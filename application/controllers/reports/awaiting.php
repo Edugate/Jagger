@@ -140,7 +140,6 @@ class Awaiting extends MY_Controller {
                     $data['error_message'] = $this->error_message;
 
                     $this->load->view('page', $data);
-                    exit(); 
                 }
                 elseif($queueList->getAction() == 'Join')
                 {
@@ -171,7 +170,6 @@ class Awaiting extends MY_Controller {
                           }
                           $data['content_view'] = 'reports/awaiting_invite_federation_view';
                           $this->load->view('page', $data);
-                          exit();
                     } 
                 }
                 else
@@ -213,7 +211,6 @@ class Awaiting extends MY_Controller {
                         }
                         $data['content_view'] = 'reports/awaiting_invite_provider_view';
                         $this->load->view('page', $data);
-                        exit();
                     }
                 }
                 else
@@ -222,7 +219,6 @@ class Awaiting extends MY_Controller {
                 }
                 $data['content_view'] = 'reports/awaiting_federation_register_view';
                 $this->load->view('page', $data);
-                exit();
             }
             else
             {
@@ -234,7 +230,6 @@ class Awaiting extends MY_Controller {
             $data['content_view'] = 'error_message';
             $data['error_message'] = 'Specified Queue Id doesnt exist';
             $this->load->view('page',$data);
-            exit();
         }
     }
 
@@ -342,7 +337,6 @@ class Awaiting extends MY_Controller {
                             $data['content_view'] = 'reports/awaiting_approved_view';
                             $data['success_message'] = $success_message;
                             $this->load->view('page', $data);
-                            exit();
                         }
                     }
                     else
@@ -350,7 +344,6 @@ class Awaiting extends MY_Controller {
                         $data['error_message'] = "You have no permission to approve it";
                         $data['content_view'] = 'error_message';
                         $this->load->view('page',$data);
-                        exit();
                     }
                 }
                 elseif (($queueObj->getAction() === 'Create') && ($queueObj->getType() === 'SP'))
@@ -429,7 +422,6 @@ class Awaiting extends MY_Controller {
                             $data['content_view'] = 'reports/awaiting_approved_view';
                             $data['success_message'] = $success_message;
                             $this->load->view('page', $data);
-                            exit();
                         }
                     }
                     else
@@ -437,7 +429,6 @@ class Awaiting extends MY_Controller {
                         $data['error_message'] = "You have no permission to approve it";
                         $data['content_view'] = 'error_message';
                         $this->load->view('page',$data);
-                        exit();
                     }
                 }
                 elseif (($queueObj->getAction() === 'Create') && ($queueObj->getType() === 'Federation'))
@@ -488,7 +479,6 @@ class Awaiting extends MY_Controller {
                         $data['error_message'] = "You have no permission to approve it";
                         $data['content_view'] = 'error_message';
                         $this->load->view('page',$data);
-                        exit();
                       
                     }
                 }
@@ -507,7 +497,6 @@ class Awaiting extends MY_Controller {
                         if (empty($provider))
                         {
                             show_error('Provider not found', 404);
-                            exit();
                         }
                         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
                         if (!$has_write_access)
@@ -515,10 +504,8 @@ class Awaiting extends MY_Controller {
                              $data['error_message'] = "You have no permission to approve it";
                              $data['content_view'] = 'error_message';
                              $this->load->view('page',$data);
-                             exit();
-
                         }
-                        if ($type == 'Federation')
+                        elseif ($type == 'Federation')
                         {
                             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $queueObj->getName()));
                             if (empty($federation))
@@ -552,7 +539,6 @@ class Awaiting extends MY_Controller {
                                 $this->email_sender->send($mail_recipients, $sbj, $body);
                                 $data['content_view'] = 'reports/awaiting_invite_provider_view';
                                 $this->load->view('page', $data);
-                                exit();
                             }
                         }
                     }
@@ -563,7 +549,6 @@ class Awaiting extends MY_Controller {
                         if(empty($federation))
                         {
                            show_error('Federation not found', 404);
-                           exit();
                         }
                         $has_write_access = $this->zacl->check_acl('f_'.$federation->getId(), 'write', 'federation', '');
                         if (!$has_write_access)
@@ -571,16 +556,14 @@ class Awaiting extends MY_Controller {
                              $data['error_message'] = "You have no permission to approve it";
                              $data['content_view'] = 'error_message';
                              $this->load->view('page',$data);
-                             exit();
                         }
-                        if ($type == 'Provider')
+                        elseif ($type == 'Provider')
  			{
                             $d = $queueObj->getData(); 
                             $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $d['id'],'name'=>$d['name'],'entityid'=>$d['entityid']));
                             if(empty($provider)) 
                             {
                                 show_error('Provider not found', 404);
-                                exit();
                             }
                             $provider->setFederation($federation);
                             /**
@@ -615,8 +598,6 @@ class Awaiting extends MY_Controller {
                                  }
                                  $data['content_view'] = 'reports/awaiting_invite_federation_view';
                                  $this->load->view('page', $data);
-                                 exit();
-
 
                             }
                            
@@ -644,7 +625,6 @@ class Awaiting extends MY_Controller {
                 $data['error_message'] = 'Can\'t approve it because this request dosn\'t exist';
                 $data['content_view'] = 'error_message';
                 $this->load->view('page',$data);
-                exit();
             }
         }
 
@@ -737,14 +717,12 @@ class Awaiting extends MY_Controller {
                     log_message('debug', $this->error_message);
                     $data['content_view'] = 'reports/awaiting_rejected_view';
                     $this->load->view('page', $data);
-                    exit();
                 }
                 else
                 {
                    $data['error_message'] = 'You have no permission to reject this request';
                    $data['content_view'] = 'error_message';
                    $this->load->view('page', $data);
-                   exit();
                 }
                 
             }
@@ -757,7 +735,6 @@ class Awaiting extends MY_Controller {
                 $data['error_message'] = $this->error_message;
                 $data['content_view'] = 'reports/awaiting_rejected_view';
                 $this->load->view('page', $data);
-                exit();
             }
         }
         else
@@ -766,7 +743,6 @@ class Awaiting extends MY_Controller {
             $data['error_message'] = $this->error_message;
             $data['content_view'] = 'reports/awaiting_rejected_view';
             $this->load->view('page', $data);
-            exit();
         }
     }
 

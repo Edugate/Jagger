@@ -62,7 +62,6 @@ class Arp extends MY_Controller {
         if (!empty($m) && $m != 'arp.xml')
         {
             show_error('Request not allowed', 403);
-            exit();
         }
         $data = array();
         $tmp_idp = new models\Providers;
@@ -72,7 +71,6 @@ class Arp extends MY_Controller {
         {
             log_message('debug', $this->mid . "IdP not found with id:." . $idp_entityid);
             show_error("Identity Provider not found", 404);
-            exit();
         }
         $data['out'] = $this->generateXml($idp);
         if (!empty($data['out']))
