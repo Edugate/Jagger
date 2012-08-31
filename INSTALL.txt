@@ -25,7 +25,8 @@ Lets presume you want to install rr in /usr/local/www-sites/rr3
    into /opt/codeigniter
 
 3. apache settings:
-
+ enabled modules:  rewrite, unique_id
+==========================================
      Alias /rr3 /usr/local/www-sites/rr3
         <Directory /usr/local/www-sites/rr3>
                 RewriteEngine On
@@ -37,8 +38,18 @@ Lets presume you want to install rr in /usr/local/www-sites/rr3
                 Order allow,deny
                 Deny from all
         </Directory>
+=========================================
+php.ini : 
+ memory_limit = 256M
+ max_execution_time = 60
+
+
 
     and reload apache
+
+
+
+
 4. create database in mysql and set permisions
 
    mysql> create database rr CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -86,7 +97,14 @@ Lets presume you want to install rr in /usr/local/www-sites/rr3
 
   above command populate database with tables;
 
-11. populate basic informations:
+11. you may need to create "Proxies" directory in /usr/local/www-sites/rr3/application/models/
+    note: if you are RR3 developer, don't commit this directory. 
+    Also if you are in production mode (you can set it in index.php)
+    Then you need generate proxyEntities from commmand line
+    go to /usr/local/www-sites/rr3/application
+    ./doctrine orm:generate-proxies
+
+12. populate basic informations:
 
    open your site 
    
@@ -98,12 +116,6 @@ Lets presume you want to install rr in /usr/local/www-sites/rr3
    and find $config['rr_setup_allowed']  and set to TRUE
    remember to change back after setup
   
-12. you may need to create "Proxies" directory in /usr/local/www-sites/rr3/application/models/
-    note: if you are RR3 developer, don't commit this directory. 
-    Also if you are in production mode (you can set it in index.php)
-    Then you need generate proxyEntities from commmand line
-    go to /usr/local/www-sites/rr3/application
-    ./doctrine orm:generate-proxies
 
 
 
