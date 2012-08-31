@@ -1,0 +1,174 @@
+Requirements: 
+ *) mysql > 5.1  (it should work with postgres etc but not tested)
+ *) PHP >= 5.3 with modules: php-apc, php5-cli, php5-curl, php5-mysql, php5-mcrypt
+ *) Apache >= 2.2 with enabled modules: rewrite, unique_id
+ *) Shibboleth-SP >= 2.4 - optional needed for federated access
+ *) Codeigniter framework > 2.1 
+    from git://github.com/EllisLab/CodeIgniter.git
+ *) Doctrine 2.2.2
+    http://www.doctrine-project.org/downloads/DoctrineORM-2.2.2-full.tar.gz
+    into APP_PATH/libraries/Doctrine
+ *) Zend Framework
+    Only Zend-ACL (Acl dir, Acl.php,  Exception.php) part from http://framework.zend.com/download/current/
+    into APP_PATH/libraries/Zend
+     
+
+
+
+
+Lets presume you want to install rr in /usr/local/www-sites/rr3
+
+1. download ResourceRegistry3 repository into /usr/local/www-sites/rr3
+
+2. download codeigniter develop branch from git repository
+   git://github.com/EllisLab/CodeIgniter.git
+   into /opt/codeigniter
+
+3. apache settings:
+
+     Alias /rr3 /usr/local/www-sites/rr3
+        <Directory /usr/local/www-sites/rr3>
+                RewriteEngine On
+                RewriteBase /rr3
+                RewriteCond $1 !^(Shibboleth\.sso|index\.php|logos|signedmetadata|flags|images|app|schemas|fonts|styles|images|js|robots\.txt|pub|includes)
+                RewriteRule  ^(.*)$ /rr3/index.php?/$1 [L]
+        </Directory>
+        <Directory /usr/local/www-sites/rr/application>
+                Order allow,deny
+                Deny from all
+        </Directory>
+
+    and reload apache
+4. create database in mysql and set permisions
+
+   mysql> create database rr CHARACTER SET utf8 COLLATE utf8_general_ci;
+   mysql> grant all on rr.* to rr@'localhost' identified by 'rr12';
+   mysql> flush privileges;
+
+5. got to main folder run ./install.sh script
+   script will download third party software
+
+6. go to /usr/local/www-sites/rr3
+   open application/config/config.php
+
+   and chaange
+   $config['base_url']   to base location like
+            'https://yousite/rr3'
+   
+  then open application/config/database.php
+  and set user/pass/dbname you created
+
+7. Modify /usr/local/www-sites/rr3/index.php
+   If file doesn't exist then copy it from codeigniter framework
+   *) you may need to add timezone on the top of file ex. 
+       date_default_timezone_set('Europe/Dublin');
+   *) find line containing $system_path and set correct path to you system codeigniter
+      example: $system_path = '/opt/codeigniter/system';
+8. Doctrine (install.sh script should do it for you)
+   RR3 has been tested with Doctrine 2.2.2
+   Check if Doctrine is installed already in /usr/local/www-sites/rr3/application/libraries/Doctrine 
+   This folder should contain Common,  DBAL,  ORM,  Symfony
+   If not please download from http://www.doctrine-project.org/downloads/DoctrineORM-2.2.2-full.tar.gz
+   Modify /usr/local/www-sites/rr3/application/doctrine.php
+   find line containing define('BASEPATH'
+   and set correct path to codeigniter system dir
+   example: define('BASEPATH',  '/opt/codeigniter/system/');
+
+9.  Zend Framework (install.sh script should do it for you)
+    Only Zend-ACL (Acl dir, Acl.php,  Exception.php) part from http://framework.zend.com/download/current/
+    into APP_PATH/libraries/Zend
+
+ 
+10. populate database:
+  go to /usr/local/www-sites/rr3/application
+  then run
+  ./doctrine orm:schema-tool:create
+
+  above command populate database with tables;
+
+11. populate basic informations:
+
+   open your site 
+   
+   https://YOUR_HOST/path_rr/setup
+
+
+   if you get error: Setup is disabled
+   then you need to open then open application/config/config_rr.php
+   and find $config['rr_setup_allowed']  and set to TRUE
+   remember to change back after setup
+  
+12. you may need to create "Proxies" directory in /usr/local/www-sites/rr3/application/models/
+    note: if you are RR3 developer, don't commit this directory. 
+    Also if you are in production mode (you can set it in index.php)
+    Then you need generate proxyEntities from commmand line
+    go to /usr/local/www-sites/rr3/application
+    ./doctrine orm:generate-proxies
+
+
+
+13.  Signing metadata script. To run this script you will need 
+     xmlsectool tool, JAVA installed, cert/key for signing metadata
+     it will sign circle metadata for each entity and federation and store into 
+     /usr/local/www-sites/rr3/signedmetadata/(federation|provider)/${ENCODED_ENTITY_OR_FEDER}/metadata.xml
+
+     you can run this script for specific entity
+     example:
+     ./script.sh provider encoded_entityID
+
+     how entityID is encoded you can find in {RR3}/applications/helpers/url_encoder_helper.php
+     
+     
+
+####################################
+#!/bin/bash 
+export JAVA_HOME=/usr/lib/jvm/java-6-sun
+# optional args
+G=$1
+H=$2
+XMLSECTOOLDIR="/usr/local/tools/xmlsectool-1.1.5"
+SIGNCERT="/usr/local/metadata-signer-cert/metadata-signer.crt"
+SIGNKEY="/usr/local/metadata-signer-cert/metadata-signer.key"
+SIGNPASS="YOUR_STRONG_PASS_FOR_PRV_KEY"
+RR3_PATH="/usr/local/www-sites/rr3"
+RR3_URL="https://YOUR_SITE/rr3_path/tools/sync_metadata/metadataslist";
+Y=`tempfile`
+cd ${XMLSECTOOLDIR}
+if [ $G == "provider" ]; then
+ wget --no-check-certificate -O ${Y} ${RR3_URL}/${H}
+else
+ wget --no-check-certificate -O ${Y} ${RR3_URL}
+fi
+  for i in `cat ${Y}`; do
+    group=`echo $i|awk -F ";" '{ print $1 }'|tr -d ' '`
+    name=`echo $i|awk -F ";" '{ print $2 }'|tr -d ' '`
+    srcurl=`echo $i|awk -F ";" '{ print $3 }'|tr -d ' '`
+
+    #tempofileoutput="/tmp/${name}"
+    dstoutput="/opt/mware-shared/www-sites/webapps/rr3/signedmetadata/${group}/${name}"
+    if [ ! -d "/opt/mware-shared/www-sites/webapps/rr3" ]; then
+       exit 3
+    fi
+    if [ ! -d "$dstoutput" ]; then
+       mkdir -p $dstoutput
+    fi
+    ${XMLSECTOOLDIR}/xmlsectool.sh --sign --certificate ${SIGNCERT} --key ${SIGNKEY} --keyPassword ${SIGNPASS} \
+      --outFile ${dstoutput}/metadata.xml --inUrl ${srcurl}
+  done
+  rm ${Y}
+
+##################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+

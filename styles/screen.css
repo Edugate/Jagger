@@ -1,0 +1,1993 @@
+html {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, blockquote, q, th, td, caption, table, body, div, span, object, iframe, p,
+pre, a, abbr, acronym, address,
+code, del, dfn, em, img,
+dl, dt, dd, ol, ul, li, fieldset,
+form, label, legend, tbody, tfoot, thead, tr, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
+  display: block;
+}
+
+blockquote, q {
+  quotes: "" "";
+}
+blockquote:before, q:before, blockquote:after, q:after {
+  content: "";
+}
+
+th, td, caption {
+  float: none !important;
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  vertical-align: middle;
+}
+
+a img {
+  border: none;
+}
+
+#nav {
+  margin: 0;
+  padding: 7px 6px 0;
+  background: #7d7d7d url(/rr3/images/gradient.png) repeat-x 0 -110px;
+  line-height: 100%;
+  border-radius: 2px 2px 0 0;
+  -webkit-border-radius: 2px 2px 0 0;
+  -moz-border-radius: 2px 2px 0 0;
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  display: inline-block;
+  height: 1%;
+}
+#nav li {
+  margin: 0 1px;
+  padding: 0 0 8px;
+  float: left;
+  position: relative;
+  list-style: none;
+  z-index: 2;
+}
+#nav a {
+  font-weight: bold;
+  color: #e7e5e5;
+  text-decoration: none;
+  display: block;
+  padding: 8px 20px;
+  margin: 0;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+#nav a:hover {
+  background: #000;
+  color: #fff;
+}
+#nav .current a, #nav li:hover > a {
+  background: #666666 url(/rr3/images/gradient.png) repeat-x 0 -40px;
+  color: #444;
+  border-top: solid 1px #f8f8f8;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 0 white;
+}
+#nav ul li:hover a, #nav li:hover li a {
+  background: none;
+  border: none;
+  color: #666;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
+#nav ul a:hover {
+  background: #0078ff url(/rr3/images/gradient.png) repeat-x 0 -100px !important;
+  color: #fff !important;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+#nav li:hover > ul {
+  display: block;
+}
+#nav ul {
+  display: none;
+  margin: 0;
+  padding: 0;
+  width: 185px;
+  position: absolute;
+  top: 35px;
+  left: 0;
+  background: #dddddd url(/rr3/images/gradient.png) repeat-x 0 0;
+  border: solid 1px #b4b4b4;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  border-radius: 1px;
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+#nav ul li {
+  float: none;
+  margin: 0;
+  padding: 0;
+}
+#nav ul a {
+  font-weight: normal;
+  text-shadow: 0 1px 0 #fff;
+}
+#nav ul ul {
+  left: 181px;
+  top: -3px;
+}
+#nav ul li:first-child > a {
+  -webkit-border-top-left-radius: 1px;
+  -moz-border-radius-topleft: 1px;
+  -webkit-border-top-right-radius: 1px;
+  -moz-border-radius-topright: 1px;
+}
+#nav ul li:last-child > a {
+  -webkit-border-bottom-left-radius: 1px;
+  -moz-border-radius-bottomleft: 1px;
+  -webkit-border-bottom-right-radius: 1px;
+  -moz-border-radius-bottomright: 1px;
+}
+#nav :after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
+}
+
+body.rr3 form {
+  line-height: 3;
+  border-radius: 5px;
+  -icab-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  counter-reset: fieldsets;
+  padding: 10px;
+  margin: auto;
+  margin-bottom: 20px;
+  line-height: 2;
+}
+body.rr3 form label {
+  font-weight: bold;
+}
+body.rr3 form fieldset {
+  padding: 1.4em;
+  margin: 0 0 1.5em 0;
+}
+body.rr3 form legend {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+body.rr3 form input.text, body.rr3 form input.title, body.rr3 form input[type=email], body.rr3 form input[type=text], body.rr3 form input[type=password] {
+  margin: 0.5em 0;
+  background-color: white;
+  padding: 5px;
+}
+body.rr3 form input.title {
+  font-size: 1.5em;
+}
+body.rr3 form textarea {
+  margin: 0.5em 0;
+  padding: 5px;
+}
+body.rr3 form select {
+  margin: 0.5em 0;
+}
+body.rr3 form fieldset {
+  border: 1px solid #cccccc;
+}
+body.rr3 form input.text, body.rr3 form input.title, body.rr3 form input[type=email], body.rr3 form input[type=text], body.rr3 form input[type=password],
+body.rr3 form textarea {
+  background-color: #fff;
+  border: 1px solid #bbbbbb;
+}
+body.rr3 form input.text:focus, body.rr3 form input.title:focus, body.rr3 form input[type=email]:focus, body.rr3 form input[type=text]:focus, body.rr3 form input[type=password]:focus,
+body.rr3 form textarea:focus {
+  border-color: #666666;
+}
+body.rr3 form select {
+  background-color: #fff;
+  border-width: 1px;
+  border-style: solid;
+}
+body.rr3 form input.text, body.rr3 form input.title, body.rr3 form input[type=email], body.rr3 form input[type=text], body.rr3 form input[type=password] {
+  width: 300px;
+}
+body.rr3 form textarea {
+  width: 390px;
+  height: 250px;
+}
+body.rr3 form p {
+  margin-bottom: 0;
+}
+body.rr3 form input.text, body.rr3 form input.title, body.rr3 form input[type=email], body.rr3 form input[type=text], body.rr3 form input[type=password] {
+  width: 300px;
+}
+body.rr3 form textarea {
+  width: 300px;
+  height: auto;
+}
+body.rr3 form span.geoform {
+  text-align: left;
+}
+body.rr3 form td {
+  line-height: 1;
+}
+body.rr3 form fieldset {
+  margin-bottom: 2px;
+  background-color: #d6e5f4;
+  padding: 0px;
+}
+body.rr3 form legend {
+  display: inline-block;
+  padding-right: 5px;
+  color: black;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding-bottom: 5px;
+}
+body.rr3 form legend a {
+  color: black;
+  padding-bottom: 5px;
+  text-decoration: none;
+  padding-left: 0px;
+}
+body.rr3 form legend.on:before {
+  content: url(../images/icons/control-270.png);
+  margin-right: 7px;
+}
+body.rr3 form legend.off:before {
+  content: url(../images/icons/control.png);
+  margin-right: 7px;
+}
+body.rr3 form legend.oko2 {
+  background-color: red;
+  color: red;
+}
+body.rr3 form label {
+  min-width: 40%;
+  white-space: nowrap;
+  display: block;
+  float: left;
+  text-align: right;
+  padding-right: 10px;
+}
+body.rr3 form select {
+  border: 1px solid #969696;
+  font: 13px Arial, Helvetica, sans-serif;
+  min-width: 120px;
+  margin-left: 5px;
+  margin-right: 10px;
+  padding: 2px;
+  width-min: 204px;
+}
+body.rr3 form input {
+  border: 1px solid;
+  height: 1.5em;
+  line-height: 1em;
+  margin-left: 6px;
+  padding: 0px 3px;
+}
+body.rr3 form input.acsindex {
+  min-width: 2px;
+  width: 10px;
+  margin-left: 5px;
+}
+body.rr3 form input.acsurl {
+  margin-right: 5px;
+}
+body.rr3 form textarea {
+  min-height: 150px;
+  width: auto;
+}
+body.rr3 form fieldset fieldset legend {
+  color: #111111;
+  font-weight: normal;
+  padding-bottom: 0;
+  padding-left: 15px;
+  text-shadow: 0 0px 0px black;
+  font-weight: bolder;
+}
+body.rr3 form ol li {
+  background: #e2edf7;
+  border-color: #e3ebc3;
+  border-style: solid;
+  border-width: 1px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -khtml-border-radius: 3px;
+  border-radius: 3px;
+  list-style: none;
+  /* padding: 5px 10px;*/
+  margin-bottom: 3px;
+}
+body.rr3 form ol ol li {
+  background: none;
+  border: none;
+  float: left;
+}
+body.rr3 form div.buttons {
+  display: block-inline;
+  float: right;
+}
+body.rr3 form div.buttons button {
+  margin: 10px;
+}
+body.rr3 form div#sortable {
+  overflow: auto;
+}
+body.rr3 form div#sortable span {
+  display: block;
+  cursor: move;
+}
+body.rr3 form div.ncert li {
+  background-color: #aecbe9;
+}
+body.rr3 form fieldset.newcontact {
+  background-color: #aecbe9;
+}
+body.rr3 form #combobox {
+  float: left;
+}
+
+#login {
+  margin-top: 50px;
+}
+
+a.btn {
+  display: inline;
+  float: left;
+  display: block;
+  margin: 0.7em 0.5em 0.7em 0;
+  border-width: 1px;
+  border-style: solid;
+  font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+  font-size: 100%;
+  line-height: 130%;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 5px 10px 5px 7px;
+  background-color: #f0f0f0;
+  border-color: #cdcdcd #bdbdbd #bdbdbd #cdcdcd;
+  color: #565656;
+}
+a.btn img {
+  margin: 0 3px -3px 0 !important;
+  padding: 0;
+  border: none;
+  width: 16px;
+  height: 16px;
+  float: none;
+}
+a.btn:hover {
+  background-color: #dff4ff;
+  border-color: #d2f1ff #c2e1ef #c2e1ef #d2f1ff;
+  color: #336699;
+}
+a.btn:active {
+  background-color: #6299c5;
+  border-color: #72a9d5 #6299c5 #6299c5 #72a9d5;
+  color: white;
+}
+
+span.save:before {
+  content: url(../images/buttons/tick.png);
+  vertical-align: bottom;
+  margin-right: 7px;
+}
+
+span.reset:before {
+  content: url(../images/buttons/cross.png);
+  margin-right: 7px;
+}
+
+span.cancel:before {
+  content: url(../images/buttons/cross.png);
+  margin-right: 7px;
+}
+
+span.remove:before {
+  content: url(../images/buttons/cross.png);
+  margin-right: 7px;
+}
+
+button {
+  display: inline;
+  float: left;
+  display: block;
+  margin: 0.7em 0.5em 0.7em 0;
+  border-width: 1px;
+  border-style: solid;
+  font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+  font-size: 100%;
+  line-height: 130%;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  width: auto;
+  overflow: visible;
+  padding: 4px 10px 3px 7px;
+  background-color: #f0f0f0;
+  border-color: #cdcdcd #bdbdbd #bdbdbd #cdcdcd;
+  color: #565656;
+}
+button img {
+  margin: 0 3px -3px 0 !important;
+  padding: 0;
+  border: none;
+  width: 16px;
+  height: 16px;
+  float: none;
+}
+button[type] {
+  padding: 4px 10px 4px 7px;
+  line-height: 17px;
+}
+*:first-child + html button[type] {
+  padding: 4px 10px 3px 7px;
+}
+button:hover {
+  background-color: #dff4ff;
+  border-color: #d2f1ff #c2e1ef #c2e1ef #d2f1ff;
+  color: #336699;
+}
+button:active {
+  background-color: #6299c5;
+  border-color: #72a9d5 #6299c5 #6299c5 #72a9d5;
+  color: white;
+}
+
+button.v2 {
+  display: inline;
+  float: none;
+  display: block;
+  margin: 0.7em 0.5em 0.7em 0;
+  border-width: 1px;
+  border-style: solid;
+  font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+  font-size: 100%;
+  line-height: 130%;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  width: auto;
+  overflow: visible;
+  padding: 4px 10px 3px 7px;
+}
+button.v2 img {
+  margin: 0 3px -3px 0 !important;
+  padding: 0;
+  border: none;
+  width: 16px;
+  height: 16px;
+  float: none;
+}
+button.v2[type] {
+  padding: 4px 10px 4px 7px;
+  line-height: 17px;
+}
+*:first-child + html button.v2[type] {
+  padding: 4px 10px 3px 7px;
+}
+
+a.positive, button.positive {
+  color: #529214;
+}
+a.positive:hover, button.positive:hover {
+  background-color: #e6efc2;
+  border-color: #d6e890 #c6d880 #c6d880 #d6e890;
+  color: #529214;
+}
+a.positive:active, button.positive:active {
+  background-color: #529214;
+  border-color: #62a224 #529214 #529214 #62a224;
+  color: white;
+}
+
+a.negative, button.negative {
+  color: #d12f19;
+}
+a.negative:hover, button.negative:hover {
+  background-color: #fbe3e4;
+  border-color: #ffd2d4 #fbc2c4 #fbc2c4 #ffd2d4;
+  color: #d12f19;
+}
+a.negative:active, button.negative:active {
+  background-color: #d12f19;
+  border-color: #e13f29 #d12f19 #d12f19 #e13f29;
+  color: white;
+}
+
+button.btn {
+  display: -moz-inline-box;
+  -moz-box-orient: vertical;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  margin: 0.7em 0.5em 0.7em 0;
+  border-width: 1px;
+  border-style: solid;
+  font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+  font-size: 100%;
+  line-height: 130%;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  width: auto;
+  overflow: visible;
+  padding: 4px 10px 3px 7px;
+  background-color: #f0f0f0;
+  border-color: #cdcdcd #bdbdbd #bdbdbd #cdcdcd;
+  color: #565656;
+  cursor: pointer;
+}
+button.btn {
+  *display: inline;
+}
+button.btn img {
+  margin: 0 3px -3px 0 !important;
+  padding: 0;
+  border: none;
+  width: 16px;
+  height: 16px;
+  float: none;
+}
+button.btn[type] {
+  padding: 4px 10px 4px 7px;
+  line-height: 17px;
+}
+*:first-child + html button.btn[type] {
+  padding: 4px 10px 3px 7px;
+}
+button.btn:hover {
+  background-color: #dff4ff;
+  border-color: #d2f1ff #c2e1ef #c2e1ef #d2f1ff;
+  color: #336699;
+}
+button.btn:active {
+  background-color: #6299c5;
+  border-color: #72a9d5 #6299c5 #6299c5 #72a9d5;
+  color: white;
+}
+
+a.positive, button.positive {
+  color: #529214;
+}
+a.positive:hover, button.positive:hover {
+  background-color: #e6efc2;
+  border-color: #d6e890 #c6d880 #c6d880 #d6e890;
+  color: #529214;
+}
+a.positive:active, button.positive:active {
+  background-color: #529214;
+  border-color: #62a224 #529214 #529214 #62a224;
+  color: white;
+}
+
+a.negative, button.negative {
+  color: #d12f19;
+}
+a.negative:hover, button.negative:hover {
+  background-color: #fbe3e4;
+  border-color: #ffd2d4 #fbc2c4 #fbc2c4 #ffd2d4;
+  color: #d12f19;
+}
+a.negative:active, button.negative:active {
+  background-color: #d12f19;
+  border-color: #e13f29 #d12f19 #d12f19 #e13f29;
+  color: white;
+}
+
+a.gorgeous, button.gorgeous {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #049cdb), color-stop(100%, #0064cd));
+  background-image: -webkit-linear-gradient(#049cdb, #0064cd);
+  background-image: -moz-linear-gradient(#049cdb, #0064cd);
+  background-image: -o-linear-gradient(#049cdb, #0064cd);
+  background-image: -ms-linear-gradient(#049cdb, #0064cd);
+  background-image: linear-gradient(#049cdb, #0064cd);
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: white;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  border-color: #0064cd #0064cd #003f81;
+}
+a.gorgeous:hover, button.gorgeous:hover {
+  color: white;
+  border-color: #0064cd #0064cd #003f81;
+  background: #0064CD;
+}
+
+div.buttons {
+  display: -moz-inline-box;
+  -moz-box-orient: vertical;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  padding-right: 20px;
+  text-align: right;
+  font-size: 1.2em;
+}
+div.buttons {
+  *display: inline;
+}
+
+table.tablesorter {
+  background-color: #3F92D2;
+  text-align: left;
+}
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+  background-color: #e6EEEE;
+  font-size: bold;
+}
+table.tablesorter thead tr .header {
+  background-image: url(ascdesc.gif);
+  background-repeat: no-repeat;
+  background-position: center right;
+  cursor: pointer;
+}
+table.tablesorter tbody td {
+  color: #2B2B2B;
+  padding: 4px;
+  background-color: #FFF;
+  vertical-align: top;
+  white-space: normal;
+}
+table.tablesorter tr.odd td {
+  background-color: #CBD9E0;
+}
+
+table#details {
+  width: 100%;
+}
+table#details span.additions {
+  size: 0.5em;
+  display: block;
+  text-align: right;
+}
+table#details caption {
+  text-align: center;
+  padding: .4em 1em;
+       /*
+	border-top: 1px solid #000;
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
+	border-bottom: 0px solid #fff;
+       */
+  margin-bottom: 1px;
+  background: #384063;
+  font-weight: bolder;
+  font-size: 1.3em;
+  color: #ECECEC;
+}
+table#details tr > :first-child {
+  white-space: nowrap;
+}
+table#details th, table#details td {
+  border: 1px solid #000;
+  border-color: #dddddd;
+  border-collapse: collapse;
+  padding: 5px;
+  text-align: left;
+}
+table#details td.highlight {
+  background-color: #394C5F;
+  color: whitesmoke;
+  font-size: 1.3em;
+  font-weight: bolder;
+  text-align: left;
+}
+table#details tr:nth-of-type(odd) {
+  background-color: #f9f9ee;
+}
+table#details tr:nth-of-type(even) {
+  background-color: #ecf0f2;
+}
+table#details td > lo > li {
+  padding-top: 3px;
+  list-style: none;
+  font-size: larger;
+}
+table#details td.homeorg:before {
+  content: url(../images/icons/home.png);
+}
+table#details tr:hover {
+  background-color: #D6E5F4;
+}
+
+tbody.attr_supported td {
+  background-color: #bfccd8;
+}
+
+body {
+  line-height: 1.5;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  color: #333333;
+  font-size: 75%;
+  background-image: url("/rr3/images/fm_page_bg.png");
+  background-repeat: repeat-x;
+}
+body .container {
+  min-width: 950px;
+  width: 80%;
+  margin: 0 auto;
+  overflow: hidden;
+  *zoom: 1;
+}
+body .span-1 {
+  width: 3.167%;
+}
+body div.span-1 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 3.167%;
+  margin-right: 1.042%;
+}
+body .span-2 {
+  width: 7.376%;
+}
+body div.span-2 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 7.376%;
+  margin-right: 1.042%;
+}
+body .span-3 {
+  width: 11.585%;
+}
+body div.span-3 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 11.585%;
+  margin-right: 1.042%;
+}
+body .span-4 {
+  width: 15.794%;
+}
+body div.span-4 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 15.794%;
+  margin-right: 1.042%;
+}
+body .span-5 {
+  width: 20.003%;
+}
+body div.span-5 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 20.003%;
+  margin-right: 1.042%;
+}
+body .span-6 {
+  width: 24.212%;
+}
+body div.span-6 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 24.212%;
+  margin-right: 1.042%;
+}
+body .span-7 {
+  width: 28.421%;
+}
+body div.span-7 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 28.421%;
+  margin-right: 1.042%;
+}
+body .span-8 {
+  width: 32.63%;
+}
+body div.span-8 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 32.63%;
+  margin-right: 1.042%;
+}
+body .span-9 {
+  width: 36.839%;
+}
+body div.span-9 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 36.839%;
+  margin-right: 1.042%;
+}
+body .span-10 {
+  width: 41.048%;
+}
+body div.span-10 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 41.048%;
+  margin-right: 1.042%;
+}
+body .span-11 {
+  width: 45.257%;
+}
+body div.span-11 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 45.257%;
+  margin-right: 1.042%;
+}
+body .span-12 {
+  width: 49.466%;
+}
+body div.span-12 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 49.466%;
+  margin-right: 1.042%;
+}
+body .span-13 {
+  width: 53.675%;
+}
+body div.span-13 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 53.675%;
+  margin-right: 1.042%;
+}
+body .span-14 {
+  width: 57.884%;
+}
+body div.span-14 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 57.884%;
+  margin-right: 1.042%;
+}
+body .span-15 {
+  width: 62.093%;
+}
+body div.span-15 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 62.093%;
+  margin-right: 1.042%;
+}
+body .span-16 {
+  width: 66.302%;
+}
+body div.span-16 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 66.302%;
+  margin-right: 1.042%;
+}
+body .span-17 {
+  width: 70.511%;
+}
+body div.span-17 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 70.511%;
+  margin-right: 1.042%;
+}
+body .span-18 {
+  width: 74.72%;
+}
+body div.span-18 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 74.72%;
+  margin-right: 1.042%;
+}
+body .span-19 {
+  width: 78.929%;
+}
+body div.span-19 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 78.929%;
+  margin-right: 1.042%;
+}
+body .span-20 {
+  width: 83.138%;
+}
+body div.span-20 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 83.138%;
+  margin-right: 1.042%;
+}
+body .span-21 {
+  width: 87.347%;
+}
+body div.span-21 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 87.347%;
+  margin-right: 1.042%;
+}
+body .span-22 {
+  width: 91.556%;
+}
+body div.span-22 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 91.556%;
+  margin-right: 1.042%;
+}
+body .span-23 {
+  width: 95.765%;
+}
+body div.span-23 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 95.765%;
+  margin-right: 1.042%;
+}
+body .span-24 {
+  width: 99.974%;
+}
+body div.span-24 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 99.974%;
+  margin-right: 0;
+}
+body div.last {
+  margin-right: 0;
+}
+body .append-1 {
+  padding-right: 4.209%;
+}
+body .append-2 {
+  padding-right: 8.418%;
+}
+body .append-3 {
+  padding-right: 12.627%;
+}
+body .append-4 {
+  padding-right: 16.836%;
+}
+body .append-5 {
+  padding-right: 21.045%;
+}
+body .append-6 {
+  padding-right: 25.254%;
+}
+body .append-7 {
+  padding-right: 29.463%;
+}
+body .append-8 {
+  padding-right: 33.672%;
+}
+body .append-9 {
+  padding-right: 37.881%;
+}
+body .append-10 {
+  padding-right: 42.09%;
+}
+body .append-11 {
+  padding-right: 46.299%;
+}
+body .append-12 {
+  padding-right: 50.508%;
+}
+body .append-13 {
+  padding-right: 54.717%;
+}
+body .append-14 {
+  padding-right: 58.926%;
+}
+body .append-15 {
+  padding-right: 63.135%;
+}
+body .append-16 {
+  padding-right: 67.344%;
+}
+body .append-17 {
+  padding-right: 71.553%;
+}
+body .append-18 {
+  padding-right: 75.762%;
+}
+body .append-19 {
+  padding-right: 79.971%;
+}
+body .append-20 {
+  padding-right: 84.18%;
+}
+body .append-21 {
+  padding-right: 88.389%;
+}
+body .append-22 {
+  padding-right: 92.598%;
+}
+body .append-23 {
+  padding-right: 96.807%;
+}
+body .prepend-1 {
+  padding-left: 4.209%;
+}
+body .prepend-2 {
+  padding-left: 8.418%;
+}
+body .prepend-3 {
+  padding-left: 12.627%;
+}
+body .prepend-4 {
+  padding-left: 16.836%;
+}
+body .prepend-5 {
+  padding-left: 21.045%;
+}
+body .prepend-6 {
+  padding-left: 25.254%;
+}
+body .prepend-7 {
+  padding-left: 29.463%;
+}
+body .prepend-8 {
+  padding-left: 33.672%;
+}
+body .prepend-9 {
+  padding-left: 37.881%;
+}
+body .prepend-10 {
+  padding-left: 42.09%;
+}
+body .prepend-11 {
+  padding-left: 46.299%;
+}
+body .prepend-12 {
+  padding-left: 50.508%;
+}
+body .prepend-13 {
+  padding-left: 54.717%;
+}
+body .prepend-14 {
+  padding-left: 58.926%;
+}
+body .prepend-15 {
+  padding-left: 63.135%;
+}
+body .prepend-16 {
+  padding-left: 67.344%;
+}
+body .prepend-17 {
+  padding-left: 71.553%;
+}
+body .prepend-18 {
+  padding-left: 75.762%;
+}
+body .prepend-19 {
+  padding-left: 79.971%;
+}
+body .prepend-20 {
+  padding-left: 84.18%;
+}
+body .prepend-21 {
+  padding-left: 88.389%;
+}
+body .prepend-22 {
+  padding-left: 92.598%;
+}
+body .prepend-23 {
+  padding-left: 96.807%;
+}
+body .pull-1 {
+  margin-left: -4.209%;
+}
+body .pull-2 {
+  margin-left: -8.418%;
+}
+body .pull-3 {
+  margin-left: -12.627%;
+}
+body .pull-4 {
+  margin-left: -16.836%;
+}
+body .pull-5 {
+  margin-left: -21.045%;
+}
+body .pull-6 {
+  margin-left: -25.254%;
+}
+body .pull-7 {
+  margin-left: -29.463%;
+}
+body .pull-8 {
+  margin-left: -33.672%;
+}
+body .pull-9 {
+  margin-left: -37.881%;
+}
+body .pull-10 {
+  margin-left: -42.09%;
+}
+body .pull-11 {
+  margin-left: -46.299%;
+}
+body .pull-12 {
+  margin-left: -50.508%;
+}
+body .pull-13 {
+  margin-left: -54.717%;
+}
+body .pull-14 {
+  margin-left: -58.926%;
+}
+body .pull-15 {
+  margin-left: -63.135%;
+}
+body .pull-16 {
+  margin-left: -67.344%;
+}
+body .pull-17 {
+  margin-left: -71.553%;
+}
+body .pull-18 {
+  margin-left: -75.762%;
+}
+body .pull-19 {
+  margin-left: -79.971%;
+}
+body .pull-20 {
+  margin-left: -84.18%;
+}
+body .pull-21 {
+  margin-left: -88.389%;
+}
+body .pull-22 {
+  margin-left: -92.598%;
+}
+body .pull-23 {
+  margin-left: -96.807%;
+}
+body .pull-24 {
+  margin-left: -101.016%;
+}
+body .push-1 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -4.209%;
+  margin-bottom: 0;
+}
+body .push-2 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -8.418%;
+  margin-bottom: 0;
+}
+body .push-3 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -12.627%;
+  margin-bottom: 0;
+}
+body .push-4 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -16.836%;
+  margin-bottom: 0;
+}
+body .push-5 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -21.045%;
+  margin-bottom: 0;
+}
+body .push-6 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -25.254%;
+  margin-bottom: 0;
+}
+body .push-7 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -29.463%;
+  margin-bottom: 0;
+}
+body .push-8 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -33.672%;
+  margin-bottom: 0;
+}
+body .push-9 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -37.881%;
+  margin-bottom: 0;
+}
+body .push-10 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -42.09%;
+  margin-bottom: 0;
+}
+body .push-11 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -46.299%;
+  margin-bottom: 0;
+}
+body .push-12 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -50.508%;
+  margin-bottom: 0;
+}
+body .push-13 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -54.717%;
+  margin-bottom: 0;
+}
+body .push-14 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -58.926%;
+  margin-bottom: 0;
+}
+body .push-15 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -63.135%;
+  margin-bottom: 0;
+}
+body .push-16 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -67.344%;
+  margin-bottom: 0;
+}
+body .push-17 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -71.553%;
+  margin-bottom: 0;
+}
+body .push-18 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -75.762%;
+  margin-bottom: 0;
+}
+body .push-19 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -79.971%;
+  margin-bottom: 0;
+}
+body .push-20 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -84.18%;
+  margin-bottom: 0;
+}
+body .push-21 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -88.389%;
+  margin-bottom: 0;
+}
+body .push-22 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -92.598%;
+  margin-bottom: 0;
+}
+body .push-23 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -96.807%;
+  margin-bottom: 0;
+}
+body .push-24 {
+  display: inline;
+  float: right;
+  margin-top: 0;
+  margin-left: 1.042%;
+  margin-right: -101.016%;
+  margin-bottom: 0;
+}
+body h1, body h2, body h3, body h4, body h5, body h6 {
+  font-weight: normal;
+  color: #222222;
+}
+body h1 img, body h2 img, body h3 img, body h4 img, body h5 img, body h6 img {
+  margin: 0;
+}
+body h1 {
+  font-size: 3em;
+  line-height: 1;
+  margin-bottom: 0.50em;
+}
+body h2 {
+  font-size: 2em;
+  margin-bottom: 0.75em;
+}
+body h3 {
+  font-size: 1.5em;
+  line-height: 1;
+  margin-bottom: 1.00em;
+}
+body h4 {
+  font-size: 1.2em;
+  line-height: 1.25;
+  margin-bottom: 1.25em;
+}
+body h5 {
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 1.50em;
+}
+body h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
+body p {
+  margin: 0 0 1.5em;
+}
+body p .left {
+  display: inline;
+  float: left;
+  margin: 1.5em 1.5em 1.5em 0;
+  padding: 0;
+}
+body p .right {
+  display: inline;
+  float: right;
+  margin: 1.5em 0 1.5em 1.5em;
+  padding: 0;
+}
+body a {
+  text-decoration: underline;
+  color: #0066cc;
+}
+body a:visited {
+  color: #004c99;
+}
+body a:focus {
+  color: #0099ff;
+}
+body a:hover {
+  color: #0099ff;
+}
+body a:active {
+  color: #bf00ff;
+}
+body blockquote {
+  margin: 1.5em;
+  color: #666666;
+  font-style: italic;
+}
+body strong, body dfn {
+  font-weight: bold;
+}
+body em, body dfn {
+  font-style: italic;
+}
+body sup, body sub {
+  line-height: 0;
+}
+body abbr, body acronym {
+  border-bottom: 1px dotted #666666;
+}
+body address {
+  margin: 0 0 1.5em;
+  font-style: italic;
+}
+body del {
+  color: #666666;
+}
+body pre {
+  margin: 1.5em 0;
+  white-space: pre;
+}
+body pre, body code, body tt {
+  font: 1em "andale mono", "lucida console", monospace;
+  line-height: 1.5;
+}
+body li ul, body li ol {
+  margin: 0;
+}
+body ul, body ol {
+  margin: 0 1.5em 1.5em 0;
+  padding-left: 1.5em;
+}
+body ul {
+  list-style-type: disc;
+}
+body ol {
+  list-style-type: decimal;
+}
+body dl {
+  margin: 0 0 1.5em 0;
+}
+body dl dt {
+  font-weight: bold;
+}
+body dd {
+  margin-left: 1.5em;
+}
+body table {
+  margin-bottom: 1.4em;
+  width: 100%;
+}
+body th {
+  font-weight: bold;
+}
+body thead th {
+  background: #c3d9ff;
+}
+body th, body td, body caption {
+  padding: 4px 10px 4px 5px;
+}
+body table.striped tr:nth-child(even) td,
+body table tr.even td {
+  background: #e5ecf9;
+}
+body tfoot {
+  font-style: italic;
+}
+body caption {
+  background: #eeeeee;
+}
+body .quiet {
+  color: #666666;
+}
+body .loud {
+  color: #111111;
+}
+body p + p {
+  text-indent: 2em;
+  margin-top: -1.5em;
+  /* Don't want this in forms. */
+}
+form body p + p {
+  text-indent: 0;
+}
+body p.incr,
+body .incr p {
+  font-size: 0.833em;
+  line-height: 1.44em;
+  margin-bottom: 1.5em;
+}
+body .caps {
+  font-variant: small-caps;
+  letter-spacing: 1px;
+  text-transform: lowercase;
+  font-size: 1.2em;
+  line-height: 1%;
+  font-weight: bold;
+  padding: 0 2px;
+}
+body .dquo {
+  margin-left: -0.5em;
+}
+body .alt {
+  color: #666666;
+  font-family: "Warnock Pro", "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif;
+  font-style: italic;
+  font-weight: normal;
+}
+body .clear {
+  clear: both;
+}
+body .nowrap {
+  white-space: nowrap;
+}
+body .clearfix {
+  overflow: hidden;
+  *zoom: 1;
+}
+body .small {
+  font-size: 0.8em;
+  margin-bottom: 1.875em;
+  line-height: 1.875em;
+}
+body .large {
+  font-size: 1.2em;
+  line-height: 2.5em;
+  margin-bottom: 1.25em;
+}
+body .first {
+  margin-left: 0;
+  padding-left: 0;
+}
+body .last {
+  margin-right: 0;
+  padding-right: 0;
+}
+body .top {
+  margin-top: 0;
+  padding-top: 0;
+}
+body .bottom {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+body .showgrid {
+  background-image: -webkit-gradient(linear, 50% 100%, 50% 0%, color-stop(5%, rgba(0, 0, 0, 0.5)), color-stop(5%, rgba(0, 0, 0, 0))), -webkit-gradient(linear, 0% 50%, 960 50%, color-stop(0%, rgba(0, 0, 0, 0)), color-stop(0%, rgba(100, 100, 225, 0.25)), color-stop(3.125%, rgba(100, 100, 225, 0.25)), color-stop(3.125%, rgba(0, 0, 0, 0)), color-stop(4.167%, rgba(0, 0, 0, 0)), color-stop(4.167%, rgba(100, 100, 225, 0.25)), color-stop(7.292%, rgba(100, 100, 225, 0.25)), color-stop(7.292%, rgba(0, 0, 0, 0)), color-stop(8.333%, rgba(0, 0, 0, 0)), color-stop(8.333%, rgba(100, 100, 225, 0.25)), color-stop(11.458%, rgba(100, 100, 225, 0.25)), color-stop(11.458%, rgba(0, 0, 0, 0)), color-stop(12.5%, rgba(0, 0, 0, 0)), color-stop(12.5%, rgba(100, 100, 225, 0.25)), color-stop(15.625%, rgba(100, 100, 225, 0.25)), color-stop(15.625%, rgba(0, 0, 0, 0)), color-stop(16.667%, rgba(0, 0, 0, 0)), color-stop(16.667%, rgba(100, 100, 225, 0.25)), color-stop(19.792%, rgba(100, 100, 225, 0.25)), color-stop(19.792%, rgba(0, 0, 0, 0)), color-stop(20.833%, rgba(0, 0, 0, 0)), color-stop(20.833%, rgba(100, 100, 225, 0.25)), color-stop(23.958%, rgba(100, 100, 225, 0.25)), color-stop(23.958%, rgba(0, 0, 0, 0)), color-stop(25%, rgba(0, 0, 0, 0)), color-stop(25%, rgba(100, 100, 225, 0.25)), color-stop(28.125%, rgba(100, 100, 225, 0.25)), color-stop(28.125%, rgba(0, 0, 0, 0)), color-stop(29.167%, rgba(0, 0, 0, 0)), color-stop(29.167%, rgba(100, 100, 225, 0.25)), color-stop(32.292%, rgba(100, 100, 225, 0.25)), color-stop(32.292%, rgba(0, 0, 0, 0)), color-stop(33.333%, rgba(0, 0, 0, 0)), color-stop(33.333%, rgba(100, 100, 225, 0.25)), color-stop(36.458%, rgba(100, 100, 225, 0.25)), color-stop(36.458%, rgba(0, 0, 0, 0)), color-stop(37.5%, rgba(0, 0, 0, 0)), color-stop(37.5%, rgba(100, 100, 225, 0.25)), color-stop(40.625%, rgba(100, 100, 225, 0.25)), color-stop(40.625%, rgba(0, 0, 0, 0)), color-stop(41.667%, rgba(0, 0, 0, 0)), color-stop(41.667%, rgba(100, 100, 225, 0.25)), color-stop(44.792%, rgba(100, 100, 225, 0.25)), color-stop(44.792%, rgba(0, 0, 0, 0)), color-stop(45.833%, rgba(0, 0, 0, 0)), color-stop(45.833%, rgba(100, 100, 225, 0.25)), color-stop(48.958%, rgba(100, 100, 225, 0.25)), color-stop(48.958%, rgba(0, 0, 0, 0)), color-stop(50%, rgba(0, 0, 0, 0)), color-stop(50%, rgba(100, 100, 225, 0.25)), color-stop(53.125%, rgba(100, 100, 225, 0.25)), color-stop(53.125%, rgba(0, 0, 0, 0)), color-stop(54.167%, rgba(0, 0, 0, 0)), color-stop(54.167%, rgba(100, 100, 225, 0.25)), color-stop(57.292%, rgba(100, 100, 225, 0.25)), color-stop(57.292%, rgba(0, 0, 0, 0)), color-stop(58.333%, rgba(0, 0, 0, 0)), color-stop(58.333%, rgba(100, 100, 225, 0.25)), color-stop(61.458%, rgba(100, 100, 225, 0.25)), color-stop(61.458%, rgba(0, 0, 0, 0)), color-stop(62.5%, rgba(0, 0, 0, 0)), color-stop(62.5%, rgba(100, 100, 225, 0.25)), color-stop(65.625%, rgba(100, 100, 225, 0.25)), color-stop(65.625%, rgba(0, 0, 0, 0)), color-stop(66.667%, rgba(0, 0, 0, 0)), color-stop(66.667%, rgba(100, 100, 225, 0.25)), color-stop(69.792%, rgba(100, 100, 225, 0.25)), color-stop(69.792%, rgba(0, 0, 0, 0)), color-stop(70.833%, rgba(0, 0, 0, 0)), color-stop(70.833%, rgba(100, 100, 225, 0.25)), color-stop(73.958%, rgba(100, 100, 225, 0.25)), color-stop(73.958%, rgba(0, 0, 0, 0)), color-stop(75%, rgba(0, 0, 0, 0)), color-stop(75%, rgba(100, 100, 225, 0.25)), color-stop(78.125%, rgba(100, 100, 225, 0.25)), color-stop(78.125%, rgba(0, 0, 0, 0)), color-stop(79.167%, rgba(0, 0, 0, 0)), color-stop(79.167%, rgba(100, 100, 225, 0.25)), color-stop(82.292%, rgba(100, 100, 225, 0.25)), color-stop(82.292%, rgba(0, 0, 0, 0)), color-stop(83.333%, rgba(0, 0, 0, 0)), color-stop(83.333%, rgba(100, 100, 225, 0.25)), color-stop(86.458%, rgba(100, 100, 225, 0.25)), color-stop(86.458%, rgba(0, 0, 0, 0)), color-stop(87.5%, rgba(0, 0, 0, 0)), color-stop(87.5%, rgba(100, 100, 225, 0.25)), color-stop(90.625%, rgba(100, 100, 225, 0.25)), color-stop(90.625%, rgba(0, 0, 0, 0)), color-stop(91.667%, rgba(0, 0, 0, 0)), color-stop(91.667%, rgba(100, 100, 225, 0.25)), color-stop(94.792%, rgba(100, 100, 225, 0.25)), color-stop(94.792%, rgba(0, 0, 0, 0)), color-stop(95.833%, rgba(0, 0, 0, 0)), color-stop(95.833%, rgba(100, 100, 225, 0.25)), color-stop(98.958%, rgba(100, 100, 225, 0.25)), color-stop(98.958%, rgba(0, 0, 0, 0)), color-stop(100%, rgba(0, 0, 0, 0)));
+  background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.5) 5%, rgba(0, 0, 0, 0) 5%), -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 0px, rgba(100, 100, 225, 0.25) 0px, rgba(100, 100, 225, 0.25) 30px, rgba(0, 0, 0, 0) 30px, rgba(0, 0, 0, 0) 40px, rgba(100, 100, 225, 0.25) 40px, rgba(100, 100, 225, 0.25) 70px, rgba(0, 0, 0, 0) 70px, rgba(0, 0, 0, 0) 80px, rgba(100, 100, 225, 0.25) 80px, rgba(100, 100, 225, 0.25) 110px, rgba(0, 0, 0, 0) 110px, rgba(0, 0, 0, 0) 120px, rgba(100, 100, 225, 0.25) 120px, rgba(100, 100, 225, 0.25) 150px, rgba(0, 0, 0, 0) 150px, rgba(0, 0, 0, 0) 160px, rgba(100, 100, 225, 0.25) 160px, rgba(100, 100, 225, 0.25) 190px, rgba(0, 0, 0, 0) 190px, rgba(0, 0, 0, 0) 200px, rgba(100, 100, 225, 0.25) 200px, rgba(100, 100, 225, 0.25) 230px, rgba(0, 0, 0, 0) 230px, rgba(0, 0, 0, 0) 240px, rgba(100, 100, 225, 0.25) 240px, rgba(100, 100, 225, 0.25) 270px, rgba(0, 0, 0, 0) 270px, rgba(0, 0, 0, 0) 280px, rgba(100, 100, 225, 0.25) 280px, rgba(100, 100, 225, 0.25) 310px, rgba(0, 0, 0, 0) 310px, rgba(0, 0, 0, 0) 320px, rgba(100, 100, 225, 0.25) 320px, rgba(100, 100, 225, 0.25) 350px, rgba(0, 0, 0, 0) 350px, rgba(0, 0, 0, 0) 360px, rgba(100, 100, 225, 0.25) 360px, rgba(100, 100, 225, 0.25) 390px, rgba(0, 0, 0, 0) 390px, rgba(0, 0, 0, 0) 400px, rgba(100, 100, 225, 0.25) 400px, rgba(100, 100, 225, 0.25) 430px, rgba(0, 0, 0, 0) 430px, rgba(0, 0, 0, 0) 440px, rgba(100, 100, 225, 0.25) 440px, rgba(100, 100, 225, 0.25) 470px, rgba(0, 0, 0, 0) 470px, rgba(0, 0, 0, 0) 480px, rgba(100, 100, 225, 0.25) 480px, rgba(100, 100, 225, 0.25) 510px, rgba(0, 0, 0, 0) 510px, rgba(0, 0, 0, 0) 520px, rgba(100, 100, 225, 0.25) 520px, rgba(100, 100, 225, 0.25) 550px, rgba(0, 0, 0, 0) 550px, rgba(0, 0, 0, 0) 560px, rgba(100, 100, 225, 0.25) 560px, rgba(100, 100, 225, 0.25) 590px, rgba(0, 0, 0, 0) 590px, rgba(0, 0, 0, 0) 600px, rgba(100, 100, 225, 0.25) 600px, rgba(100, 100, 225, 0.25) 630px, rgba(0, 0, 0, 0) 630px, rgba(0, 0, 0, 0) 640px, rgba(100, 100, 225, 0.25) 640px, rgba(100, 100, 225, 0.25) 670px, rgba(0, 0, 0, 0) 670px, rgba(0, 0, 0, 0) 680px, rgba(100, 100, 225, 0.25) 680px, rgba(100, 100, 225, 0.25) 710px, rgba(0, 0, 0, 0) 710px, rgba(0, 0, 0, 0) 720px, rgba(100, 100, 225, 0.25) 720px, rgba(100, 100, 225, 0.25) 750px, rgba(0, 0, 0, 0) 750px, rgba(0, 0, 0, 0) 760px, rgba(100, 100, 225, 0.25) 760px, rgba(100, 100, 225, 0.25) 790px, rgba(0, 0, 0, 0) 790px, rgba(0, 0, 0, 0) 800px, rgba(100, 100, 225, 0.25) 800px, rgba(100, 100, 225, 0.25) 830px, rgba(0, 0, 0, 0) 830px, rgba(0, 0, 0, 0) 840px, rgba(100, 100, 225, 0.25) 840px, rgba(100, 100, 225, 0.25) 870px, rgba(0, 0, 0, 0) 870px, rgba(0, 0, 0, 0) 880px, rgba(100, 100, 225, 0.25) 880px, rgba(100, 100, 225, 0.25) 910px, rgba(0, 0, 0, 0) 910px, rgba(0, 0, 0, 0) 920px, rgba(100, 100, 225, 0.25) 920px, rgba(100, 100, 225, 0.25) 950px, rgba(0, 0, 0, 0) 950px, rgba(0, 0, 0, 0) 960px);
+  background-image: -moz-linear-gradient(bottom, rgba(0, 0, 0, 0.5) 5%, rgba(0, 0, 0, 0) 5%), -moz-linear-gradient(left, rgba(0, 0, 0, 0) 0px, rgba(100, 100, 225, 0.25) 0px, rgba(100, 100, 225, 0.25) 30px, rgba(0, 0, 0, 0) 30px, rgba(0, 0, 0, 0) 40px, rgba(100, 100, 225, 0.25) 40px, rgba(100, 100, 225, 0.25) 70px, rgba(0, 0, 0, 0) 70px, rgba(0, 0, 0, 0) 80px, rgba(100, 100, 225, 0.25) 80px, rgba(100, 100, 225, 0.25) 110px, rgba(0, 0, 0, 0) 110px, rgba(0, 0, 0, 0) 120px, rgba(100, 100, 225, 0.25) 120px, rgba(100, 100, 225, 0.25) 150px, rgba(0, 0, 0, 0) 150px, rgba(0, 0, 0, 0) 160px, rgba(100, 100, 225, 0.25) 160px, rgba(100, 100, 225, 0.25) 190px, rgba(0, 0, 0, 0) 190px, rgba(0, 0, 0, 0) 200px, rgba(100, 100, 225, 0.25) 200px, rgba(100, 100, 225, 0.25) 230px, rgba(0, 0, 0, 0) 230px, rgba(0, 0, 0, 0) 240px, rgba(100, 100, 225, 0.25) 240px, rgba(100, 100, 225, 0.25) 270px, rgba(0, 0, 0, 0) 270px, rgba(0, 0, 0, 0) 280px, rgba(100, 100, 225, 0.25) 280px, rgba(100, 100, 225, 0.25) 310px, rgba(0, 0, 0, 0) 310px, rgba(0, 0, 0, 0) 320px, rgba(100, 100, 225, 0.25) 320px, rgba(100, 100, 225, 0.25) 350px, rgba(0, 0, 0, 0) 350px, rgba(0, 0, 0, 0) 360px, rgba(100, 100, 225, 0.25) 360px, rgba(100, 100, 225, 0.25) 390px, rgba(0, 0, 0, 0) 390px, rgba(0, 0, 0, 0) 400px, rgba(100, 100, 225, 0.25) 400px, rgba(100, 100, 225, 0.25) 430px, rgba(0, 0, 0, 0) 430px, rgba(0, 0, 0, 0) 440px, rgba(100, 100, 225, 0.25) 440px, rgba(100, 100, 225, 0.25) 470px, rgba(0, 0, 0, 0) 470px, rgba(0, 0, 0, 0) 480px, rgba(100, 100, 225, 0.25) 480px, rgba(100, 100, 225, 0.25) 510px, rgba(0, 0, 0, 0) 510px, rgba(0, 0, 0, 0) 520px, rgba(100, 100, 225, 0.25) 520px, rgba(100, 100, 225, 0.25) 550px, rgba(0, 0, 0, 0) 550px, rgba(0, 0, 0, 0) 560px, rgba(100, 100, 225, 0.25) 560px, rgba(100, 100, 225, 0.25) 590px, rgba(0, 0, 0, 0) 590px, rgba(0, 0, 0, 0) 600px, rgba(100, 100, 225, 0.25) 600px, rgba(100, 100, 225, 0.25) 630px, rgba(0, 0, 0, 0) 630px, rgba(0, 0, 0, 0) 640px, rgba(100, 100, 225, 0.25) 640px, rgba(100, 100, 225, 0.25) 670px, rgba(0, 0, 0, 0) 670px, rgba(0, 0, 0, 0) 680px, rgba(100, 100, 225, 0.25) 680px, rgba(100, 100, 225, 0.25) 710px, rgba(0, 0, 0, 0) 710px, rgba(0, 0, 0, 0) 720px, rgba(100, 100, 225, 0.25) 720px, rgba(100, 100, 225, 0.25) 750px, rgba(0, 0, 0, 0) 750px, rgba(0, 0, 0, 0) 760px, rgba(100, 100, 225, 0.25) 760px, rgba(100, 100, 225, 0.25) 790px, rgba(0, 0, 0, 0) 790px, rgba(0, 0, 0, 0) 800px, rgba(100, 100, 225, 0.25) 800px, rgba(100, 100, 225, 0.25) 830px, rgba(0, 0, 0, 0) 830px, rgba(0, 0, 0, 0) 840px, rgba(100, 100, 225, 0.25) 840px, rgba(100, 100, 225, 0.25) 870px, rgba(0, 0, 0, 0) 870px, rgba(0, 0, 0, 0) 880px, rgba(100, 100, 225, 0.25) 880px, rgba(100, 100, 225, 0.25) 910px, rgba(0, 0, 0, 0) 910px, rgba(0, 0, 0, 0) 920px, rgba(100, 100, 225, 0.25) 920px, rgba(100, 100, 225, 0.25) 950px, rgba(0, 0, 0, 0) 950px, rgba(0, 0, 0, 0) 960px);
+  background-image: -o-linear-gradient(bottom, rgba(0, 0, 0, 0.5) 5%, rgba(0, 0, 0, 0) 5%), -o-linear-gradient(left, rgba(0, 0, 0, 0) 0px, rgba(100, 100, 225, 0.25) 0px, rgba(100, 100, 225, 0.25) 30px, rgba(0, 0, 0, 0) 30px, rgba(0, 0, 0, 0) 40px, rgba(100, 100, 225, 0.25) 40px, rgba(100, 100, 225, 0.25) 70px, rgba(0, 0, 0, 0) 70px, rgba(0, 0, 0, 0) 80px, rgba(100, 100, 225, 0.25) 80px, rgba(100, 100, 225, 0.25) 110px, rgba(0, 0, 0, 0) 110px, rgba(0, 0, 0, 0) 120px, rgba(100, 100, 225, 0.25) 120px, rgba(100, 100, 225, 0.25) 150px, rgba(0, 0, 0, 0) 150px, rgba(0, 0, 0, 0) 160px, rgba(100, 100, 225, 0.25) 160px, rgba(100, 100, 225, 0.25) 190px, rgba(0, 0, 0, 0) 190px, rgba(0, 0, 0, 0) 200px, rgba(100, 100, 225, 0.25) 200px, rgba(100, 100, 225, 0.25) 230px, rgba(0, 0, 0, 0) 230px, rgba(0, 0, 0, 0) 240px, rgba(100, 100, 225, 0.25) 240px, rgba(100, 100, 225, 0.25) 270px, rgba(0, 0, 0, 0) 270px, rgba(0, 0, 0, 0) 280px, rgba(100, 100, 225, 0.25) 280px, rgba(100, 100, 225, 0.25) 310px, rgba(0, 0, 0, 0) 310px, rgba(0, 0, 0, 0) 320px, rgba(100, 100, 225, 0.25) 320px, rgba(100, 100, 225, 0.25) 350px, rgba(0, 0, 0, 0) 350px, rgba(0, 0, 0, 0) 360px, rgba(100, 100, 225, 0.25) 360px, rgba(100, 100, 225, 0.25) 390px, rgba(0, 0, 0, 0) 390px, rgba(0, 0, 0, 0) 400px, rgba(100, 100, 225, 0.25) 400px, rgba(100, 100, 225, 0.25) 430px, rgba(0, 0, 0, 0) 430px, rgba(0, 0, 0, 0) 440px, rgba(100, 100, 225, 0.25) 440px, rgba(100, 100, 225, 0.25) 470px, rgba(0, 0, 0, 0) 470px, rgba(0, 0, 0, 0) 480px, rgba(100, 100, 225, 0.25) 480px, rgba(100, 100, 225, 0.25) 510px, rgba(0, 0, 0, 0) 510px, rgba(0, 0, 0, 0) 520px, rgba(100, 100, 225, 0.25) 520px, rgba(100, 100, 225, 0.25) 550px, rgba(0, 0, 0, 0) 550px, rgba(0, 0, 0, 0) 560px, rgba(100, 100, 225, 0.25) 560px, rgba(100, 100, 225, 0.25) 590px, rgba(0, 0, 0, 0) 590px, rgba(0, 0, 0, 0) 600px, rgba(100, 100, 225, 0.25) 600px, rgba(100, 100, 225, 0.25) 630px, rgba(0, 0, 0, 0) 630px, rgba(0, 0, 0, 0) 640px, rgba(100, 100, 225, 0.25) 640px, rgba(100, 100, 225, 0.25) 670px, rgba(0, 0, 0, 0) 670px, rgba(0, 0, 0, 0) 680px, rgba(100, 100, 225, 0.25) 680px, rgba(100, 100, 225, 0.25) 710px, rgba(0, 0, 0, 0) 710px, rgba(0, 0, 0, 0) 720px, rgba(100, 100, 225, 0.25) 720px, rgba(100, 100, 225, 0.25) 750px, rgba(0, 0, 0, 0) 750px, rgba(0, 0, 0, 0) 760px, rgba(100, 100, 225, 0.25) 760px, rgba(100, 100, 225, 0.25) 790px, rgba(0, 0, 0, 0) 790px, rgba(0, 0, 0, 0) 800px, rgba(100, 100, 225, 0.25) 800px, rgba(100, 100, 225, 0.25) 830px, rgba(0, 0, 0, 0) 830px, rgba(0, 0, 0, 0) 840px, rgba(100, 100, 225, 0.25) 840px, rgba(100, 100, 225, 0.25) 870px, rgba(0, 0, 0, 0) 870px, rgba(0, 0, 0, 0) 880px, rgba(100, 100, 225, 0.25) 880px, rgba(100, 100, 225, 0.25) 910px, rgba(0, 0, 0, 0) 910px, rgba(0, 0, 0, 0) 920px, rgba(100, 100, 225, 0.25) 920px, rgba(100, 100, 225, 0.25) 950px, rgba(0, 0, 0, 0) 950px, rgba(0, 0, 0, 0) 960px);
+  background-image: -ms-linear-gradient(bottom, rgba(0, 0, 0, 0.5) 5%, rgba(0, 0, 0, 0) 5%), -ms-linear-gradient(left, rgba(0, 0, 0, 0) 0px, rgba(100, 100, 225, 0.25) 0px, rgba(100, 100, 225, 0.25) 30px, rgba(0, 0, 0, 0) 30px, rgba(0, 0, 0, 0) 40px, rgba(100, 100, 225, 0.25) 40px, rgba(100, 100, 225, 0.25) 70px, rgba(0, 0, 0, 0) 70px, rgba(0, 0, 0, 0) 80px, rgba(100, 100, 225, 0.25) 80px, rgba(100, 100, 225, 0.25) 110px, rgba(0, 0, 0, 0) 110px, rgba(0, 0, 0, 0) 120px, rgba(100, 100, 225, 0.25) 120px, rgba(100, 100, 225, 0.25) 150px, rgba(0, 0, 0, 0) 150px, rgba(0, 0, 0, 0) 160px, rgba(100, 100, 225, 0.25) 160px, rgba(100, 100, 225, 0.25) 190px, rgba(0, 0, 0, 0) 190px, rgba(0, 0, 0, 0) 200px, rgba(100, 100, 225, 0.25) 200px, rgba(100, 100, 225, 0.25) 230px, rgba(0, 0, 0, 0) 230px, rgba(0, 0, 0, 0) 240px, rgba(100, 100, 225, 0.25) 240px, rgba(100, 100, 225, 0.25) 270px, rgba(0, 0, 0, 0) 270px, rgba(0, 0, 0, 0) 280px, rgba(100, 100, 225, 0.25) 280px, rgba(100, 100, 225, 0.25) 310px, rgba(0, 0, 0, 0) 310px, rgba(0, 0, 0, 0) 320px, rgba(100, 100, 225, 0.25) 320px, rgba(100, 100, 225, 0.25) 350px, rgba(0, 0, 0, 0) 350px, rgba(0, 0, 0, 0) 360px, rgba(100, 100, 225, 0.25) 360px, rgba(100, 100, 225, 0.25) 390px, rgba(0, 0, 0, 0) 390px, rgba(0, 0, 0, 0) 400px, rgba(100, 100, 225, 0.25) 400px, rgba(100, 100, 225, 0.25) 430px, rgba(0, 0, 0, 0) 430px, rgba(0, 0, 0, 0) 440px, rgba(100, 100, 225, 0.25) 440px, rgba(100, 100, 225, 0.25) 470px, rgba(0, 0, 0, 0) 470px, rgba(0, 0, 0, 0) 480px, rgba(100, 100, 225, 0.25) 480px, rgba(100, 100, 225, 0.25) 510px, rgba(0, 0, 0, 0) 510px, rgba(0, 0, 0, 0) 520px, rgba(100, 100, 225, 0.25) 520px, rgba(100, 100, 225, 0.25) 550px, rgba(0, 0, 0, 0) 550px, rgba(0, 0, 0, 0) 560px, rgba(100, 100, 225, 0.25) 560px, rgba(100, 100, 225, 0.25) 590px, rgba(0, 0, 0, 0) 590px, rgba(0, 0, 0, 0) 600px, rgba(100, 100, 225, 0.25) 600px, rgba(100, 100, 225, 0.25) 630px, rgba(0, 0, 0, 0) 630px, rgba(0, 0, 0, 0) 640px, rgba(100, 100, 225, 0.25) 640px, rgba(100, 100, 225, 0.25) 670px, rgba(0, 0, 0, 0) 670px, rgba(0, 0, 0, 0) 680px, rgba(100, 100, 225, 0.25) 680px, rgba(100, 100, 225, 0.25) 710px, rgba(0, 0, 0, 0) 710px, rgba(0, 0, 0, 0) 720px, rgba(100, 100, 225, 0.25) 720px, rgba(100, 100, 225, 0.25) 750px, rgba(0, 0, 0, 0) 750px, rgba(0, 0, 0, 0) 760px, rgba(100, 100, 225, 0.25) 760px, rgba(100, 100, 225, 0.25) 790px, rgba(0, 0, 0, 0) 790px, rgba(0, 0, 0, 0) 800px, rgba(100, 100, 225, 0.25) 800px, rgba(100, 100, 225, 0.25) 830px, rgba(0, 0, 0, 0) 830px, rgba(0, 0, 0, 0) 840px, rgba(100, 100, 225, 0.25) 840px, rgba(100, 100, 225, 0.25) 870px, rgba(0, 0, 0, 0) 870px, rgba(0, 0, 0, 0) 880px, rgba(100, 100, 225, 0.25) 880px, rgba(100, 100, 225, 0.25) 910px, rgba(0, 0, 0, 0) 910px, rgba(0, 0, 0, 0) 920px, rgba(100, 100, 225, 0.25) 920px, rgba(100, 100, 225, 0.25) 950px, rgba(0, 0, 0, 0) 950px, rgba(0, 0, 0, 0) 960px);
+  background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.5) 5%, rgba(0, 0, 0, 0) 5%), linear-gradient(left, rgba(0, 0, 0, 0) 0px, rgba(100, 100, 225, 0.25) 0px, rgba(100, 100, 225, 0.25) 30px, rgba(0, 0, 0, 0) 30px, rgba(0, 0, 0, 0) 40px, rgba(100, 100, 225, 0.25) 40px, rgba(100, 100, 225, 0.25) 70px, rgba(0, 0, 0, 0) 70px, rgba(0, 0, 0, 0) 80px, rgba(100, 100, 225, 0.25) 80px, rgba(100, 100, 225, 0.25) 110px, rgba(0, 0, 0, 0) 110px, rgba(0, 0, 0, 0) 120px, rgba(100, 100, 225, 0.25) 120px, rgba(100, 100, 225, 0.25) 150px, rgba(0, 0, 0, 0) 150px, rgba(0, 0, 0, 0) 160px, rgba(100, 100, 225, 0.25) 160px, rgba(100, 100, 225, 0.25) 190px, rgba(0, 0, 0, 0) 190px, rgba(0, 0, 0, 0) 200px, rgba(100, 100, 225, 0.25) 200px, rgba(100, 100, 225, 0.25) 230px, rgba(0, 0, 0, 0) 230px, rgba(0, 0, 0, 0) 240px, rgba(100, 100, 225, 0.25) 240px, rgba(100, 100, 225, 0.25) 270px, rgba(0, 0, 0, 0) 270px, rgba(0, 0, 0, 0) 280px, rgba(100, 100, 225, 0.25) 280px, rgba(100, 100, 225, 0.25) 310px, rgba(0, 0, 0, 0) 310px, rgba(0, 0, 0, 0) 320px, rgba(100, 100, 225, 0.25) 320px, rgba(100, 100, 225, 0.25) 350px, rgba(0, 0, 0, 0) 350px, rgba(0, 0, 0, 0) 360px, rgba(100, 100, 225, 0.25) 360px, rgba(100, 100, 225, 0.25) 390px, rgba(0, 0, 0, 0) 390px, rgba(0, 0, 0, 0) 400px, rgba(100, 100, 225, 0.25) 400px, rgba(100, 100, 225, 0.25) 430px, rgba(0, 0, 0, 0) 430px, rgba(0, 0, 0, 0) 440px, rgba(100, 100, 225, 0.25) 440px, rgba(100, 100, 225, 0.25) 470px, rgba(0, 0, 0, 0) 470px, rgba(0, 0, 0, 0) 480px, rgba(100, 100, 225, 0.25) 480px, rgba(100, 100, 225, 0.25) 510px, rgba(0, 0, 0, 0) 510px, rgba(0, 0, 0, 0) 520px, rgba(100, 100, 225, 0.25) 520px, rgba(100, 100, 225, 0.25) 550px, rgba(0, 0, 0, 0) 550px, rgba(0, 0, 0, 0) 560px, rgba(100, 100, 225, 0.25) 560px, rgba(100, 100, 225, 0.25) 590px, rgba(0, 0, 0, 0) 590px, rgba(0, 0, 0, 0) 600px, rgba(100, 100, 225, 0.25) 600px, rgba(100, 100, 225, 0.25) 630px, rgba(0, 0, 0, 0) 630px, rgba(0, 0, 0, 0) 640px, rgba(100, 100, 225, 0.25) 640px, rgba(100, 100, 225, 0.25) 670px, rgba(0, 0, 0, 0) 670px, rgba(0, 0, 0, 0) 680px, rgba(100, 100, 225, 0.25) 680px, rgba(100, 100, 225, 0.25) 710px, rgba(0, 0, 0, 0) 710px, rgba(0, 0, 0, 0) 720px, rgba(100, 100, 225, 0.25) 720px, rgba(100, 100, 225, 0.25) 750px, rgba(0, 0, 0, 0) 750px, rgba(0, 0, 0, 0) 760px, rgba(100, 100, 225, 0.25) 760px, rgba(100, 100, 225, 0.25) 790px, rgba(0, 0, 0, 0) 790px, rgba(0, 0, 0, 0) 800px, rgba(100, 100, 225, 0.25) 800px, rgba(100, 100, 225, 0.25) 830px, rgba(0, 0, 0, 0) 830px, rgba(0, 0, 0, 0) 840px, rgba(100, 100, 225, 0.25) 840px, rgba(100, 100, 225, 0.25) 870px, rgba(0, 0, 0, 0) 870px, rgba(0, 0, 0, 0) 880px, rgba(100, 100, 225, 0.25) 880px, rgba(100, 100, 225, 0.25) 910px, rgba(0, 0, 0, 0) 910px, rgba(0, 0, 0, 0) 920px, rgba(100, 100, 225, 0.25) 920px, rgba(100, 100, 225, 0.25) 950px, rgba(0, 0, 0, 0) 950px, rgba(0, 0, 0, 0) 960px);
+  -webkit-background-size: 100% 18px, auto;
+  -moz-background-size: 100% 18px, auto;
+  -o-background-size: 100% 18px, auto;
+  background-size: 100% 18px, auto;
+  background-position: left top;
+}
+body .feedback, body .error, body .alert, body .notice, body .success, body .info {
+  padding: 0.8em;
+  margin-bottom: 1em;
+  border: 2px solid #dddddd;
+}
+body .error, body .alert {
+  background: #fbe3e4;
+  color: #8a1f11;
+  border-color: #fbc2c4;
+}
+body .error a, body .alert a {
+  color: #8a1f11;
+}
+body .notice {
+  background: #fff6bf;
+  color: #514721;
+  border-color: #ffd324;
+}
+body .notice a {
+  color: #514721;
+}
+body .success {
+  background: #e6efc2;
+  color: #264409;
+  border-color: #c6d880;
+}
+body .success a {
+  color: #264409;
+}
+body .info {
+  background: #d5edf8;
+  color: #205791;
+  border-color: #92cae4;
+}
+body .info a {
+  color: #205791;
+}
+body .hide {
+  display: none;
+}
+body .highlight {
+  background: yellow;
+}
+body .added {
+  background: #006600;
+  color: white;
+}
+body .removed {
+  background: #990000;
+  color: white;
+}
+body label {
+  font-weight: bold;
+}
+body fieldset {
+  padding: 1.4em;
+  margin: 0 0 1.5em 0;
+}
+body legend {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+body input.text, body input.title, body input[type=email], body input[type=text], body input[type=password] {
+  margin: 0.5em 0;
+  background-color: white;
+  padding: 5px;
+}
+body input.title {
+  font-size: 1.5em;
+}
+body textarea {
+  margin: 0.5em 0;
+  padding: 5px;
+}
+body select {
+  margin: 0.5em 0;
+}
+body fieldset {
+  border: 1px solid #cccccc;
+}
+body input.text, body input.title, body input[type=email], body input[type=text], body input[type=password], body textarea {
+  background-color: #fff;
+  border: 1px solid #bbbbbb;
+}
+body input.text:focus, body input.title:focus, body input[type=email]:focus, body input[type=text]:focus, body input[type=password]:focus, body textarea:focus {
+  border-color: #666666;
+}
+body select {
+  background-color: #fff;
+  border-width: 1px;
+  border-style: solid;
+}
+body input.text, body input.title, body input[type=email], body input[type=text], body input[type=password] {
+  width: 300px;
+}
+body textarea {
+  width: 390px;
+  height: 250px;
+}
+body fieldset {
+  border: 1px solid #cccccc;
+}
+body input.text, body input.title, body input[type=email], body input[type=text], body input[type=password], body textarea {
+  background-color: #fff;
+  border: 1px solid #bbbbbb;
+}
+body input.text:focus, body input.title:focus, body input[type=email]:focus, body input[type=text]:focus, body input[type=password]:focus, body textarea:focus {
+  border-color: #666666;
+}
+body select {
+  background-color: #fff;
+  border-width: 1px;
+  border-style: solid;
+}
+body code, body pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap !important;
+  white-space: -pre-wrap;
+  white-space: o-pre-wrap;
+  word-wrap: break-word;
+  width: 90%;
+  max-width: 800px;
+}
+body .provider-logo {
+  position: relative;
+  max-height: 100px;
+  width: auto;
+}
+body .provider-logo span {
+  width: 20px;
+  height: 18px;
+  position: absulute;
+  top: -12px;
+  left: 90px;
+  background: url(../images/icons/document-binary.png) no-repeat;
+}
+body #footer {
+  text-align: center;
+  width: 100%;
+  color: #000;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+body #container {
+  min-width: 950px;
+  width: 80%;
+  margin: 0 auto;
+  overflow: hidden;
+  *zoom: 1;
+}
+body #content #subtitle {
+  margin-top: 10px;
+  margin-left: 20%;
+  font-family: "Times New Roman",Georgia,Serif;
+  font-size: 1.5em;
+}
+body #content #responsecontainer {
+  margin-top: 10px;
+  padding: 10px;
+  text-align: center;
+}
+body .accordionButton {
+  cursor: pointer;
+  color: black;
+}
+body .accordionButton a {
+  color: black;
+}
+body .xml .de1, body .xml .de2 {
+  font: normal normal 1em/1.2em monospace;
+  margin: 0;
+  padding: 0;
+  background: grey;
+  vertical-align: top;
+}
+body .xml {
+  font-family: monospace;
+}
+body .xml .imp {
+  font-weight: bold;
+  color: red;
+}
+body .xml li, body .xml .li1 {
+  font-weight: normal;
+  vertical-align: top;
+}
+body .xml .ln {
+  width: 1px;
+  text-align: right;
+  margin: 0;
+  padding: 0 2px;
+  vertical-align: top;
+}
+body .xml .li2 {
+  font-weight: bold;
+  vertical-align: top;
+}
+body .xml .es0 {
+  color: #000099;
+  font-weight: bold;
+}
+body .xml .br0 {
+  color: #66cc66;
+}
+body .xml .sy0 {
+  color: #66cc66;
+}
+body .xml .st0 {
+  color: #ff0000;
+}
+body .xml .nu0 {
+  color: #cc66cc;
+}
+body .xml .sc-1 {
+  color: #808080;
+  font-style: italic;
+}
+body .xml .sc0 {
+  color: #00bbdd;
+}
+body .xml .sc1 {
+  color: #ddbb00;
+}
+body .xml .sc2 {
+  color: #339933;
+}
+body .xml .sc3 {
+  color: #009900;
+}
+body .xml .re0 {
+  color: #000066;
+}
+body .xml .re1 {
+  color: #7f0055;
+  font-weight: bold;
+}
+body .xml .re2 {
+  color: #000000;
+  font-weight: bold;
+}
+body .xml .ln-xtra, body .xml li.ln-xtra, body .xml div.ln-xtra {
+  background-color: #ffc;
+}
+body .xml span.xtra {
+  display: block;
+}
+body span.loggedin {
+  position: absolute;
+  right: 50px;
+  top: 10px;
+  list-style-type: none;
+}
+
+span.homeorg:before {
+  content: url(../images/icons/home.png);
+}
+
+td.homeorg:before {
+  content: url(../images/icons/home.png);
+}
+
+span.on:before {
+  content: url(../images/icons/control-270.png);
+  margin-right: 7px;
+}
+
+span.off:before {
+  content: url(../images/icons/control.png);
+  margin-right: 7px;
+}
+
+tr.off td:first-child:before {
+  content: url(../images/icons/control.png);
+  margin-right: 7px;
+}
+
+tr.on td:first-child:before {
+  content: url(../images/icons/control-270.png);
+  margin-right: 7px;
+}
+
+#divmenu {
+  clear: both;
+  margin-top: 8px;
+  width: 820px;
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#logo {
+  vertical-align: top;
+}
+
+#matrixtable table {
+  border: 2px solid black;
+}
+#matrixtable td {
+  border: 1px solid grey;
+}
+#matrixtable td.den {
+  background-color: #FF0000;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+#matrixtable td.perm {
+  background-color: #00FF00;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+#matrixtable td.dis {
+  background-color: #E3E5FF;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+#matrixtable td.spec {
+  background-color: #FFFF00;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+div.floating-menu {
+  position: fixed;
+  background: #fff4c8;
+  border: 1px solid #ffcc00;
+  width: 130px;
+  left: 4px;
+  z-index: 100;
+}
+div.floating-menu span {
+  cursor: pointer;
+}
+div.floating-menu hr {
+  color: #ffcc00;
+}
+
+div.floating-menu a, div.floating-menu h3 {
+  display: block;
+  margin: 0 0.5em;
+}
+
+a > span.inqueue {
+  color: red;
+  vertical-align: top;
+  font-size: x-small;
+  font-weight: bolder;
+}
+
+html, body {
+  height: 100%;
+}
+
+#oko {
+  clear: both;
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin-bottom: -50px;
+}
+#oko #inpre_footer {
+  height: 50px;
+}
+
+#footer {
+  clear: both;
+  position: relative;
+  height: 50px;
+}

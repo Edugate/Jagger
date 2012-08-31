@@ -1,0 +1,178 @@
+body.rr3 form {
+    @include blueprint-form;
+    @include blueprint-inline-form;
+    @include blueprint-form-sizes($input-width, $textarea-width, $textarea-height);
+    //  background-color: $form-background-color-quiet;
+    border-radius: 5px;
+    -icab-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px; 
+    counter-reset: fieldsets;
+    padding: 10px;
+    margin: auto;
+    margin-bottom: 20px;
+    line-height: 2; 
+    span.geoform {
+         text-align: left; 
+    }
+     
+    td {
+       line-height: 1;
+    }
+    
+    
+    fieldset {
+        margin-bottom: 2px;
+        background-color: $form-background-color;
+        padding: 0px;
+    } 
+    
+    
+    legend {
+        display: inline-block;
+        padding-right: 5px;
+        color: $form-legend-color;
+        font-size: 1.5em;
+        font-weight: bold;
+        padding-bottom: 5px;
+        //text-align: left;
+        a {
+            color: black;
+            // font-weight: bold;
+            padding-bottom: 5px;
+            
+            text-decoration: none;
+            padding-left: 0px;
+            
+        }
+        
+    }
+    legend.on:before{
+        content:url(../images/icons/control-270.png);
+        margin-right: 7px;
+    }
+    legend.off:before{
+        content:url(../images/icons/control.png);
+        margin-right: 7px;
+    }
+    legend.oko2 {
+        background-color: red;
+        color: red;
+    }
+    label {
+        //  display: -moz-inline-block;
+        //  display: inline-block;
+        min-width: 40%; 
+        white-space: nowrap;
+        display: block;
+        float: left;
+        text-align: right;
+        padding-right: 10px;
+    }
+    select {     
+        border: 1px solid #969696;
+        font: 13px Arial, Helvetica, sans-serif;
+        min-width: 120px;
+        margin-left: 5px;
+        margin-right: 10px;
+        padding: 2px;
+        width-min: 204px;
+        
+        
+    }
+    input {      
+        
+        border: 1px solid;
+        height: 1.5em;
+        line-height: 1em;
+        margin-left: 6px;
+        padding: 0px 3px;
+        //   width: 194px;
+        
+    }
+    input.acsindex {
+        min-width:2px;
+        width: 10px;
+        margin-left: 5px;
+    }
+    input.acsurl {
+        margin-right: 5px;
+    }
+    
+    textarea {
+        min-height: $textarea-min-height;
+        width: auto;
+        
+    }
+    fieldset fieldset legend{
+        color: #111111;
+        font-weight: normal;
+        padding-bottom: 0;
+        padding-left: 15px;
+        text-shadow: 0 0px 0px black;
+        font-weight: bolder;
+    }
+
+    ol li {
+        background: $form-background-color-quiet;
+        border-color: $form-border-color;
+        border-style: solid;
+        border-width: 1px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        -khtml-border-radius: 3px;
+        border-radius: 3px;
+        list-style: none;
+       /* padding: 5px 10px;*/
+
+        margin-bottom: 3px;
+    }
+    ol ol li {
+        background: none;
+        border: none;
+        float: left;
+    }
+    
+    div.buttons  {  
+        display: block-inline;
+        float: right;
+        
+        button {
+            
+            margin: 10px;
+        }
+        
+    }   
+    
+    
+    div#sortable {
+        
+        //float: right;
+        //display: block;
+        
+        overflow: auto;
+        span {
+            display: block;
+            
+            cursor:move; 
+        }
+    }
+    div.ncert li {
+        background-color: $form-background-color-new;
+    }
+    fieldset.newcontact {
+        background-color: $form-background-color-new;   
+    }
+    #combobox {
+        float: left;
+    }
+    
+}
+
+
+#login {
+    margin-top: 50px;
+    
+}
+

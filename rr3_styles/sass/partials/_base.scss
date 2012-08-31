@@ -1,0 +1,37 @@
+// Here is where you can define your constants for your application and to configure the blueprint framework.
+// Feel free to delete these if you want keep the defaults:
+
+$blueprint-grid-columns: 24;
+$blueprint-container-size: 950px;
+$blueprint-grid-margin: 10px;
+
+// Use this to calculate the width based on the total width.
+// Or you can set $blueprint-grid-width to a fixed value and unset $blueprint-container-size -- it will be calculated for you.
+$blueprint-grid-width: ($blueprint-container-size + $blueprint-grid-margin) / $blueprint-grid-columns - $blueprint-grid-margin;
+$blueprint-button-font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif ;
+$blueprint-button-background-color: #f0f0f0;
+$blueprint-button-border-color: #f0f0f0;
+$blueprint-button-border-color: darken($blueprint-button-border-color,20%);
+
+$form-background-color: #d6e5f4;
+
+$form-background-color-quiet: lighten($form-background-color, 3%);
+$form-background-color-new: darken($form-background-color, 10%);
+$form-border-color: #e3ebc3;
+$form-legend-color: #000;
+
+$input-width: 300px;
+$input-border-color: #969696;
+
+$textarea-width: 300px;
+$textarea-height: auto;
+$textarea-min-height:150px;
+$textarea-min-width: 300px;
+
+$tr-odd-back-color: #F9F9EE;
+$tr-even-back-color: #ECF0F2;
+$tr-highlight-back-color: #394C5F;
+$tr-highlight-color: whitesmoke;
+$table-border-color: red;
+
+$supported-back-color: #394C5F;
