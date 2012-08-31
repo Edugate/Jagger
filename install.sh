@@ -57,7 +57,7 @@ install(){
 
   
 }
-#install
+install
 echo -e "Done!!!"
 echo -e "Now go to application/config"
 echo -e "copy belowe config files and customize them:
