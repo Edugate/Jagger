@@ -260,6 +260,16 @@ class Provider {
             $differ['Scope']['before'] = $provider->getScope();
             $differ['Scope']['after'] = $this->getScope();
         }
+        $nameids_before = $provider->getNameIdToArray();
+        $nameids_after = $this->getNameIdToArray();
+        if($nameids_before != $nameids_after)
+        {
+            $differ['nameids']['before'] = implode(', ',$nameids_before);
+            $differ['nameids']['after'] = implode(', ',$nameids_after);
+        } 
+       
+                 
+
         if ($provider->getCountry() != $this->getCountry()) {
             $differ['Country']['before'] = $provider->getCountry();
             $differ['Country']['after'] = $this->getCountry();
@@ -307,9 +317,6 @@ class Provider {
             $differ['Active']['before'] = $provider->getActive();
             $differ['Active']['after'] = $this->getActive();
         }
-
-
-
 
         return $differ;
     }

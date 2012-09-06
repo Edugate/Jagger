@@ -76,7 +76,8 @@ class Idp_registration extends MY_Controller {
                 $idp->setFederation($federation);
             }
             $idp->setName($this->input->post('homeorg'));
-            $idp->setEntityId($this->input->post('entity'));
+            $r_entityid = $this->input->post('entity');
+            $idp->setEntityId($r_entityid);
             $idp->setIDP();
             $idp->setHelpdeskUrl($this->input->post('helpdeskurl'));
             $idp->setHomeUrl($this->input->post('homeurl'));
@@ -158,6 +159,7 @@ class Idp_registration extends MY_Controller {
             $sbj = "IDP registration request";
             $body = "Dear Administrator\r\n";
             $body .= "".$qu->getEmail()." just filled IDP Registration form\r\n";
+            $body .= "entityID: ".$r_entityid."\r\n";
             $body .="You can approve or reject it on ".base_url()."reports/awaiting/detail/".$qu->getToken()."\r\n";
             $this->load->library('email_sender');
             $this->email_sender->send($recipients,$sbj,$body);

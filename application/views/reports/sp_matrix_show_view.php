@@ -8,7 +8,7 @@ echo '</div>';
 
 }
 ?>
-<div id="matrixtable" style="text-align: center; width: 100%;" class="span-24">
+<div id="matrixtable" style="text-align: center; width: 100%; overflow: auto;" class="span-24">
 <br />
 <br />
 <br />
@@ -16,7 +16,7 @@ echo '</div>';
 <div id="button" class="prepend-10">
 
 
-<button type="button" onclick="document.getElementById('matrixtable').innerHTML ='<br /><br /><br /><img src=\'https://middleware-dev.heanet.ie/rr3/images/loading.gif\' />'; setTimeout(function(){matrixinit('<?php echo $entityid; ?>');},1000);">Show matrix</button> 
+<button type="button" onclick="document.getElementById('matrixtable').innerHTML ='<br /><br /><br /><img src=\'<?php echo base_url();?>images/loading.gif\' />'; setTimeout(function(){matrixinit('<?php echo $entityid; ?>');},1000);">Show matrix</button> 
 </div>
 
 

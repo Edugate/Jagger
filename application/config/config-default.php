@@ -231,6 +231,9 @@ $config['encryption_key'] = 'jhiufhi34hfhewhfsdfhsd';
 | 
 |--------------------------------------------------------------------------
 |
+| 'sess_driver'				= the driver to load: cookie (Classic), native (PHP sessions),
+|	or your custom driver name
+| 'sess_valid_drivers'		= additional valid drivers which may be loaded
 | 'sess_cookie_name'		= the name you want for the cookie
 | 'sess_expiration'			= the number of SECONDS you want the session to last.
 |  by default sessions last 7200 seconds (two hours). Set to zero for no expiration.
@@ -244,6 +247,8 @@ $config['encryption_key'] = 'jhiufhi34hfhewhfsdfhsd';
 | 'sess_time_to_update'		= how many seconds between CI refreshing Session Information
 |
 */
+$config['sess_driver']			= 'cookie';
+$config['sess_valid_drivers']	= array();
 $config['sess_cookie_name']		= 'rr3sess';
 $config['sess_expiration']		= 3600;
 $config['sess_expire_on_close']	= TRUE;
