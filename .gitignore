@@ -4,6 +4,9 @@ application/libraries/Zend/*
 application/libraries/Doctrine
 application/libraries/Doctine/*
 
+application/libraries/geshi
+application/libraries/geshi/*
+
 application/logs/*
 application/cache/*
 application/models/Proxies/*

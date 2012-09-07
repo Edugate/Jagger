@@ -30,9 +30,9 @@ install(){
    ZENDACL="Zend"
    if [ ! -d "${LIBRARYPATH}/${ZENDACL}" ]
    then
-     wget http://framework.zend.com/releases/ZendFramework-1.11.14/ZendFramework-1.11.14.tar.gz -O ${TMPDIR}/ZendFramework-1.11.14.tar.gz
-     tar zxf ${TMPDIR}/ZendFramework-1.11.14.tar.gz  -C ${TMPDIR}/
-     SRCZENDLIB="${TMPDIR}/ZendFramework-1.11.14/library/Zend"
+     wget http://packages.zendframework.com/releases/ZendFramework-1.12.0/ZendFramework-1.12.0.tar.gz -O ${TMPDIR}/ZendFramework-1.12.0.tar.gz
+     tar zxf ${TMPDIR}/ZendFramework-1.12.0.tar.gz  -C ${TMPDIR}/
+     SRCZENDLIB="${TMPDIR}/ZendFramework-1.12.0/library/Zend"
      mkdir ${LIBRARYPATH}/${ZENDACL}
      cp -r ${SRCZENDLIB}/Acl.php ${SRCZENDLIB}/Exception.php ${SRCZENDLIB}/Acl  ${LIBRARYPATH}/${ZENDACL}/
    else
