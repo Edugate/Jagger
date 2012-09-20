@@ -12,6 +12,8 @@ $config['rr_display_memory_usage'] = TRUE;
 $config['syncpass'] = 'verystrongpasss';
 
 
+$config['mainfedname'] = 'Edugate';
+
 /**
  * if TRUE feadmin may remove member from his fed without approve queue
  * don't change to FALSE as it's not finished yet
