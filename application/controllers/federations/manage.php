@@ -96,6 +96,71 @@ class Manage extends MY_Controller {
         $this->load->view('page', $data);
     }
 
+    function showcontactlist($fed_name,$type=NULL)
+    {
+       $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
+       if (empty($federation))
+       {
+           show_error('Federation not found', 404);
+           return;
+       }
+       $fed_members = $federation->getMembers();
+       $members_ids = array();
+       if(!empty($type) )
+       {
+           if($type == 'idp')
+           {
+               foreach($fed_members as $m)
+               {
+                   if($m->getType() == 'IDP' or $m->getType() == 'BOTH')
+                   {
+                       $members_ids[] = $m->getId();
+                   }
+               }
+           }
+           elseif($type == 'sp')
+           {
+               foreach($fed_members as $m)
+               {
+                   if($m->getType() == 'SP' or $m->getType() == 'BOTH')
+                   {
+                       $members_ids[] = $m->getId();
+                   }
+               }
+           }
+           else
+           {
+               show_error(404);
+           }
+      
+      }
+      else
+      {
+               foreach($fed_members as $m)
+               {
+                  $members_ids[] = $m->getId();
+               }
+      } 
+       
+      $contacts = $this->em->getRepository("models\Contact")->findBy(array('provider'=>$members_ids)) ;
+      $cont_array = array(); 
+      foreach($contacts as $c)
+      {
+        $cont_array[$c->getEmail()] = $c->getFullName();
+      }
+      $this->output->set_content_type('text/plain');
+      $result = "";
+      foreach($cont_array as $key=>$value)
+      {
+          $result .= $key."    <".trim($value).">\n";
+      }
+      $data['contactlist']= $result;
+      $this->load->helper('download');
+      $filename = 'federationcontactlist.txt';
+      force_download($filename,$result,'text/plain');
+
+    }
+
     function show($fed_name)
     {
         $this->load->library('show_element');
@@ -157,6 +222,10 @@ class Manage extends MY_Controller {
         $data['tbl'][] = array('Description', htmlentities($federation->getDescription()));
         $data['tbl'][] = array('Terms Of Use', htmlentities($federation->getTou()));
         $data['tbl'][] = array('Federation owner/creator', htmlentities($federation->getOwner()));
+        $idp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/idp', 'Contact list of idp members');
+        $sp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/sp', 'Contact list of sp members');
+        $all_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'', 'Contact list of all federation members');
+        $data['tbl'][] = array('Download contacts list in txt format', $idp_contactlist.'<br />'.$sp_contactlist.'<br />'.$all_contactlist);
         
 
         $image_link = "<img src=\"" . base_url() . "images/icons/pencil-field.png\"/>";
@@ -206,8 +275,7 @@ class Manage extends MY_Controller {
         else
         {
              $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">no access to manage permissions</div></small>', 'colspan' => 2));
-            
-        }
+       }
         $data['tbl'][] = array('data' => array('data' => 'Metadata', 'class' => 'highlight', 'colspan' => 2));
         if (empty($data['federation_is_active']))
         {
