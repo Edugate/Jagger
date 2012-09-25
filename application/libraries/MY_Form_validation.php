@@ -314,6 +314,7 @@ class MY_form_validation extends CI_form_validation {
             	$xpath->registerNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
             	$xpath->registerNamespace('shibmd', 'urn:mace:shibboleth:metadata:1.0');
             	$xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
+            	$xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
 
                 $first_attempt = $this->CI->metadata_validator->validateWithSchema($metadata);
                 if(empty($first_attempt))
@@ -328,7 +329,7 @@ class MY_form_validation extends CI_form_validation {
                         else
                         {
                            $err_details = "<br />Make sure elements contains namespaces ex. md:EntityDescriptor.";
-                           $err_details .='<br />Also inside EntitiyDescriptor element you must declare namespaces defitions<br/> <code>xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"  xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"</code>';
+                           $err_details .='<br />Also inside EntitiyDescriptor element you must declare namespaces defitions<br/> <code>xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"  xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi"  xmlns:ds="http://www.w3.org/2000/09/xmldsig#"</code>';
                            $this->set_message('valid_static', "The %s : is not valid metadata.".$err_details);
                            return FALSE;
                         }

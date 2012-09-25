@@ -34,12 +34,15 @@ class Arp_generator {
         $this->tmp_providers = new models\Providers;
     }
 
-    public function arpToXML(models\Provider $idp)
+    public function arpToXML(models\Provider $idp,$return_in_array=FALSE)
     {
         $this->idp = $idp;
         $idp_id = $idp->getId();
-        // $res = $this->arpToArray();
         $res = $this->ci->j_cache->library('arp_generator', 'arpToArray', array($idp_id), $this->ci->config->item('arp_cache_time'));
+        if(!empty($return_in_array))
+        {
+           return $res;
+        }
         $result = null;
         if (!empty($res) && is_array($res))
         {
@@ -443,6 +446,7 @@ class Arp_generator {
             $release[$m_entityid]['entityid'] = $m_entityid;
             $release[$m_entityid]['name'] = $m->getName();
             $release[$m_entityid]['attributes'] = $supported_attrs;
+            $release[$m_entityid]['spid'] = $m->getId();
             if (array_key_exists($m->getId(), $members_requirements))
             {
                 $r = $members_requirements[$m->getId()];
@@ -455,8 +459,10 @@ class Arp_generator {
                 {
                     $requiredAttrs[$rk->getAttribute()->getName()] = $rk->getStatus();
                 }
+                
                 foreach ($attrs[$m_entityid] as $attr_name => $attr_value)
                 {
+                    $release[$m_entityid]['req'] = $requiredAttrs;
                     if (array_key_exists($attr_name, $requiredAttrs))
                     {
                         $rel_value = $attrs[$m_entityid][$attr_name];

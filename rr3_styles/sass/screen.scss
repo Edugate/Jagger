@@ -28,6 +28,7 @@
 @import "partials/buttons";
 @import "partials/tables";
 
+
 // To generate css equivalent to the blueprint css but with your
 // configuration applied, uncomment:
 // @include blueprint
@@ -49,9 +50,12 @@ body {
     @include blueprint-interaction;
     @include blueprint-form;
     @include blueprint-form-borders;
+        @media screen and (max-width: 480px) {
+          width: 480px;
+        } 
     
     
-    background-image: url("/rr3/images/fm_page_bg.png");
+    background-image: url("../images/fm_page_bg.png");
     background-repeat: repeat-x; 
     code,pre {
         overflow-x: auto;
@@ -62,6 +66,9 @@ body {
         word-wrap: break-word;
         width: 90%;
         max-width: 800px;
+        @media screen and (max-width: 480px) {
+            max-width: 300px;
+        } 
     }
     
     #header,#footer {
@@ -95,23 +102,40 @@ body {
         font-weight: bold;
     }
     #container {
-        //  $content-columns: ceil(2 * $blueprint-grid-columns / 3);
-        //  @include column($content-columns,true);
-        //width: 90%;
         @include container;
-    }
+        @media screen and (-webkit-device-pixel-ratio:0.75) {
+          background-color: red;
+        } 
+        @media screen and (max-width: 480px) {
+          background-color: red;
+          width: 470px;
+        } 
+  } 
+   #wrapper
+   {
+      @media screen and (max-width: 480px) {
+         margin:0px;
+         padding:0px;
+      }
+   }
     
     #content #subtitle {
          margin-top: 10px;
          margin-left: 20%;
          font-family:"Times New Roman",Georgia,Serif;
          font-size: 1.5em;
+        @media screen and (max-width: 480px) {
+          margin-left: 2px;
+        } 
         
     }
     #content #responsecontainer {
         margin-top: 10px;
         padding: 10px;
 	text-align: center;
+        @media screen and (max-width: 480px) {
+          padding: 2px;
+        } 
    }
     
     
@@ -202,10 +226,24 @@ tr.on td:first-child:before {
     width: 820px;
     text-align: left;
     margin-left: auto; 
-    margin-right: auto
+    margin-right: auto;
+    @media screen and (max-width: 480px) {
+         width: 470px;
+     }
 }
 #logo {
    vertical-align: top;
+   @media screen and (max-width: 480px) {
+          width: 400px;
+          clear: both;
+   } 
+   img {
+    @media screen and (max-width: 480px) {
+       max-width: 400px;
+       max-height: 100px;
+    }
+
+   }
 
 }
 #matrixtable {
@@ -264,6 +302,51 @@ a > span.inqueue {
    font-size: x-small;
    font-weight: bolder;
 }
+div.perm {
+  background-color: #00FF00;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+div.dis {
+  background-color: #E3E5FF;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+div.spec {
+  background-color: #FFFF00;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+div.den {
+  background-color: red;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+#idpmatrix th {
+  border-left: 1px gray solid;
+  border-bottom: 1px gray solid;
+  border-top: 1px gray solid;
+}
+#idpmatrix tr th:last-child {
+  border-right: 1px gray solid;
+}
+#idpmatrix td {
+ padding: 0px;
+ text-align: center;
+ border-left: 1px gray solid;
+ border-bottom: 1px gray solid;
+ 
+}
+#idpmatrix td:first-child {
+  text-align: left;
+  padding-left: 5px;
+ }
+#idpmatrix td:last-child {
+  border-right: 1px gray solid;
+}
+
+
 @include sticky-footer(50px, "#oko","#inpre_footer","#footer");
 
 

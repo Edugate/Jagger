@@ -9,6 +9,9 @@ $provurl = base_url().'providers/provider_detail/idp/'.$idpid;
 <a href="<?php echo $provurl ; ?>#technical">Technical Information</a>
 <a href="<?php echo $provurl ; ?>#metadata">Metadata</a>
 <a href="<?php echo $provurl ; ?>#arp">ARP</a>
+<?php
+echo '<a href="'.base_url().'reports/idp_matrix/show/'.$idpid.'/idp">Attributes overview</a>';
+?>
 <a href="<?php echo $provurl ; ?>#attrs">Supported Attributes</a>
 <?php
 echo '<a href="'.base_url().'geolocation/show/'.$idpid.'/idp">Geolocation</a>';

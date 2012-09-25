@@ -41,6 +41,7 @@ class Metadata2array {
         $this->xpath->registerNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
         $this->xpath->registerNamespace('shibmd', 'urn:mace:shibboleth:metadata:1.0');
         $this->xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
+        $this->xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
         foreach ($this->doc->childNodes as $child) {
             $this->entitiesConvert($child, $full);
         }

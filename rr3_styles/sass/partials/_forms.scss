@@ -13,6 +13,10 @@ body.rr3 form {
     margin: auto;
     margin-bottom: 20px;
     line-height: 2; 
+    @media screen and (max-width: 480px) {
+          max-width: 480px;
+          margin-left: 0px;
+    } 
     span.geoform {
          text-align: left; 
     }

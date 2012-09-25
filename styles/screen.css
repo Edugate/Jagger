@@ -234,6 +234,12 @@ body.rr3 form textarea {
   width: 300px;
   height: auto;
 }
+@media screen and (max-width: 480px) {
+  body.rr3 form {
+    max-width: 480px;
+    margin-left: 0px;
+  }
+}
 body.rr3 form span.geoform {
   text-align: left;
 }
@@ -737,7 +743,7 @@ body {
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
   color: #333333;
   font-size: 75%;
-  background-image: url("/rr3/images/fm_page_bg.png");
+  background-image: url("../images/fm_page_bg.png");
   background-repeat: repeat-x;
 }
 body .container {
@@ -1736,6 +1742,11 @@ body select {
   border-width: 1px;
   border-style: solid;
 }
+@media screen and (max-width: 480px) {
+  body {
+    width: 480px;
+  }
+}
 body code, body pre {
   overflow-x: auto;
   white-space: pre-wrap;
@@ -1745,6 +1756,11 @@ body code, body pre {
   word-wrap: break-word;
   width: 90%;
   max-width: 800px;
+}
+@media screen and (max-width: 480px) {
+  body code, body pre {
+    max-width: 300px;
+  }
 }
 body .provider-logo {
   position: relative;
@@ -1773,16 +1789,43 @@ body #container {
   overflow: hidden;
   *zoom: 1;
 }
+@media screen and (-webkit-device-pixel-ratio: 0.75) {
+  body #container {
+    background-color: red;
+  }
+}
+@media screen and (max-width: 480px) {
+  body #container {
+    background-color: red;
+    width: 470px;
+  }
+}
+@media screen and (max-width: 480px) {
+  body #wrapper {
+    margin: 0px;
+    padding: 0px;
+  }
+}
 body #content #subtitle {
   margin-top: 10px;
   margin-left: 20%;
   font-family: "Times New Roman",Georgia,Serif;
   font-size: 1.5em;
 }
+@media screen and (max-width: 480px) {
+  body #content #subtitle {
+    margin-left: 2px;
+  }
+}
 body #content #responsecontainer {
   margin-top: 10px;
   padding: 10px;
   text-align: center;
+}
+@media screen and (max-width: 480px) {
+  body #content #responsecontainer {
+    padding: 2px;
+  }
 }
 body .accordionButton {
   cursor: pointer;
@@ -1912,9 +1955,26 @@ tr.on td:first-child:before {
   margin-left: auto;
   margin-right: auto;
 }
+@media screen and (max-width: 480px) {
+  #divmenu {
+    width: 470px;
+  }
+}
 
 #logo {
   vertical-align: top;
+}
+@media screen and (max-width: 480px) {
+  #logo {
+    width: 400px;
+    clear: both;
+  }
+}
+@media screen and (max-width: 480px) {
+  #logo img {
+    max-width: 400px;
+    max-height: 100px;
+  }
 }
 
 #matrixtable table {
@@ -1969,6 +2029,56 @@ a > span.inqueue {
   vertical-align: top;
   font-size: x-small;
   font-weight: bolder;
+}
+
+div.perm {
+  background-color: #00FF00;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+div.dis {
+  background-color: #E3E5FF;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+div.spec {
+  background-color: #FFFF00;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+div.den {
+  background-color: red;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+#idpmatrix th {
+  border-left: 1px gray solid;
+  border-bottom: 1px gray solid;
+  border-top: 1px gray solid;
+}
+
+#idpmatrix tr th:last-child {
+  border-right: 1px gray solid;
+}
+
+#idpmatrix td {
+  padding: 0px;
+  text-align: center;
+  border-left: 1px gray solid;
+  border-bottom: 1px gray solid;
+}
+
+#idpmatrix td:first-child {
+  text-align: left;
+  padding-left: 5px;
+}
+
+#idpmatrix td:last-child {
+  border-right: 1px gray solid;
 }
 
 html, body {
