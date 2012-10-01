@@ -26,7 +26,6 @@ class Sync_metadata extends CI_Controller {
 	{
 		parent::__construct();
 		$this->em = $this->doctrine->em;
-		date_default_timezone_set('Europe/Dublin');
 		$this->mid =  "[".uniqid()."] ";
 		$this->load->library('curl');
 

@@ -43,7 +43,6 @@ private $current_user;
 		$this->em = $this->doctrine->em;
 		$this->title = "";
 		$this->mid = "";
-		date_default_timezone_set('Europe/Dublin');
                 $cookie_lang = $this->input->cookie('rr3_langugage', TRUE); 
                 $this->current_language = 'english';
                 /*
