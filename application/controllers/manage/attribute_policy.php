@@ -82,6 +82,7 @@ class Attribute_policy extends MY_Controller {
         if (empty($idpid) or !is_numeric($idpid)) {
             show_error('something went wrong', 503);
         }
+        $idp = $this->tmp_providers->getOneIdpById($idpid);
         $resource = $idpid;
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
@@ -99,20 +100,27 @@ class Attribute_policy extends MY_Controller {
             show_error($this->mid . 'Policy is not set', 503);
         }
 
+        $tmp_a = $this->config->item('policy_dropdown');
+        $attribute = $this->tmp_attrs->getAttributeById($attr);
         $attrPolicy = $this->tmp_arps->getOneGlobalPolicy($idpid, $attr);
+        $changes = array();
         if (empty($attrPolicy) && ($action == 'modify' or $action == 'Add default policy')) {
             $attrPolicy = new models\AttributeReleasePolicy;
-            $attribute = $this->tmp_attrs->getAttributeById($attr);
-
-            $idp = $this->tmp_providers->getOneIdpById($idpid);
             if (empty($idp) or empty($attribute)) {
                 log_message('debug', $this->mid . 'Cannot create new policy for idpid = ' . $idpid . ' because idp attribute not found');
                 show_error($this->mid . 'No attribute or Identity Provider', 503);
             }
+            $changes['attr: ' .$attribute->getName().'']['before'] = 'no default policy';
             $attrPolicy->setGlobalPolicy($idp, $attribute, $policy);
+            $changes['attr: ' .$attribute->getName().'']['after'] = $tmp_a[$policy];
         } elseif ($action == 'Cancel') {
             return $this->globals($idpid);
         } else {
+            if( $attrPolicy->getPolicy() ==  $policy)
+            {
+               $changes['attr: ' .$attribute->getName().'']['before'] = $tmp_a[$attrPolicy->getPolicy()] . ' (default policy)';
+               $changes['attr: ' .$attribute->getName().'']['after'] = $tmp_a[$policy];
+            }
             $attrPolicy->setPolicy($policy);
         }
 
@@ -121,11 +129,17 @@ class Attribute_policy extends MY_Controller {
         if ($action == 'modify' or $action == 'Add default policy') {
             $this->em->persist($attrPolicy);
         } elseif ($action == 'delete' && !empty($attrPolicy)) {
+            $changes['attr: ' .$attribute->getName().'']['before'] = $tmp_a[$attrPolicy->getPolicy()] . ' (default policy)';
             $this->em->remove($attrPolicy);
+            $changes['attr: ' .$attribute->getName().'']['after'] = 'policy removed';
         }
 
 	
         $this->j_cache->library('arp_generator', 'arpToArray', array($idpid),-1);
+        if(!empty($changes) && count($changes) > 0)
+        {
+            $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
+        }
         $this->em->flush();
         return $this->globals($idpid);
     }
@@ -606,7 +620,8 @@ class Attribute_policy extends MY_Controller {
     }
 
     public function submit_multi($idp_id) {
-
+        $changes = array();
+        $tmp_a = $this->config->item('policy_dropdown');
         $submited_provider_id = $this->input->post('idpid');
         if (empty($submited_provider_id) or ($idp_id != $submited_provider_id)) {
             log_message('error', $this->mid . 'conflivt or empty');
@@ -634,24 +649,41 @@ class Attribute_policy extends MY_Controller {
         }
 
         foreach ($submited_policies as $key => $value) {
-            if ($value == '100') {
+            if ($value == '100') 
+            {
                 $arp = $this->tmp_arps->getOneSPPolicy($idp->getId(), $key, $sp->getId());
-                if (!empty($arp)) {
+                if (!empty($arp))
+                {
+                    $changes['attr:'.$arp->getAttribute()->getName().'']['before'] = 'policy for '.htmlentities($sp->getEntityId()).' : '.$tmp_a[$arp->getPolicy()];
                     $this->em->remove($arp);
+                    $changes['attr:'.$arp->getAttribute()->getName().'']['after'] = 'policy removed';
                 }
-            } else {
+            } 
+            else
+            {
                 $arp = $this->tmp_arps->getOneSPPolicy($idp->getId(), $key, $sp->getId());
-                if (!empty($arp)) {
+                if (!empty($arp)) 
+                {
                     $old_policy = $arp->getPolicy();
-                    if ($value == 0 or $value == 1 or $value == 2) {
+                    if ($value == 0 or $value == 1 or $value == 2)
+                    {
+                        if($old_policy != $value)
+                        {
+                            $changes['attr:'.$arp->getAttribute()->getName().'']['before'] = 'policy for '.htmlentities($sp->getEntityId()).' : '.$tmp_a[$arp->getPolicy()];
+                            $changes['attr:'.$arp->getAttribute()->getName().'']['after'] = $tmp_a[$value];
+                        }
                         $arp->setPolicy($value);
                         $this->em->persist($arp);
                         log_message('debug', $this->mid . 'policy changed for arp_id:' . $arp->getId() . ' from ' . $old_policy . ' to ' . $value . ' ready for sync');
-                    } else {
+                    } 
+                    else 
+                    {
                         log_message('error', $this->mid . 'policy couldnt be changed for arp_id:' . $arp->getId() . ' from ' . $old_policy . ' to ' . $value);
                     }
-                } else {
-                    if ($value == 0 or $value == 1 or $value == 2) {
+                }
+                else {
+                    if($value == 0 or $value == 1 or $value == 2) 
+                    {
                         log_message('debug', $this->mid . 'create new arp record for idp:' . $idp->getEntityId());
                         $new_arp = new models\AttributeReleasePolicy;
                         $attr = $this->tmp_attrs->getAttributeById($key);
@@ -662,9 +694,15 @@ class Attribute_policy extends MY_Controller {
                         $new_arp->setPolicy($value);
                         $new_arp->setRequester($sp->getId());
                         $this->em->persist($new_arp);
+                        $changes['attr:'.$attr->getName().'']['before'] = 'no policy for '.htmlentities($sp->getEntityId());
+                        $changes['attr:'.$attr->getName().'']['after'] = $tmp_a[$value];
                     }
                 }
             }
+        }
+        if(!empty($changes) && count($changes) > 0)
+        {
+            $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
         }
         $this->em->flush();
         return $this->multi($idp->getId(), 'sp', $sp->getId());

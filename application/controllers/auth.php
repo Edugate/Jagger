@@ -196,7 +196,7 @@ class Auth extends MY_Controller {
           $can_autoregister = $this->config->item('autoregister_federated');
           if(!$can_autoregister)
           {
-             show_error($user_var.', your account does\'t exist in ResourceRegistry and autoregistration is not active. Please contact with support@edugate.ie <br /> <a href="/Shibboleth.sso/Logout?return='.base_url().'">Logout</a>',403);
+             show_error('An account for '.$user_var.' doesn\'t exist in the Resource Registry. You can request access <a href="mailto:'.$this->config->item('support_mailto').'?subject=Access%20request%20from%20'.$user_var.'">here</a>',403);
           }
           
        }

@@ -11,6 +11,7 @@ $config['rr_display_memory_usage'] = TRUE;
 
 $config['syncpass'] = 'verystrongpasss';
 
+$config['support_mailto'] = 'support@example.com';
 
 $config['mainfedname'] = 'Edugate';
 
