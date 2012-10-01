@@ -1,8 +1,8 @@
-$images : "/rr3/images";
+$images : "../images";
 #nav {
     margin: 0;
     padding: 7px 6px 0;
-    background: #7d7d7d url(/rr3/images/gradient.png) repeat-x 0 -110px;
+    background: #7d7d7d url(../images/gradient.png) repeat-x 0 -110px;
     line-height: 100%;
     border-radius: 2px 2px 0 0;
     -webkit-border-radius: 2px 2px 0 0 ;
@@ -36,7 +36,7 @@ $images : "/rr3/images";
     color: #fff;
   }
   .current a,li:hover > a {
-    background: #666 url(/rr3/images/gradient.png) repeat-x 0 -40px;
+    background: #666 url(../images/gradient.png) repeat-x 0 -40px;
     color: #444;
     border-top: solid 1px #f8f8f8;
     -webkit-box-shadow: 0 1px 1px rgba(0,0,0, .2);
@@ -52,7 +52,7 @@ $images : "/rr3/images";
     -moz-box-shadow: none;
   }
   ul a:hover {
-    background: #0078ff url(/rr3/images/gradient.png) repeat-x 0 -100px !important;
+    background: #0078ff url(../images/gradient.png) repeat-x 0 -100px !important;
     color: #fff !important;
 
     -webkit-border-radius: 0;
@@ -73,7 +73,7 @@ $images : "/rr3/images";
     position: absolute;
     top: 35px;
     left: 0;
-    background: #ddd url(/rr3/images/gradient.png) repeat-x 0 0;
+    background: #ddd url(../images/gradient.png) repeat-x 0 0;
     border: solid 1px #b4b4b4;
 
     -webkit-border-radius: 1px;

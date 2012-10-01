@@ -8,7 +8,7 @@ $attributes = array('class' => 'span-15', 'id' => 'login');
 
 <fieldset>
     <legend>Login form</legend>
-    <?
+    <?php
     $v_errors = validation_errors('<div>', '</div>');
     if (!empty($v_errors)) {
         echo "<div class=\"error\">";
