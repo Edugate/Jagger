@@ -1,5 +1,8 @@
 <?php
-echo "<div class=\"notice\">All metadata files are signed with <b><a href=\"https://edugate.heanet.ie/metadata-signer-2012.crt\">metadata-signer-2012</a></b></div>";
+if(!empty($metadatasigner_url))
+{
+   echo "<div class=\"notice\">All metadata files are signed with <b><a href=\"".$metadatasigner_url."\">".$metadatasigner_url."</a></b></div>";
+}
 if(!empty($tarray))
 {
 $tmpl = array('table_open' => '<table  id="details" class="zebra">');

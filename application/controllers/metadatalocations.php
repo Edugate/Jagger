@@ -46,6 +46,10 @@ class Metadatalocations extends MY_Controller {
         $data['tarray'] = $tarray;
         $data['sarray'] = $sarray;
         $data['content_view'] = 'metadatalocations_view';
+        if(!empty($this->config->item('metadatasigner_url')))
+        {
+           $data['metadatasigner_url'] = $this->config->item('metadatasigner_url');
+        }
         $this->load->view('page',$data);
 
     }
