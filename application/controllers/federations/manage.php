@@ -136,12 +136,18 @@ class Manage extends MY_Controller {
       }
       else
       {
-               foreach($fed_members as $m)
-               {
-                  $members_ids[] = $m->getId();
-               }
+          foreach($fed_members as $m)
+          {
+              $members_ids[] = $m->getId();
+          }
       } 
-       
+
+      if(count($members_ids) == 0)
+      {   
+           show_error('federation has no members yet',404);
+           return;
+      }   
+
       $contacts = $this->em->getRepository("models\Contact")->findBy(array('provider'=>$members_ids)) ;
       $cont_array = array(); 
       foreach($contacts as $c)
