@@ -320,7 +320,7 @@ class Sp_edit extends MY_Controller {
             if ($ccerttype) {
 
                 $cusesigning = false;
-                $cseencryption = false;
+                $cuseencryption = false;
                 foreach ($cuse as $c) {
                     if ($c == 'signing') {
                         $cusesigning = true;
@@ -344,9 +344,9 @@ class Sp_edit extends MY_Controller {
                 if (!empty($cvalid)) {
 
                     $newcert = new models\Certificate;
-                    $newcert->setCertType($ctype);
-                    if (!empty($cdata) && ($ctype == 'x509')) {
-                        if ($cusesigning === $cseencryption) {
+                    $newcert->setCertType($ccerttype);
+                    if (!empty($cdata) && ($ccerttype == 'x509')) {
+                        if ($cusesigning === $cuseencryption) {
                             $newcert->setCertUse();
                         } elseif ($cusesigning) {
                             $newcert->setCertUse('signing');
