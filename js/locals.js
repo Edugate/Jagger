@@ -13,6 +13,11 @@ $(document).ready(function() {
    $.ajaxSetup({ cache: false });
 });
 
+$(function() {
+   $( "#sortable" ).sortable();
+   $( "#sortable" ).disableSelection();
+});
+
 $(document).ready(function() {
 	 	
         $('.accordionButton').addClass('off');

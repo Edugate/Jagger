@@ -30,7 +30,7 @@ $pageTitle .= $this->title;
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/themes/redmond/jquery-ui-1.8.17.custom.css" />';
         echo "\n";
         echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.js"></script>';
+//        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.js"></script>';
         echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.tablesorter.js"></script>';
         echo "<script type=\"text/javascript\" src=\"" . $base_url . "js/jquery.inputfocus-0.9.min.js\"></script>\n";
