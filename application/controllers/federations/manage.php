@@ -196,6 +196,7 @@ class Manage extends MY_Controller {
         }
         $has_addbulk_access = $this->zacl->check_acl('f_' . $resource, 'addbulk', $group, '');
         $has_manage_access = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
+        $can_edit = (boolean)($has_manage_access OR $has_write_access);
         $this->title = 'Federation detail';
 
         if (!$has_read_access && ($federation->getPublic() === FALSE))
@@ -218,7 +219,16 @@ class Manage extends MY_Controller {
         $data['meta_link'] = base_url() . "metadata/federation/" . base64url_encode($data['federation_name']) . "/metadata.xml";
         $data['meta_link_signed'] = base_url() . "signedmetadata/federation/" . base64url_encode($data['federation_name']) . "/metadata.xml";
         $data['content_view'] = 'federation/federation_show_view';
-        $data['tbl'][] = array('data' => array('data' => 'Basic Information', 'class' => 'highlight', 'colspan' => 2));
+        if(!$can_edit)
+        {
+            $edit_link = "<span class=\"notice\">".lang('rr_nopermission')."</span>";
+        }
+        else
+        {
+            $image_link = "<img src=\"" . base_url() . "images/icons/pencil-field.png\"/>";
+            $edit_link = "<span><a href=\"" . base_url() . "manage/fededit/show/" . $federation->getId() . "\" class=\"edit\" title=\"edit\" >" . $image_link . "</a></span>";
+        }
+        $data['tbl'][] = array('data' => array('data' => 'Basic Information '.$edit_link, 'class' => 'highlight', 'colspan' => 2));
         if (empty($data['federation_is_active']))
         {
             $data['tbl'][] = array('<span class="alert">warning!</span>', '<b>Federation is inactive</b>');

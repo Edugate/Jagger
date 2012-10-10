@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
@@ -18,13 +19,13 @@ if (!defined('BASEPATH'))
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
 class Form_element {
 
     protected $ci;
     protected $em;
 
-    function __construct() {
+    function __construct()
+    {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->helper('form');
@@ -35,25 +36,32 @@ class Form_element {
      * by default we just get all federations
      * @todo add more if conditions are set in array
      */
-    public function getFederation($conditions = null) {
+    public function getFederation($conditions = null)
+    {
         $result = array();
         $feds = new models\Federations;
         $fedCollection = $feds->getFederations();
-        if (!empty($fedCollection)) {
+        if (!empty($fedCollection))
+        {
             $result[''] = "Please select";
-            foreach ($fedCollection as $key) {
+            foreach ($fedCollection as $key)
+            {
                 $value = "";
                 $is_activ = $key->getActive();
-                if (!($is_activ)) {
+                if (!($is_activ))
+                {
                     $value .="inactive";
                 }
 
-                if (!empty($value)) {
+                if (!empty($value))
+                {
                     $value = "(" . $value . ")";
                 }
                 $result[$key->getName()] = $key->getName() . " " . $value;
             }
-        } else {
+        }
+        else
+        {
             $result[''] = "no federation found";
         }
         return $result;
@@ -62,25 +70,30 @@ class Form_element {
     /**
      * make dropdown list of type of entities
      */
-    public function buildTypeOfEntities() {
+    public function buildTypeOfEntities()
+    {
         $types = array('' => 'Please select', 'idp' => 'Identity Providers', 'sp' => 'Service Providers', 'all' => 'All Entities');
         return $types;
     }
 
-    public function generateFederationsElement($federations) {
+    public function generateFederationsElement($federations)
+    {
         $result = "";
         $list = array();
-        foreach ($federations as $f) {
+        foreach ($federations as $f)
+        {
             $list[$f->getId()] = $f->getName();
         }
         $result .= form_dropdown('fedid', $list);
         return $result;
     }
 
-    private function generateServiceLocationsSpForm(models\Provider $provider, $action = null) {
+    private function generateServiceLocationsSpForm(models\Provider $provider, $action = null)
+    {
         log_message('debug', $this->ci->mid . 'Form_element::generateServiceLocationsSpForm method started');
         $locations = array();
-        foreach ($provider->getServiceLocations()->getValues() as $srv) {
+        foreach ($provider->getServiceLocations()->getValues() as $srv)
+        {
             $locations[$srv->getType()][] = array(
                 'id' => $srv->getId(),
                 'type' => $srv->getType(),
@@ -101,14 +114,16 @@ class Form_element {
             'index_number' => '',
             'is_default' => null,);
 
-        if (array_key_exists('AssertionConsumerService', $locations)) {
+        if (array_key_exists('AssertionConsumerService', $locations))
+        {
             log_message('debug', $this->ci->mid . "found ACS for sp: " . $provider->getEntityId());
             $i = 0;
             $s_input = "";
             $s_input .=form_fieldset('AssertionConsumerService');
 
 
-            foreach ($locations['AssertionConsumerService'] as $acs) {
+            foreach ($locations['AssertionConsumerService'] as $acs)
+            {
                 $name = 'srv_' . $acs['id'];
                 $srvid = $acs['id'];
 
@@ -122,13 +137,13 @@ class Form_element {
                     'name' => 'acs_url[' . $srvid . ']',
                     'id' => 'acs_url[' . $srvid . ']',
                     'value' => set_value('acs_url', $acs['url']),
-                    'class'=>'acsurl',
+                    'class' => 'acsurl',
                 );
                 $url_label = form_label('URL', 'acs_url[' . $srvid . ']');
 
                 $url_input = form_input($url_data);
 
-                $s_row .="" . $url_label . $url_input ;
+                $s_row .="" . $url_label . $url_input;
 
                 $order_data = array(
                     'name' => 'acs_index[' . $srvid . ']',
@@ -154,9 +169,12 @@ class Form_element {
                 $is_default_checkbox = form_radio($is_default_data);
                 $isdefaulrow = " is default? " . $is_default_checkbox;
                 $s_row .= "<span style=\"white-space: nowrap;\">" . $indexrow . $isdefaulrow . "</span><br />";
-                if ($srvid == 'n') {
+                if ($srvid == 'n')
+                {
                     $s_input .= "<li>" . form_fieldset(lang('rr_addnewacs')) . $s_row . form_fieldset_close() . " </li>";
-                } else {
+                }
+                else
+                {
                     $s_input .= "<li> " . $s_row . " </li>";
                 }
             }
@@ -164,7 +182,7 @@ class Form_element {
         }
 
         $srvform = form_fieldset('Service Locations');
-        $srvform = "<fieldset><legend class=\"accordionButton\">".lang('rr_servicelocations')."</legend>";
+        $srvform = "<fieldset><legend class=\"accordionButton\">" . lang('rr_servicelocations') . "</legend>";
         $srvform .="<ol class=\"accordionContent\">";
         $srvform .= $s_input;
 
@@ -173,18 +191,21 @@ class Form_element {
         return $srvform;
     }
 
-    private function generateServiceLocationsIdpForm(models\Provider $provider, $action = null) {
+    private function generateServiceLocationsIdpForm(models\Provider $provider, $action = null)
+    {
         $ssotmpl = $this->ci->config->item('ssohandler_saml2');
         $ssotmpl = array_merge($ssotmpl, $this->ci->config->item('ssohandler_saml1'));
         $locations = array();
         $locations['SingleSignOnService'] = array();
         $slocations = $provider->getServiceLocations();
         $i = $provider->getServiceLocations()->getValues();
-        if (!empty($slocations)) {
+        if (!empty($slocations))
+        {
             /**
              * mapping collection into array
              */
-            foreach ($slocations->getValues() as $s) {
+            foreach ($slocations->getValues() as $s)
+            {
                 $s_id = $s->getId();
                 $s_type = $s->getType();
                 $s_bindingname = $s->getBindingName();
@@ -208,12 +229,14 @@ class Form_element {
         //    $s_input .='<fieldset><legen class="accordionButton">SingleSignOnService</legend>';
 
         $i = 0;
-        foreach ($ssotmpl as $m) {
+        foreach ($ssotmpl as $m)
+        {
 
             /**
              * if locations is set
              */
-            if (array_key_exists($m, $locations['SingleSignOnService'])) {
+            if (array_key_exists($m, $locations['SingleSignOnService']))
+            {
                 $name = 'srvsso_' . $locations['SingleSignOnService'][$m]['id'] . '_url';
                 $url = $locations['SingleSignOnService'][$m]['url'];
                 $labelname = $m;
@@ -224,7 +247,9 @@ class Form_element {
                     'id' => $name,
                     'value' => set_value($name, $url)));
                 $s_input .="</li>\n";
-            } else {
+            }
+            else
+            {
                 $i++;
                 $name = 'srvsso_' . $i . 'n_url';
                 $hiddenname = 'srvsso_' . $i . 'n_type';
@@ -255,7 +280,7 @@ class Form_element {
 
 
         $srvform = form_fieldset('Service Locations');
-        $srvform = '<fieldset><legend class="accordionButton">'.lang('rr_servicelocations').'</legend>';
+        $srvform = '<fieldset><legend class="accordionButton">' . lang('rr_servicelocations') . '</legend>';
         $srvform .='<ol class="accordionContent">';
         $srvform .= $s_input;
         $srvform .='</ol>';
@@ -263,12 +288,16 @@ class Form_element {
         return $srvform;
     }
 
-    private function generateServiceLocationsForm(models\Provider $provider, $action = null) {
+    private function generateServiceLocationsForm(models\Provider $provider, $action = null)
+    {
         $type = $provider->getType();
         $s = null;
-        if ($type == 'IDP') {
+        if ($type == 'IDP')
+        {
             $s = $this->generateServiceLocationsIdpForm($provider);
-        } elseif ($type == 'SP') {
+        }
+        elseif ($type == 'SP')
+        {
             $s = $this->generateServiceLocationsSpForm($provider);
         }
 
@@ -276,9 +305,10 @@ class Form_element {
         return $t;
     }
 
-    private function generateContactsForm(models\Provider $provider, $action = null, $template = null) {
+    private function generateContactsForm(models\Provider $provider, $action = null, $template = null)
+    {
         //$cntform = form_fieldset('Contacts');
-        $cntform = '<fieldset><legend class="accordionButton">'.lang('rr_contacts').'</legend>';
+        $cntform = '<fieldset><legend class="accordionButton">' . lang('rr_contacts') . '</legend>';
         $cntform .='<ol class="accordionContent">';
         $formtypes = array(
             'administrative' => 'Administrative',
@@ -291,8 +321,10 @@ class Form_element {
 
         $cntcollection = $provider->getContacts();
         $no_contacts = $cntcollection->count();
-        if (!empty($cntcollection)) {
-            foreach ($cntcollection->getValues() as $cnt) {
+        if (!empty($cntcollection))
+        {
+            foreach ($cntcollection->getValues() as $cnt)
+            {
 
                 $cntform .= form_fieldset('Contacts');
                 //  $cntform .= "<ol>";
@@ -320,8 +352,8 @@ class Form_element {
                 $cntform .= form_fieldset_close();
             }
             $no_contacts++;
-            
-            $cntform .='<fieldset class="newcontact"><legend>'.lang('rr_newcontact').'</legend>';
+
+            $cntform .='<fieldset class="newcontact"><legend>' . lang('rr_newcontact') . '</legend>';
             $cntform .= "<li>";
             $cntform .=form_label('Contact Type', 'contact_0n_type');
             $cntform .= form_dropdown('contact_0n_type', $formtypes, set_value('contact_0n_type'));
@@ -348,15 +380,18 @@ class Form_element {
         return $cntform;
     }
 
-    private function generateCertificatesForm(models\Provider $provider, $action = null) {
+    private function generateCertificatesForm(models\Provider $provider, $action = null)
+    {
         $crtform = form_fieldset('Certificates');
-        $crtform = '<fieldset><legend class="accordionButton">'.lang('rr_certificates').'</legend>';
+        $crtform = '<fieldset><legend class="accordionButton">' . lang('rr_certificates') . '</legend>';
         $crtform .='<ol class="accordionContent">';
 
         $crtcollection = $provider->getCertificates();
         $no_certs = count($crtcollection);
-        if ($no_certs > 0) {
-            foreach ($crtcollection->getValues() as $crt) {
+        if ($no_certs > 0)
+        {
+            foreach ($crtcollection->getValues() as $crt)
+            {
                 $i = $crt->getId();
                 $crtform .="<li>\n";
                 $crtform .=form_label(lang('rr_pleaseremove'), 'cert_' . $i . '_remove');
@@ -370,9 +405,12 @@ class Form_element {
                 $crtform .=form_label(lang('rr_certificateuse'), 'cert_' . $i . '_use[]');
                 $m = array('signing' => 'signing', 'encryption' => 'encryption');
                 $mselected = $crt->getCertUse();
-                if (empty($mselected)) {
+                if (empty($mselected))
+                {
                     $n = $m;
-                } else {
+                }
+                else
+                {
                     $n = array($mselected = $mselected);
                 }
                 $crtform .=form_multiselect('cert_' . $i . '_use[]', $m, $n);
@@ -384,7 +422,7 @@ class Form_element {
                 $crtform .="</li>\n";
 
                 $crtform .="<li>";
-                $crtform .=form_label(lang('rr_certificate').showHelp(lang('rhelp_cert')), 'cert_' . $i . '_data');
+                $crtform .=form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'cert_' . $i . '_data');
                 $crtform .=form_textarea(array(
                     'name' => 'cert_' . $i . '_data', 'id' => 'cert_' . $i . '_data',
                     'value' => set_value('cert_' . $i . '_data', $crt->getPEM($crt->getCertData())), 'cols' => 65, 'rows' => 30
@@ -393,7 +431,7 @@ class Form_element {
             }
         }
         $crtform .= '<div class="ncert">';
-        $crtform .='<li><b>'.lang('rr_newcertificate').'</b><small>('.lang('rr_optional').')</small></li>';
+        $crtform .='<li><b>' . lang('rr_newcertificate') . '</b><small>(' . lang('rr_optional') . ')</small></li>';
         $crtform .="<li>\n";
         $crtform .=form_label(lang('rr_certificatetype'), 'cert_0n_type');
         $crtform .=form_dropdown('cert_0n_type', array('x509' => 'x509'), set_value('cert_0n_type', 'x509'));
@@ -411,7 +449,7 @@ class Form_element {
         $crtform .=form_input(array('name' => 'cert_0n_keyname', 'id' => 'cert_0n_keyname', 'value' => set_value('cert_0n_keyname')));
         $crtform .="</li>\n";
         $crtform .="<li>\n";
-        $crtform .=form_label(lang('rr_certificate').showHelp(lang('rhelp_cert')), 'cert_0n_data');
+        $crtform .=form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'cert_0n_data');
         $crtform .=form_textarea(array(
             'name' => 'cert_0n_data',
             'id' => 'cert_0n_data',
@@ -434,15 +472,17 @@ class Form_element {
     /**
      * @todo add to main function generating form
      */
-    private function staticMetadata(models\Provider $provider) {
+    private function staticMetadata(models\Provider $provider)
+    {
         $is_static = $provider->getStatic();
         $static_mid = $provider->getStaticMetadata();
         $static_metadata = '';
-        if ($static_mid) {
+        if ($static_mid)
+        {
             $static_metadata = $static_mid->getMetadataToDecoded();
         }
 
-        $tform = '<fieldset><legend class="accordionButton">'.lang('rr_staticmetadata').'</legend>';
+        $tform = '<fieldset><legend class="accordionButton">' . lang('rr_staticmetadata') . '</legend>';
         $tform .='<ol class="accordionContent">';
         $tform .="<li>";
         $tform .= form_label(lang('rr_usestaticmetadata'), 'usestatic');
@@ -466,18 +506,20 @@ class Form_element {
         return $tform;
     }
 
-    private function supportedProtocols(models\Provider $provider, $action = null) {
+    private function supportedProtocols(models\Provider $provider, $action = null)
+    {
         $tform = '';
         $t_protocols = $provider->getProtocol();
         $selected_options = array();
-        foreach ($t_protocols as $p) {
+        foreach ($t_protocols as $p)
+        {
             $selected_options[$p] = $p;
         }
         // $tform .= form_fieldset('Protocols');
-        $tform .= '<fieldset><legend class="accordionButton">'.lang('rr_protocols').'</legend>';
+        $tform .= '<fieldset><legend class="accordionButton">' . lang('rr_protocols') . '</legend>';
         $tform .= "<ol class=\"accordionContent\">";
         $tform .="<li>";
-        $tform .= form_label(lang('rr_supportedprotocols').showHelp(lang('rhelp_supportedprotocols')), 'protocols[]');
+        $tform .= form_label(lang('rr_supportedprotocols') . showHelp(lang('rhelp_supportedprotocols')), 'protocols[]');
 
         $options = array(
             'urn:oasis:names:tc:SAML:2.0:protocol' => 'urn:oasis:names:tc:SAML:2.0:protocol',
@@ -496,14 +538,16 @@ class Form_element {
     /**
      * @todo add javascript ordering
      */
-    private function supportedNameIds(models\Provider $provider) {
+    private function supportedNameIds(models\Provider $provider)
+    {
         $tform = '';
         $supported_nameids = array();
         $tmpl_nameids = $this->ci->config->item('nameids');
 
 
         $s_nameids = $provider->getNameId();
-        foreach ($s_nameids->getValues() as $n) {
+        foreach ($s_nameids->getValues() as $n)
+        {
             $supported_nameids[$n] = $n;
             $chb[] = array(
                 'name' => 'nameids[]',
@@ -511,8 +555,10 @@ class Form_element {
                 'value' => $n,
                 'checked' => TRUE);
         }
-        foreach ($tmpl_nameids as $t) {
-            if (!array_key_exists($t, $supported_nameids)) {
+        foreach ($tmpl_nameids as $t)
+        {
+            if (!array_key_exists($t, $supported_nameids))
+            {
                 $chb[] = array(
                     'name' => 'nameids[]',
                     'id' => 'nameids[]',
@@ -522,13 +568,14 @@ class Form_element {
         }
 
         $tform .='<li>';
-        
+
         $tform .= form_label(lang('rr_supportednameids'), 'nameids[]');
         $tform .="<div id=\"sortable\">";
-        foreach ($chb as $n) {
+        foreach ($chb as $n)
+        {
             $tform .= "<span>" . form_checkbox($n) . $n['value'] . "</span>";
         }
-        
+
         $tform .= "</div>";
         $tform .="</li>";
 
@@ -537,7 +584,8 @@ class Form_element {
         return $tform;
     }
 
-    private function generateSpForm(models\Provider $provider, $action = null, $template = null) {
+    private function generateSpForm(models\Provider $provider, $action = null, $template = null)
+    {
         log_message('debug', $this->ci->mid . 'Form_element::generateSpForm method started');
         $tmp = "<div id=\"mojtest\">";
         $tmp .="<div id=\"accordion\">";
@@ -545,13 +593,13 @@ class Form_element {
 
         $tmp .= "<ol class=\"accordionContent\">";
         $tmp .= '<li>';
-        $tmp .= form_label(lang('rr_entityid').showHelp(lang('rhelp_entityid')).'<br /><small><span class="notice">'.lang('rr_noticechangearp').'</span></small>', 'entityid');
+        $tmp .= form_label(lang('rr_entityid') . showHelp(lang('rhelp_entityid')) . '<br /><small><span class="notice">' . lang('rr_noticechangearp') . '</span></small>', 'entityid');
         $f_en = array('id' => 'entityid', 'name' => 'entityid', 'required' => 'required', 'value' => $provider->getEntityid());
         $tmp .= form_input($f_en);
 
         $tmp .= '</li>';
         $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_resource').showHelp(lang('rhelp_resourcename')), 'homeorgname');
+        $tmp .= form_label(lang('rr_resource') . showHelp(lang('rhelp_resourcename')), 'homeorgname');
         $tmp .= form_input('homeorgname', set_value('homeorgname', $provider->getName()));
         $tmp .= "</li>";
         $tmp .= "<li>";
@@ -563,7 +611,7 @@ class Form_element {
         $tmp .= form_input('homeurl', set_value('homeurl', $provider->getHomeUrl()));
         $tmp .= "</li>";
         $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_helpdeskurl').showHelp(lang('rhelp_helpdeskurl')), 'helpdeskeurl');
+        $tmp .= form_label(lang('rr_helpdeskurl') . showHelp(lang('rhelp_helpdeskurl')), 'helpdeskeurl');
         $tmp .= form_input('helpdeskurl', set_value('helpdeskurl', $provider->getHelpdeskUrl()));
         $tmp .= "</li>";
         $tmp .= "<li>";
@@ -573,13 +621,16 @@ class Form_element {
         $tmp .= "<li>";
         $tmp .= form_label(lang('rr_validfrom'), 'validfrom');
         $ptm = $provider->getValidFrom();
-        if (!empty($ptm)) {
+        if (!empty($ptm))
+        {
             $tmp .= form_input(array(
                 'name' => 'validfrom',
                 'id' => 'validfrom',
                 'value' => set_value('validfrom', $provider->getValidFrom()->format('Y-m-d'))
                     ));
-        } else {
+        }
+        else
+        {
             $tmp .= form_input(array(
                 'name' => 'validfrom',
                 'id' => 'validfrom',
@@ -591,13 +642,16 @@ class Form_element {
         $tmp .= "<li>";
         $tmp .= form_label(lang('rr_validto'), 'validto');
         $vtm = $provider->getValidTo();
-        if (!empty($vtm)) {
+        if (!empty($vtm))
+        {
             $tmp .= form_input(array(
                 'name' => 'validto',
                 'id' => 'validto',
                 'value' => set_value('validto', $provider->getValidTo()->format('Y-m-d'))
                     ));
-        } else {
+        }
+        else
+        {
             $tmp .= form_input(array(
                 'name' => 'validto',
                 'id' => 'validto',
@@ -623,33 +677,34 @@ class Form_element {
         $tmp .= $this->generateContactsForm($provider);
         $tmp .= "<fieldset>
 			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "manage/attribute_requirement/sp/" . $provider->getId() . "\">".lang('rr_requiredattributes')."</a>
+			<a href=\"" . base_url() . "manage/attribute_requirement/sp/" . $provider->getId() . "\">" . lang('rr_requiredattributes') . "</a>
 			</legend>
 			</fieldset>";
         $tmp .= "<fieldset>
 			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "manage/logos/provider/sp/" . $provider->getId() . "\">".lang('rr_logo')."</a>
+			<a href=\"" . base_url() . "manage/logos/provider/sp/" . $provider->getId() . "\">" . lang('rr_logo') . "</a>
 			</legend>
 			</fieldset>";
         $tmp .= "<fieldset>
 			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "geolocation/show/".$provider->getId()."/sp\">" .lang('rr_geolocation')."</a>
+			<a href=\"" . base_url() . "geolocation/show/" . $provider->getId() . "/sp\">" . lang('rr_geolocation') . "</a>
 			</legend>
 			</fieldset>";
         $tmp .="</div>";
         return $tmp;
     }
 
-    private function generateIdpForm(models\Provider $provider, $action = null, $template = null) {
+    private function generateIdpForm(models\Provider $provider, $action = null, $template = null)
+    {
         $tmp = "";
         $tmp .='<div id="accordion">';
 
-        $tmp .='<fieldset><legend class="accordionButton"  >'.lang('rr_generalinformation').'</legend>';
+        $tmp .='<fieldset><legend class="accordionButton"  >' . lang('rr_generalinformation') . '</legend>';
 
 
         $tmp .= '<ol class="accordionContent">';
         $tmp .= '<li>';
-        $tmp .= form_label(lang('rr_entityid').showHelp(lang('rhelp_entityid')).'<br /><small><span class="notice">'.lang('rr_noticechangearp').'</span></small>', 'entityid');
+        $tmp .= form_label(lang('rr_entityid') . showHelp(lang('rhelp_entityid')) . '<br /><small><span class="notice">' . lang('rr_noticechangearp') . '</span></small>', 'entityid');
         $f_en = array('id' => 'entityid', 'name' => 'entityid', 'required' => 'required', 'value' => $provider->getEntityid());
         $tmp .= form_input($f_en);
 
@@ -669,7 +724,7 @@ class Form_element {
         $tmp .= form_input('homeurl', set_value('homeurl', $provider->getHomeUrl()));
         $tmp .= "</li>";
         $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_helpdeskurl').showHelp(lang('rhelp_helpdeskurl')), 'helpdeskeurl');
+        $tmp .= form_label(lang('rr_helpdeskurl') . showHelp(lang('rhelp_helpdeskurl')), 'helpdeskeurl');
         $in = array(
             'name' => 'helpdeskurl',
             'id' => 'helpdeskurl',
@@ -685,13 +740,16 @@ class Form_element {
         $tmp .= "<li>";
         $tmp .= form_label(lang('rr_validfrom'), 'validfrom');
         $ptm = $provider->getValidFrom();
-        if (!empty($ptm)) {
+        if (!empty($ptm))
+        {
             $tmp .= form_input(array(
                 'name' => 'validfrom',
                 'id' => 'validfrom',
                 'value' => set_value('validfrom', $provider->getValidFrom()->format('Y-m-d'))
                     ));
-        } else {
+        }
+        else
+        {
             $tmp .= form_input(array(
                 'name' => 'validfrom',
                 'id' => 'validfrom',
@@ -703,13 +761,16 @@ class Form_element {
         $tmp .= "<li>";
         $tmp .= form_label(lang('rr_validto'), 'validto');
         $vtm = $provider->getValidTo();
-        if (!empty($vtm)) {
+        if (!empty($vtm))
+        {
             $tmp .= form_input(array(
                 'name' => 'validto',
                 'id' => 'validto',
                 'value' => set_value('validto', $provider->getValidTo()->format('Y-m-d'))
                     ));
-        } else {
+        }
+        else
+        {
             $tmp .= form_input(array(
                 'name' => 'validto',
                 'id' => 'validto',
@@ -747,32 +808,38 @@ class Form_element {
         $tmp .= $this->generateContactsForm($provider);
         $tmp .= "<fieldset>
 			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "manage/attribute_policy/globals/" . $provider->getId() . "\">".lang('rr_attributes')."</a>
+			<a href=\"" . base_url() . "manage/attribute_policy/globals/" . $provider->getId() . "\">" . lang('rr_attributes') . "</a>
 			</legend>
 			</fieldset>";
         $tmp .= "<fieldset>
 			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "manage/logos/provider/idp/" . $provider->getId() . "\">".lang('rr_logo')."</a>
+			<a href=\"" . base_url() . "manage/logos/provider/idp/" . $provider->getId() . "\">" . lang('rr_logo') . "</a>
 			</legend>
 			</fieldset>";
         $tmp .= "<fieldset>
 			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "geolocation/show/".$provider->getId()."/idp\">".lang('rr_geolocation')."</a>
+			<a href=\"" . base_url() . "geolocation/show/" . $provider->getId() . "/idp\">" . lang('rr_geolocation') . "</a>
 			</legend>
 			</fieldset>";
         return $tmp;
     }
 
-    public function generateEntityForm(models\Provider $provider, $action = null) {
+    public function generateEntityForm(models\Provider $provider, $action = null)
+    {
         log_message('debug', $this->ci->mid . 'Form_element::generateEntityForm method started');
         $tform = null;
         $p_type = $provider->getType();
-        if ($p_type == 'IDP') {
+        if ($p_type == 'IDP')
+        {
             $tform = $this->generateIdpForm($provider, $action);
-        } elseif ($p_type == 'SP') {
+        }
+        elseif ($p_type == 'SP')
+        {
 
             $tform = $this->generateSpForm($provider, $action);
-        } else {
+        }
+        else
+        {
             /**
              * @todo display form if type is BOTH
              */
@@ -782,15 +849,35 @@ class Form_element {
         return $tform;
     }
 
+    public function generateFederationEditForm(models\Federation $federation)
+    {
+        $f = null;
+        $f .= form_fieldset('Basic Information');
+        $f .="<ol>\n<li>";
+        $f .=form_label('Federation URN','urn');
+        $f .= form_input('urn', set_value('urn',$federation->getUrn()));
+        $f .="</li>\n<li>";
+        $f .=form_label('Description','description');
+        $f .=form_textarea('description', set_value('description', $federation->getDescription()));
+        $f .="</li>\n<li>";
+        $f .= form_label('Terms of Use','tou');
+        $f .= form_textarea('tou', set_value('tou', $federation->getTou()));
+        $f .="</li></ol>";
+        $f .= form_fieldset_close();
+        return $f;
+    }
+
     /**
      * function return html of form elements from attributes like:
      * homeorgname,displayname,homeurl,helpdeskurl,validfrom,validto
      */
-    public function generateIdpBasicForm($provider) {
-        if (!$provider instanceof models\Provider) {
+    public function generateIdpBasicForm($provider)
+    {
+        if (!$provider instanceof models\Provider)
+        {
             return false;
         }
-        $tmp = form_fieldset('Baisc Information');
+        $tmp = form_fieldset('Basic Information');
         $tmp .= "<ol>";
         $tmp .= "<li>";
         $tmp .= form_label('HomeOrg Name', 'homeorgname');
@@ -817,9 +904,12 @@ class Form_element {
         $tmp .= "<li>";
         $tmp .= form_label('Valid to', 'validto');
         $vtm = $provider->getValidTo();
-        if (!empty($vtm)) {
+        if (!empty($vtm))
+        {
             $tmp .= form_input(array('name' => 'validto', 'id' => 'validto', 'value' => set_value('validto', $provider->getValidTo()->format('Y-m-d'))));
-        } else {
+        }
+        else
+        {
             $tmp .= form_input(array('name' => 'validto', 'id' => 'validto', 'value' => set_value('validto')));
         }
         $tmp .= "</li>";
@@ -833,22 +923,27 @@ class Form_element {
         return $tmp;
     }
 
-    public function supportedAttributesForm(models\Provider $idp) {
+    public function supportedAttributesForm(models\Provider $idp)
+    {
         $tmp = new models\Attributes();
         $attributes_defs = $tmp->getAttributes();
-        if (empty($attributes_defs)) {
+        if (empty($attributes_defs))
+        {
             log_message('error', 'There is no attributes definitions');
             return null;
         }
         $tmp1 = new models\AttributeReleasePolicies();
         $supported = $tmp1->getSupportedAttributes($idp);
         $data = array();
-        foreach ($attributes_defs as $a) {
+        foreach ($attributes_defs as $a)
+        {
             $data[$a->getId()] = array('s' => 0, 'name' => $a->getName(), 'attrid' => $a->getId());
         }
-        if (!empty($supported)) {
+        if (!empty($supported))
+        {
 
-            foreach ($supported as $s) {
+            foreach ($supported as $s)
+            {
                 $data[$s->getAttribute()->getId()]['s'] = 1;
             }
         }
@@ -858,52 +953,62 @@ class Form_element {
         $result = "<table id=\"details\">\n";
         $result .="<caption>Supported Attributes</caption>";
         $result .="<thead><tr><th>Attribute name</th><th>supported</th></tr></thead>\n";
-      //  $result .="<tbody>";
-        foreach ($data as $d => $value) {
-            if ($value['s'] == 1) {
+        //  $result .="<tbody>";
+        foreach ($data as $d => $value)
+        {
+            if ($value['s'] == 1)
+            {
                 $f = form_checkbox('attr[' . $value['attrid'] . ']', '1', true);
                 $result_top .= "<tr><td>" . $value['name'] . "</td><td>" . $f . "</td></tr>\n";
-            } else {
+            }
+            else
+            {
                 $f = form_checkbox('attr[' . $value['attrid'] . ']', '1', false);
                 $result_bottom .="<tr><td>" . $value['name'] . "</td><td>" . $f . "</td></tr>\n";
             }
         }
-        if(!empty($result_top))
+        if (!empty($result_top))
         {
-            $result_top = "<tbody class=\"attr_supported\">".$result_top ."</tbody>";     
+            $result_top = "<tbody class=\"attr_supported\">" . $result_top . "</tbody>";
         }
-        if(!empty($result_bottom))
+        if (!empty($result_bottom))
         {
-            $result_bottom = "<tbody>". $result_bottom . "</tbody>";
+            $result_bottom = "<tbody>" . $result_bottom . "</tbody>";
         }
-        $result .= $result_top . $result_bottom ."</table>";
+        $result .= $result_top . $result_bottom . "</table>";
         return $result;
     }
 
-    public function generateEditPolicyForm(models\AttributeReleasePolicy $arp, $action = null, $submit_type = null) {
+    public function generateEditPolicyForm(models\AttributeReleasePolicy $arp, $action = null, $submit_type = null)
+    {
         $result = "";
         $attributes = array('id' => 'formver2');
         $type = $arp->getType();
         $hidden = array('idpid' => $arp->getProvider()->getId(), 'attribute' => $arp->getAttribute()->getId(), 'requester' => $arp->getRequester());
-        if ($type == 'fed') {
+        if ($type == 'fed')
+        {
             $hidden['fedid'] = $arp->getRequester();
         }
-        if (empty($action)) {
+        if (empty($action))
+        {
             $action = base_url() . 'manage/attribute_policy/submit';
         }
         $result .= form_open($action, $attributes, $hidden);
         $result .= $this->generateEditPolicyFormElement($arp);
         //$result .= form_fieldset('');
         $result .='<div class="buttons">';
-        if (!empty($submit_type) && $submit_type == 'create') {
+        if (!empty($submit_type) && $submit_type == 'create')
+        {
             $cancel_value = 'cancel';
             $save_value = 'create';
-        } else {
+        }
+        else
+        {
             $save_value = 'modify';
             $cancel_value = 'delete';
         }
-        $result .= '<button name="submit" type="submit" value="'.$cancel_value.'" class="btn negative"><span class="cancel">'.$cancel_value.'</span></button>';
-        $result .= '<button name="submit" type="submit" value="'.$save_value.'" class="btn positive"><span class="save">'.$save_value.'</span></button>';
+        $result .= '<button name="submit" type="submit" value="' . $cancel_value . '" class="btn negative"><span class="cancel">' . $cancel_value . '</span></button>';
+        $result .= '<button name="submit" type="submit" value="' . $save_value . '" class="btn positive"><span class="save">' . $save_value . '</span></button>';
         $result .='</div>';
 
         //$result .= form_fieldset_close();
@@ -912,7 +1017,8 @@ class Form_element {
         return $result;
     }
 
-    public function generateEditPolicyFormElement(models\AttributeReleasePolicy $arp) {
+    public function generateEditPolicyFormElement(models\AttributeReleasePolicy $arp)
+    {
         $result = "";
         $result .= form_fieldset('Attribute name: ' . $arp->getAttribute()->getFullName() . ' (' . $arp->getAttribute()->getName() . ')');
         $result .= "<ol>";

@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
@@ -17,7 +18,6 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
 class Disco extends MY_Controller {
 
     protected $logo_url;
@@ -35,9 +35,9 @@ class Disco extends MY_Controller {
         {
             show_error('Request not allowed', 403);
         }
-        if(!empty($_GET['callback']))
+        if (!empty($_GET['callback']))
         {
-           $call = $_GET['callback'];
+            $call = $_GET['callback'];
         }
         if (!empty($call))
         {
@@ -56,7 +56,7 @@ class Disco extends MY_Controller {
         $me = $tmp->getOneSpByEntityId($name);
         if (empty($me))
         {
-            log_message('debug', 'Failed generating circle metadata for ' . $name);
+            log_message('error', 'Failed generating circle metadata for ' . $name);
             show_error('unknown provider', 404);
             return;
         }
@@ -75,11 +75,11 @@ class Disco extends MY_Controller {
             if ($key2->getAvailable() && ($key2->getType() == 'IDP' OR $key2->getType() == 'BOTH'))
             {
                 $output[$oi]['entityID'] = $key2->getEntityId();
-        //        $output[$oi]['country'] = 'IE';
+                //        $output[$oi]['country'] = 'IE';
                 $entityname = $key2->getName();
-                if(empty($entityname))
+                if (empty($entityname))
                 {
-                   $entityname = $key2->getEntityId();
+                    $entityname = $key2->getEntityId();
                 }
                 $output[$oi]['title'] = $entityname;
                 $extend = $key2->getExtendMetadata();
@@ -130,7 +130,7 @@ class Disco extends MY_Controller {
             $jsonoutput = json_encode($output);
         }
         $data['result'] = $jsonoutput;
-        $this->load->view('disco_view',$data);
+        $this->load->view('disco_view', $data);
     }
 
 }

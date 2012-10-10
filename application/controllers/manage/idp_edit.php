@@ -97,9 +97,7 @@ class Idp_edit extends MY_Controller {
         $tf .='<button type="submit" name="modify" value="submit" class="button positive">
                   <span class="save">'.lang('rr_save').'</span></button>';
         $tf .= '</div>';
-        //$tf .="</li>";
-        //$tf .= "</ol>";
-        //$tf .= form_fieldset_close();
+     
         $data['form'] .=$tf;
         $data['form'] .= form_close();
         $data['content_view'] = 'manage/idp_edit_view';
