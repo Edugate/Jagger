@@ -104,7 +104,7 @@
                        value="<?php echo set_value('phone'); ?>" /><br />
             </li>
             <li>
-                <label for="helpdeskurl"><?php echo lang('rr_helpdeskurl').showHelp(lang(' rhelp_helpdeskurl'));?></label>
+                <label for="helpdeskurl"><?php echo lang('rr_helpdeskurl').showHelp(lang('rhelp_helpdeskurl'));?></label>
                 <input type="text" id="helpdeskurl" name="helpdeskurl"
                        value="<?php echo set_value('helpdeskurl'); ?>"   <?php echo $required; ?>/><br />
             </li>

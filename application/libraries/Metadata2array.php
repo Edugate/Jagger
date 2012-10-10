@@ -36,12 +36,11 @@ class Metadata2array {
         $this->doc = new \DOMDocument();
         $this->xpath = new \DomXPath($this->doc);
         $this->doc->loadXML($xml);
-        $this->xpath->registerNamespace('md', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        $this->xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
-        $this->xpath->registerNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
-        $this->xpath->registerNamespace('shibmd', 'urn:mace:shibboleth:metadata:1.0');
-        $this->xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
-        $this->xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
+        $namespaces = h_metadataNamespaces();
+        foreach($namespaces as $key=>$value)
+        {
+           $this->xpath->registerNamespace($key,$value);
+        }
         foreach ($this->doc->childNodes as $child) {
             $this->entitiesConvert($child, $full);
         }
@@ -207,12 +206,36 @@ class Metadata2array {
 
     private function ExtensionsToArray($node) {
         foreach ($node->childNodes as $enode) {
-            //echo $enode->nodeName;
-            /**
-             * @todo check if multiple scopes are allowed
-             */
             if ($enode->nodeName == "shibmd:Scope" OR $enode->nodeName == "Scope") {
                 $ext['scope'][] = $enode->nodeValue;
+            }
+            elseif($enode->nodeName == "mdui:DiscoHints" && $enode->hasChildNodes())
+            {
+                foreach($enode->childNodes as $gnode)
+                {
+                    $geovalue = array();
+                    if($gnode->nodeName == "mdui:GeolocationHint")
+                    {
+                         $geovalue = explode(",",str_ireplace("geo:","",$gnode->nodeValue));
+                         if(count($geovalue) == 2)
+                         {
+                             $numericvalues = true;
+                             foreach($geovalue as $g)
+                             {
+                                if(!is_numeric($g))
+                                {
+                                   $numericvalues = false;
+                                }
+                             }
+                             if($numericvalues === TRUE)
+                             {
+                                $ext['geo'][] = array_values($geovalue);
+                             }
+                         }
+                         
+                    }
+                }
+
             }
         }
         if (empty($ext)) {
