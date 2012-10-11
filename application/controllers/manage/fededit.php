@@ -101,8 +101,8 @@ class Fededit extends MY_Controller {
             $tf .= '</div>';
 
             $f .=$tf;
-            $data['form'] .= form_close();
             $data['form'] = $f;
+            $data['form'] .= form_close();
         
         }
             $data['subtitle'] = "Details for \"".htmlspecialchars($fedname)."\" Federation <a href=\"".base_url()."federations/manage/show/".$fedurl."\"><img src=\"".base_url()."images/icons/application-browser.png\"/></a>";
