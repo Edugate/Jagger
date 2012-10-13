@@ -228,6 +228,7 @@ class Arp_generator {
     public function arpToArray($provider)
     {
         $idp = null;
+        $release = array();
         if (empty($idp_id))
         {
             $idp = $this->idp;
@@ -288,6 +289,7 @@ class Arp_generator {
         }
 
         $members_requirements = $tmp_requirements->getRequirementsBySPs(array_keys($members_byid));
+        
         log_message('debug', $this->mid . 'Arp: found ' . count($members) . ' for idp (id:' . $idp->getId() . '): ' . $idp->getEntityId() . '');
 
         $attrs = array();
@@ -408,12 +410,10 @@ class Arp_generator {
                     }
                 }
             }
-            // $feds = $m->getFederations()->getValues();
+
         }
         $i = 0;
-        //echo "<pre>specific\n";
-        //print_r($specific_attributes);
-        //echo "</pre>";
+
         foreach ($specific_attributes as $pkey => $pvalue)
         {
 
@@ -432,11 +432,6 @@ class Arp_generator {
                 }
             }
         }
-        //echo "<pre>==";
-        //print_r($attrs);
-        //echo "</pre>";
-
-        $release = array();
         foreach ($members as $m)
         {
             $r = null;
@@ -447,6 +442,7 @@ class Arp_generator {
             $release[$m_entityid]['name'] = $m->getName();
             $release[$m_entityid]['attributes'] = $supported_attrs;
             $release[$m_entityid]['spid'] = $m->getId();
+            $release[$m_entityid]['req'] = array();
             if (array_key_exists($m->getId(), $members_requirements))
             {
                 $r = $members_requirements[$m->getId()];
@@ -480,14 +476,14 @@ class Arp_generator {
                             $release[$m_entityid]['attributes'][$attr_name] = 0;
                         }
                     }
-                }
+                }              
             }
             else
             {
                 $feds_1 = $m->getFederations();
                 if (!empty($feds_1))
                 {
-                    $tmp_fed_req = array();
+                    $tmp_fed_req = array();                 
                     foreach ($feds_1->getValues() as $f_key => $f_value)
                     {
                         /* check if sp's federation matches idp federation */
@@ -497,20 +493,21 @@ class Arp_generator {
                             $n_req = $tmp_requirements->getRequirementsByFed($f_value);
                             if (!empty($n_req))
                             {
+                                $requiredAttrs = array();
                                 foreach ($n_req as $nk)
-                                {
-                                    $requiredAttrs = array();
-                                    $requiredAttrs[$nk->getAttribute()->getName()] = $nk->getStatus();
+                                {                                  
+                                    $requiredAttrs[$nk->getAttribute()->getName()] = $nk->getStatus();                                    
                                 }
+                                $release[$m->getEntityId()]['req'] = $requiredAttrs;
                                 foreach ($attrs[$m->getEntityId()] as $attr_name => $attr_value)
                                 {
                                     if (array_key_exists($attr_name, $requiredAttrs))
-                                    {
+                                    {                                      
                                         $rel_value = $attrs[$m->getEntityId()][$attr_name];
                                         $req_value = $requiredAttrs[$attr_name];
                                         if ($req_value == 'required' && ($rel_value > 0))
                                         {
-                                            $release[$m->getEntityId()]['attributes'][$attr_name] = 1;
+                                            $release[$m->getEntityId()]['attributes'][$attr_name] = 1;                                            
                                         }
                                         elseif ($rel_value == 2)
                                         {
@@ -528,12 +525,6 @@ class Arp_generator {
                             }
                         }
                     }
-                }
-                else
-                {
-                    /**
-                     * @todo fill with zeros
-                     */
                 }
             }
         }
