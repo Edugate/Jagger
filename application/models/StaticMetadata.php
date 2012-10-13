@@ -81,6 +81,7 @@ class StaticMetadata
 			 xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" 
 			 xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init" 
 			 xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" 
+			 xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi" 
 			 xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" 
 			 xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label" 
 			 xmlns:wayf="http://sdss.ac.uk/2006/06/WAYF" 
