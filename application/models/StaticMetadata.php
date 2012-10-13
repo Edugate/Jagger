@@ -84,6 +84,7 @@ class StaticMetadata
 			 xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" 
 			 xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label" 
 			 xmlns:wayf="http://sdss.ac.uk/2006/06/WAYF" 
+        	         xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi"
 			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 			 ID="static" 
 			 Name="static"> ';
