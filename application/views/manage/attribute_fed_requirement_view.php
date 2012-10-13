@@ -42,7 +42,7 @@ if (count($add_attr_final) > 0)
         echo "</li>";
         echo "<li>";
         echo form_label('The reason of requirement', 'reason');
-        echo form_textarea(array('name' => 'reason', 'cols' => 5, 'rows' => 5));
+        echo form_textarea(array('name' => 'reason', 'cols' => 25, 'rows' => 5));
         echo "</li>";
         echo "</ol>";
         echo form_fieldset_close();
@@ -79,7 +79,7 @@ if (count($already_in_attr) > 0)
         echo "<li></li>";
         echo "<li>";
         echo form_label('The reason of requirement', 'reason');
-        echo form_textarea(array('name' => 'reason', 'cols' => 5, 'rows' => 5, 'value' => $a['reason']));
+        echo form_textarea(array('name' => 'reason', 'cols' => 25, 'rows' => 5, 'value' => $a['reason']));
         echo "</li>";
         echo "<ol>";
         echo '<div class="buttons">';
