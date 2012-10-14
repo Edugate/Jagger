@@ -23,6 +23,7 @@ class Provider_detail extends MY_Controller {
     private $current_idp;
     private $current_idp_name;
     private $logo_url;
+    private $tmp_attributes;
 
     function __construct()
     {
@@ -49,6 +50,8 @@ class Provider_detail extends MY_Controller {
             $this->logo_baseurl = base_url();
         }
         $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
+        $this->tmp_attributes = new models\Attributes;
+        $this->tmp_attributes->getAttributes();
     }
 
     function idp($id = NULL)

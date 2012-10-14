@@ -1,10 +1,13 @@
 <?php
+
 namespace models;
+
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
 use \Doctrine\Common\Collections\ArrayCollection;
 use \Doctrine\ORM\Query\ResultSetMapping;
+
 /**
  * ResourceRegistry3
  * 
@@ -22,9 +25,7 @@ use \Doctrine\ORM\Query\ResultSetMapping;
  * @subpackage  Models
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
-class Providers
-{
+class Providers {
 
     protected $providers;
     protected $em;
@@ -83,6 +84,7 @@ class Providers
         }
         return $this->providers;
     }
+
     public function getCircleMembersIDP(Provider $provider, $federations = null)
     {
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
@@ -116,9 +118,10 @@ class Providers
         $this->providers = $this->em->getRepository("models\Provider")->findBy(array(), array('name' => 'ASC'));
         return $this->providers;
     }
+
     public function getLocalProviders()
     {
-        $this->providers = $this->em->getRepository("models\Provider")->findBy(array('is_local'=>TRUE), array('name' => 'ASC'));
+        $this->providers = $this->em->getRepository("models\Provider")->findBy(array('is_local' => TRUE), array('name' => 'ASC'));
         return $this->providers;
     }
 
@@ -128,96 +131,98 @@ class Providers
         return $this->providers;
     }
 
-
-	/**
-	 *  getIdps_inNative and getSps_inNative to display just the list of entities without details.
-	 *   it's faster than getIdps and getSps but its sesnsitive to database changes like column names etc
-	 */
-    public function getIdps_inNative($local=null)
+    /**
+     *  getIdps_inNative and getSps_inNative to display just the list of entities without details.
+     *   it's faster than getIdps and getSps but its sesnsitive to database changes like column names etc
+     */
+    public function getIdps_inNative($local = null)
     {
 
-		$rsm = new ResultSetMapping;
-		
-		$rsm->addEntityResult('models\Provider', 'u');
-		$rsm->addFieldResult('u', 'id', 'id');
-		$rsm->addFieldResult('u', 'name', 'name');
-		$rsm->addFieldResult('u', 'entityid', 'entityid');
-		$rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
-		$rsm->addFieldResult('u', 'homeurl', 'homeurl');
-		$rsm->addFieldResult('u', 'is_active', 'is_active');
-		$rsm->addFieldResult('u', 'is_approved', 'is_approved');
-		$rsm->addFieldResult('u', 'validfrom', 'validfrom');
-		$rsm->addFieldResult('u', 'validto', 'validto');
-		$rsm->addFieldResult('u', 'displayname', 'displayname');
-		$rsm->addFieldResult('u', 'contacts', 'contacts');
-                if(!empty($local) && $local === TRUE)
-                {
-		     $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
-                }
-                else
-                {
-		     $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
-                }
-		$query->setParameter(1, 'IDP');
-		$query->setParameter(2, 'BOTH');
-		$this->providers = $query->execute();
-		
-        return $this->providers;
-    }
-    public function getSps_inNative($local=null)
-    {
+        $rsm = new ResultSetMapping;
 
-		$rsm = new ResultSetMapping;
-		
-		$rsm->addEntityResult('models\Provider', 'u');
-		$rsm->addFieldResult('u', 'id', 'id');
-		$rsm->addFieldResult('u', 'name', 'name');
-		$rsm->addFieldResult('u', 'entityid', 'entityid');
-		$rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
-		$rsm->addFieldResult('u', 'homeurl', 'homeurl');
-		$rsm->addFieldResult('u', 'displayname', 'displayname');
-		$rsm->addFieldResult('u', 'is_active', 'is_active');
-		$rsm->addFieldResult('u', 'is_approved', 'is_approved');
-		$rsm->addFieldResult('u', 'validfrom', 'validfrom');
-		$rsm->addFieldResult('u', 'validto', 'validto');
-		$rsm->addFieldResult('u', 'contacts', 'contacts');
-                if(!empty($local) && $local === TRUE)
-                {
-		    $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
-		    $query->setParameter(1, 'SP');
-		    $query->setParameter(2, 'BOTH');
-                }
-                else
-                {
-		    $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
-		    $query->setParameter(1, 'SP');
-		    $query->setParameter(2, 'BOTH');
-                }
-		$this->providers = $query->execute();
-		
+        $rsm->addEntityResult('models\Provider', 'u');
+        $rsm->addFieldResult('u', 'id', 'id');
+        $rsm->addFieldResult('u', 'name', 'name');
+        $rsm->addFieldResult('u', 'entityid', 'entityid');
+        $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
+        $rsm->addFieldResult('u', 'homeurl', 'homeurl');
+        $rsm->addFieldResult('u', 'is_active', 'is_active');
+        $rsm->addFieldResult('u', 'is_approved', 'is_approved');
+        $rsm->addFieldResult('u', 'validfrom', 'validfrom');
+        $rsm->addFieldResult('u', 'validto', 'validto');
+        $rsm->addFieldResult('u', 'displayname', 'displayname');
+        $rsm->addFieldResult('u', 'contacts', 'contacts');
+        if (!empty($local) && $local === TRUE)
+        {
+            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
+        }
+        else
+        {
+            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
+        }
+        $query->setParameter(1, 'IDP');
+        $query->setParameter(2, 'BOTH');
+        $this->providers = $query->execute();
+
         return $this->providers;
     }
 
-	public function getSpsByEntities($entityids_in_array)
-	{
-		$this->providers = $this->em->getRepository("models\Provider")->findBy(array('type'=>array('SP','BOTH'),'entityid'=>$entityids_in_array));
-		return $this->providers;
-	}
-	public function getIdpsByEntities($entityids_in_array)
-	{
-		$this->providers = $this->em->getRepository("models\Provider")->findBy(array('type'=>array('IDP','BOTH'),'entityid'=>$entityids_in_array));
-		return $this->providers;
-	}
+    public function getSps_inNative($local = null)
+    {
+
+        $rsm = new ResultSetMapping;
+
+        $rsm->addEntityResult('models\Provider', 'u');
+        $rsm->addFieldResult('u', 'id', 'id');
+        $rsm->addFieldResult('u', 'name', 'name');
+        $rsm->addFieldResult('u', 'entityid', 'entityid');
+        $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
+        $rsm->addFieldResult('u', 'homeurl', 'homeurl');
+        $rsm->addFieldResult('u', 'displayname', 'displayname');
+        $rsm->addFieldResult('u', 'is_active', 'is_active');
+        $rsm->addFieldResult('u', 'is_approved', 'is_approved');
+        $rsm->addFieldResult('u', 'validfrom', 'validfrom');
+        $rsm->addFieldResult('u', 'validto', 'validto');
+        $rsm->addFieldResult('u', 'contacts', 'contacts');
+        if (!empty($local) && $local === TRUE)
+        {
+            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
+            $query->setParameter(1, 'SP');
+            $query->setParameter(2, 'BOTH');
+        }
+        else
+        {
+            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
+            $query->setParameter(1, 'SP');
+            $query->setParameter(2, 'BOTH');
+        }
+        $this->providers = $query->execute();
+
+        return $this->providers;
+    }
+
+    public function getSpsByEntities($entityids_in_array)
+    {
+        $this->providers = $this->em->getRepository("models\Provider")->findBy(array('type' => array('SP', 'BOTH'), 'entityid' => $entityids_in_array));
+        return $this->providers;
+    }
+
+    public function getIdpsByEntities($entityids_in_array)
+    {
+        $this->providers = $this->em->getRepository("models\Provider")->findBy(array('type' => array('IDP', 'BOTH'), 'entityid' => $entityids_in_array));
+        return $this->providers;
+    }
+
     public function test_getIdps()
     {
-		$rsm = new ResultSetMapping;
-		$rsm->addEntityResult('models\Provider', 'u');
-		$rsm->addFieldResult('u', 'id', 'id');
-		$rsm->addFieldResult('u', 'name', 'name');
-		$query = $this->em->createNativeQuery('SELECT id,name FROM provider WHERE type = ?', $rsm);
-		$query->setParameter(1, 'SP');
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('models\Provider', 'u');
+        $rsm->addFieldResult('u', 'id', 'id');
+        $rsm->addFieldResult('u', 'name', 'name');
+        $query = $this->em->createNativeQuery('SELECT id,name FROM provider WHERE type = ?', $rsm);
+        $query->setParameter(1, 'SP');
 
-		$users = $query->getResult();
+        $users = $query->getResult();
 
         return $users;
     }
@@ -239,14 +244,16 @@ class Providers
         $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $id));
         return $this->providers;
     }
+
     public function getOneIdpByEntityId($id)
     {
-        $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $id,'type'=>array('IDP','BOTH')));
+        $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $id, 'type' => array('IDP', 'BOTH')));
         return $this->providers;
     }
+
     public function getOneSpByEntityId($id)
     {
-        $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $id,'type'=>array('SP','BOTH')));
+        $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $id, 'type' => array('SP', 'BOTH')));
         return $this->providers;
     }
 

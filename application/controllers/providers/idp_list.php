@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASEPATH'))
     exit('Ni direct script access allowed');
 /**
@@ -17,8 +18,7 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Idp_list extends MY_Controller
-{
+class Idp_list extends MY_Controller {
 
     //put your code here
     function __construct()
@@ -46,42 +46,42 @@ class Idp_list extends MY_Controller
         $resource = 'idp_list';
         $action = 'read';
         $group = 'default';
-        $has_read_access = $this->zacl->check_acl($resource,$action,$group,'');
-        if(!$has_read_access)
+        $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
+        if (!$has_read_access)
         {
-                      $data['content_view'] = 'nopermission';
-                      $data['error'] = "No access to list all idps";
-                      $this->load->view('page',$data);
-                      return;
-
+            $data['content_view'] = 'nopermission';
+            $data['error'] = "No access to list all idps";
+            $this->load->view('page', $data);
+            return;
         }
         $idprows = array();
-		$col = new models\Providers();
-		$idps = $col->getIdps_inNative();
-                 $data['idps_count'] = count($idps);
+        $col = new models\Providers();
+        //$idps = $col->getIdps_inNative();
+        $idps = $col->getIdps();
+        $data['idps_count'] = count($idps);
         foreach ($idps as $i)
         {
             $i_link = base_url() . "providers/provider_detail/idp/" . $i->getId();
-                       if($i->getAvailable())
-                       {
-			$col1 = anchor($i_link, $i->getDisplayName())."<br />(".$i->getEntityId().")";
-                       }
-                       else
-                       {
-			   $col1 = "<div class=\"alert\" title=\"disabled or expired\">".anchor($i_link, $i->getDisplayName())."</div>(".$i->getEntityId().")";
-                       }
-                        $help_url = $i->getHelpdeskUrl();
-                        if(!empty($help_url))
-                        {
-			    $col2 = auto_link($help_url,'url');
-                        }
-                        else
-                        { 
-                            $col2='';
-                        }
-            $idprows[] = array('data'=>array('data'=>$col1,'class'=>'homeorg'), $col2);
+            if ($i->getAvailable())
+            {
+                $col1 = anchor($i_link, $i->getDisplayName()) . "<br />(" . $i->getEntityId() . ")";
+            }
+            else
+            {
+                $col1 = "<div class=\"alert\" title=\"disabled or expired\">" . anchor($i_link, $i->getDisplayName()) . "</div>(" . $i->getEntityId() . ")";
+            }
+            $help_url = $i->getHelpdeskUrl();
+            if (!empty($help_url))
+            {
+                $col2 = auto_link($help_url, 'url');
+            }
+            else
+            {
+                $col2 = '';
+            }
+            $idprows[] = array('data' => array('data' => $col1, 'class' => 'homeorg'), $col2);
         }
-        $data['idprows'] =  $idprows;
+        $data['idprows'] = $idprows;
         $data['content_view'] = 'providers/idp_list_view';
         $this->load->view('page', $data);
     }
