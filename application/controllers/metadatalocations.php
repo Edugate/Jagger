@@ -27,10 +27,20 @@ class Metadatalocations extends MY_Controller {
        $this->load->library('table');
 
         $providerprefix = base_url() . "signedmetadata/provider/"; 
+        $federationprefix = base_url() . "signedmetadata/federation/";
         $tmp_providers = new models\Providers;
+        $tmp_federations = new models\Federations;
         $onlylocals = TRUE;
+        $feds = $tmp_federations->getFederations();
+        
         $idps = $tmp_providers->getSps_inNative($onlylocals);
         $sps = $tmp_providers->getIdps_inNative($onlylocals);
+        $farray = array();
+        foreach($feds as $fed)
+        {
+            $farray[] = array('<a href="'.$federationprefix. base64url_encode($fed->getName()).'/metadata.xml">signed metadata</a>', 
+                              '<span title="'.$fed->getName().'">'.$fed->getName().'</span>',$fed->getUrn());
+        }
         $tarray = array();
         foreach($idps as $idp)
         {
@@ -42,11 +52,10 @@ class Metadatalocations extends MY_Controller {
         {
             $sarray[] = array('<a href="'.$providerprefix. base64url_encode($sp->getEntityId()).'/metadata.xml">signed metadata</a>', '<span title="'.$sp->getDisplayName().'">'.$sp->getDisplayName(40).'<span>',$sp->getEntityId());
         }
-       
+        $data['farray'] = $farray;
         $data['tarray'] = $tarray;
         $data['sarray'] = $sarray;
         $data['content_view'] = 'metadatalocations_view';
-        $data['metadatasigner_url'] = $this->config->item('metadatasigner_url');
         $this->load->view('page',$data);
 
     }
