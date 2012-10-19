@@ -33,6 +33,7 @@ function h_metadataNamespaces()
          'wayf'=>'http://sdss.ac.uk/2006/06/WAYF',
          'elab'=>'http://eduserv.org.uk/labels',
          'ukfedlabel'=>'http://ukfederation.org.uk/2006/11/label',
+         'init'=>'urn:oasis:names:tc:SAML:profiles:SSO:request-init',
           );
      return $t;
 
