@@ -14,6 +14,7 @@ echo '<a href="'.base_url().'reports/idp_matrix/show/'.$idpid.'/idp">Attributes 
 ?>
 <a href="<?php echo $provurl ; ?>#attrs">Supported Attributes</a>
 <?php
+echo '<a href="'.base_url().'manage/attribute_policy/globals/'.$idpid.'">Attribute Policy</a>';
 echo '<a href="'.base_url().'geolocation/show/'.$idpid.'/idp">Geolocation</a>';
 echo '<a href="'.base_url().'manage/logos/provider/idp/'.$idpid.'">Logos</a>';
 ?>

@@ -144,6 +144,7 @@ $lang['rr_noidpaccess'] = 'No access to view idp details';
 $lang['rr_nospaccess'] = 'No access to view sp details';
 $lang['rr_nopermission'] ='(no permission to edit)';
 $lang['rr_externalentity']='(External entity - cannot be edited)';
+$lang['rr_lockedentity']='(Entity locked - cannot be edited)';
 $lang['rr_fromtomatch']='Valid From/To doesn\'t match current date. Your entity won\'t appear in metadata';
 
 

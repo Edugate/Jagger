@@ -99,7 +99,8 @@ class Provider_detail extends MY_Controller {
         $data['idpid'] = $resource;
         $group = 'idp';
         $action = 'read';
-        $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
+        $has_read_access = $this->zacl->check_acl($resource, 'read', 'idp', '');
+        $has_manage_access = $this->zacl->check_acl($resource, 'manage', 'idp', '');
         if (!$has_read_access)
         {
             //show_error('No access',401);
@@ -110,6 +111,8 @@ class Provider_detail extends MY_Controller {
         }
 
         $is_active = $idp->getActive();
+        $locked = $idp->getLocked();
+        $lockicon = '<img src="' . base_url() . 'images/icons/lock.png" title="Locked">';
 
         if (empty($is_active))
         {
@@ -127,7 +130,7 @@ class Provider_detail extends MY_Controller {
         $has_write_access = $this->zacl->check_acl($resource, $action, $group, '');
         if (!$has_write_access)
         {
-            $edit_link = "<span class=\"notice\">" . lang('rr_nopermission') . "</span>";
+            $edit_link = '<img src="' . base_url() . 'images/icons/pencil-prohibition.png" title="' . lang('rr_nopermission') . '"/>';
             $edit_basic = "";
             $edit_federation = "";
             $edit_technical = "";
@@ -143,6 +146,21 @@ class Provider_detail extends MY_Controller {
         elseif (!$idp->getLocal())
         {
             $edit_link = "<span class=\"notice\">" . lang('rr_externalentity') . "</span>";
+            $edit_basic = "";
+            $edit_federation = "";
+            $edit_technical = "";
+            $edit_protocols = "";
+            $edit_services = "";
+            $edit_certificates = "";
+            $edit_contacts = "";
+            $edit_attributes = "";
+            $edit_policy = "";
+            $e_local = false;
+            $image_link = "";
+        }
+        elseif ($locked)
+        {
+            $edit_link = '<img src="' . base_url() . 'images/icons/lock.png" title="Locked"/>';
             $edit_basic = "";
             $edit_federation = "";
             $edit_technical = "";
@@ -290,11 +308,25 @@ class Provider_detail extends MY_Controller {
             $manage_membership = '';
             if ($feds->count() > 0 && $has_write_access)
             {
-                $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                if (!$locked)
+                {
+                    $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                }
+                else
+                {
+                    $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . $lockicon . '<br />';
+                }
             }
             if ($has_write_access && ($feds->count() < count($all_federations)))
             {
-                $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                if (!$locked)
+                {
+                    $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                }
+                else
+                {
+                    $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . $lockicon . '<br />';
+                }
             }
         }
         $data['idp_details'][$i++]['value'] = "<b>" . $federationsString . "</b>" . $manage_membership;
@@ -524,9 +556,25 @@ class Provider_detail extends MY_Controller {
         $data['idp_details'][$i++]['value'] = $this->show_element->generateModificationsList($idp, 3);
 
         $data['idp_details'][$i++]['header'] = lang('rr_homeorgadmin');
-        $data['idp_details'][$i]['name'] = '';
-        $data['idp_details'][$i++]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/access_manage/entity/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
 
+        $data['idp_details'][$i]['name'] = 'Manage status';
+        if ($has_manage_access)
+        {
+            $data['idp_details'][$i++]['value'] = 'Lock/Unlock Enable/Disable' . anchor(base_url() . 'manage/entitystate/modify/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        }
+        else
+        {
+            $data['idp_details'][$i++]['value'] = 'Lock/Unlock Enable/Disable <img src="' . base_url() . 'images/icons/prohibition.png"/>';
+        }
+        $data['idp_details'][$i]['name'] = '';
+        if ($has_manage_access)
+        {
+            $data['idp_details'][$i++]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/access_manage/entity/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        }
+        else
+        {
+            $data['idp_details'][$i++]['value'] = lang('rr_displayaccess') .  '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
+        }
 
         $data['idpname'] = $idp->getName();
         $this->title = lang("rr_informationdetail") . $data['idpname'];
@@ -588,6 +636,7 @@ class Provider_detail extends MY_Controller {
         $action = 'read';
         $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
+        $has_manage_access = $this->zacl->check_acl($resource, 'manage', $group, '');
         if (!$has_read_access)
         {
             //show_error('No access',401);
@@ -598,6 +647,8 @@ class Provider_detail extends MY_Controller {
         }
 
         $is_active = $sp->getActive();
+        $locked = $sp->getLocked();
+        $lockicon = '<img src="' . base_url() . 'images/icons/lock.png" title="Locked">';
         if (empty($is_active))
         {
             $activeString = "<span class=\"notice\"><small>" . lang('rr_spdisabled') . "</small></span>";
@@ -608,11 +659,15 @@ class Provider_detail extends MY_Controller {
         }
         if (!$has_write_access)
         {
-            $edit_link = "<span class=\"notice\">" . lang('rr_nopermission') . "</span>";
+            $edit_link = '<img src="' . base_url() . 'images/icons/pencil-prohibition.png" title="' . lang('rr_nopermission') . '"/>';
         }
         elseif (!$sp->getLocal())
         {
             $edit_link = "<span class=\"notice\">" . lang('rr_externalentity') . "</span>";
+        }
+        elseif ($locked)
+        {
+            $edit_link = '<img src="' . base_url() . 'images/icons/lock.png" title="' . lang('rr_lockedentity') . '" />';
         }
         else
         {
@@ -684,6 +739,18 @@ class Provider_detail extends MY_Controller {
         {
             $data['sp_details'][$i++]['value'] = lang('rr_unlimited');
         }
+
+        if ($locked)
+        {
+            $data['sp_details'][$i]['name'] = 'Status';
+            $data['sp_details'][$i++]['value'] = '' . $lockicon . '<b>Locked (cannot be edited)</b>';
+        }
+        if (!$sp->getActive())
+        {
+            $data['sp_details'][$i]['name'] = 'Status';
+            $data['sp_details'][$i++]['value'] = '<b>Inactive</b>';
+        }
+
         $data['sp_details'][$i]['name'] = lang('rr_managedlocallyexternal');
         if (!($sp->getLocal()))
         {
@@ -724,11 +791,25 @@ class Provider_detail extends MY_Controller {
             $manage_membership = '';
             if ($feds->count() > 0 && $has_write_access)
             {
-                $manage_membership .= '<b>Manage membership (leaving)</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                if (!$locked)
+                {
+                    $manage_membership .= '<b>Manage membership (leaving)</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                }
+                else
+                {
+                    $manage_membership .= '<b>Manage membership (leaving)</b> ' . $lockicon . ' <br />';
+                }
             }
             if ($has_write_access && ($feds->count() < count($all_federations)))
             {
-                $manage_membership .= '<b>Manage membership (joining)</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                if (!$locked)
+                {
+                    $manage_membership .= '<b>Manage membership (joining)</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                }
+                else
+                {
+                    $manage_membership .= '<b>Manage membership (joining)</b> ' . $lockicon . '<br />';
+                }
             }
         }
         $data['sp_details'][$i++]['value'] = "<b>" . $federationsString . "</b>" . $manage_membership;
@@ -909,8 +990,24 @@ class Provider_detail extends MY_Controller {
         $data['sp_details'][$i++]['header'] = lang('rr_logs');
 
         $data['sp_details'][$i++]['header'] = lang('rr_admins');
+        $data['sp_details'][$i]['name'] = 'Manage status';
+        if ($has_manage_access)
+        {
+            $data['sp_details'][$i++]['value'] = 'Lock/Unlock Enable/Disable' . anchor(base_url() . 'manage/entitystate/modify/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        }
+        else
+        {
+            $data['sp_details'][$i++]['value'] = 'Lock/Unlock Enable/Disable <img src="' . base_url() . 'images/icons/prohibition.png"/>';
+        }
         $data['sp_details'][$i]['name'] = '';
-        $data['sp_details'][$i++]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/access_manage/entity/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        if ($has_manage_access)
+        {
+            $data['sp_details'][$i++]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/access_manage/entity/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        }
+        else
+        {
+            $data['sp_details'][$i++]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
+        }
         $data['spname'] = $sp->getName();
         if (empty($data['spname']))
         {
@@ -928,9 +1025,7 @@ class Provider_detail extends MY_Controller {
                 $el = $ex->getElement();
                 if ($el == 'Logo')
                 {
-                    //$img_logo = "<img src=\"".$this->logo_url . $ex->getEvalue()."\" style=\"float: left; max-width: 150px;\"/>";
                     $data['provider_logo_url'] = $this->logo_url . $ex->getEvalue();
-                    //$is_logo = true;
                 }
             }
         }

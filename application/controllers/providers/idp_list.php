@@ -43,6 +43,7 @@ class Idp_list extends MY_Controller {
 
     function show()
     {
+        $lockicon = '<img src="'.base_url().'images/icons/lock.png" title="Locked"/>';
         $resource = 'idp_list';
         $action = 'read';
         $group = 'default';

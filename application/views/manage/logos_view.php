@@ -10,9 +10,14 @@ if ($provider_detail['type'] == 'sp') {
     $data['idpid'] = $provider_detail['id'];
     $this->load->view('/navigations/floatnav_idp_logos_view', $data);
 }
+
 ?>
+
 <div id="subtitle">
-<?php echo $sub . $provider_detail['name'] . '<i> (' . $provider_detail['entityid'] . ')</i>' . anchor(base_url() . "providers/provider_detail/" . $provider_detail['type'] . "/" . $provider_detail['id'], '<img src="' . base_url() . 'images/icons/' . $imglink . '" />'); ?>
+    
+<?php 
+echo $provider_detail['locked'];
+echo $sub .' '. $provider_detail['name'] . '<i> (' . $provider_detail['entityid'] . ')</i>' . anchor(base_url() . "providers/provider_detail/" . $provider_detail['type'] . "/" . $provider_detail['id'], '<img src="' . base_url() . 'images/icons/' . $imglink . '" />'); ?>
     <br />
 <?php
 if (!empty($backlink)) {

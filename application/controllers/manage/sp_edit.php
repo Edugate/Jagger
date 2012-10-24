@@ -45,9 +45,18 @@ class Sp_edit extends MY_Controller {
             show_error(lang('rerror_spnotfound'), 404);
         }
         $has_write_access = $this->zacl->check_acl($this->sp->getId(), 'write', 'sp', '');
+        $locked = $this->sp->getLocked();
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = 'No access to edit sp: ' . $this->sp->getEntityid();
+            $this->load->view('page', $data);
+            return;
+        }
+        if($locked)
+        {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = 'Identity Provider is locked: ' . $this->sp->getEntityid();
+            log_message('debug',$this->sp->getEntityid(). ': is locked and cannot be edited');
             $this->load->view('page', $data);
             return;
         }
@@ -117,6 +126,15 @@ class Sp_edit extends MY_Controller {
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = 'No access to edit sp: ' . $this->sp->getEntityid();
+            $this->load->view('page', $data);
+            return;
+        }
+        $locked = $this->sp->getLocked();
+        if($locked)
+        {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = 'Identity Provider is locked: ' . $this->sp->getEntityid();
+            log_message('debug',$this->sp->getEntityid(). ': is locked and cannot be edited');
             $this->load->view('page', $data);
             return;
         }

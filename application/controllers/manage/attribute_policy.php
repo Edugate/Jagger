@@ -83,6 +83,10 @@ class Attribute_policy extends MY_Controller {
             show_error('something went wrong', 503);
         }
         $idp = $this->tmp_providers->getOneIdpById($idpid);
+        if(empty($idp))
+        {
+            show_error('Identity Provider not found',404);
+        }
         $resource = $idpid;
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
@@ -92,6 +96,14 @@ class Attribute_policy extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+        $locked = $idp->getLocked();
+        if ($locked) {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = "No access to edit idp, entity id locked";
+            $this->load->view('page', $data);
+            return;
+        }
+        
 
 
 
@@ -175,6 +187,7 @@ class Attribute_policy extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+        $locked = $idp->getLocked();
 
         $attribute = $this->tmp_attrs->getAttributeById($attr_id);
         if (empty($attribute)) {
@@ -188,6 +201,10 @@ class Attribute_policy extends MY_Controller {
             $attr_policy = $this->tmp_arps->getOneGlobalPolicy($idp_id, $attr_id);
             $action = base_url('manage/attribute_policy/submit_global');
             $subtitle = "Default attribute release policy";
+            if($locked)
+            {
+                $subtitle .='<small><span class="notice">locked</span></small>';
+            }
         } elseif ($type == 'fed') {
             $attr_policy = $this->tmp_arps->getOneFedPolicy($idp_id, $attr_id, $requester);
             $tmp_feds = new models\Federations;
@@ -198,6 +215,10 @@ class Attribute_policy extends MY_Controller {
             }
             $action = base_url('manage/attribute_policy/submit_fed/' . $idp_id);
             $subtitle = "Attribute release policy for  federation";
+            if($locked)
+            {
+                $subtitle .='<small><span class="notice">locked</span></small>';
+            }
         } elseif ($type == 'sp') {
             $attr_policy = $this->tmp_arps->getOneSPPolicy($idp_id, $attr_id, $requester);
 
@@ -211,6 +232,10 @@ class Attribute_policy extends MY_Controller {
             }
             $action = base_url('manage/attribute_policy/submit_sp/' . $idp_id);
             $subtitle = "Specific attribute release policy for service provider";
+            if($locked)
+            {
+                $subtitle .='<small><span class="notice">locked</span></small>';
+            }
         }
         if (empty($attr_policy)) {
             $data['error_message'] = $this->mid . ' Attribute Release Policy not found';
@@ -284,6 +309,7 @@ class Attribute_policy extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+       
         /**
          * pull default arp - it's equal to supported attributes 
          */
@@ -460,6 +486,13 @@ class Attribute_policy extends MY_Controller {
                     $this->load->view('page', $data);
                     return;
                 }
+                $locked = $idp->getLocked();
+                if ($locked) {
+                    $data['content_view'] = 'nopermission';
+                    $data['error'] = "No access to edit idp, entity is locked";
+                    $this->load->view('page', $data);
+                    return;
+                }
 
                 $fed = $tmp_feds->getOneFederationById($fedid);
                 if (empty($fed)) {
@@ -575,6 +608,14 @@ class Attribute_policy extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+        $locked = $idp->getLocked();
+        if ($locked) {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = "No access to edit idp, entity is locked";
+            $this->load->view('page', $data);
+            return;
+        }
+        
 
         $tmp_attrs = new models\Attributes;
         $attribute = $tmp_attrs->getAttributeById($attributeid);
@@ -647,6 +688,14 @@ class Attribute_policy extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+        $locked = $idp->getLocked();
+        if ($locked) {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = "No access to edit idp, entity id locked";
+            $this->load->view('page', $data);
+            return;
+        }
+ 
 
         foreach ($submited_policies as $key => $value) {
             if ($value == '100') 

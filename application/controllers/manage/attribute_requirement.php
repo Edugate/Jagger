@@ -286,6 +286,7 @@ class Attribute_requirement extends MY_Controller {
         {
            return $this->sp($spid);
         }
+        
         $attr = $this->input->post('attribute');
         $status = $this->input->post('requirement');
         $reason = $this->input->post('reason');
@@ -293,6 +294,12 @@ class Attribute_requirement extends MY_Controller {
         //$spid = $this->input->post('spid');
         if (empty($spid) or !is_numeric($spid)) {
             show_error('Incorect sp id', 404);
+        }
+        $provider_tmp = new models\Providers();
+        $sp = $provider_tmp->getOneSpById($spid);
+        if(empty($sp))
+        {
+            show_error('Service Provider not found',404);
         }
         $resource = $spid;
         $group = 'sp';
@@ -303,7 +310,13 @@ class Attribute_requirement extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
-
+        $locked = $sp->getLocked();
+        if ($locked) {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = 'No access to manage attribute requirements for sp :' . $sp->getEntityId().': entity is locked';
+            $this->load->view('page', $data);
+            return;
+        }
         if ($attr && $status && $action == 'Add') {
             $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attr));
             $attr_req = new models\AttributeRequirement;
@@ -332,7 +345,7 @@ class Attribute_requirement extends MY_Controller {
         } else {
             echo $action;
         }
-        //redirect(base_url() . "manage/attribute_requirement/sp", 'refresh');
+        
         return $this->sp($spid);
     }
 

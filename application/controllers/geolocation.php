@@ -58,6 +58,15 @@ class Geolocation extends MY_Controller {
         if (!($provider_type == $type or $provider_type == 'both')) {
             show_error('Wrong type of provider', 404);
         }
+        $locked = $provider->getLocked();
+        if($locked)
+        {
+          $lockicon = '<img src="'.base_url().'images/icons/lock.png" title="Locked"/>';
+        }
+        else
+        {
+          $lockicon = '';
+        }
         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', $type, '');
         $has_read_access = $this->zacl->check_acl($provider->getId(), 'read', $type, '');
 
@@ -69,6 +78,10 @@ class Geolocation extends MY_Controller {
             return;
         }
         if ($this->_submit_validate()) {
+            if($locked)
+            {
+               show_error('Entity id Locked cannot be modified',403);
+            }
             $s_action = $this->input->post('addPoint');
             $s_raction = $this->input->post('remove');
             $s_idpid = $this->input->post('idp');
@@ -129,7 +142,8 @@ class Geolocation extends MY_Controller {
             $display_name = $provider->getName();
         }
 
-        $data['subtitle'] = "<div id=\"subtitle\">Geolocations for " . $display_name . "&nbsp;&nbsp;" . anchor(base_url() . "providers/provider_detail/" . $type . "/" . $provider->getId(), '<img src="' . base_url() . 'images/icons/home.png" />') . " </div>";
+        
+        $data['subtitle'] = "<div id=\"subtitle\">".$lockicon." Geolocations for " . $display_name . "&nbsp;&nbsp;" . anchor(base_url() . "providers/provider_detail/" . $type . "/" . $provider->getId(), '<img src="' . base_url() . 'images/icons/home.png" />') . " </div>";
         $data['form_errors'] = validation_errors('<p class="error">', '</p>');
 
 
@@ -180,7 +194,14 @@ class Geolocation extends MY_Controller {
         $formular .= form_open($action, '', $hidden);
         $formular .=' <label for="latinput">Latitude</label><input type="text" id="latinput"  name="latinput" value="" /><br />
 <label for="lnginput">Longitude</label><input type="text" id="lnginput" name="lnginput" value="" /><br /> ';
-        $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="btn positive"><span class="save">add point</span></button></div>';
+        if($locked)
+        {
+             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="btn positive" disabled="disabled"><span class="save">cannot add point (locked)</span></button></div>';
+        }
+        else
+        {
+             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="btn positive"><span class="save">add point</span></button></div>';
+        }
         $formular .= form_close();
         $formular .='</span>';
 
@@ -191,7 +212,15 @@ class Geolocation extends MY_Controller {
             $formular2 .= '<input type="checkbox" name="geoloc[]" id="geoloc[]" value=' . $g->getEvalue() . ' >';
             $formular2 .= '<input type="text" disabled="disabled" name="info" id="info" value=' . $g->getEvalue() . ' /><br />';
         }
-        $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative"><span class="remove">Remove selected points</span></button></div>';
+        if($locked)
+        {
+            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative" disabled="disabled"><span class="remove">Cannot delete (locked)</span></button></div>';
+           
+        }
+        else
+        {
+            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative"><span class="remove">Remove selected points</span></button></div>';
+        }
         $formular2 .= form_close() . '</span>';
 
         $formulars = $formular . $spacebreak ;

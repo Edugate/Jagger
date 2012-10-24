@@ -33,8 +33,8 @@ class Metadatalocations extends MY_Controller {
         $onlylocals = TRUE;
         $feds = $tmp_federations->getFederations();
         
-        $idps = $tmp_providers->getSps_inNative($onlylocals);
-        $sps = $tmp_providers->getIdps_inNative($onlylocals);
+        $sps = $tmp_providers->getSps_inNative($onlylocals);
+        $idps = $tmp_providers->getIdps_inNative($onlylocals);
         $farray = array();
         foreach($feds as $fed)
         {

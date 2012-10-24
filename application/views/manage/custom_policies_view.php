@@ -9,14 +9,21 @@ $idp_link = anchor(base_url() . 'providers/provider_detail/idp/' . $idp_id, '<im
 $sp_link = anchor(base_url() . 'providers/provider_detail/sp/' . $sp_id, '<img src="' . base_url() . 'images/icons/block-share.png"/>');
 $subtitle = "<div id=\"subtitle\"><dl>";
 $subtitle .="<dt>Provider</dt>";
-$subtitle .="<dd>" . $idp_name . " (" . $idp_entityid . ") " . $idp_link . "</dd>";
+if($locked)
+{
+    $subtitle .='<dd>' . $idp_name . ' (' . $idp_entityid . ') <span class="notice">locked</span>' . $idp_link . '</dd>';
+}
+else
+{
+    $subtitle .='<dd>' . $idp_name . ' (' . $idp_entityid . ') ' . $idp_link . '</dd>';
+}
 
-$subtitle .="<dt>Service Provider</dt>";
-$subtitle .="<dd>" . $sp_name . " (" . $sp_entityid . ") " . $sp_link . "</dd>";
-$subtitle .="</dl></div>";
+$subtitle .='<dt>Service Provider</dt>';
+$subtitle .='<dd>' . $sp_name . ' (' . $sp_entityid . ') ' . $sp_link . '</dd>';
+$subtitle .='</dl></div>';
 if(empty($values))
 {
-   $values = "";
+   $values = '';
 }
 echo $subtitle;
 echo validation_errors('<div class="error">', '</div>'); 
@@ -36,10 +43,10 @@ echo form_textarea(
             'name'=>'values',
             'value'=>set_value('values',$values))
     );
-echo "</li>";
+echo '</li>';
 
 
-echo "</ol>";
+echo '</ol>';
 echo form_fieldset_close();
 ?>
 <div class="buttons">

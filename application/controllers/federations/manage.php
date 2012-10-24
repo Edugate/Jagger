@@ -221,7 +221,7 @@ class Manage extends MY_Controller {
         $data['content_view'] = 'federation/federation_show_view';
         if(!$can_edit)
         {
-            $edit_link = "<span class=\"notice\">".lang('rr_nopermission')."</span>";
+            $edit_link = '<img src="'.base_url().'images/icons/pencil-prohibition.png" title="'.lang('rr_nopermission').'"/>';;
         }
         else
         {

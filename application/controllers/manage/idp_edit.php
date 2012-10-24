@@ -54,6 +54,7 @@ class Idp_edit extends MY_Controller {
             log_message('error', $pref . "IdP edit: Identity Provider with id=" . $idpid . " not found");
             show_error(lang('rerror_idpnotfound'), 404);
         }
+        $locked = $idp->getLocked();
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'idp', '');
         if (!$has_write_access)
         {
@@ -61,6 +62,16 @@ class Idp_edit extends MY_Controller {
             $data['error'] = 'No access to edit idp: ' . $idp->getEntityid();
             $this->load->view('page', $data);
             return;
+        }
+        if($locked)
+        {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = 'Identity Provider is locked: ' . $idp->getEntityid();
+            log_message('debug',$idp->getEntityid(). ': is locked and cannot be edited');
+            $this->load->view('page', $data);
+            return;
+            
+        
         }
         log_message('debug', $pref . 'opening idp_edit form for:' . $idp->getEntityId());
         $is_local = $idp->getLocal();
@@ -154,6 +165,18 @@ class Idp_edit extends MY_Controller {
         {
             show_error(lang('rerror_idpnotfound'), 404);
         }
+        $locked = $idp->getLocked();
+        if($locked)
+        {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = 'Identity Provider is locked: ' . $idp->getEntityid();
+            log_message('debug',$idp->getEntityid(). ': is locked and cannot be edited');
+            $this->load->view('page', $data);
+            return;
+            
+        
+        }
+
         if ($this->_submit_validate() === FALSE)
         {
             return $this->show($editedidp);

@@ -584,6 +584,24 @@ class Provider {
         }
         return $this;
     }
+    public function Disactivate()
+    {
+       $this->is_active = 0;
+    }
+    public function Activate()
+    {
+       $this->is_active = 1;
+    }
+
+    public function  Lock()
+    {
+       $this->is_locked = 1;
+    }
+   
+    public function Unlock()
+    {
+       $this->is_locked = 0;
+    }
 
     public function setApproved($val = NULL) {
         if (!empty($val)) {

@@ -70,6 +70,7 @@ class Custom_policies extends MY_Controller {
         {
             show_error('no access', 403);
         }
+        $locked = $idp->getLocked();
         if (!empty($attr_id))
         {
             $attribute = $this->tmp_attrs->getAttributeById($attr_id);
@@ -77,10 +78,13 @@ class Custom_policies extends MY_Controller {
             if (empty($attribute))
             {
                 show_error('Attribute doesnt exist', 404);
-                return;
             }
             if ($this->_submit_validate() === TRUE)
             {
+                if($locked)
+                {
+                   show_error('Identity Provider is locked. It cannot be modified', 403);
+                }
                 $custom_arp = $this->tmp_arps->getCustomSpArpByAttribute($idp, $sp, $attribute);
                 $values = trim($this->input->post('values'));
                 $policy = $this->input->post('policy');
@@ -157,6 +161,7 @@ class Custom_policies extends MY_Controller {
             }
             $data['idp_id'] = $idp->getId();
             $data['idp_name'] = $idp->getName();
+            $data['locked'] = $locked;
             $data['idp_entityid'] = $idp->getEntityId();
             $data['sp_id'] = $sp->getId();
             $data['sp_name'] = $sp->getName();

@@ -69,6 +69,7 @@ class Leavefed extends MY_Controller {
         }
         $data['subtitle'] = $provider->getName().' ('.$provider->getEntityId().')'.anchor(base_url().'providers/provider_detail/'.strtolower($provider->getType()).'/'.$provider->getId(),'<img src="' . base_url() . 'images/icons/'.$icon.'" />');
         $has_write_access = $this->zacl->check_acl($provider->getId(),'write',strtolower($provider->getType()),'');
+        
         if(!$has_write_access)
         {
            show_error('No access',403);
