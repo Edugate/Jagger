@@ -19,26 +19,27 @@ $pageTitle .= $this->title;
 <!DOCTYPE html>
 <html lang="en">
     <head>     
-        <?php
-        echo '<meta charset="utf-8">';
-        echo '<meta name="viewport" content="width=device-width" />';
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width" />
+    <?php
         echo '<title>' . $pageTitle . '</title>';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/themes/base/jquery.ui.all.css" />';
-        echo "\n";
+        
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/themes/redmond/jquery.ui.all.css" />';
-        echo "\n";
+        
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/themes/redmond/jquery-ui-1.8.17.custom.css" />';
-        echo "\n";
-        echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>';
-//        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.js"></script>';
-        echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>';
+        
+        ?>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+        <?php
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.tablesorter.js"></script>';
-        echo "<script type=\"text/javascript\" src=\"" . $base_url . "js/jquery.inputfocus-0.9.min.js\"></script>\n";
-        echo "<script type=\"text/javascript\" src=\"" . $base_url . "js/idpAttribute.js\"></script>\n";
-        echo "<script type=\"text/javascript\" src=\"" . $base_url . "js/esapi4js/esapi-compressed.js\"></script>\n";
-        echo "<script type=\"text/javascript\" src=\"" . $base_url . "js/esapi4js/resources/i18n/ESAPI_Standard_en_US.properties.js\"></script>\n";
-        echo "<script type=\"text/javascript\" src=\"" . $base_url . "js/esapi4js/resources/Base.esapi.properties.js\"></script>\n";
-        echo "<script type=\"text/javascript\" src=\"" . $base_url . "js/locals.js\"></script>\n";
+        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.inputfocus-0.9.min.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/idpAttribute.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/esapi4js/esapi-compressed.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/esapi4js/resources/i18n/ESAPI_Standard_en_US.properties.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/esapi4js/resources/Base.esapi.properties.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/locals.js"></script>';
 
         if (!empty($headerjs)) {
             echo $headerjs;
@@ -46,16 +47,12 @@ $pageTitle .= $this->title;
         if (!empty($headermap)) {
             echo $headermap;
         }
-        echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . $base_url . "styles/screen.css\" media=\"screen\" />\n";
+        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/screen.css" media="screen" />';
        
         if(!empty($load_matrix_js))
         {
-           echo '<script type="text/javascript">';
-        //   echo '$(document).ready(function(){';
-        //   echo 'matrixinit();';
-        //   echo '});';
-           $this->load->view('reports/matrixsp_js_view');
-            
+           echo '<script type="text/javascript">'; 
+           $this->load->view('reports/matrixsp_js_view');          
            echo '</script>';
         }
         ?>
@@ -69,13 +66,13 @@ $pageTitle .= $this->title;
             <span id="logo">
                 <?php
                 
-                echo "<a href=\"" . $base_url . "\"><img src=\"" . $base_url . "images/".$this->config->item('site_logo')."\" class=\"span-5\"/></a>\n";
+                echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images'.$this->config->item('site_logo').'" class="span-5"/></a>';
                 ?>
             </span>
             <?php
                 if(!empty($provider_logo_url))
                 {
-               	echo "<img src=\"". $provider_logo_url ."\" class=\"span-3 prepend-8 provider-logo\"/>\n";
+               	echo '<img src="'. $provider_logo_url .'" class="span-3 prepend-8 provider-logo"/>';
                 }
             ?>
 
