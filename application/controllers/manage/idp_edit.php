@@ -245,19 +245,17 @@ class Idp_edit extends MY_Controller {
         else
         {
             log_message('debug', $pref . "not found existing services for idp");
-        }
-
+        }          
         if (array_key_exists('SingleSignOnService', $srv_new))
         {
-            log_message('debug', $pref . "key SingleSignOnService exists and number of values is: " . count($srv_new['SingleSignOnService']));
-            foreach ($srv_new['SingleSignOnService'] as $ns)
+            log_message('debug', $pref . "key SingleSignOnService exists and number of values is: " . count($srv_new['SingleSignOnService']));        
+            foreach ($srv_new['SingleSignOnService'] as $key => $ns)
             {
 
                 $s = new models\ServiceLocation;
                 $s->setType('SingleSignOnService');
-                $s->setBindingName(key($srv_new['SingleSignOnService']));
-                $s->setUrl($ns);
-                $s->setOrder(0);
+                $s->setBindingName($key);
+                $s->setUrl($ns);     
                 $idp->setServiceLocation($s);
                 $this->em->persist($s);
             }
