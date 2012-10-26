@@ -66,7 +66,7 @@ $pageTitle .= $this->title;
             <span id="logo">
                 <?php
                 
-                echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images'.$this->config->item('site_logo').'" class="span-5"/></a>';
+                echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/'.$this->config->item('site_logo').'" class="span-5"/></a>';
                 ?>
             </span>
             <?php
