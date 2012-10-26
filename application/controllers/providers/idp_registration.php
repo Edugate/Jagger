@@ -170,13 +170,13 @@ class Idp_registration extends MY_Controller {
     }
 
     private function _submit_validate() {
-        $this->form_validation->set_rules('homeorg', 'Homeorg Organization', 'trim|required|min_length[5]|max_length[25]|homeorg_unique[homeorg]|xss_clean');
+        $this->form_validation->set_rules('homeorg', 'Homeorg Organization', 'trim|required|min_length[5]|max_length[128]|homeorg_unique[homeorg]|xss_clean');
         $this->form_validation->set_rules('entity', 'entityID', 'trim|required|min_length[10]|max_length[128]|entity_unique[entity]|xss_clean');
         $this->form_validation->set_rules('ssohandler', 'SSO Handler', 'trim|required|min_length[10]|valid_url[sshohandler]|ssohandler_unique[ssohandler]|xss_clean');
         $this->form_validation->set_rules('certbody', 'Certificate', 'trim|required|xss_clean|verify_cert[certbody]');
         $this->form_validation->set_rules('phone', 'Phone','trim|xss_clean');
-        $this->form_validation->set_rules('contactname', 'Contact name', 'trim|required|min_length[5]|max_length[25]|xss_clean');
-        $this->form_validation->set_rules('contactmail', 'Contact email', 'trim|required|valid_email');
+        $this->form_validation->set_rules('contactname', 'Contact name', 'trim|required|min_length[5]|max_length[255]|xss_clean');
+        $this->form_validation->set_rules('contactmail', 'Contact email', 'trim|required|max_length[255]|valid_email');
         $this->form_validation->set_rules('helpdeskurl', 'helpdesk Url or E-mail', 'trim|required|xss_clean');
         $this->form_validation->set_rules('scope', 'Scope', 'trim|required|xss_clean');
         $this->form_validation->set_rules('homeurl', 'Home Url', 'trim|required|valid_url[homeurl]');

@@ -191,10 +191,10 @@ class Sp_registration extends MY_Controller {
     private function _submit_validate() {
         log_message('debug', $this->mid . 'validating form initialized');
 
-        $this->form_validation->set_rules('resource', 'Resource name', 'required|min_length[3]|max_length[64]');
-        $this->form_validation->set_rules('entityid', 'EntityID', 'required|min_length[3]|max_length[256]|entity_unique[entityid]');
-        $this->form_validation->set_rules('contact_name', 'Contact name', 'required|min_length[3]|max_length[25]');
-        $this->form_validation->set_rules('contact_mail', 'Contact mail', 'required|min_length[3]|max_length[128]|valid_email');
+        $this->form_validation->set_rules('resource', 'Resource name', 'required|min_length[3]|max_length[128]');
+        $this->form_validation->set_rules('entityid', 'EntityID', 'required|min_length[3]|max_length[255]|entity_unique[entityid]');
+        $this->form_validation->set_rules('contact_name', 'Contact name', 'required|min_length[3]|max_length[255]');
+        $this->form_validation->set_rules('contact_mail', 'Contact mail', 'required|min_length[3]|max_length[255]|valid_email');
         $this->form_validation->set_rules('contact_phone', 'Contact phone', 'numeric');
         $this->form_validation->set_rules('acs_url', 'AccertionConsumerService URL', 'required|valid_url[acs_url]');
         $this->form_validation->set_rules('acs_bind', 'AccertionConsumerService Binding', 'required');
