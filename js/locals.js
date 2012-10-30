@@ -1,8 +1,7 @@
 $(function() {
     $( "#validfrom" ).datepicker({ dateFormat: 'yy-mm-dd' });
-});
-$(function() {
     $( "#validto" ).datepicker({ dateFormat: 'yy-mm-dd' });
+    $( "#registerdate" ).datepicker({ dateFormat: 'yy-mm-dd' });
 });
 
 $(document).ready(function() {

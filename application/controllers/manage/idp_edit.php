@@ -125,8 +125,10 @@ class Idp_edit extends MY_Controller {
         $this->form_validation->set_rules('homeurl', lang('rr_homeorganisationurl'), 'trim|valid_url');
         $this->form_validation->set_rules('description', lang('rr_description'), 'trim|xss_clean');
         $this->form_validation->set_rules('usestatic', lang('rr_staticmetadata'), "valid_static[".base64_encode($this->input->post('staticmetadatabody')).":::".$this->input->post('entityid')." ]");
-        $this->form_validation->set_rules('validfrom', lang('rr_validfrom'), 'trim|xss_clean');
-        $this->form_validation->set_rules('validto', lang('rr_validto'), 'trim|xss_clean');
+        $this->form_validation->set_rules('validfrom', lang('rr_validfrom'), 'trim|xss_clean|valid_date');
+        $this->form_validation->set_rules('validto', lang('rr_validto'), 'trim|xss_clean|valid_date');
+        $this->form_validation->set_rules('registerdate', 'Registration date', 'trim|xss_clean|valid_date_past');
+        $this->form_validation->set_rules('registar', 'Registration authority', 'trim|xss_clean|max_length[250]');
         return $this->form_validation->run();
     }
 
@@ -271,8 +273,8 @@ class Idp_edit extends MY_Controller {
         $homeurl = $this->input->post('homeurl');
         $helpdeskurl = $this->input->post('helpdeskurl');
         $privacyurl = $this->input->post('privacyurl');
-
-
+        $registrationdate = $this->input->post('registerdate');
+        $registrar = $this->input->post('registrar');
         $scope = $this->input->post('scope');
         $description = $this->input->post('description');
         $usestatic = $this->input->post('usestatic');
@@ -301,7 +303,10 @@ class Idp_edit extends MY_Controller {
         $idp->setHomeUrl($homeurl);
         $idp->setHelpdeskUrl($helpdeskurl);
         $idp->setPrivacyUrl($privacyurl);
-
+        if(!empty($registrar))
+        {
+            $idp->setRegistrationAuthority($registrar);
+        }
         $validfrom = $this->input->post('validfrom');
         if (!empty($validfrom))
         {
@@ -314,6 +319,14 @@ class Idp_edit extends MY_Controller {
         }
         $idp->setValidFrom(\DateTime::createFromFormat('Y-m-d H:i:s', $validfrom));
         $idp->setValidTo(\DateTime::createFromFormat('Y-m-d H:i:s', $validto));
+        if(!empty($registrationdate))
+        {
+            $idp->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $registrationdate.' 00:00:00'));
+        }
+        else
+        {
+            $idp->setRegistrationDate(null);
+        }
         $idp->setScope($scope);
         $idp->setDescription($description);
         if (isset($usestatic) && $usestatic == 'accept')

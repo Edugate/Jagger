@@ -55,6 +55,59 @@ class MY_form_validation extends CI_form_validation {
         return $result;
     }
 
+    
+    /**
+     * Validates a date (yyyy-mm-dd)
+     * 
+     * @param type $date
+     * @return boolean
+     */
+    public function valid_date($date) {
+        if (!empty($date))
+        {
+            if(preg_match("/^(?P<year>[0-9]{4})[-](?P<month>[0-9]{2})[-](?P<day>[0-9]{2})$/", $date, $matches))
+            {
+                if (checkdate($matches['month'], $matches['day'], $matches['year']))    // Date really exists
+                {
+                    return TRUE;
+                }
+            }
+        }
+        $this->set_message('valid_date', "The %s : \"$date\" doesn't exist or invalid format. Valid format: yyyy-mm-dd.");
+        return FALSE;
+    }
+  /**
+     * Validates a date (yyyy-mm-dd) and check if not future
+     * 
+     * @param type $date
+     * @return boolean
+     */
+    public function valid_date_past($date) {
+        if (!empty($date))
+        {
+            if(preg_match("/^(?P<year>[0-9]{4})[-](?P<month>[0-9]{2})[-](?P<day>[0-9]{2})$/", $date, $matches))
+            {
+                if (checkdate($matches['month'], $matches['day'], $matches['year']))    // Date really exists
+                {
+                    $d1 = new DateTime($date);
+                    $d2 = new DateTime("now");
+                    if($d1 > $d2)
+                    {
+                        $this->set_message('valid_date_past', "The %s : \"$date\" is set in the future.");
+                        return FALSE;
+                        
+                    }
+                    else
+                    {
+                        return TRUE;
+                    }
+                }
+            }
+        }
+        $this->set_message('valid_date_past', "The %s : \"$date\" doesn't exist or invalid format. Valid format: yyyy-mm-dd.");
+        return FALSE;
+   
+    }
     /**
      *
      * @param type $homeorg

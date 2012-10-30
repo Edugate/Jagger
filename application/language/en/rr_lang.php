@@ -1,9 +1,13 @@
 <?php
 
-//SP Registration Form
+/**
+  * SP Registration Form
+  */
 $lang['rr_sp_register_title'] = 'Service Provider registration form';
 
-//General Information
+/**
+  * General Information
+  */
 $lang['rr_generalinformation'] = "General Information";
 
 $lang['rr_resource'] = "Resource Name";
@@ -13,18 +17,24 @@ $lang['rr_helpdeskurl'] = 'Helpdesk URL';
 
 $lang['rr_homeorganisation']= 'Home Organization' ;
 
-//Technical information
+/** 
+  * Technical information
+  */
 $lang['rr_technicalinformation'] = 'Technical Information';
 
 
-//SP Specific Tech Information
+/**
+  * SP Specific Tech Information
+  */
 $lang['rr_assertioncosumerservice'] = 'AssertionConsumerService Binding protocol';
 $lang['rr_acsurl'] = 'ACS URL';
 $lang['rr_certificatesigning'] = 'Certificate for signing';
 $lang['rr_certificateencrypting'] = 'Certificate for encryption';
 
 
-//IDP Specific Tech Information
+/**
+  * IDP Specific Tech Information
+  */
 $lang['rr_metadatalocation'] = 'Metadata location (optional)';
 $lang['rr_privacystatement'] = 'Privacy Statement URL (optional)';
 $lang['rr_scope'] = 'Scope';
@@ -32,12 +42,16 @@ $lang['rr_bindingtypesinglesign'] = 'BindingType of Single Sign-on Handler';
 $lang['rr_singlesignonurl'] = 'URL of Single Sign-on Handler';
 $lang['rr_idpsigningcert'] = 'IDP Signing Certificate';
 
-//IDP Logo
+/** 
+  * IDP Logo
+  */
 $lang['rr_logo'] = 'Logo';
 $lang['rr_imagedimensions'] = 'Your image dimensions are not correct, please use the editor.';
 
 
-//Primary Contact
+/** 
+  * Primary Contact
+  */
 $lang['rr_primarycontact'] = 'Primary Contact';
 
 $lang['rr_contactname'] = 'Contact name';
@@ -45,16 +59,22 @@ $lang['rr_contactemail'] = 'Contact email';
 $lang['rr_contactphone'] = 'Contact phone';
 
 
-//IDP Specific primary contact information
+/**
+  * IDP Specific primary contact information
+  */
 $lang['rr_homeorganisationurl'] = 'HomeOrg URL';
 
 
-//Submit Button
+/**
+  * Submit Button
+  */
 $lang['rr_submitwait'] = 'Submit and wait for approval';
 
 
 
-//IDP Edit Page
+/** 
+  * IDP Edit Page
+  */
 $lang['rr_detailsfor'] = 'Details for ';
 $lang['rr_displayname'] = 'Display Name';
 $lang['rr_homeorganisationname'] ='HomeOrg Name';
@@ -70,22 +90,30 @@ $lang['rr_enabledempty'] = 'Static metadata is enabled but it\'s empty';
 
 
 
-//Basic information
+/**
+  * Basic information
+  */
 $lang['rr_basicinformation'] = 'Basic Information';
 
-//Metadata
+/**
+  * Metadata
+  */
 $lang['rr_usestaticmetadata'] = 'Use static metadata';
 $lang['rr_staticmetadataxml'] = 'Static metadata xml';
 $lang['rr_metadatageneratedbased'] ='    But metadata is  generated based on below informations';
 
 
-//Protocols
+/**
+  * Protocols
+  */
 $lang['rr_protocols'] = 'Protocols';
 $lang['rr_supportedprotocols'] = 'Supported Protocols'; 
 $lang['rr_supportednameids'] = 'Supported nameids';
 
 
-//Certificates
+/**
+  * Certificates
+  */
 $lang['rr_certificates'] = 'Certificates';
 
 $lang['rr_pleaseremove'] = 'Please remove it';
@@ -97,11 +125,16 @@ $lang['rr_newcertificate'] = 'New Certificate';
 $lang['rr_optional']= 'optional';
 
 
-//Service information
+/** 
+  * Service information
+  */
 
 $lang['rr_servicelocations'] = 'Service Locations';
 
-//Contacts
+/**
+  * Contacts
+  */
+  
 $lang['rr_contacts'] = 'Contacts';
 $lang['rr_contacttype'] = 'Contact type';
 $lang['rr_contactdetails'] = 'Contact details';
@@ -111,32 +144,44 @@ $lang['rr_contactemail'] ='Contact Email';
 $lang['rr_newcontact'] = 'New contact details';
 
 
-//Attributes
+/**
+  * Attributes
+  */
 $lang['rr_attributes'] = 'Attributes';
 $lang['rr_requiredattributes'] = 'Required Attributes';
 $lang['rr_geolocation'] = 'Geolocation';
 
 
-//SP EDIT FORM
+/** 
+  * SP EDIT FORM
+  */
 
-//General inforamtion
+/**
+  * General inforamtion
+  */
 $lang['rr_resourceurl'] = 'Resource home URL';
 
-//Service Locations
+/**
+  * Service Locations
+  */
 $lang['rr_bindingname'] = 'Binding Name';
 $lang['rr_addnewacs'] = 'Add new ACS';
 
 
 
-//Button
+/**
+  * Button
+  */
 $lang['rr_reset'] = 'Reset';
 $lang['rr_save'] = 'Save';
 $lang['rr_submitapprove'] = 'Accept request';
 $lang['rr_submitreject'] = 'Reject request';
 
 
-//Idp details
-//Alert
+/** 
+  * Idp details
+  * Alert
+  */
 $lang['rr_idpnotenabled'] ='Identity Provider is disabled';
 $lang['rr_spdisabled'] ='Service Provider is disabled';
 $lang['rr_idpactive'] = '(is active)';
@@ -148,19 +193,28 @@ $lang['rr_lockedentity']='(Entity locked - cannot be edited)';
 $lang['rr_fromtomatch']='Valid From/To doesn\'t match current date. Your entity won\'t appear in metadata';
 
 
-//Small
+/**
+  * Small
+  */
 $lang['rr_includedmetadata']='(included in metadata)';
 $lang['rr_notincludedmetadata']='(not included in metadata)';
 
-//Notice
+/** 
+  * Notice
+  */
 $lang['rr_staticmetadataset'] = 'static metadata is set and it\'s active';
 
 $lang['rr_staticxmlenabled'] = 'static xml is enabled';
 
 
-//Basic info
+/**
+  * Basic info
+  */
 $lang['rr_lastmodification']= 'Last modification';
 $lang['rr_descriptivename'] ='Descriptive Name';
+$lang['rr_regauthority'] = 'Registration Authority';
+$lang['rr_regdate'] = 'Registration Date';
+$lang['rr_regauthority_alt'] = 'It\'s not set but for metadata generation system will be using';
 $lang['rr_notset'] = 'not set';
 $lang['rr_unlimited'] ='unlimited';
 $lang['rr_external'] = 'external';
@@ -170,15 +224,19 @@ $lang['rr_metadata']='Metadata';
 $lang['rr_generatedbelow']='It\'s generated based on below informations';
 $lang['rr_memberof'] = 'Member of';
 
-//Technical information
+/**
+ * Technical information
+ */
 $lang['rr_entitymetadataurl'] = 'entity metadata URL';
 $lang['rr_circleoftrust'] = 'Circle of trust metadata URL';
 $lang['rr_domainscope']='Domain(s) Scope of Identities';
 
-//certificate
+/**
+  * certificate
+  */
 $lang['rr_certificatenotvalid'] = 'certificate is not valid';
 
-//ARP
+  
 $lang['rr_arp'] = 'ARP (Attribute Release Policy)';
 $lang['rr_individualarpurl'] = 'Individual Attribite Release Policy URL';
 $lang['rr_recentarpdownload'] = 'Most recent ARP/Attribute filter downloads';
@@ -207,12 +265,63 @@ $lang['rr_setnotactive'] = 'This static metadata is set but not active';
 $lang['rr_setasdefault'] ='static metadata is set as default';
 $lang['rr_certificateexpired'] = 'Certificate is expired. Some service providers may reject to consume this metadata';
 
-//Federation
+/**
+  * Federation
+  */
 $lang['rr_federationjoin']='Manage membership (joining)';
 $lang['rr_federationleave']= 'Manage membership (leaving)';
 
 
-//SP details
+/**
+ * SP details
+ */
 $lang['rr_serviceproviderdetails'] = 'Service Provider details';
 $lang['rr_acs'] = 'AssertionConsumerService';
 $lang['rr_admins'] = 'Admins';
+
+/**
+ * HELP
+ */
+
+/**
+  * SP Help
+  */
+$lang['rhelp_entityid'] = 'Use a URL https://<HOSTNAME>/idp/shibboleth. This URL does not necessarily need to resolve to a web page yet, but it should be possible publish your IDPs own metadata at this URL (Shibboleth 2.1+ IdP metadata is usually automatically published at https://idp.example.org/idp/profile/Metadata/SAML).';
+
+$lang['rhelp_resourcename'] = 'Name of the Resource or Service';
+$lang['rhelp_helpdeskurl'] = 'A web page that offers users help and guidance in case of Federation related problems with the resource';
+$lang['rhelp_assertionconsumer'] = 'Define bindings that your service provider supports';
+$lang['rhelp_acsurl'] = 'AttributeConsumerService URL';
+$lang['rhelp_certificatesigning'] = 'Certificate for signing';
+$lang['rhelp_certificateencryption'] = 'Certificate for encryption';
+
+
+/**
+  * IDP Help
+  */
+$lang['rhelp_bindingtype'] = 'Please select the binding type that your identity provider supports.';
+$lang['rhelp_urlsinglesign'] = 'Please type the url of your single sign-on handler. E.g: https://idp.example.com/idp/profile/SAML2/Redirect/SSO';
+
+
+/**
+  * SP/IDP edit
+  */
+$lang['rhelp_supportedprotocols'] = 'These are the protocols that you support.';
+$lang['rhelp_cert'] = 'Paste your certificate here.';
+
+
+/**
+  * ERRORS
+  */
+
+
+$lang['rerror_idpnotfound'] = 'Identity Provider not found'; 
+$lang['rerror_lostinfo'] = 'Lost information about what idp to update';
+$lang['rerror_cannotmanageexternal'] = 'cannot be managed. This is external resource';
+
+
+
+$lang['rerror_spnotfound'] = 'Service Provider not found';
+$lang['rerror_splostinfo'] = 'Lost information about what sp to update';
+$lang['rerror_wrongidpid'] ='Wrong IDP ID';
+$lang['rerror_wrongspid'] ='Wrong SP ID';

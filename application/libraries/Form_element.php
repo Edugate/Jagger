@@ -605,8 +605,40 @@ class Form_element {
         $tmp .= "<li>";
         $tmp .= form_label(lang('rr_displayname'), 'displayname');
         $tmp .= form_input('displayname', set_value('displayname', $provider->getDisplayName()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
+        $tmp .= "</li><li>";
+           $configRegAuth = $this->ci->config->item('registrationAutority');
+
+        if (!empty($configRegAuth))
+        {
+            $tmp .= form_label('Registration authority<br /><small>Default: ' . $configRegAuth . '</small>', 'registrar');
+        }
+        else
+        {
+            $tmp .= form_label('Registration authority', 'registrar');
+        }
+        $in = array('id' => 'registrar', 'name' => 'registrar', 'value' => set_value('registrar', $provider->getRegistrationAuthority()));
+        $tmp .= form_input($in);
+        $tmp .= '</li>';
+        $tmp .= '<li>';
+        $tmp .= form_label('Registration Date', 'registerdate');
+        $ptm = $provider->getRegistrationDate();
+        if (!empty($ptm))
+        {
+            $tmp .= form_input(array(
+                'name' => 'registerdate',
+                'id' => 'registerdate',
+                'value' => set_value('registerdate', $provider->getRegistrationDate()->format('Y-m-d'))
+                    ));
+        }
+        else
+        {
+            $tmp .= form_input(array(
+                'name' => 'registerdate',
+                'id' => 'registerdate',
+                'value' => set_value('registerdate')
+                    ));
+        }
+        $tmp .= "</li><li>";
         $tmp .= form_label(lang('rr_resourceurl'), 'homeurl');
         $tmp .= form_input('homeurl', set_value('homeurl', $provider->getHomeUrl()));
         $tmp .= "</li>";
@@ -710,16 +742,50 @@ class Form_element {
 
         $tmp .= '</li>';
         $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_homeorganisationname'), 'homeorgname');
+        $tmp .= form_label(lang('rr_homeorganisationname') . ' (english)', 'homeorgname');
         $in = array('id' => 'homeorgname', 'name' => 'homeorgname', 'required' => 'required', 'value' => set_value('homeorgname', $provider->getName()));
         $tmp .= form_input($in);
         $tmp .= "</li>";
         $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_displayname'), 'displayname');
+        $tmp .= form_label(lang('rr_displayname') . ' (english)', 'displayname');
         $in = array('id' => 'displayname', 'name' => 'displayname', 'required' => 'required', 'value' => set_value('displayname', $provider->getDisplayName()));
         $tmp .= form_input($in);
-        $tmp .= "</li>";
-        $tmp .= "<li>";
+        $tmp .= '</li><li>';
+        $configRegAuth = $this->ci->config->item('registrationAutority');
+
+        if (!empty($configRegAuth))
+        {
+            $tmp .= form_label('Registration authority<br /><small>Default: ' . $configRegAuth . '</small>', 'registrar');
+        }
+        else
+        {
+            $tmp .= form_label('Registration authority', 'registrar');
+        }
+        $in = array('id' => 'registrar', 'name' => 'registrar', 'value' => set_value('registrar', $provider->getRegistrationAuthority()));
+        $tmp .= form_input($in);
+        $tmp .= '</li>';
+        $tmp .= '<li>';
+        $tmp .= form_label('Registration Date', 'registerdate');
+        $ptm = $provider->getRegistrationDate();
+        if (!empty($ptm))
+        {
+            $tmp .= form_input(array(
+                'name' => 'registerdate',
+                'id' => 'registerdate',
+                'value' => set_value('registerdate', $provider->getRegistrationDate()->format('Y-m-d'))
+                    ));
+        }
+        else
+        {
+            $tmp .= form_input(array(
+                'name' => 'registerdate',
+                'id' => 'registerdate',
+                'value' => set_value('registerdate')
+                    ));
+        }
+
+        $tmp .= '</li>';
+        $tmp .= '<li>';
         $tmp .= form_label(lang('rr_homeorganisationurl'), 'homeurl');
         $tmp .= form_input('homeurl', set_value('homeurl', $provider->getHomeUrl()));
         $tmp .= "</li>";
@@ -854,13 +920,13 @@ class Form_element {
         $f = null;
         $f .= form_fieldset('Basic Information');
         $f .="<ol>\n<li>";
-        $f .=form_label('Federation URN','urn');
-        $f .= form_input('urn', set_value('urn',$federation->getUrn()));
+        $f .=form_label('Federation URN', 'urn');
+        $f .= form_input('urn', set_value('urn', $federation->getUrn()));
         $f .="</li>\n<li>";
-        $f .=form_label('Description','description');
+        $f .=form_label('Description', 'description');
         $f .=form_textarea('description', set_value('description', $federation->getDescription()));
         $f .="</li>\n<li>";
-        $f .= form_label('Terms of Use','tou');
+        $f .= form_label('Terms of Use', 'tou');
         $f .= form_textarea('tou', set_value('tou', $federation->getTou()));
         $f .="</li></ol>";
         $f .= form_fieldset_close();

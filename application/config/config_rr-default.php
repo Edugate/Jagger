@@ -86,6 +86,15 @@ $config['metadata_validuntil_days'] = '7';
 $config['policy_dropdown'] = array('0' => 'never', '1' => 'permit only if required', '2' => 'permit if required or desired');
 
 /**
+ * default registrationAuthority for example http://www.heanet.ie
+ */
+$config['registrationAutority'] = null;
+/**
+ * (boolean) load default registrationAuthority to localy managed entities if not  set. It will be visible in generated metadata 
+ */
+$config['load_registrationAutority'] = false;
+
+/**
  * caching in seconds
  */
 

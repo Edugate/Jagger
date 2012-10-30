@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
@@ -17,17 +18,18 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
 class Sp_edit extends MY_Controller {
 
     protected $sp;
     protected $tmp_providers;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin) {
+        if (!$loggedin)
+        {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'refresh');
         }
@@ -37,26 +39,29 @@ class Sp_edit extends MY_Controller {
         $this->load->library('zacl');
     }
 
-    public function show($spid) {
+    public function show($spid)
+    {
         $this->sp = $this->tmp_providers->getOneSpById($spid);
 
-        if (empty($this->sp)) {
+        if (empty($this->sp))
+        {
             log_message('error', $this->mid . "SP edit: Service Provider with id=" . $spid . " not found");
             show_error(lang('rerror_spnotfound'), 404);
         }
         $has_write_access = $this->zacl->check_acl($this->sp->getId(), 'write', 'sp', '');
         $locked = $this->sp->getLocked();
-        if (!$has_write_access) {
+        if (!$has_write_access)
+        {
             $data['content_view'] = 'nopermission';
             $data['error'] = 'No access to edit sp: ' . $this->sp->getEntityid();
             $this->load->view('page', $data);
             return;
         }
-        if($locked)
+        if ($locked)
         {
             $data['content_view'] = 'nopermission';
             $data['error'] = 'Identity Provider is locked: ' . $this->sp->getEntityid();
-            log_message('debug',$this->sp->getEntityid(). ': is locked and cannot be edited');
+            log_message('debug', $this->sp->getEntityid() . ': is locked and cannot be edited');
             $this->load->view('page', $data);
             return;
         }
@@ -64,7 +69,8 @@ class Sp_edit extends MY_Controller {
         log_message('debug', $this->mid . 'opening sp_edit form for:' . $this->sp->getEntityId());
 
         $is_local = $this->sp->getLocal();
-        if (!$is_local) {
+        if (!$is_local)
+        {
             $data['error_message'] = anchor(base_url() . "providers/provider_detail/sp/" . $this->sp->getId(), $this->sp->getName()) . lang('rerror_cannotmanageexternal');
             $data['content_view'] = "manage/sp_edit_view";
             $this->load->view('page', $data);
@@ -84,20 +90,21 @@ class Sp_edit extends MY_Controller {
         $this->load->view('page', $data);
     }
 
-    private function _submit_validate() {
-        $this->form_validation->set_rules('entityid',lang('rr_entityid'),'trim|required|min_length[5]|max_length[255]|entityid_unique_update['.$this->spid.']|xss_clean');
+    private function _submit_validate()
+    {
+        $this->form_validation->set_rules('entityid', lang('rr_entityid'), 'trim|required|min_length[5]|max_length[255]|entityid_unique_update[' . $this->spid . ']|xss_clean');
         $this->form_validation->set_rules('displayname', lang('rr_displayname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
         $this->form_validation->set_rules('homeorgname', lang('rr_resource'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
         $this->form_validation->set_rules('privacyurl', lang('rr_privacystatement'), 'trim|xss_clean');
         $this->form_validation->set_rules('description', lang('rr_description'), 'trim|max_length[512]|xss_clean');
-        $this->form_validation->set_rules('homeurl',lang('rr_resourceurl'),'xss_clean|valid_url');
-        $this->form_validation->set_rules('helpdeskurl',lang('rr_helpdeskurl'),'required|xss_clean');
-        $this->form_validation->set_rules('description',lang('rr_description'),'xss_clean');
-        $this->form_validation->set_rules('validfrom', lang('rr_validfrom'),'trim|xss_clean');
-        $this->form_validation->set_rules('validto', lang('rr_validto'),'trim|xss_clean');
-        //$this->form_validation->set_rules('usestatic', 'Static metdatada', 'valid_static[' . base64_encode($this->input->post('staticmetadatabody')) . ']');
-        $this->form_validation->set_rules('usestatic', 'Static metdatada', "valid_static[".base64_encode($this->input->post('staticmetadatabody')).":::".$this->input->post('entityid')." ]");
-
+        $this->form_validation->set_rules('homeurl', lang('rr_resourceurl'), 'xss_clean|valid_url');
+        $this->form_validation->set_rules('helpdeskurl', lang('rr_helpdeskurl'), 'required|xss_clean');
+        $this->form_validation->set_rules('description', lang('rr_description'), 'xss_clean');
+        $this->form_validation->set_rules('validfrom', lang('rr_validfrom'), 'trim|xss_clean|valid_date');
+        $this->form_validation->set_rules('validto', lang('rr_validto'), 'trim|xss_clean|valid_date');
+        $this->form_validation->set_rules('registerdate', 'Registration date', 'trim|xss_clean|valid_date_past');
+        $this->form_validation->set_rules('registar', 'Registration authority', 'trim|xss_clean|max_length[250]');
+        $this->form_validation->set_rules('usestatic', 'Static metdatada', "valid_static[" . base64_encode($this->input->post('staticmetadatabody')) . ":::" . $this->input->post('entityid') . " ]");
         $this->form_validation->set_rules('acs_index', 'Assertion Consumer Service index', 'acs_index_check');
         $this->form_validation->set_rules('acs_url', 'Assertion Consumer Service url', 'array_valid_url');
         /**
@@ -106,7 +113,8 @@ class Sp_edit extends MY_Controller {
         return $this->form_validation->run();
     }
 
-    public function submit() {
+    public function submit()
+    {
         $data = array();
         $pref = $this->mid . "sp_edit: submit: ";
         log_message('debug', $pref . "started");
@@ -114,32 +122,36 @@ class Sp_edit extends MY_Controller {
 
         $editedsp = $this->session->userdata('editedsp');
         $this->spid = $editedsp;
-        if (empty($editedsp)) {
+        if (empty($editedsp))
+        {
             show_error(lang('rerror_splostinfo'), 404);
         }
         log_message('debug', $pref . "sp_id: " . $editedsp);
         $this->sp = $this->tmp_providers->getOneSpById($editedsp);
-        if (empty($this->sp)) {
+        if (empty($this->sp))
+        {
             show_error($this->mid . lang('rerror_spnotfound'), 404);
         }
         $has_write_access = $this->zacl->check_acl($this->sp->getId(), 'write', 'sp', '');
-        if (!$has_write_access) {
+        if (!$has_write_access)
+        {
             $data['content_view'] = 'nopermission';
             $data['error'] = 'No access to edit sp: ' . $this->sp->getEntityid();
             $this->load->view('page', $data);
             return;
         }
         $locked = $this->sp->getLocked();
-        if($locked)
+        if ($locked)
         {
             $data['content_view'] = 'nopermission';
             $data['error'] = 'Identity Provider is locked: ' . $this->sp->getEntityid();
-            log_message('debug',$this->sp->getEntityid(). ': is locked and cannot be edited');
+            log_message('debug', $this->sp->getEntityid() . ': is locked and cannot be edited');
             $this->load->view('page', $data);
             return;
         }
 
-        if ($this->_submit_validate() === FALSE) {
+        if ($this->_submit_validate() === FALSE)
+        {
             return $this->show($editedsp);
         }
 
@@ -157,25 +169,36 @@ class Sp_edit extends MY_Controller {
         $acs_default = $this->input->post('acs_default');
 
         $acs_keys = array_keys($acs_bind);
-        foreach ($serviceLocations as $srv) {
+        foreach ($serviceLocations as $srv)
+        {
             $srvid = $srv->getId();
-            if ($srv->getType() == 'AssertionConsumerService') {
-                if (array_key_exists($srvid, $acs_bind)) {
-                    if (empty($acs_url[$srvid])) {
+            if ($srv->getType() == 'AssertionConsumerService')
+            {
+                if (array_key_exists($srvid, $acs_bind))
+                {
+                    if (empty($acs_url[$srvid]))
+                    {
                         $this->sp->removeServiceLocation($srv);
                         $this->em->persist($srv);
-                    } else {
+                    }
+                    else
+                    {
                         $srv->setBindingName($acs_bind[$srvid]);
                         $srv->setUrl($acs_url[$srvid]);
                         $srv->setOrder($acs_index[$srvid]);
-                        if ($acs_default == $srvid) {
+                        if ($acs_default == $srvid)
+                        {
                             $srv->setDefault(true);
-                        } else {
+                        }
+                        else
+                        {
                             $srv->setDefault(false);
                         }
                         $this->em->persist($srv);
                     }
-                } else {
+                }
+                else
+                {
                     log_message('warn', $this->mid . 'Some inconsistency with submited edit sp form for entity:' . $this->sp->getEntityId() . ' AssertionConsumerService didnt exist in submited form');
                 }
             }
@@ -183,17 +206,20 @@ class Sp_edit extends MY_Controller {
         /**
          * add new acs to database if filled
          */
-        if (!empty($acs_url['n'])) {
+        if (!empty($acs_url['n']))
+        {
             $newsrv_acs = new models\ServiceLocation;
             $newsrv_acs->setAsACS();
             $newsrv_acs->setBindingName($acs_bind['n']);
-            if (!isset($acs_index['n']) or $acs_index['n'] < 0 or $acs_index['n'] == null or !is_numeric($acs_index['n'])) {
+            if (!isset($acs_index['n']) or $acs_index['n'] < 0 or $acs_index['n'] == null or !is_numeric($acs_index['n']))
+            {
                 $acs_index['n'] = null;
                 $acs_index['n'] = max($acs_index) + 1;
             }
 
             $newsrv_acs->setOrder($acs_index['n']);
-            if ($acs_default == 'n') {
+            if ($acs_default == 'n')
+            {
                 $newsrv_acs->setDefault(true);
             }
             $newsrv_acs->setProvider($this->sp);
@@ -212,14 +238,25 @@ class Sp_edit extends MY_Controller {
         $homeurl = $this->input->post('homeurl');
         $helpdeskurl = $this->input->post('helpdeskurl');
         $privacyurl = $this->input->post('privacyurl');
-
         $description = $this->input->post('description');
         $usestatic = $this->input->post('usestatic');
-
         $staticmetadatabody = $this->input->post('staticmetadatabody');
         $protocols = $this->input->post('protocols');
         $nameids = $this->input->post('nameids');
-
+        $registrationdate = $this->input->post('registerdate');
+        $registrar = $this->input->post('registrar');
+        if(!empty($registrar))
+        {
+            $this->sp->setRegistrationAuthority($registrar);
+        }
+        if(!empty($registrationdate))
+        {
+            $this->sp->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $registrationdate.' 00:00:00'));
+        }
+        else
+        {
+            $this->sp->setRegistrationDate(null);
+        }
         $this->sp->setName($homeorgname);
         $this->sp->setEntityid($entityid);
         $this->sp->setDisplayName($displayname);
@@ -231,18 +268,24 @@ class Sp_edit extends MY_Controller {
         $this->sp->setValidTo(\DateTime::createFromFormat('Y-m-d', $this->input->post('validto')));
         $this->sp->setScope(null);
         $this->sp->setDescription($description);
-        if (isset($usestatic) && $usestatic == 'accept') {
+        if (isset($usestatic) && $usestatic == 'accept')
+        {
             $this->sp->setStatic(true);
             log_message('debug', $pref . "static set: true");
-        } else {
+        }
+        else
+        {
             $this->sp->setStatic(false);
             log_message('debug', $pref . "static set: false");
         }
         $e_static_metadata = $this->sp->getStaticMetadata();
-        if (!empty($e_static_metadata)) {
+        if (!empty($e_static_metadata))
+        {
             $s_metadata = $e_static_metadata;
             log_message('debug', $pref . "static metadata is not empty");
-        } else {
+        }
+        else
+        {
             $s_metadata = new models\StaticMetadata;
             log_message('debug', $pref . "static metadata is empty");
         }
@@ -254,17 +297,21 @@ class Sp_edit extends MY_Controller {
 
 
 
-        if (!empty($protocols) && is_array($protocols) && count($protocols) > 0) {
+        if (!empty($protocols) && is_array($protocols) && count($protocols) > 0)
+        {
             log_message('debug', $pref . "setting protocols");
             $this->sp->resetProtocol();
-            foreach ($protocols as $p) {
+            foreach ($protocols as $p)
+            {
                 $this->sp->setProtocol($p);
             }
         }
-        if (!empty($nameids) && is_array($nameids) && count($nameids) > 0) {
+        if (!empty($nameids) && is_array($nameids) && count($nameids) > 0)
+        {
             log_message('debug', $pref . "setting nameids");
             $this->sp->resetNameId();
-            foreach ($nameids as $p) {
+            foreach ($nameids as $p)
+            {
                 $this->sp->setNameId($p);
             }
         }
@@ -279,9 +326,11 @@ class Sp_edit extends MY_Controller {
         $existingCerts = $this->sp->getCertificates();
         log_message('debug', $pref . "number of existing certs is: " . $existingCerts->count());
         //$count_existingCerts = count($existingCerts);
-        if ($existingCerts->count() > 0) {
+        if ($existingCerts->count() > 0)
+        {
 
-            foreach ($existingCerts->getValues() as $ec) {
+            foreach ($existingCerts->getValues() as $ec)
+            {
                 $id = $ec->getId();
                 $ecdata = trim($this->input->post('cert_' . $id . '_data'));
                 $ectype = $this->input->post('cert_' . $id . '_type');
@@ -289,27 +338,39 @@ class Sp_edit extends MY_Controller {
                 $eckeyname = $this->input->post('cert_' . $id . '_keyname');
                 $ecremove = $this->input->post('cert_' . $id . '_remove');
 
-                if ($ecremove == 'yes') {
+                if ($ecremove == 'yes')
+                {
                     log_message('debug', $pref . 'cert action: ' . $ecremove);
                     $this->sp->removeCertificate($ec);
-                } elseif (!empty($ecdata) OR !empty($eckeyname)) {
+                }
+                elseif (!empty($ecdata) OR !empty($eckeyname))
+                {
                     $ecusesigning = false;
                     $ecuseencryption = false;
-                    if (empty($ecuse)) {
+                    if (empty($ecuse))
+                    {
                         $ecuse = array();
                     }
-                    foreach ($ecuse as $pec) {
-                        if ($pec == 'signing') {
+                    foreach ($ecuse as $pec)
+                    {
+                        if ($pec == 'signing')
+                        {
                             $ecusesigning = true;
                         }
-                        if ($pec == 'encryption') {
+                        if ($pec == 'encryption')
+                        {
                             $ecuseencryption = true;
                         }
-                        if ($ecusesigning === $ecuseencryption) {
+                        if ($ecusesigning === $ecuseencryption)
+                        {
                             $ec->setCertUse();
-                        } elseif ($ecusesigning) {
+                        }
+                        elseif ($ecusesigning)
+                        {
                             $ec->setCertUse('signing');
-                        } else {
+                        }
+                        else
+                        {
                             $ec->setCertUse('encryption');
                         }
                         $ec->setCertdata($ecdata);
@@ -333,42 +394,59 @@ class Sp_edit extends MY_Controller {
         /**
          * check any input (*_0n_*) if new certificate added in form
          */
-        if (!empty($cdata) OR !empty($ckeyname)) {
+        if (!empty($cdata) OR !empty($ckeyname))
+        {
             log_message('debug', $pref . "setting new cert");
-            if ($ccerttype) {
+            if ($ccerttype)
+            {
 
                 $cusesigning = false;
                 $cuseencryption = false;
-                foreach ($cuse as $c) {
-                    if ($c == 'signing') {
+                foreach ($cuse as $c)
+                {
+                    if ($c == 'signing')
+                    {
                         $cusesigning = true;
                     }
-                    if ($c == 'encryption') {
+                    if ($c == 'encryption')
+                    {
                         $cuseencryption = true;
                     }
                 }
                 $cvalid = false;
-                if ($ccerttype == 'x509') {
-                    if (!empty($cdata)) {
+                if ($ccerttype == 'x509')
+                {
+                    if (!empty($cdata))
+                    {
                         log_message('debug', $pref . "setting new cert 2");
                         $cvalid = validateX509($cdata);
-                    } elseif (!empty($ckeyname)) {
+                    }
+                    elseif (!empty($ckeyname))
+                    {
                         log_message('debug', $pref . "setting new cert 3");
                         $cvalid = true;
                     }
-                } {
+                }
+                {
                     
                 }
-                if (!empty($cvalid)) {
+                if (!empty($cvalid))
+                {
 
                     $newcert = new models\Certificate;
                     $newcert->setCertType($ccerttype);
-                    if (!empty($cdata) && ($ccerttype == 'x509')) {
-                        if ($cusesigning === $cuseencryption) {
+                    if (!empty($cdata) && ($ccerttype == 'x509'))
+                    {
+                        if ($cusesigning === $cuseencryption)
+                        {
                             $newcert->setCertUse();
-                        } elseif ($cusesigning) {
+                        }
+                        elseif ($cusesigning)
+                        {
                             $newcert->setCertUse('signing');
-                        } else {
+                        }
+                        else
+                        {
                             $newcert->setCertUse('encryption');
                         }
                     }
@@ -390,14 +468,18 @@ class Sp_edit extends MY_Controller {
         log_message('debug', $pref . "2 finished");
         $no_contacts = $this->input->post('no_contacts');
         $contacts_col = $this->sp->getContacts();
-        foreach ($contacts_col->getValues() as $c) {
+        foreach ($contacts_col->getValues() as $c)
+        {
             $type = $this->input->post('contact_' . $c->getId() . '_type');
             $fname = $this->input->post('contact_' . $c->getId() . '_fname');
             $sname = $this->input->post('contact_' . $c->getId() . '_sname');
             $email = $this->input->post('contact_' . $c->getId() . '_email');
-            if (empty($email)) {
+            if (empty($email))
+            {
                 $this->sp->removeContact($c);
-            } else {
+            }
+            else
+            {
                 $c->setType($type);
                 $c->setGivenname($fname);
                 $c->setSurname($sname);
@@ -410,7 +492,8 @@ class Sp_edit extends MY_Controller {
         $cnt_newtype = $this->input->post('contact_0n_type');
         $cnt_newgivenname = $this->input->post('contact_0n_fname');
         $cnt_newsurname = $this->input->post('contact_0n_sname');
-        if (!empty($cnt_newmail)) {
+        if (!empty($cnt_newmail))
+        {
             $k = new models\Contact;
             $k->setEmail($cnt_newmail);
             $k->setType($cnt_newtype);
@@ -420,11 +503,6 @@ class Sp_edit extends MY_Controller {
             $this->sp->setContact($k);
             $this->em->persist($k);
         }
-
-
-
-
-
         $this->em->persist($this->sp);
         $this->em->flush();
 

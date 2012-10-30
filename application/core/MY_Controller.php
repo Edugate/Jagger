@@ -44,7 +44,8 @@ private $current_user;
 		$this->title = "";
 		$this->mid = "";
                 $cookie_lang = $this->input->cookie('rr3_langugage', TRUE); 
-                $this->current_language = 'english';
+                $this->current_language = 'en';
+                $this->lang->load('rr_lang', $this->current_language);
                 /*
                 if(!empty($cookie_lang))
                 {
@@ -54,9 +55,7 @@ private $current_user;
                      }
                 }
                 */
-                $this->lang->load('rr_lang', $this->current_language);
-                $this->lang->load('rrerror_lang', $this->current_language);
-                $this->lang->load('rrhelp_lang', $this->current_language);
+                //$this->lang->load('rr_lang', 'pt');
           
 
 

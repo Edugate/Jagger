@@ -91,7 +91,7 @@ class Provider_detail extends MY_Controller {
             /**
              * @todo finish action (display error) if idp not found	
              */
-            log_message('debug', "Idp " . $idp . " not found");
+            log_message('debug', 'IDP ' . $idp . ' not found');
             show_error(lang('rerror_idpnotfound'), 404);
             return;
         }
@@ -116,7 +116,7 @@ class Provider_detail extends MY_Controller {
 
         if (empty($is_active))
         {
-            $activeString = "<span class=\"notice\"><small>" . lang('rr_idpnotenabled') . "</small></span>";
+            $activeString = '<span class="notice"><small>' . lang('rr_idpnotenabled') . '</small></span>';
         }
         else
         {
@@ -131,76 +131,104 @@ class Provider_detail extends MY_Controller {
         if (!$has_write_access)
         {
             $edit_link = '<img src="' . base_url() . 'images/icons/pencil-prohibition.png" title="' . lang('rr_nopermission') . '"/>';
-            $edit_basic = "";
-            $edit_federation = "";
-            $edit_technical = "";
-            $edit_protocols = "";
-            $edit_services = "";
-            $edit_certificates = "";
-            $edit_contacts = "";
-            $edit_attributes = "";
-            $edit_policy = "";
+            $edit_basic = '';
+            $edit_federation = '';
+            $edit_technical = '';
+            $edit_protocols = '';
+            $edit_services = '';
+            $edit_certificates = '';
+            $edit_contacts = '';
+            $edit_attributes = '';
+            $edit_policy = '';
             $e_local = false;
-            $image_link = "";
+            $image_link = '';
         }
         elseif (!$idp->getLocal())
         {
-            $edit_link = "<span class=\"notice\">" . lang('rr_externalentity') . "</span>";
-            $edit_basic = "";
-            $edit_federation = "";
-            $edit_technical = "";
-            $edit_protocols = "";
-            $edit_services = "";
-            $edit_certificates = "";
-            $edit_contacts = "";
-            $edit_attributes = "";
-            $edit_policy = "";
+            $edit_link = '<span class="notice">' . lang('rr_externalentity') . '</span>';
+            $edit_basic = '';
+            $edit_federation = '';
+            $edit_technical = '';
+            $edit_protocols = '';
+            $edit_services = '';
+            $edit_certificates = '';
+            $edit_contacts = '';
+            $edit_attributes = '';
+            $edit_policy = '';
             $e_local = false;
-            $image_link = "";
+            $image_link = '';
         }
         elseif ($locked)
         {
             $edit_link = '<img src="' . base_url() . 'images/icons/lock.png" title="Locked"/>';
-            $edit_basic = "";
-            $edit_federation = "";
-            $edit_technical = "";
-            $edit_protocols = "";
-            $edit_services = "";
-            $edit_certificates = "";
-            $edit_contacts = "";
-            $edit_attributes = "";
-            $edit_policy = "";
+            $edit_basic = '';
+            $edit_federation = '';
+            $edit_technical = '';
+            $edit_protocols = '';
+            $edit_services = '';
+            $edit_certificates = '';
+            $edit_contacts = '';
+            $edit_attributes = '';
+            $edit_policy = '';
             $e_local = false;
-            $image_link = "";
+            $image_link = '';
         }
         else
         {
-            $image_link = "<img src=\"" . base_url() . "images/icons/pencil-field.png\"/>";
-            $edit_link = "<span><a href=\"" . base_url() . "manage/idp_edit/show/" . $idp->getId() . "\" class=\"edit\" title=\"edit\" >" . $image_link . "</a></span>";
-            $edit_basic = "";
-            $edit_federation = "";
-            $edit_technical = "";
-            $edit_protocols = "";
-            $edit_services = "";
-            $edit_certificates = "";
-            $edit_contacts = "";
-            $edit_attributes = "<span><a href=\"" . base_url() . "manage/supported_attributes/idp/" . $idp->getId() . " \" class=\"edit\">" . $image_link . "</a></span>";
-            $edit_policy = "<span><a href=\"" . base_url() . "manage/attribute_policy/globals/" . $idp->getId() . " \" class=\"edit\">" . $image_link . "</a></span>";
+            $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
+            $edit_link = '<span><a href="' . base_url() . 'manage/idp_edit/show/' . $idp->getId() . '" class="edit" title="edit" >' . $image_link . '</a></span>';
+            $edit_basic = '';
+            $edit_federation = '';
+            $edit_technical = '';
+            $edit_protocols = '';
+            $edit_services = '';
+            $edit_certificates = '';
+            $edit_contacts = '';
+            $edit_attributes = '<span><a href="' . base_url() . 'manage/supported_attributes/idp/' . $idp->getId() . ' " class="edit">' . $image_link . '</a></span>';
+            $edit_policy = '<span><a href="' . base_url() . 'manage/attribute_policy/globals/' . $idp->getId() .'" class="edit">' . $image_link . '</a></span>';
             $e_local = true;
         }
 
         $data['edit_link'] = $edit_link;
 
-        $data['idp_details'][$i++]['header'] = "<a name=\"basic\"></a><b>" . lang('rr_basicinformation') . $activeString . " </b> " . $edit_basic . "";
-        $data['idp_details'][$i]['name'] = 'Last modification';
-        $data['idp_details'][$i++]['value'] = "<b>" . $idp->getLastModified()->format('Y-m-d H:i:s') . "</b>";
+        $data['idp_details'][$i++]['header'] = '<a name="basic"></a><b>' . lang('rr_basicinformation') . $activeString . '</b> '. $edit_basic;
+        $data['idp_details'][$i]['name'] = lang('rr_lastmodification');
+        $data['idp_details'][$i++]['value'] = '<b>' . $idp->getLastModified()->format('Y-m-d H:i:s') . '</b>';
 
-        $data['idp_details'][$i]['name'] = lang('rr_homeorganisationname');
-        $data['idp_details'][$i++]['value'] = "<b>" . $idp->getName() . "</b>";
-        $data['idp_details'][$i]['name'] = lang('rr_descriptivename');
-        $data['idp_details'][$i++]['value'] = "<b>" . $idp->getDisplayName() . "</b>";
+        $data['idp_details'][$i]['name'] = lang('rr_homeorganisationname') . ' <small>(en)</small>';
+        $data['idp_details'][$i++]['value'] = '<b>' . $idp->getName() . '</b>';
+        $data['idp_details'][$i]['name'] = lang('rr_descriptivename') . ' <small>(en)</small>';
+        $data['idp_details'][$i++]['value'] = '<b>' . $idp->getDisplayName() . '</b>';
+        $data['idp_details'][$i]['name'] = lang('rr_regauthority');
+        $regauthority = $idp->getRegistrationAuthority();
+        $regauthoritytext = null;
+        if (empty($regauthority))
+        {
+            $confRegAuth = $this->config->item('registrationAutority');
+            $confRegLoad = $this->config->item('load_registrationAutority');
+            if ($idp->getLocal() && !empty($confRegLoad) && !empty($confRegAuth))
+            {
+                $regauthoritytext = lang('rr_regauthority_alt') . ' <b>' . $confRegAuth . '</b>';
+            }
+            $data['idp_details'][$i++]['value'] = $regauthoritytext;
+        }
+        else
+        {
+            $data['idp_details'][$i++]['value'] = $regauthority;
+        }
+        $data['idp_details'][$i]['name'] = lang('rr_regdate');
+        $regdate = $idp->getRegistrationDate();
+        if (isset($regdate))
+        {
+            $data['idp_details'][$i++]['value'] = $regdate->format('Y-m-d');
+        }
+        else
+        {
+            $data['idp_details'][$i++]['value'] = null;
+        }
+
         $data['idp_details'][$i]['name'] = lang('rr_description');
-        $data['idp_details'][$i++]['value'] = "" . htmlentities($idp->getDescription()) . "";
+        $data['idp_details'][$i++]['value'] = htmlentities($idp->getDescription());
         $data['idp_details'][$i]['name'] = lang('rr_homeorganisationurl') . '<small> ' . lang('rr_notincludedmetadata') . '</small>';
         $homeUrl = $idp->getHomeUrl();
         if (!empty($homeUrl))
@@ -222,12 +250,12 @@ class Provider_detail extends MY_Controller {
         }
         else
         {
-            $data['idp_details'][$i++]['value'] = lang("rr_notset");
+            $data['idp_details'][$i++]['value'] = lang('rr_notset');
         }
 
         if (!$idp->getIsValidFromTo())
         {
-            $data['idp_details'][$i++]['2cols'] = "<div class=\"alert\">" . lang('rr_fromtomatch') . "</div>";
+            $data['idp_details'][$i++]['2cols'] = '<div class="alert">' . lang('rr_fromtomatch') . '</div>';
         }
 
         $data['idp_details'][$i]['name'] = lang('rr_validfrom');
@@ -297,14 +325,14 @@ class Provider_detail extends MY_Controller {
 
         if (!empty($feds))
         {
-            $federationsString = "<ul>";
+            $federationsString = '<ul>';
             foreach ($feds->getValues() as $f)
             {
-                $fedlink = base_url() . "federations/manage/show/" . base64url_encode($f->getName()) . "/metadata.xml";
-                $metalink = base_url() . "metadata/federation/" . base64url_encode($f->getName()) . "/metadata.xml";
-                $federationsString .= "<li>" . anchor($fedlink, $f->getName()) . " &nbsp&nbsp&nbsp; <span class=\"accordionButton\">metadata URL:</span><span class=\"accordionContent\"><br />" . $metalink . "</span> " . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . "</li>";
+                $fedlink = base_url() .'federations/manage/show/'. base64url_encode($f->getName()) .'/metadata.xml';
+                $metalink = base_url() . 'metadata/federation/'. base64url_encode($f->getName()) . '/metadata.xml';
+                $federationsString .= '<li>'. anchor($fedlink, $f->getName()) . ' &nbsp&nbsp&nbsp; <span class="accordionButton">metadata URL:</span><span class="accordionContent"><br />' . $metalink . '</span> '  . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . "</li>";
             }
-            $federationsString .="</ul>";
+            $federationsString .='</ul>';
             $manage_membership = '';
             if ($feds->count() > 0 && $has_write_access)
             {
@@ -329,32 +357,32 @@ class Provider_detail extends MY_Controller {
                 }
             }
         }
-        $data['idp_details'][$i++]['value'] = "<b>" . $federationsString . "</b>" . $manage_membership;
+        $data['idp_details'][$i++]['value'] = '<b>' . $federationsString . '</b>' . $manage_membership;
 
 
         $data['idp_details'][$i++]['header'] = '<a name="technical"></a>' . lang('rr_technicalinformation') . $edit_technical;
         $data['idp_details'][$i]['name'] = lang('rr_entityid');
         $data['idp_details'][$i++]['value'] = $idp->getEntityId();
-        $idp_metalink = base_url() . "metadata/service/" . base64url_encode($idp->getEntityId()) . "/metadata.xml";
+        $idp_metalink = base_url() . 'metadata/service/' . base64url_encode($idp->getEntityId()) . '/metadata.xml';
         $data['idp_details'][$i]['name'] = '<a name="metadata"></a>' . lang('rr_entitymetadataurl');
-        $data['idp_details'][$i++]['value'] = "<span class=\"accordionButton\"><b>" . lang('rr_metadataurl') . "</b></span><span class=\"accordionContent\"><br />" . $idp_metalink . "&nbsp;&nbsp;</span>&nbsp; " . anchor_popup($idp_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $data['idp_details'][$i++]['value'] = '<span class="accordionButton"><b>' . lang('rr_metadataurl') . '</b></span><span class="accordionContent"><br />' . $idp_metalink . '&nbsp;&nbsp;</span>&nbsp; ' . anchor_popup($idp_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
 
-        $idp_circle_metalink = base_url() . "metadata/circle/" . base64url_encode($idp->getEntityId()) . "/metadata.xml";
+        $idp_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($idp->getEntityId()) . '/metadata.xml';
         $data['idp_details'][$i]['name'] = lang('rr_circleoftrust');
-        $data['idp_details'][$i++]['value'] = "<span class=\"accordionButton\"><b>" . lang('rr_metadataurl') . "</b></span><span class=\"accordionContent\"><br />" . $idp_circle_metalink . "&nbsp;&nbsp;</span> &nbsp;" . anchor_popup($idp_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $data['idp_details'][$i++]['value'] = '<span class="accordionButton"><b>'. lang('rr_metadataurl') . '</b></span><span class="accordionContent"><br />' . $idp_circle_metalink . '&nbsp;&nbsp;</span> &nbsp;' . anchor_popup($idp_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
 
-        $idp_circle_metalink_signed = base_url() . "signedmetadata/provider/" . base64url_encode($idp->getEntityId()) . "/metadata.xml";
-        $data['idp_details'][$i]['name'] = lang('rr_circleoftrust') . " (signed)";
-        $data['idp_details'][$i++]['value'] = "<span class=\"accordionButton\"><b>" . lang('rr_metadataurl') . "</b></span><span class=\"accordionContent\"><br />" . $idp_circle_metalink_signed . "&nbsp;&nbsp;</span> &nbsp;" . anchor_popup($idp_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $idp_circle_metalink_signed = base_url() .'signedmetadata/provider/'. base64url_encode($idp->getEntityId()) . '/metadata.xml';
+        $data['idp_details'][$i]['name'] = lang('rr_circleoftrust') . ' (signed)';
+        $data['idp_details'][$i++]['value'] = '<span class="accordionButton"><b>'. lang('rr_metadataurl') . '</b></span><span class="accordionContent"><br />' . $idp_circle_metalink_signed . '&nbsp;&nbsp;</span> &nbsp;' . anchor_popup($idp_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
 
         $data['idp_details'][$i]['name'] = lang('rr_domainscope');
         $scopes = $idp->getScopeToArray();
-        $scopeString = "<ul>";
+        $scopeString = '<ul>';
         foreach ($scopes as $key => $value)
         {
-            $scopeString .= "<li>" . $value . "</li>";
+            $scopeString .= '<li>' . $value . '</li>';
         }
-        $scopeString .= "</ul>";
+        $scopeString .= '</ul>';
         $data['idp_details'][$i++]['value'] = $scopeString;
 
         $is_static = $idp->getStatic();
@@ -369,13 +397,12 @@ class Provider_detail extends MY_Controller {
             if (empty($static_metadata))
             {
                 $data['idp_details'][$i]['name'] = lang('rrstaticmetadataactive');
-                $data['idp_details'][$i++]['value'] = "<span class=\"error\">" . lang('rr_isempty') . "</span>";
+                $data['idp_details'][$i++]['value'] = '<span class="error">' . lang('rr_isempty') . '</span>';
             }
             else
             {
                 $data['idp_details'][$i++]['header'] = lang('rr_staticmetadataactive');
-                //  $data['idp_details'][$i++]['value'] = "";
-                $data['idp_details'][$i++]['2cols'] = "<span class=\"accordionButton\"></span><code>" . $this->geshilib->highlight($static_metadata, 'xml', $params) . "</code>";
+                $data['idp_details'][$i++]['2cols'] = '<span class="accordionButton"></span><code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
         }
         else
@@ -383,36 +410,33 @@ class Provider_detail extends MY_Controller {
             if (empty($static_metadata))
             {
                 $data['idp_details'][$i]['name'] = lang('rr_staticmetadatanotactive');
-                $data['idp_details'][$i++]['value'] = "<span>" . lang('rr_isempty') . "</span>";
+                $data['idp_details'][$i++]['value'] = '<span>'. lang('rr_isempty') .'</span>';
             }
             else
             {
                 $data['idp_details'][$i++]['header'] = lang('rr_setnotactive');
-
-                //$data['idp_details'][$i++]['2cols'] = "<pre>" . htmlentities($static_metadata) . "</pre>";
-
-                $data['idp_details'][$i++]['2cols'] = "<span class=\"accordionButton\"></span><code class=\"accordionContent\">" . $this->geshilib->highlight($static_metadata, 'xml', $params) . "</code>";
+                $data['idp_details'][$i++]['2cols'] = '<span class="accordionButton"></span><code class="accordionContent">' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
         }
         $data['idp_details'][$i++]['header'] = '<a name="arp"></a>' . lang('rr_arp');
 
         $encoded_entityid = base64url_encode($idp->getEntityId());
-        $arp_url = base_url() . "arp/format2/" . $encoded_entityid . "/arp.xml";
+        $arp_url = base_url() . 'arp/format2/' . $encoded_entityid . '/arp.xml';
         $data['idp_details'][$i]['name'] = lang('rr_individualarpurl');
-        $data['idp_details'][$i++]['value'] = "<span class=\"accordionButton\">ARP URL</span><span class=\"accordionContent\"><br />" . $arp_url . "&nbsp;</span>&nbsp;" . anchor_popup($arp_url, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $data['idp_details'][$i++]['value'] = '<span class="accordionButton">ARP URL</span><span class="accordionContent"><br />' . $arp_url . '&nbsp;</span>&nbsp;' . anchor_popup($arp_url, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         //
         $tmp_logs = new models\Trackers;
         $arp_logs = $tmp_logs->getArpDownloaded($idp);
 
-        $logg_tmp = "<ul>";
+        $logg_tmp = '<ul>';
         if (!empty($arp_logs))
         {
             foreach ($arp_logs as $l)
             {
-                $logg_tmp .= "<li><b>" . $l->getCreated()->format('Y-m-d H:i:s') . "</b> - " . $l->getIp() . " <small><i>(" . $l->getAgent() . ")</i></small></li>";
+                $logg_tmp .= '<li><b>'. $l->getCreated()->format('Y-m-d H:i:s') . '</b> - ' . $l->getIp() .' <small><i>(' . $l->getAgent() .')</i></small></li>';
             }
         }
-        $logg_tmp .= "</ul>";
+        $logg_tmp .= '</ul>';
         $data['idp_details'][$i]['name'] = lang('rr_recentarpdownload');
         $data['idp_details'][$i++]['value'] = $logg_tmp;
 
@@ -420,15 +444,15 @@ class Provider_detail extends MY_Controller {
 
         $data['idp_details'][$i++]['header'] = lang('rr_supportedprotocols') . $edit_protocols;
         $data['idp_details'][$i]['name'] = lang('rr_supportedprotocols');
-        $protocols = "";
+        $protocols = '';
         $no_protocols = count($idp->getProtocol()->getValues());
         foreach ($idp->getProtocol()->getValues() as $p)
         {
-            $protocols .=$p . " ";
+            $protocols .=$p . ' ';
         }
         if (($no_protocols < 1) && !$idp->getStatic())
         {
-            $data['alert_message'][] = "Supported protocols is not set";
+            $data['alert_message'][] = 'Supported protocols is not set';
         }
         $data['idp_details'][$i++]['value'] = trim($protocols);
 
@@ -437,23 +461,23 @@ class Provider_detail extends MY_Controller {
         $nameids = "<ul>";
         foreach ($idp->getNameId()->getValues() as $r)
         {
-            $nameids .= "<li>" . $r . "</li>";
+            $nameids .= '<li>' . $r . '</li>';
         }
-        $nameids .="</ul>";
+        $nameids .='</ul>';
         $data['idp_details'][$i++]['value'] = trim($nameids);
 
         $serviceLocations = $idp->getServiceLocations()->getValues();
         $no_of_serviceLocations = count($serviceLocations);
         if ($no_of_serviceLocations < 1 && !$idp->getStatic())
         {
-            $data['alert_message'][] = "ServiceLocations: SingleSignOnService is not set";
+            $data['alert_message'][] = 'ServiceLocations: SingleSignOnService is not set';
         }
 
 
         $data['idp_details'][$i++]['header'] = lang('rr_servicelocations') . $edit_services;
 
 
-        $ssovalues = "";
+        $ssovalues = '';
 
         foreach ($serviceLocations as $s)
         {
@@ -474,7 +498,7 @@ class Provider_detail extends MY_Controller {
          */
         $certs = $idp->getCertificates()->getValues();
 
-        $cString = "";
+        $cString = '';
         $data['idp_details'][$i++]['header'] = lang('rr_certificates') . $edit_certificates;
         foreach ($certs as $c)
         {
@@ -482,7 +506,7 @@ class Provider_detail extends MY_Controller {
             $c_certData = $c->getCertData();
             if (!empty($c_certKeyname))
             {
-                $cString .="<b>Keyname:</b> <span>" . $c_certKeyname . "</span><br />";
+                $cString .='<b>Keyname:</b> <span>' . $c_certKeyname . '</span><br />';
             }
 
             $data['idp_details'][$i]['name'] = '';
@@ -495,14 +519,14 @@ class Provider_detail extends MY_Controller {
                     $c_certValid = validateX509($c_certData);
                     if (!$c_certValid)
                     {
-                        $cString .="<span class=\"error\">" . lang('rr_certificatenotvalid') . "</span>";
+                        $cString .='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
                     }
                 }
                 if (!empty($c_fingerprint))
                 {
-                    $cString .="<b>Fingerprint:</b> <span>" . $c_fingerprint . "</span><br />";
+                    $cString .='<b>Fingerprint:</b> <span>' . $c_fingerprint . '</span><br />';
                 }
-                $cString .= "<span class=\"accordionButton\"><b>Certificate body</b><br /></span><code class=\"accordionContent\">" . trim($c_certData) . "</code>";
+                $cString .= '<span class="accordionButton"><b>Certificate body</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                 $val = $c->getTimeValid('days');
                 if ($val > 30)
                 {
@@ -573,11 +597,11 @@ class Provider_detail extends MY_Controller {
         }
         else
         {
-            $data['idp_details'][$i++]['value'] = lang('rr_displayaccess') .  '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
+            $data['idp_details'][$i++]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
 
         $data['idpname'] = $idp->getName();
-        $this->title = lang("rr_informationdetail") . $data['idpname'];
+        $this->title = lang('rr_informationdetail') . $data['idpname'];
         $data['content_view'] = 'providers/idp_detail_view';
         /** display logo */
         $extends = $idp->getExtendMetadata();
@@ -603,7 +627,7 @@ class Provider_detail extends MY_Controller {
             'enable_classes' => false,
         );
         $this->session->set_userdata(array('currentMenu' => 'sp'));
-        $this->title = lang("rr_serviceproviderdetails");
+        $this->title = lang('rr_serviceproviderdetails');
         if (empty($id))
         {
             /**
@@ -628,7 +652,7 @@ class Provider_detail extends MY_Controller {
         if (empty($sp))
         {
             log_message('error', $this->mid . 'Service Provider with id:' . $id . ' not found');
-            show_error($this->mid . lang("rerror_spnotfound"), 404);
+            show_error('Service Provider not found', 404);
         }
 
         $resource = $sp->getId();
@@ -651,11 +675,11 @@ class Provider_detail extends MY_Controller {
         $lockicon = '<img src="' . base_url() . 'images/icons/lock.png" title="Locked">';
         if (empty($is_active))
         {
-            $activeString = "<span class=\"notice\"><small>" . lang('rr_spdisabled') . "</small></span>";
+            $activeString = '<span class="notice"><small>' . lang('rr_spdisabled') . '</small></span>';
         }
         else
         {
-            $activeString = lang("rr_idpactive");
+            $activeString = lang('rr_idpactive');
         }
         if (!$has_write_access)
         {
@@ -663,7 +687,7 @@ class Provider_detail extends MY_Controller {
         }
         elseif (!$sp->getLocal())
         {
-            $edit_link = "<span class=\"notice\">" . lang('rr_externalentity') . "</span>";
+            $edit_link = '<span class="notice">' . lang('rr_externalentity') . '</span>';
         }
         elseif ($locked)
         {
@@ -671,20 +695,51 @@ class Provider_detail extends MY_Controller {
         }
         else
         {
-            $image_link = "<img src=\"" . base_url('images/icons/pencil-field.png') . "\"/>";
-            $edit_link = "<span><a href=\"" . base_url("manage/sp_edit/show/" . $sp->getId()) . "\" class=\"edit\" title=\"edit\" >" . $image_link . "</a></span>";
+            $image_link = '<img src="' . base_url('images/icons/pencil-field.png') . '"/>';
+            $edit_link = '<span><a href="' . base_url('manage/sp_edit/show/' . $sp->getId()) . '" class="edit" title="edit" >' . $image_link . '</a></span>';
         }
         $data['edit_link'] = $edit_link;
         $i = 1;
-        $data['sp_details'][$i++]['header'] = "<span id=\"basic\"></span>" . lang('rr_basicinformation') . " <b> " . $activeString . "</b>";
+        $data['sp_details'][$i++]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation') . ' <b> ' . $activeString . '</b>';
         $data['sp_details'][$i]['name'] = lang('rr_lastmodification');
-        $data['sp_details'][$i++]['value'] = "<b>" . $sp->getLastModified()->format('Y-m-d H:i:s') . "</b>";
+        $data['sp_details'][$i++]['value'] = '<b>' . $sp->getLastModified()->format('Y-m-d H:i:s') . '</b>';
         $data['sp_details'][$i]['name'] = lang('rr_resource');
-        $data['sp_details'][$i++]['value'] = "<b>" . $sp->getName() . "</b>";
+        $data['sp_details'][$i++]['value'] = '<b>' . $sp->getName() . '</b>';
         $data['sp_details'][$i]['name'] = lang('rr_descriptivename');
-        $data['sp_details'][$i++]['value'] = "<b>" . htmlentities($sp->getDisplayName()) . "</b>";
+        $data['sp_details'][$i++]['value'] = '<b>' . htmlentities($sp->getDisplayName()) . '</b>';
+
+        $data['sp_details'][$i]['name'] = lang('rr_regauthority');
+        $regauthority = $sp->getRegistrationAuthority();
+        $regauthoritytext = null;
+        if (empty($regauthority))
+        {
+            $confRegAuth = $this->config->item('registrationAutority');
+            $confRegLoad = $this->config->item('load_registrationAutority');
+            if ($sp->getLocal() && !empty($confRegLoad) && !empty($confRegAuth))
+            {
+                $regauthoritytext = lang('rr_regauthority_alt') . ' <b>' . $confRegAuth . '</b>';
+            }
+            $data['sp_details'][$i++]['value'] = $regauthoritytext;
+        }
+        else
+        {
+            $data['sp_details'][$i++]['value'] = $regauthority;
+        }
+        $data['sp_details'][$i]['name'] = lang('rr_regdate');
+        $regdate = $sp->getRegistrationDate();
+        if (isset($regdate))
+        {
+            $data['sp_details'][$i++]['value'] = $regdate->format('Y-m-d');
+        }
+        else
+        {
+            $data['sp_details'][$i++]['value'] = null;
+        }
+
+
+
         $data['sp_details'][$i]['name'] = lang('rr_description');
-        $data['sp_details'][$i++]['value'] = "" . htmlentities($sp->getDescription()) . "";
+        $data['sp_details'][$i++]['value'] = htmlentities($sp->getDescription()) ;
         $data['sp_details'][$i]['name'] = lang('rr_homeorganisationurl') . '<small>(not included in metadata)</small>';
         $homeUrl = $sp->getHomeUrl();
         if (!empty($homeUrl))
@@ -704,7 +759,7 @@ class Provider_detail extends MY_Controller {
         }
         else
         {
-            $data['sp_details'][$i++]['value'] = "<span class=\"alert\">" . lang('rr_notset') . "</span>";
+            $data['sp_details'][$i++]['value'] = '<span class="alert">' . lang('rr_notset') . '</span>';
         }
         $data['sp_details'][$i]['name'] = lang('rr_privacystatement');
         $privurl = $sp->getPrivacyUrl();
@@ -714,11 +769,11 @@ class Provider_detail extends MY_Controller {
         }
         else
         {
-            $data['sp_details'][$i++]['value'] = lang("rr_notset");
+            $data['sp_details'][$i++]['value'] = lang('rr_notset');
         }
         if (!$sp->getIsValidFromTo())
         {
-            $data['sp_details'][$i++]['2cols'] = "<div class=\"alert\">Valid From/To doesn't match current date. Your entity won't appear in metadata</div>";
+            $data['sp_details'][$i++]['2cols'] = '<div class="alert">Valid From/To doesn\'t match current date. Your entity won\'t appear in metadata</div>';
         }
 
         $data['sp_details'][$i]['name'] = lang('rr_validfrom');
@@ -780,14 +835,14 @@ class Provider_detail extends MY_Controller {
         $feds = $sp->getFederations();
         if (!empty($feds))
         {
-            $federationsString = "<ul>";
+            $federationsString = '<ul>';
             foreach ($feds->getValues() as $f)
             {
-                $fedlink = base_url("federations/manage/show/" . base64url_encode($f->getName()));
-                $metalink = base_url("metadata/federation/" . base64url_encode($f->getName()) . "/metadata.xml");
-                $federationsString .= "<li>" . anchor($fedlink, $f->getName()) . " <span class=\"accordionButton\">metadata URL:</span><span class=\"accordionContent\"><br />" . $metalink . "&nbsp;</span> &nbsp;&nbsp;" . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . "</li>";
+                $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getName()));
+                $metalink = base_url('metadata/federation/' . base64url_encode($f->getName()) . '/metadata.xml');
+                $federationsString .= '<li>' . anchor($fedlink, $f->getName()) . ' <span class="accordionButton">metadata URL:</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
             }
-            $federationsString .="</ul>";
+            $federationsString .='</ul>';
             $manage_membership = '';
             if ($feds->count() > 0 && $has_write_access)
             {
@@ -812,21 +867,21 @@ class Provider_detail extends MY_Controller {
                 }
             }
         }
-        $data['sp_details'][$i++]['value'] = "<b>" . $federationsString . "</b>" . $manage_membership;
+        $data['sp_details'][$i++]['value'] = '<b>' . $federationsString . '</b>' . $manage_membership;
 
         $data['sp_details'][$i++]['header'] = '<span id="technical"></span>' . lang('rr_technicalinformation');
         $data['sp_details'][$i]['name'] = lang('rr_entityid');
         $data['sp_details'][$i++]['value'] = $sp->getEntityId();
         $sp_metalink = base_url("metadata/service/" . base64url_encode($sp->getEntityId()) . "/metadata.xml");
         $data['sp_details'][$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-        $data['sp_details'][$i++]['value'] = "<span class=\"accordionButton\">" . lang('rr_metadataurl') . "</span><span class=\"accordionContent\"><br />" . $sp_metalink . "&nbsp;</span>&nbsp; " . anchor_popup($sp_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $data['sp_details'][$i++]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $sp_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($sp_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
 
-        $sp_circle_metalink = base_url() . "metadata/circle/" . base64url_encode($sp->getEntityId()) . "/metadata.xml";
+        $sp_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($sp->getEntityId()) . '/metadata.xml';
         $data['sp_details'][$i]['name'] = lang('rr_circleoftrust');
-        $data['sp_details'][$i++]['value'] = "<span class=\"accordionButton\">" . lang('rr_metadataurl') . "</span><span class=\"accordionContent\"><br />" . $sp_circle_metalink . "&nbsp;</span>&nbsp; " . anchor_popup($sp_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-        $sp_circle_metalink_signed = base_url() . "signedmetadata/provider/" . base64url_encode($sp->getEntityId()) . "/metadata.xml";
-        $data['sp_details'][$i]['name'] = lang('rr_circleoftrust') . "(signed)";
-        $data['sp_details'][$i++]['value'] = "<span class=\"accordionButton\">" . lang('rr_metadataurl') . "</span><span class=\"accordionContent\"><br />" . $sp_circle_metalink_signed . "&nbsp;</span>&nbsp; " . anchor_popup($sp_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $data['sp_details'][$i++]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $sp_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($sp_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $sp_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($sp->getEntityId()) . '/metadata.xml';
+        $data['sp_details'][$i]['name'] = lang('rr_circleoftrust') . '(signed)';
+        $data['sp_details'][$i++]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $sp_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($sp_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
 
 
 
@@ -847,45 +902,45 @@ class Provider_detail extends MY_Controller {
             if (empty($static_metadata))
             {
                 $data['sp_details'][$i]['name'] = lang('rr_staticmetadataactive');
-                $data['sp_details'][$i++]['value'] = "<span class=\"alert\">" . lang('rr_isempty') . "</span>";
+                $data['sp_details'][$i++]['value'] = '<span class="alert">' . lang('rr_isempty') . '</span>';
             }
             else
             {
                 $data['sp_details'][$i++]['header'] = lang('rr_staticmetadataactive');
 
-                $data['sp_details'][$i++]['2cols'] = "<span class=\"accordionButton\"></span><code class=\"accordionContent\">" . $this->geshilib->highlight($static_metadata, 'xml', $params) . "</code>";
+                $data['sp_details'][$i++]['2cols'] = '<span class="accordionButton"></span><code class="accordionContent">' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
         }
         $data['sp_details'][$i++]['header'] = lang('rr_supportedprotocols');
         $data['sp_details'][$i]['name'] = lang('rr_supportedprotocols');
-        $protocols = "";
+        $protocols = '';
         foreach ($sp->getProtocol()->getValues() as $p)
         {
-            $protocols .=$p . " ";
+            $protocols .=$p . ' ';
         }
         $data['sp_details'][$i++]['value'] = trim($protocols);
         $data['sp_details'][$i]['name'] = lang('rr_supportednameids');
-        $nameids = "<ul>";
+        $nameids = '<ul>';
         foreach ($sp->getNameId()->getValues() as $r)
         {
-            $nameids .= "<li>" . $r . "</li>";
+            $nameids .= '<li>' . $r . '</li>';
         }
-        $nameids .="</ul>";
+        $nameids .='</ul>';
         $data['sp_details'][$i++]['value'] = trim($nameids);
 
         $serviceLocations = $sp->getServiceLocations()->getValues();
 
         $data['sp_details'][$i++]['header'] = lang('rr_servicelocations');
 
-        $acs = "";
+        $acs = '';
         foreach ($serviceLocations as $s)
         {
             if ($s->getType() == 'AssertionConsumerService')
             {
-                $def = "";
+                $def = '';
                 if ($s->getDefault())
                 {
-                    $def = "<i>(default)</i>";
+                    $def = '<i>(default)</i>';
                 }
                 $acs .= '<b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small><br />';
             }
@@ -906,10 +961,10 @@ class Provider_detail extends MY_Controller {
             $c_certUse = $c->getCertUse();
             $c_certKeyname = $c->getKeyname();
             $c_certData = $c->getCertData();
-            $cString .= "<b>Usage: </b>" . $c_certUse . ": <br />";
+            $cString .= '<b>Usage: </b>' . $c_certUse . ': <br />';
             if (!empty($c_certKeyname))
             {
-                $cString .= "<b>KeyName:</b> " . $c_certKeyname . "<br />";
+                $cString .= '<b>KeyName:</b> ' . $c_certKeyname . '<br />';
             }
             if (!empty($c_certData))
             {
@@ -920,15 +975,15 @@ class Provider_detail extends MY_Controller {
                     $c_certValid = validateX509($c_certData);
                     if (!$c_certValid)
                     {
-                        $cString .="<span class=\"error\">" . lang('rr_certificatenotvalid') . "</span>";
+                        $cString .='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
                     }
                 }
                 if (!empty($c_fingerprint))
                 {
-                    $cString .="<b>Fingerprint:</b> <span>" . $c_fingerprint . "</span><br />";
+                    $cString .='<b>Fingerprint:</b> <span>' . $c_fingerprint . '</span><br />';
                 }
 
-                $cString .= "<span class=\"accordionButton\"></span><code class=\"accordionContent\">" . trim($c_certData) . "</code>";
+                $cString .= '<span class="accordionButton"></span><code class="accordionContent">' . trim($c_certData) . '</code>';
             }
             $val = $c->getTimeValid('days');
             if ($val > 30)
@@ -946,7 +1001,7 @@ class Provider_detail extends MY_Controller {
             }
             $data['sp_details'][$i++]['value'] = $cString;
         }
-        $data['sp_details'][$i++]['header'] = lang("rr_contacts");
+        $data['sp_details'][$i++]['header'] = lang('rr_contacts');
 
 
         $contacts = $sp->getContacts()->getValues();
@@ -961,14 +1016,14 @@ class Provider_detail extends MY_Controller {
          */
         if ($has_write_access)
         {
-            $image_link = "<img src=\"" . base_url('images/icons/pencil-field.png') . "\"/>";
-            $edit_req_attrs_link = "<span><a href=\"" . base_url("manage/attribute_requirement/sp/" . $sp->getId()) . "\" class=\"edit\" title=\"edit\" >" . $image_link . "</a></span>";
+            $image_link = '<img src="' . base_url('images/icons/pencil-field.png') . '"/>';
+            $edit_req_attrs_link = '<span><a href="' . base_url('manage/attribute_requirement/sp/' . $sp->getId()) . '" class="edit" title="edit" >' . $image_link . '</a></span>';
         }
         else
         {
             $edit_req_attrs_link = '';
         }
-        $data['sp_details'][$i++]['header'] = "<span id=\"reqattrs\"></span>" . lang("rr_requiredattributes") . $edit_req_attrs_link;
+        $data['sp_details'][$i++]['header'] = '<span id="reqattrs"></span>' . lang('rr_requiredattributes') . $edit_req_attrs_link;
         $requiredAttributes = $sp->getAttributesRequirement();
 
         if ($requiredAttributes->count() == 0)
@@ -981,7 +1036,7 @@ class Provider_detail extends MY_Controller {
             foreach ($requiredAttributes->getValues() as $key)
             {
                 $data['sp_details'][$i]['name'] = $key->getAttribute()->getName();
-                $data['sp_details'][$i++]['value'] = "<b>" . $key->getStatus() . "</b>: <i>(" . $key->getReason() . ")</i>";
+                $data['sp_details'][$i++]['value'] = '<b>' . $key->getStatus() . '</b>: <i>(' . $key->getReason() . ')</i>';
             }
         }
 
