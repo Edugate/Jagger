@@ -270,6 +270,26 @@ $lang['rr_certificateexpired'] = 'Certificate is expired. Some service providers
   */
 $lang['rr_federationjoin']='Manage membership (joining)';
 $lang['rr_federationleave']= 'Manage membership (leaving)';
+$lang['rr_federation_regform_title'] = 'Federation registration form';
+$lang['rr_federation_list'] = 'Federation List';
+$lang['rr_fed_desc'] = 'Description';
+$lang['rr_federation_detail'] = 'Federation detail';
+$lang['rr_fed_inactive'] = 'inactive';
+$lang['rr_fed_inactive_full'] = 'Federation is inactive';
+
+$lang['rr_fed_external'] = 'external';
+$lang['rr_fed_local'] = 'local';
+$lang['rr_fed_notpublic'] = 'not public';
+$lang['rr_fed_public'] = 'public';
+
+$lang['rr_fed_name'] = 'Federation name';
+$lang['rr_fed_urn'] = 'Federation URN';
+
+$lang['rr_fed_cntidps_list'] = 'Contact list of idp members';
+$lang['rr_fed_cntisps_list'] = 'Contact list of sp members';
+$lang['rr_fed_cnt_list'] = 'Contact list of all federation members';
+
+
 
 
 /**
@@ -314,6 +334,8 @@ $lang['rhelp_cert'] = 'Paste your certificate here.';
   * ERRORS
   */
 
+$lang['rrerror_noperm_regfed'] = 'You don\'t have permision to register new Federation';
+$lang['rrerror_noperm_viewfed'] = 'You have no access to display details for this federation';
 
 $lang['rerror_idpnotfound'] = 'Identity Provider not found'; 
 $lang['rerror_lostinfo'] = 'Lost information about what idp to update';

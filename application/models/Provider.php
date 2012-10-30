@@ -877,6 +877,9 @@ class Provider {
         $this->setDisplayName($provider->getDisplayName());
         $this->overwriteScope($provider);
         $this->setEntityId($provider->getEntityId());
+        $this->setRegistrationAuthority($provider->getRegistrationAuthority());
+        $this->setRegistrationDate($provider->getRegistrationDate());
+        
         $this->overwriteWithNameid($provider);
 
         $this->resetProtocol();
@@ -2248,6 +2251,15 @@ class Provider {
         {
             $p = explode("T", $a['validuntil']);
             $this->setValidTo(\DateTime::createFromFormat('Y-m-d', $p[0]));
+        }
+        if(!empty($a['registrar']))
+        {
+            $this->setRegistrationAuthority($a['registrar']);
+            if(!empty($a['regdate']))
+            {
+                $p=explode("T", $a['regdate']);
+                $this->setRegistrationDate(\DateTime::createFromFormat('Y-m-d', $p[0]));
+            }
         }
         if (!empty($a['metadata']))
         {

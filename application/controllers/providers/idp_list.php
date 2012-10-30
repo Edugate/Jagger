@@ -63,24 +63,39 @@ class Idp_list extends MY_Controller {
         foreach ($idps as $i)
         {
             $i_link = base_url() . "providers/provider_detail/idp/" . $i->getId();
+            $displayname = $i->getDisplayName();
+            if(empty($displayname))
+            {
+                $displayname = $i->getEntityId();
+            }
+            
             if ($i->getAvailable())
             {
-                $col1 = anchor($i_link, $i->getDisplayName()) . "<br />(" . $i->getEntityId() . ")";
+                $col1 = anchor($i_link, $displayname) . "<br />(" . $i->getEntityId() . ")";
             }
             else
             {
-                $col1 = "<div class=\"alert\" title=\"disabled or expired\">" . anchor($i_link, $i->getDisplayName()) . "</div>(" . $i->getEntityId() . ")";
+                $col1 = '<div class="alert" title="disabled or expired">'.anchor($i_link, $displayname).'</div>('. $i->getEntityId().')';
             }
-            $help_url = $i->getHelpdeskUrl();
-            if (!empty($help_url))
+            $regdate = $i->getRegistrationDate();
+            if(isset($regdate))
             {
-                $col2 = auto_link($help_url, 'url');
+                $col2 = $regdate->format('Y-m-d');
             }
             else
             {
                 $col2 = '';
             }
-            $idprows[] = array('data' => array('data' => $col1, 'class' => 'homeorg'), $col2);
+            $help_url = $i->getHelpdeskUrl();
+            if (!empty($help_url))
+            {
+                $col3 = auto_link($help_url, 'url');
+            }
+            else
+            {
+                $col3 = '';
+            }
+            $idprows[] = array('data' => array('data' => $col1, 'class' => 'homeorg'), $col2,$col3);
         }
         $data['idprows'] = $idprows;
         $data['content_view'] = 'providers/idp_list_view';

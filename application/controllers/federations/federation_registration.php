@@ -35,7 +35,7 @@ class Federation_registration extends MY_Controller
             redirect('auth/login', 'refresh');
         }
         $this->session->set_userdata(array('currentMenu'=>'register'));
-        $this->title = "Federation registration form";
+        $this->title = lang('rr_federation_regform_title');
         $this->load->library('approval');
         $this->load->library('zacl');
     }
@@ -51,7 +51,7 @@ class Federation_registration extends MY_Controller
         else
         {
                 $data['content_view'] = 'nopermission';
-                $data['error'] = 'You dont have permission to register new Federation';
+                $data['error'] = lang('rrerror_noperm_regfed');
         }
         $this->load->view('page', $data);
     }
@@ -67,13 +67,13 @@ class Federation_registration extends MY_Controller
         if(!$access)
         {
                 $data['content_view'] = 'nopermission';
-                $data['error'] = 'You dont have permission to register new Federation';
+                $data['error'] = lang('rrerror_noperm_regfed');
                 $this->load->view('page', $data);
             
         }
-
+        $fedname = $this->input->post('fedname');
         $federation = new models\Federation;
-        $federation->setName($this->input->post('fedname'));
+        $federation->setName($fedname);
         $federation->setUrn($this->input->post('fedurn'));
         $ispub = $this->input->post('ispublic');
         if (!empty($ispub) && $ispub == 'public')
@@ -105,6 +105,7 @@ class Federation_registration extends MY_Controller
             $sbj = "Federation registration request";
             $body = "Dear Administrator\r\n";
             $body .= "".$q->getEmail()." just filled Federation Registration form\r\n";
+            $body .= "Federation name: ".$fedname. "\r\n";
             $body .="You can approve or reject it on ".base_url()."reports/awaiting/detail/".$q->getToken()."\r\n";
             $this->load->library('email_sender');
             $this->email_sender->send($recipients,$sbj,$body);

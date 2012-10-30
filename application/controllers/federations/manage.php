@@ -55,11 +55,11 @@ class Manage extends MY_Controller {
         {
             if ($f->getPublic())
             {
-                $public = "public";
+                $public = lang('rr_fed_public');
             }
             else
             {
-                $public = "<span class=\"orange\">not public</span>";
+                $public = '<span class="orange">'.lang('rr_fed_notpublic').'</span>';
             }
             if ($f->getActive())
             {
@@ -67,16 +67,16 @@ class Manage extends MY_Controller {
             }
             else
             {
-                $active = "<span class=\"alert\">inactive</span>";
+                $active = '<span class="alert">'.lang('rr_fed_inactive').'</span>';
             }
 
             if ($f->getLocal())
             {
-                $local = "local";
+                $local = lang('rr_fed_local');
             }
             else
             {
-                $local = "<span class=\"orange\">external<span>";
+                $local = '<span class="orange">'.lang('rr_fed_external').'<span>';
             }
 
 
@@ -90,7 +90,7 @@ class Manage extends MY_Controller {
                 $f->getDescription(),
             );
         }
-        $this->title = 'Federations list';
+        $this->title = lang('rr_federation_list');
         $data['fedlist'] = $frow;
         $data['content_view'] = 'federation/list_view.php';
         $this->load->view('page', $data);
@@ -197,12 +197,12 @@ class Manage extends MY_Controller {
         $has_addbulk_access = $this->zacl->check_acl('f_' . $resource, 'addbulk', $group, '');
         $has_manage_access = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
         $can_edit = (boolean)($has_manage_access OR $has_write_access);
-        $this->title = 'Federation detail';
+        $this->title = lang('rr_federation_detail');
 
         if (!$has_read_access && ($federation->getPublic() === FALSE))
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = "You have no access to display details for this federation";
+            $data['error'] = lang('rrerror_noperm_viewfed');
             $this->load->view('page', $data);
             return;
         }
@@ -228,19 +228,19 @@ class Manage extends MY_Controller {
             $image_link = "<img src=\"" . base_url() . "images/icons/pencil-field.png\"/>";
             $edit_link = "<span><a href=\"" . base_url() . "manage/fededit/show/" . $federation->getId() . "\" class=\"edit\" title=\"edit\" >" . $image_link . "</a></span>";
         }
-        $data['tbl'][] = array('data' => array('data' => 'Basic Information '.$edit_link, 'class' => 'highlight', 'colspan' => 2));
+        $data['tbl'][] = array('data' => array('data' => lang('rr_basicinformation').' '.$edit_link, 'class' => 'highlight', 'colspan' => 2));
         if (empty($data['federation_is_active']))
         {
-            $data['tbl'][] = array('<span class="alert">warning!</span>', '<b>Federation is inactive</b>');
+            $data['tbl'][] = array('<span class="alert">warning!</span>', '<b>'.lang('rr_fed_inactive_full').'</b>');
         }
-        $data['tbl'][] = array('Federation name', $federation->getName());
-        $data['tbl'][] = array('Federation URN', $federation->getUrn());
-        $data['tbl'][] = array('Description', htmlentities($federation->getDescription()));
+        $data['tbl'][] = array(lang('rr_fed_name'), $federation->getName());
+        $data['tbl'][] = array(lang('rr_fed_urn'), $federation->getUrn());
+        $data['tbl'][] = array(lang('rr_fed_desc'), htmlentities($federation->getDescription()));
         $data['tbl'][] = array('Terms Of Use', htmlentities($federation->getTou()));
         $data['tbl'][] = array('Federation owner/creator', htmlentities($federation->getOwner()));
-        $idp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/idp', 'Contact list of idp members');
-        $sp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/sp', 'Contact list of sp members');
-        $all_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'', 'Contact list of all federation members');
+        $idp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/idp', lang('rr_fed_cntidps_list'));
+        $sp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/sp', lang('rr_fed_cntisps_list'));
+        $all_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'', lang('rr_fed_cnt_list'));
         $data['tbl'][] = array('Download contacts list in txt format', $idp_contactlist.'<br />'.$sp_contactlist.'<br />'.$all_contactlist);
         
 
