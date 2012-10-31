@@ -239,7 +239,6 @@ class Provider {
 
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
-        log_message('debug', 'AAAAAAAAAAAAAAAAAAAAa');
     }
 
     public function diffProviderToArray($provider)
@@ -278,25 +277,22 @@ class Provider {
         if ($provider->getRegistrationDate() != $this->getRegistrationDate())
         {
             $rgbefore = $provider->getRegistrationDate();
-            if(!empty($rgbefore))
+            if (!empty($rgbefore))
             {
                 $differ['Registration Date']['before'] = $rgbefore->format('Y-m-d');
-            }
-            else
+            } else
             {
-                 $differ['Registration Date']['before'] = null;
+                $differ['Registration Date']['before'] = null;
             }
             $rgafter = $this->getRegistrationDate();
-            if(!empty($rgafter))
+            if (!empty($rgafter))
             {
                 $rgafter = $this->getRegistrationDate();
                 $differ['Registration Date']['after'] = $rgafter->format('Y-m-d');
-            }
-            else
+            } else
             {
                 $differ['Registration Date']['after'] = null;
             }
-       
         }
 
         if ($provider->getEntityId() != $this->getEntityId())
@@ -330,16 +326,14 @@ class Provider {
         if (!empty($tmp_provider_validto))
         {
             $validto_before = $provider->getValidTo()->format('Y-m-d');
-        }
-        else
+        } else
         {
             $validto_before = '';
         }
         if (!empty($tmp_this_validto))
         {
             $validto_after = $this->getValidTo()->format('Y-m-d');
-        }
-        else
+        } else
         {
             $validto_after = '';
         }
@@ -354,16 +348,14 @@ class Provider {
         if (!empty($tmp_provider_validfrom))
         {
             $validfrom_before = $provider->getValidFrom()->format('Y-m-d');
-        }
-        else
+        } else
         {
             $validfrom_before = '';
         }
         if (!empty($tmp_this_validfrom))
         {
             $validfrom_after = $this->getValidFrom()->format('Y-m-d');
-        }
-        else
+        } else
         {
             $validfrom_after = '';
         }
@@ -427,12 +419,10 @@ class Provider {
             if ($stype == 'BOTH')
             {
                 $types = array('idp', 'sp');
-            }
-            elseif ($stype == 'IDP')
+            } elseif ($stype == 'IDP')
             {
                 $types = array('idp');
-            }
-            else
+            } else
             {
                 $types = array('sp');
             }
@@ -508,8 +498,7 @@ class Provider {
         {
             $this->entityid = $entity;
             return $this;
-        }
-        else
+        } else
         {
             return false;
         }
@@ -647,8 +636,7 @@ class Provider {
         if (empty($date))
         {
             $this->validto = NULL;
-        }
-        else
+        } else
         {
             // $date->setTime(23, 59, 59);
             $this->validto = $date;
@@ -661,8 +649,7 @@ class Provider {
         if (empty($date))
         {
             $this->validfrom = NULL;
-        }
-        else
+        } else
         {
             //$date->setTime(00, 01, 00);
             $this->validfrom = $date;
@@ -693,8 +680,7 @@ class Provider {
         if ($is_local)
         {
             $this->is_local = true;
-        }
-        else
+        } else
         {
             $this->is_local = false;
         }
@@ -716,8 +702,7 @@ class Provider {
         if (!empty($val))
         {
             $this->is_active = 1;
-        }
-        else
+        } else
         {
             $this->is_active = 0;
         }
@@ -749,8 +734,7 @@ class Provider {
         if (!empty($val))
         {
             $this->is_approved = 1;
-        }
-        else
+        } else
         {
             $this->is_approved = 0;
         }
@@ -781,6 +765,12 @@ class Provider {
         return $this->serviceLocations;
     }
 
+    public function setExtendMetadata(ExtendMetadata $ext)
+    {
+        $this->getExtendMetadata()->add($ext);
+        return $this->extend;
+    }
+
     public function removeServiceLocation(ServiceLocation $service)
     {
         $this->getServiceLocations()->removeElement($service);
@@ -793,8 +783,7 @@ class Provider {
         if ($static === true)
         {
             $this->is_static = true;
-        }
-        else
+        } else
         {
             $this->is_static = false;
         }
@@ -815,8 +804,7 @@ class Provider {
         if (!empty($m))
         {
             $m->setMetadata($metadata->getMetadata());
-        }
-        else
+        } else
         {
             $this->setStaticMetadata($metadata);
         }
@@ -873,13 +861,18 @@ class Provider {
      */
     public function overwriteByProvider(Provider $provider)
     {
+        $this->ci = & get_instance();
+        $this->em = $this->ci->doctrine->em;
+
+
+
         $this->setName($provider->getName());
         $this->setDisplayName($provider->getDisplayName());
         $this->overwriteScope($provider);
         $this->setEntityId($provider->getEntityId());
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
         $this->setRegistrationDate($provider->getRegistrationDate());
-        
+
         $this->overwriteWithNameid($provider);
 
         $this->resetProtocol();
@@ -931,10 +924,40 @@ class Provider {
         {
             $this->setCertificate($r);
         }
+        foreach ($this->getExtendMetadata()->getValues() as $f)
+        {
+            if(!empty($f))
+            {
+               $this->removeExtendWithChildren($f);
+            }
+        }
+        foreach($provider->getExtendMetadata()->getValues() as $gg)
+        {
+            $this->setExtendMetadata($gg);
+        }
 
         //}
         //$this=$provider;
         return $this;
+    }
+
+    private function removeExtendWithChildren($e)
+    {  
+        $this->ci = & get_instance();
+        $this->em = $this->ci->doctrine->em;
+        
+        $children = $e->getChildren();
+        if (!empty($children) && $children->count() > 0)
+        {
+            
+            foreach ($children->getValues() as $c)
+            {
+               
+                $this->removeExtendWithChildren($c);
+            }
+            
+        }
+        $this->em->remove($e);
     }
 
     public function getId()
@@ -987,8 +1010,7 @@ class Provider {
         if (!empty($tmp))
         {
             return $this->protocol;
-        }
-        else
+        } else
         {
             return $col;
         }
@@ -1056,8 +1078,7 @@ class Provider {
         if (empty($length) or !is_integer($length) or strlen($this->displayname) <= $length)
         {
             return $this->displayname;
-        }
-        else
+        } else
         {
             return substr($this->displayname, 0, $length) . "...";
         }
@@ -1156,8 +1177,7 @@ class Provider {
         if ($c && !empty($d))
         {
             return true;
-        }
-        else
+        } else
         {
             return false;
         }
@@ -1218,8 +1238,7 @@ class Provider {
                     $finalArp->add($a);
                 }
             }
-        }
-        else
+        } else
         {
             return false;
         }
@@ -1231,8 +1250,7 @@ class Provider {
         if (empty($this->updatedAt))
         {
             return $this->createdAt;
-        }
-        else
+        } else
         {
             return $this->updatedAt;
         }
@@ -1332,8 +1350,7 @@ class Provider {
         if (!empty($r['displayname']))
         {
             $this->setDisplayname($r['displayname']);
-        }
-        else
+        } else
         {
             $this->setDisplayname($r['name']);
         }
@@ -1454,8 +1471,7 @@ class Provider {
         if (!empty($protocol))
         {
             $protocols = implode(" ", $protocol);
-        }
-        else
+        } else
         {
             $protocols = 'urn:oasis:names:tc:SAML:2.0:protocol';
         }
@@ -1528,8 +1544,7 @@ class Provider {
                     if ($element_name == 'UIInfo')
                     {
                         $root_extends = &$UIInfo_Node;
-                    }
-                    else
+                    } else
                     {
                         $root_extends = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $ex->getElement() . '');
                     }
@@ -1547,8 +1562,7 @@ class Provider {
                             if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $child->getElementValue(), $matches)))
                             {
                                 $ElementValue = $this->logo_url . $child->getElementValue();
-                            }
-                            else
+                            } else
                             {
                                 $ElementValue = $child->getElementValue();
                             }
@@ -1580,8 +1594,7 @@ class Provider {
         if (!empty($certs))
         {
             $ncerts = $certs->count();
-        }
-        else
+        } else
         {
             $ncerts = 0;
         }
@@ -1606,8 +1619,7 @@ class Provider {
                     {
                         log_message('debug', 'cert - all');
                         $tmp_certs['all'][] = $cert;
-                    }
-                    else
+                    } else
                     {
                         log_message('debug', 'cert - ' . $certusage);
                         $tmp_certs[$certusage] = $cert;
@@ -1693,8 +1705,7 @@ class Provider {
                 $protocols .= $key . " ";
             }
             $protocols = \trim($protocols);
-        }
-        else
+        } else
         {
             $protocols = 'urn:oasis:names:tc:SAML:2.0:protocol';
         }
@@ -1757,8 +1768,7 @@ class Provider {
                     if ($element_name == 'UIInfo')
                     {
                         $root_extends = &$UIInfo_Node;
-                    }
-                    else
+                    } else
                     {
                         $root_extends = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $ex->getElement() . '');
                     }
@@ -1776,21 +1786,18 @@ class Provider {
                             if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $child->getElementValue(), $matches)))
                             {
                                 $ElementValue = $this->logo_url . $child->getElementValue();
-                            }
-                            else
+                            } else
                             {
                                 if ($Element == 'DisplayName')
                                 {
                                     $is_extend_displayname = TRUE;
-                                }
-                                elseif ($Element == 'Description')
+                                } elseif ($Element == 'Description')
                                 {
                                     $is_extend_description = TRUE;
                                 }
                                 $ElementValue = $child->getElementValue();
                             }
-                        }
-                        else
+                        } else
                         {
                             $ElementValue = $child->getElementValue();
                         }
@@ -1931,8 +1938,7 @@ class Provider {
             {
                 log_message('error', 'Static metadata is enabled but doesnt exist for entity (id: ' . $this->getId() . '):' . $this->getEntityId());
                 return null;
-            }
-            else
+            } else
             {
                 $s_metadata = $this->getStaticMetadata()->getMetadata();
                 $comment .= "static meta\n";
@@ -1969,8 +1975,7 @@ class Provider {
                 $EntityDesc_Node->setAttribute('validUntil', $valid_until);
             }
             $docXML->appendChild($EntityDesc_Node);
-        }
-        else
+        } else
         {
             $c = $parent->ownerDocument->createComment(str_replace('--', '-' . chr(194) . chr(173) . '-', $comment));
             $parent->appendChild($c);
@@ -1982,10 +1987,9 @@ class Provider {
                     $node = $parent->ownerDocument->importNode($node, true);
                     $parent->appendChild($node);
                     return $node;
-                }
-                else
+                } else
                 {
-                    log_message('error', "Provider model: static metadata active but is empty - null returned");
+                    log_message('error', 'Provider model: ' . $this->entityid . ' static metadata active but is empty - null returned');
                     return null;
                 }
             }
@@ -2012,8 +2016,7 @@ class Provider {
                 $RegistrationInfo_Node->setAttribute('registrationInstant', $this->registerdate->format('Y-m-d') . 'T' . $this->registerdate->format('H:i:s') . 'Z');
             }
             $EntExtension_Node->appendChild($RegistrationInfo_Node);
-        }
-        elseif (!empty($configRegistrarLoad) && !empty($configRegistrar) && $this->is_local === TRUE)
+        } elseif (!empty($configRegistrarLoad) && !empty($configRegistrar) && $this->is_local === TRUE)
         {
             $EntExtension_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
             $EntityDesc_Node->appendChild($EntExtension_Node);
@@ -2035,8 +2038,7 @@ class Provider {
                 if (!empty($SSODesc_Node))
                 {
                     $EntityDesc_Node->appendChild($SSODesc_Node);
-                }
-                else
+                } else
                 {
                     \log_message('error', "Provider model: IDP type but IDPSSODescriptor is null. Metadata for " . $this->getEntityId() . " couldnt be generated");
                     return null;
@@ -2047,8 +2049,7 @@ class Provider {
                 if (!empty($SSODesc_Node))
                 {
                     $EntityDesc_Node->appendChild($SSODesc_Node);
-                }
-                else
+                } else
                 {
                     log_message('error', "Provider model: SP type but SPSSODescriptor is null - null returned");
                     return null;
@@ -2088,8 +2089,7 @@ class Provider {
         if ($parent === NULL)
         {
             return $docXML;
-        }
-        else
+        } else
         {
             $parent->appendChild($EntityDesc_Node);
             return $EntityDesc_Node;
@@ -2100,12 +2100,31 @@ class Provider {
      *
      * extensions inside DPSSODEscriptor or IDPSSODescriptor 
      */
-    private function SSODescriptorExtensionsFromArray($ext)
+    private function SSODescriptorExtensionsFromArray($ext, $type = null)
     {
         if (array_key_exists('scope', $ext))
         {
             $scopeString = implode(",", $ext['scope']);
             $this->setScope($scopeString);
+        }
+        if (array_key_exists('geo', $ext) && is_array($ext['geo']))
+        {
+            $parentgeo = new ExtendMetadata;
+            $parentgeo->setNamespace('mdui');
+            $parentgeo->setElement('DiscoHints');
+            $parentgeo->setAttributes(array());
+            if (!empty($type))
+            {
+                $parentgeo->setType($type);
+            }
+            $parentgeo->setProvider($this);
+            $this->setExtendMetadata($parentgeo);
+            foreach ($ext['geo'] as $g)
+            {
+                $geo = new ExtendMetadata;
+                $geo->setGeoLocation('' . $g[0] . ',' . $g[1] . '', $this, $parentgeo, $type);
+                $this->setExtendMetadata($geo);
+            }
         }
     }
 
@@ -2113,7 +2132,7 @@ class Provider {
     {
         if (array_key_exists('extensions', $b))
         {
-            $this->SSODescriptorExtensionsFromArray($b['extensions']);
+            $this->SSODescriptorExtensionsFromArray($b['extensions'], 'idp');
         }
 
         if (array_key_exists('nameid', $b))
@@ -2182,7 +2201,7 @@ class Provider {
     {
         if (array_key_exists('extensions', $b))
         {
-            $this->SSODescriptorExtensionsFromArray($b['extensions']);
+            $this->SSODescriptorExtensionsFromArray($b['extensions'], 'sp');
         }
         if (array_key_exists('nameid', $b))
         {
@@ -2252,12 +2271,12 @@ class Provider {
             $p = explode("T", $a['validuntil']);
             $this->setValidTo(\DateTime::createFromFormat('Y-m-d', $p[0]));
         }
-        if(!empty($a['registrar']))
+        if (!empty($a['registrar']))
         {
             $this->setRegistrationAuthority($a['registrar']);
-            if(!empty($a['regdate']))
+            if (!empty($a['regdate']))
             {
-                $p=explode("T", $a['regdate']);
+                $p = explode("T", $a['regdate']);
                 $this->setRegistrationDate(\DateTime::createFromFormat('Y-m-d', $p[0]));
             }
         }
@@ -2272,6 +2291,13 @@ class Provider {
             $this->setName($a['details']['organization']['organizationname']);
             $this->setDisplayName($a['details']['organization']['organizationdisplayname']);
             $this->setHelpdeskUrl($a['details']['organization']['organizationurl']);
+            foreach ($a['details']['regpolicy'] as $rp)
+            {
+                /**
+                 * extend regpolicy 
+                 */
+            }
+
             foreach ($a['details']['contacts'] as $c)
             {
                 $tc = new Contact;
@@ -2289,15 +2315,13 @@ class Provider {
 
                     $this->IDPSSODescriptorFromArray($a['details']['idpssodescriptor']);
                 }
-            }
-            elseif ($a['type'] == "SP")
+            } elseif ($a['type'] == "SP")
             {
                 if (array_key_exists('spssodescriptor', $a['details']))
                 {
                     $this->SPSSODescriptorFromArray($a['details']['spssodescriptor']);
                 }
-            }
-            elseif ($a['type'] == "BOTH")
+            } elseif ($a['type'] == "BOTH")
             {
                 if (array_key_exists('idpssodescriptor', $a['details']))
                 {

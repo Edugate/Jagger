@@ -114,18 +114,34 @@ class Metadata2array {
             }
             if ($gnode->nodeName == 'Extensions' OR $gnode->nodeName == 'md:Extensions')
             {
-                if($gnode->hasChildNodes())
+                if ($gnode->hasChildNodes())
                 {
                     foreach ($gnode->childNodes as $enode)
                     {
-                        if($enode->nodeName == 'mdrpi:RegistrationInfo' && $enode->hasAttributes())
+                        if ($enode->nodeName == 'mdrpi:RegistrationInfo' && $enode->hasAttributes())
                         {
                             $entity['registrar'] = $enode->getAttribute('registrationAuthority');
                             $entity['regdate'] = $enode->getAttribute('registrationInstant');
+                            if ($enode->hasChildNodes())
+                            {
+                                $children = $enode->childNodes();
+                                foreach ($children as $ch)
+                                {
+                                    if ($ch->nodeName = 'mdrpi:RegistrationPolicy')
+                                    {
+                                        $chlang = $ch->getAttribute('xml:lang');
+                                        $chvalue = $ch->nodeValue;
+                                        if (!empty($chlang) && !empty($chvalue))
+                                        {
+                                            $entity['details']['regpolicy'][] = array('lang' => $chlang, 'url' => $chvalue);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-          //      $entity['details']['extensions'] = $this->ExtensionsToArray($gnode);
+                //      $entity['details']['extensions'] = $this->ExtensionsToArray($gnode);
             } elseif ($gnode->nodeName == 'ContactPerson' OR $gnode->nodeName == 'md:ContactPerson')
             {
                 $entity['details']['contacts'][] = $this->ContactPersonConvert($gnode);
@@ -173,7 +189,7 @@ class Metadata2array {
                     'location' => $child->getAttribute('Location')
                 );
             } elseif ($child->nodeName == "KeyDescriptor" OR $child->nodeName == "md:KeyDescriptor")
-            {
+            {            
                 $result['certificate'][] = $this->KeyDescriptorConvert($child);
             }
         }

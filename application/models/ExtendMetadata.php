@@ -65,7 +65,7 @@ class ExtendMetadata {
     protected $parent;
 
     /**
-     * @OneToMany(targetEntity="ExtendMetadata", mappedBy="parent")
+     * @OneToMany(targetEntity="ExtendMetadata", mappedBy="parent",cascade={"persist", "remove"})
      */
     private $children;
 
@@ -153,7 +153,7 @@ class ExtendMetadata {
         $this->namespace = $namespace;
     }
 
-    public function setParent($parent) {
+    public function setParent($parent = null) {
         $this->parent = $parent;
     }
 
@@ -175,6 +175,18 @@ class ExtendMetadata {
         $this->setType($type);
         $this->setAttributes($attrs);
     }
+    public function setGeoLocation($location, Provider $provider,ExtendMetadata $parent,$type)
+    {
+        $this->setNamespace('mdui');
+        $this->setElement('GeolocationHint');
+        $this->setValue($location);
+        $this->setProvider($provider);
+        $this->setParent($parent);
+        $this->setType($type);
+        $attrs = array();
+        $this->setAttributes($attrs);
+    }
+    
 
     public function setAttributes(array $attrs) {
         
@@ -186,6 +198,9 @@ class ExtendMetadata {
         $attrs[$name] = $value;
         $this->setAttributes($attrs);
     }
+    
+    
+   
 
 
 }
