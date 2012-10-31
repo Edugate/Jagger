@@ -172,7 +172,7 @@ class Metadata2array {
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
-            } elseif ($child->nodeName == "KeyDescriptor" OR $child->nodeName == "ds:KeyDescriptor")
+            } elseif ($child->nodeName == "KeyDescriptor" OR $child->nodeName == "md:KeyDescriptor")
             {
                 $result['certificate'][] = $this->KeyDescriptorConvert($child);
             }
