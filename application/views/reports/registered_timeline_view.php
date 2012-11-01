@@ -112,7 +112,7 @@ highlighter: {
         sizeAdjust: 7.5
       },
                 seriesColors: [ "#66c974", "#a4b9fb", "#c61717"],
-                legend:{show: true, placement:"insideGrid",location:"ne",showSwatch: true,marginLeft:"210px",labels:['Service Providers','Identity Providers','All Entities']},
+                legend:{show: true, placement:"outsideGrid",location:"s",showSwatch: true,marginLeft:"210px",labels:['Service Providers','Identity Providers','All Entities']},
             
                 series:[{lineWidth:2 },{lineWidth:2 },{lineWidth:4 }],
                 seriesDefaults: {
