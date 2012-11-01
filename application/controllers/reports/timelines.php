@@ -22,9 +22,8 @@ class Timelines extends MY_Controller {
 
         if ($loggedin)
         {
-            $this->session->set_userdata(array('currentMenu' => 'awaiting'));
-            $this->load->library('zacl');
-            $this->load->library('j_queue');
+            $this->session->set_userdata(array('currentMenu' => 'general'));
+            $this->load->library('zacl');           
             return;
         } else
         {
