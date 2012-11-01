@@ -768,7 +768,9 @@ class Provider {
     public function setExtendMetadata(ExtendMetadata $ext)
     {
         $this->getExtendMetadata()->add($ext);
-        return $this->extend;
+        $ext->setProvider($this);
+        return $this->extend; 
+     
     }
 
     public function removeServiceLocation(ServiceLocation $service)
@@ -935,9 +937,6 @@ class Provider {
         {
             $this->setExtendMetadata($gg);
         }
-
-        //}
-        //$this=$provider;
         return $this;
     }
 
@@ -957,6 +956,7 @@ class Provider {
             }
             
         }
+        $this->getExtendMetadata()->removeElement($e);
         $this->em->remove($e);
     }
 
@@ -2277,7 +2277,8 @@ class Provider {
             if (!empty($a['regdate']))
             {
                 $p = explode("T", $a['regdate']);
-                $this->setRegistrationDate(\DateTime::createFromFormat('Y-m-d', $p[0]));
+                $ptime = str_replace('Z', '', $p['1']);
+                $this->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $p[0].' '.$ptime));
             }
         }
         if (!empty($a['metadata']))
