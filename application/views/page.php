@@ -28,11 +28,15 @@ $pageTitle .= $this->title;
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/themes/redmond/jquery.ui.all.css" />';
         
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/themes/redmond/jquery-ui-1.8.17.custom.css" />';
-        
+        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
+        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jqplot.pointLabels.min.js" />';
         ?>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+    
         <?php
+        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.jqplot.min.js"></script>';
+        echo '<script type="text/javascript" src="'.$base_url.'js/jqplot.dateAxisRenderer.min.js"></scipt>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.tablesorter.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.inputfocus-0.9.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/idpAttribute.js"></script>';
