@@ -50,7 +50,7 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
     $line3 = '[';
     foreach ($all_converted as $m)
     {
-        $gg = '[\'' . $m['d'] . ' 4:00PM\',' . $m[v] . '],';
+        $gg = '[\'' . $m['d'] . '\',' . $m['v'] . '],';
         $line3 .= $gg;
     }
     $line3 .='];';
@@ -60,7 +60,7 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
         $line1 = '[';
         foreach ($sps_converted as $m)
         {
-            $gg = '[\'' . $m['d'] . ' 4:00PM\',' . $m[v] . '],';
+            $gg = '[\'' . $m['d'] . '\',' . $m['v'] . '],';
             $line1 .= $gg;
         }
 
@@ -69,12 +69,12 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
     {
         //$today = DateTime::createFromFormat('Y-m-d H:i:s');
         $today = date('Y-m-d');
-        $line1 = '[[\'' . $today . ' 4:00PM\',0]]';
+        $line1 = '[[\'' . $today . '\',0]]';
     }
     $line2 = '[';
     foreach ($idps_converted as $m)
     {
-        $gg = '[\'' . $m['d'] . ' 4:00PM\',' . $m[v] . '],';
+        $gg = '[\'' . $m['d'] . '\',' . $m['v'] . '],';
         $line2 .= $gg;
     }
 
@@ -100,12 +100,15 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
             var plot1 = $.jqplot('chart1', [line1,line2,line3], {
                 title:'<?php echo $graphTitle; ?>',
                 axes:{xaxis:{renderer:$.jqplot.DateAxisRenderer}},
+                seriesColors: [ "#66c974", "#a4b9fb", "#c61717"],
                 legend:{show: true, placement:"insideGrid",labels:['Service Providers','Identity Providers','All Entities']},
             
-                series:[{lineWidth:4 }],
+                series:[{lineWidth:2 },{lineWidth:2 },{lineWidth:4 }],
                 seriesDefaults: {
+                    lineWidth:4,
                     showMarker:true,
-                    pointLabels: { show:true }
+                    pointLabels: { show:true },
+                    fontSize: 16
                 }
             }
                  );
