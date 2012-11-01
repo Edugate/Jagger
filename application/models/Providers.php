@@ -130,6 +130,15 @@ class Providers {
         $this->providers = $this->em->getRepository("models\Provider")->findBy(array('type' => array('IDP', 'BOTH')), array('name' => 'ASC'));
         return $this->providers;
     }
+    
+    public function getIdpsLight()
+    {
+        log_message('debug', 'run: models\Providers::getSpsLight()');
+        $dql = "SELECT p FROM models\Provider p WHERE p.type IN ('IDP','BOTH') ORDER BY p.name ASC ";
+        $query = $this->em->createQuery($dql);
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();  
+    }
 
     /**
      *  getIdps_inNative and getSps_inNative to display just the list of entities without details.
@@ -267,12 +276,17 @@ class Providers {
     {
         log_message('debug', 'run: models\Providers::getSps()');
         $this->providers = $this->em->getRepository("models\Provider")->findBy(array('type' => array('SP', 'BOTH')), array('name' => 'ASC'));
-        //$query = $this->em->createQuery('select u from models\Provider u');
-        //$query->useResultCache(true);
-        //$this->providers = $query->execute();
         return $this->providers;
     }
-
+    public function getSpsLight()
+    {
+        log_message('debug', 'run: models\Providers::getSpsLight()');
+        $dql = "SELECT p FROM models\Provider p WHERE p.type IN ('SP','BOTH') ORDER BY p.name ASC ";
+        $query = $this->em->createQuery($dql);
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();
+    }
+    
     public function getProviders()
     {
         return $this->providers;

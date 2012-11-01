@@ -58,7 +58,7 @@ class Idp_list extends MY_Controller {
         $idprows = array();
         $col = new models\Providers();
         //$idps = $col->getIdps_inNative();
-        $idps = $col->getIdps();
+        $idps = $col->getIdpsLight();
         $data['idps_count'] = count($idps);
         foreach ($idps as $i)
         {

@@ -1,7 +1,7 @@
 <?php
-
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
+
 /**
  * ResourceRegistry3
  * 
@@ -58,7 +58,8 @@ class Sp_list extends MY_Controller {
         $sprows = array();
         $tmp_providers = new models\Providers;
         //$sps = $tmp_providers->getSps_inNative();
-        $sps = $tmp_providers->getSPs();
+      
+        $sps = $tmp_providers->getSPsLight();
         $data['sps_count'] = count($sps);
         foreach ($sps as $i)
         {
