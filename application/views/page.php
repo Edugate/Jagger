@@ -35,9 +35,9 @@ $pageTitle .= $this->title;
 
         <?php
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.jqplot.min.js"></script>';
-       echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.dateAxisRenderer.min.js"></scipt>';
-          echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.cursor.min.js"></scipt>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.highlighter.min.js"></scipt>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.dateAxisRenderer.min.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.cursor.min.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.highlighter.min.js"></script>';
        
       
           //echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.pointLabels.min.js" />';
