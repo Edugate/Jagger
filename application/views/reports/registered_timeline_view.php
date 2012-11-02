@@ -7,8 +7,8 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
 
     echo '<div class="notice">No entity found with registered date</div>';
 } else
-{
-    ksort($grid['known']);
+{   
+    ksort($grid['known']);  
     $y = 0;
     foreach ($grid['known'] as $k => $g)
     {
@@ -20,13 +20,13 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
 
             if ($gg['t'] == 'IDP')
             {
-                $idps[$k] = $g;
+                $idps[$k][] = $gg;             
             } else
             {
-                $sps[$k] = $g;
+                $sps[$k][] = $gg;
             }
         }
-    }
+    }    
     $all_converted[] = array('d' => date('Y-m-d'), 'v' => $y);
     $y = 0;
     $idps_converted = array();
