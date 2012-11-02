@@ -235,9 +235,9 @@ class Manage extends MY_Controller {
         }
         $data['tbl'][] = array(lang('rr_fed_name'), $federation->getName());
         $data['tbl'][] = array(lang('rr_fed_urn'), $federation->getUrn());
-        $data['tbl'][] = array(lang('rr_fed_desc'), htmlentities($federation->getDescription()));
-        $data['tbl'][] = array('Terms Of Use', htmlentities($federation->getTou()));
-        $data['tbl'][] = array('Federation owner/creator', htmlentities($federation->getOwner()));
+        $data['tbl'][] = array(lang('rr_fed_desc'), $federation->getDescription());
+        $data['tbl'][] = array('Terms Of Use', $federation->getTou());
+        $data['tbl'][] = array('Federation owner/creator', $federation->getOwner());
         $idp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/idp', lang('rr_fed_cntidps_list'));
         $sp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/sp', lang('rr_fed_cntisps_list'));
         $all_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'', lang('rr_fed_cnt_list'));
