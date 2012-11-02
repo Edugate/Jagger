@@ -1,5 +1,6 @@
 <?php
-
+$lang['login_unsuccessful'] = 'Login unsuccessful';
+$lang['login_successful'] = 'Login successful';
 /**
   * SP Registration Form
   */
