@@ -7,7 +7,7 @@ $attributes = array('class' => 'span-15', 'id' => 'login');
 <?php echo form_open("auth/login", $attributes); ?>
 
 <fieldset>
-    <legend>Login form</legend>
+    <legend><?php echo lang('login_form') ?></legend>
     <?php
     $v_errors = validation_errors('<div>', '</div>');
     if (!empty($v_errors)) {

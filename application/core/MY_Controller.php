@@ -1,4 +1,7 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -15,10 +18,9 @@
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
-
 class MY_Controller extends CI_Controller {
-private $current_user;
+
+    private $current_user;
 
     /**
      * Doctrine entity manager
@@ -28,42 +30,40 @@ private $current_user;
     public $mid;
     protected $em;
     protected $authenticated;
-    protected $current_language;
+    public $current_language;
     public $title;
     protected $inqueue;
 
     public function __construct()
     {
-		ini_set("session.cookie_secure","1");
-		ini_set("session.cookie_httponly","1");
+        ini_set("session.cookie_secure", "1");
+        ini_set("session.cookie_httponly", "1");
+        session_name('_RR3_SESS');
+        session_start();
+        parent::__construct();
+        $this->em = $this->doctrine->em;
+        $this->title = "";
+        $this->mid = "";
+        $this->lang->load('rr_lang', 'english');
+        $this->current_language = 'en';
+        $langs = array('pl', 'pt');
+        $cookie_lang = $this->input->cookie('rrlang', TRUE);
+        $defaultlang_cookie = array(
+            'name' => 'rrlang',
+            'value' => 'english',
+            'expire' => '2600000',
+            'secure' => TRUE
+        );
 
-                session_name('_RR3_SESS');
-                session_start();
-		parent::__construct();
-		$this->em = $this->doctrine->em;
-		$this->title = "";
-		$this->mid = "";
-                $cookie_lang = $this->input->cookie('rr3_langugage', TRUE); 
-                $this->current_language = 'english';
-                $this->lang->load('rr_lang', $this->current_language);
-                /*
-                if(!empty($cookie_lang))
-                {
-                     if($cookie_lang == 'irish')
-                     {
-                         $this->current_language = 'irish';
-                     }
-                }
-                */
-                //$this->lang->load('rr_lang', 'pt');
-          
-
-
-
-
-
-      
-
+        if (!empty($cookie_lang) && in_array($cookie_lang, $langs))
+        {
+            $this->lang->load('rr_lang', $cookie_lang);
+            $this->current_language = $cookie_lang;
+        }
+        else
+        {
+            $this->input->set_cookie($defaultlang_cookie);
+        }
     }
 
 }

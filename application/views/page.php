@@ -17,7 +17,7 @@ $idp_change_link = base_url() . "manage/settings/idp";
 $pageTitle .= $this->title;
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo $this->current_language; ?>">
     <head>     
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width" />
@@ -38,10 +38,10 @@ $pageTitle .= $this->title;
         echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.dateAxisRenderer.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.cursor.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.highlighter.min.js"></script>';
-       
-      
-          //echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.pointLabels.min.js" />';
-      
+
+
+        //echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.pointLabels.min.js" />';
+
 
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.tablesorter.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.inputfocus-0.9.min.js"></script>';
@@ -76,6 +76,7 @@ $pageTitle .= $this->title;
             <span id="header" class="span-24">
 
                 <span id="logo">
+
                     <?php
                     echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $this->config->item('site_logo') . '" class="span-5"/></a>';
                     ?>
@@ -86,7 +87,12 @@ $pageTitle .= $this->title;
                     echo '<img src="' . $provider_logo_url . '" class="span-3 prepend-8 provider-logo"/>';
                 }
                 ?>
-
+                <div id="langicons">
+                    <a href="<?php echo $base_url; ?>ajax/changelanguage/english" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-gb.png" alt="en"/></a>
+                    <a href="<?php echo $base_url; ?>ajax/changelanguage/pl" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pl.png" alt="pl"/></a>
+                    <a href="<?php echo $base_url; ?>ajax/changelanguage/pt" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pt.png" alt="pt"/></a>
+                    <a href="<?php echo $base_url; ?>ajax/changelanguage/it" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-it.png" alt="it"/></a>
+                </div>
                 <?php
                 if ($this->j_auth->logged_in())
                 {
@@ -182,34 +188,34 @@ $pageTitle .= $this->title;
                 <div id="divmenu">
 
                     <ul id="nav">
-                        <li <?php echo $m_home; ?> ><a href="<?php echo base_url() ?>">Home</a>
+                        <li <?php echo $m_home; ?> ><a href="<?php echo base_url() ?>"><?php echo lang('home');?></a>
 
                         </li>
-                        <li <?php echo $m_federation; ?>><a href="<?php echo base_url(); ?>federations/manage">Federations</a>
+                        <li <?php echo $m_federation; ?>><a href="<?php echo base_url(); ?>federations/manage"><?php echo lang('federations'); ?></a>
                             <ul>
-                                <li><a href="<?php echo base_url(); ?>federations/federation_registration">Register</a></li>
+                                <li><a href="<?php echo base_url(); ?>federations/federation_registration"><?php echo lang('register'); ?></a></li>
                             </ul>
                         </li>
-                        <li <?php echo $m_idp ?>><a href="<?php echo base_url(); ?>providers/idp_list/show">Identity Providers</a>
+                        <li <?php echo $m_idp ?>><a href="<?php echo base_url(); ?>providers/idp_list/show"><?php echo lang('identityproviders');?></a>
                             <ul><?php
-                echo $current_idp_menu;
+            echo $current_idp_menu;
                 ?>
 
                                 <li><a href="<?php echo base_url(); ?>providers/idp_list/show">List</a></li>
-                                <li><a href="<?php echo base_url(); ?>providers/idp_registration">Register</a></li>
+                                <li><a href="<?php echo base_url(); ?>providers/idp_registration"><?php echo lang('register') ; ?></a></li>
 
                             </ul>
                         </li>
-                        <li <?php echo $m_sp ?>><a href="<?php echo base_url(); ?>providers/sp_list/show">Service Providers</a>
+                        <li <?php echo $m_sp ?>><a href="<?php echo base_url(); ?>providers/sp_list/show"><?php echo lang('serviceproviders'); ?></a>
                             <ul><?php
                             echo $current_sp_menu;
-                            ?>
+                ?>
                                 <li><a href="<?php echo base_url(); ?>providers/sp_list/show">List</a></li>
                                 <li><a href="<?php echo base_url(); ?>manage/attribute_requirement/sp">Attribute Requirement</a></li>
-                                <li><a href="<?php echo base_url(); ?>providers/sp_registration">Register</a></li>
+                                <li><a href="<?php echo base_url(); ?>providers/sp_registration"><?php echo lang('register');?></a></li>
                             </ul>
                         </li>
-                        <li <?php echo $m_register; ?>><a href="<?php echo base_url(); ?>">Register</a>
+                        <li <?php echo $m_register; ?>><a href="<?php echo base_url(); ?>"><?php echo lang('register') ;?></a>
                             <ul><li><a href="<?php echo base_url(); ?>providers/idp_registration">Identity Provider</a></li>
                                 <li><a href="<?php echo base_url(); ?>providers/sp_registration">Service Provider</a></li>
                                 <li><a href="<?php echo base_url(); ?>federations/federation_registration">Federation</a></li>
@@ -217,14 +223,14 @@ $pageTitle .= $this->title;
                         </li>
 
                         <li  <?php echo $m_awaiting; ?>><a href="<?php echo base_url(); ?>reports/awaiting">Queue
-                <?php
-                if (!empty($inqueue))
-                {
-                    echo "<span class=\"inqueue\">" . $inqueue . "</span>";
-                }
-                ?>
+                                <?php
+                                if (!empty($inqueue))
+                                {
+                                    echo "<span class=\"inqueue\">" . $inqueue . "</span>";
+                                }
+                                ?>
                             </a></li>
-                        <li <?php echo $m_general; ?>><a href="<?php echo base_url(); ?>">General</a>
+                        <li <?php echo $m_general; ?>><a href="<?php echo base_url(); ?>"><?php echo lang('general');?></a>
                             <ul>
                                 <li><a href="<?php echo base_url(); ?>attributes/attributes/show">Attribute definitions</a></li>
                                 <li><a href="<?php echo base_url(); ?>manage/importer">Metadata importer</a></li>
@@ -239,49 +245,49 @@ $pageTitle .= $this->title;
                                 </li>
                             </ul>
                         </li>
-                        <li><a href="<?php echo base_url(); ?>">Help</a></li>
+                        <li><a href="<?php echo base_url(); ?>"><?php echo lang('help');?></a></li>
                     </ul>
                 </div>
                 <!-- end menu -->
-                    <?php
-                }
-                ?>
+                <?php
+            }
+            ?>
 
 
         </span>
 
-                <?php
-                $height100 = '';
-                if (!empty($loadGoogleMap))
-                {
-                    $height100 = ' style="height: 100%" ';
-                }
-                ?>
+        <?php
+        $height100 = '';
+        if (!empty($loadGoogleMap))
+        {
+            $height100 = ' style="height: 100%" ';
+        }
+        ?>
 
         <div id="container"    <?php echo $height100 ?>>
 
             <div id="wrapper" class="span-21 append-1 prepend-1"  class="block" <?php echo $height100 ?> >
                 <span id="content"  <?php echo $height100 ?> >
-            <?php
-            $this->load->view($content_view);
-            ?>
+                    <?php
+                    $this->load->view($content_view);
+                    ?>
                 </span>
             </div>
             <div id="navigation">
-            <?php
-            if (!empty($navigation_view))
-            {
-                $this->load->view($navigation_view);
-            }
-            ?>
+                <?php
+                if (!empty($navigation_view))
+                {
+                    $this->load->view($navigation_view);
+                }
+                ?>
             </div>
             <div id="extra">
-<?php
-if (!empty($extra_view))
-{
-    $this->load->view($extra_view);
-}
-?>
+                <?php
+                if (!empty($extra_view))
+                {
+                    $this->load->view($extra_view);
+                }
+                ?>
             </div>
 
         </div>
@@ -291,14 +297,14 @@ if (!empty($extra_view))
     <div id="footer">
 
         <footer>
-<?php
-echo "<small>Resource Registry</small><br />";
-$disp_mem = $this->config->item('rr_display_memory_usage');
-if ($disp_mem)
-{
-    echo echo_memory_usage();
-}
-?>
+            <?php
+            echo "<small>Resource Registry</small><br />";
+            $disp_mem = $this->config->item('rr_display_memory_usage');
+            if ($disp_mem)
+            {
+                echo echo_memory_usage();
+            }
+            ?>
         </footer>
     </div>
 

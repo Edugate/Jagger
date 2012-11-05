@@ -1,6 +1,15 @@
 <?php
+$lang['login_form'] = 'Login Form';
 $lang['login_unsuccessful'] = 'Login unsuccessful';
 $lang['login_successful'] = 'Login successful';
+
+$lang['home'] = 'Home';
+$lang['federations'] = 'Federations';
+$lang['register'] = 'Register';
+$lang['serviceproviders'] = 'Service Providers';
+$lang['identityproviders'] = 'Identity Providers';
+$lang['help'] = 'Help';
+$lang['general']='General';
 /**
   * SP Registration Form
   */

@@ -187,10 +187,11 @@ body {
     .xml span.xtra { display:block; }
 
     span.loggedin {
-	position: absolute;
+//	position: absolute;
 	right: 50px;
 	top: 10px;
         list-style-type: none;
+        float: right;
     }
     
 }
@@ -345,7 +346,14 @@ div.den {
 #idpmatrix td:last-child {
   border-right: 1px gray solid;
 }
-
+#langicons{
+  float: right;
+  margin-right: 5px;
+}
+.langset img {
+  width: 20px;
+  
+}
 
 @include sticky-footer(50px, "#oko","#inpre_footer","#footer");
 
