@@ -101,6 +101,10 @@ $config['load_registrationAutority'] = false;
 $config['arp_cache_time'] = 1200;
 $config['metadata_cache_time'] = 120;
 
+/**
+ * map defaul center
+ */
+$config['geocenterpoint']  = array('-6.247856140071235','53.34961629053703');
 
 /**
  * acls

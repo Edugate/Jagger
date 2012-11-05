@@ -236,14 +236,13 @@ class Manage extends MY_Controller {
         $data['tbl'][] = array(lang('rr_fed_name'), $federation->getName());
         $data['tbl'][] = array(lang('rr_fed_urn'), $federation->getUrn());
         $data['tbl'][] = array(lang('rr_fed_desc'), $federation->getDescription());
-        $data['tbl'][] = array('Terms Of Use', $federation->getTou());
+        $data['tbl'][] = array(lang('rr_fed_tou'), $federation->getTou());
         $data['tbl'][] = array('Federation owner/creator', $federation->getOwner());
         $idp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/idp', lang('rr_fed_cntidps_list'));
         $sp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/sp', lang('rr_fed_cntisps_list'));
         $all_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'', lang('rr_fed_cnt_list'));
-        $data['tbl'][] = array('Download contacts list in txt format', $idp_contactlist.'<br />'.$sp_contactlist.'<br />'.$all_contactlist);
-       
-        $data['tbl'][] = array('Timeline', '<a href="'.base_url().'reports/timelines/showregistered/'.$federation->getId().'">Diagram</a>'); 
+        $data['tbl'][] = array(lang('rr_downcontactsintxt'), $idp_contactlist.'<br />'.$sp_contactlist.'<br />'.$all_contactlist);
+        $data['tbl'][] = array(lang('rr_timeline'), '<a href="'.base_url().'reports/timelines/showregistered/'.$federation->getId().'">Diagram</a>'); 
 
         $image_link = "<img src=\"" . base_url() . "images/icons/pencil-field.png\"/>";
         $edit_attributes_link = "<span><a href=\"" . base_url() . "manage/attribute_requirement/fed/" . $federation->getId() . " \" class=\"edit\">" . $image_link . "</a></span>";
@@ -251,64 +250,64 @@ class Manage extends MY_Controller {
         {
             $edit_attributes_link = '';
         }
-        $data['tbl'][] = array('data' => array('data' => 'Required attributes' . $edit_attributes_link . '', 'class' => 'highlight', 'colspan' => 2));
+        $data['tbl'][] = array('data' => array('data' => lang('rr_fed_req_attrs') . $edit_attributes_link . '', 'class' => 'highlight', 'colspan' => 2));
         if (!$has_write_access)
         {
-            $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">no access to edit</div></small>', 'colspan' => 2));
+            $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_edit').'</div></small>', 'colspan' => 2));
         }
         foreach ($required_attributes as $key)
         {
             $data['tbl'][] = array($key->getAttribute()->getName(), $key->getStatus() . "<br /><i>(" . $key->getReason() . ")</i>");
         }
-        $data['tbl'][] = array('data' => array('data' => 'Membership management', 'class' => 'highlight', 'colspan' => 2));
+        $data['tbl'][] = array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2));
         if (!$has_addbulk_access)
         {
-            $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">no access to bulk operations</div></small>', 'colspan' => 2));
+            $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_bulks').'</div></small>', 'colspan' => 2));
         }
         else
         {
-            $data['tbl'][] = array('IDPs', 'Add new Identity Providers to federation without invitation' . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/idp', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['tbl'][] = array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/idp', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
 
-            $data['tbl'][] = array('SPs', 'Add new Service Providers to federation without invitation' . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/sp', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['tbl'][] = array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/sp', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
         }
         if ($has_write_access)
         {
-            $data['tbl'][] = array('Invitation', 'Invite Identity/Service Provider to join your federation' . anchor(base_url() . 'federations/manage/inviteprovider/' . $fed_name . '', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
-            $data['tbl'][] = array('Remove member', 'Remove Identity/Service Provider from your your federation' . anchor(base_url() . 'federations/manage/removeprovider/' . $fed_name . '', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['tbl'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $fed_name . '', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['tbl'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $fed_name . '', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
         }
         else
         {
-            $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">no access to invite other providers</div></small>', 'colspan' => 2));
+            $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_invmembers').'</div></small>', 'colspan' => 2));
         }
 
         
-        $data['tbl'][] = array('data' => array('data' => 'Access management', 'class' => 'highlight', 'colspan' => 2));
+        $data['tbl'][] = array('data' => array('data' => lang('access_mngmt'), 'class' => 'highlight', 'colspan' => 2));
       
         if($has_manage_access)
         {
-             $data['tbl'][] = array('data' => array('data' => 'Access management ' .anchor(base_url().'manage/access_manage/federation/'.$resource,'<img src="'.base_url().'images/icons/arrow.png"/>'), 'colspan' => 2));
+             $data['tbl'][] = array('data' => array('data' => lang('access_mngmt') .anchor(base_url().'manage/access_manage/federation/'.$resource,'<img src="'.base_url().'images/icons/arrow.png"/>'), 'colspan' => 2));
              
         } 
         else
         {
-             $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">no access to manage permissions</div></small>', 'colspan' => 2));
+             $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_accessmngt').'</div></small>', 'colspan' => 2));
        }
-        $data['tbl'][] = array('data' => array('data' => 'Metadata', 'class' => 'highlight', 'colspan' => 2));
+        $data['tbl'][] = array('data' => array('data' => lang('rr_metadata'), 'class' => 'highlight', 'colspan' => 2));
         if (empty($data['federation_is_active']))
         {
-            $data['tbl'][] = array('Federation metadata public link (unsigned)', "<span class=\"alert\">is inactive</span>" . anchor($data['meta_link']));
-            $data['tbl'][] = array('Federation metadata public link (signed)', "<span class=\"alert\">is inactive</span>" . anchor($data['meta_link_signed']));
+            $data['tbl'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="alert">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link']));
+            $data['tbl'][] = array(lang('rr_fedmetasingedlink'), '<span class="alert">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link_signed']));
         }
         else
         {
             $table_of_members = $this->show_element->IdPMembersToTable($federation_members);
-            $data['tbl'][] = array('Federation metadata public link (unsigned)', $data['meta_link'] . " " . anchor_popup($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
-            $data['tbl'][] = array('Federation metadata public link (signed)', $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
-            $data['tbl'][] = array('data' => array('data' => 'Identity Providers Members', 'class' => 'highlight', 'colspan' => 2));
+            $data['tbl'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor_popup($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['tbl'][] = array(lang('rr_fedmetasingedlink'), $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['tbl'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
             $data['tbl'][] = array('data' => array('data' => $table_of_members['IDP'], 'colspan' => 2));
-            $data['tbl'][] = array('data' => array('data' => 'Service Provider Members', 'class' => 'highlight', 'colspan' => 2));
+            $data['tbl'][] = array('data' => array('data' => lang('serviceprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
             $data['tbl'][] = array('data' => array('data' => $table_of_members['SP'], 'colspan' => 2));
-            $data['tbl'][] = array('data' => array('data' => 'Members who are IdPs and SPs', 'class' => 'highlight', 'colspan' => 2));
+            $data['tbl'][] = array('data' => array('data' => lang('bothprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
             $data['tbl'][] = array('data' => array('data' => $table_of_members['BOTH'], 'colspan' => 2));
         }
         $this->load->view('page', $data);
@@ -345,7 +344,7 @@ class Manage extends MY_Controller {
             $data['m_list'][$i]['entity'] = $m->getEntityId();
             $data['m_list'][$i++]['link'] = anchor($link, '&gt;&gt');
         }
-        $this->title = 'Federation members';
+        $this->title = lang('rr_fedmembers');
         $data['content_view'] = 'federation/federation_members_view';
         $this->load->view('page', $data);
     }
@@ -460,11 +459,11 @@ class Manage extends MY_Controller {
                     $this->em->persist($nmember);
                 }
                 $this->em->flush();
-                $message = "<div class=\"success\">New members have been added to federation</div>";
+                $message = '<div class="success">'.lang('rr_fedmembersadded').'</div>';
             }
             else
             {
-                $message = "<div class=\"alert\">no " . $memberstype . " were selected</div>";
+                $message = '<div class="alert">'.sprintf(lang('rr_nomemtype_selected'),$memberstype).'</div>';
             }
         }
         else
@@ -477,16 +476,16 @@ class Manage extends MY_Controller {
     private function _invite_submitvalidate()
     {
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('provider', 'Provider', 'required|numeric|xss_clean');
-        $this->form_validation->set_rules('message', 'Message', 'required|xss_clean');
+        $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
+        $this->form_validation->set_rules('message', lang('rr_message'), 'required|xss_clean');
         return $this->form_validation->run();
     }
 
     private function _remove_submitvalidate()
     {
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('provider', 'Provider', 'required|numeric|xss_clean');
-        $this->form_validation->set_rules('message', 'Message', 'required|xss_clean');
+        $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
+        $this->form_validation->set_rules('message', lang('rr_message'), 'required|xss_clean');
         return $this->form_validation->run();
     }
 
@@ -518,7 +517,7 @@ class Manage extends MY_Controller {
             show_error('no access', 403);
             return;
         }
-        $data['subtitle'] = 'Federation: ' . $federation->getName() . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), '<img src="' . base_url() . 'images/icons/arrow-in.png"/>');
+        $data['subtitle'] = lang('rr_federation').': ' . $federation->getName() . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), '<img src="' . base_url() . 'images/icons/arrow-in.png"/>');
         log_message('debug', '_________Before validation');
         if ($this->_invite_submitvalidate() === TRUE)
         {
@@ -528,14 +527,15 @@ class Manage extends MY_Controller {
             $inv_member = $this->tmp_providers->getOneById($provider_id);
             if (empty($inv_member))
             {
-                $data['error'] = "Provider doesn\'t exist";
+                $data['error'] = lang('rerror_providernotexist');
             }
             else
             {
                 $inv_member_federations = $inv_member->getFederations();
                 if ($inv_member_federations->contains($federation))
                 {
-                    $data['error'] = "Provider already member of " . $federation->getName();
+                    //$data['error'] = "Provider already member of " . $federation->getName();
+                    $data['error'] = sprintf(lang('rr_provideralready_member_of'),$federation->getName());
                 }
                 else
                 {
@@ -599,7 +599,7 @@ class Manage extends MY_Controller {
         }
         else
         {
-            $data['error_message'] = 'No providers available';
+            $data['error_message'] = lang('rr_fednoprovidersavail');
         }
         $data['fedname'] = $federation->getName();
         $this->load->helper('form');
@@ -646,7 +646,7 @@ class Manage extends MY_Controller {
             $inv_member = $this->tmp_providers->getOneById($provider_id);
             if (empty($inv_member))
             {
-                $data['error_message'] = "Provider you selected doesn\'t exist";
+                $data['error_message'] = lang('rerror_providernotexist');
             }
             else
             {

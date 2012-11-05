@@ -1,15 +1,23 @@
 <?php
 $lang['login_form'] = 'Login Form';
+$lang['authn_form'] = 'Authentication form';
 $lang['login_unsuccessful'] = 'Login unsuccessful';
 $lang['login_successful'] = 'Login successful';
-
+$lang['access_mngmt'] = 'Access management';
 $lang['home'] = 'Home';
 $lang['federations'] = 'Federations';
 $lang['register'] = 'Register';
 $lang['serviceproviders'] = 'Service Providers';
+$lang['serviceprovidersmembers'] = 'Service Providers members';
 $lang['identityproviders'] = 'Identity Providers';
+$lang['identityprovidersmembers'] = 'Identity Providers members';
+$lang['bothprovidersmembers'] = 'Members who are IdPs and SPs';
+$lang['rr_provider'] = 'Provider';
+$lang['rr_message'] = 'Message';
+
 $lang['help'] = 'Help';
 $lang['general']='General';
+$lang['rr_metadata'] = 'Metadata';
 /**
   * SP Registration Form
   */
@@ -170,6 +178,7 @@ $lang['rr_geolocation'] = 'Geolocation';
   * General inforamtion
   */
 $lang['rr_resourceurl'] = 'Resource home URL';
+$lang['rr_geolocations_for'] = 'Geolocations for';
 
 /**
   * Service Locations
@@ -278,6 +287,17 @@ $lang['rr_certificateexpired'] = 'Certificate is expired. Some service providers
 /**
   * Federation
   */
+$lang['rr_fedrmmember'] = 'Remove member';
+$lang['rr_fedinvitation'] = 'Invitation';
+$lang['rr_membermanagement'] = 'Membership management';
+$lang['rr_addnewidpsnoinv'] = 'Add new Identity Providers to federation without invitation';
+$lang['rr_addnewspsnoinv'] ='Add new Service Providers to federation without invitation';
+$lang['rr_fedinvidpsp'] = 'Invite Identity/Service Provider to join your federation';
+$lang['rr_fedrmidpsp'] = 'Remove Identity/Service Provider from your your federation';
+$lang['rr_fedmetaunsingedlink']='Federation metadata public link (unsigned)';
+$lang['rr_fedmetasingedlink']='Federation metadata public link (signed)';
+$lang['rr_fedmembers'] = 'Federation members';
+$lang['rr_fednoprovidersavail'] = 'No providers available';
 $lang['rr_federationjoin']='Manage membership (joining)';
 $lang['rr_federationleave']= 'Manage membership (leaving)';
 $lang['rr_federation_regform_title'] = 'Federation registration form';
@@ -286,7 +306,8 @@ $lang['rr_fed_desc'] = 'Description';
 $lang['rr_federation_detail'] = 'Federation detail';
 $lang['rr_fed_inactive'] = 'inactive';
 $lang['rr_fed_inactive_full'] = 'Federation is inactive';
-
+$lang['rr_fed_tou'] = 'Terms Of Use';
+$lang['rr_fed_req_attrs'] = 'Required attributes';
 $lang['rr_fed_external'] = 'external';
 $lang['rr_fed_local'] = 'local';
 $lang['rr_fed_notpublic'] = 'not public';
@@ -299,8 +320,13 @@ $lang['rr_fed_cntidps_list'] = 'Contact list of idp members';
 $lang['rr_fed_cntisps_list'] = 'Contact list of sp members';
 $lang['rr_fed_cnt_list'] = 'Contact list of all federation members';
 
+$lang['rr_fed_req_sent'] = 'Request has been sent to approval';
 
-
+$lang['rr_downcontactsintxt'] = 'Download contacts list in txt format';
+$lang['rr_timeline'] = 'Timeline';
+$lang['rr_fedmembersadded'] = 'New members have been added to federation';
+$lang['rr_nomemtype_selected'] = 'no %s were selected';
+$lang['rr_provideralready_member_of'] = 'Provider already member of %s';
 
 /**
  * SP details
@@ -340,17 +366,29 @@ $lang['rhelp_supportedprotocols'] = 'These are the protocols that you support.';
 $lang['rhelp_cert'] = 'Paste your certificate here.';
 
 
+$lang['rr_latitude'] = 'Latitude';
+$lang['rr_longitude'] = 'Longitude';
+$lang['rr_locked'] = 'Locked';
+
 /**
   * ERRORS
   */
 
+
+$lang['rr_noperm_edit'] = 'no access to edit';
+$lang['rr_noperm_bulks'] = 'no access to bulk operations';
+$lang['rr_noperm_invmembers'] = 'no access to invite other providers';
+$lang['rr_noperm_accessmngt'] = 'no access to manage permissions';
 $lang['rrerror_noperm_regfed'] = 'You don\'t have permision to register new Federation';
 $lang['rrerror_noperm_viewfed'] = 'You have no access to display details for this federation';
+$lang['rrerror_noperm_geo'] = 'No access to edit provider\'s geolocations';
 
+$lang['rerror_providernotexist'] = 'Provider doesn\'t exist';
 $lang['rerror_idpnotfound'] = 'Identity Provider not found'; 
 $lang['rerror_lostinfo'] = 'Lost information about what idp to update';
 $lang['rerror_cannotmanageexternal'] = 'cannot be managed. This is external resource';
-
+$lang['rerror_cannotaddpoint'] = 'cannot add point';
+$lang['rerror_cannotdelete'] = 'cannot delete';
 
 
 $lang['rerror_spnotfound'] = 'Service Provider not found';

@@ -109,7 +109,7 @@ class Auth extends MY_Controller {
 
 
             $this->data['dontshowsigning'] = true;
-            $this->data['title'] = "Authentication form";
+            $this->data['title'] = lang('authn_form');
             $this->data['content_view'] = 'auth/login';
             $this->load->view('page', $this->data);
         }

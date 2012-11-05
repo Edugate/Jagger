@@ -110,7 +110,7 @@ class Federation_registration extends MY_Controller
             $this->load->library('email_sender');
             $this->email_sender->send($recipients,$sbj,$body);
 
-        $data['success'] = "Request has been sent to approval";
+        $data['success'] = lang('rr_fed_req_sent');
         $data['content_view'] = 'federation/success_view';
         $this->load->view('page',$data);
     }
@@ -120,10 +120,10 @@ class Federation_registration extends MY_Controller
         /**
          * @todo add more checks link unique 
          */
-        $this->form_validation->set_rules('fedname', 'Federation name', 'required|min_length[5]|max_length[128]|xss_clean');
-        $this->form_validation->set_rules('fedurn', 'Federation URN', 'required|min_length[5]|max_length[128]|xss_clean');
-        $this->form_validation->set_rules('description', 'Description', 'min_length[5]|max_length[500]|xss_clean');
-        $this->form_validation->set_rules('termsofuse', 'Terms Of Use', 'min_length[5]|max_length[1000]|xss_clean');
+        $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'required|min_length[5]|max_length[128]|xss_clean');
+        $this->form_validation->set_rules('fedurn', lang('rr_fed_urn'), 'required|min_length[5]|max_length[128]|xss_clean');
+        $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'min_length[5]|max_length[500]|xss_clean');
+        $this->form_validation->set_rules('termsofuse', lang('rr_fed_tou'), 'min_length[5]|max_length[1000]|xss_clean');
         return $this->form_validation->run();
     }
 

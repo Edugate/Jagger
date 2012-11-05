@@ -35,8 +35,8 @@ class Geolocation extends MY_Controller {
 
     private function _submit_validate() {
 
-        $this->form_validation->set_rules('latinput', 'Latitude', 'numeric|xss_clean');
-        $this->form_validation->set_rules('lnginput', 'Longitutde', 'numeric|xss_clean');
+        $this->form_validation->set_rules('latinput', lang('rr_latitude'), 'numeric|xss_clean');
+        $this->form_validation->set_rules('lnginput', lang('rr_longitude'), 'numeric|xss_clean');
         return $this->form_validation->run();
     }
 
@@ -61,7 +61,7 @@ class Geolocation extends MY_Controller {
         $locked = $provider->getLocked();
         if($locked)
         {
-          $lockicon = '<img src="'.base_url().'images/icons/lock.png" title="Locked"/>';
+          $lockicon = '<img src="'.base_url().'images/icons/lock.png" title="'.lang('rr_locked').'"/>';
         }
         else
         {
@@ -73,7 +73,7 @@ class Geolocation extends MY_Controller {
 
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
-            $data['error'] = 'No access to edit provider\'s geolocations: ' . $provider->getEntityid();
+            $data['error'] = lang('rrerror_noperm_geo').': ' . $provider->getEntityid();
             $this->load->view('page', $data);
             return;
         }
@@ -143,7 +143,7 @@ class Geolocation extends MY_Controller {
         }
 
         
-        $data['subtitle'] = "<div id=\"subtitle\">".$lockicon." Geolocations for " . $display_name . "&nbsp;&nbsp;" . anchor(base_url() . "providers/provider_detail/" . $type . "/" . $provider->getId(), '<img src="' . base_url() . 'images/icons/home.png" />') . " </div>";
+        $data['subtitle'] = '<div id="subtitle">'.$lockicon.' '.lang('rr_geolocations_for').' ' . $display_name . '&nbsp;&nbsp;' . anchor(base_url() . 'providers/provider_detail/' . $type . '/' . $provider->getId(), '<img src="' . base_url() . 'images/icons/home.png" />') . ' </div>';
         $data['form_errors'] = validation_errors('<p class="error">', '</p>');
 
 
@@ -164,7 +164,15 @@ class Geolocation extends MY_Controller {
                 $this->gmap->addMarkerByCoords($point['1'], $point['0'],$point['0'].','.$point['1'] , $display_name . " (" . $provider->getEntityId() . ")");
             }
         } else {
-            $this->gmap->adjustCenterCoords('-6.247856140071235', '53.34961629053703');
+            $geocenter = $this->config->item('geocenterpoint');
+            if(!empty($geocenter))
+            {
+                 $this->gmap->adjustCenterCoords($geocenter['0'],$geocenter['1']);
+            }
+            else
+            {
+                 $this->gmap->adjustCenterCoords('-6.247856140071235', '53.34961629053703');
+            }
             $this->gmap->setZoomLevel(7);
         }
 
@@ -180,7 +188,7 @@ class Geolocation extends MY_Controller {
         $content .= $data['onload'] = $this->gmap->printOnLoad();
 
         $content .= $data['map'] = $this->gmap->printMap();
-        $content .= '<div class="small">Lattitude: <span id="latspan"></span>&nbsp;&nbsp;Longitude: <span id="lngspan"></span> </div>';
+        $content .= '<div class="small">'.lang('rr_latitude').': <span id="latspan"></span>&nbsp;&nbsp;'.lang('rr_longitude').': <span id="lngspan"></span> </div>';
 
         $hidden = array('idp' => $provider->getId());
         $action = current_url();
@@ -192,11 +200,11 @@ class Geolocation extends MY_Controller {
         $spacebreak = '<div class="span-23"><hr class="span-23" /></div>';
 
         $formular .= form_open($action, '', $hidden);
-        $formular .=' <label for="latinput">Latitude</label><input type="text" id="latinput"  name="latinput" value="" /><br />
-<label for="lnginput">Longitude</label><input type="text" id="lnginput" name="lnginput" value="" /><br /> ';
+        $formular .=' <label for="latinput">'.lang('rr_latitude').'</label><input type="text" id="latinput"  name="latinput" value="" /><br />
+<label for="lnginput">'.lang('rr_longitude').'</label><input type="text" id="lnginput" name="lnginput" value="" /><br /> ';
         if($locked)
         {
-             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="btn positive" disabled="disabled"><span class="save">cannot add point (locked)</span></button></div>';
+             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="btn positive" disabled="disabled"><span class="save">'.lang('rerror_cannotaddpoint').' ('.lang('rr_locked').')</span></button></div>';
         }
         else
         {
@@ -214,7 +222,7 @@ class Geolocation extends MY_Controller {
         }
         if($locked)
         {
-            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative" disabled="disabled"><span class="remove">Cannot delete (locked)</span></button></div>';
+            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative" disabled="disabled"><span class="remove">'.lang('rerror_cannotdelete').' ('.lang('rr_locked').')</span></button></div>';
            
         }
         else
