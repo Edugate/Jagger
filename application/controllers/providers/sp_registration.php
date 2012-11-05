@@ -30,7 +30,6 @@ class Sp_registration extends MY_Controller {
         $this->load->helper('url');
         $this->tmp_providers = new models\Providers;
         $this->tmp_federations = new models\Federations;
-        $this->lang->load('rr_lang', $this->current_language);
     }
 
     function index() {

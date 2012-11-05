@@ -8,16 +8,31 @@ $lang['home'] = 'Home';
 $lang['federations'] = 'Federations';
 $lang['register'] = 'Register';
 $lang['serviceproviders'] = 'Service Providers';
+$lang['serviceprovider'] = 'Service Provider';
 $lang['serviceprovidersmembers'] = 'Service Providers members';
+$lang['identityprovider'] = 'Identity Provider';
 $lang['identityproviders'] = 'Identity Providers';
 $lang['identityprovidersmembers'] = 'Identity Providers members';
 $lang['bothprovidersmembers'] = 'Members who are IdPs and SPs';
 $lang['rr_provider'] = 'Provider';
 $lang['rr_message'] = 'Message';
-
+$lang['rr_local_authn'] = 'Local authentication';
+$lang['federated_access'] = 'Federated Access';
 $lang['help'] = 'Help';
 $lang['general']='General';
 $lang['rr_metadata'] = 'Metadata';
+$lang['rr_username'] = 'Username';
+$lang['rr_user'] = 'User';
+$lang['rr_users'] = 'Users';
+$lang['rr_users_list'] = 'Users list';
+$lang['rr_newuser'] = 'New user';
+$lang['rr_rmuser'] = 'Remove user';
+$lang['rr_password'] = 'Password';
+$lang['urloggedas'] = 'You are logged in as';
+$lang['rr_list'] = 'List';
+$lang['rr_queue'] = 'Queue';
+$lang['rr_attr_defs'] ='Attribute definitions';
+$lang['rr_meta_importer'] = 'Metadata importer';
 /**
   * SP Registration Form
   */

@@ -19,13 +19,13 @@ $attributes = array('class' => 'span-15', 'id' => 'login');
     <ol>
         <li>
             <?php
-            echo form_label('Username', 'username');
+            echo form_label(lang('rr_username'), 'username');
             echo form_input('username');
             ?>
         </li>
         <li>
 
-            <label for="password">Password</label>
+            <label for="password"><?php echo lang('rr_password');?></label>
             <?php
             echo form_password('password');
             ?>
@@ -35,10 +35,10 @@ $attributes = array('class' => 'span-15', 'id' => 'login');
 
         <?php
         if (!empty($shib_url)) {
-            echo anchor($shib_url, '<button type="button" name="faderated" value="fadetate" class="btn" onclick="window.open(\''.$shib_url.'\',\'_self\')">Federated Access</button>');
+            echo anchor($shib_url, '<button type="button" name="faderated" value="faderated" class="btn" onclick="window.open(\''.$shib_url.'\',\'_self\')">'.lang('federated_access').'</button>');
         }
         ?> 
-        <button type="submit" name="submit" value="Login" class="btn">Local Authentication</button>
+        <button type="submit" name="submit" value="Login" class="btn"><?php echo lang('rr_local_authn'); ?></button>
     </div>
 </fieldset>
 <?php echo form_close(); ?>

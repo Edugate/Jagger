@@ -3,30 +3,45 @@ $lang['login_form'] = 'Formularz logowania';
 $lang['authn_form'] = 'Formularz logowania';
 $lang['login_unsuccessful'] = 'Login unsuccessful';
 $lang['login_successful'] = 'Login successful';
-$lang['access_mngmt'] = 'Zarzadznie prawami dostępu';
+$lang['access_mngmt'] = 'Zarządzanie prawami dostępu';
 $lang['home'] = 'Główna';
 $lang['federations'] = 'Federacje';
-$lang['register'] = 'Rejestestracja';
-$lang['serviceproviders'] = 'Dostawcy serwisu';
+$lang['register'] = 'Rejestracja';
+$lang['serviceproviders'] = 'Dostawcy serwisów';
 $lang['serviceprovidersmembers'] = 'Service Providers members';
+$lang['serviceprovider'] = 'Dostawca serwisu';
 $lang['identityproviders'] = 'Dostawcy tożsamości';
+$lang['identityprovider'] = 'Dostawca tożsamości';
 $lang['identityprovidersmembers'] = 'Identity Providers members';
 $lang['bothprovidersmembers'] = 'Members who are IdPs and SPs';
 $lang['rr_provider'] = 'Dostawca';
 $lang['rr_message'] = 'Komunikat';
-
+$lang['rr_local_authn'] = 'Lokalna autentykacja';
+$lang['federated_access'] = 'Dostęp federacyjny';
 $lang['help'] = 'Pomoc';
 $lang['general']='Ogólne';
-$lang['rr_metadata'] = 'Metadane';
+$lang['rr_metadata'] = 'Metadata';
+$lang['rr_username'] = 'Użytkownik';
+$lang['rr_user'] = 'Użytkownik';
+$lang['rr_users'] = 'Użytkownicy';
+$lang['rr_users_list'] = 'Lista użytkowników';
+$lang['rr_newuser'] = 'Nowy użytkownik';
+$lang['rr_rmuser'] = 'Usuń użytkownika';
+$lang['rr_password'] = 'Hasło';
+$lang['urloggedas'] = 'Zalogowany jako';
+$lang['rr_list'] = 'Lista';
+$lang['rr_queue'] = 'Kolejka';
+$lang['rr_attr_defs'] ='Definicje attrybutów';
+$lang['rr_meta_importer'] = 'Importer metadanych';
 /**
   * SP Registration Form
   */
-$lang['rr_sp_register_title'] = 'Formularz rejestracji dostwacy serwisu';
+$lang['rr_sp_register_title'] = 'Formularz rejestracji Dostawcy Serwisu (Service Provider)';
 
 /**
   * General Information
   */
-$lang['rr_generalinformation'] = "Ogólne informacje";
+$lang['rr_generalinformation'] = "Informacje ogólne";
 
 $lang['rr_resource'] = "Nazwa serwisu";
 $lang['rr_entityid'] = 'EntityID';
@@ -38,7 +53,7 @@ $lang['rr_homeorganisation']= 'Nazwa organizacji' ;
 /** 
   * Technical information
   */
-$lang['rr_technicalinformation'] = 'Techniczne informacje';
+$lang['rr_technicalinformation'] = 'Informacje techniczne';
 
 
 /**
@@ -102,8 +117,8 @@ $lang['rr_validto'] = 'Ważny do';
 $lang['rr_validfrom'] = 'Ważny od';
 
 
-$lang['rr_noticechangearp'] = 'changing this value will change your ARP and metadata urls';
-$lang['rr_notgeneratedbased']='It\'s not generated based on below informations';
+$lang['rr_noticechangearp'] = 'zmiana wartości pociąga za sobą zmianę adresu URL pliku metadata i ARP';
+$lang['rr_notgeneratedbased']='Nie jest generowany na podstawie poniższych informacji';
 $lang['rr_enabledempty'] = 'Static metadata is enabled but it\'s empty';
 
 
@@ -118,7 +133,7 @@ $lang['rr_basicinformation'] = 'Podstawowe informacje';
   */
 $lang['rr_usestaticmetadata'] = 'Use static metadata';
 $lang['rr_staticmetadataxml'] = 'Static metadata xml';
-$lang['rr_metadatageneratedbased'] ='    But metadata is  generated based on below informations';
+$lang['rr_metadatageneratedbased'] ='But metadata is  generated based on below informations';
 
 
 /**
@@ -234,14 +249,14 @@ $lang['rr_descriptivename'] ='Descriptive Name';
 $lang['rr_regauthority'] = 'Registration Authority';
 $lang['rr_regdate'] = 'Data rejestracji';
 $lang['rr_regauthority_alt'] = 'It\'s not set but for metadata generation system will be using';
-$lang['rr_notset'] = 'not set';
-$lang['rr_unlimited'] ='niegraniczony';
+$lang['rr_notset'] = 'b.d.';
+$lang['rr_unlimited'] ='nieograniczony';
 $lang['rr_external'] = 'zewnetrzny';
 $lang['rr_managedlocallyexternal']='Managed locally/External Import';
 $lang['rr_managedlocally']='zarządzany lokalnie';
 $lang['rr_metadata']='Metadane';
-$lang['rr_generatedbelow']='It\'s generated based on below informations';
-$lang['rr_memberof'] = 'Członek';
+$lang['rr_generatedbelow']='Generowany na podstawie poniższych informacji';
+$lang['rr_memberof'] = 'Członkostwo';
 
 /**
  * Technical information
@@ -265,7 +280,7 @@ $lang['rr_servicemetadataurl'] ='Service metadata url';
 
 $lang['rr_defaultspecificarp'] = 'Default and specific attribute release policy';
 
-$lang['rr_logs'] = 'Logs';
+$lang['rr_logs'] = 'Logi';
 
 $lang['rr_expired'] = 'przedawniony';
 $lang['rr_modifications'] = 'Modyfikacje';
@@ -279,7 +294,7 @@ $lang['rr_informationdetail'] = 'Information detail for ';
 
 $lang['rr_staticmetadataactive'] ='Static metadata is active';
 $lang['rr_staticmetadatanotactive'] ='Static metadata is not active';
-$lang['rr_isempty'] = 'is empty';
+$lang['rr_isempty'] = 'jest pusty';
 $lang['rr_setnotactive'] = 'This static metadata is set but not active';
 $lang['rr_setasdefault'] ='static metadata is set as default';
 $lang['rr_certificateexpired'] = 'Certificate is expired. Some service providers may reject to consume this metadata';

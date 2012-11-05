@@ -28,7 +28,6 @@ class Idp_registration extends MY_Controller {
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
         $this->session->set_userdata(array('currentMenu' => 'register'));
-        $this->lang->load('rr_lang', $this->current_language);
     }
 
     function index() {
