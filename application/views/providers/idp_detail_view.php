@@ -12,7 +12,15 @@ if(!empty($alert_message))
 }
 $tmpl = array ( 'table_open'  => '<table id="details" class="zebra">' );
 $this->table->set_template($tmpl);
-$this->table->set_caption('Identity Provider information for: <b>'.$idpname.'</b> '.$edit_link.'');
+if(empty($bookmarked))
+{
+   $bookmark = '<a href="'.base_url().'ajax/bookentity/'.$idpid.'" class="bookentity"><img src="'.base_url().'images/icons/star--plus.png" style="float:right"/></a>';
+}
+else
+{
+   $bookmark = '<a href="'.base_url().'ajax/delbookentity/'.$idpid.'" class="bookentity"><img src="'.base_url().'images/icons/star--minus.png" style="float:right"/></a>';
+}
+$this->table->set_caption('Identity Provider information for: <b>'.$idpname.'</b> '.$edit_link.$bookmark.'');
 //$this->table->set_heading('Name','Detail');
 foreach($idp_details as $row)
 {

@@ -1,7 +1,9 @@
 <?php
+
 namespace models;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * ResourceRegistry3
  * 
@@ -11,7 +13,6 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
-
 /**
  * User Class
  * 
@@ -26,8 +27,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * @Table(name="user")
  * @author janusz
  */
-class User
-{
+class User {
 
     protected $em;
 
@@ -74,8 +74,10 @@ class User
      */
     protected $surname;
 
-
-
+    /**
+     * @Column(type="text", nullable=true)
+     */
+    protected $userpref;
 
     /**
      * creator of all queue entries
@@ -112,7 +114,6 @@ class User
      */
     protected $validated;
 
-
     /**
      * @ManyToMany(targetEntity="AclRole", inversedBy="members")
      * @JoinTable(name="aclrole_members" )
@@ -131,7 +132,7 @@ class User
 
     public function __construct()
     {
-	log_message('debug','User model initiated');
+        log_message('debug', 'User model initiated');
         $this->in_queue = new \Doctrine\Common\Collections\ArrayCollection();
         $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -181,12 +182,11 @@ class User
      */
     public function encryptPassword($password)
     {
-	log_message('debug','Model User: encryptPassword('.$password.')');
-    //    $CI = & get_instance();
-
+        log_message('debug', 'Model User: encryptPassword(' . $password . ')');
+        //    $CI = & get_instance();
         //$salt = $CI->config->item('encryption_key');
         $salt = $this->getSalt();
-	log_message('debug','Model User: encryptPassword: got slat:'.$salt);
+        log_message('debug', 'Model User: encryptPassword: got slat:' . $salt);
         $encrypted_password = sha1($password . $salt);
 
         return $encrypted_password;
@@ -194,26 +194,26 @@ class User
 
     public function setSalt()
     {
-	log_message('debug','Model User: setSalt()');
-	$length = 10;
-	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-	$string = '';
+        log_message('debug', 'Model User: setSalt()');
+        $length = 10;
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $string = '';
         for ($p = 0; $p < $length; $p++)
-	{
-		$string .= $characters[mt_rand(0, (strlen($characters))-1)];
-	}
-	$this->salt = $string;
-	log_message('debug','Model User: salt:'.$this->salt);
-	
-	return $this;
+        {
+            $string .= $characters[mt_rand(0, (strlen($characters)) - 1)];
+        }
+        $this->salt = $string;
+        log_message('debug', 'Model User: salt:' . $this->salt);
+
+        return $this;
     }
 
     public function setRole(AclRole $role)
     {
         $already_there = $this->getRoles()->contains($role);
-        if(empty($already_there))
+        if (empty($already_there))
         {
-             $this->getRoles()->add($role);
+            $this->getRoles()->add($role);
         }
     }
 
@@ -298,39 +298,89 @@ class User
 
     public function setFederatedDisabled()
     {
-		$this->federated = FALSE;
-		return $this;
+        $this->federated = FALSE;
+        return $this;
     }
 
     public function setAccepted()
     {
-		$this->approved = TRUE;
-		return $this;
+        $this->approved = TRUE;
+        return $this;
     }
 
     public function setRejected()
     {
         $this->approved = FALSE;
-		return $this;
+        return $this;
     }
 
     public function setEnabled()
     {
-		$this->enabled = TRUE;
-		return $this;
+        $this->enabled = TRUE;
+        return $this;
     }
 
     public function setDisabled()
     {
-		$this->enabled = FALSE;
-		return $this;
+        $this->enabled = FALSE;
+        return $this;
     }
 
-	public function setIP($ip)
-	{
-		$this->lastip=$ip;
-		return $this;
-	}
+    public function setIP($ip)
+    {
+        $this->lastip = $ip;
+        return $this;
+    }
+
+    public function setUserpref(array $pref)
+    {
+        log_message('debug','setUserpref');
+        $this->userpref = serialize($pref);
+  //      return $this;
+    }
+    public function delEntityFromBookmark($id)
+    {
+       $pref = $this->getUserpref();
+       if(empty($pref) or !is_array($pref))
+       {
+          $pref = array();
+       }
+       else
+       {
+          unset($pref['board']['idp'][$id]);
+          unset($pref['board']['sp'][$id]);
+       }
+       $this->setUserpref($pref);
+    }
+    public function addEntityToBookmark($entid,$entname,$enttype)
+    {
+        log_message('debug','addEntityToBookmark');
+        $pref = $this->getUserpref();
+        if(empty($pref) or !is_array($pref))
+        {
+           $pref = array();
+        }
+        if($enttype == 'IDP')
+        {
+            log_message('debug','addEntityToBookmark : IDP');
+
+            $pref['board']['idp'][$entid] = array('name'=>$entname);
+        }
+        elseif($enttype == 'SP')
+        {
+            log_message('debug','addEntityToBookmark : SP');
+            $pref['board']['sp'][$entid] = array('name'=>$entname);
+        }
+        else
+        {
+            $pref['board']['idp'][$entid] = array('name'=>$entname);
+            $pref['board']['sp'][$entid] = array('name'=>$entname);
+        }
+        log_message('debug',serialize($pref));
+        $this->setUserpref($pref);
+//        return $this;
+       
+    }
 
     public function setValid()
     {
@@ -342,13 +392,13 @@ class User
         $this->validated = FALSE;
     }
 
-	/**
-	 * @PreUpdate
-	 */
-	public function updated()
-	{
-		$this->lastlogin = new \DateTime("now");
-	}
+    /**
+     * @PreUpdate
+     */
+    public function updated()
+    {
+        $this->lastlogin = new \DateTime("now");
+    }
 
     public function getId()
     {
@@ -359,9 +409,10 @@ class User
     {
         return $this->username;
     }
+
     public function getFullname()
     {
-        $fullname = $this->givenname." ".$this->surname;
+        $fullname = $this->givenname . " " . $this->surname;
         return $fullname;
     }
 
@@ -374,38 +425,48 @@ class User
     {
         return $this->password;
     }
-	/**
-	 * getBasic is used by j_auth lib to creta sessiondata
+
+    /**
+     * getBasic is used by j_auth lib to creta sessiondata
      */
-	public function getBasic()
+    public function getBasic()
     {
-       $data = array('username'=>$this->getUsername(),
-					  'user_id'=>$this->getId());
-       return $data;
+        $data = array('username' => $this->getUsername(),
+            'user_id' => $this->getId());
+        return $data;
     }
+
     public function getSalt()
     {
-	log_message('debug','Model:User run getSalt() ');
-	return $this->salt;
+        log_message('debug', 'Model:User run getSalt() ');
+        return $this->salt;
     }
-  
+
+    public function getUserpref()
+    {
+        return unserialize($this->userpref);
+    }
+
     public function isEnabled()
     {
-       return $this->enabled;
+        return $this->enabled;
     }
+
     public function getFederated()
     {
-      return $this->federated;
+        return $this->federated;
     }
+
     public function getLocal()
     {
-      return $this->local;
+        return $this->local;
     }
 
     public function getLastlogin()
     {
-      return $this->lastlogin;
+        return $this->lastlogin;
     }
+
     public function getIp()
     {
         return $this->lastip;
@@ -415,16 +476,16 @@ class User
     {
         return $this->roles;
     }
+
     public function getRoleNames()
     {
         $rolename = array();
         $roles = $this->getRoles();
-        foreach($roles as $r)
+        foreach ($roles as $r)
         {
-          $rolename[]=$r->getName();
+            $rolename[] = $r->getName();
         }
         return $rolename;
-        
     }
 
     // End method stubs

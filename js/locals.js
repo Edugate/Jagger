@@ -35,6 +35,17 @@ $(document).ready(function() {
         
             return false;   
         });
+    $("a.bookentity").click(function(){
+        var link = $(this), url = link.attr("href");
+        
+        $.ajax({
+            url: url,
+            timeout: 2500,
+            cache: false
+           });
+        
+            return false;   
+        });
     });
 
     $(function() {

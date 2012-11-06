@@ -46,6 +46,59 @@ class Ajax extends MY_Controller {
             log_message('debug', 'noajax');
         }
     }
+    public function bookentity($id)
+    {
+        if ($this->input->is_ajax_request())
+        {
+           log_message('debug','bookentity: got ajax request');
+           $this->load->library('j_auth');
+           $loggedin = $this->j_auth->logged_in();
+           if($loggedin)
+           {
+              log_message('debug','bookentity: loggedin');
+              $username = $this->j_auth->current_user();
+              $u = $this->em->getRepository("models\User")->findOneBy(array('username'=>$username));
+              $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$id));
+              if(!empty($u) && !empty($ent))
+              {
+                 $enttype = $ent->getType();
+                 $entname = $ent->getName();
+                 $entid = $ent->getId();
+                 $u->addEntityToBookmark($entid,$entname,$enttype);
+                 $this->em->persist($u);
+                 $userprefs = $u->getUserpref();
+                 $this->session->set_userdata(array('board'=> $userprefs['board']));
+                 $this->em->flush();
+              } 
+           }
+           else
+           {
+              log_message('debug','bookentity: not  loggedin');
+           }
+        }
+    }
+
+    public function delbookentity($id)
+    {
+       if ($this->input->is_ajax_request())
+       {
+           $this->load->library('j_auth');
+           $loggedin = $this->j_auth->logged_in();
+           if($loggedin && is_numeric($id))
+           {
+                $username = $this->j_auth->current_user();
+                $u = $this->em->getRepository("models\User")->findOneBy(array('username'=>$username));
+                if(!empty($u))
+                {
+                    $u->delEntityFromBookmark($id);
+                    $this->em->persist($u);
+                    $userprefs = $u->getUserpref();
+                    $this->session->set_userdata(array('board'=> $userprefs['board']));
+                    $this->em->flush();
+                }
+           }
+       }
+    }
 
 }
 

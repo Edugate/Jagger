@@ -64,6 +64,12 @@ class J_auth {
                  * @todo set groups
                  */
                 $ip = $_SERVER['REMOTE_ADDR'];
+                $userprefs = $u->getUserpref();
+                if(!empty($userprefs) && array_key_exists('board',$userprefs))
+                {
+                    $this->ci->session->set_userdata(array('board'=> $userprefs['board']));
+                }
+             
                 $u->setIP($ip);
                 $u->updated();
                 $this->em->persist($u);

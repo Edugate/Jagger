@@ -5,11 +5,19 @@ if(!empty($error_message))
 {
     echo "<span class=\"alert\">".$error_message."</span>";
 }
+if(empty($bookmarked))
+{
+   $bookmark = '<a href="'.base_url().'ajax/bookentity/'.$spid.'" class="bookentity"><img src="'.base_url().'images/icons/star--plus.png" style="float:right"/></a>';
+}
+else
+{
+   $bookmark = '<a href="'.base_url().'ajax/delbookentity/'.$spid.'" class="bookentity"><img src="'.base_url().'images/icons/star--minus.png" style="float:right"/></a>';
+}
 if(!empty($spname))
 {
 $tmpl = array ( 'table_open'  => '<table id="details" class="zebra">' );
 $this->table->set_template($tmpl);
-$this->table->set_caption('Service Provider information for: <b>'.$spname."</b> ".$edit_link."");
+$this->table->set_caption('Service Provider information for: <b>'.$spname.'</b> '.$edit_link.$bookmark.'');
 foreach($sp_details as $row)
 {
     if(array_key_exists('header', $row))

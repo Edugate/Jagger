@@ -95,6 +95,12 @@ class Provider_detail extends MY_Controller {
             show_error(lang('rerror_idpnotfound'), 404);
             return;
         }
+
+        $b = $this->session->userdata('board');
+        if(!empty($b) && is_array($b) && isset($b['idp'][$id]))
+        {
+           $data['bookmarked'] = true;
+        }
         $resource = $idp->getId();
         $data['idpid'] = $resource;
         $group = 'idp';
@@ -653,6 +659,11 @@ class Provider_detail extends MY_Controller {
         {
             log_message('error', $this->mid . 'Service Provider with id:' . $id . ' not found');
             show_error('Service Provider not found', 404);
+        }
+        $b = $this->session->userdata('board');
+        if(!empty($b) && is_array($b) && isset($b['sp'][$id]))
+        {
+           $data['bookmarked'] = true;
         }
 
         $resource = $sp->getId();

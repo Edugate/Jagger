@@ -41,6 +41,7 @@ class Dashboard extends MY_Controller {
 
     function index()
     {
+        $this->load->library('table');
         $q = $this->em->getRepository("models\Queue")->findAll();
         $this->inqueue = count($q);
 
@@ -58,6 +59,40 @@ class Dashboard extends MY_Controller {
         else
         {
             $this->title = "Dashboard";
+            $board = $this->session->userdata('board');
+	    
+            $idps = array();
+            $sps = array();
+            $feds = array();
+            if(!empty($board)&& is_array($board))
+            {
+                if(array_key_exists('idp',$board) && is_array($board['idp'])) 
+                {
+                    foreach($board['idp'] as $key=>$value)
+                    {
+                        $idps[$key] = '<a href="'.base_url().'providers/provider_detail/idp/'.$key.'">'.$value['name'].'</a>';
+                    }
+                }
+                if(array_key_exists('sp',$board) && is_array($board['sp'])) 
+                {
+                    foreach($board['sp'] as $key=>$value)
+                    {
+                        $sps[$key] = '<a href="'.base_url().'providers/provider_detail/sp/'.$key.'">'.$value['name'].'</a>';
+                    }
+                }
+                if(array_key_exists('fed',$board) && is_array($board['fed'])) 
+                {
+                    foreach($board['fed'] as $key=>$value)
+                    {
+                        $feds[$key] = '<a href="'.base_url().'federations/manage/show/'.base64url_encode($value['name']).'">'.$value['name'].'</a>';
+                    }
+                }
+            }
+
+            $data['idps'] = $idps;
+            $data['sps'] = $sps;
+            $data['feds'] = $feds;
+             
             $data['content_view'] = 'default_body';
             $this->load->view('page', $data);
         }
