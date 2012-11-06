@@ -334,52 +334,77 @@ class User {
 
     public function setUserpref(array $pref)
     {
-        log_message('debug','setUserpref');
+        log_message('debug', 'setUserpref');
         $this->userpref = serialize($pref);
-  //      return $this;
+        //      return $this;
     }
+
     public function delEntityFromBookmark($id)
     {
-       $pref = $this->getUserpref();
-       if(empty($pref) or !is_array($pref))
-       {
-          $pref = array();
-       }
-       else
-       {
-          unset($pref['board']['idp'][$id]);
-          unset($pref['board']['sp'][$id]);
-       }
-       $this->setUserpref($pref);
-    }
-    public function addEntityToBookmark($entid,$entname,$enttype)
-    {
-        log_message('debug','addEntityToBookmark');
         $pref = $this->getUserpref();
-        if(empty($pref) or !is_array($pref))
+        if (empty($pref) or !is_array($pref))
         {
-           $pref = array();
-        }
-        if($enttype == 'IDP')
-        {
-            log_message('debug','addEntityToBookmark : IDP');
-
-            $pref['board']['idp'][$entid] = array('name'=>$entname);
-        }
-        elseif($enttype == 'SP')
-        {
-            log_message('debug','addEntityToBookmark : SP');
-            $pref['board']['sp'][$entid] = array('name'=>$entname);
+            $pref = array();
         }
         else
         {
-            $pref['board']['idp'][$entid] = array('name'=>$entname);
-            $pref['board']['sp'][$entid] = array('name'=>$entname);
+            unset($pref['board']['idp'][$id]);
+            unset($pref['board']['sp'][$id]);
         }
-        log_message('debug',serialize($pref));
         $this->setUserpref($pref);
-//        return $this;
-       
+    }
+
+    public function delFedFromBookmark($id)
+    {
+        $pref = $this->getUserpref();
+        if (empty($pref) or !is_array($pref))
+        {
+            $pref = array();
+        }
+        else
+        {
+            unset($pref['board']['fed'][$id]);
+        }
+        $this->setUserpref($pref);
+    }
+
+    public function addEntityToBookmark($entid, $entname, $enttype,$entityid)
+    {
+        log_message('debug', 'addEntityToBookmark');
+        $pref = $this->getUserpref();
+        if (empty($pref) or !is_array($pref))
+        {
+            $pref = array();
+        }
+        if ($enttype == 'IDP')
+        {
+            log_message('debug', 'addEntityToBookmark : IDP');
+
+            $pref['board']['idp'][$entid] = array('name' => $entname,'entity'=>$entityid);
+        }
+        elseif ($enttype == 'SP')
+        {
+            log_message('debug', 'addEntityToBookmark : SP');
+            $pref['board']['sp'][$entid] = array('name' => $entname,'entity'=>$entityid);
+        }
+        else
+        {
+            $pref['board']['idp'][$entid] = array('name' => $entname,'entity'=>$entityid);
+            $pref['board']['sp'][$entid] = array('name' => $entname,'entity'=>$entityid);
+        }
+        $this->setUserpref($pref);
+    }
+
+    public function addFedToBookmark($fedid, $fedname, $fedencoded)
+    {
+        log_message('debug', 'addFedToBookmark');
+        $pref = $this->getUserpref();
+        if (empty($pref) or !is_array($pref))
+        {
+            $pref = array();
+        }
+        $pref['board']['fed'][$fedid] = array('name' => $fedname, 'url' => $fedencoded);
+        $this->setUserpref($pref);
     }
 
     public function setValid()

@@ -354,6 +354,31 @@ div.den {
   width: 20px;
   
 }
+div.dashboard {
+    text-align: center;
+    ul {
+       list-style-type: none;        
+       text-align: left;
+       margin-left: 10px;
+    }
+    #idps,#sps,#feds {
+      background-color: $tr-odd-back-color;
+      min-height: 200px;
+      h3 {
+           padding: 5px;
+           background-color: darken($tr-odd-back-color,10%);
+
+       }
+   }
+}
+div.dashboardtitle {
+  text-align: center; 
+  background-color:  #384063 ;
+  padding: 10px;
+  h3 {
+    color: white;
+  }
+}
 
 @include sticky-footer(50px, "#oko","#inpre_footer","#footer");
 

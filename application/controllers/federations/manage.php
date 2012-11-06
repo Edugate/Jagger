@@ -206,6 +206,14 @@ class Manage extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+        $data['federation_id'] = $federation->getId();
+        $bookmarked = false;
+        $b = $this->session->userdata('board');
+        if(!empty($b) and is_array($b) and isset($b['fed'][$data['federation_id']]))
+        {
+            $bookmarked = true;
+        }
+        $data['bookmarked'] = $bookmarked;
         $data['federation_name'] = $federation->getName();
         $data['federation_urn'] = $federation->getUrn();
         $data['federation_desc'] = $federation->getDescription();

@@ -70,21 +70,21 @@ class Dashboard extends MY_Controller {
                 {
                     foreach($board['idp'] as $key=>$value)
                     {
-                        $idps[$key] = '<a href="'.base_url().'providers/provider_detail/idp/'.$key.'">'.$value['name'].'</a>';
+                        $idps[$key] = '<a href="'.base_url().'providers/provider_detail/idp/'.$key.'">'.$value['name'].'</a><br /> <small>'.$value['entity'].'</small>';
                     }
                 }
                 if(array_key_exists('sp',$board) && is_array($board['sp'])) 
                 {
                     foreach($board['sp'] as $key=>$value)
                     {
-                        $sps[$key] = '<a href="'.base_url().'providers/provider_detail/sp/'.$key.'">'.$value['name'].'</a>';
+                        $sps[$key] = '<a href="'.base_url().'providers/provider_detail/sp/'.$key.'">'.$value['name'].'</a><br /><small>'.$value['entity'].'</small>';
                     }
                 }
                 if(array_key_exists('fed',$board) && is_array($board['fed'])) 
                 {
                     foreach($board['fed'] as $key=>$value)
                     {
-                        $feds[$key] = '<a href="'.base_url().'federations/manage/show/'.base64url_encode($value['name']).'">'.$value['name'].'</a>';
+                        $feds[$key] = '<a href="'.base_url().'federations/manage/show/'.$value['url'].'">'.$value['name'].'</a>';
                     }
                 }
             }

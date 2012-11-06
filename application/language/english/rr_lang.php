@@ -1,4 +1,5 @@
 <?php
+$lang['quick_access'] = 'Quick access';
 $lang['login_form'] = 'Login Form';
 $lang['authn_form'] = 'Authentication form';
 $lang['login_unsuccessful'] = 'Login unsuccessful';
