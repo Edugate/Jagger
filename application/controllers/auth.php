@@ -185,8 +185,13 @@ class Auth extends MY_Controller {
              show_error($this->mid.'your account is disabled or you cannot use federated access',403);
           }
           $session_data =  $user->getBasic();
+          $userprefs = $user->getUserpref();
           
           $this->session->set_userdata($session_data);
+          if(!empty($userprefs) && array_key_exists('board',$userprefs))
+          {
+                 $this->session->set_userdata(array('board'=> $userprefs['board']));
+          }
           $_SESSION['username']=$session_data['username'];
           $_SESSION['user_id'] = $session_data['user_id'];
           $_SESSION['logged'] = 1;
