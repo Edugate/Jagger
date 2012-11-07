@@ -114,4 +114,11 @@ $config['geocenterpoint']  = array('-6.247856140071235','53.34961629053703');
 /**
  * styles
  */
+/**
+ * translator access
+ * example: $config['translator_access']['pl'] = 'USERNAME_WITH_ACCESS';
+ */
+$config['translator_access']['pl'] = null;
+$config['translator_access']['pt'] = null;
+$config['translator_access']['it'] = null;
 
