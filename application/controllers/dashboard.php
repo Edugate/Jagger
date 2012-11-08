@@ -58,8 +58,19 @@ class Dashboard extends MY_Controller {
         }
         else
         {
-            $this->title = "Dashboard";
+            $this->title = lang('dashboard');
             $board = $this->session->userdata('board');
+            if(empty($board))
+            {
+                 $cur_user = $this->j_auth->current_user();
+                 $u=$this->em->getRepository("models\User")->findOneBy(array('username'=>$cur_user));
+
+                 $pref = $u->getUserpref();
+                 if(!empty($pref))
+                 {
+                    $board = $pref['board'];
+                 }
+            }
 	    
             $idps = array();
             $sps = array();

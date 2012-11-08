@@ -239,13 +239,13 @@ class Manage extends MY_Controller {
         $data['tbl'][] = array('data' => array('data' => lang('rr_basicinformation').' '.$edit_link, 'class' => 'highlight', 'colspan' => 2));
         if (empty($data['federation_is_active']))
         {
-            $data['tbl'][] = array('<span class="alert">warning!</span>', '<b>'.lang('rr_fed_inactive_full').'</b>');
+            $data['tbl'][] = array('<span class="alert">'.lang('rr_warning').'<span>', '<b>'.lang('rr_fed_inactive_full').'</b>');
         }
         $data['tbl'][] = array(lang('rr_fed_name'), $federation->getName());
         $data['tbl'][] = array(lang('rr_fed_urn'), $federation->getUrn());
         $data['tbl'][] = array(lang('rr_fed_desc'), $federation->getDescription());
         $data['tbl'][] = array(lang('rr_fed_tou'), $federation->getTou());
-        $data['tbl'][] = array('Federation owner/creator', $federation->getOwner());
+        $data['tbl'][] = array(lang('rr_fedownercreator'), $federation->getOwner());
         $idp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/idp', lang('rr_fed_cntidps_list'));
         $sp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/sp', lang('rr_fed_cntisps_list'));
         $all_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'', lang('rr_fed_cnt_list'));
@@ -335,7 +335,7 @@ class Manage extends MY_Controller {
         if (!$has_read_access)
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = "No access to view federations list";
+            $data['error'] = lang('rerror_nopermfedlistview');
             $this->load->view('page', $data);
             return;
         }
@@ -377,7 +377,7 @@ class Manage extends MY_Controller {
             if (!$has_addbulk_access)
             {
                 $data['content_view'] = 'nopermission';
-                $data['error'] = "No access ";
+                $data['error'] = lang('rr_noperm');
                 $this->load->view('page', $data);
                 return;
             }
@@ -542,7 +542,6 @@ class Manage extends MY_Controller {
                 $inv_member_federations = $inv_member->getFederations();
                 if ($inv_member_federations->contains($federation))
                 {
-                    //$data['error'] = "Provider already member of " . $federation->getName();
                     $data['error'] = sprintf(lang('rr_provideralready_member_of'),$federation->getName());
                 }
                 else

@@ -15,11 +15,14 @@ $(document).ready(function() {
     var refreshId = setInterval(function() {
         $("#responsecontainer").load('awaiting/ajaxrefresh');
     }, 9000);
+    $("#dashresponsecontainer").load("reports/awaiting/dashajaxrefresh");
+    var refreshId = setInterval(function() {
+        $("#dashresponsecontainer").load('reports/awaiting/dashajaxrefresh');
+    }, 9000);
+
     $.ajaxSetup({
         cache: false
     });
-});
-$(document).ready(function() {
    
     $.ajaxSetup ({
         cache: false

@@ -20,8 +20,7 @@ else
 {
    $bookmark = '<a href="'.base_url().'ajax/delbookentity/'.$idpid.'" class="bookentity"><img src="'.base_url().'images/icons/star--minus.png" style="float:right"/></a>';
 }
-$this->table->set_caption('Identity Provider information for: <b>'.$idpname.'</b> '.$edit_link.$bookmark.'');
-//$this->table->set_heading('Name','Detail');
+$this->table->set_caption(lang('identityprovider').': <b>'.$idpname.'</b> '.$edit_link.$bookmark.'');
 foreach($idp_details as $row)
 {
     if(array_key_exists('header', $row))

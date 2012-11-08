@@ -208,7 +208,7 @@ class Geolocation extends MY_Controller {
         }
         else
         {
-             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="btn positive"><span class="save">add point</span></button></div>';
+             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="btn positive"><span class="save">'.lang('rr_addpoint').'</span></button></div>';
         }
         $formular .= form_close();
         $formular .='</span>';
@@ -227,7 +227,7 @@ class Geolocation extends MY_Controller {
         }
         else
         {
-            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative"><span class="remove">Remove selected points</span></button></div>';
+            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative"><span class="remove">'.lang('rr_rmselectedpoints').'</span></button></div>';
         }
         $formular2 .= form_close() . '</span>';
 

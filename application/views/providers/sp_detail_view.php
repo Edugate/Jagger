@@ -17,7 +17,7 @@ if(!empty($spname))
 {
 $tmpl = array ( 'table_open'  => '<table id="details" class="zebra">' );
 $this->table->set_template($tmpl);
-$this->table->set_caption('Service Provider information for: <b>'.$spname.'</b> '.$edit_link.$bookmark.'');
+$this->table->set_caption(lang('serviceprovider').': <b>'.$spname.'</b> '.$edit_link.$bookmark.'');
 foreach($sp_details as $row)
 {
     if(array_key_exists('header', $row))

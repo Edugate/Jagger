@@ -235,7 +235,7 @@ class Provider_detail extends MY_Controller {
 
         $data['idp_details'][$i]['name'] = lang('rr_description');
         $data['idp_details'][$i++]['value'] = htmlentities($idp->getDescription());
-        $data['idp_details'][$i]['name'] = lang('rr_homeorganisationurl') . '<small> ' . lang('rr_notincludedmetadata') . '</small>';
+        $data['idp_details'][$i]['name'] = lang('rr_homeorganisationurl') . '<small> (' . lang('rr_notincludedmetadata') . ')</small>';
         $homeUrl = $idp->getHomeUrl();
         if (!empty($homeUrl))
         {
@@ -245,7 +245,7 @@ class Provider_detail extends MY_Controller {
         {
             $data['idp_details'][$i++]['value'] = lang("rr_notset");
         }
-        $data['idp_details'][$i]['name'] = lang('rr_helpdeskurl') . '<small> ' . lang('rr_includedmetadata') . '</small>';
+        $data['idp_details'][$i]['name'] = lang('rr_helpdeskurl') . '<small> (' . lang('rr_includedmetadata') . ')</small>';
         $data['idp_details'][$i++]['value'] = anchor($idp->getHelpdeskURL());
 
         $data['idp_details'][$i]['name'] = lang('rr_privacystatement');
@@ -429,7 +429,7 @@ class Provider_detail extends MY_Controller {
         $encoded_entityid = base64url_encode($idp->getEntityId());
         $arp_url = base_url() . 'arp/format2/' . $encoded_entityid . '/arp.xml';
         $data['idp_details'][$i]['name'] = lang('rr_individualarpurl');
-        $data['idp_details'][$i++]['value'] = '<span class="accordionButton">ARP URL</span><span class="accordionContent"><br />' . $arp_url . '&nbsp;</span>&nbsp;' . anchor_popup($arp_url, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $data['idp_details'][$i++]['value'] = '<span class="accordionButton">'.lang('rr_arpurl').'</span><span class="accordionContent"><br />' . $arp_url . '&nbsp;</span>&nbsp;' . anchor_popup($arp_url, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         //
         $tmp_logs = new models\Trackers;
         $arp_logs = $tmp_logs->getArpDownloaded($idp);
@@ -458,7 +458,7 @@ class Provider_detail extends MY_Controller {
         }
         if (($no_protocols < 1) && !$idp->getStatic())
         {
-            $data['alert_message'][] = 'Supported protocols is not set';
+            $data['alert_message'][] = lang('rr_supportedprotocolsnotset');
         }
         $data['idp_details'][$i++]['value'] = trim($protocols);
 
@@ -476,7 +476,7 @@ class Provider_detail extends MY_Controller {
         $no_of_serviceLocations = count($serviceLocations);
         if ($no_of_serviceLocations < 1 && !$idp->getStatic())
         {
-            $data['alert_message'][] = 'ServiceLocations: SingleSignOnService is not set';
+            $data['alert_message'][] = lang('rr_servicelocations').': SingleSignOnService '.lang('rr_is_not_set');
         }
 
 
@@ -512,7 +512,7 @@ class Provider_detail extends MY_Controller {
             $c_certData = $c->getCertData();
             if (!empty($c_certKeyname))
             {
-                $cString .='<b>Keyname:</b> <span>' . $c_certKeyname . '</span><br />';
+                $cString .='<b>'.lang('rr_keyname').':</b> <span>' . $c_certKeyname . '</span><br />';
             }
 
             $data['idp_details'][$i]['name'] = '';
@@ -530,9 +530,9 @@ class Provider_detail extends MY_Controller {
                 }
                 if (!empty($c_fingerprint))
                 {
-                    $cString .='<b>Fingerprint:</b> <span>' . $c_fingerprint . '</span><br />';
+                    $cString .='<b>'.lang('rr_fingerprint').':</b> <span>' . $c_fingerprint . '</span><br />';
                 }
-                $cString .= '<span class="accordionButton"><b>Certificate body</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
+                $cString .= '<span class="accordionButton"><b>'.lang('rr_certbody').'</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                 $val = $c->getTimeValid('days');
                 if ($val > 30)
                 {
@@ -542,11 +542,11 @@ class Provider_detail extends MY_Controller {
                 {
 
                     $data['idp_details'][$i]['name'] = '<span class="notice">' . lang('rr_expired') . '</span>';
-                    $data['alert_message'][] = lang("rr_certificateexpired");
+                    $data['alert_message'][] = lang('rr_certificateexpired');
                 }
                 else
                 {
-                    $data['idp_details'][$i]['name'] = '<span class="notice">' . $val . ' days to expire</span>';
+                    $data['idp_details'][$i]['name'] = '<span class="notice">' . $val . ' '.lang('rr_daystoexpire').'</span>';
                 }
             }
             $data['idp_details'][$i++]['value'] = $cString;
@@ -587,14 +587,14 @@ class Provider_detail extends MY_Controller {
 
         $data['idp_details'][$i++]['header'] = lang('rr_homeorgadmin');
 
-        $data['idp_details'][$i]['name'] = 'Manage status';
+        $data['idp_details'][$i]['name'] = lang('rr_managestatus');
         if ($has_manage_access)
         {
-            $data['idp_details'][$i++]['value'] = 'Lock/Unlock Enable/Disable' . anchor(base_url() . 'manage/entitystate/modify/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $data['idp_details'][$i++]['value'] = lang('rr_lock').'/'.lang('rr_unlock').' '.lang('rr_enable').'/'.lang('rr_disable').' '. anchor(base_url() . 'manage/entitystate/modify/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         }
         else
         {
-            $data['idp_details'][$i++]['value'] = 'Lock/Unlock Enable/Disable <img src="' . base_url() . 'images/icons/prohibition.png"/>';
+            $data['idp_details'][$i++]['value'] = lang('rr_lock').'/'.lang('rr_unlock').' '.lang('rr_enable').'/'.lang('rr_disable').' <img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
         $data['idp_details'][$i]['name'] = '';
         if ($has_manage_access)
@@ -751,7 +751,7 @@ class Provider_detail extends MY_Controller {
 
         $data['sp_details'][$i]['name'] = lang('rr_description');
         $data['sp_details'][$i++]['value'] = htmlentities($sp->getDescription()) ;
-        $data['sp_details'][$i]['name'] = lang('rr_homeorganisationurl') . '<small>(not included in metadata)</small>';
+        $data['sp_details'][$i]['name'] = lang('rr_homeorganisationurl') . '<small>('.lang('rr_notincludedmetadata').')</small>';
         $homeUrl = $sp->getHomeUrl();
         if (!empty($homeUrl))
         {
@@ -763,7 +763,7 @@ class Provider_detail extends MY_Controller {
         }
         $helpurl = $sp->getHelpdeskURL();
 
-        $data['sp_details'][$i]['name'] = lang('rr_helpdeskurl') . '<small>(included in metadata)</small>';
+        $data['sp_details'][$i]['name'] = lang('rr_helpdeskurl') . '<small>('.lang('rr_includedmetadata').')</small>';
         if (!empty($helpurl))
         {
             $data['sp_details'][$i++]['value'] = anchor($helpurl);
@@ -784,7 +784,7 @@ class Provider_detail extends MY_Controller {
         }
         if (!$sp->getIsValidFromTo())
         {
-            $data['sp_details'][$i++]['2cols'] = '<div class="alert">Valid From/To doesn\'t match current date. Your entity won\'t appear in metadata</div>';
+            $data['sp_details'][$i++]['2cols'] = '<div class="alert">'.lang('rr_validfromto_notmatched1').'</div>';
         }
 
         $data['sp_details'][$i]['name'] = lang('rr_validfrom');
@@ -809,7 +809,7 @@ class Provider_detail extends MY_Controller {
         if ($locked)
         {
             $data['sp_details'][$i]['name'] = 'Status';
-            $data['sp_details'][$i++]['value'] = '' . $lockicon . '<b>Locked (cannot be edited)</b>';
+            $data['sp_details'][$i++]['value'] = '' . $lockicon . '<b>'.lang('rr_lockedentity').'</b>';
         }
         if (!$sp->getActive())
         {
@@ -840,7 +840,7 @@ class Provider_detail extends MY_Controller {
         }
 
         $data['sp_details'][$i++]['header'] = '<span id="federation"></span>' . lang('rr_federation');
-        $data['sp_details'][$i]['name'] = 'Member of';
+        $data['sp_details'][$i]['name'] = lang('rr_memberof');
         $federationsString = "";
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
         $feds = $sp->getFederations();
@@ -851,7 +851,7 @@ class Provider_detail extends MY_Controller {
             {
                 $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getName()));
                 $metalink = base_url('metadata/federation/' . base64url_encode($f->getName()) . '/metadata.xml');
-                $federationsString .= '<li>' . anchor($fedlink, $f->getName()) . ' <span class="accordionButton">metadata URL:</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
+                $federationsString .= '<li>' . anchor($fedlink, $f->getName()) . ' <span class="accordionButton">'.lang('rr_metadataurl').':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
             }
             $federationsString .='</ul>';
             $manage_membership = '';
@@ -859,22 +859,22 @@ class Provider_detail extends MY_Controller {
             {
                 if (!$locked)
                 {
-                    $manage_membership .= '<b>Manage membership (leaving)</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                    $manage_membership .= '<b>'.lang('rr_federationleave').'</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
                 }
                 else
                 {
-                    $manage_membership .= '<b>Manage membership (leaving)</b> ' . $lockicon . ' <br />';
+                    $manage_membership .= '<b>'.lang('rr_federationleave').'</b> ' . $lockicon . ' <br />';
                 }
             }
             if ($has_write_access && ($feds->count() < count($all_federations)))
             {
                 if (!$locked)
                 {
-                    $manage_membership .= '<b>Manage membership (joining)</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                    $manage_membership .= '<b>'.lang('rr_federationjoin').'</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
                 }
                 else
                 {
-                    $manage_membership .= '<b>Manage membership (joining)</b> ' . $lockicon . '<br />';
+                    $manage_membership .= '<b>'.lang('rr_federationjoin').'</b> ' . $lockicon . '<br />';
                 }
             }
         }
@@ -951,7 +951,7 @@ class Provider_detail extends MY_Controller {
                 $def = '';
                 if ($s->getDefault())
                 {
-                    $def = '<i>(default)</i>';
+                    $def = '<i>('.lang('rr_default').')</i>';
                 }
                 $acs .= '<b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small><br />';
             }
@@ -970,12 +970,24 @@ class Provider_detail extends MY_Controller {
         {
             $cString = "";
             $c_certUse = $c->getCertUse();
+            if($c_certUse == 'signing')
+            {
+               $lang_c_certUse = lang('rr_certsigning');
+            }
+            elseif($c_certUse == 'encryption')
+            {
+              $lang_c_certUse = lang('rr_certencryption');
+            }
+            else
+            {
+              $lang_c_certUse = '';
+            }
             $c_certKeyname = $c->getKeyname();
             $c_certData = $c->getCertData();
-            $cString .= '<b>Usage: </b>' . $c_certUse . ': <br />';
+            $cString .= '<b>'.lang('rr_certusage').': </b>' . $lang_c_certUse . ': <br />';
             if (!empty($c_certKeyname))
             {
-                $cString .= '<b>KeyName:</b> ' . $c_certKeyname . '<br />';
+                $cString .= '<b>'.lang('rr_keyname').':</b> ' . $c_certKeyname . '<br />';
             }
             if (!empty($c_certData))
             {
@@ -1008,7 +1020,7 @@ class Provider_detail extends MY_Controller {
             }
             else
             {
-                $data['sp_details'][$i]['name'] = '<span class="notice">' . $val . ' days to expire</span>';
+                $data['sp_details'][$i]['name'] = '<span class="notice">' . $val . ' '.lang('rr_daystoexpire').'</span>';
             }
             $data['sp_details'][$i++]['value'] = $cString;
         }
@@ -1040,7 +1052,7 @@ class Provider_detail extends MY_Controller {
         if ($requiredAttributes->count() == 0)
         {
             $data['sp_details'][$i]['name'] = '';
-            $data['sp_details'][$i++]['value'] = '<span class="notice">No requirement specified. It may inherit requirement from federation</span>';
+            $data['sp_details'][$i++]['value'] = '<span class="notice">'.lang('rr_noregspecified_inherit_from_fed').'</span>';
         }
         else
         {
@@ -1056,14 +1068,14 @@ class Provider_detail extends MY_Controller {
         $data['sp_details'][$i++]['header'] = lang('rr_logs');
 
         $data['sp_details'][$i++]['header'] = lang('rr_admins');
-        $data['sp_details'][$i]['name'] = 'Manage status';
+        $data['sp_details'][$i]['name'] = lang('rr_managestatus');
         if ($has_manage_access)
         {
-            $data['sp_details'][$i++]['value'] = 'Lock/Unlock Enable/Disable' . anchor(base_url() . 'manage/entitystate/modify/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $data['sp_details'][$i++]['value'] = lang('rr_lock').'/'.lang('rr_unlock').' '.lang('rr_enable').'/'.lang('rr_disable').' ' . anchor(base_url() . 'manage/entitystate/modify/' . $sp->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         }
         else
         {
-            $data['sp_details'][$i++]['value'] = 'Lock/Unlock Enable/Disable <img src="' . base_url() . 'images/icons/prohibition.png"/>';
+            $data['sp_details'][$i++]['value'] =  lang('rr_lock').'/'.lang('rr_unlock').' '.lang('rr_enable').'/'.lang('rr_disable').' <img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
         $data['sp_details'][$i]['name'] = '';
         if ($has_manage_access)

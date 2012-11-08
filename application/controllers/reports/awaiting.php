@@ -98,6 +98,48 @@ class Awaiting extends MY_Controller {
         $data['content_view'] = 'reports/awaiting_list_view';
         $this->load->view('reports/awaiting_list_view', $data);
     }
+    function dashajaxrefresh()
+    {
+       if($this->input->is_ajax_request())
+        {
+        $queueArray = $this->em->getRepository("models\Queue")->findAll();
+        $kid = 0;
+        foreach ($queueArray as $q)
+        {
+            $c_creator = 'anonymous';
+            $creator = $q->getCreator();
+            $request_type = $q->getType();
+            $request_action = $q->getAction();
+            $access = true;
+            if (!empty($creator))
+            {
+                $c_creator = $creator->getUsername();
+            }
+            if ($access)
+            {
+                $data['list'][$kid]['requester'] = $c_creator;
+                $data['list'][$kid]['idate'] = $q->getCreatedAt();
+                $data['list'][$kid]['datei'] = $q->getCreatedAt();
+                $data['list'][$kid]['iname'] = $q->getName();
+                $data['list'][$kid]['qid'] = $q->getID();
+                $data['list'][$kid]['mail'] = $q->getEmail();
+                $data['list'][$kid]['type'] = $q->getType();
+                $data['list'][$kid]['action'] = $q->getAction();
+                $data['list'][$kid]['token'] = $q->getToken();
+                $data['list'][$kid]['confirmed'] = $q->getConfirm();
+                $kid++;
+            }
+        }
+
+        $data['content_view'] = 'reports/dashawaiting_list_view';
+        $this->load->view('reports/dashawaiting_list_view', $data);
+        }
+       else
+       {
+            echo "lll2";
+        }
+        
+    }
 
     private function idpDetails($queueList)
     {

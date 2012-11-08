@@ -43,6 +43,10 @@ foreach ($feds as $k => $i)
 ?>
         </ul>
     </div>
+   <div id="feds" class="span-12 last">
+       <h3><?php echo lang('rr_queue'); ?></h3>
+      <div id="dashresponsecontainer"></div>
+    </div>
 
 </div>
 

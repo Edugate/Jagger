@@ -76,8 +76,8 @@ class Auth extends MY_Controller {
 
 
         //validate form input
-        $this->form_validation->set_rules('username', 'Username', 'required|xss_clean');
-        $this->form_validation->set_rules('password', 'Password', 'required');
+        $this->form_validation->set_rules('username', lang('rr_username'), 'required|xss_clean');
+        $this->form_validation->set_rules('password', lang('rr_password'), 'required');
 
         if ($this->form_validation->run() == true) {
             if ($this->j_auth->login($this->input->post('username'), $this->input->post('password'))) {
@@ -182,7 +182,7 @@ class Auth extends MY_Controller {
           $can_access = (bool) ($user->isEnabled() && $user->getFederated());
           if(!$can_access)
           {
-             show_error($this->mid.'your account is disabled or you cannot use federated access',403);
+             show_error($this->mid.' '.lang('rerror_youraccountdisorfeddis'),403);
           }
           $session_data =  $user->getBasic();
           $userprefs = $user->getUserpref();

@@ -1,4 +1,5 @@
 <?php
+$lang['dashboard'] = 'Dashboard';
 $lang['quick_access'] = 'Quick access';
 $lang['login_form'] = 'Login Form';
 $lang['authn_form'] = 'Authentication form';
@@ -34,6 +35,8 @@ $lang['rr_list'] = 'List';
 $lang['rr_queue'] = 'Queue';
 $lang['rr_attr_defs'] ='Attribute definitions';
 $lang['rr_meta_importer'] = 'Metadata importer';
+$lang['rr_details'] = 'details';
+$lang['rr_noawaitingforapproval'] = 'Nothing is wating for approval';
 /**
   * SP Registration Form
   */
@@ -48,6 +51,7 @@ $lang['rr_resource'] = "Resource Name";
 $lang['rr_entityid'] = 'EntityID';
 $lang['rr_federation'] = 'Federation';
 $lang['rr_helpdeskurl'] = 'Helpdesk URL';
+$lang['rr_fedownercreator'] = 'Federation owner/creator';
 
 $lang['rr_homeorganisation']= 'Home Organization' ;
 
@@ -55,7 +59,7 @@ $lang['rr_homeorganisation']= 'Home Organization' ;
   * Technical information
   */
 $lang['rr_technicalinformation'] = 'Technical Information';
-
+$lang['rr_logos'] = 'Logos';
 
 /**
   * SP Specific Tech Information
@@ -127,6 +131,7 @@ $lang['rr_enabledempty'] = 'Static metadata is enabled but it\'s empty';
 /**
   * Basic information
   */
+$lang['rr_basic'] = 'Basic';
 $lang['rr_basicinformation'] = 'Basic Information';
 
 /**
@@ -231,8 +236,9 @@ $lang['rr_fromtomatch']='Valid From/To doesn\'t match current date. Your entity 
 /**
   * Small
   */
-$lang['rr_includedmetadata']='(included in metadata)';
-$lang['rr_notincludedmetadata']='(not included in metadata)';
+$lang['rr_includedmetadata']='included in metadata';
+$lang['rr_notincludedmetadata']='not included in metadata';
+
 
 /** 
   * Notice
@@ -271,15 +277,21 @@ $lang['rr_domainscope']='Domain(s) Scope of Identities';
   */
 $lang['rr_certificatenotvalid'] = 'certificate is not valid';
 
-  
+$lang['rr_gotosection'] = 'go to section';
+$lang['rr_arp_short'] = 'ARP';  
+$lang['rr_attrsoverview'] = 'Attributes overview';
 $lang['rr_arp'] = 'ARP (Attribute Release Policy)';
+$lang['rr_arpurl'] = 'ARP URL';
 $lang['rr_individualarpurl'] = 'Individual Attribite Release Policy URL';
 $lang['rr_recentarpdownload'] = 'Most recent ARP/Attribute filter downloads';
 $lang['rr_supportedattributes'] = 'Supported attributes';
+$lang['rr_attributepolicy'] = 'Attribute Policy';
 $lang['rr_metadataurl']='metadata url';
 $lang['rr_servicemetadataurl'] ='Service metadata url';
 
 $lang['rr_defaultspecificarp'] = 'Default and specific attribute release policy';
+
+$lang['rr_default'] = 'default';
 
 $lang['rr_logs'] = 'Logs';
 
@@ -291,7 +303,9 @@ $lang['rr_homeorgadmin'] = 'HomeOrg Admins';
 $lang['rr_displayaccess'] = 'Display access';
 
 $lang['rr_informationdetail'] = 'Information detail for ';
-
+$lang['rr_certusage'] = 'Usage';
+$lang['rr_certsigning'] = 'signing';
+$lang['rr_certencryption'] = 'encryption';
 
 $lang['rr_staticmetadataactive'] ='Static metadata is active';
 $lang['rr_staticmetadatanotactive'] ='Static metadata is not active';
@@ -344,12 +358,21 @@ $lang['rr_fedmembersadded'] = 'New members have been added to federation';
 $lang['rr_nomemtype_selected'] = 'no %s were selected';
 $lang['rr_provideralready_member_of'] = 'Provider already member of %s';
 
-/**
- * SP details
- */
+
+
+$lang['rr_supportedprotocolsnotset'] = 'Supported protocols are not set';
+$lang['rr_servicelocations'] = 'Service Locations';
+$lang['rr_keyname'] = 'KeyName';
+$lang['rr_fingerprint'] = 'Fingerprint';
+$lang['rr_certbody']='Certificate body';
+$lang['rr_daystoexpire'] = 'days to expire';
+
 $lang['rr_serviceproviderdetails'] = 'Service Provider details';
 $lang['rr_acs'] = 'AssertionConsumerService';
 $lang['rr_admins'] = 'Admins';
+$lang['rr_managestatus'] = 'Manage status';
+
+$lang['rr_noregspecified_inherit_from_fed'] = 'No requirement specified. It may inherit requirement from federation';
 
 /**
  * HELP
@@ -367,7 +390,6 @@ $lang['rhelp_acsurl'] = 'AttributeConsumerService URL';
 $lang['rhelp_certificatesigning'] = 'Certificate for signing';
 $lang['rhelp_certificateencryption'] = 'Certificate for encryption';
 
-
 /**
   * IDP Help
   */
@@ -384,13 +406,20 @@ $lang['rhelp_cert'] = 'Paste your certificate here.';
 
 $lang['rr_latitude'] = 'Latitude';
 $lang['rr_longitude'] = 'Longitude';
+$lang['rr_lock'] = 'Lock';
+$lang['rr_unlock'] = 'Unlock';
+$lang['rr_enable'] = 'Enable';
+$lang['rr_disable'] = 'Disable';
 $lang['rr_locked'] = 'Locked';
+$lang['rr_rmselectedpoints'] = 'Remove selected points';
+$lang['rr_addpoint'] = 'Add point';
 
 /**
   * ERRORS
   */
-
-
+$lang['rr_validfromto_notmatched1'] = 'Valid From/To doesn\'t match current date. Your entity won\'t appear in metadata';
+$lang['rr_is_not_set'] = 'is not set';
+$lang['rr_noperm'] = 'No permission';
 $lang['rr_noperm_edit'] = 'no access to edit';
 $lang['rr_noperm_bulks'] = 'no access to bulk operations';
 $lang['rr_noperm_invmembers'] = 'no access to invite other providers';
@@ -405,9 +434,11 @@ $lang['rerror_lostinfo'] = 'Lost information about what idp to update';
 $lang['rerror_cannotmanageexternal'] = 'cannot be managed. This is external resource';
 $lang['rerror_cannotaddpoint'] = 'cannot add point';
 $lang['rerror_cannotdelete'] = 'cannot delete';
-
+$lang['rerror_youraccountdisorfeddis'] = 'Your account is disabled or you cannot use federated access';
 
 $lang['rerror_spnotfound'] = 'Service Provider not found';
 $lang['rerror_splostinfo'] = 'Lost information about what sp to update';
 $lang['rerror_wrongidpid'] ='Wrong IDP ID';
 $lang['rerror_wrongspid'] ='Wrong SP ID';
+$lang['rerror_nopermfedlistview'] = 'No access to view federations list';
+$lang['rr_warning'] = 'warning!';
