@@ -36,6 +36,7 @@ $lang['rr_queue'] ="Kolejka";
 $lang['rr_attr_defs'] ="Definicje attrybutów";
 $lang['rr_meta_importer'] ="Importer metadanych";
 $lang['rr_details'] ="details";
+$lang['rr_noawaitingforapproval'] ="Nothing is wating for approval";
 $lang['rr_sp_register_title'] ="Formularz rejestracji Dostawcy Serwisu (Service Provider)";
 $lang['rr_generalinformation'] ="Informacje ogólne";
 $lang['rr_resource'] ="Nazwa serwisu";

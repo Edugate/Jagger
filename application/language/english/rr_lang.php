@@ -8,6 +8,7 @@ $lang['login_successful'] = 'Login successful';
 $lang['access_mngmt'] = 'Access management';
 $lang['home'] = 'Home';
 $lang['federations'] = 'Federations';
+$lang['rr_federations'] = 'Federations';
 $lang['register'] = 'Register';
 $lang['serviceproviders'] = 'Service Providers';
 $lang['serviceprovider'] = 'Service Provider';
