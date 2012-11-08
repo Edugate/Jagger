@@ -1791,13 +1791,13 @@ body #container {
 }
 @media screen and (-webkit-device-pixel-ratio: 0.75) {
   body #container {
-    background-color: red;
+    #      background-color: red;
   }
 }
 @media screen and (max-width: 480px) {
   body #container {
-    background-color: red;
-    width: 470px;
+    #     background-color: red;
+    #     width: 470px;
   }
 }
 @media screen and (max-width: 480px) {

@@ -104,11 +104,11 @@ body {
     #container {
         @include container;
         @media screen and (-webkit-device-pixel-ratio:0.75) {
-          background-color: red;
+    #      background-color: red;
         } 
         @media screen and (max-width: 480px) {
-          background-color: red;
-          width: 470px;
+     #     background-color: red;
+     #     width: 470px;
         } 
   } 
    #wrapper
