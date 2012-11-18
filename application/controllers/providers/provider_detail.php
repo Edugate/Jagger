@@ -197,7 +197,7 @@ class Provider_detail extends MY_Controller {
 
         $data['edit_link'] = $edit_link;
 
-        $data['idp_details'][$i++]['header'] = '<a name="basic"></a><b>' . lang('rr_basicinformation') . $activeString . '</b> '. $edit_basic;
+        $data['idp_details'][$i++]['header'] = '<a name="basic"></a><b>' . lang('rr_basicinformation').' ' . $activeString . '</b> '. $edit_basic;
         $data['idp_details'][$i]['name'] = lang('rr_lastmodification');
         $data['idp_details'][$i++]['value'] = '<b>' . $idp->getLastModified()->format('Y-m-d H:i:s') . '</b>';
 
@@ -605,8 +605,15 @@ class Provider_detail extends MY_Controller {
         {
             $data['idp_details'][$i++]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
-
-        $data['idpname'] = $idp->getName();
+        $idpname = $idp->getName();
+        if(!empty($idpname))
+        {
+           $data['idpname'] = $idpname;
+        }
+        else
+        {
+           $data['idpname'] = $idp->getEntityId();
+        }
         $this->title = lang('rr_informationdetail') . $data['idpname'];
         $data['content_view'] = 'providers/idp_detail_view';
         /** display logo */
