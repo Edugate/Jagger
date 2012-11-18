@@ -20,8 +20,6 @@ if (!defined('BASEPATH'))
  */
 class Sp_list extends MY_Controller {
 
-    //put your code here
-    //put your code here
     function __construct()
     {
         parent::__construct();
@@ -51,7 +49,7 @@ class Sp_list extends MY_Controller {
         if (!$has_read_access)
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = "No access to list all sps";
+            $data['error'] = lang('rerror_nopermtolistisps');
             $this->load->view('page', $data);
             return;
         }
@@ -61,6 +59,7 @@ class Sp_list extends MY_Controller {
       
         $sps = $tmp_providers->getSPsLight();
         $data['sps_count'] = count($sps);
+        $linktitle_disexp = lang('rr_disexp_link_title');
         foreach ($sps as $i)
         {
             $regdate = $i->getRegistrationDate();
@@ -75,11 +74,10 @@ class Sp_list extends MY_Controller {
             $is_available = $i->getAvailable();
             if ($is_available)
             {
-                #$sprows[] = array(anchor($i_link, $i->getDisplayName(50)."",'title="'.$i->getDisplayName().'"')."<span class=\"additions\">".$i->getEntityId()."</span>", auto_link($i->getHelpdeskUrl(),'url'));
-                $sprows[] = array(anchor($i_link, $i->getDisplayName(50) . "", 'title="' . $i->getDisplayName() . '"') . "<span class=\"additions\">" . $i->getEntityId() . "</span>",$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
+                $sprows[] = array(anchor($i_link, $i->getDisplayName(50) . '', 'title="' . $i->getDisplayName() . '"') . '<span class="additions">' . $i->getEntityId() . '</span>',$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
             } else
             {
-                $sprows[] = array("<div class=\"alert\" title=\"inactive\">" . anchor($i_link, $i->getDisplayName(50) . "", 'title="' . $i->getDisplayName() . '"') . "</div><span class=\"additions\">" . $i->getEntityId() . "</span>",$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
+                $sprows[] = array('<div class="alert" title="'.$linktitle_disexp.'">' . anchor($i_link, $i->getDisplayName(50) , 'title="' . $i->getDisplayName() . '"') . '</div><span class="additions">' . $i->getEntityId() . '</span>',$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
             }
         }
         $data['sprows'] = $sprows;

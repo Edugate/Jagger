@@ -96,7 +96,7 @@ class Idp_edit extends MY_Controller {
         {
             $display_name = $idp->getName();
         }
-        $data['form'] = "<div id=\"subtitle\">" . lang('rr_detailsfor') . $display_name . "&nbsp;&nbsp;" . anchor(base_url() . "providers/provider_detail/idp/" . $idp->getId(), '<img src="' . base_url() . 'images/icons/home.png" />') . " </div>";
+        $data['form'] = '<div id="subtitle">' . lang('rr_detailsfor') .' ' . $display_name . '&nbsp;&nbsp;' . anchor(base_url() . 'providers/provider_detail/idp/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/home.png" />') . '</div>';
         $data['form'] .= validation_errors('<p class="error">', '</p>');
         $data['form'] .= form_open($action, $attributes);
         $data['form'] .= $this->form_element->generateEntityForm($idp);

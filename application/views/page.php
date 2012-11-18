@@ -204,7 +204,6 @@ $pageTitle .= $this->title;
                             echo $current_sp_menu;
                 ?>
                                 <li><a href="<?php echo base_url(); ?>providers/sp_list/show"><?php echo lang('rr_list'); ?></a></li>
-                                <li><a href="<?php echo base_url(); ?>manage/attribute_requirement/sp">Attribute Requirement</a></li>
                                 <li><a href="<?php echo base_url(); ?>providers/sp_registration"><?php echo lang('register'); ?></a></li>
                             </ul>
                         </li>
@@ -260,7 +259,7 @@ $pageTitle .= $this->title;
 
         <div id="container"    <?php echo $height100 ?>>
 
-            <div id="wrapper" class="span-21"  <?php echo $height100 ?> >
+            <div id="wrapper" class="span-24"  <?php echo $height100 ?> >
                 <span id="content"  <?php echo $height100 ?> >
                     <?php
                     $this->load->view($content_view);

@@ -13,25 +13,25 @@ if (empty($list))
 }
 if (!empty($message))
 {
-    echo "<p>" . $message . "</p>";
+    echo '<p>' . $message . '</p>';
 }
 if (!empty($error_message))
 {
-    echo "<span>" . $error_message . "</span>";
+    echo '<span>' . $error_message . '</span>';
 }
 if (!empty($list))
 {
     $tmpl = array('table_open' => '<table  id="detailsi" class="itablesorter">');
     $this->table->set_template($tmpl);
-    $this->table->set_heading('Date', 'Requester', 'Request Type' ,'');
+    $this->table->set_heading(lang('rr_tbltitle_date'), lang('rr_tbltitle_requester'), lang('rr_tbltitle_requesttype') ,'');
     foreach ($list as $q)
     {
         if ($q['confirmed'])
         {
-            $confirm = "yes";
+            $confirm = lang('rr_yes');
         } else
         {
-            $confirm = "no";
+            $confirm = lang('rr_no');
         }
         $cdate = $q['idate'];
         $detail = anchor(base_url()."/reports/awaiting/detail/" . $q['token'], '>>');

@@ -51,7 +51,7 @@ class Idp_list extends MY_Controller {
         if (!$has_read_access)
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = "No access to list all idps";
+            $data['error'] = lang('rerror_nopermtolistidps');
             $this->load->view('page', $data);
             return;
         }
@@ -60,6 +60,7 @@ class Idp_list extends MY_Controller {
         //$idps = $col->getIdps_inNative();
         $idps = $col->getIdpsLight();
         $data['idps_count'] = count($idps);
+        $linktitlediexp = lang('rr_disexp_link_title');
         foreach ($idps as $i)
         {
             $i_link = base_url() . "providers/provider_detail/idp/" . $i->getId();
@@ -75,7 +76,7 @@ class Idp_list extends MY_Controller {
             }
             else
             {
-                $col1 = '<div class="alert" title="disabled or expired">'.anchor($i_link, $displayname).'</div>('. $i->getEntityId().')';
+                $col1 = '<div class="alert" title="'.$linktitlediexp.'">'.anchor($i_link, $displayname).'</div>('. $i->getEntityId().')';
             }
             $regdate = $i->getRegistrationDate();
             if(isset($regdate))

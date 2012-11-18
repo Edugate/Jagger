@@ -1,4 +1,6 @@
 <?php
+$lang['rr_yes'] = 'yes';
+$lang['rr_no'] = 'no';
 $lang['dashboard'] = 'Dashboard';
 $lang['quick_access'] = 'Quick access';
 $lang['login_form'] = 'Login Form';
@@ -10,6 +12,7 @@ $lang['home'] = 'Home';
 $lang['federations'] = 'Federations';
 $lang['rr_federations'] = 'Federations';
 $lang['register'] = 'Register';
+$lang['allentities'] = 'All entities';
 $lang['serviceproviders'] = 'Service Providers';
 $lang['serviceprovider'] = 'Service Provider';
 $lang['serviceprovidersmembers'] = 'Service Providers members';
@@ -35,9 +38,14 @@ $lang['urloggedas'] = 'You are logged in as';
 $lang['rr_list'] = 'List';
 $lang['rr_queue'] = 'Queue';
 $lang['rr_attr_defs'] ='Attribute definitions';
+$lang['rr_attr_name'] = 'Attribute name';
 $lang['rr_meta_importer'] = 'Metadata importer';
 $lang['rr_details'] = 'details';
 $lang['rr_noawaitingforapproval'] = 'Nothing is wating for approval';
+$lang['rr_requestawaiting'] ='Request waiting for approval';
+$lang['rr_pleaseselect'] = 'Please select';
+$lang['rr_nofedfound'] = 'no federation found';
+$lang['rr_supported'] = 'supported';
 /**
   * SP Registration Form
   */
@@ -61,6 +69,10 @@ $lang['rr_homeorganisation']= 'Home Organization' ;
   */
 $lang['rr_technicalinformation'] = 'Technical Information';
 $lang['rr_logos'] = 'Logos';
+
+
+
+$lang['rr_disexp_link_title'] = 'disabled or expired';
 
 /**
   * SP Specific Tech Information
@@ -97,6 +109,11 @@ $lang['rr_contactname'] = 'Contact name';
 $lang['rr_contactemail'] = 'Contact email';
 $lang['rr_contactphone'] = 'Contact phone';
 
+$lang['rr_cnt_type_admin'] = 'Administrative';
+$lang['rr_cnt_type_tech'] = 'Technical';
+$lang['rr_cnt_type_support'] = 'Support';
+$lang['rr_cnt_type_bill'] = 'Billing';
+$lang['rr_cnt_type_other'] = 'Other';
 
 /**
   * IDP Specific primary contact information
@@ -163,6 +180,8 @@ $lang['rr_keyname'] = 'Keyname (optional):';
 $lang['rr_certificate'] = 'Certificate';
 $lang['rr_newcertificate'] = 'New Certificate';
 $lang['rr_optional']= 'optional';
+$lang['rr_keepit'] = 'Keep it';
+$lang['rr_yesremoveit'] = 'Yes, remove it';
 
 
 /** 
@@ -282,6 +301,7 @@ $lang['rr_gotosection'] = 'go to section';
 $lang['rr_arp_short'] = 'ARP';  
 $lang['rr_attrsoverview'] = 'Attributes overview';
 $lang['rr_arp'] = 'ARP (Attribute Release Policy)';
+$lang['rr_setpolicy'] = 'Set policy';
 $lang['rr_arpurl'] = 'ARP URL';
 $lang['rr_individualarpurl'] = 'Individual Attribite Release Policy URL';
 $lang['rr_recentarpdownload'] = 'Most recent ARP/Attribute filter downloads';
@@ -314,6 +334,7 @@ $lang['rr_isempty'] = 'is empty';
 $lang['rr_setnotactive'] = 'This static metadata is set but not active';
 $lang['rr_setasdefault'] ='static metadata is set as default';
 $lang['rr_certificateexpired'] = 'Certificate is expired. Some service providers may reject to consume this metadata';
+$lang['rr_isdefault'] = 'Is default';
 
 /**
   * Federation
@@ -370,6 +391,10 @@ $lang['rr_daystoexpire'] = 'days to expire';
 
 $lang['rr_serviceproviderdetails'] = 'Service Provider details';
 $lang['rr_acs'] = 'AssertionConsumerService';
+$lang['rr_acs_fieldset'] = 'AssertionConsumerService';
+$lang['rr_singlesignon_fieldset'] = 'SingleSignOn';
+
+$lang['rr_url'] = 'URL';
 $lang['rr_admins'] = 'Admins';
 $lang['rr_managestatus'] = 'Manage status';
 
@@ -415,6 +440,22 @@ $lang['rr_locked'] = 'Locked';
 $lang['rr_rmselectedpoints'] = 'Remove selected points';
 $lang['rr_addpoint'] = 'Add point';
 
+
+$lang['rr_arpoverview'] = 'Attribute release policy overview by entityID';
+$lang['tbl_title_nameandentityid'] = 'Name and entityID';
+$lang['tbl_title_regdate'] = 'Registration Date';
+$lang['tbl_title_helpurl'] = 'Helpdesk URL';
+$lang['rr_tbltitle_listidps'] = 'List Of Identity Providers';
+$lang['rr_tbltitle_listsps'] = 'List Of Service Providers';
+$lang['rr_tbltitle_date'] = 'Date';
+$lang['rr_tbltitle_requester'] = 'Requester';
+$lang['rr_tbltitle_requesttype'] = 'Request Type';
+$lang['rr_tbltitle_primcontact'] = 'Primary contact';
+$lang['rr_tbltitle_name'] = 'Name';
+$lang['rr_tbltitle_confirmed'] = 'Confirmed';
+
+$lang['rr_found'] = 'found';
+
 /**
   * ERRORS
   */
@@ -443,3 +484,12 @@ $lang['rerror_wrongidpid'] ='Wrong IDP ID';
 $lang['rerror_wrongspid'] ='Wrong SP ID';
 $lang['rerror_nopermfedlistview'] = 'No access to view federations list';
 $lang['rr_warning'] = 'warning!';
+$lang['rerror_nopermtolistidps'] = 'No access to list all idps';
+$lang['rerror_nopermtolistisps'] = 'No access to list all sps';
+$lang['rerror_noperm_viewqueuerequest'] = 'You have no permisson to see details of this request';
+$lang['rerror_qid_noexist'] = 'Specified Queue Id doesn\'t exist';
+$lang['rerror_noperm_approve'] = 'You have no permission to approve it';
+$lang['rerror_noperm_reject'] = 'You have no permission to reject this request';
+$lang['rerror_nothinginqueue'] = 'Nothing is wating for approval';
+
+

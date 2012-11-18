@@ -208,7 +208,7 @@ class Awaiting extends MY_Controller {
                           }
                           else
                           {
-                                $data['error_message'] = "You have no permisson to see details of this request";
+                                $data['error_message'] = lang('rerror_noperm_viewqueuerequest');
                           }
                           $data['content_view'] = 'reports/awaiting_invite_federation_view';
                           $this->load->view('page', $data);
@@ -249,7 +249,7 @@ class Awaiting extends MY_Controller {
                         }
                         else
                         {
-                            $data['error_message'] = "You have no permisson to see details of this request";
+                            $data['error_message'] = lang('rerror_noperm_viewqueuerequest');
                         }
                         $data['content_view'] = 'reports/awaiting_invite_provider_view';
                         $this->load->view('page', $data);
@@ -270,7 +270,7 @@ class Awaiting extends MY_Controller {
         else
         {
             $data['content_view'] = 'error_message';
-            $data['error_message'] = 'Specified Queue Id doesnt exist';
+            $data['error_message'] = lang('rerror_qid_noexist');
             $this->load->view('page',$data);
         }
     }
@@ -383,7 +383,7 @@ class Awaiting extends MY_Controller {
                     }
                     else
                     {
-                        $data['error_message'] = "You have no permission to approve it";
+                        $data['error_message'] = lang('rerror_noperm_approve');
                         $data['content_view'] = 'error_message';
                         $this->load->view('page',$data);
                     }
@@ -468,7 +468,7 @@ class Awaiting extends MY_Controller {
                     }
                     else
                     {
-                        $data['error_message'] = "You have no permission to approve it";
+                        $data['error_message'] = lang('rerror_noperm_approve');
                         $data['content_view'] = 'error_message';
                         $this->load->view('page',$data);
                     }
@@ -518,7 +518,7 @@ class Awaiting extends MY_Controller {
                     }
                     else
                     {
-                        $data['error_message'] = "You have no permission to approve it";
+                        $data['error_message'] = lang('rerror_noperm_approve');
                         $data['content_view'] = 'error_message';
                         $this->load->view('page',$data);
                       
@@ -543,7 +543,7 @@ class Awaiting extends MY_Controller {
                         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
                         if (!$has_write_access)
                         {
-                             $data['error_message'] = "You have no permission to approve it";
+                             $data['error_message'] = lang('rerror_noperm_approve');
                              $data['content_view'] = 'error_message';
                              $this->load->view('page',$data);
                         }
@@ -595,7 +595,7 @@ class Awaiting extends MY_Controller {
                         $has_write_access = $this->zacl->check_acl('f_'.$federation->getId(), 'write', 'federation', '');
                         if (!$has_write_access)
                         {
-                             $data['error_message'] = "You have no permission to approve it";
+                             $data['error_message'] = lang('rerror_noperm_approve');
                              $data['content_view'] = 'error_message';
                              $this->load->view('page',$data);
                         }
@@ -762,7 +762,7 @@ class Awaiting extends MY_Controller {
                 }
                 else
                 {
-                   $data['error_message'] = 'You have no permission to reject this request';
+                   $data['error_message'] = lang('rerror_noperm_reject');
                    $data['content_view'] = 'error_message';
                    $this->load->view('page', $data);
                 }

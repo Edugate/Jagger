@@ -43,7 +43,7 @@ class Form_element {
         $fedCollection = $feds->getFederations();
         if (!empty($fedCollection))
         {
-            $result[''] = "Please select";
+            $result[''] = lang('rr_pleaseselect');
             foreach ($fedCollection as $key)
             {
                 $value = "";
@@ -62,7 +62,7 @@ class Form_element {
         }
         else
         {
-            $result[''] = "no federation found";
+            $result[''] = lang('rr_nofedfound');;
         }
         return $result;
     }
@@ -72,7 +72,7 @@ class Form_element {
      */
     public function buildTypeOfEntities()
     {
-        $types = array('' => 'Please select', 'idp' => 'Identity Providers', 'sp' => 'Service Providers', 'all' => 'All Entities');
+        $types = array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities'));
         return $types;
     }
 
@@ -119,7 +119,7 @@ class Form_element {
             log_message('debug', $this->ci->mid . "found ACS for sp: " . $provider->getEntityId());
             $i = 0;
             $s_input = "";
-            $s_input .=form_fieldset('AssertionConsumerService');
+            $s_input .=form_fieldset(lang('rr_acs_fieldset'));
 
 
             foreach ($locations['AssertionConsumerService'] as $acs)
@@ -139,7 +139,7 @@ class Form_element {
                     'value' => set_value('acs_url', $acs['url']),
                     'class' => 'acsurl',
                 );
-                $url_label = form_label('URL', 'acs_url[' . $srvid . ']');
+                $url_label = form_label(lang('rr_url'), 'acs_url[' . $srvid . ']');
 
                 $url_input = form_input($url_data);
 
@@ -153,10 +153,9 @@ class Form_element {
                     'class' => 'acsindex',
                     'value' => set_value('acs_index', $acs['index_number']),
                 );
-                //$index_label = form_label('index', 'acs_index');
 
                 $index_input = form_input($order_data);
-                $indexrow = "index " . $index_input;
+                $indexrow = 'index ' . $index_input;
 
                 $is_default_data = array(
                     'name' => 'acs_default',
@@ -165,28 +164,28 @@ class Form_element {
                     'checked' => set_value('acs_default', $acs['is_default'])
                 );
 
-                $is_default_label = form_label('Is default?', $name . '_default');
+                $is_default_label = form_label(lang('rr_isdefault'), $name . '_default');
                 $is_default_checkbox = form_radio($is_default_data);
-                $isdefaulrow = " is default? " . $is_default_checkbox;
-                $s_row .= "<span style=\"white-space: nowrap;\">" . $indexrow . $isdefaulrow . "</span><br />";
+                $isdefaulrow = ' '.lang('rr_isdefault').' ' . $is_default_checkbox;
+                $s_row .= '<span style="white-space: nowrap;">' . $indexrow . $isdefaulrow . '</span><br />';
                 if ($srvid == 'n')
                 {
-                    $s_input .= "<li>" . form_fieldset(lang('rr_addnewacs')) . $s_row . form_fieldset_close() . " </li>";
+                    $s_input .= '<li>' . form_fieldset(lang('rr_addnewacs')) . $s_row . form_fieldset_close() . '</li>';
                 }
                 else
                 {
-                    $s_input .= "<li> " . $s_row . " </li>";
+                    $s_input .= '<li>' . $s_row . '</li>';
                 }
             }
             $s_input .= form_fieldset_close();
         }
 
-        $srvform = form_fieldset('Service Locations');
-        $srvform = "<fieldset><legend class=\"accordionButton\">" . lang('rr_servicelocations') . "</legend>";
-        $srvform .="<ol class=\"accordionContent\">";
+        $srvform = form_fieldset(lang('rr_servicelocations'));
+        $srvform = '<fieldset><legend class="accordionButton">' . lang('rr_servicelocations') . '</legend>';
+        $srvform .='<ol class="accordionContent">';
         $srvform .= $s_input;
 
-        $srvform .="</ol>";
+        $srvform .='</ol>';
         $srvform .=form_fieldset_close();
         return $srvform;
     }
@@ -224,9 +223,7 @@ class Form_element {
         /**
          * generate inputs and fill with values
          */
-        $s_input = "";
-        $s_input .=form_fieldset('SingleSignOn');
-        //    $s_input .='<fieldset><legen class="accordionButton">SingleSignOnService</legend>';
+        $s_input = form_fieldset(lang('rr_singlesignon_fieldset'));
 
         $i = 0;
         foreach ($ssotmpl as $m)
@@ -246,7 +243,7 @@ class Form_element {
                     'name' => $name,
                     'id' => $name,
                     'value' => set_value($name, $url)));
-                $s_input .="</li>\n";
+                $s_input .='</li>';
             }
             else
             {
@@ -254,19 +251,19 @@ class Form_element {
                 $name = 'srvsso_' . $i . 'n_url';
                 $hiddenname = 'srvsso_' . $i . 'n_type';
                 $labelname = $m;
-                $s_input .="<li>";
+                $s_input .='<li>';
                 $s_input .= form_label($labelname, $name) . "\n";
-                $s_input .= "<div style=\"display:none\">";
+                $s_input .= '<div style="display:none">';
                 $s_input .= form_input(array(
                     'name' => $hiddenname,
                     'type' => 'hidden',
                     'value' => $m));
-                $s_input .= "</div>";
+                $s_input .= '</div>';
                 $s_input .= form_input(array(
                     'name' => $name,
                     'id' => $name,
                     'value' => set_value($name)));
-                $s_input .="</li>\n";
+                $s_input .='</li>';
             }
         }
         $s_input .= form_input(array(
@@ -277,14 +274,8 @@ class Form_element {
 
         $s_input .= form_fieldset_close();
 
-
-
-        $srvform = form_fieldset('Service Locations');
-        $srvform = '<fieldset><legend class="accordionButton">' . lang('rr_servicelocations') . '</legend>';
-        $srvform .='<ol class="accordionContent">';
-        $srvform .= $s_input;
-        $srvform .='</ol>';
-        $srvform .=form_fieldset_close();
+        $srvform = '<fieldset><legend class="accordionButton">' . lang('rr_servicelocations') . '</legend><ol class="accordionContent">';
+        $srvform .= $s_input . '</ol>' . form_fieldset_close();
         return $srvform;
     }
 
@@ -307,15 +298,14 @@ class Form_element {
 
     private function generateContactsForm(models\Provider $provider, $action = null, $template = null)
     {
-        //$cntform = form_fieldset('Contacts');
         $cntform = '<fieldset><legend class="accordionButton">' . lang('rr_contacts') . '</legend>';
         $cntform .='<ol class="accordionContent">';
         $formtypes = array(
-            'administrative' => 'Administrative',
-            'technical' => 'Technical',
-            'support' => 'Support',
-            'billing' => 'Billing',
-            'other' => 'Other'
+            'administrative' => lang('rr_cnt_type_admin'),
+            'technical' => lang('rr_cnt_type_tech'),
+            'support' => lang('rr_cnt_type_support'),
+            'billing' => lang('rr_cnt_type_bill'),
+            'other' => lang('rr_cnt_type_other')
         );
         $no_contacts = 0;
 
@@ -326,57 +316,42 @@ class Form_element {
             foreach ($cntcollection->getValues() as $cnt)
             {
 
-                $cntform .= form_fieldset('Contacts');
-                //  $cntform .= "<ol>";
-                $cntform .= "<li>\n";
+                $cntform .= form_fieldset(lang('rr_contacts')) . '<li>';
                 $cntform .= form_label(lang('rr_contacttype'), 'contact_' . $cnt->getId() . '_type');
                 $cntform .= form_dropdown('contact_' . $cnt->getId() . '_type', $formtypes, set_value('contact_' . $cnt->getId() . '_type', $cnt->getType()));
-                $cntform .= "</li>\n";
-                $cntform .= "<li>\n";
-                $cntform .=form_label(lang('rr_contactfirstname'), 'contact_' . $cnt->getId() . '_fname');
+                $cntform .= '</li><li>'. form_label(lang('rr_contactfirstname'), 'contact_' . $cnt->getId() . '_fname');
                 $cntform .= form_input(array('name' => 'contact_' . $cnt->getId() . '_fname', 'id' => 'contact_' . $cnt->getId() . '_fname',
                     'value' => set_value('contact_' . $cnt->getId() . '_fname', htmlentities($cnt->getGivenname()))));
-                $cntform .= "</li>\n";
-                $cntform .= "<li>\n";
-                $cntform .=form_label(lang('rr_contactlastname'), 'contact_' . $cnt->getId() . '_sname');
+                $cntform .= '</li><li>'. form_label(lang('rr_contactlastname'), 'contact_' . $cnt->getId() . '_sname');
                 $sur = htmlspecialchars_decode($cnt->getSurname());
                 $cntform .= form_input(array('name' => 'contact_' . $cnt->getId() . '_sname', 'id' => 'contact_' . $cnt->getId() . '_sname',
                     'value' => set_value('contact_' . $cnt->getId() . '_sname', $sur)));
-                $cntform .= "</li>";
-                $cntform .= "<li>";
-                $cntform .=form_label(lang('rr_contactemail'), 'contact_' . $cnt->getId() . '_email');
+                $cntform .= '</li><li>' . form_label(lang('rr_contactemail'), 'contact_' . $cnt->getId() . '_email');
                 $cntform .= form_input(array('name' => 'contact_' . $cnt->getId() . '_email', 'id' => 'contact_' . $cnt->getId() . '_email',
                     'value' => set_value('contact_' . $cnt->getId() . '_email', $cnt->getEmail())));
-                $cntform .= "</li>";
-                //$cntform .= "</ol>";
-                $cntform .= form_fieldset_close();
+                $cntform .= '</li>'. form_fieldset_close();
             }
             $no_contacts++;
 
-            $cntform .='<fieldset class="newcontact"><legend>' . lang('rr_newcontact') . '</legend>';
-            $cntform .= "<li>";
-            $cntform .=form_label('Contact Type', 'contact_0n_type');
+            $cntform .= '<fieldset class="newcontact"><legend>' . lang('rr_newcontact') . '</legend>';
+            $cntform .= '<li>';
+            $cntform .= form_label(lang('rr_contacttype'), 'contact_0n_type');
             $cntform .= form_dropdown('contact_0n_type', $formtypes, set_value('contact_0n_type'));
-            $cntform .= "<div style=\"display:none\">";
+            $cntform .= '<div style="display:none">';
             $cntform .= form_input(array('name' => 'no_contacts', 'type' => 'hidden', 'value' => $no_contacts));
-            $cntform .= "</div>";
-            $cntform .= "</li>";
-            $cntform .= "<li>";
-            $cntform .=form_label('Contact first name', 'contact_0n_fname');
+            $cntform .= '</div>';
+            $cntform .= '</li><li>';
+            $cntform .= form_label(lang('rr_contactfirstname'), 'contact_0n_fname');
             $cntform .= form_input(array('name' => 'contact_0n_fname', 'id' => 'contact_0n_fname', 'value' => set_value('contact_0n_fname')));
-            $cntform .= "</li>";
-            $cntform .= "<li>";
-            $cntform .=form_label('Contact last name', 'contact_0n_sname');
+            $cntform .= '</li><li>';
+            $cntform .= form_label(lang('rr_contactlastname'), 'contact_0n_sname');
             $cntform .= form_input(array('name' => 'contact_0n_sname', 'id' => 'contact_0n_sname', 'value' => set_value('contact_0n_sname')));
-            $cntform .= "</li>";
-            $cntform .= "<li>";
-            $cntform .=form_label('Contact Email', 'contact_0n_email');
+            $cntform .= '</li><li>';
+            $cntform .= form_label(lang('rr_contactemail'), 'contact_0n_email');
             $cntform .= form_input(array('name' => 'contact_0n_email', 'id' => 'contact_0n_email', 'value' => set_value('contact_0n_email')));
-            $cntform .= "</li>";
-            $cntform .= form_fieldset_close();
+            $cntform .= '</li>'. form_fieldset_close();
         }
-        $cntform .="</ol>";
-        $cntform .=form_fieldset_close();
+        $cntform .='</ol>'. form_fieldset_close();
         return $cntform;
     }
 
@@ -393,15 +368,13 @@ class Form_element {
             foreach ($crtcollection->getValues() as $crt)
             {
                 $i = $crt->getId();
-                $crtform .="<li>\n";
+                $crtform .='<li>';
                 $crtform .=form_label(lang('rr_pleaseremove'), 'cert_' . $i . '_remove');
-                $crtform .=form_dropdown('cert_' . $i . '_remove', array('none' => 'Keep it', 'yes' => 'Yes, remove it'));
-                $crtform .="</li>\n";
-                $crtform .="<li>\n";
+                $crtform .=form_dropdown('cert_' . $i . '_remove', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit')));
+                $crtform .='</li><li>';
                 $crtform .=form_label(lang('rr_certificatetype'), 'cert_' . $i . '_type');
                 $crtform .=form_dropdown('cert_' . $i . '_type', array('x509' => 'x509'), set_value('cert_' . $i . '_type', 'x509'));
-                $crtform .="</li>\n";
-                $crtform .="<li>\n";
+                $crtform .='</li><li>';
                 $crtform .=form_label(lang('rr_certificateuse'), 'cert_' . $i . '_use[]');
                 $m = array('signing' => 'signing', 'encryption' => 'encryption');
                 $mselected = $crt->getCertUse();
@@ -414,41 +387,35 @@ class Form_element {
                     $n = array($mselected = $mselected);
                 }
                 $crtform .=form_multiselect('cert_' . $i . '_use[]', $m, $n);
-                $crtform .="</li>\n";
-                $crtform .="<li>\n";
+                $crtform .='</li><li>';
                 $crtform .=form_label(lang('rr_keyname'), 'cert_' . $i . '_keyname');
                 $crtform .=form_input(array('name' => 'cert_' . $i . '_keyname', 'id' => 'cert_' . $i . '_keyname', 'value' => set_value('cert_' . $i . '_keyname', $crt->getKeyName())));
 
-                $crtform .="</li>\n";
-
-                $crtform .="<li>";
+                $crtform .='</li><li>';
                 $crtform .=form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'cert_' . $i . '_data');
                 $crtform .=form_textarea(array(
                     'name' => 'cert_' . $i . '_data', 'id' => 'cert_' . $i . '_data',
                     'value' => set_value('cert_' . $i . '_data', $crt->getPEM($crt->getCertData())), 'cols' => 65, 'rows' => 30
                         ));
-                $crtform .="</li>\n";
+                $crtform .='</li>';
             }
         }
         $crtform .= '<div class="ncert">';
         $crtform .='<li><b>' . lang('rr_newcertificate') . '</b><small>(' . lang('rr_optional') . ')</small></li>';
-        $crtform .="<li>\n";
+        $crtform .='<li>';
         $crtform .=form_label(lang('rr_certificatetype'), 'cert_0n_type');
         $crtform .=form_dropdown('cert_0n_type', array('x509' => 'x509'), set_value('cert_0n_type', 'x509'));
-        $crtform .="</li>\n";
-        $crtform .="<li>\n";
+        $crtform .='</li><li>';
         $crtform .=form_label(lang('rr_certificateuse'), 'cert_0n_use[]');
         $m = array(
             'signing' => 'signing',
             'encryption' => 'encryption'
         );
         $crtform .=form_multiselect('cert_0n_use[]', $m, $m);
-        $crtform .="</li>\n";
-        $crtform .="<li>\n";
+        $crtform .='</li><li>';
         $crtform .=form_label(lang('rr_keyname'), 'cert_0n_keyname');
         $crtform .=form_input(array('name' => 'cert_0n_keyname', 'id' => 'cert_0n_keyname', 'value' => set_value('cert_0n_keyname')));
-        $crtform .="</li>\n";
-        $crtform .="<li>\n";
+        $crtform .='</li><li>';
         $crtform .=form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'cert_0n_data');
         $crtform .=form_textarea(array(
             'name' => 'cert_0n_data',
@@ -456,10 +423,7 @@ class Form_element {
             'value' => set_value('cert_0n_data'),
             'cols' => 65,
                 ));
-        $crtform .="</li>\n";
-        $crtform .="</div>";
-        $crtform .="</ol>";
-        $crtform .=form_fieldset_close();
+        $crtform .='</li></div></ol>' . form_fieldset_close();
         return $crtform;
     }
 
@@ -482,9 +446,7 @@ class Form_element {
             $static_metadata = $static_mid->getMetadataToDecoded();
         }
 
-        $tform = '<fieldset><legend class="accordionButton">' . lang('rr_staticmetadata') . '</legend>';
-        $tform .='<ol class="accordionContent">';
-        $tform .="<li>";
+        $tform = '<fieldset><legend class="accordionButton">'. lang('rr_staticmetadata') .'</legend><ol class="accordionContent"><li>';
         $tform .= form_label(lang('rr_usestaticmetadata'), 'usestatic');
         $tform .= form_checkbox(array(
             'name' => 'usestatic',
@@ -492,17 +454,14 @@ class Form_element {
             'value' => 'accept',
             'checked' => set_value('usestatic', $is_static)
                 ));
-        $tform .="</li>";
-        $tform .="<li>";
+        $tform .='</li><li>';
         $tform .= form_label(lang('rr_staticmetadataxml'), 'staticmetadatabody');
         $tform .= form_textarea(array(
             'name' => 'staticmetadatabody',
             'id' => 'staticmetadatabody',
             'value' => set_value('staticmetadatabody', $static_metadata)
                 ));
-        $tform .="</li>\n";
-        $tform .="</ol>\n";
-        $tform .= form_fieldset_close();
+        $tform .='</li></ol>'. form_fieldset_close();
         return $tform;
     }
 
@@ -516,22 +475,14 @@ class Form_element {
             $selected_options[$p] = $p;
         }
         // $tform .= form_fieldset('Protocols');
-        $tform .= '<fieldset><legend class="accordionButton">' . lang('rr_protocols') . '</legend>';
-        $tform .= "<ol class=\"accordionContent\">";
-        $tform .="<li>";
+        $tform .= '<fieldset><legend class="accordionButton">'. lang('rr_protocols') .'</legend><ol class="accordionContent"><li>';
         $tform .= form_label(lang('rr_supportedprotocols') . showHelp(lang('rhelp_supportedprotocols')), 'protocols[]');
-
         $options = array(
             'urn:oasis:names:tc:SAML:2.0:protocol' => 'urn:oasis:names:tc:SAML:2.0:protocol',
             'urn:oasis:names:tc:SAML:1.1:protocol' => 'urn:oasis:names:tc:SAML:1.1:protocol'
         );
-        $tform .= form_multiselect('protocols[]', $options, $selected_options);
-
-        $tform .="</li>";
-        $tform .= $this->supportedNameIds($provider);
-        $tform .="</ol>";
-        $tform .= form_fieldset_close();
-
+        $tform .= form_multiselect('protocols[]', $options, $selected_options) .'</li>';
+        $tform .= $this->supportedNameIds($provider) . '</ol>'. form_fieldset_close();
         return $tform;
     }
 
@@ -566,61 +517,45 @@ class Form_element {
                     'checked' => FALSE);
             }
         }
-
         $tform .='<li>';
-
-        $tform .= form_label(lang('rr_supportednameids'), 'nameids[]');
-        $tform .="<div id=\"sortable\">";
+        $tform .= form_label(lang('rr_supportednameids'), 'nameids[]') .'<div id="sortable">';
         foreach ($chb as $n)
         {
-            $tform .= "<span>" . form_checkbox($n) . $n['value'] . "</span>";
+            $tform .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
         }
-
-        $tform .= "</div>";
-        $tform .="</li>";
-
-
-
+        $tform .= '</div></li>';
         return $tform;
     }
 
     private function generateSpForm(models\Provider $provider, $action = null, $template = null)
     {
         log_message('debug', $this->ci->mid . 'Form_element::generateSpForm method started');
-        $tmp = "<div id=\"mojtest\">";
-        $tmp .="<div id=\"accordion\">";
+        $tmp = '<div id="mojtest">';
+        $tmp .='<div id="accordion">';
         $tmp .='<fieldset><legend class="accordionButton">' . lang('rr_generalinformation') . '</legend>';
-
-        $tmp .= "<ol class=\"accordionContent\">";
-        $tmp .= '<li>';
+        $tmp .= '<ol class="accordionContent"><li>';
         $tmp .= form_label(lang('rr_entityid') . showHelp(lang('rhelp_entityid')) . '<br /><small><span class="notice">' . lang('rr_noticechangearp') . '</span></small>', 'entityid');
         $f_en = array('id' => 'entityid', 'name' => 'entityid', 'required' => 'required', 'value' => $provider->getEntityid());
-        $tmp .= form_input($f_en);
-
-        $tmp .= '</li>';
-        $tmp .= "<li>";
+        $tmp .= form_input($f_en) .'</li><li>';
         $tmp .= form_label(lang('rr_resource') . showHelp(lang('rhelp_resourcename')), 'homeorgname');
         $tmp .= form_input('homeorgname', set_value('homeorgname', $provider->getName()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
+        $tmp .= '</li><li>';
         $tmp .= form_label(lang('rr_displayname'), 'displayname');
         $tmp .= form_input('displayname', set_value('displayname', $provider->getDisplayName()));
-        $tmp .= "</li><li>";
-           $configRegAuth = $this->ci->config->item('registrationAutority');
+        $tmp .= '</li><li>';
+        $configRegAuth = $this->ci->config->item('registrationAutority');
 
         if (!empty($configRegAuth))
         {
-            $tmp .= form_label('Registration authority<br /><small>Default: ' . $configRegAuth . '</small>', 'registrar');
+            $tmp .= form_label(lang('rr_regauthority').'<br /><small>'.lang('rr_default').': ' . $configRegAuth . '</small>', 'registrar');
         }
         else
         {
-            $tmp .= form_label('Registration authority', 'registrar');
+            $tmp .= form_label(lang('rr_regauthority'), 'registrar');
         }
         $in = array('id' => 'registrar', 'name' => 'registrar', 'value' => set_value('registrar', $provider->getRegistrationAuthority()));
-        $tmp .= form_input($in);
-        $tmp .= '</li>';
-        $tmp .= '<li>';
-        $tmp .= form_label('Registration Date', 'registerdate');
+        $tmp .= form_input($in). '</li><li>';
+        $tmp .= form_label(lang('rr_regdate'), 'registerdate');
         $ptm = $provider->getRegistrationDate();
         if (!empty($ptm))
         {
@@ -638,20 +573,13 @@ class Form_element {
                 'value' => set_value('registerdate')
                     ));
         }
-        $tmp .= "</li><li>";
-        $tmp .= form_label(lang('rr_resourceurl'), 'homeurl');
+        $tmp .= '</li><li>'. form_label(lang('rr_resourceurl'), 'homeurl');
         $tmp .= form_input('homeurl', set_value('homeurl', $provider->getHomeUrl()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_helpdeskurl') . showHelp(lang('rhelp_helpdeskurl')), 'helpdeskeurl');
+        $tmp .= '</li><li>'. form_label(lang('rr_helpdeskurl') . showHelp(lang('rhelp_helpdeskurl')), 'helpdeskeurl');
         $tmp .= form_input('helpdeskurl', set_value('helpdeskurl', $provider->getHelpdeskUrl()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_privacystatement'), 'privacyurl');
+        $tmp .= '</li><li>'. form_label(lang('rr_privacystatement'), 'privacyurl');
         $tmp .= form_input('privacyurl', set_value('privacyurl', $provider->getPrivacyUrl()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_validfrom'), 'validfrom');
+        $tmp .= '</li><li>'. form_label(lang('rr_validfrom'), 'validfrom');
         $ptm = $provider->getValidFrom();
         if (!empty($ptm))
         {
@@ -670,9 +598,7 @@ class Form_element {
                     ));
         }
 
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_validto'), 'validto');
+        $tmp .= '</li><li>'. form_label(lang('rr_validto'), 'validto');
         $vtm = $provider->getValidTo();
         if (!empty($vtm))
         {
@@ -690,64 +616,32 @@ class Form_element {
                 'value' => set_value('validto')
                     ));
         }
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label('Description', 'description');
+        $tmp .= '</li><li>'. form_label(lang('rr_description'), 'description');
         $tmp .= form_textarea('description', set_value('description', $provider->getDescription()));
-        $tmp .= "</li>";
-        $tmp .= "</ol>";
-
-        $tmp .= form_fieldset_close();
-        $tmp .="</div>";
-        $tmp .= $this->staticMetadata($provider);
-        $tmp .= $this->supportedProtocols($provider);
+        $tmp .= '</li></ol>'. form_fieldset_close() .'</div>'. $this->staticMetadata($provider) . $this->supportedProtocols($provider);
         $tmp .= $this->generateCertificatesForm($provider);
         /**
          * @todo add  service locations for sp
          */
-        $tmp .= $this->generateServiceLocationsForm($provider);
-        $tmp .= $this->generateContactsForm($provider);
-        $tmp .= "<fieldset>
-			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "manage/attribute_requirement/sp/" . $provider->getId() . "\">" . lang('rr_requiredattributes') . "</a>
-			</legend>
-			</fieldset>";
-        $tmp .= "<fieldset>
-			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "manage/logos/provider/sp/" . $provider->getId() . "\">" . lang('rr_logo') . "</a>
-			</legend>
-			</fieldset>";
-        $tmp .= "<fieldset>
-			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "geolocation/show/" . $provider->getId() . "/sp\">" . lang('rr_geolocation') . "</a>
-			</legend>
-			</fieldset>";
-        $tmp .="</div>";
+        $tmp .= $this->generateServiceLocationsForm($provider) . $this->generateContactsForm($provider);
+        $tmp .= '<fieldset><legend class="accordionButton"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $provider->getId() . '">' . lang('rr_requiredattributes') . '</a></legend></fieldset>';
+        $tmp .= '<fieldset><legend class="accordionButton"><a href="' . base_url() . 'manage/logos/provider/sp/' . $provider->getId() . '">' . lang('rr_logo') . '</a></legend></fieldset>';
+        $tmp .= '<fieldset><legend class="accordionButton"><a href="' . base_url() . 'geolocation/show/' . $provider->getId() . '/sp">' . lang('rr_geolocation') . '</a></legend></fieldset></div>';
         return $tmp;
     }
 
     private function generateIdpForm(models\Provider $provider, $action = null, $template = null)
     {
-        $tmp = "";
-        $tmp .='<div id="accordion">';
-
-        $tmp .='<fieldset><legend class="accordionButton"  >' . lang('rr_generalinformation') . '</legend>';
-
-
-        $tmp .= '<ol class="accordionContent">';
-        $tmp .= '<li>';
+        $tmp = '';
+        $tmp .='<div id="accordion"><fieldset><legend class="accordionButton"  >' . lang('rr_generalinformation') . '</legend>';
+        $tmp .= '<ol class="accordionContent"><li>';
         $tmp .= form_label(lang('rr_entityid') . showHelp(lang('rhelp_entityid')) . '<br /><small><span class="notice">' . lang('rr_noticechangearp') . '</span></small>', 'entityid');
         $f_en = array('id' => 'entityid', 'name' => 'entityid', 'required' => 'required', 'value' => $provider->getEntityid());
         $tmp .= form_input($f_en);
-
-        $tmp .= '</li>';
-        $tmp .= "<li>";
+        $tmp .= '</li><li>';
         $tmp .= form_label(lang('rr_homeorganisationname') . ' (english)', 'homeorgname');
         $in = array('id' => 'homeorgname', 'name' => 'homeorgname', 'required' => 'required', 'value' => set_value('homeorgname', $provider->getName()));
-        $tmp .= form_input($in);
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_displayname') . ' (english)', 'displayname');
+        $tmp .= form_input($in) . '</li><li>' . form_label(lang('rr_displayname') . ' (english)', 'displayname');
         $in = array('id' => 'displayname', 'name' => 'displayname', 'required' => 'required', 'value' => set_value('displayname', $provider->getDisplayName()));
         $tmp .= form_input($in);
         $tmp .= '</li><li>';
@@ -755,17 +649,15 @@ class Form_element {
 
         if (!empty($configRegAuth))
         {
-            $tmp .= form_label('Registration authority<br /><small>Default: ' . $configRegAuth . '</small>', 'registrar');
+            $tmp .= form_label(lang('rr_regauthority').'<br /><small>'.lang('rr_default').': ' . $configRegAuth . '</small>', 'registrar');
         }
         else
         {
-            $tmp .= form_label('Registration authority', 'registrar');
+            $tmp .= form_label(lang('rr_regauthority'), 'registrar');
         }
         $in = array('id' => 'registrar', 'name' => 'registrar', 'value' => set_value('registrar', $provider->getRegistrationAuthority()));
         $tmp .= form_input($in);
-        $tmp .= '</li>';
-        $tmp .= '<li>';
-        $tmp .= form_label('Registration Date', 'registerdate');
+        $tmp .= '</li><li>' . form_label(lang('rr_regdate'), 'registerdate');
         $ptm = $provider->getRegistrationDate();
         if (!empty($ptm))
         {
@@ -784,13 +676,9 @@ class Form_element {
                     ));
         }
 
-        $tmp .= '</li>';
-        $tmp .= '<li>';
-        $tmp .= form_label(lang('rr_homeorganisationurl'), 'homeurl');
+        $tmp .= '</li><li>' . form_label(lang('rr_homeorganisationurl'), 'homeurl');
         $tmp .= form_input('homeurl', set_value('homeurl', $provider->getHomeUrl()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_helpdeskurl') . showHelp(lang('rhelp_helpdeskurl')), 'helpdeskeurl');
+        $tmp .= '</li><li>' . form_label(lang('rr_helpdeskurl') . showHelp(lang('rhelp_helpdeskurl')), 'helpdeskeurl');
         $in = array(
             'name' => 'helpdeskurl',
             'id' => 'helpdeskurl',
@@ -798,12 +686,9 @@ class Form_element {
             'value' => set_value('helpdeskurl', $provider->getHelpdeskUrl()),
         );
         $tmp .= form_input($in);
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_privacystatement'), 'privacyurl');
+        $tmp .= '</li><li>' . form_label(lang('rr_privacystatement'), 'privacyurl');
         $tmp .= form_input('privacyurl', set_value('privacyurl', $provider->getPrivacyUrl()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
+        $tmp .= '</li><li>';
         $tmp .= form_label(lang('rr_validfrom'), 'validfrom');
         $ptm = $provider->getValidFrom();
         if (!empty($ptm))
@@ -823,9 +708,7 @@ class Form_element {
                     ));
         }
 
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_validto'), 'validto');
+        $tmp .= '</li><li>' . form_label(lang('rr_validto'), 'validto');
         $vtm = $provider->getValidTo();
         if (!empty($vtm))
         {
@@ -843,22 +726,12 @@ class Form_element {
                 'value' => set_value('validto')
                     ));
         }
-        $tmp .= "</li>";
-        $tmp .="<li>";
-        $tmp .= form_label(lang('rr_scope'), 'scope');
+        $tmp .= '</li><li>' . form_label(lang('rr_scope'), 'scope');
         $tmp .= form_input('scope', set_value('scope', $provider->getScope()));
-        $tmp .="</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label(lang('rr_description'), 'description');
+        $tmp .= '</li><li>' . form_label(lang('rr_description'), 'description');
         $tmp .= form_textarea('description', set_value('description', $provider->getDescription()));
-        $tmp .= "</li>";
-        $tmp .= "</ol>";
-
-        $tmp .= form_fieldset_close();
-        $tmp .="</div>";
-
-        $tmp .= $this->staticMetadata($provider);
-        $tmp .= $this->supportedProtocols($provider);
+        $tmp .= '</li></ol>' .  form_fieldset_close() . '</div>';
+        $tmp .= $this->staticMetadata($provider) . $this->supportedProtocols($provider);
 
         /**
          * certificates section
@@ -872,21 +745,9 @@ class Form_element {
          * contacts section
          */
         $tmp .= $this->generateContactsForm($provider);
-        $tmp .= "<fieldset>
-			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "manage/attribute_policy/globals/" . $provider->getId() . "\">" . lang('rr_attributes') . "</a>
-			</legend>
-			</fieldset>";
-        $tmp .= "<fieldset>
-			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "manage/logos/provider/idp/" . $provider->getId() . "\">" . lang('rr_logo') . "</a>
-			</legend>
-			</fieldset>";
-        $tmp .= "<fieldset>
-			<legend class=\"accordionButton\">
-			<a href=\"" . base_url() . "geolocation/show/" . $provider->getId() . "/idp\">" . lang('rr_geolocation') . "</a>
-			</legend>
-			</fieldset>";
+        $tmp .= '<fieldset><legend class="accordionButton"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $provider->getId() . '">' . lang('rr_attributes') . '</a></legend></fieldset>';
+        $tmp .= '<fieldset><legend class="accordionButton"><a href="' . base_url() . 'manage/logos/provider/idp/' . $provider->getId() . '">' . lang('rr_logo') . '</a></legend></fieldset>';
+        $tmp .= '<fieldset><legend class="accordionButton"><a href="' . base_url() . 'geolocation/show/' . $provider->getId() . '/idp">' . lang('rr_geolocation') . '</a></legend></fieldset>';
         return $tmp;
     }
 
@@ -918,18 +779,14 @@ class Form_element {
     public function generateFederationEditForm(models\Federation $federation)
     {
         $f = null;
-        $f .= form_fieldset('Basic Information');
-        $f .="<ol>\n<li>";
-        $f .=form_label('Federation URN', 'urn');
+        $f .= form_fieldset(lang('rr_basicinformation'));
+        $f .='<ol><li>' .form_label(lang('rr_fed_urn'), 'urn');
         $f .= form_input('urn', set_value('urn', $federation->getUrn()));
-        $f .="</li>\n<li>";
-        $f .=form_label('Description', 'description');
+        $f .='</li><li>' . form_label(lang('rr_description'), 'description');
         $f .=form_textarea('description', set_value('description', $federation->getDescription()));
-        $f .="</li>\n<li>";
-        $f .= form_label('Terms of Use', 'tou');
+        $f .='</li><li>' . form_label(lang('rr_fed_tou'), 'tou');
         $f .= form_textarea('tou', set_value('tou', $federation->getTou()));
-        $f .="</li></ol>";
-        $f .= form_fieldset_close();
+        $f .='</li></ol>' . form_fieldset_close();
         return $f;
     }
 
@@ -943,32 +800,19 @@ class Form_element {
         {
             return false;
         }
-        $tmp = form_fieldset('Basic Information');
-        $tmp .= "<ol>";
-        $tmp .= "<li>";
-        $tmp .= form_label('HomeOrg Name', 'homeorgname');
+        $tmp = form_fieldset(lang('rr_basicinformation'));
+        $tmp .= '<ol><li>' . form_label(lang('rr_homeorganisationname'), 'homeorgname');
         $in = array('id' => 'homeorgname', 'name' => 'homeorgname', 'required' => 'required', 'value' => set_value('homeorgname', $provider->getName()));
-        //$tmp .= form_input('homeorgname', set_value('homeorgname', $provider->getName()));
         $tmp .= form_input($in);
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label('Display Name', 'displayname');
+        $tmp .= '</li><li>' . form_label(lang('rr_displayname'), 'displayname');
         $tmp .= form_input('displayname', set_value('displayname', $provider->getDisplayName()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label('Home Organization URL', 'homeurl');
+        $tmp .= '</li><li>' . form_label(lang('rr_homeorganisationurl'), 'homeurl');
         $tmp .= form_input('homeurl', set_value('homeurl', $provider->getHomeUrl()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label('Helpdesk URL', 'helpdeskeurl');
+        $tmp .= '</li><li>'  . form_label(lang('rr_helpdeskurl'), 'helpdeskeurl');
         $tmp .= form_input('helpdeskurl', set_value('helpdeskurl', $provider->getHelpdeskUrl()));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label('Valid from', 'validfrom');
+        $tmp .= '</li><li>' . form_label(lang('rr_validfrom'), 'validfrom');
         $tmp .= form_input(array('name' => 'validfrom', 'id' => 'validfrom', 'value' => set_value('validfrom', $provider->getValidFrom()->format('Y-m-d'))));
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label('Valid to', 'validto');
+        $tmp .= '</li><li>'. form_label(lang('rr_validto'), 'validto');
         $vtm = $provider->getValidTo();
         if (!empty($vtm))
         {
@@ -978,14 +822,9 @@ class Form_element {
         {
             $tmp .= form_input(array('name' => 'validto', 'id' => 'validto', 'value' => set_value('validto')));
         }
-        $tmp .= "</li>";
-        $tmp .= "<li>";
-        $tmp .= form_label('Description', 'description');
+        $tmp .= '</li><li>'.  form_label(lang('rr_description'), 'description');
         $tmp .= form_textarea('description', set_value('description', $provider->getDescription()));
-        $tmp .= "</li>";
-        $tmp .= "</ol>";
-        $tmp .= form_fieldset_close();
-
+        $tmp .= '</li></ol>' . form_fieldset_close();
         return $tmp;
     }
 
@@ -1016,38 +855,36 @@ class Form_element {
 
         $result_top = "";
         $result_bottom = "";
-        $result = "<table id=\"details\">\n";
-        $result .="<caption>Supported Attributes</caption>";
-        $result .="<thead><tr><th>Attribute name</th><th>supported</th></tr></thead>\n";
-        //  $result .="<tbody>";
+        $result = '<table id="details"><caption>'.lang('rr_supportedattributes').'</caption>';
+        $result .= '<thead><tr><th>'.lang('rr_attr_name').'</th><th>'.lang('rr_supported').'</th></tr></thead>';
         foreach ($data as $d => $value)
         {
             if ($value['s'] == 1)
             {
                 $f = form_checkbox('attr[' . $value['attrid'] . ']', '1', true);
-                $result_top .= "<tr><td>" . $value['name'] . "</td><td>" . $f . "</td></tr>\n";
+                $result_top .= '<tr><td>' . $value['name'] . '</td><td>' . $f . '</td></tr>';
             }
             else
             {
                 $f = form_checkbox('attr[' . $value['attrid'] . ']', '1', false);
-                $result_bottom .="<tr><td>" . $value['name'] . "</td><td>" . $f . "</td></tr>\n";
+                $result_bottom .='<tr><td>' . $value['name'] . '</td><td>' . $f . '</td></tr>';
             }
         }
         if (!empty($result_top))
         {
-            $result_top = "<tbody class=\"attr_supported\">" . $result_top . "</tbody>";
+            $result_top = '<tbody class="attr_supported">' . $result_top . '</tbody>';
         }
         if (!empty($result_bottom))
         {
-            $result_bottom = "<tbody>" . $result_bottom . "</tbody>";
+            $result_bottom = '<tbody>' . $result_bottom . '</tbody>';
         }
-        $result .= $result_top . $result_bottom . "</table>";
+        $result .= $result_top . $result_bottom . '</table>';
         return $result;
     }
 
     public function generateEditPolicyForm(models\AttributeReleasePolicy $arp, $action = null, $submit_type = null)
     {
-        $result = "";
+        $result = '';
         $attributes = array('id' => 'formver2');
         $type = $arp->getType();
         $hidden = array('idpid' => $arp->getProvider()->getId(), 'attribute' => $arp->getAttribute()->getId(), 'requester' => $arp->getRequester());
@@ -1085,15 +922,11 @@ class Form_element {
 
     public function generateEditPolicyFormElement(models\AttributeReleasePolicy $arp)
     {
-        $result = "";
-        $result .= form_fieldset('Attribute name: ' . $arp->getAttribute()->getFullName() . ' (' . $arp->getAttribute()->getName() . ')');
-        $result .= "<ol>";
-        $result .= "<li>\n";
-        $result .= form_label('Set policy', 'policy');
+        $result = '';
+        $result .= form_fieldset(lang('rr_attr_name').': ' . $arp->getAttribute()->getFullName() . ' (' . $arp->getAttribute()->getName() . ')');
+        $result .= '<ol><li>' . form_label(lang('rr_setpolicy'), 'policy');
         $result .= form_dropdown('policy', $this->ci->config->item('policy_dropdown'), $arp->getPolicy());
-        $result .= "</li>\n";
-        $result .= "</ol>\n";
-        $result .= form_fieldset_close();
+        $result .= '</li></ol>' . form_fieldset_close();
         return $result;
     }
 

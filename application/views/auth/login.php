@@ -10,9 +10,16 @@ $attributes = array('class' => 'span-15', 'id' => 'login');
     <legend><?php echo lang('login_form') ?></legend>
     <?php
     $v_errors = validation_errors('<div>', '</div>');
-    if (!empty($v_errors)) {
-        echo "<div class=\"error\">";
+    if (!empty($v_errors))
+    {
+        echo '<div class="error">';
         echo $v_errors;
+        echo "</div>";
+    }
+    elseif (!empty($message))
+    {
+        echo '<div class="error">';
+        echo $message;
         echo "</div>";
     }
     ?>
@@ -25,7 +32,7 @@ $attributes = array('class' => 'span-15', 'id' => 'login');
         </li>
         <li>
 
-            <label for="password"><?php echo lang('rr_password');?></label>
+            <label for="password"><?php echo lang('rr_password'); ?></label>
             <?php
             echo form_password('password');
             ?>
@@ -34,8 +41,9 @@ $attributes = array('class' => 'span-15', 'id' => 'login');
     <div class="buttons">
 
         <?php
-        if (!empty($shib_url)) {
-            echo anchor($shib_url, '<button type="button" name="faderated" value="faderated" class="btn" onclick="window.open(\''.$shib_url.'\',\'_self\')">'.lang('federated_access').'</button>');
+        if (!empty($shib_url))
+        {
+            echo anchor($shib_url, '<button type="button" name="faderated" value="faderated" class="btn" onclick="window.open(\'' . $shib_url . '\',\'_self\')">' . lang('federated_access') . '</button>');
         }
         ?> 
         <button type="submit" name="submit" value="Login" class="btn"><?php echo lang('rr_local_authn'); ?></button>

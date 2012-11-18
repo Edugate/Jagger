@@ -3,7 +3,7 @@
 $tmpl = array('table_open' => '<table  id="details" class="zebra">');
 $this->table->set_template($tmpl);
 
-$this->table->set_caption('Request waiting for approval');
+$this->table->set_caption(lang('rr_requestawaiting'));
 foreach ($fedrows as $row)
 {
 
