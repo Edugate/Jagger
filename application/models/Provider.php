@@ -1481,7 +1481,7 @@ class Provider {
         /* UIInfo */
         $UIInfo_Node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
         $d_element = 'DisplayName';
-        $d_value = $this->getDisplayName();
+        $d_value = htmlspecialchars($this->getDisplayName());
         $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
         $d_node->setAttribute('xml:lang', 'en');
         $UIInfo_Node->appendChild($d_node);
@@ -1716,13 +1716,13 @@ class Provider {
         /* UIInfo */
         $UIInfo_Node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
         $d_element = 'DisplayName';
-        $d_value = $this->getDisplayName();
+        $d_value = htmlspecialchars($this->getDisplayName());
         $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
         $d_node->setAttribute('xml:lang', 'en');
         $UIInfo_Node->appendChild($d_node);
 
         $d_element = 'Description';
-        $d_value = trim($this->getDescription());
+        $d_value = htmlspecialchars(trim($this->getDescription()));
         if (empty($d_value))
         {
             $d_value = "description not provided";
@@ -2010,7 +2010,7 @@ class Provider {
             $EntExtension_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
             $EntityDesc_Node->appendChild($EntExtension_Node);
             $RegistrationInfo_Node = $EntExtension_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:rpi', 'mdrpi:RegistrationInfo');
-            $RegistrationInfo_Node->setAttribute('registrationAuthority', $this->registrar);
+            $RegistrationInfo_Node->setAttribute('registrationAuthority', htmlspecialchars($this->registrar));
             if (!empty($this->registerdate))
             {
                 $RegistrationInfo_Node->setAttribute('registrationInstant', $this->registerdate->format('Y-m-d') . 'T' . $this->registerdate->format('H:i:s') . 'Z');
