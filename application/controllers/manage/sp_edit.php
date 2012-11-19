@@ -386,7 +386,7 @@ class Sp_edit extends MY_Controller {
         /**
          * add new certificate
          */
-        $cdata = $this->input->post('cert_0n_data');
+        $cdata = reformatPEM($this->input->post('cert_0n_data'));
         $ctype = 'sso';
         $ccerttype = $this->input->post('cert_0n_type');
         $cuse = $this->input->post('cert_0n_use');
