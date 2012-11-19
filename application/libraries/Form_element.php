@@ -477,10 +477,7 @@ class Form_element {
         // $tform .= form_fieldset('Protocols');
         $tform .= '<fieldset><legend class="accordionButton">'. lang('rr_protocols') .'</legend><ol class="accordionContent"><li>';
         $tform .= form_label(lang('rr_supportedprotocols') . showHelp(lang('rhelp_supportedprotocols')), 'protocols[]');
-        $options = array(
-            'urn:oasis:names:tc:SAML:2.0:protocol' => 'urn:oasis:names:tc:SAML:2.0:protocol',
-            'urn:oasis:names:tc:SAML:1.1:protocol' => 'urn:oasis:names:tc:SAML:1.1:protocol'
-        );
+        $options = $this->ci->config->item('supported_protocols');
         $tform .= form_multiselect('protocols[]', $options, $selected_options) .'</li>';
         $tform .= $this->supportedNameIds($provider) . '</ol>'. form_fieldset_close();
         return $tform;

@@ -880,6 +880,7 @@ class Provider {
         $this->resetProtocol();
         foreach ($provider->getProtocol()->getValues() as $p)
         {
+            log_message('debug','PPPPP overwrite with:'.$p);
             $this->setProtocol($p);
         }
         $this->setType($provider->getType());
@@ -2210,6 +2211,13 @@ class Provider {
                 $this->setNameid($n);
             }
         }
+        if (array_key_exists('protocols', $b))
+        {
+            foreach ($b['protocols'] as $p)
+            {
+                $this->setProtocol($p);
+            }
+        }
         if (array_key_exists('servicelocations', $b))
         {
 
@@ -2335,8 +2343,6 @@ class Provider {
                 }
             }
         }
-
-
         return $this;
     }
 

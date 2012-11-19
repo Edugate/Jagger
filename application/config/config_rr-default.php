@@ -62,13 +62,14 @@ $config['supported_protocols'] = array(
 	'urn:oasis:names:tc:SAML:2.0:protocol'=>'urn:oasis:names:tc:SAML:2.0:protocol',
 	'urn:oasis:names:tc:SAML:1.1:protocol'=>'urn:oasis:names:tc:SAML:1.1:protocol',
 	'urn:oasis:names:tc:SAML:1.0:protocol'=>'urn:oasis:names:tc:SAML:1.0:protocol',
+        'urn:mace:shibboleth:1.0'=>'urn:mace:shibboleth:1.0',
 	);
 
 $config['ssohandler_saml2'] = array(
-     'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-     'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-	 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
- 	 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'=>'urn:oasis:names:tc:SAML:2.0:bindings:SOAP');
+    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
+    'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'=>'urn:oasis:names:tc:SAML:2.0:bindings:SOAP');
 $config['ssohandler_saml1'] = array('urn:mace:shibboleth:1.0:profiles:AuthnRequest'=>'urn:mace:shibboleth:1.0:profiles:AuthnRequest');
 
 $config['acs_binding'] = array(
