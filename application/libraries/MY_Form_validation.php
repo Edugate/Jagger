@@ -46,7 +46,7 @@ class MY_form_validation extends CI_form_validation {
     function alpha_dash_comma($str)
     {
 
-        $result =  (bool) preg_match('/^[\s-_a-z0-9,\.\@]+$/i', $str);
+        $result =  (bool) preg_match('/^[\s-_a-z0-9,\.\@\:]+$/i', $str);
        
         if($result === FALSE)
         {

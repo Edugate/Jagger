@@ -179,7 +179,7 @@ class Access_manage extends MY_Controller
            }
            else
            {    
-                $row[$i][] = $key.$is_me;
+                $row[$i][] = $key.' ('.$users_objects[$key]->getFullname().')'.$is_me;
                 foreach($value as $ackey=>$acvalue)
                 {
                         if($acvalue)

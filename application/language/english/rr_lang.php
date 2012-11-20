@@ -46,6 +46,7 @@ $lang['rr_requestawaiting'] ='Request waiting for approval';
 $lang['rr_pleaseselect'] = 'Please select';
 $lang['rr_nofedfound'] = 'no federation found';
 $lang['rr_supported'] = 'supported';
+$lang['rr_filter'] = 'Filter';
 /**
   * SP Registration Form
   */

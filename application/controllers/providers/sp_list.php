@@ -77,7 +77,7 @@ class Sp_list extends MY_Controller {
                 $sprows[] = array(anchor($i_link, $i->getDisplayName(50) . '', 'title="' . $i->getDisplayName() . '"') . '<span class="additions">' . $i->getEntityId() . '</span>',$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
             } else
             {
-                $sprows[] = array('<div class="alert" title="'.$linktitle_disexp.'">' . anchor($i_link, $i->getDisplayName(50) , 'title="' . $i->getDisplayName() . '"') . '</div><span class="additions">' . $i->getEntityId() . '</span>',$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
+                $sprows[] = array('<span class="alert" title="'.$linktitle_disexp.'">' . anchor($i_link, $i->getDisplayName(50) , 'title="' . $i->getDisplayName() . '"') . '</span><span class="additions">' . $i->getEntityId() . '</span>',$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
             }
         }
         $data['sprows'] = $sprows;

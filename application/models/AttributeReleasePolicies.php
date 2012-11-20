@@ -29,6 +29,12 @@ class AttributeReleasePolicies {
         $this->em = $this->ci->doctrine->em;
     }
 
+    public function getAllPolicies(Provider $idp)
+    {
+         $collection = $this->em->getRepository("models\AttributeReleasePolicy")->findBy(array('idp' => $idp->getId()));
+         return $collection;
+    }
+
     public function getCustomSpPolicyAttributes(Provider $idp, $requester = null)
     {
         if (empty($requester))
@@ -124,7 +130,6 @@ class AttributeReleasePolicies {
                  }
               }
           }
-
           return $collection;
          
 

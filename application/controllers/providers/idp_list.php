@@ -57,7 +57,6 @@ class Idp_list extends MY_Controller {
         }
         $idprows = array();
         $col = new models\Providers();
-        //$idps = $col->getIdps_inNative();
         $idps = $col->getIdpsLight();
         $data['idps_count'] = count($idps);
         $linktitlediexp = lang('rr_disexp_link_title');
@@ -76,7 +75,7 @@ class Idp_list extends MY_Controller {
             }
             else
             {
-                $col1 = '<div class="alert" title="'.$linktitlediexp.'">'.anchor($i_link, $displayname).'</div>('. $i->getEntityId().')';
+                $col1 = '<span class="alert" title="'.$linktitlediexp.'">'.anchor($i_link, $displayname).'</span><br />('. $i->getEntityId().')';
             }
             $regdate = $i->getRegistrationDate();
             if(isset($regdate))
@@ -96,7 +95,7 @@ class Idp_list extends MY_Controller {
             {
                 $col3 = '';
             }
-            $idprows[] = array('data' => array('data' => $col1, 'class' => 'homeorg'), $col2,$col3);
+            $idprows[] = array('data' => array('data' => $col1), $col2,$col3);
         }
         $data['idprows'] = $idprows;
         $data['content_view'] = 'providers/idp_list_view';
