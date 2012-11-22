@@ -42,6 +42,12 @@ class Sp_list extends MY_Controller {
 
     function show()
     {
+        $this->load->helper('iconhelp');
+        $lockicon = genIcon('locked',lang('rr_locked'));
+        $disabledicon = genIcon('disabled',lang('rr_disabled')); 
+        $expiredicon = genIcon('expired',lang('rr_expornotvalidyet'));
+        $staticon = genIcon('mstatic',lang('rr_staticmetadataactive')); 
+        $exticon = genIcon('external',lang('rr_externalentity'));
         $resource = 'sp_list';
         $action = 'read';
         $group = 'default';
@@ -62,6 +68,28 @@ class Sp_list extends MY_Controller {
         $linktitle_disexp = lang('rr_disexp_link_title');
         foreach ($sps as $i)
         {
+            $iconsblock = '';
+            
+            if($i->getLocked())
+            {
+               $iconsblock .= $lockicon .' '; 
+            }
+            if(!($i->getActive()))
+            {
+               $iconsblock .= $disabledicon .' ';
+            }
+            if(!($i->getIsValidFromTo()))
+            {
+               $iconsblock .= $expiredicon .' ';
+            }
+            if(!($i->getLocal()))
+            {
+              $iconsblock .= $exticon .' ';
+            }
+            if($i->getStatic())
+            {
+               $iconsblock .= $staticon .' ';
+            }
             $regdate = $i->getRegistrationDate();
             if (isset($regdate))
             {
@@ -74,10 +102,10 @@ class Sp_list extends MY_Controller {
             $is_available = $i->getAvailable();
             if ($is_available)
             {
-                $sprows[] = array(anchor($i_link, $i->getDisplayName(50) . '', 'title="' . $i->getDisplayName() . '"') . '<span class="additions">' . $i->getEntityId() . '</span>',$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
+                $sprows[] = array(anchor($i_link, $i->getDisplayName(50) . '', 'title="' . $i->getDisplayName() . '"') . '<span class="additions">' . $i->getEntityId() . '</span>',$iconsblock,$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
             } else
             {
-                $sprows[] = array('<span class="alert" title="'.$linktitle_disexp.'">' . anchor($i_link, $i->getDisplayName(50) , 'title="' . $i->getDisplayName() . '"') . '</span><span class="additions">' . $i->getEntityId() . '</span>',$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
+                $sprows[] = array('<span class="alert" title="'.$linktitle_disexp.'">' . anchor($i_link, $i->getDisplayName(50) , 'title="' . $i->getDisplayName() . '"') . '</span><span class="additions">' . $i->getEntityId() . '</span>',$iconsblock,$regcol, '<a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . substr($i->getHelpdeskUrl(), 0, 30) . '...</a>');
             }
         }
         $data['sprows'] = $sprows;

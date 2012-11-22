@@ -96,7 +96,21 @@ class Premoval extends MY_Controller {
                         $status = $this->providerremover->removeProvider($provider);
                         if ($status)
                         {
+                            $this->load->library('tracker');
+                            $this->remove_ProviderTrack($data['entityid']);
                             $this->em->flush();
+                            $recipients = array();
+                            $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>'Administrator'));
+                            $a_members = $a->getMembers();
+                            foreach($a_members as $m)
+                            {
+                                 $recipients[] = $m->getEmail();
+                            }
+                            $sbj = 'Provider has been removed from system';
+                            $body = "Dear Administrator\r\n";
+                            $body .= $this->j_auth->current_user(). "(IP:".$_SERVER['REMOTE_ADDR'].") removed provider:". $data['entityid']. "from the system\r\n";
+                            $this->load->library('email_sender');
+                            $this->email_sender->send($recipients,$sbj,$body); 
                             $data['success_message'] = lang('rr_provider') . ' ' . $data['entityid'] . ' ' . lang('rr_hasbeenremoved');
                             $data['showform'] = false;
                             $this->load->view('page', $data);
