@@ -43,7 +43,12 @@ class Idp_list extends MY_Controller {
 
     function show()
     {
-        $lockicon = '<img src="'.base_url().'images/icons/lock.png" title="Locked"/>';
+        $this->load->helper('iconhelp');
+        $lockicon = genIcon('locked',lang('rr_locked'));
+        $disabledicon = genIcon('disabled',lang('rr_disabled')); 
+        $expiredicon = genIcon('expired',lang('rr_expornotvalidyet'));
+        $staticon = genIcon('mstatic',lang('rr_staticmetadataactive')); 
+        $exticon = genIcon('external',lang('rr_externalentity'));
         $resource = 'idp_list';
         $action = 'read';
         $group = 'default';
@@ -63,6 +68,28 @@ class Idp_list extends MY_Controller {
         foreach ($idps as $i)
         {
             $i_link = base_url() . "providers/provider_detail/idp/" . $i->getId();
+            $iconsblock = '';
+            
+            if($i->getLocked())
+            {
+               $iconsblock .= $lockicon .' '; 
+            }
+            if(!($i->getActive()))
+            {
+               $iconsblock .= $disabledicon .' ';
+            }
+            if(!($i->getIsValidFromTo()))
+            {
+               $iconsblock .= $expiredicon .' ';
+            }
+            if(!($i->getLocal()))
+            {
+              $iconsblock .= $exticon .' ';
+            }
+            if($i->getStatic())
+            {
+               $iconsblock .= $staticon .' ';
+            }
             $displayname = $i->getDisplayName();
             if(empty($displayname))
             {
@@ -95,7 +122,7 @@ class Idp_list extends MY_Controller {
             {
                 $col3 = '';
             }
-            $idprows[] = array('data' => array('data' => $col1), $col2,$col3);
+            $idprows[] = array('data' => array('data' =>  $col1 ),$iconsblock, $col2,$col3);
         }
         $data['idprows'] = $idprows;
         $data['content_view'] = 'providers/idp_list_view';

@@ -41,14 +41,23 @@ class Tracker {
         $track->setSubType($subtype);
         $track->setDetail($details);
         $track->setResourceName($resourcename);
-
-
-
-
         $this->em->persist($track);
         if ($sync_with_db === TRUE) {
             $this->em->flush();
         }
+    }
+    
+    function remove_ProviderTrack($entityid)
+    {
+       $tracks = $this->em->getRepository("models\Tracker")->findBy(array('resourcename'=>$entityid,'resourcetype'=>array('idp','sp') ));
+       if(!empty($tracks))
+       {
+          foreach($tracks as $t)
+          {
+              $this->em->remove($t);
+          }
+       }
+       return true;
     }
 
 }
