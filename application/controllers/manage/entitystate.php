@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
@@ -17,7 +18,6 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
 class Entitystate extends MY_Controller {
 
     protected $id;
@@ -42,91 +42,104 @@ class Entitystate extends MY_Controller {
         $this->tmp_providers = new models\Providers();
         $this->entity = null;
     }
-    
+
     private function _submit_validate()
     {
-        $this->form_validation->set_rules('elock','fff','max_length[1]');
-        $this->form_validation->set_rules('eactive','dfdfd','max_length[1]');
+        $this->form_validation->set_rules('elock', lang('rr_lock_entity'), 'max_length[1]');
+        $this->form_validation->set_rules('eactive', lang('rr_entityactive'), 'max_length[1]');
+        $this->form_validation->set_rules('extint', lang('rr_entitylocalext'), 'max_length[1]');
         return $this->form_validation->run();
     }
+
     public function modify($id)
     {
-        if(!is_numeric($id))
+        if (!is_numeric($id))
         {
-            show_error('Incorrect entity id provided',404);
+            show_error('Incorrect entity id provided', 404);
         }
         else
         {
             $this->entity = $this->tmp_providers->getOneById($id);
         }
-        if(!isset($this->entity))
+        if (!isset($this->entity))
         {
-           show_error('Provider not found',404);
+            show_error('Provider not found', 404);
         }
         $data['entid'] = $id;
         $data['current_locked'] = $this->entity->getLocked();
         $data['current_active'] = $this->entity->getActive();
+        $data['current_extint'] = $this->entity->getLocal();
         $has_manage_access = $this->zacl->check_acl($this->entity->getId(), 'manage', 'entity', '');
-        if(!$has_manage_access)
+        if (!$has_manage_access)
         {
-             show_error('No sufficient permision to manage entity',403);
+            show_error('No sufficient permision to manage entity', 403);
         }
 
 
-        if($this->_submit_validate() === TRUE)
+        if ($this->_submit_validate() === TRUE)
         {
             $locked = $this->input->post('elock');
             $active = $this->input->post('eactive');
+            $extint = $this->input->post('extint');
+            if (isset($locked))
+            {
+                if ($data['current_locked'] != $locked)
+                {
 
-            if(isset($locked))
-            {
-               if($data['current_locked'] != $locked)
-               {
-                
-                  if($locked == '1')
-                  {
-                      $this->entity->Lock();
-                  }
-                  elseif($locked == '0')
-                  {
-                      $this->entity->Unlock();
-                  }
-               }
+                    if ($locked == '1')
+                    {
+                        $this->entity->Lock();
+                    }
+                    elseif ($locked == '0')
+                    {
+                        $this->entity->Unlock();
+                    }
+                }
             }
-            if(isset($active))
+            if (isset($active))
             {
-               if($data['current_active'] != $active)
-               {
-                  if($active == '1')
-                  {
-                      $this->entity->Activate();
-                  }
-                  elseif($active == '0')
-                  {
-                       $this->entity->Disactivate();
-                  }
-               }
+                if ($data['current_active'] != $active)
+                {
+                    if ($active == '1')
+                    {
+                        $this->entity->Activate();
+                    }
+                    elseif ($active == '0')
+                    {
+                        $this->entity->Disactivate();
+                    }
+                }
+            }
+            if (isset($extint))
+            {
+                if ($data['current_extint'] != $extint)
+                {
+                    if ($extint == '1')
+                    {
+                        $this->entity->setAsLocal();
+                        $this->entity->createAclResource();
+                    }
+                    elseif ($extint == '0')
+                    {
+                        $this->entity->setAsExternal();
+                    }
+                }
             }
             $this->em->persist($this->entity);
             $this->em->flush();
         }
         $data['current_locked'] = $this->entity->getLocked();
         $data['current_active'] = $this->entity->getActive();
-   
-       $data['entityid'] = $this->entity->getEntityId();
-       $data['name'] = $this->entity->getName();
-       $data['id'] = $this->entity->getId();
-       $data['type'] = strtolower($this->entity->getType());
+        $data['current_extint'] = $this->entity->getLocal();
+        $data['entityid'] = $this->entity->getEntityId();
+        $data['name'] = $this->entity->getName();
+        $data['id'] = $this->entity->getId();
+        $data['type'] = strtolower($this->entity->getType());
 
-       
- 
+
+
         $data['content_view'] = 'manage/entitystate_form_view';
-        $this->load->view('page',$data);
-           
-
+        $this->load->view('page', $data);
     }
 
-    
-
-    
 }

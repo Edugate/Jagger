@@ -405,12 +405,19 @@ class Provider {
      */
     public function createAclResource()
     {
+       $this->ci = &get_instance();
+        $this->em = $this->ci->doctrine->em;
         $is_local = $this->is_local;
         if ($is_local)
         {
+            $rescheck = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => $this->id));
+            if(!empty($rescheck))
+            {
+                return true;
+            }
             $parent = array();
 
-            $parents = $this->em->getRepository("models\AclResource")->findBy(array('resource' => array('idp', 'sp')));
+            $parents = $this->em->getRepository("models\AclResource")->findBy(array('resource' => array('idp', 'sp','entity')));
             foreach ($parents as $p)
             {
                 $parent[$p->getResource()] = $p;
@@ -880,7 +887,6 @@ class Provider {
         $this->resetProtocol();
         foreach ($provider->getProtocol()->getValues() as $p)
         {
-            log_message('debug','PPPPP overwrite with:'.$p);
             $this->setProtocol($p);
         }
         $this->setType($provider->getType());

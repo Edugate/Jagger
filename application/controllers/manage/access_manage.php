@@ -65,6 +65,12 @@ class Access_manage extends MY_Controller
         {
                 show_error('No access to manage permissions',403);
         }
+        $is_local = $ent->getLocal();
+        if(!$is_local)
+        {
+            show_error('Entity is external, cannot manage permissions',403);
+        }
+        
 
         $submited = $this->input->post('change_access');
         if(!empty($submited))
