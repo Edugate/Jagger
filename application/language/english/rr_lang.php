@@ -304,7 +304,7 @@ $lang['rr_serviceproviderdetails'] = 'Service Provider details';
 $lang['rr_acs'] = 'AssertionConsumerService';
 $lang['rr_acs_fieldset'] = 'AssertionConsumerService';
 $lang['rr_singlesignon_fieldset'] = 'SingleSignOn';
-
+$lang['rr_status'] = 'Status';
 $lang['rr_url'] = 'URL';
 $lang['rr_admins'] = 'Admins';
 $lang['rr_managestatus'] = 'Manage status';

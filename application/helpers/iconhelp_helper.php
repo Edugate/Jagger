@@ -34,7 +34,10 @@ function genIcon($type, $title=null)
           'disabled' => 'minus-button.png',
           'expired' => 'calendar--minus.png',
           'mstatic' => 'ui-toolbar--arrow.png',
-          'external'=> 'tag-cloud.png'
+          'external'=> 'tag-cloud.png',
+          'noeditperm' => 'pencil-prohibition.png',
+          'edit' => 'pencil-field.png',
+          'bookmarkadd' => 'star--plus.png',
           );
     if(array_key_exists($type,$icons))
     {

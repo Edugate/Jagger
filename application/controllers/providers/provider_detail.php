@@ -690,7 +690,8 @@ class Provider_detail extends MY_Controller {
 
         $is_active = $sp->getActive();
         $locked = $sp->getLocked();
-        $lockicon = '<img src="' . base_url() . 'images/icons/lock.png" title="Locked">';
+        $lockicon = genIcon('locked',lang('rr_locked'));
+        
         if (empty($is_active))
         {
             $activeString = '<span class="notice"><small>' . lang('rr_spdisabled') . '</small></span>';
@@ -701,7 +702,7 @@ class Provider_detail extends MY_Controller {
         }
         if (!$has_write_access)
         {
-            $edit_link = '<img src="' . base_url() . 'images/icons/pencil-prohibition.png" title="' . lang('rr_nopermission') . '"/>';
+            $edit_link = genIcon('noeditperm',lang('rr_nopermission'));
         }
         elseif (!$sp->getLocal())
         {
@@ -709,12 +710,11 @@ class Provider_detail extends MY_Controller {
         }
         elseif ($locked)
         {
-            $edit_link = '<img src="' . base_url() . 'images/icons/lock.png" title="' . lang('rr_lockedentity') . '" />';
+            $edit_link = genIcon('locked',lang('rr_lockedentity'));
         }
         else
         {
-            $image_link = '<img src="' . base_url('images/icons/pencil-field.png') . '"/>';
-            $edit_link = '<span><a href="' . base_url('manage/sp_edit/show/' . $sp->getId()) . '" class="edit" title="edit" >' . $image_link . '</a></span>';
+            $edit_link = '<span><a href="' . base_url('manage/sp_edit/show/' . $sp->getId()) . '" class="edit" title="edit" >' . genIcon('edit') . '</a></span>';
         }
         $data['edit_link'] = $edit_link;
         $i = 1;
@@ -766,7 +766,7 @@ class Provider_detail extends MY_Controller {
         }
         else
         {
-            $data['sp_details'][$i++]['value'] = lang("rr_notset");
+            $data['sp_details'][$i++]['value'] = lang('rr_notset');
         }
         $helpurl = $sp->getHelpdeskURL();
 
@@ -815,12 +815,12 @@ class Provider_detail extends MY_Controller {
 
         if ($locked)
         {
-            $data['sp_details'][$i]['name'] = 'Status';
+            $data['sp_details'][$i]['name'] = lang('rr_status');
             $data['sp_details'][$i++]['value'] = '' . $lockicon . '<b>'.lang('rr_lockedentity').'</b>';
         }
         if (!$sp->getActive())
         {
-            $data['sp_details'][$i]['name'] = 'Status';
+            $data['sp_details'][$i]['name'] = lang('rr_status');
             $data['sp_details'][$i++]['value'] = '<b>Inactive</b>';
         }
 
@@ -1096,9 +1096,9 @@ class Provider_detail extends MY_Controller {
         $data['spname'] = $sp->getName();
         if (empty($data['spname']))
         {
-            $data['spname'] = 'unknown';
+            $data['spname'] = $sp->getEntityId();
         }
-        $this->title = lang("rr_informationdetail") . $data['spname'];
+        $this->title = lang('rr_informationdetail') .' ' . $data['spname'];
         $data['content_view'] = 'providers/sp_detail_view';
         /** display logo */
         $extends = $sp->getExtendMetadata();
