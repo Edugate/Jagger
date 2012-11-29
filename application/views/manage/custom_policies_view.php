@@ -37,7 +37,7 @@ echo form_label('Policy','policy');
 echo form_dropdown('policy' , $options, $policy_selected);
 echo "</li>";
 echo "<li>";
-echo form_label('Permited/Denied values <br /><small>use comma as delimeter</small>','values');
+echo form_label('Permited/Denied values <br /><small>'.lang('rr_usecommaasdelimeter').'<br />note: '.lang('rr_customattrscopednote').'</small>','values');
 echo form_textarea(
       array('id'=>'values',
             'name'=>'values',
@@ -51,7 +51,7 @@ echo form_fieldset_close();
 ?>
 <div class="buttons">
     <button type="submit" name="submit" value="Save" class="btn positive">
-        <span class="save">Save<span></button>
+        <span class="save"><?php echo lang('rr_save'); ?><span></button>
 </div>
 <?php
 

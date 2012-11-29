@@ -221,6 +221,7 @@ class Auth extends MY_Controller {
             $can_autoregister = $this->config->item('autoregister_federated');
             if (!$can_autoregister)
             {
+                log_message('error','User authorization failed: '.$user_var.' doesnt exist in RR');
                 show_error('An account for ' . $user_var . ' doesn\'t exist in the Resource Registry. You can request access <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">here</a>', 403);
             }
         }

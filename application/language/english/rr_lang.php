@@ -299,6 +299,8 @@ $lang['rr_keyname'] = 'KeyName';
 $lang['rr_fingerprint'] = 'Fingerprint';
 $lang['rr_certbody']='Certificate body';
 $lang['rr_daystoexpire'] = 'days to expire';
+$lang['rr_usecommaasdelimeter'] = 'use comma as delimeter';
+$lang['rr_customattrscopednote'] = 'If attr type is Scoped and your IDP is shibboleth then use values without scope as Shib-idp adds scope after filtering';
 
 $lang['rr_serviceproviderdetails'] = 'Service Provider details';
 $lang['rr_acs'] = 'AssertionConsumerService';
