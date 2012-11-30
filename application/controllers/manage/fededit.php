@@ -36,9 +36,9 @@ class Fededit extends MY_Controller {
 
     private function _submit_validate()
     {
-        $this->form_validation->set_rules('urn', 'Federation URN', 'required|trim|min_length[5]|max_length[128]|xss_clean');
-        $this->form_validation->set_rules('description', 'Description', 'trim|min_length[5]|max_length[500]|xss_clean');
-        $this->form_validation->set_rules('tou', 'Terms Of Use', 'trim|min_length[5]|max_length[1000]|xss_clean');
+        $this->form_validation->set_rules('urn', lang('rr_fed_urn'), 'required|trim|min_length[5]|max_length[128]|xss_clean');
+        $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[500]|xss_clean');
+        $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'trim|min_length[5]|max_length[1000]|xss_clean');
         return $this->form_validation->run();
     }
 
@@ -81,7 +81,7 @@ class Fededit extends MY_Controller {
             $this->em->persist($fed);
             $this->em->flush();
             log_message('info','Basic information for federation '.$fedname.' has been updated');
-            $data['success_message'] = 'Basic information for federation <b>'.$fedname.'</b> has been updated';
+            $data['success_message'] = sprintf(lang('rr_fedinfo_updated'),$fedname);
         }
         else
         {
@@ -105,7 +105,7 @@ class Fededit extends MY_Controller {
             $data['form'] .= form_close();
         
         }
-            $data['subtitle'] = "Details for \"".htmlspecialchars($fedname)."\" Federation <a href=\"".base_url()."federations/manage/show/".$fedurl."\"><img src=\"".base_url()."images/icons/application-browser.png\"/></a>";
+            $data['subtitle'] = 'Details for "'.htmlspecialchars($fedname).'" Federation <a href="'.base_url().'federations/manage/show/'.$fedurl.'"><img src="'.base_url().'images/icons/application-browser.png"/></a>';
             $data['content_view'] = 'manage/fededit_view';
             $this->load->view('page', $data);
         

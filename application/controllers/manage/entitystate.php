@@ -81,6 +81,7 @@ class Entitystate extends MY_Controller {
             $locked = $this->input->post('elock');
             $active = $this->input->post('eactive');
             $extint = $this->input->post('extint');
+            $changed = false;
             if (isset($locked))
             {
                 if ($data['current_locked'] != $locked)
@@ -94,6 +95,7 @@ class Entitystate extends MY_Controller {
                     {
                         $this->entity->Unlock();
                     }
+                    $changed = true;
                 }
             }
             if (isset($active))
@@ -108,6 +110,7 @@ class Entitystate extends MY_Controller {
                     {
                         $this->entity->Disactivate();
                     }
+                    $changed = true;
                 }
             }
             if (isset($extint))
@@ -123,10 +126,15 @@ class Entitystate extends MY_Controller {
                     {
                         $this->entity->setAsExternal();
                     }
+                    $changed = true;
                 }
             }
             $this->em->persist($this->entity);
             $this->em->flush();
+            if($changed)
+            {
+                $data['success_message'] = lang('rr_entstate_updated');
+            }
         }
         $data['current_locked'] = $this->entity->getLocked();
         $data['current_active'] = $this->entity->getActive();

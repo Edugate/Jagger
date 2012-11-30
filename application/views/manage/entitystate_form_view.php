@@ -12,6 +12,11 @@ if (!empty($error))
     <?php echo lang('rr_state_mngt');?>: <?php echo $name . ' ('.$entityid.')<a href="'.base_url().'providers/provider_detail/'.$type.'/'.$id.'"><img src="'.base_url().'images/icons/arrow.png"/></a>'; ?>
 </div>
 <?php
+if(!empty($success_message))
+{
+  echo '<div class="success">'.$success_message.'</div>';
+}
+
 $attributes = array('class' => 'span-16', 'id' => 'formver1');
 $hidden = array('entid'=>$entid); 
 $target = current_url();

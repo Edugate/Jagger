@@ -56,7 +56,7 @@ $lang['rr_entityid'] = 'EntityID';
 $lang['rr_federation'] = 'Federation';
 $lang['rr_helpdeskurl'] = 'Helpdesk URL';
 $lang['rr_fedownercreator'] = 'Federation owner/creator';
-
+$lang['rr_fedinfo_updated'] = 'Basic information for federation %s has been updated';
 $lang['rr_homeorganisation']= 'Home Organization' ;
 $lang['rr_technicalinformation'] = 'Technical Information';
 $lang['rr_logos'] = 'Logos';
@@ -363,6 +363,7 @@ $lang['rr_noperm_edit'] = 'no access to edit';
 $lang['rr_noperm_bulks'] = 'no access to bulk operations';
 $lang['rr_noperm_invmembers'] = 'no access to invite other providers';
 $lang['rr_noperm_accessmngt'] = 'no access to manage permissions';
+$lang['rr_entstate_updated'] = 'Entity status has been updated';
 $lang['rrerror_noperm_regfed'] = 'You don\'t have permision to register new Federation';
 $lang['rrerror_noperm_viewfed'] = 'You have no access to display details for this federation';
 $lang['rrerror_noperm_geo'] = 'No access to edit provider\'s geolocations';
