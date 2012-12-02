@@ -195,6 +195,12 @@ body {
     }
     
 }
+li.resource:before {
+    content:url(../images/icons/block-share.png);
+}
+li.homeorg:before {
+    content:url(../images/icons/home.png);
+}
 span.homeorg:before {
     content:url(../images/icons/home.png);
 }
@@ -379,7 +385,18 @@ div.dashboardtitle {
     color: white;
   }
 }
-
+.spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-left: -50px; /* half width of the spinner gif */
+        margin-top: -50px; /* half height of the spinner gif */
+        text-align:center;
+        z-index:1234;
+        overflow: auto;
+        width: 158px; /* width of the spinner gif */
+        height: 158px; /*hight of the spinner gif +2px to fix IE8 issue */
+}
 @include sticky-footer(50px, "#oko","#inpre_footer","#footer");
 
 

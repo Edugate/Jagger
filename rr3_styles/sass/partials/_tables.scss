@@ -1,3 +1,5 @@
+
+
 table.tablesorter {
    background-color: #3F92D2;
    text-align: left;
@@ -72,6 +74,16 @@ table#details {
       text-align: left;
    //   padding-left: 15px;
    }
+   tr.opened {
+      border-bottom: 0px;
+   }
+   tr.opened td {
+      border-bottom: 0px;
+   }
+tr.feddetails td {
+      border-top: 0px;
+      background-color:$tr-highlight-back-color-light;
+}
    tr:nth-of-type(odd) {
       background-color: $tr-odd-back-color;
    }

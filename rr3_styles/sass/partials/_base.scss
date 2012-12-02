@@ -33,6 +33,10 @@ $tr-odd-back-color: #F9F9EE;
 $tr-even-back-color: #ECF0F2;
 $tr-highlight-back-color: #394C5F;
 $tr-highlight-color: whitesmoke;
+
+$tr-highlight-back-color-light: lighten($tr-highlight-back-color,65%);
+
+
 $table-border-color: red;
 
 $supported-back-color: #394C5F;

@@ -300,6 +300,8 @@ $pageTitle .= $this->title;
             ?>
         </footer>
     </div>
-
+<div id="spinner" class="spinner" style="display:none;">
+	<img id="img-spinner" src="<?php echo base_url();?>images/spinner1.gif" alt="Loading"/>
+</div>
 </body>
 </html>

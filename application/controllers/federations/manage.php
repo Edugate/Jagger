@@ -78,12 +78,15 @@ class Manage extends MY_Controller {
             {
                 $local = '<span class="orange">'.lang('rr_fed_external').'<span>';
             }
-
+            
+            $imgtoggle ='<img class="toggle" src="'.base_url().'images/icons/control-270.png" />'; 
+            
 
 
             $frow[$i++] = array(
                 $active,
                 anchor(current_url() . "/show/" . base64url_encode($f->getName()), $f->getName()),
+                '<a href="'.current_url().'/showmembers/'.$f->getId().'" class="fmembers" id="'.$f->getId().'">'.$imgtoggle.'</a>', 
                 $f->getUrn(),
                 $public,
                 $local,
@@ -96,6 +99,42 @@ class Manage extends MY_Controller {
         $this->load->view('page', $data);
     }
 
+    function showmembers($fedid)
+    {
+       if (!$this->input->is_ajax_request())
+       {
+           show_error('Request not allowed',403);
+       }
+       $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
+       if(empty($federation))
+       {
+           show_error('federation not found',404);
+       }
+       $fmembers = $federation->getMembers();
+       if(empty($fmembers))
+       {
+           show_error('No members for federation',404);
+       }
+       $preurl = base_url().'providers/provider_detail/';
+       //$members = array('idp','sp','both');
+       $members = array();
+       foreach($fmembers as $m)
+       {
+            $type = strtolower($m->getType());
+            $name = $m->getName();
+            if(empty($name))
+            {
+                $name = $m->getEntityId();
+            }
+            $members[''.$type.''][] = array('entityid'=>$m->getEntityId(),'name'=>$name,'url'=>$preurl.$type.'/'.$m->getId());
+       }
+       
+       echo json_encode($members);
+
+
+
+
+    }
     function showcontactlist($fed_name,$type=NULL)
     {
        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
