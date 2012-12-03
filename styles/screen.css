@@ -1,3 +1,4 @@
+@charset "utf-8";
 html {
   margin: 0;
   padding: 0;
@@ -1923,6 +1924,10 @@ body span.loggedin {
   top: 10px;
   list-style-type: none;
   float: right;
+}
+
+.feddetails li {
+  list-style-type: none;
 }
 
 li.resource:before {
