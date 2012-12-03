@@ -97,30 +97,36 @@ $(function() {
                         {
                             if(data.idp)
                             {
-                        
+                                var stitle = $('<li>Identity Providers</li>');
+                                var nlist = $('<ol/>');
                                 $.each(data.idp , function(i,v){
                                     var div_data = '<li class="homeorg"><a href="'+v.url+'">'+ v.name + '</a> ('+v.entityid +') </li>';
-                                    value.append(div_data);
+                                    nlist.append(div_data);
                                 });
-                                value.append('<li/>');
+                                stitle.append(nlist);
+                                value.append(stitle);
                             }
                             if(data.sp)
                             {
+                                var stitle = $('<li>Service Providers</li>');
+                                var nlist = $('<ol/>');
                                 $.each(data.sp , function(i,v){
                                     var div_data = '<li class="resource"><a href="'+v.url+'">'+ v.name +'</a> ('+v.entityid +') </li>';
-                                    value.append(div_data);
-                      
+                                    nlist.append(div_data);
                                 });
-                                value.append('<li/>');
+                                stitle.append(nlist);
+                                value.append(stitle);
                             }
                             if(data.both)
                             {
+                                var stitle = $('<li>Services are both IdP and SP</li>');
+                                var nlist = $('<ol/>');
                                 $.each(data.both , function(i,v){
                                     var div_data = '<li class="both"><a href="'+v.url+'">'+ v.name +'</a> ('+v.entityid +') </li>';
-                                    value.append(div_data);
-                             
+                                    nlist.append(div_data);
                                 }); 
-                                value.append('<li/>');
+                                stitle.append(nlist);
+                                value.append(stitle);
                             }
                         }
                     }
@@ -135,7 +141,7 @@ $(function() {
                     alert('problem with loading data');
                 }
             }).done(function(){
-                var nextrow = '<tr class="feddetails"><td colspan="7"><p>'+value.html()+'</p></td></tr>';  
+                var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">'+value.html()+'</ul></td></tr>';  
                 $(nextrow).insertAfter(row);
             }
             )

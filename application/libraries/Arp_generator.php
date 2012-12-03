@@ -334,7 +334,14 @@ class Arp_generator {
             foreach ($spec_attrs as $skey => $svalue)
             {
                 //$ent = $t_sp->getOneById($svalue->getRequester());
-                $ent = $members_byid[$svalue->getRequester()];
+                if(isset($members_byid[$svalue->getRequester()]))
+                {
+                   $ent = $members_byid[$svalue->getRequester()];
+                }
+                else
+                {
+                   log_message('error','found orphaned arps in db : sprequest:'.$svalue->getRequester() .' doesn exist in provider table');
+                }
                 //echo $svalue->getRequester();
                 //echo $ent;
                 if (!empty($ent))

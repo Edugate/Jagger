@@ -38,7 +38,7 @@ $pageTitle .= $this->title;
         echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.highlighter.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.tablesorter.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.inputfocus-0.9.min.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/idpAttribute.js"></script>';
+#        echo '<script type="text/javascript" src="' . $base_url . 'js/idpAttribute.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/esapi4js/esapi-compressed.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/esapi4js/resources/i18n/ESAPI_Standard_en_US.properties.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/esapi4js/resources/Base.esapi.properties.js"></script>';

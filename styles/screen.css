@@ -1930,6 +1930,20 @@ body span.loggedin {
   list-style-type: none;
 }
 
+.feddetails ul {
+  font-size: larger;
+}
+
+.feddetails ul li ol {
+  list-style-image: url("../images/icons/arrow-transition.png");
+  padding: 5px 5px 7px 20px;
+}
+
+.feddetails ul li ol li {
+  color: black;
+  margin-left: 10px;
+}
+
 li.resource:before {
   content: url(../images/icons/block-share.png);
 }

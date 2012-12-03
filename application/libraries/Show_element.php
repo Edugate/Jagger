@@ -64,9 +64,13 @@ class Show_element {
         foreach ($arps as $a) {
             $spid = $a->getRequester();
             $sp_requester = $this->tmp_providers->getOneSpById($spid);
-            if (!empty($sp_requester)) {
-                $required_attrs = $tmp_reqs->getRequirementsBySP($sp_requester);
+            if(empty($sp_requester))
+            {
+               log_message('error','found orhaned arp with id:'.$a->getId() .' removing from db ....');
             }
+            else
+            {
+            $required_attrs = $tmp_reqs->getRequirementsBySP($sp_requester);
 
             $name = $sp_requester->getName();
             if(empty($name))
@@ -92,6 +96,7 @@ class Show_element {
             if (array_key_exists($spid, $c_arps) && array_key_exists($a->getAttribute()->getName(),$c_arps[$spid]))
             {
                    $result[$name][$a->getAttribute()->getName()]['custom'] = $c_arps[$spid][$a->getAttribute()->getName()]['custom'];
+            }
             }
         }
         $result3 = array();
