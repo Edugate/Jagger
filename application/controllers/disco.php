@@ -76,12 +76,13 @@ class Disco extends MY_Controller {
             {
                 $output[$oi]['entityID'] = $key2->getEntityId();
                 //        $output[$oi]['country'] = 'IE';
+                $entityid = $key2->getEntityId();
                 $entityname = $key2->getName();
                 if (empty($entityname))
                 {
-                    $entityname = $key2->getEntityId();
+                    $entityname = $entityid;
                 }
-                $output[$oi]['title'] = $entityname;
+                $output[$oi]['title'] = $entityname . '<span style="display:none">'.$entityid.'</span>';
                 $extend = $key2->getExtendMetadata();
                 $count_extend = count($extend);
                 $e_extend = array();
