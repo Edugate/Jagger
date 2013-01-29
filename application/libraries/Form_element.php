@@ -778,12 +778,13 @@ class Form_element {
         $f = null;
         $f .= form_fieldset(lang('rr_basicinformation'));
         $f .='<ol><li>' .form_label(lang('rr_fed_urn'), 'urn');
-        $f .= form_input('urn', set_value('urn', $federation->getUrn()));
-        $f .='</li><li>' . form_label(lang('rr_description'), 'description');
-        $f .=form_textarea('description', set_value('description', $federation->getDescription()));
-        $f .='</li><li>' . form_label(lang('rr_fed_tou'), 'tou');
-        $f .= form_textarea('tou', set_value('tou', $federation->getTou()));
-        $f .='</li></ol>' . form_fieldset_close();
+        $f .= form_input('urn', set_value('urn', $federation->getUrn())).'</li>';
+        $f .= '<li>'. form_label(lang('rr_include_attr_in_meta'),'incattrs').form_checkbox('incattrs', 'accept', set_value('incattrs',$federation->getAttrsInmeta())).'</li>';
+        $f .='<li>' . form_label(lang('rr_description'), 'description');
+        $f .=form_textarea('description', set_value('description', $federation->getDescription())).'</li>';
+        $f .='<li>' . form_label(lang('rr_fed_tou'), 'tou');
+        $f .= form_textarea('tou', set_value('tou', $federation->getTou())).'</li>';
+        $f .='</ol>' . form_fieldset_close();
         return $f;
     }
 
@@ -852,7 +853,7 @@ class Form_element {
 
         $result_top = "";
         $result_bottom = "";
-        $result = '<table id="details"><caption>'.lang('rr_supportedattributes').'</caption>';
+        $result = '<table id="details">';
         $result .= '<thead><tr><th>'.lang('rr_attr_name').'</th><th>'.lang('rr_supported').'</th></tr></thead>';
         foreach ($data as $d => $value)
         {

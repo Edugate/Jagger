@@ -55,6 +55,23 @@ class Metadata extends MY_Controller {
 
             //$tmp_cnt = new models\Contacts;
             //$contacts = $tmp_cnt->getContacts();
+           
+            /**
+             * check if required attribute must be added to federated metadata 
+             */
+            $include_attrs = $federation->getAttrsInmeta();
+            $reqattrs_by_fed = null;
+            $options = array();
+            if($include_attrs)
+            {
+              $options['attrs'] = 1;
+              $attrfedreq_tmp = new models\AttributeRequirements;
+              $reqattrs_by_fed = $attrfedreq_tmp->getRequirementsByFed($federation);
+              if(!empty($reqattrs_by_fed))
+              {
+                 $options['fedreqattrs'] = $reqattrs_by_fed ;
+              }
+            }
 
             $members = $federation->getMembers();
             $members_count = $members->count();
@@ -95,19 +112,13 @@ class Metadata extends MY_Controller {
                 for ($i = 0; $i < $members_count; $i++) {
                     if($members->get($members_keys['' . $i . ''])->getAvailable())
                     {
-                        $members->get($members_keys['' . $i . ''])->getProviderToXML($Entities_Node);
+                        $members->get($members_keys['' . $i . ''])->getProviderToXML($Entities_Node,$options);
                     }
                 }
-                /*
-                  foreach ($members as $key=>$value)
-                  {
-                  $value->getProviderToXML($Entities_Node);
-                  }
-                 */
             } else {
                 foreach ($members as $key) {
                     if ($key->getAvailable() && (($key->getType() == $type) or ($key->getType() == 'BOTH'))) {
-                        $key->getProviderToXML($Entities_Node);
+                        $key->getProviderToXML($Entities_Node,$options);
                     }
                 }
             }
@@ -128,10 +139,11 @@ class Metadata extends MY_Controller {
         $data = array();
 
         $name = base64url_decode($entityId);
+        $options = array();
         $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
         if (!empty($entity))
          {
-                $y = $entity->getProviderToXML();
+                $y = $entity->getProviderToXML($parent=null,$options);
                 if (empty($y))
                 {
                     log_message('error', $this->mid . 'Got empty xml form Provider model');

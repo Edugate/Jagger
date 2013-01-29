@@ -1,3 +1,4 @@
+<div id="pagetitle"><?php echo lang('rr_geolocation');?></div>
 <?php
 if(!empty($subtitle))
 {

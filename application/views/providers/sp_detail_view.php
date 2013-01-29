@@ -1,6 +1,6 @@
 <?php
 $data['spid'] = $spid;
-$this->load->view('/navigations/floatnav_sp_details_view',$data);
+
 if(!empty($error_message))
 {
     echo "<span class=\"alert\">".$error_message."</span>";
@@ -15,9 +15,12 @@ else
 }
 if(!empty($spname))
 {
+?>
+<div id="subtitle"><div style="float: right; display: block"><?php echo $edit_link.'&nbsp;'.$bookmark.'</div><h3>'. lang('serviceprovider').': '.$spname .'</h3></div>';
+$this->load->view('/navigations/floatnav_sp_details_view',$data);
+
 $tmpl = array ( 'table_open'  => '<table id="details" class="zebra">' );
 $this->table->set_template($tmpl);
-$this->table->set_caption(lang('serviceprovider').': <b>'.$spname.'</b> '.$edit_link.$bookmark.'');
 foreach($sp_details as $row)
 {
     if(array_key_exists('header', $row))

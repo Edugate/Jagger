@@ -74,6 +74,12 @@ class Federation
      */
     protected $is_local;
 
+     /**
+      * add attribute requirements into generated metadata
+      * @Column(name="attrreq_inmeta", type="boolean", nullable=false)
+      */
+     protected $attrreq_inmeta = false;
+
     /**
      * optional terms of use for federation it can be included in metadata as a comment
      * @Column(name="tou",type="text", nullable=true)
@@ -259,6 +265,21 @@ class Federation
     public function getActive()
     {
         return $this->is_active;
+    }
+    public function getAttrsInmeta()
+    {
+        return $this->attrreq_inmeta;
+    }
+    public function setAttrsInmeta($r)
+    {
+        if($r === TRUE)
+        {
+           $this->attrreq_inmeta=true;
+        }
+        elseif($r === FALSE)
+        {
+           $this->attrreq_inmeta=false;
+        }
     }
 
     public function getDescription()

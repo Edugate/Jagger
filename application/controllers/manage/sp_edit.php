@@ -48,6 +48,7 @@ class Sp_edit extends MY_Controller {
             log_message('error', $this->mid . "SP edit: Service Provider with id=" . $spid . " not found");
             show_error(lang('rerror_spnotfound'), 404);
         }
+        $this->title = lang('title_spedit');
         $has_write_access = $this->zacl->check_acl($this->sp->getId(), 'write', 'sp', '');
         $locked = $this->sp->getLocked();
         if (!$has_write_access)

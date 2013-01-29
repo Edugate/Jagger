@@ -129,8 +129,8 @@ class Supported_attributes extends MY_Controller {
 
         $data = array();
         $buttons = form_submit(array('name' => 'submit', 'value' => 'submit'));
-        $buttons = '<div class="buttons"><button type="submit" value="submit" name="submit" class="btn positive"><span class="save">Save</span></button></div>';
-        $formstyle = array('id' => 'formver2');
+        $buttons = '<div class="buttons"><button type="submit" value="submit" name="submit" class="btn positive"><span class="save">'.lang('rr_save').'</span></button></div>';
+        $formstyle = array('id' => 'supportedattrs');
         $hidden = form_input(array('name' => 'idpid', 'type' => 'hidden', 'value' => $idp->getId()));
         $form_attributes = form_open(base_url() . 'manage/supported_attributes/submit', $formstyle) . $hidden . $form_attributes . $buttons . form_close();
         $data['form_attributes'] = $form_attributes;

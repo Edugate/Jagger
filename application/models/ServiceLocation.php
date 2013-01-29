@@ -192,7 +192,8 @@ class ServiceLocation
             {
                 $e->setAttribute("isDefault", 'true');
             }
-        } else
+        } 
+        else
         {
             $e = null;
         }

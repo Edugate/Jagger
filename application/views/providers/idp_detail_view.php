@@ -1,5 +1,18 @@
 <?php
 $data['idpid'] = $idpid;
+if(empty($bookmarked))
+{
+   $bookmark = '<a href="'.base_url().'ajax/bookentity/'.$idpid.'" class="bookentity icon"><img src="'.base_url().'images/icons/star--plus.png" style="float:right"/></a>';
+}
+else
+{
+   $bookmark = '<a href="'.base_url().'ajax/delbookentity/'.$idpid.'" class="bookentity icon"><img src="'.base_url().'images/icons/star--minus.png" style="float:right"/></a>';
+}
+
+?>
+
+<div id="subtitle"><div style="float: right; display: block"><?php echo $edit_link.'&nbsp;'.$bookmark; ?></div><h3><?php echo lang('identityprovider').': ';?><?php echo $idpname ?></h3></div>
+<?php
 $this->load->view('/navigations/floatnav_idp_details_view',$data);
 if(!empty($alert_message))
 {
@@ -12,15 +25,7 @@ if(!empty($alert_message))
 }
 $tmpl = array ( 'table_open'  => '<table id="details" class="zebra">' );
 $this->table->set_template($tmpl);
-if(empty($bookmarked))
-{
-   $bookmark = '<a href="'.base_url().'ajax/bookentity/'.$idpid.'" class="bookentity"><img src="'.base_url().'images/icons/star--plus.png" style="float:right"/></a>';
-}
-else
-{
-   $bookmark = '<a href="'.base_url().'ajax/delbookentity/'.$idpid.'" class="bookentity"><img src="'.base_url().'images/icons/star--minus.png" style="float:right"/></a>';
-}
-$this->table->set_caption(lang('identityprovider').': <b>'.$idpname.'</b> '.$edit_link.$bookmark.'');
+#$this->table->set_caption(lang('identityprovider').': <b>'.$idpname.'</b> '.$edit_link.$bookmark.'');
 foreach($idp_details as $row)
 {
     if(array_key_exists('header', $row))

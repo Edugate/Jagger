@@ -69,6 +69,19 @@ class Awaiting extends MY_Controller {
             $creator = $q->getCreator();
             $request_type = $q->getType();
             $request_action = $q->getAction();
+            $recipenttype = $q->getRecipientType();
+            $recipientid = $q->getRecipient(); 
+            $recipientname = '';
+            if($recipenttype == 'provider')
+            {
+                $p = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$recipientid));
+                if(!empty($p))
+                {
+                   $recipientname = $p->getName();
+                }
+
+            }
+            
             $access = true;
             if (!empty($creator))
             {
@@ -82,6 +95,7 @@ class Awaiting extends MY_Controller {
                 $data['list'][$kid]['iname'] = $q->getName();
                 $data['list'][$kid]['qid'] = $q->getID();
                 $data['list'][$kid]['mail'] = $q->getEmail();
+                $data['list'][$kid]['recipientname'] = $recipientname;
                 $data['list'][$kid]['type'] = $q->getType();
                 $data['list'][$kid]['action'] = $q->getAction();
                 $data['list'][$kid]['token'] = $q->getToken();
@@ -110,6 +124,18 @@ class Awaiting extends MY_Controller {
             $creator = $q->getCreator();
             $request_type = $q->getType();
             $request_action = $q->getAction();
+            $recipientid = $q->getRecipient(); 
+            $recipenttype = $q->getRecipientType();
+            $recipientname = '';
+            if($recipenttype == 'provider')
+            {
+                $p = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$recipientid));
+                if(!empty($p))
+                {
+                   $recipientname = $p->getName();
+                }
+
+            }
             $access = true;
             if (!empty($creator))
             {
@@ -125,6 +151,7 @@ class Awaiting extends MY_Controller {
                 $data['list'][$kid]['mail'] = $q->getEmail();
                 $data['list'][$kid]['type'] = $q->getType();
                 $data['list'][$kid]['action'] = $q->getAction();
+                $data['list'][$kid]['recipientname'] = $recipientname;
                 $data['list'][$kid]['token'] = $q->getToken();
                 $data['list'][$kid]['confirmed'] = $q->getConfirm();
                 $kid++;
@@ -253,6 +280,7 @@ class Awaiting extends MY_Controller {
                         }
                         $data['content_view'] = 'reports/awaiting_invite_provider_view';
                         $this->load->view('page', $data);
+                        return;
                     }
                 }
                 else

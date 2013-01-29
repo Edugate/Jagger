@@ -1,6 +1,8 @@
 <?php
 $this->load->helper("cert");
-
+?>
+<div id="subtitle"><h3><?php echo lang('rr_sp_register_title');?></h3></div>
+<?php
 $required = "required=\"required\"";
 $errors_v = validation_errors('<span class="span-12">', '</span><br />');
 if (!empty($errors_v)) {
@@ -13,7 +15,6 @@ if (!empty($errors_v)) {
 echo "<div =\"step1\">";
 $form_attributes = array('id' => 'formver2', 'class' => 'register');
 $action = base_url() . "providers/sp_registration/submit";
-echo "<h2>".lang('rr_sp_register_title')."</h2>";
 echo form_open($action, $form_attributes);
 echo form_fieldset(lang('rr_generalinformation'));
 echo "<ol>";

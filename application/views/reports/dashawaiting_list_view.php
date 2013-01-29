@@ -35,7 +35,7 @@ if (!empty($list))
         }
         $cdate = $q['idate'];
         $detail = anchor(base_url()."/reports/awaiting/detail/" . $q['token'], '>>');
-        $this->table->add_row($q['idate'], $q['requester'], $q['type'] . " - " . $q['action'], $detail);
+        $this->table->add_row($q['idate'], $q['requester'], $q['recipientname'].'<br />'.$q['type'] . " - " . $q['action'], $detail);
     }
     echo $this->table->generate();
 }

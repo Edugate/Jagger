@@ -11,13 +11,7 @@
 
 
 ?>
-
-<script type="text/javascript">
-    $(function() {		
-        $("#details").tablesorter({sortList:[[0,0],[2,1]], widgets: ['zebra']});
-        $("#options").tablesorter({sortList: [[0,0]], headers: { 3:{sorter: false}, 4:{sorter: false}}});
-    });	
-</script>
+<div id="subtitle"><h3>Attributes definitions list</h3></div>
 <?php
 
 /*
@@ -28,6 +22,5 @@ $tmpl = array('table_open' => '<table  id="details" class="tablesorter drop-shad
 
     $this->table->set_template($tmpl);
     $this->table->set_heading('Name','Full name','OID','URN');
-    $this->table->set_caption('List Of Attributes');
     echo $this->table->generate($attributes);
 ?>

@@ -1,4 +1,4 @@
-<div id="jj">
+<div id="subtitle"><h3><?php echo lang('rr_idp_register_title');?></h3></div>
     <?php
     $this->load->helper("cert");
     $base = base_url();
@@ -131,4 +131,3 @@
                         <?php
                         echo form_close();
                         ?>
-                        </div>

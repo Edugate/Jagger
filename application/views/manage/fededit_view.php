@@ -1,3 +1,4 @@
+<div id="pagetitle"><?php echo lang('rr_fededitform'); ?></div>
 <?php
 
 if (!empty($javascript))
@@ -6,7 +7,7 @@ if (!empty($javascript))
 }
 if(!empty($subtitle))
 {
-    echo "<div id=\"subtitle\">".$subtitle."</div>";
+    echo '<div id="subtitle"><h3>'.$subtitle.'</h3></div>';
 }
 if (!empty($error_message))
 {

@@ -43,6 +43,7 @@ class Idp_edit extends MY_Controller {
 
     public function show($idpid)
     {
+        
         $this->idpid = $idpid;
         $pref = $this->mid;
 
@@ -54,6 +55,7 @@ class Idp_edit extends MY_Controller {
             log_message('error', $pref . "IdP edit: Identity Provider with id=" . $idpid . " not found");
             show_error(lang('rerror_idpnotfound'), 404);
         }
+        $this->title = lang('title_idpedit');
         $locked = $idp->getLocked();
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'idp', '');
         if (!$has_write_access)
@@ -86,6 +88,15 @@ class Idp_edit extends MY_Controller {
         $this->session->set_userdata($sessiontostore);
         $action = base_url() . "manage/idp_edit/submit";
 
+        $tmpname = $idp->getName();
+        if(empty($tmpname))
+        {
+          $tmpname = lang('rr_notset');
+        }
+        $data['idpname'] = $tmpname;
+        $data['entityid'] = $idp->getEntityId();
+        $data['idpid'] = $idp->getId();
+
         $attributes = array('id' => 'formver2', 'class' => 'editidp');
         $tmp_name = $idp->getName();
         if (empty($tmp_name))
@@ -96,7 +107,7 @@ class Idp_edit extends MY_Controller {
         {
             $display_name = $idp->getName();
         }
-        $data['form'] = '<div id="subtitle">' . lang('rr_detailsfor') .' ' . $display_name . '&nbsp;&nbsp;' . anchor(base_url() . 'providers/provider_detail/idp/' . $idp->getId(), '<img src="' . base_url() . 'images/icons/home.png" />') . '</div>';
+        $data['form'] = '';
         $data['form'] .= validation_errors('<p class="error">', '</p>');
         $data['form'] .= form_open($action, $attributes);
         $data['form'] .= $this->form_element->generateEntityForm($idp);

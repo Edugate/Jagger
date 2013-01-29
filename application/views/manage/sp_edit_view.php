@@ -3,9 +3,11 @@ if (!empty($javascript)) {
     echo $javascript;
 }
 ?>
-<div id="subtitle">
-    Details for <?php echo $sp_detail['name'] . '<i> (' . $sp_detail['entityid'] . ')</i>' . anchor(base_url() . "providers/provider_detail/sp/" . $sp_detail['id'], '<img src="' . base_url() . 'images/icons/block-share.png" />'); ?>
-</div>
+<div id="subtitle"><h3>
+    Service Provider's name: <?php echo   anchor(base_url() . "providers/provider_detail/sp/" . $sp_detail['id'], $sp_detail['name']); ?>
+</h3><h4>
+<?php echo $sp_detail['entityid']; ?>
+</h4></div>
 
 <?php
 if (!empty($error_message)) {

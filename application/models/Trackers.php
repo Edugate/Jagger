@@ -40,6 +40,22 @@ class Trackers
 		return $track;
 	
 	}
+        public function getArpDownloadedByTime($d)
+        {
+               $datetime = new \DateTime('now');
+               $datetime->modify('- '.$d.' minutes');
+               $rsm = new ResultSetMapping;
+               $rsm->addEntityResult('models\Tracker', 'u');
+               $rsm->addFieldResult('u', 'id', 'id');
+               $rsm->addFieldResult('u', 'resourcetype', 'resourcetype');
+               $rsm->addFieldResult('u', 'subtype', 'subtype');
+               $rsm->addFieldResult('u', 'resourcename', 'resourcename');
+               $rsm->addFieldResult('u', 'created_at', 'createdAt');
+               $query = $this->em->createNativeQuery('SELECT id,resourcetype,resourcename,created_at,subtype from tracker where resourcetype = \'idp\' and subtype = \'arp_download\' and created_at > (?)',$rsm ); 
+               $query->setParameter(1, $datetime);
+               $result = $query->execute();
+               return $result;
+        }
 	public function getProviderModifications(Provider $provider, $count)
 	{
 		$resourcename = $provider->getEntityId();

@@ -1,3 +1,5 @@
+<div id="subtitle"><h3>Federations list in the system</h3></div>
+
 <script type="text/javascript">
 $(function() {    
   $("#details").tablesorter({sortList:[[0,0],[2,1]], widgets: ['zebra']});
@@ -7,8 +9,7 @@ $(function() {
 <?php
 $tmpl = array('table_open' => '<table  id="details" class="tablesorter drop-shadow lifted">');
 $this->table->set_template($tmpl);
-$this->table->set_heading('','Name','#','URN','Public','External/Local','Description');
-$this->table->set_caption('Federations list in the system');
+$this->table->set_heading('Name','URN','','Description','#');
 echo $this->table->generate($fedlist);
 $this->table->clear();
 ?>

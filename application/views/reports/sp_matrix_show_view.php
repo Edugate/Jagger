@@ -1,22 +1,23 @@
+<div id="pagetitle"><?php echo lang('rr_provideingattrsoverview');?></div>
 <?php
 if (!empty($entityid))
 {
 
-    echo '<div id="subtitle">';
+    echo '<div id="subtitle"><h3>';
     $imgsrc = '<img src="' . base_url() . 'images/icons/block-share.png" />';
-    echo $arpcachetimeicon . ' Attribute overview for entityID: ' . $entityid . ' ' . anchor('' . base_url() . 'providers/provider_detail/sp/' . $spid, $imgsrc);
-    echo '</div>';
+    echo $arpcachetimeicon . ' Service Provider: '. anchor('' . base_url() . 'providers/provider_detail/sp/' . $spid, $entityname);
+    echo '</h3><h4>'.$entityid.'<h4></div>';
 }
 ?>
-<div id="matrixtable" style="text-align: center; width: 100%;" class="span-24">
+<div id="matrixtable">
     <br />
     <br />
     <br />
     <br />
-    <div id="button" class="prepend-10">
+    <div class="buttons">
 
 
-        <button type="button" onclick="document.getElementById('matrixtable').innerHTML ='<br /><br /><br /><img src=\'https://middleware-dev.heanet.ie/rr3/images/loading.gif\' />'; setTimeout(function(){matrixinit('<?php echo $entityid; ?>');},1000);">Show matrix</button> 
+        <button class="btn" type="button" onclick="document.getElementById('matrixtable').innerHTML ='<br /><br /><br /><img src=\'<?php echo base_url();?>images/loading.gif\' />'; setTimeout(function(){matrixinit('<?php echo $entityid; ?>');},1000);">Show matrix</button> 
     </div>
 
 

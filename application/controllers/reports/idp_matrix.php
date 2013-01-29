@@ -207,9 +207,17 @@ class Idp_matrix extends MY_Controller {
         $corner .= 'Service Provider';
         array_unshift($thead, $corner);
         array_unshift($mrows, $thead);
- //       $data['arparray'] = $arparray;
         $data['entityid'] = $idp->getEntityId();
         $data['idpid'] = $idp->getId();
+        $t_name = $idp->getName();
+        if(!empty($t_name))
+        {
+            $data['idpname'] = $t_name;
+        }
+        else
+        {
+            $data['idpname'] = $data['entityid'];
+        }
         $data['result'] = $mrows;
 
         $data['content_view'] = 'reports/idp_matrix_show_view';

@@ -1,17 +1,18 @@
+		
 <?php
 if(!empty($error_message))
 {
-    echo "<span class=\"alert\">".$error_message."</span>"; 
+    echo '<span class="alert">'.$error_message.'</span>'; 
 }
 if (!empty($edit_form))
 {
     if (!empty($subtitle))
     {
-        $link_policy = anchor(base_url() . "/manage/attribute_policy/globals/" . $idp_id, '<img src="' . base_url() . 'images/icons/application-browser.png" />');
-        $link_idp = anchor(base_url() . "providers/provider_detail/idp/" . $idp_id, '<img src="' . base_url() . 'images/icons/home.png" />');
+        $link_policy = anchor(base_url() . "/manage/attribute_policy/globals/" . $idp_id, 'Back to defeault policy list');
+        $link_idp = anchor(base_url() . "providers/provider_detail/idp/" . $idp_id, $idp_name);
         echo '<br />';
-        echo '<h3>' .$link_policy. $subtitle . '</h3>';
-        echo "<h3>Provider: " .$idp_name . $link_idp . "</h3>";
+        echo '<div id="pagetitle">' . $subtitle . ' per attribute</div>';
+        echo '<div id="subtitle"><h3>Provider: ' . $link_idp . '</h3><h4>'.$provider_entity.'</h4>'.$link_policy.'</div>';
 		if($type == 'sp')
 		{
         	$link_sp = anchor(base_url() . "providers/provider_detail/sp/" . $requester_id, '<img src="' . base_url() . 'images/icons/application-browser.png" />');

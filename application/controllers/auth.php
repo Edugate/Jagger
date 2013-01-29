@@ -62,6 +62,7 @@ class Auth extends MY_Controller {
 
     function login()
     {
+        $this->title = lang('title_login');
 
         $shib = $this->config->item('Shibboleth');
         if ($shib['enabled'] === TRUE)

@@ -119,14 +119,15 @@ class Provider_detail extends MY_Controller {
         $is_active = $idp->getActive();
         $locked = $idp->getLocked();
         $lockicon = '<img src="' . base_url() . 'images/icons/lock.png" title="Locked">';
+       # $lockicon = '<span class="lbl lbl-locked">'.lang('rr_locked').'</span>';
 
         if (empty($is_active))
         {
-            $activeString = '<span class="notice"><small>' . lang('rr_idpnotenabled') . '</small></span>';
+            $activeString = '<span class="lbl lbl-alert">' . lang('rr_idpnotenabled') . '</span>';
         }
         else
         {
-            $activeString = lang('rr_idpactive');
+            $activeString = '<span class="lbl lbl-active">' .lang('rr_idpactive'). '</span>';
         }
         $i = 1;
 
@@ -136,7 +137,7 @@ class Provider_detail extends MY_Controller {
         $has_write_access = $this->zacl->check_acl($resource, $action, $group, '');
         if (!$has_write_access)
         {
-            $edit_link = '<img src="' . base_url() . 'images/icons/pencil-prohibition.png" title="' . lang('rr_nopermission') . '"/>';
+            $edit_link = '<span class="lbl lbl-alert"><img src="' . base_url() . 'images/icons/pencil-prohibition.png" title="' . lang('rr_nopermission') . '"/>edit</span>';
             $edit_basic = '';
             $edit_federation = '';
             $edit_technical = '';
@@ -151,7 +152,7 @@ class Provider_detail extends MY_Controller {
         }
         elseif (!$idp->getLocal())
         {
-            $edit_link = '<span class="notice">' . lang('rr_externalentity') . '</span>';
+            $edit_link = '<span class="lbl lbl-external" title="' . lang('rr_externalentity') . '">'.lang('rr_external').'</span>';
             $edit_basic = '';
             $edit_federation = '';
             $edit_technical = '';
@@ -166,7 +167,7 @@ class Provider_detail extends MY_Controller {
         }
         elseif ($locked)
         {
-            $edit_link = '<img src="' . base_url() . 'images/icons/lock.png" title="Locked"/>';
+            $edit_link = '<span class="lbl lbl-locked" title="'.lang('rr_locked').'"><img src="' . base_url() . 'images/icons/lock.png"/>'.lang('rr_locked').'</span>';
             $edit_basic = '';
             $edit_federation = '';
             $edit_technical = '';
@@ -182,7 +183,7 @@ class Provider_detail extends MY_Controller {
         else
         {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-            $edit_link = '<span><a href="' . base_url() . 'manage/idp_edit/show/' . $idp->getId() . '" class="edit" title="edit" >' . $image_link . '</a></span>';
+            $edit_link = '<span class="lbl lbl-edit"><a href="' . base_url() . 'manage/idp_edit/show/' . $idp->getId() . '" class="edit" title="edit" >' . $image_link . 'edit</a></span>';
             $edit_basic = '';
             $edit_federation = '';
             $edit_technical = '';
@@ -190,8 +191,8 @@ class Provider_detail extends MY_Controller {
             $edit_services = '';
             $edit_certificates = '';
             $edit_contacts = '';
-            $edit_attributes = '<span><a href="' . base_url() . 'manage/supported_attributes/idp/' . $idp->getId() . ' " class="edit">' . $image_link . '</a></span>';
-            $edit_policy = '<span><a href="' . base_url() . 'manage/attribute_policy/globals/' . $idp->getId() .'" class="edit">' . $image_link . '</a></span>';
+            $edit_attributes = '<span class="lbl lbl-edit"><a href="' . base_url() . 'manage/supported_attributes/idp/' . $idp->getId() . ' " class="edit">' . $image_link . 'edit</a></span>';
+            $edit_policy = '<span class="lbl lbl-edit"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $idp->getId() .'" class="edit">' . $image_link . 'edit</a></span>';
             $e_local = true;
         }
 
@@ -261,7 +262,8 @@ class Provider_detail extends MY_Controller {
 
         if (!$idp->getIsValidFromTo())
         {
-            $data['idp_details'][$i++]['2cols'] = '<div class="alert">' . lang('rr_fromtomatch') . '</div>';
+        #    $data['idp_details'][$i++]['2cols'] = '<div class="alert">' . lang('rr_fromtomatch') . '</div>';
+            $data['idp_details'][$i++]['2cols'] =  '<span class="lbl lbl-alert">' . lang('rr_fromtomatch') . '</span>';
         }
 
         $data['idp_details'][$i]['name'] = lang('rr_validfrom');
@@ -408,7 +410,7 @@ class Provider_detail extends MY_Controller {
             else
             {
                 $data['idp_details'][$i++]['header'] = lang('rr_staticmetadataactive');
-                $data['idp_details'][$i++]['2cols'] = '<span class="accordionButton"></span><code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
+                $data['idp_details'][$i++]['2cols'] = '<span class="accordionButton">source</span><code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
         }
         else
@@ -702,19 +704,19 @@ class Provider_detail extends MY_Controller {
         }
         if (!$has_write_access)
         {
-            $edit_link = genIcon('noeditperm',lang('rr_nopermission'));
+            $edit_link = '<span class="lbl lbl-noperm" title="' . lang('rr_nopermission') . '">'.lang('rr_nopermission').'</span>';
         }
         elseif (!$sp->getLocal())
         {
-            $edit_link = '<span class="notice">' . lang('rr_externalentity') . '</span>';
+            $edit_link = '<span class="lbl lbl-external" title="' . lang('rr_externalentity') . '">'.lang('rr_external').'</span>';
         }
         elseif ($locked)
         {
-            $edit_link = genIcon('locked',lang('rr_lockedentity'));
+            $edit_link = '<span class="lbl lbl-locked" title="' . lang('rr_lockedentity') . '">'.lang('rr_lockedentity').'</span>';
         }
         else
         {
-            $edit_link = '<span><a href="' . base_url('manage/sp_edit/show/' . $sp->getId()) . '" class="edit" title="edit" >' . genIcon('edit') . '</a></span>';
+            $edit_link = '<span class="lbl lbl-edit"><a href="' . base_url() . 'manage/sp_edit/show/' . $sp->getId() . '" class="edit" title="edit" >' . genIcon('edit') . 'edit</a></span>';
         }
         $data['edit_link'] = $edit_link;
         $i = 1;
@@ -926,7 +928,7 @@ class Provider_detail extends MY_Controller {
             {
                 $data['sp_details'][$i++]['header'] = lang('rr_staticmetadataactive');
 
-                $data['sp_details'][$i++]['2cols'] = '<span class="accordionButton"></span><code class="accordionContent">' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
+                $data['sp_details'][$i++]['2cols'] = '<span class="accordionButton">source</span><code class="accordionContent">' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
         }
         $data['sp_details'][$i++]['header'] = lang('rr_supportedprotocols');
@@ -1047,7 +1049,7 @@ class Provider_detail extends MY_Controller {
         if ($has_write_access)
         {
             $image_link = '<img src="' . base_url('images/icons/pencil-field.png') . '"/>';
-            $edit_req_attrs_link = '<span><a href="' . base_url('manage/attribute_requirement/sp/' . $sp->getId()) . '" class="edit" title="edit" >' . $image_link . '</a></span>';
+            $edit_req_attrs_link = '<span class="lbl lbl-edit"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $sp->getId() . '" class="edit" title="edit" >' . genIcon('edit') . 'edit</a></span>';
         }
         else
         {

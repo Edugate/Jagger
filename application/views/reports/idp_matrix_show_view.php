@@ -1,12 +1,12 @@
+<div id="pagetitle"><?php echo lang('rr_arpoverview');?></div>
 <?php
 
 
 if(!empty($entityid))
 {
-   echo '<div id="subtitle">';
-   $imgsrc = '<img src="'.base_url().'images/icons/home.png" />';
-   echo lang('rr_arpoverview').': '. $entityid . ' '.anchor(''.base_url().'providers/provider_detail/idp/'.$idpid,$imgsrc) ;
-   echo '</div>';
+   echo '<div id="subtitle"><h3>';
+   echo lang('identityprovider').': '.anchor(''.base_url().'providers/provider_detail/idp/'.$idpid,$idpname) ;
+   echo '</h3><h4>'.$entityid.'</h4></div>';
 }
 if(!empty($error_message))
 {

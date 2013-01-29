@@ -132,6 +132,11 @@ class Provider {
     protected $country;
 
     /**
+     * @Column(type="text",nullable=true)
+     */
+    protected $wayflist;
+
+    /**
      * not used for the moment and default true
      * @Column(type="boolean")
      */
@@ -425,7 +430,7 @@ class Provider {
             $stype = $this->type;
             if ($stype == 'BOTH')
             {
-                $types = array('idp', 'sp');
+                $types = array('entity');
             } elseif ($stype == 'IDP')
             {
                 $types = array('idp');
@@ -668,6 +673,14 @@ class Provider {
     {
         $this->description = $description;
         return $this;
+    }
+
+    public function setWayfList($wayflist = null)
+    {
+       if(!empty($wayflist) && is_array($wayflist))
+       {
+          $this->wayflist = serialize($wayflist);
+       }
     }
 
     public function setDefaultState()
@@ -1230,6 +1243,19 @@ class Provider {
     {
         return $this->description;
     }
+    public function getWayfList()
+    {
+         $w = $this->wayflist;
+         if(!empty($w))
+         {
+             return  unserialize($w);
+         }
+         else
+         {
+            return null;
+         }
+
+    }
 
     public function getSupportedAttributes()
     {
@@ -1459,7 +1485,7 @@ class Provider {
         return $e;
     }
 
-    public function getIDPSSODescriptorToXML(\DOMElement $parent)
+    public function getIDPSSODescriptorToXML(\DOMElement $parent, $options = null)
     {
         $this->ci = & get_instance();
         $this->ci->load->helper('url');
@@ -1675,7 +1701,7 @@ class Provider {
         }
         foreach ($services as $srv)
         {
-            $ServiceLocation_Node = $srv->getServiceLocationToXML($e);
+            $ServiceLocation_Node = $srv->getServiceLocationToXML($e,$options);
             /**
              * @todo check if index or default can be added
              */
@@ -1685,7 +1711,7 @@ class Provider {
         return $e;
     }
 
-    public function getSPSSODescriptorToXML(\DOMElement $parent)
+    public function getSPSSODescriptorToXML(\DOMElement $parent,$options = null)
     {
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
@@ -1866,6 +1892,96 @@ class Provider {
              */
             $e->appendChild($ServiceLocation_Node);
         }
+        if(!empty($options) and is_array($options) and array_key_exists('attrs',$options) and !empty($options['attrs']))
+        {
+           $sp_reqattrs = $this->getAttributesRequirement();
+           $sp_reqattrs_count = $sp_reqattrs->count();
+           if($sp_reqattrs_count > 0)
+           {
+               $Attrconsumingservice_Node =  $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AttributeConsumingService');
+               $Attrconsumingservice_Node->setAttribute('index','0');
+               $e->appendChild($Attrconsumingservice_Node);
+               $t_name = $this->getName();
+               if(empty($t_name))
+               {
+                   $t_name = $this->getEntityId();
+               }
+               $srvname_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceName',$t_name);
+               $srvname_node->setAttribute('xml:lang','en');
+               $Attrconsumingservice_Node->appendChild($srvname_node);
+               $t_displayname = $this->getDisplayName();
+               if(!empty($t_displayname))
+               {
+                   $srvdisplay_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceDescription',$t_displayname);
+                   $srvdisplay_node->setAttribute('xml:lang','en');
+                   $Attrconsumingservice_Node->appendChild($srvdisplay_node);
+               }
+               foreach($sp_reqattrs->getValues() as $v)
+               {
+                  $attr_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata','md:RequestedAttribute');         
+                  $attr_node->setAttribute('FriendlyName',$v->getAttribute()->getName());
+                  $attr_node->setAttribute('Name',$v->getAttribute()->getOid());
+                  $attr_node->setAttribute('NameFormat','urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+                  if($v->getStatus() == 'required')
+                  {
+                      $attr_node->setAttribute('isRequired','true');
+                  }
+                  else
+                  {
+                      $attr_node->setAttribute('isRequired','false');
+                  }
+                  $Attrconsumingservice_Node->appendChild($attr_node);
+                  
+               }
+           
+           }
+           else
+           {
+               
+               \log_message('debug','OKO: '.$this->getEntityId());
+               if(array_key_exists('fedreqattrs',$options) && is_array($options['fedreqattrs']))
+               {
+                  $Attrconsumingservice_Node =  $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AttributeConsumingService');
+                  $Attrconsumingservice_Node->setAttribute('index','0');
+                  $e->appendChild($Attrconsumingservice_Node);
+                  $t_name = $this->getName();
+                  if(empty($t_name))
+                  {
+                     $t_name = $this->getEntityId();
+                  }
+                  $srvname_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceName',$t_name);
+                  $srvname_node->setAttribute('xml:lang','en');
+                  $Attrconsumingservice_Node->appendChild($srvname_node);
+                  $t_displayname = $this->getDisplayName();
+                  if(!empty($t_displayname))
+                  {
+                     $srvdisplay_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceDescription',$t_displayname);
+                     $srvdisplay_node->setAttribute('xml:lang','en');
+                     $Attrconsumingservice_Node->appendChild($srvdisplay_node);
+                  }
+                  foreach($options['fedreqattrs'] as $v)
+                  {
+                        \log_message('debug','OKO: '.$v->getAttribute()->getName());
+                        $attr_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata','md:RequestedAttribute');         
+                        $attr_node->setAttribute('FriendlyName',$v->getAttribute()->getName());
+                        $attr_node->setAttribute('Name',$v->getAttribute()->getOid());
+                        $attr_node->setAttribute('NameFormat','urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+                        if($v->getStatus() == 'required')
+                        {
+                           $attr_node->setAttribute('isRequired','true');
+                        }
+                        else
+                        {
+                           $attr_node->setAttribute('isRequired','false');
+                        }
+                        $Attrconsumingservice_Node->appendChild($attr_node);
+                   }
+               }
+           }
+     
+            
+        }
+        
 
         return $e;
     }
@@ -1877,7 +1993,7 @@ class Provider {
      * @todo add attr requirements in sp if required
      * @param type $conditions
      */
-    public function getProviderToXML(\DOMElement $parent = NULL)
+    public function getProviderToXML(\DOMElement $parent = NULL, $options = NULL)
     {
         log_message('debug', "Provider model: start generating xml for " . $this->getEntityId());
         $comment = "\"" . $this->getEntityId() . "\" \n";
@@ -2052,7 +2168,7 @@ class Provider {
                 }
                 break;
             case "SP":
-                $SSODesc_Node = $this->getSPSSODescriptorToXML($EntityDesc_Node);
+                $SSODesc_Node = $this->getSPSSODescriptorToXML($EntityDesc_Node,$options);
                 if (!empty($SSODesc_Node))
                 {
                     $EntityDesc_Node->appendChild($SSODesc_Node);
@@ -2070,7 +2186,7 @@ class Provider {
                     return null;
                 }
                 $EntityDesc_Node->appendChild($SSODesc_Node);
-                $SSODesc_Node = $this->getSPSSODescriptorToXML($EntityDesc_Node);
+                $SSODesc_Node = $this->getSPSSODescriptorToXML($EntityDesc_Node,$options);
                 if (empty($SSODesc_Node))
                 {
                     log_message('error', "Provider model: BOTH type but SPSSODescriptor is null - null returned");

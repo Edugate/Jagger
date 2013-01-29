@@ -2,10 +2,10 @@
 
 if(!empty($row))
 {
+        echo '<div id="subtitle"><h3>Identity Provider:&nbsp;'.$resource_name.'</h3></div>';
         $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
         $this->table->set_template($tmpl);
 
-        $this->table->set_caption('Table of access list for: '.$resource_name);
         $r = '';
         if(!empty($readlegend))
         {

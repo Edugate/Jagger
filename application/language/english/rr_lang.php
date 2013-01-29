@@ -1,6 +1,19 @@
 <?php
+
+$lang['title_idplist'] = 'Identity Providers List';
+$lang['title_splist'] = 'Service Providers List';
+$lang['title_fedlist'] = 'Federations List';
+$lang['title_idpedit'] = 'IDP edit form';
+$lang['title_spedit'] = 'SP edit form';
+$lang['title_login'] = 'Login';
+$lang['title_fededit'] = 'Federation edit';
+
 $lang['rr_yes'] = 'yes';
 $lang['rr_no'] = 'no';
+$lang['rr_add'] = 'Add';
+$lang['rr_remove'] = 'Remove';
+$lang['rr_modify'] = 'Modify';
+$lang['rr_cancel'] = 'Cancel';
 $lang['dashboard'] = 'Dashboard';
 $lang['quick_access'] = 'Quick access';
 $lang['login_form'] = 'Login Form';
@@ -18,12 +31,16 @@ $lang['serviceprovider'] = 'Service Provider';
 $lang['serviceprovidersmembers'] = 'Service Providers members';
 $lang['identityprovider'] = 'Identity Provider';
 $lang['identityproviders'] = 'Identity Providers';
+$lang['identityproviderdetails'] = 'Identity Provider\'s details';
+$lang['adddefaultpolicy'] = 'Add default policy';
+$lang['setdefaultpolicyfornewsupattrs'] = 'Set detault policy for new supported attributes';
 $lang['identityprovidersmembers'] = 'Identity Providers members';
 $lang['bothprovidersmembers'] = 'Members who are IdPs and SPs';
 $lang['rr_provider'] = 'Provider';
 $lang['rr_message'] = 'Message';
 $lang['rr_local_authn'] = 'Local authentication';
 $lang['federated_access'] = 'Federated Access';
+$lang['rr_fededitform'] = 'Federation edit form';
 $lang['help'] = 'Help';
 $lang['general']='General';
 $lang['rr_metadata'] = 'Metadata';
@@ -48,7 +65,9 @@ $lang['rr_nofedfound'] = 'no federation found';
 $lang['rr_supported'] = 'supported';
 $lang['rr_filter'] = 'Filter';
 $lang['rr_state_mngt'] ='State management for entity';
+$lang['rr_status_mngmt'] = 'Status management';
 $lang['rr_sp_register_title'] = 'Service Provider registration form';
+$lang['rr_idp_register_title'] = 'Identity Provider registration form';
 $lang['rr_generalinformation'] = "General Information";
 
 $lang['rr_resource'] = "Resource Name";
@@ -158,6 +177,16 @@ $lang['rr_newcontact'] = 'New contact details';
 
 $lang['rr_attributes'] = 'Attributes';
 $lang['rr_requiredattributes'] = 'Required Attributes';
+$lang['rr_provideingattrsoverview'] = 'Attributes provided overview';
+$lang['rr_addreqattr'] = 'Add new required attribute';
+$lang['rr_modreqattr'] = 'Modify or remove existing requirement(s)';
+$lang['rr_selectattr'] = 'Select attribute';
+$lang['rr_selectsupportedattr'] = 'Select supprted attribute';
+$lang['rr_selectpolicytorelease'] ='Select policy when attribute may be release';
+$lang['rr_selectreq'] = 'Select requirement';
+
+$lang['rr_reqattrreason'] = 'The reason of requirement';
+$lang['rr_reqattr_currenttype'] = 'Current type of requirement';
 $lang['rr_geolocation'] = 'Geolocation';
 
 $lang['rr_resourceurl'] = 'Resource home URL';
@@ -173,19 +202,19 @@ $lang['rr_submitreject'] = 'Reject request';
 
 $lang['rr_idpnotenabled'] ='Identity Provider is disabled';
 $lang['rr_spdisabled'] ='Service Provider is disabled';
-$lang['rr_idpactive'] = '(is active)';
+$lang['rr_idpactive'] = 'active';
 $lang['rr_noidpaccess'] = 'No access to view idp details';
 $lang['rr_nospaccess'] = 'No access to view sp details';
-$lang['rr_nopermission'] ='(no permission to edit)';
+$lang['rr_nopermission'] ='no permission to edit';
 $lang['rr_externalentity']='External entity - cannot be edited';
-$lang['rr_lockedentity']='(Entity locked - cannot be edited)';
+$lang['rr_lockedentity']='Entity locked - cannot be edited';
 $lang['rr_fromtomatch']='Valid From/To doesn\'t match current date. Your entity won\'t appear in metadata';
 
 $lang['rr_includedmetadata']='included in metadata';
 $lang['rr_notincludedmetadata']='not included in metadata';
 
 $lang['rr_staticmetadataset'] = 'static metadata is set and it\'s active';
-
+$lang['rr_static'] = 'Static';
 $lang['rr_staticxmlenabled'] = 'static xml is enabled';
 
 $lang['rr_lastmodification']= 'Last modification';
@@ -220,6 +249,8 @@ $lang['rr_individualarpurl'] = 'Individual Attribite Release Policy URL';
 $lang['rr_recentarpdownload'] = 'Most recent ARP/Attribute filter downloads';
 $lang['rr_supportedattributes'] = 'Supported attributes';
 $lang['rr_attributepolicy'] = 'Attribute Policy';
+$lang['rr_attributereleasepolicy'] = 'Attribute Release Policy';
+$lang['rr_attributerequirements'] = 'Attributes requirements';
 $lang['rr_metadataurl']='metadata url';
 $lang['rr_servicemetadataurl'] ='Service metadata url';
 
@@ -302,6 +333,9 @@ $lang['rr_daystoexpire'] = 'days to expire';
 $lang['rr_usecommaasdelimeter'] = 'use comma as delimeter';
 $lang['rr_customattrscopednote'] = 'If attr type is Scoped and your IDP is shibboleth then use values without scope as Shib-idp adds scope after filtering';
 
+$lang['rr_userslist'] = 'List users in the system';
+$lang['rr_detforuser'] = 'Details for user';
+
 $lang['rr_serviceproviderdetails'] = 'Service Provider details';
 $lang['rr_acs'] = 'AssertionConsumerService';
 $lang['rr_acs_fieldset'] = 'AssertionConsumerService';
@@ -322,6 +356,9 @@ $lang['rhelp_bindingtype'] = 'Please select the binding type that your identity 
 $lang['rhelp_urlsinglesign'] = 'Please type the url of your single sign-on handler. E.g: https://idp.example.com/idp/profile/SAML2/Redirect/SSO';
 $lang['rhelp_supportedprotocols'] = 'These are the protocols that you support.';
 $lang['rhelp_cert'] = 'Paste your certificate here.';
+$lang['rr_meta_with_attr'] = 'Generated metadata will contain attributes requirements elements';
+$lang['rr_meta_with_noattr'] = 'Generated metadata will not contain attributes requirements elements';
+$lang['rr_include_attr_in_meta'] = 'Include required attributes in metadata';
 $lang['rr_latitude'] = 'Latitude';
 $lang['rr_longitude'] = 'Longitude';
 $lang['rr_lock'] = 'Lock';
@@ -352,6 +389,8 @@ $lang['rr_tbltitle_requester'] = 'Requester';
 $lang['rr_tbltitle_requesttype'] = 'Request Type';
 $lang['rr_tbltitle_primcontact'] = 'Primary contact';
 $lang['rr_tbltitle_name'] = 'Name';
+$lang['rr_tbltitle_reason'] = 'reason';
+$lang['rr_tbltitle_status'] = 'status';
 $lang['rr_tbltitle_confirmed'] = 'Confirmed';
 $lang['rr_provider_rmform'] = 'Provider removal form';
 $lang['rr_btn_rmprovider'] = 'Remove provider from the system';

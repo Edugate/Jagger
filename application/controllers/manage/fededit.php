@@ -32,6 +32,7 @@ class Fededit extends MY_Controller {
         $this->load->library('form_element');
         $this->load->library('form_validation');
         $this->load->library('zacl');
+        $this->title = lang('title_fededit');
     }
 
     private function _submit_validate()
@@ -39,6 +40,7 @@ class Fededit extends MY_Controller {
         $this->form_validation->set_rules('urn', lang('rr_fed_urn'), 'required|trim|min_length[5]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[500]|xss_clean');
         $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'trim|min_length[5]|max_length[1000]|xss_clean');
+        $this->form_validation->set_rules('incattrs',lang('rr_include_attr_in_meta'),'trim|xss_clean|max_length[10]');
         return $this->form_validation->run();
     }
 
@@ -71,11 +73,20 @@ class Fededit extends MY_Controller {
             $indesc = $this->input->post('description');
             $intou = $this->input->post('tou');
             $infedid = $this->input->post('fed');
+            $incattrs = $this->input->post('incattrs');
             if ($infedid != $fedid)
             {
                 show_error('Incorrect post', 403);
             }
             $fed->setUrn($inurn);
+            if($incattrs == 'accept')
+            {
+                $fed->setAttrsInmeta(TRUE);
+            }
+            elseif(empty($incattrs))
+            {
+                $fed->setAttrsInmeta(FALSE);
+            }
             $fed->setDescription($indesc);
             $fed->setTou($intou);
             $this->em->persist($fed);
@@ -105,7 +116,8 @@ class Fededit extends MY_Controller {
             $data['form'] .= form_close();
         
         }
-            $data['subtitle'] = 'Details for "'.htmlspecialchars($fedname).'" Federation <a href="'.base_url().'federations/manage/show/'.$fedurl.'"><img src="'.base_url().'images/icons/application-browser.png"/></a>';
+            $data['pagetitle'] = lang('rr_fededitform');
+            $data['subtitle'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.htmlspecialchars($fedname).'</a>';
             $data['content_view'] = 'manage/fededit_view';
             $this->load->view('page', $data);
         

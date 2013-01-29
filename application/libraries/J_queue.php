@@ -45,17 +45,17 @@ class J_queue {
         $approve_hidden_attributes = array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes');
         $approve_attrid = array('id' => 'approvequeue');
         $approve_form = form_open('reports/awaiting/approve', $approve_attrid, $approve_hidden_attributes);
-        $approve_form .= '<div class="buttons" style="float:right"><button type="submit" name="mysubmit" value="Accept request!" class="btn positive"><span class="save">' . lang("rr_submitapprove") . '</span></button></div>';
+        $approve_form .= '<button type="submit" name="mysubmit" value="Accept request!" class="btn positive"><span class="save">' . lang("rr_submitapprove") . '</span></button>';
         $approve_form .= form_close();
         /* add reject form */
         $reject_hidden_attributes = array('qaction' => 'reject', 'qid' => $qid);
         $reject_attrid = array('id' => 'rejectqueue');
         $reject_form = form_open('reports/awaiting/reject', $reject_attrid, $reject_hidden_attributes);
-        $reject_form .= '<div class="buttons prepend-12" style="float: left"><button type="submit" name="mysubmit" value="Reject request!" class="btn negative"><span class="cancel">' . lang("rr_submitreject") . '</span></button></div>';
+        $reject_form .= '<button type="submit" name="mysubmit" value="Reject request!" class="btn negative"><span class="cancel">' . lang("rr_submitreject") . '</span></button>';
         $reject_form .= form_close();
 
 
-        $result = '<div class="span-24" style="display:inline"><span style="float:left">' . $reject_form . '</span><span>' . $approve_form . '</span></div>';
+        $result = '<div class="buttons" >' . $reject_form .'&nbsp;'  . $approve_form . '</div>';
         return $result;
     }
 

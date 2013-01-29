@@ -1,3 +1,4 @@
+<div id="pagetitle"><?php echo lang('rr_status_mngmt');?></div>
 <?php
 if (!empty($message))
 {
@@ -8,9 +9,9 @@ if (!empty($error))
     echo '<span class="error">' . $error . '</span>';
 }
 ?>
-<div id="subtitle">
-    <?php echo lang('rr_state_mngt');?>: <?php echo $name . ' ('.$entityid.')<a href="'.base_url().'providers/provider_detail/'.$type.'/'.$id.'"><img src="'.base_url().'images/icons/arrow.png"/></a>'; ?>
-</div>
+<div id="subtitle"><h3>
+    <?php echo lang('serviceprovider').': <a href="'.base_url().'providers/provider_detail/'.$type.'/'.$id.'">'.$name.'</a>'; ?>
+</h3><h4><?php echo $entityid;?></h4></div>
 <?php
 if(!empty($success_message))
 {

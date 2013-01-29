@@ -29,6 +29,19 @@ $config['rr_rm_member_from_fed'] = TRUE;
  */
 $config['rr_logobaseurl'] = null;
 $config['rr_logouriprefix'] = 'logos/';
+/**
+ * Logos upload
+ */
+$config['rr_logoupload'] = false;
+/**
+ * rr_logoupload_relpath must be under your installation path
+ */
+$config['rr_logoupload_relpath'] = 'logos/';
+
+$config['rr_logo_maxwidth'] = 300;
+$config['rr_logo_maxheight'] = 300;
+$config['rr_logo_types'] = 'png';
+$config['rr_logo_maxsize'] = 2000,
 
 /**
  * rr_load_gmap_js to TRUE , if you you want to load googlemap api, then you need valid googlemap key https://code.google.com/apis/console
@@ -83,6 +96,11 @@ $config['acs_binding'] = array(
 
 
 $config['metadata_validuntil_days'] = '7';
+
+/**
+ * define if attributes requirement should be add to metadata
+ */
+$config['metadata_attrreqinc'] = false;
 
 $config['policy_dropdown'] = array('0' => 'never', '1' => 'permit only if required', '2' => 'permit if required or desired');
 

@@ -143,7 +143,7 @@ class Geolocation extends MY_Controller {
         }
 
         
-        $data['subtitle'] = '<div id="subtitle">'.$lockicon.' '.lang('rr_geolocations_for').' ' . $display_name . '&nbsp;&nbsp;' . anchor(base_url() . 'providers/provider_detail/' . $type . '/' . $provider->getId(), '<img src="' . base_url() . 'images/icons/home.png" />') . ' </div>';
+        $data['subtitle'] = '<div id="subtitle"><h3>'.$lockicon.' &nbsp;&nbsp;' . anchor(base_url() . 'providers/provider_detail/' . $type . '/' . $provider->getId(), $display_name) . '<h3><h4>'.$provider->getEntityId().'</h4> </div>';
         $data['form_errors'] = validation_errors('<p class="error">', '</p>');
 
 
@@ -192,12 +192,12 @@ class Geolocation extends MY_Controller {
 
         $hidden = array('idp' => $provider->getId());
         $action = current_url();
-        $formular = '<span class="span-24 geoform" >';
+        $formular = '<span class="geoform" >';
         $errors_v = validation_errors('<span class="span-5">', '</span><br />');
         if (!empty($errors_v)) {
             $formular .= '<div class="error">' . $errors_v . '</div>';
         }
-        $spacebreak = '<div class="span-23"><hr class="span-23" /></div>';
+        $spacebreak = '<div><hr class="span-23" /></div>';
 
         $formular .= form_open($action, '', $hidden);
         $formular .=' <label for="latinput">'.lang('rr_latitude').'</label><input type="text" id="latinput"  name="latinput" value="" /><br />
@@ -238,7 +238,7 @@ class Geolocation extends MY_Controller {
        }
 
 
-        $content = '<div class="span-12">' . $content . '</div>' . '<div class="span-11">' . $formulars . '</div>';
+        $content = '<div class="mapform">' . $formulars .  '</div><div class="span-11 map">' . $content . '</div>';
         $data['loadGoogleMap'] = true;
         $data['mapa'] = $content;
 

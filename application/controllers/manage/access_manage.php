@@ -37,7 +37,8 @@ class Access_manage extends MY_Controller
     }
     private function display_form_chng($access,$user,$action)
     {
-        $form = form_open();
+        
+        $form = '<div class="permset">'.form_open();
         $form .= form_hidden('user',$user);
         $form .= form_hidden('action',$action);
         if($access == 'allow')
@@ -48,7 +49,7 @@ class Access_manage extends MY_Controller
         {
         	$form .='<button  type="submit" name="change_access"  value="'.$access.'"  class="btn negative"><span class="remove">'.$access.'</span></button>';
         }
-        $form .= form_close();
+        $form .= form_close().'</div>';
         return $form;
     
     }

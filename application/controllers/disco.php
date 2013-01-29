@@ -60,6 +60,17 @@ class Disco extends MY_Controller {
             show_error('unknown provider', 404);
             return;
         }
+        $overwayf = $me->getWayfList();
+        $white = false;
+        $wayflist = null;
+        if(!empty($overwayf) && is_array($overwayf))
+        {
+            if(array_key_exists('white',$overwayf) && count($overwayf['white'])>0)
+            {
+                   $white = true;
+                   $wayflist = $overwayf['white'];
+            }
+        } 
 
         $p = new models\Providers;
         $p1 = $p->getCircleMembers($me);
@@ -72,17 +83,26 @@ class Disco extends MY_Controller {
         $oi = 0;
         foreach ($p1->getValues() as $key2)
         {
+            $allowed = true;
             if ($key2->getAvailable() && ($key2->getType() == 'IDP' OR $key2->getType() == 'BOTH'))
             {
+                if($white)
+                {
+                   if(!in_array($key2->getEntityId(),$wayflist))
+                   {
+                      $allowed = false;
+                   }
+                }
+               if($allowed)
+               {
                 $output[$oi]['entityID'] = $key2->getEntityId();
                 //        $output[$oi]['country'] = 'IE';
-                $entityid = $key2->getEntityId();
                 $entityname = $key2->getName();
                 if (empty($entityname))
                 {
-                    $entityname = $entityid;
+                    $entityname = $key2->getEntityId();
                 }
-                $output[$oi]['title'] = $entityname . '<span style="display:none">'.$entityid.'</span>';
+                $output[$oi]['title'] = $entityname .'<span style="display:none;">'.$key2->getEntityId().'</span>';
                 $extend = $key2->getExtendMetadata();
                 $count_extend = count($extend);
                 $e_extend = array();
@@ -118,10 +138,12 @@ class Disco extends MY_Controller {
                     }
                 }
 
-
-                $oi++;
+                   $oi++;
+               }
             }
         }
+        
+       
         if (!empty($call_array) && is_array($call_array) && count($call_array) == 3 && $call_array['0'] == 'dj' && $call_array['1'] == 'md' && is_numeric($call_array['2']))
         {
             $jsonoutput = $call . '(' . json_encode($output) . ')';

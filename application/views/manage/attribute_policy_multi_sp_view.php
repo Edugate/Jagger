@@ -1,3 +1,5 @@
+<div id="pagetitle">Specific attribute release policy</div>
+
 <?php
 $tmpl = array ( 'table_open'  => '<table border=\"0\" id="details" class="tablesorter">' );
 
@@ -40,20 +42,19 @@ foreach($arps as $arp)
 //$reset_button = form_reset('reset','reset');
 $reset_button = '';
 //$modify_button = form_submit('submit','modify');
-$modify_button = '<button type="submit" value="modify" class="btn positive"><span class="save">Modify</span></button>';
-$sp_link = anchor(base_url()."providers/provider_detail/sp/".$requester_id,'<img src="' . base_url() . 'images/icons/block-share.png" />');
-$idp_link = anchor(base_url()."providers/provider_detail/idp/".$provider_id,'<img src="' . base_url() . 'images/icons/home.png" />');
+$modify_button = '<button type="submit" value="modify" class="btn positive"><span class="save">'.lang('rr_modify').'</span></button>';
+$sp_link = anchor(base_url()."providers/provider_detail/sp/".$requester_id,$requester);
+$idp_link = anchor(base_url()."providers/provider_detail/idp/".$provider_id,$provider);
 $attr_req_link = anchor(base_url()."manage/attribute_requirement/sp/".$requester_id,'<img src="' . base_url() . 'images/icons/arrow.png" />');
-echo "<div id=\"subtitle\">";
-echo "<dl>";
-echo "<dt>Provider</dt> <dd>".$provider."</b> (".$provider_entityid.")".$idp_link."</dd>";
-echo "<dd>Supported Attributes <a href=\"".base_url()."manage/supported_attributes/idp/".$provider_id."\"><img src=\"".base_url()."images/icons/arrow.png\" /></a></dd>";
-echo "<dd>Attribute Release Policies<a href=\"".base_url()."manage/attribute_policy/globals/".$provider_id."\"><img src=\"".base_url()."images/icons/arrow.png\" /></a></dd>";
-echo "<dt>Requester</dt><dd>".$requester."</b> (".$requester_entityid.")".$sp_link."</dd>";
-echo "<dd>Attributes requirements".$attr_req_link."</dd>";
+echo '<div id="subtitle"><h3>'.lang('identityprovider').': '.$idp_link.'<br/> <small>'.$provider_entityid.'</small></h3>';
+echo '<h4>Requester: '.$sp_link.'<br/> <small>'.$requester_entityid.'</small></h4>';
 
-echo "</dl>";
-echo "</div>";
+echo '<dl>';
+echo '<dd>'.lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_attributes/idp/'.$provider_id.'"><img src="'.base_url().'images/icons/arrow.png" /></a></dd>';
+echo '<dd>'.lang('rr_attributereleasepolicy').'<a href="'.base_url().'manage/attribute_policy/globals/'.$provider_id.'"><img src="'.base_url().'images/icons/arrow.png" /></a></dd>';
+echo '<dd>'.lang('rr_attributerequirements') . $attr_req_link.'</dd>';
+echo '</dl>';
+echo '</div>';
 if(count($tbl_row)>0)
 {
 	$form_attributes = array('id'=>'formver2');

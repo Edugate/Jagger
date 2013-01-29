@@ -2323,7 +2323,7 @@ google.maps.event.addListener(map'.$_key.',\'click\',function(zdarzenie)
         $_output = '<script type="text/javascript" charset="utf-8">' . "\n" . '//<![CDATA[' . "\n";
         //$_output .= 'if (GBrowserIsCompatible()) {' . "\n";
         if (strlen($this->width) > 0 && strlen($this->height) > 0) {
-            $_output .= sprintf('document.write(\'<div id="%s" style="width: %s; height: %s; position:relative;"><\/div>\');', $this->map_id, $this->width, $this->height) . "\n";
+            $_output .= sprintf('document.write(\'<div id="%s"><\/div>\');', $this->map_id, $this->width, $this->height) . "\n";
         } else {
             $_output .= sprintf('document.write(\'<div id="%s" style="position:relative;"><\/div>\');', $this->map_id) . "\n";
         }

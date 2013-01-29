@@ -142,14 +142,14 @@ class Logos extends MY_Controller {
         $form1 .= form_fieldset('Select image you want to assign');
         $form1 .= '<ol> ';
 
-        $form1 .= '<li>';
-        $form1 .= form_label('Width in px (optional)', 'width');
-        $form1 .= form_input('width');
-        $form1 .= '</li>';
-        $form1 .= '<li>';
-        $form1 .= form_label('Height in px (optional)', 'height');
-        $form1 .= form_input('height');
-        $form1 .= '</li>';
+        #$form1 .= '<li>';
+        #$form1 .= form_label('Width in px (optional)', 'width');
+        #$form1 .= form_input('width');
+        #$form1 .= '</li>';
+        #$form1 .= '<li>';
+        #$form1 .= form_label('Height in px (optional)', 'height');
+        #$form1 .= form_input('height');
+        #$form1 .= '</li>';
         $form1 .= '<li><div class="buttons"><button name="submit" type="submit" value="submit" class="btn positive"><span class="save">Select logo and submit</span></button></div></li>';
         $form1 .= '</ol>';
         $form1 .= $this->logo->displayAvailableInGridForm('filename', 3);
@@ -159,9 +159,11 @@ class Logos extends MY_Controller {
 
         $data['form1'] = $form1;
         $data['content_view'] = 'manage/logos_view';
-        $data['add_applet'] = true;
         $data['sub'] = 'Add new logo for';
         $data['backlink'] = true;
+        $data['upload_enabled'] =  $this->config->item('rr_logoupload');
+        $data['infomessage'] = 'Max allowed image size:'.$this->config->item('rr_logo_maxwidth').'x'.$this->config->item('rr_logo_maxheight').'<br /> Please upload in png format'; 
+        $data['show_upload'] = true;
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
         $data['provider_detail']['entityid'] = $provider->getEntityId();
@@ -177,6 +179,47 @@ class Logos extends MY_Controller {
 
 
         $this->load->view('page', $data);
+    }
+   
+    public function uploadlogos()
+    {
+        $upload_enabled = $this->config->item('rr_logoupload');
+        $upload_logos_path = trim($this->config->item('rr_logoupload_relpath'));
+        if(empty($upload_enabled) || empty($upload_logos_path))
+        {
+            show_error('Upload images feature is disabled', 403);
+        }
+        if(substr($upload_logos_path, 0, 1) == '/')
+        {
+           log_message('error','upload_logos_path in you config must not begin with forward slash');
+           show_error('Incorrect config', 500);
+
+        }
+        $path = realpath(APPPATH . '../'.$upload_logos_path);
+        $config = array(
+			'allowed_types' => ''.$this->config->item('rr_logo_types').'',
+			'upload_path' => $path,
+			'max_size' => $this->config->item('rr_logo_maxsize'),
+                        'max_width' => $this->config->item('rr_logo_maxwidth'),
+                        'max_height'=> $this->config->item('rr_logo_maxheight'),
+		);
+        $this->load->library('upload', $config);
+        if ($this->input->post('upload')) {
+           
+             $data['backurl'] = $this->input->post('origurl');
+           if( $this->upload->do_upload())
+           {
+              $data['message'] = 'Image uploaded';
+              
+           }
+           else
+           {
+               $data['error'] = array('error' => $this->upload->display_errors());
+           }
+        }
+         
+        $data['content_view'] = 'manage/uploadlogo_view';
+        $this->load->view('page',$data);
     }
 
     public function provider($type = null, $id = null)

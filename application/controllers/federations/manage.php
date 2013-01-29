@@ -47,6 +47,7 @@ class Manage extends MY_Controller {
 
     function index()
     {
+        $this->title=lang('title_fedlist');
         $resource = 'fed_list';
         $federations = $this->em->getRepository("models\Federation")->findAll();
         $i = 0;
@@ -55,28 +56,28 @@ class Manage extends MY_Controller {
         {
             if ($f->getPublic())
             {
-                $public = lang('rr_fed_public');
+                $public = '<span class="lbl lbl-public">'.lang('rr_fed_public').'</span>';
             }
             else
             {
-                $public = '<span class="orange">'.lang('rr_fed_notpublic').'</span>';
+                $public = '<span class="lbl lbl-notpublic">'.lang('rr_fed_notpublic').'</span>';
             }
             if ($f->getActive())
             {
-                $active = "active";
+                $active = '<span class="lbl lbl-active">active</span>';
             }
             else
             {
-                $active = '<span class="alert">'.lang('rr_fed_inactive').'</span>';
+                $active = '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>';
             }
 
             if ($f->getLocal())
             {
-                $local = lang('rr_fed_local');
+                $local = '<span class="lbl lbl-local">'.lang('rr_fed_local').'</span>';
             }
             else
             {
-                $local = '<span class="orange">'.lang('rr_fed_external').'<span>';
+                $local = '<span class="lbl lbl-external">'.lang('rr_fed_external').'<span>';
             }
             
             $imgtoggle ='<img class="toggle" src="'.base_url().'images/icons/control-270.png" />'; 
@@ -84,16 +85,13 @@ class Manage extends MY_Controller {
 
 
             $frow[$i++] = array(
-                $active,
                 anchor(current_url() . "/show/" . base64url_encode($f->getName()), $f->getName()),
-                '<a href="'.current_url().'/showmembers/'.$f->getId().'" class="fmembers" id="'.$f->getId().'">'.$imgtoggle.'</a>', 
                 $f->getUrn(),
-                $public,
-                $local,
+                $public.'<br />'.$local.'<br />'.$active,
                 $f->getDescription(),
+                '<a href="'.current_url().'/showmembers/'.$f->getId().'" class="fmembers" id="'.$f->getId().'">'.$imgtoggle.'</a>', 
             );
         }
-        $this->title = lang('rr_federation_list');
         $data['fedlist'] = $frow;
         $data['content_view'] = 'federation/list_view.php';
         $this->load->view('page', $data);
@@ -262,7 +260,6 @@ class Manage extends MY_Controller {
         $required_attributes = $federation->getAttributesRequirement()->getValues();
 
 
-
         $data['meta_link'] = base_url() . "metadata/federation/" . base64url_encode($data['federation_name']) . "/metadata.xml";
         $data['meta_link_signed'] = base_url() . "signedmetadata/federation/" . base64url_encode($data['federation_name']) . "/metadata.xml";
         $data['content_view'] = 'federation/federation_show_view';
@@ -338,12 +335,22 @@ class Manage extends MY_Controller {
         else
         {
              $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_accessmngt').'</div></small>', 'colspan' => 2));
-       }
+        }
+       
         $data['tbl'][] = array('data' => array('data' => lang('rr_metadata'), 'class' => 'highlight', 'colspan' => 2));
+         if($federation->getAttrsInmeta())
+         {
+            $data['tbl'][] = array('data' => array('data' => lang('rr_meta_with_attr'), 'class'=>'lbl lbl-notice', 'colspan' => 2));
+         }
+         else
+         {
+            $data['tbl'][] = array('data' => array('data' => lang('rr_meta_with_noattr'),'class'=>'lbl lbl-notice', 'colspan' => 2));
+         }
+        
         if (empty($data['federation_is_active']))
         {
-            $data['tbl'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="alert">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link']));
-            $data['tbl'][] = array(lang('rr_fedmetasingedlink'), '<span class="alert">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link_signed']));
+            $data['tbl'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link']));
+            $data['tbl'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link_signed']));
         }
         else
         {

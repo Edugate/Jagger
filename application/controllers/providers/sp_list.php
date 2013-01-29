@@ -42,12 +42,13 @@ class Sp_list extends MY_Controller {
 
     function show()
     {
+        $this->title = lang('title_splist');
         $this->load->helper('iconhelp');
-        $lockicon = genIcon('locked',lang('rr_locked'));
-        $disabledicon = genIcon('disabled',lang('rr_disabled')); 
-        $expiredicon = genIcon('expired',lang('rr_expornotvalidyet'));
-        $staticon = genIcon('mstatic',lang('rr_staticmetadataactive')); 
-        $exticon = genIcon('external',lang('rr_externalentity'));
+        $lockicon = '<span class="lbl lbl-locked">'.lang('rr_locked').'</span>';
+        $disabledicon = '<span class="lbl lbl-disabled">'.lang('rr_disabled').'</span>';
+        $expiredicon = '<span class="lbl lbl-disabled">'.lang('rr_expired').'</span>';
+        $staticon = '<span class="lbl lbl-static">'.lang('rr_static').'</span>';
+        $exticon = '<span class="lbl lbl-external">'.lang('rr_external').'</span>';
         $resource = 'sp_list';
         $action = 'read';
         $group = 'default';

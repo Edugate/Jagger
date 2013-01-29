@@ -179,6 +179,7 @@ class Attribute_policy extends MY_Controller {
             show_error($this->mid . 'Identity Provider not found with id:' . $idp_id);
         }
         $resource = $idp->getId();
+        $data['provider_entity'] = $idp->getEntityId();
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
         if (!$has_write_access) {

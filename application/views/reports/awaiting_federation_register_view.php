@@ -4,6 +4,8 @@ $tmpl = array('table_open' => '<table  id="details" class="zebra">');
 $this->table->set_template($tmpl);
 
 $this->table->set_caption(lang('rr_requestawaiting'));
+if(!empty($fedrows) && is_array($fedrows))
+{
 foreach ($fedrows as $row)
 {
 
@@ -25,3 +27,4 @@ foreach ($fedrows as $row)
 echo $this->table->generate();
 
 $this->table->clear();
+}

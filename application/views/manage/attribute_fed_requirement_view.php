@@ -1,17 +1,11 @@
+<div id="pagetitle"><?php echo lang('rr_requiredattributes'); ?></div>
 <?php
 $fed_link = anchor(base_url().'federations/manage/show/'.$fed_encoded,'<img src="'.base_url().'images/icons/arrow-in.png"/>');
+$fed_link = anchor(base_url().'federations/manage/show/'.$fed_encoded,$fed_name);
+?>
+<div id="subtitle"><h3><?php echo lang('rr_federation').': '.$fed_link;?></h3></div>
+<?php
 
-echo  "<div id=\"subtitle\">";
-echo "<dl>";
-echo "<dt>";
-echo "Federation";
-echo "<dt>";
-
-echo "<dd>";
-echo $fed_name.' '.$fed_link;
-echo "</dd>";
-echo "</dl>";
-echo "</div>";
 if (!empty($message))
 {
     echo "<span class=\"message\">" . $message . "</span>";
@@ -20,34 +14,41 @@ if (!empty($error))
 {
     echo "<span class=\"error\">" . $error . "</span>";
 }
-$attributes = array('class' => 'span-16', 'id' => 'formver1');
+?>
+<?php
+$attributes = array('class' => 'reqattraddform', 'id' => 'formver1');
 $attributes2 = array('class' => 'span-16', 'id' => 'formver2');
 $spid_hidden = array('fedid' => $fedid,'type'=>'FED');
 $target = current_url();
 if (count($add_attr_final) > 0)
 {
+?>
+<button class="btn-positive showform"><?php echo lang('rr_addreqattr'); ?></button>
+<button class="btn-negative hideform hidden">Hide</button></div>
+
+<?php
     for ($i = 0; $i < $no_new_attr; $i++)
     {
         echo form_open(base_url(). "manage/attribute_requirement/fedsubmit", $attributes, $spid_hidden);
-        echo form_fieldset('Add new attribute requirement');
+        echo form_fieldset(lang('rr_addreqattr'));
         echo '<ol>';
         echo '<li>';
-        echo form_label('Select attribute', 'attribute');
+        echo form_label(lang('rr_selectattr'), 'attribute');
 
         echo form_dropdown('attribute', $add_attr_final);
         echo '</li>';
         echo '<li>';
-        echo form_label('Select requirement', 'requirement');
+        echo form_label(lang('rr_selectreq'), 'requirement');
         echo form_dropdown('requirement', array('desired' => 'desired', 'required' => 'required'));
         echo '</li>';
         echo '<li>';
-        echo form_label('The reason of requirement', 'reason');
+        echo form_label(lang('rr_reqattrreason'), 'reason');
         echo form_textarea(array('name' => 'reason', 'cols' => 25, 'rows' => 5));
         echo '</li>';
         echo '</ol>';
         echo form_fieldset_close();
         echo '<div class="buttons">';
-        echo '<button name="submit" type="submit" id="submit" value="Add" class="btn positive"><span class="save">Add</span></button>';
+        echo '<button name="submit" type="submit" id="submit" value="Add" class="btn positive"><span class="save">'.lang('rr_add').'</span></button>';
 	echo '</div>';
         echo form_close();
     }

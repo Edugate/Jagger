@@ -1,0 +1,327 @@
+// ==|== media queries ======================================================
+// PLACEHOLDER Media Queries for Responsive Design.
+// These override the primary ('mobile first') styles
+// Modify as content requires.
+// ========================================================================== */
+
+
+@media only screen and (min-width: 480px) {
+    /* Style adjustments for viewports 480px and over go here */
+    body {
+        #  background-color: red;
+    }
+    
+}
+
+@media only screen and (min-width: 768px) {
+    /* Style adjustments for viewports 768px and over go here */
+    body {
+        # background-color: yellow;
+    }
+    
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+only screen and (min-resolution: 144dpi) {
+    /* Style adjustments for high resolution devices */
+    body {
+    }
+    
+}
+@media only screen and (max-width: 1280px) {
+   #container {
+      max-width: 900px;
+   }
+   #map {
+      width: 400px;
+   }
+
+}
+
+/* Smaller than standard 960 (devices and browsers) */
+@media only screen and (max-width: 959px) {
+    body {
+        #  background-color: blue;
+    }
+   #container {
+      max-width: 850px;
+   }
+    
+}
+
+/* Tablet Portrait size to standard 960 (devices and browsers) */
+
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+    
+    body {
+          background-color: green;
+    }
+    
+}
+
+/* All Mobile Sizes (devices and browser) */
+@media only screen and (max-width: 767px) {
+    body {
+        #  background-color: purple;
+    }
+    .mobilehidden {
+        display:none;
+    }
+    
+    #logo img {
+        max-width: 150px;
+    }
+    .active {
+        display: block;
+    }
+    .nav > li {
+        float: none;
+    }
+    .nav > li > .parent {
+        background-position: 95% 50%;
+    }
+    .nav li li .parent {
+        background-image: url("../images/icons/control-270-small.png");
+        background-repeat: no-repeat;
+        background-position: 95% 50%;
+    }
+    .nav ul {
+        display: block;
+        width: 100%;
+    }
+    .nav > li.hover > ul , .nav li li.hover ul {
+        position: static;
+    }
+    
+    .row-fluid {
+        padding: 0px;
+    }
+    .span-11 {
+        margin: 5px;
+        min-width: 100%;
+        width: 100%;
+        clear: both; 
+    }
+    
+    
+    table#details {
+        display: block; 
+        caption {
+           width: auto;
+           font-weight: bold;
+           background-color: lighten($form-background-color, 0%);
+           min-height: 30px;
+           padding: 5 5 5 5;
+           margin: auto auto auto auto;
+           margin-bottom: 1px;
+           display: block;
+
+        }
+        thead, tbody, th, td, tr { 
+            display: block; 
+        }
+    }
+        
+     table#details  thead tr { 
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+        tr { border: 1px solid #ccc; }
+        tr>:first-child {
+            background: darken($top-panel-background, 10%);
+            color: grey;  
+            a {
+               color: white;
+               display: block;
+               text-decoration: underline;
+            }
+        }
+        td { 
+            /* Behave  like a "row" */
+            border: 0px;
+            position: relative;
+            padding-left: 50%; 
+        }
+        td:before { 
+            /* Now like a table header */
+            position: absolute;
+            /* Top/left values mimic padding */
+            top: 6px;
+            left: 6px;
+            width: 45%; 
+            padding-right: 10px; 
+            white-space: nowrap;
+        }
+        form {
+           label {
+             display: block;
+             width: 100%;
+             
+             
+           }
+            input {
+             width: 100%;
+             margin: auto;
+             display: block;
+           }
+        }
+        
+        form#formver2 fieldset legend{
+            font-size: larger;
+            font-weight: bolder;
+            text-align: center;
+            display: block;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            width: auto;
+            background-color: darken($form-background-color,40%);
+            width: 100%;
+            border-radius: 3px 3px 3px 3px;
+            padding: 1px 4px 2px;
+            box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
+            a {
+                    color: rgba(255, 255, 255, 0.9);
+                    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
+
+             }
+
+        }
+         form#formver2 {
+             ol, ul, li,fieldset,label, .accordionContent {
+               margin-left: 0px;
+               padding-left: 0px;
+               
+               max-width: 300px;
+               overflow: auto;
+             }
+              textarea {
+                  font-size: x-small;
+                  overflow: hidden;
+                  width: 400px;
+                  max-width: 400px;
+              }
+             .accordionContent {
+               label {
+                   display: block;
+                }
+               width: auto;
+               max-width: 400px;
+               margin-right:5px;
+             }
+         }
+       
+        div.buttons {
+             text-align: center;
+             width: 100%;
+             //padding: 5px;
+        } 
+        button.btn, button.button {
+               display: block;
+               width: 100%;
+               margin-top: 10px;
+               padding-top: 3px;
+               padding-bottom: 3px;
+                *padding-top: 3px;
+                *padding-bottom: 3px;
+ 
+               
+        }
+        form#login {
+            input {
+                        width: auto;
+                        }
+            
+            legend {
+                        width: 100%;
+                text-align: center;
+                        }
+            ol {
+                padding: 0px;
+                        margin: 0px; 
+                        }
+            ul,li {
+                padding: 0px;
+                   margin: 0px;      
+                        }
+            label {
+                padding: 5px;
+                margin: 0px;
+                }
+        div.buttons {
+                    display: block;
+                    margin: auto;
+                    margin-left: 0px;
+                    padding: 0px;
+                    width: 100%;
+                    }
+             button.btn, button.button {
+               font-size: larger;
+               padding: 0px;
+               padding-top: 5px;
+               padding-bottom: 5px;
+               *padding-top: 5px;
+               *padding-bottom: 5px;
+               
+               margin-top: 10px;
+               margin-bottom: 10px;
+               margin-left: 0px;
+               margin-right: auto;
+               min-height: 50px;
+               vertical-align: bottom;
+               
+             }
+        }
+       .lbl {
+              
+              margin-bottom: 5px;
+              padding-bottom: 5px;
+              width: auto;
+       }
+       .ui-autocomplete-input {
+         width: 200px;
+         display: inline;
+      }
+
+      div.map {
+          width: 100%;
+          display: block;
+       }   
+       div.mapform {
+          text-align: left;
+          width: 100%;
+          display: block;
+      }
+    
+}
+
+/* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+    body {
+        #  background-color: red;
+    }
+    
+}
+
+/* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
+@media only screen and (max-width: 479px) {
+    body {
+        #  background-color: white;
+    }
+    
+}
+
+
+
+
+// ==|== print styles =======================================================
+// Print styles.
+// Inlined to avoid required HTTP connection: h5bp.com/r
+// ========================================================================== */
+
+@media print {
+    @include h5bp-media-print;
+    
+    /* Style adjustments for print go here */
+}

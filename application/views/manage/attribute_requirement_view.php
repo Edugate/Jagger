@@ -1,3 +1,4 @@
+<div id="pagetitle">Attribute Requirements</div>
 <?php
 if (!empty($message))
 {
@@ -10,27 +11,20 @@ if (!empty($error))
 $attributes = array('class' => 'email', 'id' => 'formver2');
 $attributes2 = array('class' => 'email', 'id' => 'formver2');
 $spid_hidden = array('spid' => $spid, 'type' => 'SP');
-$sp_link = anchor(base_url() . 'providers/provider_detail/sp/' . $spid, '<img src="' . base_url() . 'images/icons/block-share.png"/>');
 $target = current_url();
 ?>
 
 <div id="subtitle">
-    <dl>
-        <dt>
-        Service Provider
-        <dt>
-
-        <dd>
-            <?php
-            echo $sp_name . ' (' . $sp_entityid . ')' . $sp_link;
-            ?>
-        </dd>
-    </dl>
+<h3><?php echo lang('serviceprovider').': <a href="'.base_url().'providers/provider_detail/sp/'.$spid.'">'.$sp_name.'</a>';?></h3>
+<h4><?php echo $sp_entityid ;?></h4>
 </div>
 
+<div>
+<button class="btn-positive showform"><?php echo lang('rr_addreqattr'); ?></button>
+<button class="btn-negative hideform hidden">Hide</button></div>
 
-<table id="details" style="border: 0px" >
-    <caption>Add new required attribute</caption>
+<table id="details" class="reqattraddform hidden">
+    <caption><?php echo lang('rr_addreqattr');?></caption>
     <tbody><tr><td style="border: 0px;padding: 0px">
                 <?php
                 if (count($add_attr_final) > 0)
@@ -39,20 +33,20 @@ $target = current_url();
                     {
                         echo form_open(base_url() . "manage/attribute_requirement/submit", $attributes, $spid_hidden);
                         echo '<ol><li>';
-                        echo form_label('Select attribute', 'attribute');
+                        echo form_label(lang('rr_selectattr'), 'attribute');
 
                         echo form_dropdown('attribute', $add_attr_final);
                         echo '</li><li>';
-                        echo form_label('Select requirement', 'requirement');
+                        echo form_label(lang('rr_selectreq'), 'requirement');
                         echo form_dropdown('requirement', array('desired' => 'desired', 'required' => 'required'));
                         echo '</li><li>';
-                        echo form_label('The reason of requirement', 'reason');
+                        echo form_label(lang('rr_reqattrreason'), 'reason');
                         echo form_textarea(array('name' => 'reason', 'cols' => 30, 'rows' => 5));
                         echo '</li></ol>';
                         $tf = '';
                         $tf .='<div class="buttons">';
                         $tf .='<button type="submit" name="submit" id="submit" value="Add" class="button positive">
-                  <span class="save">Add</span></button>';
+                  <span class="save">'.lang('rr_add').'</span></button>';
                         $tf .= '</div>';
                         echo $tf;
                         echo form_close();
@@ -62,7 +56,7 @@ $target = current_url();
                 if (count($already_in_attr) > 0)
                 {
 
-                    echo '<table id="details" style="border: 0px;"><caption>Modify or remove existing requirement(s)</caption><theader><td>Name</td><td>Oid</td><td>reason</td><td>status</td></theader><tbody>';
+                    echo '<table id="details"><caption>'.lang('rr_modreqattr').'</caption><theader><td>'.lang('rr_tbltitle_name').'</td><td>Oid</td><td>'.lang('rr_tbltitle_reason').'</td><td>'.lang('rr_tbltitle_status').'</td></theader><tbody>';
                     foreach ($already_in_attr as $a)
                     {
                         echo '<tr class="accordionButton">';
@@ -82,19 +76,19 @@ $target = current_url();
 			<b>SAML1:</b> ' . $a['urn'] . '<br />
 			<b>SAML2:</b> ' . $a['oid'] . '</div>';
                         echo '<li>';
-                        echo form_label('Current type of requirement', 'requirement');
+                        echo form_label(lang('rr_reqattr_currenttype'), 'requirement');
                         echo form_dropdown('requirement', array('desired' => 'desired', 'required' => 'required'), $a['status']);
                         echo '</li><li>';
-                        echo form_label('The reason of requirement', 'reason');
+                        echo form_label(lang('rr_reqattrreason'), 'reason');
                         echo form_textarea(array('name' => 'reason', 'cols' => 30, 'rows' => 5, 'value' => $a['reason']));
                         echo '</li><ol>';
                         echo form_fieldset_close();
                         $tf = '';
                         $tf .='<div class="buttons">';
                         $tf .='<button type="submit" name="submit" value="Remove" class="button negative">
-                  <span class="reset">Remove</span></button>';
+                  <span class="reset">'.lang('rr_remove').'</span></button>';
                         $tf .='<button type="submit" name="submit" value="Modify" class="button positive">
-                  <span class="save">Modify</span></button>';
+                  <span class="save">'.lang('rr_modify').'</span></button>';
                         $tf .= '</div>';
                         echo $tf;
                         echo form_close();

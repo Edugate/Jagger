@@ -1,4 +1,143 @@
 $(function() {
+
+
+/*************/
+
+
+		$.widget( "ui.combobox", {
+			_create: function() {
+				var self = this,
+					select = this.element.hide(),
+					selected = select.children( ":selected" ),
+					value = selected.val() ? selected.text() : "";
+				var input = this.input = $( "<input>" )
+					.insertAfter( select )
+					.val( value )
+					.autocomplete({
+						delay: 0,
+						minLength: 0,
+						source: function( request, response ) {
+							var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+							response( select.children( "option" ).map(function() {
+								var text = $( this ).text();
+								if ( this.value && ( !request.term || matcher.test(text) ) )
+									return {
+										label: text.replace(
+											new RegExp(
+												"(?![^&;]+;)(?!<[^<>]*)(" +
+												$.ui.autocomplete.escapeRegex(request.term) +
+												")(?![^<>]*>)(?![^&;]+;)", "gi"
+											), "<strong>$1</strong>" ),
+										value: text,
+										option: this
+									};
+							}) );
+						},
+						select: function( event, ui ) {
+							ui.item.option.selected = true;
+							self._trigger( "selected", event, {
+								item: ui.item.option
+							});
+						},
+						change: function( event, ui ) {
+							if ( !ui.item ) {
+								var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" ),
+									valid = false;
+								select.children( "option" ).each(function() {
+									if ( $( this ).text().match( matcher ) ) {
+										this.selected = valid = true;
+										return false;
+									}
+								});
+								if ( !valid ) {
+									// remove invalid value, as it didn't match anything
+									$( this ).val( "" );
+									select.val( "" );
+									input.data( "autocomplete" ).term = "";
+									return false;
+								}
+							}
+						}
+					})
+					.addClass( "ui-widget ui-widget-content ui-corner-left" );
+
+				input.data( "autocomplete" )._renderItem = function( ul, item ) {
+					return $( "<li></li>" )
+						.data( "item.autocomplete", item )
+						.append( "<a>" + item.label + "</a>" )
+						.appendTo( ul );
+				};
+
+				this.button = $( "<button type='button'>&nbsp;</button>" )
+					.attr( "tabIndex", -1 )
+					.attr( "title", "Show All Items" )
+					.insertAfter( input )
+					.button({
+						icons: {
+							primary: "ui-icon-triangle-1-s"
+						},
+						text: false
+					})
+					.removeClass( "ui-corner-all" )
+					.addClass( "ui-corner-right ui-button-icon" )
+					.click(function() {
+						// close if already visible
+						if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+							input.autocomplete( "close" );
+							return;
+						}
+
+						// work around a bug (likely same cause as #5265)
+						$( this ).blur();
+
+						// pass empty string as value to search for, displaying all results
+						input.autocomplete( "search", "" );
+						input.focus();
+					});
+			},
+
+			destroy: function() {
+				this.input.remove();
+				this.button.remove();
+				this.element.show();
+				$.Widget.prototype.destroy.call( this );
+			}
+		});
+
+		$( "#combobox" ).combobox();
+		$( "#toggle" ).click(function() {
+			$( "#combobox" ).toggle();
+		});
+/****************/
+
+        $('div.floating-menu').addClass('mobilehidden');
+        $('table.idplist tr td:first-child').addClass('homeorg');      
+        $('table.idplist tr td:first-child span.alert').removeClass('alert').parent().addClass('alert');
+        var theTable1 = $('table.idplist')
+        theTable1.find("tbody > tr").find("td:eq(1)").mousedown(function(){
+        });
+        $("#filter").keyup(function() {
+            $.uiTableFilter( theTable1, this.value );
+        })
+        $('#filter-form').submit(function(){
+            theTable1.find("tbody > tr:visible > td:eq(1)").mousedown();
+            return false;
+        }).focus(); 
+
+        $('table.splist tr td:first-child span.alert').removeClass('alert').parent().addClass('alert');
+        var theTable2 = $('table.splist')
+        theTable2.find("tbody > tr").find("td:eq(1)").mousedown(function(){
+        });
+        $("#filter").keyup(function() {
+            $.uiTableFilter( theTable2, this.value );
+        })
+        $('#filter-form').submit(function(){
+            theTable2.find("tbody > tr:visible > td:eq(1)").mousedown();
+            return false;
+        }).focus(); 
+
+
+
     $( "#validfrom" ).datepicker({
         dateFormat: 'yy-mm-dd'
     });
@@ -42,11 +181,31 @@ $(function() {
             url: url,
             timeout: 2500,
             cache: false
-        });
-        
+        });  
         return false;   
     });
-    
+    $("a.delbookentity").click(function(){
+        var link = $(this), url = link.attr("href");
+        
+        $.ajax({
+            url: url,
+            timeout: 2500,
+            cache: false,
+            success: $(this).parent().remove()
+        });  
+        return false;   
+    });
+     $("a.delbookfed").click(function(){
+        var link = $(this), url = link.attr("href");
+        
+        $.ajax({
+            url: url,
+            timeout: 2500,
+            cache: false,
+            success: $(this).parent().remove()
+        });  
+        return false;   
+    });
     $("a.fmembers").click(function(){
         var link = $(this), url = link.attr("href");
         var row = $(this).parent().parent();
@@ -139,7 +298,22 @@ $(function() {
         
          
     });
-
+    $( 'table.reqattraddform').addClass('hidden');
+    $( 'button.hideform').addClass('hidden');
+    $( 'form.reqattraddform').addClass('hidden');
+    
+    $('button.showform').click(function(){
+        $( 'table.reqattraddform').removeClass('hidden');
+        $( 'form.reqattraddform').removeClass('hidden');
+        $( 'button.showform').addClass('hidden');
+        $( 'button.hideform').removeClass('hidden');
+     });
+    $('button.hideform').click(function(){
+        $( 'table.reqattraddform').addClass('hidden');
+        $( 'form.reqattraddform').addClass('hidden');
+        $( 'button.showform').removeClass('hidden');
+        $( 'button.hideform').addClass('hidden');
+     });
     $( "#sortable" ).sortable();
     $( "#sortable" ).disableSelection();
 	 	
@@ -224,3 +398,60 @@ $(function() {
 //	$('.accordionContent1').toggle();
 
 });
+
+
+var ww = document.body.clientWidth;
+
+$(document).ready(function() {
+	$(".nav li a").each(function() {
+		if ($(this).next().length > 0) {
+			$(this).addClass("parent");
+		};
+	})
+	
+	$(".toggleMenu").click(function(e) {
+		e.preventDefault();
+		$(this).toggleClass("active");
+		$(".nav").toggle();
+	});
+	adjustMenu();
+})
+
+$(window).bind('resize orientationchange', function() {
+	ww = document.body.clientWidth;
+	adjustMenu();
+});
+
+var adjustMenu = function() {
+	if (ww < 768) {
+                $("#filter-form").remove();
+		$(".toggleMenu").css("display", "inline-block");
+		if (!$(".toggleMenu").hasClass("active")) {
+			$(".nav").hide();
+		} else {
+			$(".nav").show();
+		}
+		$(".nav li").unbind('mouseenter mouseleave');
+		$(".nav li a.parent").unbind('click').bind('click', function(e) {
+			// must be attached to anchor element to prevent bubbling
+			e.preventDefault();
+			$(this).parent("li").toggleClass("hover");
+		});
+	} 
+	else if (ww >= 768) {
+		$(".toggleMenu").css("display", "none");
+		$(".nav").show();
+		$(".nav li").removeClass("hover");
+		$(".nav li a").unbind('click');
+		$(".nav li").unbind('mouseenter mouseleave').bind('mouseenter mouseleave', function() {
+		 	// must be attached to li so that mouseleave is not triggered when hover over submenu
+		 	$(this).toggleClass('hover');
+		});
+	}
+}
+
+$(function() {              
+        $("#details").tablesorter({sortList:[[0,0],[2,1]], widgets: ['zebra']});
+        $("#options").tablesorter({sortList: [[0,0]], headers: { 3:{sorter: false}, 4:{sorter: false}}});
+    }); 
+
