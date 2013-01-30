@@ -104,7 +104,7 @@ class Idp_list extends MY_Controller {
             }
             else
             {
-                $col1 = '<span class="alert" title="'.$linktitlediexp.'">'.anchor($i_link, $displayname).'</span><br />('. $i->getEntityId().')';
+                $col1 = '<span class="additions"><span class="alert" title="'.$linktitlediexp.'">'.anchor($i_link, $displayname).'</span><br />'. $i->getEntityId().'</span>';
             }
             $regdate = $i->getRegistrationDate();
             if(isset($regdate))
@@ -124,7 +124,7 @@ class Idp_list extends MY_Controller {
             {
                 $col3 = '';
             }
-            $idprows[] = array('data' => array('data' =>  $col1 ),$iconsblock, $col2,$col3);
+            $idprows[] = array('data' => array('data' =>  $col1 ),$iconsblock, $col2,'<span class="additions">'.$col3.'</span>');
         }
         $data['idprows'] = $idprows;
         $data['content_view'] = 'providers/idp_list_view';
