@@ -748,7 +748,7 @@ class Form_element {
         return $tmp;
     }
 
-    public function generateEntityForm(models\Provider $provider, $action = null)
+    public function generateEntityForm(models\Provider $provider, $action = null, $forcetype = null)
     {
         log_message('debug', $this->ci->mid . 'Form_element::generateEntityForm method started');
         $tform = null;
@@ -764,6 +764,15 @@ class Form_element {
         }
         else
         {
+            if(!empty($forcetype) && $forcetype =='idp')
+            {
+                $tform = $this->generateIdpForm($provider, $action);
+            }
+            elseif(!empty($forcetype) && $forcetype =='sp')
+            {
+                $tform = $this->generateSpForm($provider, $action);
+            }
+
             /**
              * @todo display form if type is BOTH
              */

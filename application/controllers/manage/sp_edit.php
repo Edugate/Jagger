@@ -85,7 +85,18 @@ class Sp_edit extends MY_Controller {
         $data['sp_detail']['id'] = $this->sp->getId();
         $data['sp_detail']['entityid'] = $this->sp->getEntityId();
 
-        $data['entityform'] = $this->form_element->generateEntityForm($this->sp);
+#        $data['entityform'] = $this->form_element->generateEntityForm($this->sp);
+        $entype = $this->sp->getType();
+   
+        if($entype == 'BOTH')
+        {
+            $data['entityform'] = $this->form_element->generateEntityForm($this->sp,null,'sp');
+        }
+        else
+        {
+            $data['entityform'] = $this->form_element->generateEntityForm($this->sp);
+        }
+
 
         $data['content_view'] = 'manage/sp_edit_view';
         $this->load->view('page', $data);

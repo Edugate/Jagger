@@ -111,6 +111,16 @@ class Idp_edit extends MY_Controller {
         $data['form'] .= validation_errors('<p class="error">', '</p>');
         $data['form'] .= form_open($action, $attributes);
         $data['form'] .= $this->form_element->generateEntityForm($idp);
+        $entype = $idp->getType();
+        if($entype == 'BOTH')
+        {
+           $data['form'] .= $this->form_element->generateEntityForm($idp,null,'idp');
+        }
+        else
+        {
+           $data['form'] .= $this->form_element->generateEntityForm($idp);
+        }
+
         $tf = '';
 
         $tf .='<div class="buttons">';
