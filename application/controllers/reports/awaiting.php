@@ -516,10 +516,19 @@ class Awaiting extends MY_Controller {
                         }
 
                         $fed_check = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $fed->getName()));
+                        if(empty($fed_check))
+                        {
+                              $fed_check = $this->em->getRepository("models\Federation")->findOneBy(array('urn' => $fed->getUrn()));
+                        }
 
                         if ($fed_check)
                         {
-                            $error_message = $fed->getName() . " Federation already exists!";
+                            $error_message = "Federation already exists with provided name or urn";
+                            $data['error_message'] = $error_message;
+                            $data['content_view'] = 'error_message';
+                            $this->load->view('page',$data);
+                            return;
+                            
                         }
                         else
                         {
