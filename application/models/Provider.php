@@ -1898,6 +1898,19 @@ class Provider {
            $sp_reqattrs_count = $sp_reqattrs->count();
            if($sp_reqattrs_count > 0)
            {
+               foreach($sp_reqattrs->getValues() as $v)
+               {
+                   $in = $v->getAttribute()->showInMetadata();
+                   if($in === FALSE)
+                   {
+                       
+                       $sp_reqattrs->removeElement($v);
+                   }
+               }
+           }
+           $sp_reqattrs_count = $sp_reqattrs->count();
+           if($sp_reqattrs_count > 0)
+           {
                $Attrconsumingservice_Node =  $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AttributeConsumingService');
                $Attrconsumingservice_Node->setAttribute('index','0');
                $e->appendChild($Attrconsumingservice_Node);
