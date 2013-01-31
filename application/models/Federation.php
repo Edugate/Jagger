@@ -76,9 +76,9 @@ class Federation
 
      /**
       * add attribute requirements into generated metadata
-      * @Column(name="attrreq_inmeta", type="boolean", nullable=false)
+      * @Column(name="attrreq_inmeta", type="boolean", nullable=false, options={"default"=false})
       */
-     protected $attrreq_inmeta = false;
+     protected $attrreq_inmeta;
 
     /**
      * optional terms of use for federation it can be included in metadata as a comment

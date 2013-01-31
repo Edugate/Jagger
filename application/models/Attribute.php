@@ -56,6 +56,11 @@ class Attribute
           * @Column(type="string", length=255)
           */
          protected $urn;
+          
+         /**
+          * @Column(type="boolean", nullable=false, options={"default" = true})
+          */
+         protected $inmetadata;
 
          /**
           * @Column(type="text", nullable=true)
@@ -88,6 +93,11 @@ class Attribute
                $this->oid = \trim($oid);
                return $this;
          }
+         public function setShowInmetadata($a)
+         {
+               $this->inmetadata = $a;
+               return $this;
+         }
          public function setDescription($description)
          {
                $this->description = $description;
@@ -118,5 +128,9 @@ class Attribute
 		 {
 		 	return $this->description;
 		 }
+                 public function showInMetadata()
+                 {
+                        return $this->inmetadata;
+                 }
 }
 
