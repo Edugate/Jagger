@@ -68,6 +68,12 @@ class Idp_matrix extends MY_Controller {
         {
             show_error('Identity Provider not found', 404);
         }
+        
+        $data['idpname'] = $idp->getName();
+        if(empty($data['idpname']))
+        {
+           $data['idpname'] = $idp->getEntityId();
+        }
         $members = $this->_get_members($idp);
         $arparray = $this->arp_generator->arpToXML($idp, TRUE);
 
@@ -89,6 +95,7 @@ class Idp_matrix extends MY_Controller {
             $data['content_view'] = 'reports/idp_matrix_show_view';
             $data['entityid'] = $idp->getEntityId();
             $data['idpid'] = $idp->getId();
+            
             $data['error_message'] = 'To generate matrix IDP needs to support at least one attribute';
             $this->load->view('page', $data);
             return;
