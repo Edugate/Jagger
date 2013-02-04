@@ -41,7 +41,7 @@ $config['rr_logoupload_relpath'] = 'logos/';
 $config['rr_logo_maxwidth'] = 300;
 $config['rr_logo_maxheight'] = 300;
 $config['rr_logo_types'] = 'png';
-$config['rr_logo_maxsize'] = 2000,
+$config['rr_logo_maxsize'] = 2000;
 
 /**
  * rr_load_gmap_js to TRUE , if you you want to load googlemap api, then you need valid googlemap key https://code.google.com/apis/console

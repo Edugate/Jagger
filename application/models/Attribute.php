@@ -25,6 +25,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * This model for attributes definitions
  * 
  * @Entity
+ * @HasLifecycleCallbacks
  * @Table(name="attribute")
  * @author janusz
  */
@@ -58,19 +59,24 @@ class Attribute
          protected $urn;
           
          /**
-          * @Column(type="boolean", nullable=false, options={"default" = true})
+          * @Column(type="boolean", nullable=false )
           */
-         protected $inmetadata;
+         protected $inmetadata = TRUE;
 
          /**
           * @Column(type="text", nullable=true)
           */
          protected $description;
+    
+         public function __construct()
+         {
+             $this->inmetadata = true;
+         }
 
-		  public function __toString()
-		  {
-		          return $this->name;
-		     }
+	 public function __toString()
+	 {
+	         return $this->name;
+	 }
 
          // Begin generic set/get methods
          public function setName($name)
@@ -132,5 +138,6 @@ class Attribute
                  {
                         return $this->inmetadata;
                  }
+                 
 }
 

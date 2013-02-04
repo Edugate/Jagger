@@ -76,9 +76,9 @@ class Federation
 
      /**
       * add attribute requirements into generated metadata
-      * @Column(name="attrreq_inmeta", type="boolean", nullable=false, options={"default"=false})
+      * @Column(name="attrreq_inmeta", type="boolean", nullable=false)
       */
-     protected $attrreq_inmeta;
+     protected $attrreq_inmeta = FALSE;
 
     /**
      * optional terms of use for federation it can be included in metadata as a comment
@@ -116,7 +116,6 @@ class Federation
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->is_protected = FALSE;
         $this->is_local = TRUE;
-        $this->attrreq_inmeta = FALSE;
     }
 
     public function setName($name)
