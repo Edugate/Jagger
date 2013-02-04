@@ -177,7 +177,7 @@ class Sp_registration extends MY_Controller {
             }
             $sbj = "SP registration request";
             $body = "Dear Administrator\r\n";
-            $body .= "".$queue->getEmail()." just filled SP Registration form\r\n";
+            $body .= "".$queue->getEmail()." just completed a Service Provider registration\r\n";
             $body .="entityID: ".$entityid."\r\n";
             $body .="You can approve or reject it on ".base_url()."reports/awaiting/detail/".$queue->getToken()."\r\n";
             $this->load->library('email_sender');

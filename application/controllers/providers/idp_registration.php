@@ -156,7 +156,7 @@ class Idp_registration extends MY_Controller {
             }
             $sbj = "IDP registration request";
             $body = "Dear Administrator\r\n";
-            $body .= "".$qu->getEmail()." just filled IDP Registration form\r\n";
+            $body .= "".$qu->getEmail()." completed a new Identity Provider Registration\r\n";
             $body .="You can approve or reject it on ".base_url()."reports/awaiting/detail/".$qu->getToken()."\r\n";
             $this->load->library('email_sender');
             $this->email_sender->send($recipients,$sbj,$body);

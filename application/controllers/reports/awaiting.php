@@ -473,7 +473,7 @@ class Awaiting extends MY_Controller {
                                 $admin_recipients[] = $m->getEmail();
                             }
                             $admin_recipients = array_unique($admin_recipients);
-                            $mail_sbj = "Servider Provider has been approved";
+                            $mail_sbj = "Service Provider has been approved";
                             $mail_body ="Hi,\r\n";
                             $mail_body .= $sp->getEntityId()." has been just approved and added to Resource Registry\r\n";
                             $mail_body .= "on ".base_url()."\r\n";
