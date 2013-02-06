@@ -205,8 +205,8 @@ class Idp_matrix extends MY_Controller {
         {
             //  $thead[] = '<span style="-moz-transform: rotate(-90deg)">'.$k.'</span>';
             $thead[] = '
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="160">
-                  <text id="thetext" transform="rotate(270, 9, 0) translate(-150,0)">' . htmlentities($k) . '</text>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="190">
+                  <text id="thetext" transform="rotate(270, 9, 0) translate(-180,3)">' . htmlentities($k) . '</text>
                 </svg>
                ';
         }

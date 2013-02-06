@@ -232,10 +232,11 @@ function printout(){
 
 	var table = "<br /><br /><br /><table>";
 
-	table+="<tr><th style=text-align:left;vertical-align:bottom;><img src = \"https://middleware-dev.heanet.ie/rr3/images/legend.png\" />NAME</th>";
+	table+="<thead><tr><th style=text-align:left;vertical-align:bottom;><img src = \"<?php echo base_url();?>images/legend.png\" />NAME</th>";
 
 	for(i=0;i<attributes.length;i++){
-		table+="<td><img src=\"../../view_attribute_matrix/show/"+attributes[i] +"/"+color[i] + "/yes" +"\"></td>";	
+//		table+="<td><img src=\"../../view_attribute_matrix/show/"+attributes[i] +"/"+color[i] + "/yes" +"\"></td>";	
+		table+="<th style=\"font-size: smaller;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"190\"><text id=\"thetext\" transform=\"rotate(270, 9, 0) translate(-180,3)\">"+attributes[i]+"</text></svg></th>";
 	}
 
 
@@ -264,14 +265,14 @@ function printout(){
 			}
 			
 			if(isNone){
-			table+="<td><img src=\"../../view_attribute_matrix/show/"+tempname +"/"+"545454" + "/yes" +"\"></td>";
+			table+="<td><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"180\"><text id=\"thetext\" transform=\"rotate(270, 9, 0) translate(-170,0)\">"+tempname+"</text></svg></td>";
 			attributes[attributes.length] = tempname;
 			tempname="";
 			}
 		}
 	}
 
-	table+="</tr>";
+	table+="</tr></thead>";
 
 	var status='&nbsp;';
 
