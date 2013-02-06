@@ -24,7 +24,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  *
  *
  * @Entity
- * @Table(name="attribute_release_policy")
+ * @Table(name="attribute_release_policy", indexes={@Index(name="requester_idx", columns={"requester"})})
  * @author janusz
  */
 class AttributeReleasePolicy {

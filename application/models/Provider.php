@@ -28,7 +28,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * 
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="provider")
+ * @Table(name="provider",indexes={@Index(name="type_idx", columns={"type"})})
  * @author janusz
  */
 class Provider {

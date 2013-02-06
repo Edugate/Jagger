@@ -25,7 +25,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  *
  *
  * @Entity
- * @Table(name="attribute_requirement")
+ * @Table(name="attribute_requirement",indexes={@Index(name="type_idx", columns={"type"})})
  * @author janusz
  */
 class AttributeRequirement
