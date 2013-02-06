@@ -380,6 +380,11 @@ class Provider {
             $differ['Active']['before'] = $provider->getActive();
             $differ['Active']['after'] = $this->getActive();
         }
+        if ($provider->getLocked() != $this->getLocked())
+        {
+            $differ['Locked']['before'] = $provider->getLocked();
+            $differ['Locked']['after'] = $this->getLocked();
+        }
 
         return $differ;
     }

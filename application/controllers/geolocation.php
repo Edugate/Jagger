@@ -41,6 +41,7 @@ class Geolocation extends MY_Controller {
     }
 
     public function show($entity = null, $type = null) {
+        $this->load->library('tracker');
         $data = array();
         if (empty($entity) or !is_numeric($entity) or empty($type)) {
             show_error('Provider Id : wrong or not provided', 404);
@@ -110,6 +111,8 @@ class Geolocation extends MY_Controller {
                     $newgeo->setAttributes(array());
                     $newgeo->setType(strtolower($provider->getType()));
                     $this->em->persist($newgeo);
+                    $track_det=array('geo'=>array('before'=>'','after'=>$e_value));
+                    $this->tracker->save_track(strtolower($provider->getType()),'modification',$provider->getEntityId(),serialize($track_det),FALSE );
                     $this->em->flush();
                 }
             } elseif (!empty($s_raction) && $s_raction == 'remove' && !empty($s_geoloc)) {
@@ -120,9 +123,14 @@ class Geolocation extends MY_Controller {
                         $geolocations = $this->em->getRepository("models\ExtendMetadata")->findBy(array('provider' => $provider->getId(), 'namespace' => 'mdui', 'element' => 'GeolocationHint', 'evalue' => $s_geoloc));
 
                         if (count($geolocations) > 0) {
+                            $g_values = '';
                             foreach ($geolocations as $g) {
+                                $g_values .= $g->getElementValue().'; ';
                                 $this->em->remove($g);
                             }
+                            $track_det=array('geo'=>array('before'=>$g_values,'after'=>''));
+                            $this->tracker->save_track(strtolower($provider->getType()),'modification',$provider->getEntityId(),serialize($track_det),FALSE );
+             
                             $this->em->flush();
                         }
                     }

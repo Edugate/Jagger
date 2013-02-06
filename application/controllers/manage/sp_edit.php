@@ -166,7 +166,7 @@ class Sp_edit extends MY_Controller {
         {
             return $this->show($editedsp);
         }
-
+	$sp_before = clone($this->sp);
 
 
         /**
@@ -516,7 +516,13 @@ class Sp_edit extends MY_Controller {
             $this->em->persist($k);
         }
         $this->em->persist($this->sp);
+        $differ = $this->sp->diffProviderToArray($sp_before);
         $this->em->flush();
+        $this->load->library('tracker');
+        if (count($differ) > 0)
+        {
+            $this->tracker->save_track('sp', 'modification', $this->sp->getEntityId(), serialize($differ), true);
+        }
 
 
         log_message('debug', $pref . " finished");

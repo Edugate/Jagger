@@ -888,6 +888,33 @@ class Provider_detail extends MY_Controller {
             }
         }
         $data['sp_details'][$i++]['value'] = '<b>' . $federationsString . '</b>' . $manage_membership;
+        /**
+         * add black/white list for discojuice
+         */
+        $data['sp_details'][$i++]['header'] = 'WAYF';
+        $data['sp_details'][$i]['name'] = lang('rr_ds_disco_url');
+        $data['sp_details'][$i++]['value'] = anchor(base_url().'disco/circle/'.base64url_encode($sp->getEntityId()).'/metadata.json?callback=dj_md_1');
+        $tmpwayflist = $sp->getWayfList();
+        if(!empty($tmpwayflist) && is_array($tmpwayflist))
+        {
+           if(isset($tmpwayflist['white'])) 
+           {
+               if(is_array($tmpwayflist['white']))
+               {
+                    $discolist = implode('<br />', array_values($tmpwayflist['white']));
+                    $data['sp_details'][$i]['name'] = lang('rr_ds_white');
+                    $data['sp_details'][$i++]['value'] = $discolist; 
+               }
+           }
+           elseif(isset($tmpwayflist['black']) && is_array($tmpwayflist['black']) && count($tmpwayflist['black'])>0 )
+           {
+                    $discolist = implode('<br />', array_values($tmpwayflist['black']));
+                    $data['sp_details'][$i]['name'] = lang('rr_ds_black');
+                    $data['sp_details'][$i++]['value'] = $discolist; 
+           }
+        }
+        
+        
 
         $data['sp_details'][$i++]['header'] = '<span id="technical"></span>' . lang('rr_technicalinformation');
         $data['sp_details'][$i]['name'] = lang('rr_entityid');
@@ -1075,6 +1102,9 @@ class Provider_detail extends MY_Controller {
 
 ///////////
         $data['sp_details'][$i++]['header'] = lang('rr_logs');
+        $this->load->library('show_element');
+        $data['sp_details'][$i]['name'] = lang('rr_modifications');
+        $data['sp_details'][$i++]['value'] = $this->show_element->generateModificationsList($sp, 3);
 
         $data['sp_details'][$i++]['header'] = lang('rr_admins');
         $data['sp_details'][$i]['name'] = lang('rr_managestatus');

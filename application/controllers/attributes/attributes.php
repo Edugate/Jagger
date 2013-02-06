@@ -47,9 +47,17 @@ class Attributes extends MY_Controller
 		$attributes_tmp = new models\Attributes();
 		$attributes = $attributes_tmp->getAttributes();
         $a_ar = array();
+        $excluded = '<span class="lbl lbl-alert" title="'.lang('rr_attronlyinarpdet').'">'.lang('rr_attronlyinarp').'</span>';
+
         foreach ($attributes as $a)
         {
-            $a_ar[] = array(showHelp($a->getDescription()) . ' '. $a->getName(), $a->getFullname(), $a->getOid(),$a->getUrn());
+            $notice = '';
+            $i = $a->showInMetadata();
+            if($i === FALSE)
+            {
+                $notice = '<br />'.$excluded;
+            }
+            $a_ar[] = array(showHelp($a->getDescription()) . ' '. $a->getName().$notice, $a->getFullname(), $a->getOid(),$a->getUrn());
         }
         $data['attributes'] = $a_ar;
         $data['content_view'] = 'attribute_list_view';
