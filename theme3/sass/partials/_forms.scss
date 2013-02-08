@@ -37,7 +37,7 @@ form {
           width: auto;
        }
        ol li {
-                background: lighten($form-background-color,20%);
+       background: lighten($form-background-color,25%);
         border-color: $form-border-color;
         border-style: solid;
         border-width: 1px;
@@ -51,6 +51,9 @@ form {
         margin-bottom: 5px;
         padding: 10px;
             }
+        ol li.localized {
+          background: lighten($form-background-color,15%);
+        }
       
         ol ol li {
         background: none;

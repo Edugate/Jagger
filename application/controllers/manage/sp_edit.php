@@ -37,6 +37,7 @@ class Sp_edit extends MY_Controller {
         $this->load->library('form_validation');
         $this->tmp_providers = new models\Providers;
         $this->load->library('zacl');
+        $this->load->helper('shortcodes');
     }
 
     public function show($spid)
@@ -106,12 +107,16 @@ class Sp_edit extends MY_Controller {
     {
         $this->form_validation->set_rules('entityid', lang('rr_entityid'), 'trim|required|min_length[5]|max_length[255]|entityid_unique_update[' . $this->spid . ']|xss_clean');
         $this->form_validation->set_rules('displayname', lang('rr_displayname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
+        $this->form_validation->set_rules('ldisplayname[]', 'Localized '.lang('rr_displayname'), 'trim|max_length[255]|xss_clean');
         $this->form_validation->set_rules('homeorgname', lang('rr_resource'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
         $this->form_validation->set_rules('privacyurl', lang('rr_privacystatement'), 'trim|xss_clean');
+        $this->form_validation->set_rules('lprivacyurl[]','Localized '. lang('rr_privacystatement'), 'trim|valid_url_or_empty|min_length[0]');
         $this->form_validation->set_rules('description', lang('rr_description'), 'trim|max_length[512]|xss_clean');
         $this->form_validation->set_rules('homeurl', lang('rr_resourceurl'), 'xss_clean|valid_url');
         $this->form_validation->set_rules('helpdeskurl', lang('rr_helpdeskurl'), 'required|xss_clean');
+        $this->form_validation->set_rules('lhelpdeskurl[]', 'Localized '.lang('rr_helpdeskurl'), 'trim|valid_url_or_empty');
         $this->form_validation->set_rules('description', lang('rr_description'), 'xss_clean');
+        $this->form_validation->set_rules('ldescription[]', 'Localized' .lang('rr_description'), 'trim|xss_clean');
         $this->form_validation->set_rules('validfrom', lang('rr_validfrom'), 'trim|xss_clean|valid_date');
         $this->form_validation->set_rules('validto', lang('rr_validto'), 'trim|xss_clean|valid_date');
         $this->form_validation->set_rules('registerdate', 'Registration date', 'trim|xss_clean|valid_date_past');
@@ -245,12 +250,17 @@ class Sp_edit extends MY_Controller {
          * get submited values
          */
         $homeorgname = $this->input->post('homeorgname');
+        $lhomeorgname= $this->input->post('lname');
         $entityid = $this->input->post('entityid');
         $displayname = $this->input->post('displayname');
+        $ldisplayname = $this->input->post('ldisplayname');
         $homeurl = $this->input->post('homeurl');
         $helpdeskurl = $this->input->post('helpdeskurl');
+        $lhelpdeskurl = $this->input->post('lhelpdeskurl');
         $privacyurl = $this->input->post('privacyurl');
+        $lprivacyurl = $this->input->post('lprivacyurl');
         $description = $this->input->post('description');
+        $ldescription = $this->input->post('ldescription');
         $usestatic = $this->input->post('usestatic');
         $staticmetadatabody = $this->input->post('staticmetadatabody');
         $protocols = $this->input->post('protocols');
@@ -269,6 +279,122 @@ class Sp_edit extends MY_Controller {
         {
             $this->sp->setRegistrationDate(null);
         }
+
+
+        $langcodes = languagesCodes();
+        if(is_array($lhomeorgname))
+        {
+            foreach($lhomeorgname as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($lhomeorgname[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($lhomeorgname[$k]);
+               }
+            }
+            if(count($lhomeorgname)>0)
+            {
+              $this->sp->setLocalName($lhomeorgname);
+            }
+            else
+            {
+              $this->sp->setLocalName(NULL);
+            }
+        }
+        if(is_array($ldisplayname))
+        {
+            foreach($ldisplayname as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($ldisplayname[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($ldisplayname[$k]);
+               }
+            }
+            if(count($ldisplayname)>0)
+            {
+              $this->sp->setLocalDisplayName($ldisplayname);
+            }
+            else
+            {
+              $this->sp->setLocalDisplayName(NULL);
+            }
+        }
+
+        if(is_array($lhelpdeskurl))
+        {
+            foreach($lhelpdeskurl as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($lhelpdeskurl[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($lhelpdeskurl[$k]);
+               }
+            }
+            if(count($lhelpdeskurl>0))
+            {
+              $this->sp->setLocalHelpdeskURL($lhelpdeskurl);
+            }
+            else
+            {
+              $this->sp->setLocalHelpdeskURL(NULL);
+            }
+        }
+        if(is_array($lprivacyurl))
+        {
+            foreach($lprivacyurl as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($lprivacyurl[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($lprivacyurl[$k]);
+               }
+            }
+            if(count($lprivacyurl>0))
+            {
+              $this->sp->setLocalPrivacyUrl($lprivacyurl);
+            }
+            else
+            {
+              $this->sp->setLocalPrivacyUrl(NULL);
+            }
+        }
+
+        if(is_array($ldescription))
+        {
+            foreach($ldescription as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($ldescription[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($ldescription[$k]);
+               }
+            }
+            if(count($ldescription)>0)
+            {
+              $this->sp->setLocalDescription($ldescription);
+            }
+            else
+            {
+              $this->sp->setLocalDescription(NULL);
+            }
+        }
+        
         $this->sp->setName($homeorgname);
         $this->sp->setEntityid($entityid);
         $this->sp->setDisplayName($displayname);

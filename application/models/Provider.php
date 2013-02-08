@@ -45,15 +45,27 @@ class Provider {
 
     /**
      * @Column(type="string", length=255, nullable=true, unique=false)
-     * it got form OrganizationName
+     * it got from OrganizationName
      */
     protected $name;
+
+    /**
+     * @Column(type="text", nullable=true, unique=false)
+     * it got from OrganizationName localized, serialized
+     */
+    protected $lname;
 
     /**
      * @Column(type="string", length=255,nullable=true, unique=false)
      * it got from OrganizationDisplayName
      */
     protected $displayname;
+
+    /**
+     * @Column(type="text",nullable=true, unique=false)
+     * it got from OrganizationDisplayName localized
+     */
+    protected $ldisplayname;
 
     /**
      * @Column(type="string", length=128, nullable=false, unique=true)
@@ -94,10 +106,22 @@ class Provider {
     protected $helpdeskurl;
 
     /**
+     * licalized lhelpdeskurl is used in metadata, it can be http(s) or mailto
+     * @Column(type="text", nullable=true)
+     */
+    protected $lhelpdeskurl;
+
+    /**
      * privacyurl is used in metadata as mdui:PrivacyStatementURL
      * @Column(type="string", length=255, nullable=true)
      */
     protected $privacyurl;
+
+    /**
+     * lprivacyurl is used in metadata as mdui:PrivacyStatementURL - localized
+     * @Column(type="text", nullable=true)
+     */
+    protected $lprivacyurl;
 
     /**
      * registrar is used in metadata for registrationAuthority
@@ -125,6 +149,12 @@ class Provider {
      * @Column(type="text",nullable=true)
      */
     protected $description;
+
+    /**
+     * localized description
+     * @Column(type="text",nullable=true)
+     */
+    protected $ldescription;
 
     /**
      * @Column(type="string", length=2, nullable=true)
@@ -490,11 +520,34 @@ class Provider {
         $this->name = $name;
         return $this;
     }
+    public function setLocalName(array $name = NULL)
+    {
+        if(!empty($name))
+        {
+           $this->lname = serialize($name);
+        }
+        else
+        {
+           $this->lname = NULL;
+        }
+    }
 
     public function setDisplayName($name)
     {
         $this->displayname = $name;
         return $this;
+    }
+    
+    public function setLocalDisplayName(array $name = NULL)
+    {
+        if(!empty($name))
+        {
+           $this->ldisplayname = serialize($name);
+        }
+        else
+        {
+           $this->ldisplayname = NULL;
+        }
     }
 
     public function setScope($scope)
@@ -618,6 +671,18 @@ class Provider {
         $this->helpdeskurl = $url;
         return $this;
     }
+   
+    public function setLocalHelpdeskUrl(array $urls = NULL)
+    {
+        if(!empty($urls))
+        {
+            $this->lhelpdeskurl = serialize($urls);
+        }
+        else
+        {
+            $this->lhelpdeskurl = NULL;
+        }
+    }
 
     /**
      * set homeurl
@@ -631,6 +696,18 @@ class Provider {
     public function setPrivacyUrl($url = null)
     {
         $this->privacyurl = $url;
+    }
+
+    public function setLocalPrivacyUrl(array $url = null)
+    {
+        if(!empty($url))
+        {
+            $this->lprivacyurl = serialize($url);
+        }
+        else
+        {
+            $this->lprivacyurl = NULL;
+        }
     }
 
     public function setRegistrationAuthority($reg)
@@ -678,6 +755,17 @@ class Provider {
     {
         $this->description = $description;
         return $this;
+    }
+    public function setLocalDescription(array $descriptions = NULL)
+    {
+        if(!empty($descriptions))
+        {
+             $this->ldescription = serialize($descriptions);
+        }
+        else
+        {
+            $this->ldescription = NULL;
+        }
     }
 
     public function setWayfList($wayflist = null)
@@ -1097,6 +1185,29 @@ class Provider {
     {
         return $this->name;
     }
+    public function getLocalName()
+    {
+        return unserialize($this->lname);
+    }
+
+    public function getNameLocalized()
+    {
+        $t['en'] = $this->name;
+        $p = unserialize($this->lname);
+        if(is_array($p))
+        {
+           if(!array_key_exists('en',$p))
+           {
+              $p['en'] = $t['en'];
+           }
+        }
+        else
+        {
+           $p = $t;
+        }
+        return $p;
+        
+    }
 
     public function getDisplayName($length = null)
     {
@@ -1107,6 +1218,29 @@ class Provider {
         {
             return substr($this->displayname, 0, $length) . "...";
         }
+    }
+    public function getLocalDisplayName()
+    {
+        return unserialize($this->ldisplayname);
+    }
+
+    public function getDisplayNameLocalized()
+    {
+        $t['en'] = $this->displayname;
+        $p = unserialize($this->ldisplayname);
+        if(is_array($p))
+        {
+           if(!array_key_exists('en',$p))
+           {
+              $p['en'] = $t['en'];
+           }
+        }
+        else
+        {
+           $p = $t;
+        }
+        return $p;
+        
     }
 
     public function findOneSPbyName($name)
@@ -1217,10 +1351,55 @@ class Provider {
     {
         return $this->helpdeskurl;
     }
+    public function getLocalHelpdeskUrl()
+    {
+        return unserialize($this->lhelpdeskurl);
+    }
+    public function getHelpdeskUrlLocalized()
+    {
+        $t['en'] = $this->helpdeskurl;
+        $p = unserialize($this->lhelpdeskurl);
+        if(is_array($p))
+        {
+           if(!array_key_exists('en',$p))
+           {
+              $p['en'] = $t['en'];
+           }
+        }
+        else
+        {
+           $p = $t;
+        }
+        return $p;
+        
+    }
 
     public function getPrivacyUrl()
     {
         return $this->privacyurl;
+    }
+    public function getLocalPrivacyUrl()
+    {
+       return unserialize($this->lprivacyurl);
+    }
+
+    public function getPrivacyUrlLocalized()
+    {
+        $t['en'] = $this->privacyurl;
+        $p = unserialize($this->lprivacyurl);
+        if(is_array($p))
+        {
+           if(!array_key_exists('en',$p))
+           {
+              $p['en'] = $t['en'];
+           }
+        }
+        else
+        {
+           $p = $t;
+        }
+        return $p;
+        
     }
 
     public function getApproved()
@@ -1247,6 +1426,37 @@ class Provider {
     public function getDescription()
     {
         return $this->description;
+    }
+
+    public function getLocalDescription()
+    {
+        return unserialize($this->ldescription);
+    }
+    
+    public function getDescriptionLocalized()
+    {
+        if(empty($this->description))
+        {
+           $t['en'] = 'description not provided';
+        }
+        else
+        {
+           $t['en'] = $this->description;
+        }
+        $p = unserialize($this->ldescription);
+        if(is_array($p))
+        {
+           if(!array_key_exists('en',$p))
+           {
+              $p['en'] = $t['en'];
+           }
+        }
+        else
+        {
+           $p = $t;
+        }
+        return $p;
+
     }
     public function getWayfList()
     {
@@ -1472,21 +1682,29 @@ class Provider {
     {
         $ns_md = 'urn:oasis:names:tc:SAML:2.0:metadata';
         $e = $parent->ownerDocument->createElementNS($ns_md, 'md:Organization');
-        $OrganizationName_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationName', htmlspecialchars($this->getName()));
-        $OrganizationName_Node->setAttribute('xml:lang', 'en');
-        $OrganizationDisplayName_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationDisplayName', htmlspecialchars($this->getDisplayName()));
-        $OrganizationDisplayName_Node->setAttribute('xml:lang', 'en');
-        /**
-         * @todo for the moment using also Name as DisplayName 
-         */
-        //$OrganizationDisplayName_Node->appendChild($OrganizationName_Node_Text);
+       
+        $lorgnames = $this->getNameLocalized();
+        foreach($lorgnames as $k=>$v)
+        {     
+            $OrganizationName_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationName', htmlspecialchars($v));
+            $OrganizationName_Node->setAttribute('xml:lang', ''.$k.'');
+            $e->appendChild($OrganizationName_Node);
+        }
+        $ldorgnames = $this->getDisplayNameLocalized();
+        foreach($ldorgnames as $k=>$v)
+        {     
+           $OrganizationDisplayName_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationDisplayName', htmlspecialchars($v));
+           $OrganizationDisplayName_Node->setAttribute('xml:lang', ''.$k.'');
+           $e->appendChild($OrganizationDisplayName_Node);
+        }
+        $lurls = $this->getHelpdeskUrlLocalized();
+        foreach($lurls as $k=>$v)
+        {
+            $OrganizationURL_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationURL', htmlspecialchars($v));
+            $OrganizationURL_Node->setAttribute('xml:lang', ''.$k.'');
+            $e->appendChild($OrganizationURL_Node);
+        }
 
-        $OrganizationURL_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationURL', htmlspecialchars($this->getHelpdeskUrl()));
-        $OrganizationURL_Node->setAttribute('xml:lang', 'en');
-
-        $e->appendChild($OrganizationName_Node);
-        $e->appendChild($OrganizationDisplayName_Node);
-        $e->appendChild($OrganizationURL_Node);
         return $e;
     }
 
@@ -1519,28 +1737,34 @@ class Provider {
         /* UIInfo */
         $UIInfo_Node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
         $d_element = 'DisplayName';
-        $d_value = htmlspecialchars($this->getDisplayName());
-        $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
-        $d_node->setAttribute('xml:lang', 'en');
-        $UIInfo_Node->appendChild($d_node);
 
-        $d_element = 'Description';
-        $d_value = trim($this->getDescription());
-        if (empty($d_value))
+        $localized_dvalues = $this->getDisplayNameLocalized();
+        foreach($localized_dvalues as $k=>$v)
         {
-            $d_value = "description not provided";
-        }
-        $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', htmlspecialchars($d_value));
-        $d_node->setAttribute('xml:lang', 'en');
-        $UIInfo_Node->appendChild($d_node);
-
-        $d_element = 'PrivacyStatementURL';
-        $d_value = $this->getPrivacyUrl();
-        if (!empty($d_value))
-        {
+            $d_value = htmlspecialchars($v);
             $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
-            $d_node->setAttribute('xml:lang', 'en');
+            $d_node->setAttribute('xml:lang', ''.$k.'');
             $UIInfo_Node->appendChild($d_node);
+        }
+        $d_element = 'Description';
+        $localized_dvalues = $this->getDescriptionLocalized();
+        foreach($localized_dvalues as $k=>$v)
+        {
+           $d_value = trim($v);
+           $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', htmlspecialchars($d_value));
+           $d_node->setAttribute('xml:lang', ''.$k.'');
+           $UIInfo_Node->appendChild($d_node);
+        }
+        $d_element = 'PrivacyStatementURL';
+        $localized_dvalues = $this->getPrivacyUrlLocalized();
+        foreach($localized_dvalues as $k=>$v)
+        {
+            if(!empty($v))
+            {
+                 $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $v);
+                 $d_node->setAttribute('xml:lang', ''.$k.'');
+                 $UIInfo_Node->appendChild($d_node);
+            }
         }
 
 
@@ -1754,30 +1978,36 @@ class Provider {
         /* UIInfo */
         $UIInfo_Node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
         $d_element = 'DisplayName';
-        $d_value = htmlspecialchars($this->getDisplayName());
-        $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
-        $d_node->setAttribute('xml:lang', 'en');
-        $UIInfo_Node->appendChild($d_node);
-
-        $d_element = 'Description';
-        $d_value = htmlspecialchars(trim($this->getDescription()));
-        if (empty($d_value))
+        $localized_dvalues = $this->getDisplayNameLocalized();
+        foreach($localized_dvalues as $k=>$v)
         {
-            $d_value = "description not provided";
-        }
-        $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
-        $d_node->setAttribute('xml:lang', 'en');
-        $UIInfo_Node->appendChild($d_node);
-
-        $d_element = 'PrivacyStatementURL';
-        $d_value = $this->getPrivacyUrl();
-        if (!empty($d_value))
-        {
+            $d_value = htmlspecialchars($v);
             $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
-            $d_node->setAttribute('xml:lang', 'en');
+            $d_node->setAttribute('xml:lang', ''.$k.'');
             $UIInfo_Node->appendChild($d_node);
         }
-        $Extensions_Node->appendChild($UIInfo_Node);
+        $d_element = 'Description';
+        $localized_dvalues = $this->getDescriptionLocalized();
+        foreach($localized_dvalues as $k=>$v)
+        {
+            $d_value = htmlspecialchars(trim($v));
+            $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
+            $d_node->setAttribute('xml:lang', ''.$k.'');
+            $UIInfo_Node->appendChild($d_node);
+        }
+
+        $d_element = 'PrivacyStatementURL';
+        $localized_dvalues = $this->getPrivacyUrlLocalized();
+        foreach($localized_dvalues as $k=>$v)
+        {
+            if(!empty($v))
+            {
+                 $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $v);
+                 $d_node->setAttribute('xml:lang', ''.$k.'');
+                 $UIInfo_Node->appendChild($d_node);
+                 $Extensions_Node->appendChild($UIInfo_Node);
+            }
+        }
 
 
         $other_extends = $this->getExtendMetadata();

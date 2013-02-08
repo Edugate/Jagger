@@ -174,6 +174,36 @@ $(function() {
         
         return false;   
     });
+    $("button#addlname").click(function(){
+        var nf = $("li.addlname option:selected").val();
+        var nfv = $("li.addlname option:selected").text();
+        $("li.addlname option[value="+nf+"]").remove();
+        $(this).parent().append("<li class=\"localized\"><label for=\"lname["+nf+"]\">Name in "+nfv+" </label><input id=\"lname["+nf+"]\" name=\"lname["+nf+"]\" type=\"text\"/></li>");
+    });
+    $("button#addldisplayname").click(function(){
+        var nf = $("li.addldisplayname option:selected").val();
+        var nfv = $("li.addldisplayname option:selected").text();
+        $("li.addldisplayname option[value="+nf+"]").remove();
+        $(this).parent().append("<li class=\"localized\"><label for=\"ldisplayname["+nf+"]\">DisplayName in "+nfv+" </label><input id=\"ldisplayname["+nf+"]\" name=\"ldisplayname["+nf+"]\" type=\"text\"/></li>");
+    });
+    $("button#addlhelpdeskurl").click(function(){
+        var nf = $("li.addlhelpdeskurl option:selected").val();
+        var nfv = $("li.addlhelpdeskurl option:selected").text();
+        $("li.addlhelpdeskurl option[value="+nf+"]").remove();
+        $(this).parent().append("<li class=\"localized\"><label for=\"lhelpdeskurl["+nf+"]\">HelpdeskURL in "+nfv+" </label><input id=\"lhelpdeskurl["+nf+"]\" name=\"lhelpdeskurl["+nf+"]\" type=\"text\"/></li>");
+    });
+    $("button#addlprivacyurl").click(function(){
+        var nf = $("li.addlprivacyurl option:selected").val();
+        var nfv = $("li.addlprivacyurl option:selected").text();
+        $("li.addlprivacyurl option[value="+nf+"]").remove();
+        $(this).parent().append("<li class=\"localized\"><label for=\"lprivacyurl["+nf+"]\">Privacy Statement URL in "+nfv+" </label><input id=\"lprivacyurl["+nf+"]\" name=\"lprivacyurl["+nf+"]\" type=\"text\"/></li>");
+    });
+    $("button#addldescription").click(function(){
+        var nf = $("li.addldescription option:selected").val();
+        var nfv = $("li.addldescription option:selected").text();
+        $("li.addldescription option[value="+nf+"]").remove();
+        $(this).parent().append("<li class=\"localized\"><label for=\"ldescription["+nf+"]\">Description in "+nfv+" </label><textarea id=\"ldescription["+nf+"]\" name=\"ldescription["+nf+"]\" rows=\"5\" cols=\"40\"/></textarea></li>");
+    });
     $("a.bookentity").click(function(){
         var link = $(this), url = link.attr("href");
         

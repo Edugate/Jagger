@@ -39,6 +39,7 @@ class Idp_edit extends MY_Controller {
         $this->load->library('form_validation');
         $this->load->library('metadata_validator');
         $this->load->library('zacl');
+        $this->load->helper('shortcodes');
     }
 
     public function show($idpid)
@@ -140,11 +141,15 @@ class Idp_edit extends MY_Controller {
     {
         $this->form_validation->set_rules('entityid',lang('rr_entityid'),'trim|required|min_length[5]|max_length[255]|entityid_unique_update['.$this->idpid.']|xss_clean');
         $this->form_validation->set_rules('displayname', lang('rr_displayname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
+        $this->form_validation->set_rules('ldisplayname[]', 'Localized '.lang('rr_displayname'), 'trim|max_length[255]|xss_clean');
         $this->form_validation->set_rules('homeorgname', lang('rr_homeorganisationname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
         $this->form_validation->set_rules('privacyurl', lang('rr_privacystatement'), 'trim|valid_url');
+        $this->form_validation->set_rules('lprivacyurl[]','Localized '. lang('rr_privacystatement'), 'trim|valid_url_or_empty|min_length[0]');
         $this->form_validation->set_rules('helpdeskurl', lang('rr_helpdeskurl'), 'required|trim|valid_url');
+        $this->form_validation->set_rules('lhelpdeskurl[]', 'Localized '.lang('rr_helpdeskurl'), 'trim|valid_url_or_empty');
         $this->form_validation->set_rules('homeurl', lang('rr_homeorganisationurl'), 'trim|valid_url');
         $this->form_validation->set_rules('description', lang('rr_description'), 'trim|xss_clean');
+        $this->form_validation->set_rules('ldescription[]', 'Localized' .lang('rr_description'), 'trim|xss_clean');
         $this->form_validation->set_rules('usestatic', lang('rr_staticmetadata'), "valid_static[".base64_encode($this->input->post('staticmetadatabody')).":::".$this->input->post('entityid')." ]");
         $this->form_validation->set_rules('validfrom', lang('rr_validfrom'), 'trim|xss_clean|valid_date');
         $this->form_validation->set_rules('validto', lang('rr_validto'), 'trim|xss_clean|valid_date');
@@ -290,14 +295,19 @@ class Idp_edit extends MY_Controller {
          */
         $entityid = $this->input->post('entityid');
         $homeorgname = $this->input->post('homeorgname');
+        $lhomeorgname= $this->input->post('lname');
         $displayname = $this->input->post('displayname');
+        $ldisplayname = $this->input->post('ldisplayname');
         $homeurl = $this->input->post('homeurl');
         $helpdeskurl = $this->input->post('helpdeskurl');
+        $lhelpdeskurl = $this->input->post('lhelpdeskurl');
         $privacyurl = $this->input->post('privacyurl');
+        $lprivacyurl = $this->input->post('lprivacyurl');
         $registrationdate = $this->input->post('registerdate');
         $registrar = $this->input->post('registrar');
         $scope = $this->input->post('scope');
         $description = $this->input->post('description');
+        $ldescription = $this->input->post('ldescription');
         $usestatic = $this->input->post('usestatic');
 
         $staticmetadatabody = trim($this->input->post('staticmetadatabody'));
@@ -317,7 +327,121 @@ class Idp_edit extends MY_Controller {
         }
         $protocols = $this->input->post('protocols');
         $nameids = $this->input->post('nameids');
+        $langcodes = languagesCodes();
+        if(is_array($lhomeorgname))
+        {
+            foreach($lhomeorgname as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($lhomeorgname[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($lhomeorgname[$k]);
+               }
+            }
+            if(count($lhomeorgname)>0)
+            {
+              $idp->setLocalName($lhomeorgname);
+            }
+            else
+            {
+              $idp->setLocalName(NULL);
+            }
+        }
+        if(is_array($ldisplayname))
+        {
+            foreach($ldisplayname as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($ldisplayname[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($ldisplayname[$k]);
+               }
+            }
+            if(count($ldisplayname)>0)
+            {
+              $idp->setLocalDisplayName($ldisplayname);
+            }
+            else
+            {
+              $idp->setLocalDisplayName(NULL);
+            }
+        }
 
+        if(is_array($lhelpdeskurl))
+        {
+            foreach($lhelpdeskurl as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($lhelpdeskurl[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($lhelpdeskurl[$k]);
+               }
+            }
+            if(count($lhelpdeskurl>0))
+            {
+              $idp->setLocalHelpdeskURL($lhelpdeskurl);
+            }
+            else
+            {
+              $idp->setLocalHelpdeskURL(NULL);
+            }
+        }
+        if(is_array($lprivacyurl))
+        {
+            foreach($lprivacyurl as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($lprivacyurl[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($lprivacyurl[$k]);
+               }
+            }
+            log_message('debug','GGG4::'.serialize($lprivacyurl));
+            if(count($lprivacyurl>0))
+            {
+              $idp->setLocalPrivacyUrl($lprivacyurl);
+            }
+            else
+            {
+              $idp->setLocalPrivacyUrl(NULL);
+            }
+        }
+
+        if(is_array($ldescription))
+        {
+            foreach($ldescription as $k=>$v)
+            {
+               if(!array_key_exists($k,$langcodes))
+               {
+                   unset($ldescription[$k]);
+               }
+               elseif(empty($v))
+               {
+                   unset($ldescription[$k]);
+               }
+            }
+            if(count($ldescription)>0)
+            {
+              $idp->setLocalDescription($ldescription);
+            }
+            else
+            {
+              $idp->setLocalDescription(NULL);
+            }
+        }
+        
         $idp->setName($homeorgname);
         $idp->setEntityid($entityid);
         $idp->setDisplayName($displayname);

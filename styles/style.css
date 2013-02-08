@@ -278,7 +278,7 @@ body, select, input, textarea {
 }
 
 html {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 a {
@@ -1242,7 +1242,7 @@ form textarea {
   width: auto;
 }
 form ol li {
-  background: #bacbeb;
+  background: #cedaf1;
   border-color: #e3ebc3;
   border-style: solid;
   border-width: 1px;
@@ -1254,6 +1254,9 @@ form ol li {
   /* padding: 5px 10px;*/
   margin-bottom: 5px;
   padding: 10px;
+}
+form ol li.localized {
+  background: #a6bce5;
 }
 form ol ol li {
   background: none;

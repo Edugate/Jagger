@@ -29,6 +29,7 @@ class Form_element {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->helper('form');
+        $this->ci->load->helper('shortcodes');
         log_message('debug', $this->ci->mid . 'lib/Form_element initialized');
     }
 
@@ -527,6 +528,8 @@ class Form_element {
     private function generateSpForm(models\Provider $provider, $action = null, $template = null)
     {
         log_message('debug', $this->ci->mid . 'Form_element::generateSpForm method started');
+        $langscodes = languagesCodes(); 
+        $lnames  = $provider->getLocalName();
         $tmp = '<div id="mojtest">';
         $tmp .='<div id="accordion">';
         $tmp .='<fieldset><legend class="accordionButton">' . lang('rr_generalinformation') . '</legend>';
@@ -535,11 +538,52 @@ class Form_element {
         $f_en = array('id' => 'entityid', 'name' => 'entityid', 'required' => 'required', 'value' => $provider->getEntityid());
         $tmp .= form_input($f_en) .'</li><li>';
         $tmp .= form_label(lang('rr_resource') . showHelp(lang('rhelp_resourcename')), 'homeorgname');
-        $tmp .= form_input('homeorgname', set_value('homeorgname', $provider->getName()));
-        $tmp .= '</li><li>';
-        $tmp .= form_label(lang('rr_displayname'), 'displayname');
-        $tmp .= form_input('displayname', set_value('displayname', $provider->getDisplayName()));
-        $tmp .= '</li><li>';
+        $tmp .= form_input('homeorgname', set_value('homeorgname', $provider->getName())).'</li>';
+        if(is_array($lnames))
+        {
+            foreach($lnames as $k=>$v)
+            {
+               $tmp .='<li class="localized">';
+               $tmp .= form_label(lang('rr_homeorganisationname') . ' <small>'.$langscodes[$k].'</small>', 'lname['.$k.']');
+               $tmp .= form_input(array('id'=>'lname['.$k.']', 'name'=>'lname['.$k.']' , 'value'=>set_value('lname['.$k.']', $v)));
+               $tmp .= '</li>';
+            }
+        }
+        else
+        {
+           $lnames = array();
+        }
+        $tmp .= '<li class="addlname localized">';
+        $langscodes2 = array_diff_key($langscodes,$lnames);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addlname" name="addlname" value="addlname" class="btn">Add localized name</button>';
+        $tmp .= '</li>';
+
+        $tmp .= '<li>'.form_label(lang('rr_displayname'), 'displayname');
+        $tmp .= form_input('displayname', set_value('displayname', $provider->getDisplayName())) . '</li>';
+        
+        $ldisplaynames = $provider->getLocalDisplayName(); 
+        if(is_array($ldisplaynames))
+        {
+             foreach($ldisplaynames as $k=>$v)
+             {
+                 $tmp .= '<li class="localized">';
+                 $tmp .= form_label(lang('rr_displayname') . ' <small>'.$langscodes[$k].'</small>', 'ldisplayname['.$k.']');
+                 $tmp .= form_input(array('id'=>'ldisplayname['.$k.']', 'name'=>'ldisplayname['.$k.']' , 'value'=>set_value('ldisplayname['.$k.']', $v)));
+             }
+        }
+        else
+        {
+            $ldisplaynames = array();
+        }
+        $tmp .= '<li class="addldisplayname localized">';
+        $langscodes2 = array_diff_key($langscodes,$ldisplaynames);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addldisplayname" name="addldisplayname" value="addldisplayname" class="btn">Add localized display name</button>';
+        $tmp .= '</li>';
+          
+       
+        $tmp .='<li>';
         $configRegAuth = $this->ci->config->item('registrationAutority');
 
         if (!empty($configRegAuth))
@@ -573,10 +617,56 @@ class Form_element {
         $tmp .= '</li><li>'. form_label(lang('rr_resourceurl'), 'homeurl');
         $tmp .= form_input('homeurl', set_value('homeurl', $provider->getHomeUrl()));
         $tmp .= '</li><li>'. form_label(lang('rr_helpdeskurl') . showHelp(lang('rhelp_helpdeskurl')), 'helpdeskeurl');
-        $tmp .= form_input('helpdeskurl', set_value('helpdeskurl', $provider->getHelpdeskUrl()));
-        $tmp .= '</li><li>'. form_label(lang('rr_privacystatement'), 'privacyurl');
-        $tmp .= form_input('privacyurl', set_value('privacyurl', $provider->getPrivacyUrl()));
-        $tmp .= '</li><li>'. form_label(lang('rr_validfrom'), 'validfrom');
+        $tmp .= form_input('helpdeskurl', set_value('helpdeskurl', $provider->getHelpdeskUrl())).'</li>';
+
+        
+        $lurls = $provider->getLocalHelpdeskURL(); 
+        if(is_array($lurls))
+        {
+             foreach($lurls as $k=>$v)
+             {
+                 $tmp .= '<li class="localized">';
+                 $tmp .= form_label(lang('rr_helpdeskurl') . ' <small>'.$langscodes[$k].'</small>', 'lhelpdeskurl['.$k.']');
+                 $tmp .= form_input(array('id'=>'lhelpdeskurl['.$k.']', 'name'=>'lhelpdeskurl['.$k.']' , 'value'=>set_value('lhelpdeskurl['.$k.']', $v)));
+             }
+        }
+        else
+        {
+            $lurls = array();
+        }
+        $tmp .= '<li class="addlhelpdeskurl localized">';
+        $langscodes2 = array_diff_key($langscodes,$lurls);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addlhelpdeskurl" name="addlhelpdeskurl" value="addlhelpdeskurl" class="btn">Add localized URL</button>';
+        $tmp .= '</li>';
+         
+         
+        $tmp .= '<li>'. form_label(lang('rr_privacystatement'), 'privacyurl') . form_input('privacyurl', set_value('privacyurl', $provider->getPrivacyUrl())).'</li>';
+
+
+        $lprivacyurls = $provider->getLocalPrivacyUrl();
+        if(is_array($lprivacyurls))
+        {
+             foreach($lprivacyurls as $k=>$v)
+             {
+                 $tmp .= '<li class="localized">';
+                 $tmp .= form_label(lang('rr_privacystatement') . ' <small>'.$langscodes[$k].'</small>', 'lprivacyurl['.$k.']');
+                 $tmp .= form_input(array('id'=>'lprivacyurl['.$k.']', 'name'=>'lprivacyurl['.$k.']' , 'value'=>set_value('lprivacyurl['.$k.']', $v)));
+             }
+            
+        }
+        else
+        {
+            $lprivacyurls = array();
+        }
+        $tmp .= '<li class="addlprivacyurl localized">';
+        $langscodes2 = array_diff_key($langscodes,$lprivacyurls);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addlprivacyurl" name="addlprivacyurl" value="addlprivacyurl" class="btn">Add localized '.lang('rr_privacystatement').'</button>';
+        $tmp .= '</li>';
+
+
+        $tmp .= '<li>'. form_label(lang('rr_validfrom'), 'validfrom');
         $ptm = $provider->getValidFrom();
         if (!empty($ptm))
         {
@@ -613,9 +703,32 @@ class Form_element {
                 'value' => set_value('validto')
                     ));
         }
-        $tmp .= '</li><li>'. form_label(lang('rr_description'), 'description');
-        $tmp .= form_textarea('description', set_value('description', $provider->getDescription()));
-        $tmp .= '</li></ol>'. form_fieldset_close() .'</div>'. $this->staticMetadata($provider) . $this->supportedProtocols($provider);
+        $tmp .= '</li><li>'. form_label(lang('rr_description'), 'description') . form_textarea('description', set_value('description', $provider->getDescription())).'</li>';
+
+        $ldescriptions = $provider->getLocalDescription();
+        if(is_array($ldescriptions))
+        {
+             foreach($ldescriptions as $k=>$v)
+             {
+                 $tmp .='<li class="localized">';
+                 $tmp .= form_label(lang('rr_description') . ' <small>'.$langscodes[$k].'</small>', 'ldescription['.$k.']');
+                 $tmp .= form_textarea('ldescription['.$k.']', set_value('ldescription['.$k.']', $v));
+                 $tmp .= '</li>';
+             }
+        } 
+        else
+        {
+             $ldescriptions = array();
+        }
+        $tmp .= '<li class="addldescription localized">';
+        $langscodes2 = array_diff_key($langscodes,$ldescriptions);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="btn">Add localized Description</button>';
+        $tmp .= '</li>';
+        
+
+
+        $tmp .= '</ol>'. form_fieldset_close() .'</div>'. $this->staticMetadata($provider) . $this->supportedProtocols($provider);
         $tmp .= $this->generateCertificatesForm($provider);
         /**
          * @todo add  service locations for sp
@@ -629,6 +742,9 @@ class Form_element {
 
     private function generateIdpForm(models\Provider $provider, $action = null, $template = null)
     {
+        $langscodes = languagesCodes(); 
+        $lnames  = $provider->getLocalName();
+        
         $tmp = '';
         $tmp .='<div id="accordion"><fieldset><legend class="accordionButton"  >' . lang('rr_generalinformation') . '</legend>';
         $tmp .= '<ol class="accordionContent"><li>';
@@ -636,12 +752,55 @@ class Form_element {
         $f_en = array('id' => 'entityid', 'name' => 'entityid', 'required' => 'required', 'value' => $provider->getEntityid());
         $tmp .= form_input($f_en);
         $tmp .= '</li><li>';
-        $tmp .= form_label(lang('rr_homeorganisationname') . ' (english)', 'homeorgname');
+        $tmp .= form_label(lang('rr_homeorganisationname') . ' <small>(default)</small>', 'homeorgname');
         $in = array('id' => 'homeorgname', 'name' => 'homeorgname', 'required' => 'required', 'value' => set_value('homeorgname', $provider->getName()));
-        $tmp .= form_input($in) . '</li><li>' . form_label(lang('rr_displayname') . ' (english)', 'displayname');
+        $tmp .= form_input($in) . '</li>';
+        if(is_array($lnames))
+        {
+            foreach($lnames as $k=>$v)
+            {
+               $tmp .='<li class="localized">';
+               $tmp .= form_label(lang('rr_homeorganisationname') . ' <small>'.$langscodes[$k].'</small>', 'lname['.$k.']');
+               $tmp .= form_input(array('id'=>'lname['.$k.']', 'name'=>'lname['.$k.']' , 'value'=>set_value('lname['.$k.']', $v)));
+               $tmp .= '</li>';
+            }
+        }
+        else
+        {
+           $lnames = array();
+        }
+        $tmp .= '<li class="addlname localized">';
+        $langscodes2 = array_diff_key($langscodes,$lnames);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addlname" name="addlname" value="addlname" class="btn">Add localized name</button>';
+        $tmp .= '</li>';
+        
+        $tmp .='<li>' . form_label(lang('rr_displayname') . ' <small>default</small>', 'displayname');
         $in = array('id' => 'displayname', 'name' => 'displayname', 'required' => 'required', 'value' => set_value('displayname', $provider->getDisplayName()));
         $tmp .= form_input($in);
-        $tmp .= '</li><li>';
+        $tmp .= '</li>';
+
+        $ldisplaynames = $provider->getLocalDisplayName(); 
+        if(is_array($ldisplaynames))
+        {
+             foreach($ldisplaynames as $k=>$v)
+             {
+                 $tmp .= '<li class="localized">';
+                 $tmp .= form_label(lang('rr_displayname') . ' <small>'.$langscodes[$k].'</small>', 'ldisplayname['.$k.']');
+                 $tmp .= form_input(array('id'=>'ldisplayname['.$k.']', 'name'=>'ldisplayname['.$k.']' , 'value'=>set_value('ldisplayname['.$k.']', $v)));
+             }
+        }
+        else
+        {
+            $ldisplaynames = array();
+        }
+        $tmp .= '<li class="addldisplayname localized">';
+        $langscodes2 = array_diff_key($langscodes,$ldisplaynames);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addldisplayname" name="addldisplayname" value="addldisplayname" class="btn">Add localized display name</button>';
+        $tmp .= '</li>';
+
+        $tmp .='<li>';
         $configRegAuth = $this->ci->config->item('registrationAutority');
 
         if (!empty($configRegAuth))
@@ -683,10 +842,55 @@ class Form_element {
             'value' => set_value('helpdeskurl', $provider->getHelpdeskUrl()),
         );
         $tmp .= form_input($in);
-        $tmp .= '</li><li>' . form_label(lang('rr_privacystatement'), 'privacyurl');
+        $tmp .= '</li>';
+      
+        $lurls = $provider->getLocalHelpdeskURL(); 
+        if(is_array($lurls))
+        {
+             foreach($lurls as $k=>$v)
+             {
+                 $tmp .= '<li class="localized">';
+                 $tmp .= form_label(lang('rr_helpdeskurl') . ' <small>'.$langscodes[$k].'</small>', 'lhelpdeskurl['.$k.']');
+                 $tmp .= form_input(array('id'=>'lhelpdeskurl['.$k.']', 'name'=>'lhelpdeskurl['.$k.']' , 'value'=>set_value('lhelpdeskurl['.$k.']', $v)));
+             }
+        }
+        else
+        {
+            $lurls = array();
+        }
+        $tmp .= '<li class="addlhelpdeskurl localized">';
+        $langscodes2 = array_diff_key($langscodes,$lurls);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addlhelpdeskurl" name="addlhelpdeskurl" value="addlhelpdeskurl" class="btn">Add localized URL</button>';
+        $tmp .= '</li>';
+         
+       
+        $tmp .='<li>' . form_label(lang('rr_privacystatement') . ' <small>default</small>', 'privacyurl');
         $tmp .= form_input('privacyurl', set_value('privacyurl', $provider->getPrivacyUrl()));
-        $tmp .= '</li><li>';
-        $tmp .= form_label(lang('rr_validfrom'), 'validfrom');
+        $tmp .= '</li>';
+        
+        $lprivacyurls = $provider->getLocalPrivacyUrl();
+        if(is_array($lprivacyurls))
+        {
+             foreach($lprivacyurls as $k=>$v)
+             {
+                 $tmp .= '<li class="localized">';
+                 $tmp .= form_label(lang('rr_privacystatement') . ' <small>'.$langscodes[$k].'</small>', 'lprivacyurl['.$k.']');
+                 $tmp .= form_input(array('id'=>'lprivacyurl['.$k.']', 'name'=>'lprivacyurl['.$k.']' , 'value'=>set_value('lprivacyurl['.$k.']', $v)));
+             }
+            
+        }
+        else
+        {
+            $lprivacyurls = array();
+        }
+        $tmp .= '<li class="addlprivacyurl localized">';
+        $langscodes2 = array_diff_key($langscodes,$lprivacyurls);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addlprivacyurl" name="addlprivacyurl" value="addlprivacyurl" class="btn">Add localized '.lang('rr_privacystatement').'</button>';
+        $tmp .= '</li>';
+         
+        $tmp .= '<li>'.form_label(lang('rr_validfrom'), 'validfrom');
         $ptm = $provider->getValidFrom();
         if (!empty($ptm))
         {
@@ -727,7 +931,29 @@ class Form_element {
         $tmp .= form_input('scope', set_value('scope', $provider->getScope()));
         $tmp .= '</li><li>' . form_label(lang('rr_description'), 'description');
         $tmp .= form_textarea('description', set_value('description', $provider->getDescription()));
-        $tmp .= '</li></ol>' .  form_fieldset_close() . '</div>';
+        $tmp .= '</li>';
+        $ldescriptions = $provider->getLocalDescription();
+        if(is_array($ldescriptions))
+        {
+             foreach($ldescriptions as $k=>$v)
+             {
+                 $tmp .='<li class="localized">';
+                 $tmp .= form_label(lang('rr_description') . ' <small>'.$langscodes[$k].'</small>', 'ldescription['.$k.']');
+                 $tmp .= form_textarea('ldescription['.$k.']', set_value('ldescription['.$k.']', $v));
+                 $tmp .= '</li>';
+             }
+        } 
+        else
+        {
+             $ldescriptions = array();
+        }
+        $tmp .= '<li class="addldescription localized">';
+        $langscodes2 = array_diff_key($langscodes,$ldescriptions);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="btn">Add localized Description</button>';
+        $tmp .= '</li>';
+        
+        $tmp .='</ol>' .  form_fieldset_close() . '</div>';
         $tmp .= $this->staticMetadata($provider) . $this->supportedProtocols($provider);
 
         /**

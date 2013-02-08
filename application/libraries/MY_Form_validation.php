@@ -254,18 +254,78 @@ class MY_form_validation extends CI_form_validation {
         }
     }
 
-    function valid_url($url)
-    {
+	function valid_url($str)
+	{
+		if (empty($str))
+		{
+			return FALSE;
+		}
+		elseif (preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches))
+		{
+			if (empty($matches[2]))
+			{
+				return FALSE;
+			}
+			elseif ( ! in_array($matches[1], array('http', 'https'), TRUE))
+			{
+				return FALSE;
+			}
 
-        $result = preg_match('|^http(s)?://[a-z0-9-]+(.[~a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $url);
-        if (!$result)
-        {
-            $this->set_message('valid_url', "The %s : is not valid URL.");
-            return FALSE;
-        }
+			$str = $matches[2];
+		}
 
-        return TRUE;
-    }
+		$str = 'http://'.$str;
+
+		// There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
+		// underscore to be a valid hostname character instead of a dash.
+		// Reference: https://bugs.php.net/bug.php?id=51192
+		if (version_compare(PHP_VERSION, '5.2.13', '==') === 0 OR version_compare(PHP_VERSION, '5.3.2', '==') === 0)
+		{
+			sscanf($str, 'http://%[^/]', $host);
+			$str = substr_replace($str, strtr($host, array('_' => '-', '-' => '_')), 7, strlen($host));
+		}
+
+		return (filter_var($str, FILTER_VALIDATE_URL) !== FALSE);
+	}
+
+     function valid_url_or_empty($str)
+     {
+         if(empty($str))
+         {
+             return TRUE;
+         }
+		elseif (preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches))
+		{
+			if (empty($matches[2]))
+			{
+                                $this->set_message('valid_url_or_empty','Invalid URL in "%s"');
+				return FALSE;
+			}
+			elseif ( ! in_array($matches[1], array('http', 'https'), TRUE))
+			{
+                                $this->set_message('valid_url_or_empty','Invalid Protocol in "%s"');
+				return FALSE;
+			}
+
+			$str = $matches[2];
+		}
+
+		$str = 'http://'.$str;
+
+		// There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
+		// underscore to be a valid hostname character instead of a dash.
+		// Reference: https://bugs.php.net/bug.php?id=51192
+		if (version_compare(PHP_VERSION, '5.2.13', '==') === 0 OR version_compare(PHP_VERSION, '5.3.2', '==') === 0)
+		{
+			sscanf($str, 'http://%[^/]', $host);
+			$str = substr_replace($str, strtr($host, array('_' => '-', '-' => '_')), 7, strlen($host));
+		}
+
+		return (filter_var($str, FILTER_VALIDATE_URL) !== FALSE);
+         
+
+     }
+
 
     function acs_index_check($acs_index)
     {

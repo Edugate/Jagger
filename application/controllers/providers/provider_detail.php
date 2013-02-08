@@ -202,10 +202,36 @@ class Provider_detail extends MY_Controller {
         $data['idp_details'][$i]['name'] = lang('rr_lastmodification');
         $data['idp_details'][$i++]['value'] = '<b>' . $idp->getLastModified()->format('Y-m-d H:i:s') . '</b>';
 
-        $data['idp_details'][$i]['name'] = lang('rr_homeorganisationname') . ' <small>(en)</small>';
+        $data['idp_details'][$i]['name'] = lang('rr_homeorganisationname') . ' <small>default</small>';
         $data['idp_details'][$i++]['value'] = '<b>' . $idp->getName() . '</b>';
-        $data['idp_details'][$i]['name'] = lang('rr_descriptivename') . ' <small>(en)</small>';
-        $data['idp_details'][$i++]['value'] = '<b>' . $idp->getDisplayName() . '</b>';
+        $lname = $idp->getLocalName();
+        $lvalues = '';
+        if(is_array($lname))
+        {
+            $data['idp_details'][$i]['name'] = lang('rr_homeorganisationname') . ' <small>localized</small>';
+            foreach($lname as $k=>$v)
+            {
+                $lvalues .= '<b>'.$k.':</b> '.$v.'<br />';
+            }
+            $data['idp_details'][$i++]['value'] =  $lvalues ;
+
+        }
+        
+        $data['idp_details'][$i]['name'] = lang('rr_descriptivename') . ' <small>(default)</small>';
+        $data['idp_details'][$i++]['value'] = '<b>' . htmlentities($idp->getDisplayName()) . '</b>';
+         
+        $ldisplayname = $idp->getLocalDisplayName();
+        $lvalues = '';
+        if(is_array($ldisplayname))
+        {
+            $data['idp_details'][$i]['name'] = lang('rr_descriptivename') . ' <small>(localized)</small>';
+            foreach($ldisplayname as $k=>$v)
+            {
+               $lvalues .= '<b>'.$k.':</b> '.htmlentities($v).'<br />';
+            }
+            $data['idp_details'][$i++]['value'] =  $lvalues ;
+        }
+      
         $data['idp_details'][$i]['name'] = lang('rr_regauthority');
         $regauthority = $idp->getRegistrationAuthority();
         $regauthoritytext = null;
@@ -236,6 +262,19 @@ class Provider_detail extends MY_Controller {
 
         $data['idp_details'][$i]['name'] = lang('rr_description');
         $data['idp_details'][$i++]['value'] = htmlentities($idp->getDescription());
+      
+        $ldescription = $idp->getLocalDescription();
+        $lvalues = '';
+        if(is_array($ldescription))
+        {
+           $data['idp_details'][$i]['name'] = lang('rr_description') . ' <small>localized</small>';
+           foreach($ldescription as $k=>$v)
+           {
+               $lvalues .= '<b>'.$k.':</b> <div>'.htmlentities($v).'</div>';
+           } 
+           $data['idp_details'][$i++]['value'] =  $lvalues ;
+        }
+        
         $data['idp_details'][$i]['name'] = lang('rr_homeorganisationurl') . '<small> (' . lang('rr_notincludedmetadata') . ')</small>';
         $homeUrl = $idp->getHomeUrl();
         if (!empty($homeUrl))
@@ -248,6 +287,17 @@ class Provider_detail extends MY_Controller {
         }
         $data['idp_details'][$i]['name'] = lang('rr_helpdeskurl') . '<small> (' . lang('rr_includedmetadata') . ')</small>';
         $data['idp_details'][$i++]['value'] = anchor($idp->getHelpdeskURL());
+        $lhelpdeskurl = $idp->getLocalHelpdeskURL();
+        if(is_array($lhelpdeskurl))
+        {
+           $data['idp_details'][$i]['name'] = lang('rr_helpdeskurl') . '<small> (' . lang('rr_includedmetadata') . ' - localized)</small>';
+           $lvalues = '';
+           foreach($lhelpdeskurl as $k=>$v)
+           {
+                $lvalues .= '<b>'.$k.':</b> '.$v.'<br />';
+           }
+           $data['idp_details'][$i++]['value'] =  $lvalues ;
+        }
 
         $data['idp_details'][$i]['name'] = lang('rr_privacystatement');
         $privurl = $idp->getPrivacyUrl();
@@ -258,6 +308,17 @@ class Provider_detail extends MY_Controller {
         else
         {
             $data['idp_details'][$i++]['value'] = lang('rr_notset');
+        }
+        $privacyurl = $idp->getLocalPrivacyUrl();
+        if(is_array($privacyurl))
+        {
+            $data['idp_details'][$i]['name'] = lang('rr_privacystatement').' <small>localized</small>';
+            $lvalues = '';
+            foreach($privacyurl as $k=>$v)
+            {
+               $lvalues .= '<b>'.$k.':</b> '.$v.'<br />';
+            }
+            $data['idp_details'][$i++]['value'] =  $lvalues ;
         }
 
         if (!$idp->getIsValidFromTo())
@@ -725,8 +786,35 @@ class Provider_detail extends MY_Controller {
         $data['sp_details'][$i++]['value'] = '<b>' . $sp->getLastModified()->format('Y-m-d H:i:s') . '</b>';
         $data['sp_details'][$i]['name'] = lang('rr_resource');
         $data['sp_details'][$i++]['value'] = '<b>' . $sp->getName() . '</b>';
+
+        $lname = $sp->getLocalName();
+        $lvalues = '';
+        if(is_array($lname))
+        {
+            $data['sp_details'][$i]['name'] = lang('rr_resource') . ' <small>localized</small>';
+            foreach($lname as $k=>$v)
+            {
+                $lvalues .= '<b>'.$k.':</b> '.$v.'<br />';
+            }
+            $data['sp_details'][$i++]['value'] =  $lvalues ;
+
+        }
+
+
         $data['sp_details'][$i]['name'] = lang('rr_descriptivename');
         $data['sp_details'][$i++]['value'] = '<b>' . htmlentities($sp->getDisplayName()) . '</b>';
+
+        $ldisplayname = $sp->getLocalDisplayName();
+        $lvalues = '';
+        if(is_array($ldisplayname))
+        {
+            $data['sp_details'][$i]['name'] = lang('rr_descriptivename') . ' <small>(localized)</small>';
+            foreach($ldisplayname as $k=>$v)
+            {
+               $lvalues .= '<b>'.$k.':</b> '.htmlentities($v).'<br />';
+            }
+            $data['sp_details'][$i++]['value'] =  $lvalues ;
+        }
 
         $data['sp_details'][$i]['name'] = lang('rr_regauthority');
         $regauthority = $sp->getRegistrationAuthority();
@@ -760,6 +848,21 @@ class Provider_detail extends MY_Controller {
 
         $data['sp_details'][$i]['name'] = lang('rr_description');
         $data['sp_details'][$i++]['value'] = htmlentities($sp->getDescription()) ;
+
+        $ldescription = $sp->getLocalDescription();
+        $lvalues = '';
+        if(is_array($ldescription))
+        {
+           $data['sp_details'][$i]['name'] = lang('rr_description') . ' <small>localized</small>';
+           foreach($ldescription as $k=>$v)
+           {
+               $lvalues .= '<b>'.$k.':</b> <div>'.htmlentities($v).'</div>';
+           } 
+           $data['sp_details'][$i++]['value'] =  $lvalues ;
+        }
+
+
+
         $data['sp_details'][$i]['name'] = lang('rr_homeorganisationurl') . '<small>('.lang('rr_notincludedmetadata').')</small>';
         $homeUrl = $sp->getHomeUrl();
         if (!empty($homeUrl))
@@ -781,6 +884,21 @@ class Provider_detail extends MY_Controller {
         {
             $data['sp_details'][$i++]['value'] = '<span class="alert">' . lang('rr_notset') . '</span>';
         }
+
+        $lhelpdeskurl = $sp->getLocalHelpdeskURL();
+        if(is_array($lhelpdeskurl))
+        {
+           $data['sp_details'][$i]['name'] = lang('rr_helpdeskurl') . '<small> (' . lang('rr_includedmetadata') . ' - localized)</small>';
+           $lvalues = '';
+           foreach($lhelpdeskurl as $k=>$v)
+           {
+                $lvalues .= '<b>'.$k.':</b> '.$v.'<br />';
+           }
+           $data['sp_details'][$i++]['value'] =  $lvalues ;
+        }
+
+
+
         $data['sp_details'][$i]['name'] = lang('rr_privacystatement');
         $privurl = $sp->getPrivacyUrl();
         if (!empty($privurl))
@@ -790,6 +908,17 @@ class Provider_detail extends MY_Controller {
         else
         {
             $data['sp_details'][$i++]['value'] = lang('rr_notset');
+        }
+        $privacyurl = $sp->getLocalPrivacyUrl();
+        if(is_array($privacyurl))
+        {
+            $data['sp_details'][$i]['name'] = lang('rr_privacystatement').' <small>localized</small>';
+            $lvalues = '';
+            foreach($privacyurl as $k=>$v)
+            {
+               $lvalues .= '<b>'.$k.':</b> '.$v.'<br />';
+            }
+            $data['sp_details'][$i++]['value'] =  $lvalues ;
         }
         if (!$sp->getIsValidFromTo())
         {
