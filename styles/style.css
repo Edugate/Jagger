@@ -1334,18 +1334,18 @@ form div.buttons button.negative {
   color: red;
 }
 form ::-webkit-input-placeholder {
-  color: grey;
+  color: gray;
 }
 form :-moz-placeholder {
   /* Firefox 18- */
-  color: grey;
+  color: gray;
 }
 form ::-moz-placeholder {
   /* Firefox 19+ */
-  color: grey;
+  color: gray;
 }
 form :-ms-input-placeholder {
-  color: grey;
+  color: gray;
 }
 
 form#login {

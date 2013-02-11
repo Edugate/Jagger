@@ -134,24 +134,24 @@ span.remove:before{
        }
        button.negative {
 
-           color:red;
+           color: $button-negative-color;
       }
     }
 
 ::-webkit-input-placeholder {
-   color: grey;
+   color: $input-placeholder-color;
 }
 
 :-moz-placeholder { /* Firefox 18- */
-   color: grey;  
+   color: $input-placeholder-color;  
 }
 
 ::-moz-placeholder {  /* Firefox 19+ */
-   color: grey;  
+   color: $input-placeholder-color;  
 }
 
 :-ms-input-placeholder {  
-   color: grey;  
+   color: $input-placeholder-color;  
 }
 
 }

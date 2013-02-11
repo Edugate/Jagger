@@ -80,6 +80,7 @@ class Metadata extends MY_Controller {
 
             //$count_members = count($members);
             $docXML = new \DOMDocument();
+            $docXML->encoding = 'UTF-8';
             $docXML->formatOutput = true;
             $xpath = new \DomXPath($docXML);
             $termsofuse = $federation->getTou();
@@ -184,6 +185,7 @@ class Metadata extends MY_Controller {
         }
 
         $docXML = new \DOMDocument();
+        $docXML->encoding = 'UTF-8';
         $docXML->formatOutput = true;
 
         $xpath = new \DomXPath($docXML);
