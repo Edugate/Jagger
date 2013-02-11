@@ -218,7 +218,7 @@ class Provider_detail extends MY_Controller {
         }
         
         $data['idp_details'][$i]['name'] = lang('rr_descriptivename') . ' <small>(default)</small>';
-        $data['idp_details'][$i++]['value'] = '<b>' . htmlentities($idp->getDisplayName()) . '</b>';
+        $data['idp_details'][$i++]['value'] = '<b>' . $idp->getDisplayName() . '</b>';
          
         $ldisplayname = $idp->getLocalDisplayName();
         $lvalues = '';
@@ -227,7 +227,7 @@ class Provider_detail extends MY_Controller {
             $data['idp_details'][$i]['name'] = lang('rr_descriptivename') . ' <small>(localized)</small>';
             foreach($ldisplayname as $k=>$v)
             {
-               $lvalues .= '<b>'.$k.':</b> '.htmlentities($v).'<br />';
+               $lvalues .= '<b>'.$k.':</b> '.$v.'<br />';
             }
             $data['idp_details'][$i++]['value'] =  $lvalues ;
         }
@@ -261,7 +261,7 @@ class Provider_detail extends MY_Controller {
         }
 
         $data['idp_details'][$i]['name'] = lang('rr_description');
-        $data['idp_details'][$i++]['value'] = htmlentities($idp->getDescription());
+        $data['idp_details'][$i++]['value'] = $idp->getDescription();
       
         $ldescription = $idp->getLocalDescription();
         $lvalues = '';
@@ -270,7 +270,7 @@ class Provider_detail extends MY_Controller {
            $data['idp_details'][$i]['name'] = lang('rr_description') . ' <small>localized</small>';
            foreach($ldescription as $k=>$v)
            {
-               $lvalues .= '<b>'.$k.':</b> <div>'.htmlentities($v).'</div>';
+               $lvalues .= '<b>'.$k.':</b> <div>'.$v.'</div>';
            } 
            $data['idp_details'][$i++]['value'] =  $lvalues ;
         }
@@ -802,7 +802,7 @@ class Provider_detail extends MY_Controller {
 
 
         $data['sp_details'][$i]['name'] = lang('rr_descriptivename');
-        $data['sp_details'][$i++]['value'] = '<b>' . htmlentities($sp->getDisplayName()) . '</b>';
+        $data['sp_details'][$i++]['value'] = '<b>' . $sp->getDisplayName() . '</b>';
 
         $ldisplayname = $sp->getLocalDisplayName();
         $lvalues = '';
@@ -811,7 +811,7 @@ class Provider_detail extends MY_Controller {
             $data['sp_details'][$i]['name'] = lang('rr_descriptivename') . ' <small>(localized)</small>';
             foreach($ldisplayname as $k=>$v)
             {
-               $lvalues .= '<b>'.$k.':</b> '.htmlentities($v).'<br />';
+               $lvalues .= '<b>'.$k.':</b> '.$v.'<br />';
             }
             $data['sp_details'][$i++]['value'] =  $lvalues ;
         }
@@ -847,7 +847,7 @@ class Provider_detail extends MY_Controller {
 
 
         $data['sp_details'][$i]['name'] = lang('rr_description');
-        $data['sp_details'][$i++]['value'] = htmlentities($sp->getDescription()) ;
+        $data['sp_details'][$i++]['value'] = $sp->getDescription() ;
 
         $ldescription = $sp->getLocalDescription();
         $lvalues = '';
@@ -856,7 +856,7 @@ class Provider_detail extends MY_Controller {
            $data['sp_details'][$i]['name'] = lang('rr_description') . ' <small>localized</small>';
            foreach($ldescription as $k=>$v)
            {
-               $lvalues .= '<b>'.$k.':</b> <div>'.htmlentities($v).'</div>';
+               $lvalues .= '<b>'.$k.':</b> <div>'.$v.'</div>';
            } 
            $data['sp_details'][$i++]['value'] =  $lvalues ;
         }
