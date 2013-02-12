@@ -40,4 +40,9 @@ class Contacts
          $this->cnt = $this->em->getRepository("models\Contact")->findBy(array(), array('id' => 'ASC'));
          return $this->cnt;
     }
+    public function getContactsByProvidersIds(array $ids)
+    {
+         $this->cnt = $this->em->getRepository("models\Contact")->findBy(array( 'provider'=>$ids ), array('id' => 'ASC'));
+         return $this->cnt;
+    }
 }

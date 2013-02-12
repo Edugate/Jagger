@@ -38,23 +38,38 @@ class Providers {
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    /**
-     * @todo finish function which get providers (members) multifederations without duplication
-     */
+
+    public function  getCircleMembersCached(Provider $provider)
+    {
+        $providerid = $provider->getId();
+        $federations = $provider->getFederations();
+        $fedids = array();
+        foreach($federations as $v)
+        {
+            $fedids[] = $v->getId();
+        }
+        $in = implode(',',array_values($fedids));
+        $query=$this->em->createQuery('SELECT u,m,g,c FROM models\Provider u JOIN u.metadata m JOIN u.contacts g JOIN  u.certificates c  JOIN u.federations  a  WHERE a.id IN ('.$in.') '); 
+        $query->setResultCacheDriver(new \Doctrine\Common\Cache\ApcCache());
+        $query->useResultCache(true)
+              ->setResultCacheLifeTime($seconds = 600);
+        $query->setResultCacheId('providermembers_'.$providerid);
+        $providers = $query->getResult();
+        return $providers;
+    }
     public function getCircleMembers(Provider $provider)
     {
-        $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
+        $providerid = $provider->getId();
         $federations = $provider->getFederations();
-        foreach ($federations->getValues() as $f)
+        $fedids = array();
+        foreach($federations as $v)
         {
-            $y = $f->getMembers();
-            foreach ($y->getKeys() as $key)
-            {
-                $this->providers->set($key, $y->get($key));
-            }
+            $fedids[] = $v->getId();
         }
-
-        return $this->providers;
+        $in = implode(',',array_values($fedids));
+        $query=$this->em->createQuery('SELECT u,m,e FROM models\Provider u JOIN u.metadata m JOIN u.extend e  JOIN u.federations  a  WHERE a.id IN ('.$in.') '); 
+        $providers = $query->getResult();
+        return $providers;
     }
 
     public function getCircleMembersSP(Provider $provider, $federations = null)

@@ -4,14 +4,14 @@
 // The following html5-boilerplate styles should
 // probably be customized for each site
 //-----------------------------------------------
+html {
+    font-size: 14px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    
+}
 body, select, input, textarea {
     background-color: $body-background;
     color: $font-color;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-html {
-    font-size: 14px;
-    
 }
 
 //-----------------------------------

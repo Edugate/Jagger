@@ -271,14 +271,14 @@ table {
   border-spacing: 0;
 }
 
-body, select, input, textarea {
-  background-color: #f0f0f0;
-  color: #333333;
+html {
+  font-size: 14px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-html {
-  font-size: 14px;
+body, select, input, textarea {
+  background-color: #f0f0f0;
+  color: #333333;
 }
 
 a {
@@ -1270,9 +1270,19 @@ form input[type='text'], form input[type='email'], form input[type='password'], 
   margin-left: 6px;
   margin-top: 5px;
   padding: 0px 3px;
-  width: 50%;
-  min-width: 194px;
+  width: 55%;
+  min-width: 200px;
   width: auto;
+  border-radius: 3px;
+  -khtml-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+form select {
+  max-width: 50%;
+  overflow: hidden;
+  padding: 0px 3px;
+  border: 1px solid;
   border-radius: 3px;
   -khtml-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -1622,6 +1632,12 @@ div#sortable span {
     width: 100%;
     margin: auto;
     display: block;
+  }
+  form select {
+    width: 250px;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   form#formver2 fieldset legend {

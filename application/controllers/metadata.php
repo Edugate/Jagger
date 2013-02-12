@@ -201,10 +201,10 @@ class Metadata extends MY_Controller {
         $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
         $Entities_Node->setAttribute('Name', "circle:" . $me->getEntityId());
 
-        foreach ($p1->getValues() as $key2) {
-            if($key2->getAvailable())
+        foreach ($p1 as $k=>$v) {
+            if($v->getAvailable())
             {
-                $key2->getProviderToXML($Entities_Node);
+                $v->getProviderToXML($Entities_Node);
             }
         }
 

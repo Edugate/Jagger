@@ -119,14 +119,10 @@ class Arp_generator {
                 $PolicyRequirementRule->setAttribute('value', $key);
 
                 $AttributeFilterPolicy->appendChild($PolicyRequirementRule);
-                //$Rule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp:mf:basic', 'basic:Rule');
-                //$Rule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeRequesterString');
-                //$Rule->setAttribute('value', $key);
-                //$PolicyRequirementRule->appendChild($Rule);
                 foreach ($value['attributes'] as $attr_name => $attr_value)
                 {
                     log_message('debug', 'generating arpXML attr: ' . $attr_name . ' for:' . $key);
-                    log_message('debug', 'keys are:' . implode(";", array_keys($value)) . ' for:' . $key);
+                    //log_message('debug', 'keys are:' . implode(";", array_keys($value)) . ' for:' . $key);
                     if (array_key_exists($attr_name, $value['custom']) && $attr_value == 1)
                     {
                         log_message('debug', 'found custom for attr: ' . $attr_name . ' for:' . $key);
@@ -259,9 +255,6 @@ class Arp_generator {
             return null;
         }
         $policies = $idp->getAttributeReleasePolicies()->getValues();
-        // foreach ($policies as $p) {
-        //     $l = $p->getAttribute()->getName();
-        // }
 
         $tmp_myfeds = $idp->getFederations();
         $feds_collection = array();

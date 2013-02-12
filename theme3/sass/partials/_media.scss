@@ -164,6 +164,13 @@ only screen and (min-resolution: 144dpi) {
              margin: auto;
              display: block;
            }
+           select {
+               width: 250px;
+               max-width: 250px;
+               overflow: hidden;
+               text-overflow: ellipsis;
+           }
+ 
         }
         
         form#formver2 fieldset legend{
