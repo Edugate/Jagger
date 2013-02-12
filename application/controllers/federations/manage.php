@@ -288,8 +288,8 @@ class Manage extends MY_Controller {
         $data['tbl'][] = array(lang('rr_downcontactsintxt'), $idp_contactlist.'<br />'.$sp_contactlist.'<br />'.$all_contactlist);
         $data['tbl'][] = array(lang('rr_timeline'), '<a href="'.base_url().'reports/timelines/showregistered/'.$federation->getId().'">Diagram</a>'); 
 
-        $image_link = "<img src=\"" . base_url() . "images/icons/pencil-field.png\"/>";
-        $edit_attributes_link = "<span><a href=\"" . base_url() . "manage/attribute_requirement/fed/" . $federation->getId() . " \" class=\"edit\">" . $image_link . "</a></span>";
+        $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
+        $edit_attributes_link = '<span><a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="edit">' . $image_link . '</a></span>';
         if (!$has_write_access)
         {
             $edit_attributes_link = '';

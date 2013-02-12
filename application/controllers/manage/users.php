@@ -159,6 +159,7 @@ class Users extends MY_Controller {
 
     public function show($encoded_username) {
         $username = base64url_decode($encoded_username);
+        $limit_authn = 15;
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if (empty($user)) {
             show_error($this->mid . 'User not found', 404);
@@ -176,7 +177,7 @@ class Users extends MY_Controller {
         $image_link = "<img src=\"" . base_url() . "images/icons/pencil-field.png\"/>";
         $passedit_link = "<span><a href=\"" . base_url() . "manage/users/passedit/" . $encoded_username . "\" class=\"edit\" title=\"edit\" >" . $image_link . "</a></span>";
 
-        $authn_logs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'));
+        $authn_logs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'),$limit_authn);
 
         $action_logs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
 
@@ -204,7 +205,7 @@ class Users extends MY_Controller {
         }
         $det[$i++] = array('key' => 'Access types', 'val' => implode(", ", $access_type_str));
         $det[$i++] = array('key' => 'Assigned roles', 'val' => implode(", ", $user->getRoleNames()));
-        $det[$i++] = array('data' => array('data' => 'Authn logs', 'class' => 'highlight', 'colspan' => 2));
+        $det[$i++] = array('data' => array('data' => 'Authn logs - last '.$limit_authn, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authn_logs as $ath) {
             $date = $ath->getCreated()->format('Y-m-d H:i:s');
             $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
@@ -213,7 +214,28 @@ class Users extends MY_Controller {
         $det[$i++] = array('data' => array('data' => 'Action Logs', 'class' => 'highlight', 'colspan' => 2));
         foreach ($action_logs as $ath) {
             $subtype = $ath->getSubType();
-            if ($subtype != 'authn') {
+            if ($subtype == 'modification') {
+                $date = $ath->getCreated()->format('Y-m-d H:i:s');
+                $d = unserialize($ath->getDetail());
+                $dstr ='<br />';
+                if(is_array($d))
+                {
+                   foreach($d as $k=>$v)
+                   {
+                        $dstr .= '<b>'.$k .':</b><br />';
+                        if(is_array($v))
+                        foreach($v as $h=>$l)
+                        {
+
+                          $dstr .= $h .':'.$l.'<br />';
+                        }
+                   }
+                }
+                $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $dstr;
+                $det[$i++] = array('key' => $date, 'val' => $detail);
+            }
+            elseif($subtype == 'create' or $subtype == 'remove')
+            {
                 $date = $ath->getCreated()->format('Y-m-d H:i:s');
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
                 $det[$i++] = array('key' => $date, 'val' => $detail);

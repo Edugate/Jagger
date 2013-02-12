@@ -415,6 +415,159 @@ class Provider {
             $differ['Locked']['before'] = $provider->getLocked();
             $differ['Locked']['after'] = $this->getLocked();
         }
+        /**
+         *  compare localized names
+         */
+        $ldisplayname_before = $provider->getLocalDisplayName();
+        if($ldisplayname_before == NULL)
+        {
+            $ldisplayname_before = array();
+        }
+        $ldisplayname_after = $this->getLocalDisplayName();
+        if($ldisplayname_after == NULL)
+        {
+           $ldisplayname_after = array();
+        } 
+        $ldisplayname_diff1 = array_diff_assoc($ldisplayname_before,$ldisplayname_after);
+        $ldisplayname_diff2 = array_diff_assoc($ldisplayname_after,$ldisplayname_before);
+        if(count($ldisplayname_diff1) > 0 or count($ldisplayname_diff2) > 0)
+        {
+            $tmpstr = '';
+            foreach($ldisplayname_diff1 as $k=>$v)
+            {
+                $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['DisplayNameLocalized']['before'] = $tmpstr;
+            $tmpstr = '';
+            foreach($ldisplayname_diff2 as $k=>$v)
+            {
+                $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['DisplayNameLocalized']['after'] = $tmpstr;
+        }
+        
+
+
+
+
+
+
+        $lname_before = $provider->getLocalName();
+        if($lname_before == NULL)
+        {
+            $lname_before = array();
+        }
+        $lname_after = $this->getLocalName();
+        if($lname_after == NULL)
+        {
+           $lname_after = array();
+        } 
+        $lname_diff1 = array_diff_assoc($lname_before,$lname_after);
+        $lname_diff2 = array_diff_assoc($lname_after,$lname_before);
+        if(count($lname_diff1) > 0 or count($lname_diff2) > 0)
+        {
+            $tmpstr = '';
+            foreach($lname_diff1 as $k=>$v)
+            {
+                $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['NameLocalized']['before'] = $tmpstr;
+            $tmpstr = '';
+            foreach($lname_diff2 as $k=>$v)
+            {
+                $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['NameLocalized']['after'] = $tmpstr;
+         }
+         
+
+
+
+        $lname_before = $provider->getLocalHelpdeskUrl();
+        if($lname_before == NULL)
+        {
+            $lname_before = array();
+        }
+        $lname_after = $this->getLocalHelpdeskUrl();
+        if($lname_after == NULL)
+        {
+           $lname_after = array();
+        } 
+        $lname_diff1 = array_diff_assoc($lname_before,$lname_after);
+        $lname_diff2 = array_diff_assoc($lname_after,$lname_before);
+        if(count($lname_diff1) > 0 or count($lname_diff2) > 0)
+        {
+            $tmpstr = '';
+            foreach($lname_diff1 as $k=>$v)
+            {
+                $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['HelpdeskURLLocalized']['before'] = $tmpstr;
+            $tmpstr = '';
+            foreach($lname_diff2 as $k=>$v)
+            {
+                $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['HelpdeskURLLocalized']['after'] = $tmpstr;
+        }
+
+
+        $lname_before = $provider->getLocalPrivacyUrl();
+        if($lname_before == NULL)
+        {
+            $lname_before = array();
+        }
+        $lname_after = $this->getLocalPrivacyUrl();
+        if($lname_after == NULL)
+        {
+           $lname_after = array();
+        } 
+        $lname_diff1 = array_diff_assoc($lname_before,$lname_after);
+        $lname_diff2 = array_diff_assoc($lname_after,$lname_before);
+        if(count($lname_diff1) > 0 or count($lname_diff2) > 0)
+        {
+            $tmpstr = '';
+            foreach($lname_diff1 as $k=>$v)
+            {
+                $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['PrivacyStatementURLLocalized']['before'] = $tmpstr;
+            $tmpstr = '';
+            foreach($lname_diff2 as $k=>$v)
+            {
+                $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['PrivacyStatementURLLocalized']['after'] = $tmpstr;
+        }
+
+        $lname_before = $provider->getLocalDescription();
+        if($lname_before == NULL)
+        {
+            $lname_before = array();
+        }
+        $lname_after = $this->getLocalDescription();
+        if($lname_after == NULL)
+        {
+           $lname_after = array();
+        } 
+        $lname_diff1 = array_diff_assoc($lname_before,$lname_after);
+        $lname_diff2 = array_diff_assoc($lname_after,$lname_before);
+        if(count($lname_diff1) > 0 or count($lname_diff2) > 0)
+        {
+            $tmpstr = '';
+            foreach($lname_diff1 as $k=>$v)
+            {
+                $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['DescriptionLocalized']['before'] = $tmpstr;
+            $tmpstr = '';
+            foreach($lname_diff2 as $k=>$v)
+            {
+               $tmpstr .= $k.':'.htmlentities($v).'<br />';
+            }
+            $differ['DescriptionLocalized']['after'] = $tmpstr;
+        }
+
 
         return $differ;
     }
@@ -2243,7 +2396,7 @@ class Provider {
      */
     public function getProviderToXML(\DOMElement $parent = NULL, $options = NULL)
     {
-        log_message('debug', "Provider model: start generating xml for " . $this->getEntityId());
+        log_message('debug', "Provider model: gen xml for " . $this->getEntityId());
         $comment = "\"" . $this->getEntityId() . "\" \n";
         $l = 1;
         /*
@@ -2283,13 +2436,13 @@ class Provider {
 
             if (empty($p_active))
             {
-                log_message('debug', "Provider model: not active - null returned");
+                log_message('debug', "skip gen xml for inactive provider with id:".$this->id);
                 return \NULL;
             }
         }
 
 
-        $p_entityID = $this->getEntityId();
+        $p_entityID = $this->entityid;
         $p_static = $this->getStatic();
         $s_metadata = null;
         $valid_until = null;
@@ -2307,7 +2460,7 @@ class Provider {
             $static_meta = $this->getStaticMetadata();
             if (empty($static_meta))
             {
-                log_message('error', 'Static metadata is enabled but doesnt exist for entity (id: ' . $this->getId() . '):' . $this->getEntityId());
+                log_message('error', 'Static metadata is enabled but doesnt exist for entity (id: ' . $this->id . '):' . $this->entityid);
                 return null;
             } else
             {

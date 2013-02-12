@@ -41,7 +41,30 @@ class Zacl {
         require_once(APPPATH . '/libraries/Zend/Acl/Resource.php');
         $this->acl = new Zend_Acl();
         $this->acl->addRole(new Zend_Acl_Role('default_role'));
-        $defined_roles = $this->em->getRepository("models\AclRole")->findAll();
+
+        /**
+         * get  roles
+         */
+        //$defined_roles = $this->em->getRepository("models\AclRole")->findAll();
+        
+        if (ENVIRONMENT == 'production') 
+        {
+            $query = $this->em->createQuery('SELECT u FROM models\AclRole u');
+            $query->setResultCacheDriver(new \Doctrine\Common\Cache\ApcCache());
+            $query->useResultCache(true)
+                  ->setResultCacheLifeTime($seconds = 60);
+            $query->setResultCacheId('aclroles');
+            $defined_roles = $query->getResult();
+        }
+        else
+        {
+             $defined_roles = $this->em->getRepository("models\AclRole")->findAll();
+        }
+        
+        /**
+         * end get roles
+         */
+
         $roleArray = array();
         foreach ($defined_roles as $r) {
             $role = new Zend_Acl_Role($r->getName());

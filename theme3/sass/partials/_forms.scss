@@ -69,14 +69,25 @@ form {
         margin-left: 6px;
         margin-top: 5px;
         padding: 0px 3px;
-        width: 50%;
-        min-width: 194px;
+        width: 55%;
+        min-width: 200px;
         width: auto;
         border-radius: 3px;
         -khtml-border-radius: 3px;
         -moz-border-radius: 3px;
         -webkit-border-radius: 3px;
     }
+      select {
+        max-width: 50%;
+        overflow: hidden;
+        padding: 0px 3px;
+        border: 1px solid;
+        border-radius: 3px;
+        -khtml-border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        
+      }
       textarea {
         border: 1px solid;
         line-height: 1em;
