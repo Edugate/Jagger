@@ -1,7 +1,7 @@
 <?php
 if(!empty($subtitle))
 {
-   echo '<div id="subtitle" class="span-24">'.$subtitle.'</div>';
+   echo '<div id="subtitle"><h3>'.$subtitle.'</h3></div>';
 }
 if(!empty($error_message))
 {

@@ -35,7 +35,6 @@ class Manage extends MY_Controller {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'refresh');
         }
-        $this->load->library('table');
         $this->load->helper(array('cert'));
         $this->session->set_userdata(array('currentMenu' => 'federation'));
         /**

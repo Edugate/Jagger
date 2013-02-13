@@ -57,20 +57,24 @@ class Providers {
         $providers = $query->getResult();
         return $providers;
     }
-    public function getCircleMembers(Provider $provider)
-    {
-        $providerid = $provider->getId();
-        $federations = $provider->getFederations();
-        $fedids = array();
-        foreach($federations as $v)
-        {
-            $fedids[] = $v->getId();
-        }
-        $in = implode(',',array_values($fedids));
-        $query=$this->em->createQuery('SELECT u,m,e FROM models\Provider u JOIN u.metadata m JOIN u.extend e  JOIN u.federations  a  WHERE a.id IN ('.$in.') '); 
-        $providers = $query->getResult();
-        return $providers;
-    }
+
+     public function getCircleMembers(Provider $provider)
+     {
+        $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
+         $federations = $provider->getFederations();
+        foreach ($federations->getValues() as $f)
+         {
+            $y = $f->getMembers();
+            foreach ($y->getKeys() as $key)
+            {
+                $this->providers->set($key, $y->get($key));
+            }
+         }
+
+        return $this->providers;
+     }
+
+
 
     public function getCircleMembersSP(Provider $provider, $federations = null)
     {

@@ -78,26 +78,26 @@ class Contact {
 
     public function setSurName($name)
     {
-        $this->surname = $name;
+        $this->surname = trim($name);
         return $this;
     }
 
     public function setGivenName($name)
     {
-        $this->givenname = $name;
+        $this->givenname = trim($name);
         return $this;
     }
 
     public function setEmail($mail)
     {
         $mail = str_replace('mailto:','',$mail);
-        $this->email = $mail;
+        $this->email = trim($mail);
         return $this;
     }
 
     public function setPhone($phone)
     {
-        $this->phone = $phone;
+        $this->phone = trim($phone);
         return $this;
     }
 
@@ -196,8 +196,8 @@ class Contact {
     {
         $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ContactPerson');
         $e->setAttribute('contactType', $this->type);
-        $sn = trim($this->surname);
-        $fn = trim($this->givenname);
+        $sn = str_replace("@","(at)", $this->surname);
+        $fn = str_replace("@","(at)",$this->givenname);
         if (empty($fn))
         {
             if (!empty($sn))
@@ -221,10 +221,10 @@ class Contact {
               $sn = "unknown";
         }
  
-        $Contact_GivenName_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:GivenName', str_replace("@","(at)",$fn));
+        $Contact_GivenName_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:GivenName', $fn);
         $e->appendChild($Contact_GivenName_Node);
  
-        $Contact_Surname_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SurName', str_replace("@","(at)",$sn));
+        $Contact_Surname_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SurName', $sn);
         $e->appendChild($Contact_Surname_Node);
 
         $Contact_Email_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EmailAddress', $this->email);

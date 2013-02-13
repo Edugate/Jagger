@@ -4,6 +4,15 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
 
+/**
+ * page title prefix
+ */
+$config['pageTitlePref'] = 'RR :: ';
+/**
+ * text displayed in footer
+ */
+$config['pageFooter'] = 'Resource Registry';
+
 $config['rr_setup_allowed'] = FALSE;
 $config['site_logo'] = 'logo-default.png';
 
