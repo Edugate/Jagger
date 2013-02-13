@@ -1022,7 +1022,7 @@ class Provider_detail extends MY_Controller {
          */
         $data['sp_details'][$i++]['header'] = 'WAYF';
         $data['sp_details'][$i]['name'] = lang('rr_ds_disco_url');
-        $data['sp_details'][$i++]['value'] = anchor(base_url().'disco/circle/'.base64url_encode($sp->getEntityId()).'/metadata.json?callback=dj_md_1');
+        $data['sp_details'][$i++]['value'] = anchor(base_url().'disco/circle/'.base64url_encode($sp->getEntityId()).'/metadata.json?callback=dj_md_1','Link');
         $tmpwayflist = $sp->getWayfList();
         if(!empty($tmpwayflist) && is_array($tmpwayflist))
         {

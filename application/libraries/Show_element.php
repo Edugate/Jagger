@@ -29,7 +29,6 @@ class Show_element {
     function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
-        $this->ci->load->library('table');
         $this->tmp_policies = new models\AttributeReleasePolicies;
         $this->tmp_providers = new models\Providers;
     }
@@ -246,7 +245,6 @@ class Show_element {
                     $attributes[] = array($attr_name . $link, $attr_value['status'], $attr_value['policy'] . "<br /><div ><b>custom policy </b>".$custom_link."" . $permited_values . "" . $denied_values."</div>");
                 }
             }
-            $this->ci->load->library('table');
             $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
 
             $this->ci->table->set_template($tmpl);
@@ -270,7 +268,6 @@ class Show_element {
         $prefix_url = base_url() . "manage/attribute_policy/detail/";
         $icon = base_url() . "images/icons/pencil-field.png";
         if (!empty($source)) {
-            $this->ci->load->library('table');
             $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
             $this->ci->table->set_template($tmpl);
             $this->ci->table->set_heading('Attribute name', 'policy');
@@ -317,7 +314,6 @@ class Show_element {
                 $attributes[] = array('' . $attr_name . '' . $link . '', $s['release']);
             }
 
-            $this->ci->load->library('table');
             $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
 
             $this->ci->table->set_template($tmpl);

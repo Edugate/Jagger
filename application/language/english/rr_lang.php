@@ -389,6 +389,7 @@ $lang['tbl_title_regdate'] = 'Registration Date';
 $lang['tbl_title_helpurl'] = 'Helpdesk URL';
 $lang['rr_tbltitle_listidps'] = 'List Of Identity Providers';
 $lang['rr_tbltitle_listsps'] = 'List Of Service Providers';
+$lang['listavailableprov'] = 'List of available providers';
 $lang['rr_tbltitle_date'] = 'Date';
 $lang['rr_tbltitle_requester'] = 'Requester';
 $lang['rr_tbltitle_requesttype'] = 'Request Type';

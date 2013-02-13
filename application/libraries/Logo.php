@@ -32,7 +32,6 @@ class Logo {
         {
            $this->logo_baseurl = base_url().'logos/';
         }
-         $this->ci->load->library('table');
          $this->ci->load->helper('form');
         
     }

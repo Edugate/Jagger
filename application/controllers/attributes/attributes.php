@@ -37,7 +37,6 @@ class Attributes extends MY_Controller
         $this->current_sp = $this->session->userdata('current_sp');
         $this->current_sp_name = $this->session->userdata('current_sp_name');
         $this->load->helper(array('url', 'cert', 'url_encoder'));
-        $this->load->library('table');
 
     }
 

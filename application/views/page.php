@@ -1,8 +1,6 @@
 <?php
-$this->load->helper('url');
-$this->load->helper('memory');
 $loggedin = $this->j_auth->logged_in();
-$pageTitle = "RR :: ";
+$pageTitle = $this->config->item('pageTitlePref');
 $base_url = base_url();
 $current_fed_name = $this->session->userdata('current_fed_name');
 $current_sp_name = $this->session->userdata('current_sp_name');
@@ -263,7 +261,7 @@ $pageTitle .= $this->title;
 
                 <footer>
                     <?php
-                    echo "<small>Resource Registry</small><br />";
+                    echo '<small>'.$this->config->item('pageFooter').'</small><br />';
                     $disp_mem = $this->config->item('rr_display_memory_usage');
                     if ($disp_mem)
                     {

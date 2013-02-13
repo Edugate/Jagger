@@ -673,7 +673,6 @@ class Idp_edit extends MY_Controller {
         /**
          * contacts
          */
-        log_message('debug', $pref . "2 finished");
         $no_contacts = $this->input->post('no_contacts');
         $contacts_col = $idp->getContacts();
         foreach ($contacts_col->getValues() as $c)
@@ -695,7 +694,6 @@ class Idp_edit extends MY_Controller {
                 $this->em->persist($c);
             }
         }
-        log_message('debug', $pref . "1 finished");
         $cnt_newmail = trim($this->input->post('contact_0n_email'));
         $cnt_newtype = $this->input->post('contact_0n_type');
         $cnt_newgivenname = $this->input->post('contact_0n_fname');

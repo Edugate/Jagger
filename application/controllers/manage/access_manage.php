@@ -32,7 +32,6 @@ class Access_manage extends MY_Controller
         }
         $this->tmp_providers = new models\Providers;
         $this->load->helper('form');
-        $this->load->library('table');
         $this->load->library('zacl');
     }
     private function display_form_chng($access,$user,$action)
