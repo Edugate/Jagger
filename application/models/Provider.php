@@ -1864,7 +1864,6 @@ class Provider {
     public function getIDPSSODescriptorToXML(\DOMElement $parent, $options = null)
     {
         $this->ci = & get_instance();
-        $this->ci->load->helper('url');
 
         $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
         $this->logo_baseurl = $this->ci->config->item('rr_logobaseurl');
@@ -2339,7 +2338,6 @@ class Provider {
            else
            {
                
-               \log_message('debug','OKO: '.$this->getEntityId());
                if(array_key_exists('fedreqattrs',$options) && is_array($options['fedreqattrs']))
                {
                   $Attrconsumingservice_Node =  $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AttributeConsumingService');
@@ -2362,7 +2360,6 @@ class Provider {
                   }
                   foreach($options['fedreqattrs'] as $v)
                   {
-                        \log_message('debug','OKO: '.$v->getAttribute()->getName());
                         $attr_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata','md:RequestedAttribute');         
                         $attr_node->setAttribute('FriendlyName',$v->getAttribute()->getName());
                         $attr_node->setAttribute('Name',$v->getAttribute()->getOid());
