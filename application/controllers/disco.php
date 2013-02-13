@@ -81,7 +81,7 @@ class Disco extends MY_Controller {
         }
         $output = array();
         $oi = 0;
-        foreach ($p1->getValues() as $key2)
+        foreach ($p1 as $key2)
         {
             $allowed = true;
             if ($key2->getAvailable() && ($key2->getType() == 'IDP' OR $key2->getType() == 'BOTH'))
