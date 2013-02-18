@@ -41,6 +41,7 @@ class Fededit extends MY_Controller {
         $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[500]|xss_clean');
         $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'trim|min_length[5]|max_length[1000]|xss_clean');
         $this->form_validation->set_rules('incattrs',lang('rr_include_attr_in_meta'),'trim|xss_clean|max_length[10]');
+        $this->form_validation->set_rules('lexport',lang('rr_lexport_enabled'),'trim|xss_clean|max_length[10]');
         return $this->form_validation->run();
     }
 
@@ -74,6 +75,7 @@ class Fededit extends MY_Controller {
             $intou = $this->input->post('tou');
             $infedid = $this->input->post('fed');
             $incattrs = $this->input->post('incattrs');
+            $lexport = $this->input->post('lexport');
             if ($infedid != $fedid)
             {
                 show_error('Incorrect post', 403);
@@ -86,6 +88,15 @@ class Fededit extends MY_Controller {
             elseif(empty($incattrs))
             {
                 $fed->setAttrsInmeta(FALSE);
+            }
+
+            if($lexport == 'accept')
+            {
+                $fed->setLocalExport(TRUE);
+            }
+            elseif(empty($lexport))
+            {
+                $fed->setLocalExport(FALSE);
             }
             $fed->setDescription($indesc);
             $fed->setTou($intou);

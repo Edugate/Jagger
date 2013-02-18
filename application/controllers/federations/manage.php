@@ -261,6 +261,10 @@ class Manage extends MY_Controller {
 
         $data['meta_link'] = base_url() . "metadata/federation/" . base64url_encode($data['federation_name']) . "/metadata.xml";
         $data['meta_link_signed'] = base_url() . "signedmetadata/federation/" . base64url_encode($data['federation_name']) . "/metadata.xml";
+
+        $data['metaexport_link'] = base_url() . "metadata/federationexport/" . base64url_encode($data['federation_name']) . "/metadata.xml";
+        $data['metaexport_link_signed'] = base_url() . "signedmetadata/federationexport/" . base64url_encode($data['federation_name']) . "/metadata.xml";
+
         $data['content_view'] = 'federation/federation_show_view';
         if(!$can_edit)
         {
@@ -356,6 +360,15 @@ class Manage extends MY_Controller {
             $table_of_members = $this->show_element->IdPMembersToTable($federation_members);
             $data['tbl'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor_popup($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
             $data['tbl'][] = array(lang('rr_fedmetasingedlink'), $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+
+            $lexportenabled = $federation->getLocalExport(); 
+            if($lexportenabled === TRUE)
+            {
+                   $data['tbl'][] = array(lang('rr_fedmetaexportunsingedlink'), $data['metaexport_link'] . " " . anchor_popup($data['metaexport_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+                   $data['tbl'][] = array(lang('rr_fedmetaexportsingedlink'), $data['metaexport_link_signed'] . " " . anchor_popup($data['metaexport_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+                 
+            }
+
             $data['tbl'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
             $data['tbl'][] = array('data' => array('data' => $table_of_members['IDP'], 'colspan' => 2));
             $data['tbl'][] = array('data' => array('data' => lang('serviceprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));

@@ -1562,7 +1562,8 @@ class Provider {
 
     public function getLocked()
     {
-        return $this->is_locked;
+        
+return $this->is_locked;
     }
 
     public function getAvailable()
@@ -1574,6 +1575,10 @@ class Provider {
     public function getLocal()
     {
         return $this->is_local;
+    }
+    public function getLocalAvailable()
+    {
+        return ( $this->is_local &&  $this->is_active && $this->is_approved && $this->getIsValidFromTo());
     }
 
     public function getDescription()

@@ -131,6 +131,114 @@ class Metadata extends MY_Controller {
             $this->load->view('metadata_view', $data);
         }
     }
+    public function federationexport($federationName, $t = NULL) {
+        $data = array();
+        $name = base64url_decode($federationName);
+        if (!empty($t) AND (($t == 'IDP') OR ($t == 'SP') OR ($t == 'idp') OR ($t == 'sp'))) {
+            $type = strtoupper($t);
+        } else {
+            $type = 'all';
+        }
+
+
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $name, 'is_lexport'=>TRUE));
+
+
+        if (empty($federation)) {
+            show_404('page', 'log_error');
+        } else {
+            /**
+             * check if federation is active
+             */
+            $isactive = $federation->getActive();
+            if (empty($isactive)) {
+                /**
+                 * dont display metadata if federation is inactive
+                 */
+                show_error('federation is not active', 404);
+            }
+
+            //$tmp_cnt = new models\Contacts;
+            //$contacts = $tmp_cnt->getContacts();
+           
+            /**
+             * check if required attribute must be added to federated metadata 
+             */
+            $include_attrs = $federation->getAttrsInmeta();
+            $reqattrs_by_fed = null;
+            $options = array();
+            if($include_attrs)
+            {
+              $options['attrs'] = 1;
+              $attrfedreq_tmp = new models\AttributeRequirements;
+              $reqattrs_by_fed = $attrfedreq_tmp->getRequirementsByFed($federation);
+              if(!empty($reqattrs_by_fed))
+              {
+                 $options['fedreqattrs'] = $reqattrs_by_fed ;
+              }
+            }
+
+            $members = $federation->getMembers();
+            $members_count = $members->count();
+            $members_keys = $members->getKeys();
+            log_message('debug', $this->mid . 'no federation members: ' . $members_count);
+
+            //$count_members = count($members);
+            $docXML = new \DOMDocument();
+            $docXML->encoding = 'UTF-8';
+            $docXML->formatOutput = true;
+            $xpath = new \DomXPath($docXML);
+            $termsofuse = $federation->getTou();
+            
+            $topcomment = "\n===============================================================\n= Federation metadata containing only localy managed entities.=\n===============================================================\n";
+            $tcomment  = $docXML->createComment($topcomment);
+            $docXML->appendChild($tcomment);
+            if (!empty($termsofuse)) {
+                $termsofuse = "TERMS OF USE\n" . $termsofuse;
+                $termsofuse = h_metadataComment($termsofuse); 
+                $comment = $docXML->createComment($termsofuse);
+                $docXML->appendChild($comment);
+            }
+            /**
+             * get metadata namespaces from metadata_elements_helper
+             */
+            $namespaces = h_metadataNamespaces();
+            foreach($namespaces as $key=>$value)
+            {
+                $xpath->registerNamespace($key,$value);
+            }
+            $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
+            $Entities_Node->setAttribute('Name', $federation->getUrn());
+            $validfor = new \DateTime("now");
+            $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
+            $validuntil = $validfor->format('Y-m-d');
+            $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
+
+            /**
+             * @todo ValidUntil
+             */
+            if ($type == 'all') {
+                for ($i = 0; $i < $members_count; $i++) {
+                    if($members->get($members_keys['' . $i . ''])->getLocalAvailable())
+                    {
+                        $members->get($members_keys['' . $i . ''])->getProviderToXML($Entities_Node,$options);
+                    }
+                }
+            } else {
+                foreach ($members as $key) {
+                    if ($key->getLocalAvailable() && (($key->getType() == $type) or ($key->getType() == 'BOTH'))) {
+                        $key->getProviderToXML($Entities_Node,$options);
+                    }
+                }
+            }
+            $docXML->appendChild($Entities_Node);
+
+            $data['out'] = $docXML->saveXML();
+
+
+            $this->load->view('metadata_view', $data);
+        }
+    }
 
     public function service($entityId,$m = null) {
         if(!empty($m) && $m != 'metadata.xml')

@@ -67,6 +67,14 @@ class Federation
      * @Column(name="is_public",type="boolean", nullable=false)
      */
     protected $is_public;
+   
+    /**
+     * if true then additional metadata can be generated with local only entities
+     * example usecase - export metadata for Edugain
+     *
+     * @Column(name="is_lexport", type="boolean", nullable=false)
+     */
+    protected $is_lexport = FALSE;
 
     /**
      * set if federation is localy created or external like edugain
@@ -135,6 +143,11 @@ class Federation
     {
         $this->description = $description;
         return $this;
+    }
+    
+    public function setLocalExport($a = FALSE)
+    {
+        $this->is_lexport = (boolean) $a;
     }
 
     public function setAsActive()
@@ -280,6 +293,11 @@ class Federation
         {
            $this->attrreq_inmeta=false;
         }
+    }
+
+    public function getLocalExport()
+    {
+        return $this->is_lexport;
     }
 
     public function getDescription()
