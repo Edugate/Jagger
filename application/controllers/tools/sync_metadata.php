@@ -45,6 +45,11 @@ class Sync_metadata extends CI_Controller {
                      {
                         $url = base_url() . "metadata/federation/" . base64url_encode($f->getName()) . "/metadata.xml";
                         $result[]=array('group'=>'federation','name'=>base64url_encode($f->getName()),'url'=>$url);
+                        if($f->getLocalExport() === TRUE)
+                        {
+                           $url = base_url() . "metadata/federationexport/" . base64url_encode($f->getName()) . "/metadata.xml";
+                           $result[]=array('group'=>'federationexport','name'=>base64url_encode($f->getName()),'url'=>$url);
+                        }
                      }
                   }
                   $providers = $this->em->getRepository("models\Provider")->findAll();
