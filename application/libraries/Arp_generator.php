@@ -246,9 +246,6 @@ class Arp_generator {
         $ooo = new models\Attributes();
         $ok = $ooo->getAttributes();
         $tmp_idp = new models\Providers;
-        /* remove later  */
-        // $idp = $provider;
-        /* rem */
         if (empty($idp))
         {
             log_message('debug', $this->mid . "IdP not found with id:." . $idp->getId());
@@ -268,10 +265,21 @@ class Arp_generator {
         $members_byid = array();
 
         $members = $tmp_idp->getCircleMembersSP($idp);
+        $excluded = $idp->getExcarps();
+        if(is_array($excluded))
+        {
+           foreach($excluded as $excv)
+           {
+               $members->remove($excv);
+               log_message('debug', 'ARP for '.$idp->getEntityId().' : excluding '.$excv);
+           }
+        } 
+       
         if (!empty($members))
         {
             foreach ($members as $m_value)
             {
+               
                 $members_byid[$m_value->getId()] = $m_value;
             }
         }

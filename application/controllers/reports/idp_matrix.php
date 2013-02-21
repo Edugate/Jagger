@@ -68,6 +68,19 @@ class Idp_matrix extends MY_Controller {
         {
             show_error('Identity Provider not found', 404);
         }
+      
+        $has_read_access = $this->zacl->check_acl($idpis, 'read', 'idp', '');
+        $has_write_access = $this->zacl->check_acl($idpis, 'write', 'idp', '');
+        if(!$has_read_access)
+        {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = lang('rr_noidpaccess');
+            $this->load->view('page', $data);
+            return;
+        }
+        $data['has_write_access'] = $has_write_access;
+       
+        $data['excluded'] = $idp->getExcarps();
         
         $data['idpname'] = $idp->getName();
         if(empty($data['idpname']))

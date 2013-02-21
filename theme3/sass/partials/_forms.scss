@@ -205,6 +205,16 @@ form#login {
     
 
 }
+form#arpexlusions {
+  label { 
+     float: none;
+  }   
+  input[type='checkbox'] {
+    float: left;
+    margin-right: 10px;
+ }
+
+}
 form#formver3 {
     padding: 2px 2px 2px 2px;
 

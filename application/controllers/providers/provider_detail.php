@@ -494,6 +494,29 @@ class Provider_detail extends MY_Controller {
         $data['idp_details'][$i]['name'] = lang('rr_individualarpurl');
         $data['idp_details'][$i++]['value'] = '<span class="accordionButton">'.lang('rr_arpurl').'</span><span class="accordionContent"><br />' . $arp_url . '&nbsp;</span>&nbsp;' . anchor_popup($arp_url, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         //
+        
+        $exc = $idp->getExcarps();
+        if(is_array($exc) && count($exc)>0)
+        {
+             if(!$locked && $has_write_access)
+             {
+                $mlink = '<span class="lbl lbl-alert"><a href="'.base_url().'manage/arpsexcl/idp/'.$idp->getId().'">' . lang('rr_editarpexc') . '</a></span>';
+             }
+             else
+             {
+                $mlink = '';
+             }
+             $data['idp_details'][$i]['name'] = lang('rr_arpexclist_title') .' '.$mlink;
+             $l = '<ol>';
+             foreach($exc as $e)
+             {
+                $l .= '<li>'.$e.'</li>';
+             }
+             $l .= '</ol>';
+             $data['idp_details'][$i++]['value'] = $l;
+        }
+
+
         $tmp_logs = new models\Trackers;
         $arp_logs = $tmp_logs->getArpDownloaded($idp);
 

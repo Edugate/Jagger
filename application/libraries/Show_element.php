@@ -25,12 +25,14 @@ class Show_element {
     protected $em;
     protected $tmp_policies;
     protected $tmp_providers;
+    protected $entitiesmaps;
 
     function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->tmp_policies = new models\AttributeReleasePolicies;
         $this->tmp_providers = new models\Providers;
+        $this->entitiesmaps = array();
     }
 
     /**
@@ -71,12 +73,16 @@ class Show_element {
             {
             $required_attrs = $tmp_reqs->getRequirementsBySP($sp_requester);
 
-            $name = $sp_requester->getName();
+            $name2 = $sp_requester->getName();
             if(empty($name))
             {
-                $name=$sp_requester->getEntityId();
+                $name2=$sp_requester->getEntityId();
             }
-            $result[$name][$a->getAttribute()->getName()] = array(
+            $name = $sp_requester->getEntityId();
+            $this->entitiesmaps[$sp_requester->getEntityId()] = $name2;
+            
+
+            $result[''.$sp_requester->getEntityId().''][$a->getAttribute()->getName()] = array(
                 'id' => $a->getId(),
                 'attr_id' => $a->getAttribute()->getId(),
                 'spid' => $spid,
@@ -183,6 +189,11 @@ class Show_element {
     }
 
     public function generateTableSpecificArp(models\Provider $provider) {
+        $exluded_arps = $provider->getExcarps();
+        if(empty($exluded_arps))
+        {
+           $exluded_arps = array();
+        }
         $result = null;
         $supported = $this->tmp_policies->getSupportedAttributes($provider);
         $supported_attrs = array();
@@ -201,11 +212,17 @@ class Show_element {
                 if (!empty($tmp_sp_array)) {
                     $tmp_spid = $tmp_sp_array['spid'];
                 }
-                log_message('debug', 'KKKKKKK :::' . $key);
-                $link_sp = "<a href=\"" . $prefix_multi_url . $provider->getId() . "/sp/" . $tmp_spid . "\"><img src=\"" . $icon . "\"/></a>";
-
-
-                $attributes[] = array('data' => array('data' => $key . $link_sp, 'colspan' => 3, 'class' => 'highlight'));
+                $link_sp = '<a href="' . $prefix_multi_url . $provider->getId() . '/sp/' . $tmp_spid . '"><img src="' . $icon . '"/></a>';
+                if(in_array($key,$exluded_arps))
+                {
+                   $lbl = '<span class="lbl lbl-disabled">excluded</span> ';
+                }
+                else
+                {
+                   $lbl = '';
+                }
+                
+                $attributes[] = array('data' => array('data' => $lbl . $this->entitiesmaps[$key] .  $link_sp .' <small>'.$key.'</small>' , 'colspan' => 3, 'class' => 'highlight'));
 
                 foreach ($value as $attr_key => $attr_value) {
                     if (!array_key_exists($attr_key, $supported_attrs)) {

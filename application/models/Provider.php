@@ -167,6 +167,12 @@ class Provider {
     protected $wayflist;
 
     /**
+     * serialized array containing entities to be escluded from ARP
+     * @Column(type="text",nullable=true)
+     */
+    protected $excarps;
+
+    /**
      * not used for the moment and default true
      * @Column(type="boolean")
      */
@@ -929,6 +935,18 @@ class Provider {
        }
     }
 
+    public function setExcarps($excarps = null)
+    {
+       if(!empty($excarps) && is_array($excarps) && count($excarps) > 0)
+       {
+           $this->excarps = serialize($excarps);
+       }
+       else
+       {
+           $this->excarps = null;
+       }
+    }
+
     public function setDefaultState()
     {
         $this->is_approved = 1;
@@ -1628,6 +1646,18 @@ return $this->is_locked;
             return null;
          }
 
+    }
+    public function getExcarps()
+    {
+        $w = $this->excarps;
+        if(!empty($w))
+        {
+            return unserialize($w);
+        }
+        else
+        {
+            return array();
+        }
     }
 
     public function getSupportedAttributes()

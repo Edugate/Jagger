@@ -8,7 +8,7 @@ if (!empty($javascript))
 
 if (!empty($error_message))
 {
-    echo "<span class=\"alert\">$error_message</span>";
+    echo '<span class="alert">'.$error_message.'</span>';
 }
 
 if (!empty($form))

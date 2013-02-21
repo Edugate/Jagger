@@ -1062,6 +1062,28 @@ class Form_element {
         return $tmp;
     }
 
+    public function excludedArpsForm(models\Provider $idp)
+    {
+       $tmp_providers = new models\Providers();
+       $excluded = $idp->getExcarps();
+       $members = $tmp_providers->getCircleMembersSP($idp);
+       if(is_array($excluded))
+       $rows = array();
+       foreach($excluded as $v)
+       {
+           $members->remove($v);
+           $rows[] = '<input type="checkbox" name="exc[]" id="'.$v.'" value="'.$v.'" checked="checked" /><label for="'.$v.'">'.$v.'</label>';
+       }  
+       foreach($members as $v)
+       {
+          $rows[] = '<input type="checkbox" name="exc[]" id="'.$v->getEntityId().'" value="'.$v->getEntityId().'"  /><label for="'.$v->getEntityId().'">'.$v->getEntityId().'</label>';
+       }
+       
+       return $rows;
+
+        
+    }
+
     public function supportedAttributesForm(models\Provider $idp)
     {
         $tmp = new models\Attributes();

@@ -46,9 +46,14 @@ $modify_button = '<button type="submit" value="modify" class="btn positive"><spa
 $sp_link = anchor(base_url()."providers/provider_detail/sp/".$requester_id,$requester);
 $idp_link = anchor(base_url()."providers/provider_detail/idp/".$provider_id,$provider);
 $attr_req_link = anchor(base_url()."manage/attribute_requirement/sp/".$requester_id,'<img src="' . base_url() . 'images/icons/arrow.png" />');
-echo '<div id="subtitle"><h3>'.lang('identityprovider').': '.$idp_link.'<br/> <small>'.$provider_entityid.'</small></h3>';
-echo '<h4>Requester: '.$sp_link.'<br/> <small>'.$requester_entityid.'</small></h4>';
-
+echo '<div id="subtitle">';
+echo '<h3>'.lang('identityprovider').': '.$idp_link.'<br/> <small>'.$provider_entityid.'</small></h3>';
+echo '<h4>Requester: '.$sp_link;
+if(!empty($excluded))
+{
+      echo ' <span class="lbl lbl-disabled">'.lang('rr_arpexcludedpersp').'</span> ';
+}
+echo '<br /><small>'.$requester_entityid.'</small></h4>';
 echo '<dl>';
 echo '<dd>'.lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_attributes/idp/'.$provider_id.'"><img src="'.base_url().'images/icons/arrow.png" /></a></dd>';
 echo '<dd>'.lang('rr_attributereleasepolicy').'<a href="'.base_url().'manage/attribute_policy/globals/'.$provider_id.'"><img src="'.base_url().'images/icons/arrow.png" /></a></dd>';

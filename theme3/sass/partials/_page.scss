@@ -81,7 +81,7 @@ nav {
     max-height: 20px;
     
 }
-#subtitle,#pagetitle {
+#subtitle,#pagetitle,#excarpslist,#noticeblock{
     text-align: center;
     background-color: #FBFBFB;
     background-image: -moz-linear-gradient(center top , #FFFFFF, #F5F5F5);
@@ -92,6 +92,22 @@ nav {
     box-shadow: 0 1px 0 #FFFFFF inset;
     list-style: none outside none;
     margin: 0 0 10px;
+}
+#excarpslist{
+    background-color: #FBFBFC;
+    background-image: -moz-linear-gradient(center top , #FFFFFF, #F5F5FC);
+    background-repeat: repeat-x;
+    background: -webkit-gradient(linear, center top, center bottom, from(#fff), to(#F5F5FC));
+    ol {
+       text-align: left;
+       margin-left: 10px;
+    } 
+}
+#noticeblock{
+    text-align: left;
+    padding: 20px;
+     
+    border: 1px solid orange;
 }
 #pagetitle {
    font-size: 22px;

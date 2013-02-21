@@ -772,6 +772,7 @@ class Attribute_policy extends MY_Controller {
             log_message('error', $this->mid . '(manage/attribute_policy/multi) Identity Provider not found with id:' . $idp_id);
             show_error($this->mid . 'Identity Provider not found ', 404);
         }
+        $excluded_arp = $idp->getExcarps();
         $resource = $idp->getId();
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
@@ -792,6 +793,7 @@ class Attribute_policy extends MY_Controller {
                 log_message('error', $this->mid . '(manage/attribute_policy/multi) Service Provider as requester not found with id:' . $requester);
                 show_error($this->mid . 'Service Provider not found ', 404);
             }
+            
             $data['requester'] = $sp->getName();
             $data['requester_id'] = $sp->getId();
             $data['requester_type'] = 'SP';
@@ -864,6 +866,10 @@ class Attribute_policy extends MY_Controller {
             $data['requester'] = $sp->getName();
             $data['requester_id'] = $sp->getId();
             $data['requester_entityid'] = $sp->getEntityId();
+            if(in_array($data['requester_entityid'],$excluded_arp))
+            {
+                $data['excluded'] = true;
+            }
 
 
             /**

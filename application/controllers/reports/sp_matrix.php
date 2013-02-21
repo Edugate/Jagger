@@ -44,10 +44,12 @@ class Sp_matrix extends MY_Controller
             show_error('Wrong or empty id', 404);
         }
         $sp = $this->tmp_providers->getOneSpById($spid);
+        
         if(empty($sp))
         {
             show_error('Service Provider not found',404);
         }
+        $sp_entityid = $sp->getEntityId();
         $members = $this->_get_members($sp);
         $tmp_attributes = new models\Attributes();
         $attributes = $tmp_attributes->getAttributes();
@@ -83,6 +85,11 @@ class Sp_matrix extends MY_Controller
            $o->appendChild($sites);
            foreach($members as $m)
            {
+              $excluded = $m->getExcarps();
+              if( in_array($sp_entityid,$excluded))
+              {
+                 continue;
+              }
               $site = $output->CreateElement('site');
               $entityname = $m->getName();
               if(empty($entityname))
