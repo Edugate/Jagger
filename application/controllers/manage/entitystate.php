@@ -82,6 +82,7 @@ class Entitystate extends MY_Controller {
             $active = $this->input->post('eactive');
             $extint = $this->input->post('extint');
             $changed = false;
+            $differ = array();
             if (isset($locked))
             {
                 if ($data['current_locked'] != $locked)
@@ -89,11 +90,13 @@ class Entitystate extends MY_Controller {
 
                     if ($locked == '1')
                     {
+                        $differ['Lock'] = array('before'=>'unlocked','after'=>'locked');
                         $this->entity->Lock();
                     }
                     elseif ($locked == '0')
                     {
                         $this->entity->Unlock();
+                        $differ['Lock'] = array('before'=>'locked','after'=>'unlocked');
                     }
                     $changed = true;
                 }
@@ -105,10 +108,12 @@ class Entitystate extends MY_Controller {
                     if ($active == '1')
                     {
                         $this->entity->Activate();
+                        $differ['Active'] = array('before'=>'disabled','after'=>'enabled');
                     }
                     elseif ($active == '0')
                     {
                         $this->entity->Disactivate();
+                        $differ['Active'] = array('before'=>'enabled','after'=>'disabled');
                     }
                     $changed = true;
                 }
@@ -121,13 +126,19 @@ class Entitystate extends MY_Controller {
                     {
                         $this->entity->setAsLocal();
                         $this->entity->createAclResource();
+                        $differ['Local/External'] = array('before'=>'external','after'=>'local');
                     }
                     elseif ($extint == '0')
                     {
                         $this->entity->setAsExternal();
+                        $differ['Local/External'] = array('before'=>'local','after'=>'external');
                     }
                     $changed = true;
                 }
+            }
+            if (count($differ) > 0)
+            {
+                $this->tracker->save_track('idp', 'modification', $this->entity->getEntityId(), serialize($differ), false);
             }
             $this->em->persist($this->entity);
             $this->em->flush();

@@ -496,17 +496,17 @@ class Provider_detail extends MY_Controller {
         //
         
         $exc = $idp->getExcarps();
+        if(!$locked && $has_write_access)
+        {
+            $mlink = '<span class="lbl lbl-alert"><a href="'.base_url().'manage/arpsexcl/idp/'.$idp->getId().'">' . lang('rr_editarpexc') . '</a></span>';
+        }
+        else
+        {
+            $mlink = '';
+        }
+        $data['idp_details'][$i]['name'] = lang('rr_arpexclist_title') .' '.$mlink;
         if(is_array($exc) && count($exc)>0)
         {
-             if(!$locked && $has_write_access)
-             {
-                $mlink = '<span class="lbl lbl-alert"><a href="'.base_url().'manage/arpsexcl/idp/'.$idp->getId().'">' . lang('rr_editarpexc') . '</a></span>';
-             }
-             else
-             {
-                $mlink = '';
-             }
-             $data['idp_details'][$i]['name'] = lang('rr_arpexclist_title') .' '.$mlink;
              $l = '<ol>';
              foreach($exc as $e)
              {
@@ -514,6 +514,10 @@ class Provider_detail extends MY_Controller {
              }
              $l .= '</ol>';
              $data['idp_details'][$i++]['value'] = $l;
+        }
+        else
+        {
+              $data['idp_details'][$i++]['value'] = '';
         }
 
 
