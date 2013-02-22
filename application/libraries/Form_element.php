@@ -93,7 +93,7 @@ class Form_element {
     {
         log_message('debug', $this->ci->mid . 'Form_element::generateServiceLocationsSpForm method started');
         $locations = array();
-        foreach ($provider->getServiceLocations()->getValues() as $srv)
+        foreach ($provider->getServiceLocations() as $srv)
         {
             $locations[$srv->getType()][] = array(
                 'id' => $srv->getId(),
@@ -115,11 +115,25 @@ class Form_element {
             'index_number' => '',
             'is_default' => null,);
 
+        $locations['DiscoveryResponse'][] = array(
+            'id' => 'n',
+            'type' => 'DiscoveryResponse',
+            'binding' => 'none',
+            'url' => '',
+            'index_number' => '',
+            'is_default' => null,);
+
+        
+
+
+
+
+        $s_input = '';
+
         if (array_key_exists('AssertionConsumerService', $locations))
         {
             log_message('debug', $this->ci->mid . "found ACS for sp: " . $provider->getEntityId());
             $i = 0;
-            $s_input = "";
             $s_input .=form_fieldset(lang('rr_acs_fieldset'));
 
 
@@ -180,6 +194,66 @@ class Form_element {
             }
             $s_input .= form_fieldset_close();
         }
+
+        if(array_key_exists('DiscoveryResponse',$locations))
+        {
+            $s_input .=form_fieldset('Discovery Service Locations');
+            foreach($locations['DiscoveryResponse'] as $discins)
+            {
+                $discid = $discins['id'];
+                $name = 'disc['.$discid.']';
+                $s_row = '';
+                $url_data = array(
+                   'name'=>'disc[' . $discid . ']',
+                   'id'=>'disc[' . $discid . ']',
+                   'value'=>set_value('disc', $discins['url']),
+                );
+                $order_data = array(
+                    'name' => 'discindex[' . $discid . ']',
+                    'id' => 'discindex[' . $discid . ']',
+                    'size' => 2,
+                    'maxlength' => 2,
+                    'class' => 'acsindex',
+                    'value' => set_value('discindex', $discins['index_number']),
+                );
+                $index_input = form_input($order_data);
+                $indexrow = 'index ' . $index_input;
+                $url_label = form_label(lang('rr_url'), 'disc[' . $discid . ']'); 
+                $url_input = form_input($url_data);
+                $s_row .= $url_label . $url_input . $indexrow;
+            $s_input .= '<li>' . $s_row . '</li>';
+            }
+            $s_input .= form_fieldset_close();
+
+        }
+        if(!array_key_exists('RequestInitiator',$locations))
+        {
+            $locations['RequestInitiator'][] = array(
+               'id' => 'n',
+               'type' => 'RequestInitiator',
+               'binding' => 'none',
+               'url' => '',
+               'index_number' => '',
+               'is_default' => null,);
+         }
+            $s_input .=form_fieldset('RequestInitiator Location');
+            foreach($locations['RequestInitiator'] as $discins)
+            {
+                $discid = $discins['id'];
+                $name = 'initdisc['.$discid.']';
+                $s_row = '';
+                $url_data = array(
+                   'name'=>'initdisc[' . $discid . ']',
+                   'id'=>'initdisc[' . $discid . ']',
+                   'value'=>set_value('initdisc', $discins['url']),
+                );
+                $url_label = form_label(lang('rr_url'), 'initdisc[' . $discid . ']'); 
+                $url_input = form_input($url_data);
+                $s_row .= $url_label . $url_input ;
+            $s_input .= '<li>' . $s_row . '</li>';
+            }
+            $s_input .= form_fieldset_close();
+
 
         $srvform = form_fieldset(lang('rr_servicelocations'));
         $srvform = '<fieldset><legend class="accordionButton">' . lang('rr_servicelocations') . '</legend>';

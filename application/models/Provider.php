@@ -1059,8 +1059,10 @@ class Provider {
 
     public function removeServiceLocation(ServiceLocation $service)
     {
+        $this->ci = & get_instance();
+        $this->em = $this->ci->doctrine->em;
         $this->getServiceLocations()->removeElement($service);
-        $service->setProvider(null);
+        $this->em->remove($service);
         return $this->serviceLocations;
     }
 
@@ -1119,18 +1121,22 @@ class Provider {
 
     public function removeContact(Contact $contact)
     {
+        $this->ci = & get_instance();
+        $this->em = $this->ci->doctrine->em;
         $this->getContacts()->removeElement($contact);
-        $contact->setProvider(null);
+        $this->em->remove($contact);
         return $this->contacts;
     }
 
     public function removeAllContacts()
     {
+        $this->ci = & get_instance();
+        $this->em = $this->ci->doctrine->em;
         $contacts = $this->getContacts();
         foreach ($contacts->getValues() as $contact)
         {
             $contacts->removeElement($contact);
-            $contact->setProvider(null);
+            $this->em->remove($contact);
         }
         return $this;
     }
@@ -1782,6 +1788,7 @@ return $this->is_locked;
 
     public function importFromArray(array $r)
     {
+        $etype = strtoupper($r['type']);
         $this->setName($r['name']);
         if (!empty($r['displayname']))
         {
@@ -1842,6 +1849,21 @@ return $this->is_locked;
                     $this->setCertificate($c);
                     $c->setProvider($this);
                 }
+            }
+        }
+        if($etype == 'SP' or $etype == 'BOTH')
+        {
+            foreach($r['details']['spssodescriptor']['extensions']['idpdisc'] as $idpdisc)
+            {
+                $c = new ServiceLocation;
+                $c->setDiscoveryResponse($idpdisc['url'] , $idpdisc['order']);
+                $c->setProvider($this);
+            }
+            foreach($r['details']['spssodescriptor']['extensions']['init'] as $initreq)
+            {
+                $c = new ServiceLocation;
+                $c->setRequestInitiator($initreq['url'] , $initreq['binding']);
+                $c->setProvider($this);
             }
         }
         if (count($r['services']) > 0)
@@ -2133,6 +2155,7 @@ return $this->is_locked;
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->helper('url');
 
+
         $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
         $this->logo_baseurl = $this->ci->config->item('rr_logobaseurl');
         if (empty($this->logo_baseurl))
@@ -2162,6 +2185,29 @@ return $this->is_locked;
 
         $Extensions_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
         $e->appendChild($Extensions_Node);
+
+        /* DiscoveryResponse */
+        $tmplocations = $this->getServiceLocations();
+        foreach($tmplocations as $t)
+        {
+           $loc_type = $t->getType();
+           if($loc_type == 'RequestInitiator')
+           {
+                $disc_node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:profiles:SSO:request-init', 'init:RequestInitiator');
+                $disc_node->setAttribute('Binding',$t->getBindingName());
+                $disc_node->setAttribute('Location',$t->getUrl());
+                $Extensions_Node->appendChild($disc_node);
+           }
+           elseif($loc_type == 'DiscoveryResponse')
+           {
+                $disc_node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol', 'idpdisc:DiscoveryResponse');
+                $disc_node->setAttribute('Binding',$t->getBindingName());
+                $disc_node->setAttribute('Location',$t->getUrl());               
+                $disc_node->setAttribute('index',$t->getOrder());
+                $Extensions_Node->appendChild($disc_node);
+                
+           }
+        }
         /* UIInfo */
         $UIInfo_Node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
         $d_element = 'DisplayName';

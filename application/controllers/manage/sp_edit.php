@@ -122,8 +122,12 @@ class Sp_edit extends MY_Controller {
         $this->form_validation->set_rules('registerdate', 'Registration date', 'trim|xss_clean|valid_date_past');
         $this->form_validation->set_rules('registar', 'Registration authority', 'trim|xss_clean|max_length[250]');
         $this->form_validation->set_rules('usestatic', 'Static metdatada', "valid_static[" . base64_encode($this->input->post('staticmetadatabody')) . ":::" . $this->input->post('entityid') . " ]");
-        $this->form_validation->set_rules('acs_index', 'Assertion Consumer Service index', 'acs_index_check');
-        $this->form_validation->set_rules('acs_url', 'Assertion Consumer Service url', 'array_valid_url');
+        $this->form_validation->set_rules('acs_index[]', 'Assertion Consumer Service index', 'acs_index_check');
+        $this->form_validation->set_rules('acs_url[]', 'Assertion Consumer Service url', 'array_valid_url');
+        $this->form_validation->set_rules('discindex[]', 'Discovery  Service index', 'acs_index_check');
+        $this->form_validation->set_rules('disc[]', 'Discovery Service url', 'array_valid_url');
+        $this->form_validation->set_rules('initdisc[]', 'RequestInitiator', 'xss_clean|array_valid_url');
+       
         /**
          * @todo add validation of service locations
          */
@@ -173,6 +177,7 @@ class Sp_edit extends MY_Controller {
         }
 	$sp_before = clone($this->sp);
 
+        
 
         /**
          * @todo finish ACS input
@@ -181,11 +186,13 @@ class Sp_edit extends MY_Controller {
         $serviceLocations = $this->sp->getServiceLocations();
         $acs_bind = $this->input->post('acs_bind');
         $acs_url = $this->input->post('acs_url');
-
         $acs_index = $this->input->post('acs_index');
         $acs_default = $this->input->post('acs_default');
-
         $acs_keys = array_keys($acs_bind);
+
+        $idpdisc = $this->input->post('disc');
+        $idpdisc_index = $this->input->post('discindex');
+        $initdisc = $this->input->post('initdisc');
         foreach ($serviceLocations as $srv)
         {
             $srvid = $srv->getId();
@@ -219,7 +226,59 @@ class Sp_edit extends MY_Controller {
                     log_message('warn', $this->mid . 'Some inconsistency with submited edit sp form for entity:' . $this->sp->getEntityId() . ' AssertionConsumerService didnt exist in submited form');
                 }
             }
+            elseif($srv->getType() == 'DiscoveryResponse')
+            {
+                if (array_key_exists($srvid, $idpdisc))
+                {
+                    if(empty($idpdisc[$srvid]))
+                    {
+                        $this->sp->removeServiceLocation($srv);
+                    } 
+                    else
+                    {
+                       $srv->setDiscoveryResponse($idpdisc[$srvid],$idpdisc_index[$srvid]);
+                       $this->em->persist($srv);
+                    }
+                }
+                 
+            }
+            elseif($srv->getType() == 'RequestInitiator')
+            {
+               if (array_key_exists($srvid, $initdisc))
+               {
+                        log_message('debug', 'kkkkkkkkkkkkkkkkkkkkk'.$srvid.'::::::'.serialize($initdisc)); 
+                    if(empty($initdisc[$srvid]))
+                    {
+                        $this->sp->removeServiceLocation($srv);
+                        $this->em->remove($srv);
+                    } 
+                    else
+                    {
+                       $srv->setRequestInitiator($initdisc[$srvid]);
+                       $this->em->persist($srv);
+                    }
+                  
+               }
+               elseif(array_key_exists('n', $initdisc) && !empty($initdisc['n']))
+               {
+                        log_message('debug', 'kkkkkkkkkkkkkkkkkkkkk'.$srvid.'::::::'.serialize($initdisc)); 
+                    $newinitdisc = new models\ServiceLocation;
+                    $newinitdisc->setRequestInitiator($initdisc['n']);
+                    $newinitdisc->setProvider($this->sp);
+                    $this->em->persist($newinitdisc);
+               }
+            }
         }
+        /**
+         * add new discovery service if filled
+         */
+        if(!empty($idpdisc['n']))
+        {
+            $newidpdisc = new models\ServiceLocation;
+            $newidpdisc->setDiscoveryResponse($idpdisc['n'],$idpdisc_index['n']);
+            $newidpdisc->setProvider($this->sp);
+            $this->em->persist($newidpdisc);
+        } 
         /**
          * add new acs to database if filled
          */

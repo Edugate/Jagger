@@ -209,6 +209,8 @@ class Metadata2array {
         $profiles = explode(" ", $profiles);
         $result['protocols'] = $profiles;
         $result['servicelocations']['assertionconsumerservice'] = array();
+        $result['extensions']['idpdisc'] = array();
+        $result['extensions']['init'] = array();
         foreach ($node->childNodes as $child)
         {
             if ($child->nodeName == "md:Extensions" OR $child->nodeName == "Extensions")
@@ -296,6 +298,14 @@ class Metadata2array {
             if ($enode->nodeName == 'shibmd:Scope' OR $enode->nodeName == 'Scope')
             {
                 $ext['scope'][] = $enode->nodeValue;
+            }
+            elseif($enode->nodeName == 'idpdisc:DiscoveryResponse')
+            {
+                $ext['idpdisc'][] = array('binding'=>$enode->getAttribute('Binding'),'url'=>$enode->getAttribute('Location'),'order'=>$enode->getAttribute('index'));
+            }
+            elseif($enode->nodeName == 'init:RequestInitiator')
+            {
+                $ext['init'][] = array('binding'=>$enode->getAttribute('Binding'),'url'=>$enode->getAttribute('Location'));
             }
             elseif ($enode->nodeName == 'mdui:DiscoHints' && $enode->hasChildNodes())
             {

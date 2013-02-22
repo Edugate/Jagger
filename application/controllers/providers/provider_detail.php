@@ -1136,6 +1136,9 @@ class Provider_detail extends MY_Controller {
         $data['sp_details'][$i++]['header'] = lang('rr_servicelocations');
 
         $acs = '';
+        $idpdisc_name = '';
+        $idpdisc_v = '';
+        $requestinit = '';
         foreach ($serviceLocations as $s)
         {
             if ($s->getType() == 'AssertionConsumerService')
@@ -1147,9 +1150,30 @@ class Provider_detail extends MY_Controller {
                 }
                 $acs .= '<b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small><br />';
             }
+            elseif($s->getType() == 'DiscoveryResponse')
+            {
+                $idpdisc_v .= '<b>' . $s->getUrl() . '</b>&nbsp;&nbsp;<small><i>index:'.$s->getOrder().'</i></small><br /><small>' . $s->getBindingName() . '</small><br />';
+            }
+            elseif($s->getType() == 'RequestInitiator')
+            {
+               $requestinit .= '<b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small><br />';
+            }
         }
         $data['sp_details'][$i]['name'] = lang('rr_acs');
         $data['sp_details'][$i++]['value'] = $acs;
+        if(!empty($requestinit))
+        {
+           $data['sp_details'][$i]['name'] = 'RequestInitiator';
+           $data['sp_details'][$i++]['value'] = $requestinit;
+
+        }
+        if(!empty($idpdisc_v))
+        {
+           $data['sp_details'][$i]['name'] = 'DiscoveryResponse';
+           $data['sp_details'][$i++]['value'] = $idpdisc_v;
+
+        }
+
         /**
          * @todo check other service protocols
          */

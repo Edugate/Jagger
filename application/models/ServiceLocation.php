@@ -122,6 +122,28 @@ class ServiceLocation
         $this->provider = $provider;
     }
 
+    public function setRequestInitiator($url, $binding=NULL)
+    {
+        $this->url = $url;
+        $this->type = 'RequestInitiator';
+        if(empty($binding))
+        {
+            $this->bindingName = 'urn:oasis:names:tc:SAML:profiles:SSO:request-init';
+        }
+        else
+        {
+            $this->bindingName = $binding;
+        }
+    }
+    
+    public function  setDiscoveryResponse($url,$index)
+    {
+        $this->type = 'DiscoveryResponse';
+        $this->bindingName = 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol';
+        $this->url = $url;
+        $this->ordered_no = $index;
+    }
+
     public function getId()
     {
         return $this->id;
