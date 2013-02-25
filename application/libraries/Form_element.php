@@ -463,7 +463,7 @@ class Form_element {
                 }
                 $crtform .=form_multiselect('cert_' . $i . '_use[]', $m, $n);
                 $crtform .='</li><li>';
-                $crtform .=form_label(lang('rr_keyname'), 'cert_' . $i . '_keyname');
+                $crtform .=form_label(lang('rr_keyname').showHelp(lang('rhelp_multikeynames')), 'cert_' . $i . '_keyname');
                 $crtform .=form_input(array('name' => 'cert_' . $i . '_keyname', 'id' => 'cert_' . $i . '_keyname', 'value' => set_value('cert_' . $i . '_keyname', $crt->getKeyName())));
 
                 $crtform .='</li><li>';
@@ -488,7 +488,7 @@ class Form_element {
         );
         $crtform .=form_multiselect('cert_0n_use[]', $m, $m);
         $crtform .='</li><li>';
-        $crtform .=form_label(lang('rr_keyname'), 'cert_0n_keyname');
+        $crtform .=form_label(lang('rr_keyname').showHelp(lang('rhelp_multikeynames')), 'cert_0n_keyname');
         $crtform .=form_input(array('name' => 'cert_0n_keyname', 'id' => 'cert_0n_keyname', 'value' => set_value('cert_0n_keyname')));
         $crtform .='</li><li>';
         $crtform .=form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'cert_0n_data');

@@ -124,7 +124,7 @@ class Provider {
     protected $lprivacyurl;
 
     /**
-     * registrar is used in metadata for registrationAuthority
+     * registrar is used in metadata for registrationAuthority in mdrpi:RegistrationInfo
      * @Column(type="string", length=255, nullable=true)
      */
     protected $registrar;
@@ -697,9 +697,9 @@ class Provider {
         return $this;
     }
     
-    public function setLocalDisplayName(array $name = NULL)
+    public function setLocalDisplayName($name = NULL)
     {
-        if(!empty($name))
+        if(!empty($name) && is_array($name))
         {
            $this->ldisplayname = serialize($name);
         }
@@ -915,9 +915,9 @@ class Provider {
         $this->description = $description;
         return $this;
     }
-    public function setLocalDescription(array $descriptions = NULL)
+    public function setLocalDescription($descriptions = NULL)
     {
-        if(!empty($descriptions))
+        if(!empty($descriptions) && is_array($descriptions))
         {
              $this->ldescription = serialize($descriptions);
         }
@@ -1159,7 +1159,9 @@ class Provider {
 
 
         $this->setName($provider->getName());
+        $this->setLocalName($provider->getLocalName());
         $this->setDisplayName($provider->getDisplayName());
+        $this->setLocalDisplayName($provider->getLocalDisplayName());
         $this->overwriteScope($provider);
         $this->setEntityId($provider->getEntityId());
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
@@ -1183,6 +1185,7 @@ class Provider {
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
         $this->setDescription($provider->getDescription());
+        $this->setLocalDescription($provider->getLocalDescription());
         $smetadata = $provider->getStaticMetadata();
         if (!empty($smetadata))
         {
@@ -1364,7 +1367,15 @@ class Provider {
     }
     public function getLocalName()
     {
-        return unserialize($this->lname);
+        $p = unserialize($this->lname);
+        if(empty($p))
+        {
+            return array();
+        }
+        else
+        {
+            return $p;
+        }
     }
 
     public function getNameLocalized()
@@ -2728,6 +2739,44 @@ return $this->is_locked;
                 $this->setExtendMetadata($geo);
             }
         }
+        if(array_key_exists('desc',$ext) && is_array($ext['desc']))
+        {
+            $ldesc = array();
+            foreach($ext['desc'] as $k=> $p)
+            {
+               if($p['lang'] == 'en')
+               {
+                  $this->setDescription($p['val']);
+               }
+               $ldesc[$p['lang']] = $p['val'];
+            }
+            $this->setLocalDescription($ldesc);
+
+        }
+        if($type == 'sp')
+        {
+            if(array_key_exists('idpdisc',$ext) && is_array($ext['idpdisc']))
+            {
+                foreach($ext['idpdisc'] as $idpdiscs)
+                {
+                    $disc = new ServiceLocation;
+                    $disc->setDiscoveryResponse($idpdiscs['url'],$idpdiscs['index)']);
+                    $disc->setProvider($this);
+                    $this->setServiceLocation($disc);
+                }
+            }
+            if(array_key_exists('init',$ext) && is_array($ext['init']))
+            {
+                foreach($ext['init'] as $inits)
+                {
+                    $rinit = new ServiceLocation;
+                    $rinit->setRequestInitiator($inits['url']);
+                    $rinit->setProvider($this);
+                    $this->setServiceLocation($rinit);
+                }
+
+            }
+        }
     }
 
     private function IDPSSODescriptorFromArray($b)
@@ -2788,9 +2837,18 @@ return $this->is_locked;
 
                 $cert->setType('sso');
                 $cert->setCertUse($c['use']);
-                if (!empty($c['keyname']))
+                if (!empty($c['keyname']) )
                 {
-                    $cert->setKeyname($c['keyname']);
+                    if(is_array($c['keyname']))
+                    {
+                        $cert->setKeyname(implode(',',$c['keyname']));
+                    }
+                    else
+                    {
+                        $cert->setKeyname($c['keyname']);
+                    }
+                    
+                    
                 }
                 $cert->setProvider($this);
                 $this->setCertificate($cert);
@@ -2858,7 +2916,14 @@ return $this->is_locked;
                 $cert->setCertUse($c['use']);
                 if (!empty($c['keyname']))
                 {
-                    $cert->setKeyname($c['keyname']);
+                    if(is_array($c['keyname']))
+                    {
+                        $cert->setKeyname(implode(',',$c['keyname']));
+                    }
+                    else
+                    {
+                        $cert->setKeyname($c['keyname']);
+                    }
                 }
                 $cert->setProvider($this);
                 $this->setCertificate($cert);
@@ -2898,9 +2963,65 @@ return $this->is_locked;
         }
         if (array_key_exists('details', $a))
         {
-            $this->setName($a['details']['organization']['organizationname']);
-            $this->setDisplayName($a['details']['organization']['organizationdisplayname']);
-            $this->setHelpdeskUrl($a['details']['organization']['organizationurl']);
+           //    $this->setName($a['details']['organization']['organizationname']);
+           // $this->setDisplayName($a['details']['organization']['organizationdisplayname']);
+
+            foreach($a['details']['organization'] as $k=> $o)
+            {
+             
+                 if($k == 'organizationname' and is_array($o))
+                 {
+                      $lorgname = array();
+                      foreach($o as $p)
+                      {
+                          if(!empty($p['lang']) and !empty($p['val']))
+                          {
+                              if($p['lang'] == 'en')
+                              {
+                                   $this->setName($p['val']);
+                              }
+                              $lorgname[$p['lang']] = $p['val'];
+                          }
+                      }
+                      
+                      $this->setLocalName($lorgname); 
+                 }
+                 elseif($k == 'organizationdisplayname' and is_array($o))
+                 {
+                      $lorgname = array();
+                      foreach($o as $p)
+                      {
+                          if(!empty($p['lang']) and !empty($p['val']))
+                          {
+                              if($p['lang'] == 'en')
+                              {
+                                   $this->setDisplayName($p['val']);
+                              }
+                              $lorgname[$p['lang']] = $p['val'];
+                          }
+                      }
+                      $this->setLocalDisplayName($lorgname); 
+
+                 }
+                 elseif($k == 'organizationurl' and is_array($o))
+                 {
+                      $lorgname = array();
+                      foreach($o as $p)
+                      {
+                          if(!empty($p['lang']) and !empty($p['val']))
+                          {
+                              if($p['lang'] == 'en')
+                              {
+                                   $this->setHelpdeskUrl($p['val']);
+                              }
+                              $lorgname[$p['lang']] = $p['val'];
+                          }
+                      }
+                      $this->setLocalHelpdeskUrl($lorgname); 
+
+                 }
+            }
+            
             foreach ($a['details']['regpolicy'] as $rp)
             {
                 /**

@@ -89,7 +89,7 @@ class Certificate
     protected $is_default;
 
     /**
-     * @Column(type="string", nullable=true,length=128)
+     * @Column(type="string", nullable=true,length=512)
      */
     protected $keyname;
 
@@ -109,7 +109,7 @@ class Certificate
 
     public function setKeyname($keyname = null)
     {
-        $this->keyname = $keyname;
+        $this->keyname = str_replace(' ','',$keyname);
         return $this;
     }
 
@@ -445,8 +445,13 @@ class Certificate
         $keyname = $this->getKeyName();
         if (!empty($keyname))
         {
-            $KeyName_Node = $KeyInfo_Node->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:KeyName', $keyname);
-            $KeyInfo_Node->appendChild($KeyName_Node);
+            $keynames = explode(',',$keyname);
+            foreach($keynames as $v)
+            {
+                \log_message('debug','HHH8'.serialize($v));
+                $KeyName_Node = $KeyInfo_Node->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:KeyName', $v);
+                $KeyInfo_Node->appendChild($KeyName_Node);
+            }
         }
         $certtype = $this->getCertType();
         if ($certtype == 'X509Certificate')

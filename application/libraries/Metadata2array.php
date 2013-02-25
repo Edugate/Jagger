@@ -89,7 +89,7 @@ class Metadata2array {
         }
         $is_idp = false;
         $is_sp = false;
-        $entity['details']['organization'] = null;
+        $entity['details']['organization'] = array();
         $entity['details']['contacts'] = array();
         $entity['details']['regpolicy'] = array();
         foreach ($node->childNodes as $gnode)
@@ -126,10 +126,9 @@ class Metadata2array {
                             $entity['regdate'] = $enode->getAttribute('registrationInstant');
                             if ($enode->hasChildNodes())
                             {
-                                $children = $enode->childNodes();
-                                foreach ($children as $ch)
+                                foreach ($enode->childNodes as $ch)
                                 {
-                                    if ($ch->nodeName = 'mdrpi:RegistrationPolicy')
+                                    if ($ch->nodeName == 'mdrpi:RegistrationPolicy')
                                     {
                                         $chlang = $ch->getAttribute('xml:lang');
                                         $chvalue = $ch->nodeValue;
@@ -211,6 +210,8 @@ class Metadata2array {
         $result['servicelocations']['assertionconsumerservice'] = array();
         $result['extensions']['idpdisc'] = array();
         $result['extensions']['init'] = array();
+        $result['extensions']['desc'] = array();
+      
         foreach ($node->childNodes as $child)
         {
             if ($child->nodeName == "md:Extensions" OR $child->nodeName == "Extensions")
@@ -266,7 +267,7 @@ class Metadata2array {
                 {
                     if ($gchild->nodeName == "KeyName" OR $gchild->nodeName == "ds:KeyName")
                     {
-                        $cert['keyname'] = $gchild->nodeValue;
+                        $cert['keyname'][] = $gchild->nodeValue;
                     }
                     elseif ($gchild->nodeName == "ds:X509Data" OR $gchild->nodeName == "X509Data")
                     {
@@ -299,39 +300,13 @@ class Metadata2array {
             {
                 $ext['scope'][] = $enode->nodeValue;
             }
-            elseif($enode->nodeName == 'idpdisc:DiscoveryResponse')
+            elseif($enode->nodeName == 'idpdisc:DiscoveryResponse' OR $enode->nodeName == 'DiscoveryResponse')
             {
                 $ext['idpdisc'][] = array('binding'=>$enode->getAttribute('Binding'),'url'=>$enode->getAttribute('Location'),'order'=>$enode->getAttribute('index'));
             }
-            elseif($enode->nodeName == 'init:RequestInitiator')
+            elseif($enode->nodeName == 'init:RequestInitiator' OR $enode->nodeName == 'RequestInitiator')
             {
                 $ext['init'][] = array('binding'=>$enode->getAttribute('Binding'),'url'=>$enode->getAttribute('Location'));
-            }
-            elseif ($enode->nodeName == 'mdui:DiscoHints' && $enode->hasChildNodes())
-            {
-                foreach ($enode->childNodes as $gnode)
-                {
-                    $geovalue = array();
-                    if ($gnode->nodeName == 'mdui:GeolocationHint')
-                    {
-                        $geovalue = explode(',', str_ireplace('geo:', '', $gnode->nodeValue));
-                        if (count($geovalue) == 2)
-                        {
-                            $numericvalues = true;
-                            foreach ($geovalue as $g)
-                            {
-                                if (!is_numeric($g))
-                                {
-                                    $numericvalues = false;
-                                }
-                            }
-                            if ($numericvalues === TRUE)
-                            {
-                                $ext['geo'][] = array_values($geovalue);
-                            }
-                        }
-                    }
-                }
             }
             elseif ($enode->nodeName == 'mdui:UIInfo' && $enode->hasChildNodes())
             {
@@ -340,6 +315,36 @@ class Metadata2array {
                     /**
                      * @todo finish  
                      */
+                    if($gnode->nodeName == 'mdui:Description' OR $gnode->nodeName == 'Description')
+                    {
+                       $ext['desc'][] = array('lang'=>$gnode->getAttribute('xml:lang'),'val'=>$gnode->nodeValue);
+                    }
+                    elseif ($gnode->nodeName == 'mdui:DiscoHints' && $gnode->hasChildNodes())
+                    {
+                        foreach ($gnode->childNodes as $agnode)
+                        {
+                            $geovalue = array();
+                            if ($agnode->nodeName == 'mdui:GeolocationHint')
+                            {
+                                $geovalue = explode(',', str_ireplace('geo:', '', $agnode->nodeValue));
+                                if (count($geovalue) == 2)
+                                {
+                                      $numericvalues = true;
+                                      foreach ($geovalue as $g)
+                                      {
+                                          if (!is_numeric($g))
+                                          {
+                                              $numericvalues = false;
+                                          }
+                                      }
+                                      if ($numericvalues === TRUE)
+                                      {
+                                            $ext['geo'][] = array_values($geovalue);
+                                      }
+                                }
+                           }
+                      }
+                  }
                 }
                 
             }
@@ -348,15 +353,22 @@ class Metadata2array {
         {
             $ext = array();
         }
+        log_message('debug','HHH7'.serialize($ext['desc']));
         return $ext;
     }
 
     private function OrganizationConvert($node)
     {
         $org = array();
-        foreach ($node->childNodes as $child)
+        if($node->hasChildNodes())
         {
-            $org['' . str_replace('md:', '', strtolower($child->nodeName)) . ''] = $child->nodeValue;
+           foreach ($node->childNodes as $child)
+           {
+               if($child->nodeName == 'md:OrganizationName' OR $child->nodeName == 'OrganizationName' OR  $child->nodeName == 'md:OrganizationDisplayName' OR  $child->nodeName == 'OrganizationDisplayName' OR $child->nodeName == 'md:OrganizationURL' OR $child->nodeName == 'OrganizationURL')
+               {
+                  $org['' . str_replace('md:', '', strtolower($child->nodeName)) . ''][] = array('lang'=>$child->getAttribute('xml:lang'),'val'=> trim($child->nodeValue));
+               }
+           }
         }
         return $org;
     }

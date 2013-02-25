@@ -256,74 +256,62 @@ class MY_form_validation extends CI_form_validation {
 
 	function valid_url($str)
 	{
+                
 		if (empty($str))
 		{
 			return FALSE;
 		}
-		elseif (preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches))
+		else
 		{
+                        preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
 			if (empty($matches[2]))
 			{
+                               $this->set_message('valid_url', "incorrect URL  \"%s\" ");
+
 				return FALSE;
 			}
-			elseif ( ! in_array($matches[1], array('http', 'https'), TRUE))
+			elseif ( ! in_array($matches[1], array('http', 'https')) OR empty($matches[1]) )
 			{
+                               $this->set_message('valid_url', "incorrect protocol  \"%s\" ");
 				return FALSE;
 			}
+                        else
+                        {
+                               return TRUE;
+                        }
 
-			$str = $matches[2];
+
 		}
 
-		$str = 'http://'.$str;
-
-		// There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
-		// underscore to be a valid hostname character instead of a dash.
-		// Reference: https://bugs.php.net/bug.php?id=51192
-		if (version_compare(PHP_VERSION, '5.2.13', '==') === 0 OR version_compare(PHP_VERSION, '5.3.2', '==') === 0)
-		{
-			sscanf($str, 'http://%[^/]', $host);
-			$str = substr_replace($str, strtr($host, array('_' => '-', '-' => '_')), 7, strlen($host));
-		}
-
-		return (filter_var($str, FILTER_VALIDATE_URL) !== FALSE);
 	}
 
      function valid_url_or_empty($str)
      {
-         if(empty($str))
-         {
-             return TRUE;
-         }
-		elseif (preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches))
+		if (empty($str))
 		{
+			return TRUE;
+		}
+		else
+		{
+                        preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
 			if (empty($matches[2]))
 			{
-                                $this->set_message('valid_url_or_empty','Invalid URL in "%s"');
+                               $this->set_message('valid_url_or_empty', "incorrect URL  \"%s\" ");
+
 				return FALSE;
 			}
-			elseif ( ! in_array($matches[1], array('http', 'https'), TRUE))
+			elseif ( ! in_array($matches[1], array('http', 'https')) OR empty($matches[1]) )
 			{
-                                $this->set_message('valid_url_or_empty','Invalid Protocol in "%s"');
+                               $this->set_message('valid_url_or_empty', "incorrect protocol  \"%s\" ");
 				return FALSE;
 			}
+                        else
+                        {
+                               return TRUE;
+                        }
 
-			$str = $matches[2];
+
 		}
-
-		$str = 'http://'.$str;
-
-		// There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
-		// underscore to be a valid hostname character instead of a dash.
-		// Reference: https://bugs.php.net/bug.php?id=51192
-		if (version_compare(PHP_VERSION, '5.2.13', '==') === 0 OR version_compare(PHP_VERSION, '5.3.2', '==') === 0)
-		{
-			sscanf($str, 'http://%[^/]', $host);
-			$str = substr_replace($str, strtr($host, array('_' => '-', '-' => '_')), 7, strlen($host));
-		}
-
-		return (filter_var($str, FILTER_VALIDATE_URL) !== FALSE);
-         
-
      }
 
 
@@ -355,10 +343,6 @@ class MY_form_validation extends CI_form_validation {
         return $result;
     }
 
-    function array_valid_url($urls_in_array)
-    {
-        return true;
-    }
 
     function setup_allowed()
     {

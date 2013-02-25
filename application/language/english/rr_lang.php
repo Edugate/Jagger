@@ -363,6 +363,7 @@ $lang['rhelp_bindingtype'] = 'Please select the binding type that your identity 
 $lang['rhelp_urlsinglesign'] = 'Please type the url of your single sign-on handler. E.g: https://idp.example.com/idp/profile/SAML2/Redirect/SSO';
 $lang['rhelp_supportedprotocols'] = 'These are the protocols that you support.';
 $lang['rhelp_cert'] = 'Paste your certificate here.';
+$lang['rhelp_multikeynames'] = 'Multiple keynames separeated with coma(s)';
 $lang['rr_meta_with_attr'] = 'Generated metadata will contain attributes requirements elements';
 $lang['rr_meta_with_noattr'] = 'Generated metadata will not contain attributes requirements elements';
 $lang['rr_include_attr_in_meta'] = 'Include required attributes in metadata';

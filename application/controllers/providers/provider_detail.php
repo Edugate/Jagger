@@ -602,7 +602,7 @@ class Provider_detail extends MY_Controller {
             $c_certData = $c->getCertData();
             if (!empty($c_certKeyname))
             {
-                $cString .='<b>'.lang('rr_keyname').':</b> <span>' . $c_certKeyname . '</span><br />';
+                $cString .='<b>'.lang('rr_keyname').':</b><br /> ' . str_replace(',','<br />',$c_certKeyname) . '<br />';
             }
 
             $data['idp_details'][$i]['name'] = '';
@@ -1203,7 +1203,7 @@ class Provider_detail extends MY_Controller {
             $cString .= '<b>'.lang('rr_certusage').': </b>' . $lang_c_certUse . ': <br />';
             if (!empty($c_certKeyname))
             {
-                $cString .= '<b>'.lang('rr_keyname').':</b> ' . $c_certKeyname . '<br />';
+                $cString .= '<b>'.lang('rr_keyname').':</b><br /> ' . str_replace(',','<br />',$c_certKeyname) . '<br />';
             }
             if (!empty($c_certData))
             {

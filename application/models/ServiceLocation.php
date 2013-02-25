@@ -134,6 +134,7 @@ class ServiceLocation
         {
             $this->bindingName = $binding;
         }
+        return $this;
     }
     
     public function  setDiscoveryResponse($url,$index)
@@ -142,6 +143,7 @@ class ServiceLocation
         $this->bindingName = 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol';
         $this->url = $url;
         $this->ordered_no = $index;
+        return $this;
     }
 
     public function getId()
