@@ -125,8 +125,8 @@ class Sp_edit extends MY_Controller {
         $this->form_validation->set_rules('acs_index[]', 'Assertion Consumer Service index', 'acs_index_check');
         $this->form_validation->set_rules('acs_url[]', 'Assertion Consumer Service url', '');
         $this->form_validation->set_rules('discindex[]', 'Discovery  Service index', 'acs_index_check');
-        $this->form_validation->set_rules('disc[]', 'Discovery Service url', 'xss_clean');
-        $this->form_validation->set_rules('initdisc[]', 'RequestInitiator', 'xss_clean');
+        $this->form_validation->set_rules('disc[]', 'Discovery Service url', 'valid_url_or_empty');
+        $this->form_validation->set_rules('initdisc[]', 'RequestInitiator', 'valid_url_or_empty');
        
         /**
          * @todo add validation of service locations
@@ -246,7 +246,6 @@ class Sp_edit extends MY_Controller {
             {
                if (array_key_exists($srvid, $initdisc))
                {
-                        log_message('debug', 'kkkkkkkkkkkkkkkkkkkkk'.$srvid.'::::::'.serialize($initdisc)); 
                     if(empty($initdisc[$srvid]))
                     {
                         $this->sp->removeServiceLocation($srv);
@@ -261,11 +260,11 @@ class Sp_edit extends MY_Controller {
                }
                elseif(array_key_exists('n', $initdisc) && !empty($initdisc['n']))
                {
-                        log_message('debug', 'kkkkkkkkkkkkkkkkkkkkk'.$srvid.'::::::'.serialize($initdisc)); 
                     $newinitdisc = new models\ServiceLocation;
                     $newinitdisc->setRequestInitiator($initdisc['n']);
                     $newinitdisc->setProvider($this->sp);
                     $this->em->persist($newinitdisc);
+                    $initdisc_updated = true;
                }
             }
         }
@@ -279,6 +278,15 @@ class Sp_edit extends MY_Controller {
             $newidpdisc->setProvider($this->sp);
             $this->em->persist($newidpdisc);
         } 
+
+         if(array_key_exists('n', $initdisc) && !empty($initdisc['n']) && empty($initdisc_updated))
+         {
+                    $newinitdisc = new models\ServiceLocation;
+                    $newinitdisc->setRequestInitiator($initdisc['n']);
+                    $newinitdisc->setProvider($this->sp);
+                    $this->em->persist($newinitdisc);
+
+         }
         /**
          * add new acs to database if filled
          */
