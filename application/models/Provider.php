@@ -2174,11 +2174,13 @@ return $this->is_locked;
         }
         foreach ($services as $srv)
         {
-            $ServiceLocation_Node = $srv->getServiceLocationToXML($e,$options);
-            /**
-             * @todo check if index or default can be added
-             */
-            $e->appendChild($ServiceLocation_Node);
+            if($srv->getType() == 'SingleSignOnService')
+            {
+               $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleSignOnService');
+               $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
+               $ServiceLocation_Node->setAttribute("Location", $srv->getUrl());
+               $e->appendChild($ServiceLocation_Node);
+            }
         }
 
         return $e;
@@ -2388,14 +2390,19 @@ return $this->is_locked;
         $services = $this->getServiceLocations()->getValues();
         foreach ($services as $srv)
         {
-            $ServiceLocation_Node = $srv->getServiceLocationToXML($e);
-            /**
-             * @todo check if index or default can be added
-             */
-            if(!empty($ServiceLocation_Node))
+            if($srv->getType() == 'AssertionConsumerService')
             {
+               $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AssertionConsumerService');
+               $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
+               $ServiceLocation_Node->setAttribute("Location", $srv->getUrl());
+               $ServiceLocation_Node->setAttribute("index", $srv->getOrder());
+               $is_defaultsrc = $srv->getDefault();
+               if (!empty($is_defaultsrc))
+               {
+                   $ServiceLocation_Node->setAttribute("isDefault", 'true');
+               }
                $e->appendChild($ServiceLocation_Node);
-            }
+             }
         }
         if(!empty($options) and is_array($options) and array_key_exists('attrs',$options) and !empty($options['attrs']))
         {

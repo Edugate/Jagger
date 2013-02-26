@@ -197,26 +197,34 @@ class ServiceLocation
         $this->setDefault($s['default']);
     }
 
-    public function getServiceLocationToXML(\DOMElement $parent)
+    public function getServiceLocationToXML(\DOMElement $parent,$options=null)
     {
         $s_type = $this->type;
-        if ($s_type == 'SingleSignOnService')
+        
+        if(!empty($options))
         {
-            $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleSignOnService');
-            $e->setAttribute("Binding", $this->bindingName);
-            $e->setAttribute("Location", $this->url);
-        } else if ($s_type == 'AssertionConsumerService')
-        {
-            $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AssertionConsumerService');
-            $e->setAttribute("Binding", $this->bindingName);
-            $e->setAttribute("Location", $this->url);
-            $e->setAttribute("index", $this->ordered_no);
-            $is_defaultsrc = $this->getDefault();
-            if (!empty($is_defaultsrc))
+            if ($options == 'IDPSSODescriptor' && $s_type == 'SingleSignOnService')
             {
-                $e->setAttribute("isDefault", 'true');
-            }
-        } 
+                $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleSignOnService');
+                $e->setAttribute("Binding", $this->bindingName);
+                $e->setAttribute("Location", $this->url);
+            } elseif ( $options == 'SPSSODescriptor' &&  $s_type == 'AssertionConsumerService')
+            {
+               $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AssertionConsumerService');
+               $e->setAttribute("Binding", $this->bindingName);
+               $e->setAttribute("Location", $this->url);
+               $e->setAttribute("index", $this->ordered_no);
+               $is_defaultsrc = $this->getDefault();
+               if (!empty($is_defaultsrc))
+               {
+                   $e->setAttribute("isDefault", 'true');
+               }
+           } 
+           else
+           {
+               $e = NULL;
+           }
+        }
         else
         {
             $e = NULL;
