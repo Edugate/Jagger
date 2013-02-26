@@ -127,6 +127,72 @@ class MY_form_validation extends CI_form_validation {
             return TRUE;
         }
     }
+    function cocurl_unique($url)
+    {
+        $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url));
+        if(!empty($e))
+        {
+            $this->set_message('cocurl_unique', "The %s : \"$url\" does already exist in the system.");
+            return FALSE;
+        }
+        else
+        {
+           return TRUE;
+        }
+    }
+    function cocurl_unique_update($url,$id)
+    {
+        $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url));
+        if(!empty($e))
+        {
+            if($id == $e->getId())
+            {
+                return TRUE;
+            }
+            else
+            {
+               $this->set_message('cocurl_unique_update', "The %s : \"$url\" does already exist in the system.");
+               return FALSE;
+            }
+        }
+        else
+        {
+           return TRUE;
+        }
+    }
+    function cocname_unique($name)
+    {
+        $e = $this->em->getRepository("models\Coc")->findOneBy(array('name' => $name));
+        if(!empty($e))
+        {
+            $this->set_message('cocname_unique', "The %s : \"$name\" does already exist in the system.");
+            return FALSE;
+        }
+        else
+        {
+           return TRUE;
+        }
+    }
+    function cocname_unique_update($name,$id)
+    {
+        $e = $this->em->getRepository("models\Coc")->findOneBy(array('name' => $name));
+        if(!empty($e))
+        {
+            if($id == $e->getId())
+            {
+               return TRUE;
+            }
+            else
+            {
+                $this->set_message('cocname_unique', "The %s : \"$name\" does already exist in the system.");
+                return FALSE;
+            }
+        }
+        else
+        {
+           return TRUE;
+        }
+    }
   
     function entityid_unique_update($entityid,$id)
     {

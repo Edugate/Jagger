@@ -124,6 +124,11 @@ class Provider {
     protected $lprivacyurl;
 
     /**
+     * @ManyToOne(targetEntity="Coc",inversedBy="provider")
+     */
+     protected $coc;
+
+    /**
      * registrar is used in metadata for registrationAuthority in mdrpi:RegistrationInfo
      * @Column(type="string", length=255, nullable=true)
      */
@@ -695,6 +700,20 @@ class Provider {
     {
         $this->displayname = $name;
         return $this;
+    }
+
+    public function setCoc($coc = NULL)
+    {
+        if(empty($coc))
+        {
+            $this->coc = NULL;
+        }
+        else
+        {
+           $this->coc = $coc;
+        }
+        return $this;
+
     }
     
     public function setLocalDisplayName($name = NULL)
@@ -1294,6 +1313,11 @@ class Provider {
     public function getActive()
     {
         return $this->is_active;
+    }
+
+    public function getCoc()
+    {
+        return $this->coc;
     }
 
     public function getProtocol()
@@ -2364,12 +2388,14 @@ return $this->is_locked;
         $services = $this->getServiceLocations()->getValues();
         foreach ($services as $srv)
         {
-
             $ServiceLocation_Node = $srv->getServiceLocationToXML($e);
             /**
              * @todo check if index or default can be added
              */
-            $e->appendChild($ServiceLocation_Node);
+            if(!empty($ServiceLocation_Node))
+            {
+               $e->appendChild($ServiceLocation_Node);
+            }
         }
         if(!empty($options) and is_array($options) and array_key_exists('attrs',$options) and !empty($options['attrs']))
         {
@@ -2658,6 +2684,27 @@ return $this->is_locked;
                 }
                 break;
             case "SP":
+                /** add COC inside entity extensions  */
+                $dataprotection = $this->getCoc();
+                
+                if(!empty($dataprotection))
+                {
+                   $dataprotenabled = $dataprotection->getAvailable();
+                   if($dataprotenabled === TRUE)
+                   {
+                       $curl=$this->getCoc()->getUrl();
+                       $AttributesGroup_Node = $EntExtension_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:attribute', 'mdattr:EntityAttributes');
+                       $EntExtension_Node->appendChild($AttributesGroup_Node);
+                       $Attribute_Node=$AttributesGroup_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:Attribute');
+                       $Attribute_Node->setAttribute('Name','http://macedir.org/entity-category');
+                       $Attribute_Node->setAttribute('NameFormat','urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+                       $AttributesGroup_Node->appendChild($Attribute_Node);
+                       $Attribute_Value=$Attribute_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:AttributeValue',$curl);
+                       $Attribute_Node->appendChild($Attribute_Value);
+                   }
+
+                } 
+               
                 $SSODesc_Node = $this->getSPSSODescriptorToXML($EntityDesc_Node,$options);
                 if (!empty($SSODesc_Node))
                 {

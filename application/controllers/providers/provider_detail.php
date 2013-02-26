@@ -924,7 +924,22 @@ class Provider_detail extends MY_Controller {
            $data['sp_details'][$i++]['value'] =  $lvalues ;
         }
 
+        $data['sp_details'][$i]['name'] = 'Data protection Code of Conduct';
 
+        $coc = $sp->getCoc();
+        if(!empty($coc))
+        {
+           $cocvalue = $coc->getName().'<br />'.anchor($coc->getUrl());
+           if(!$coc->getAvailable())
+           {
+              $cocvalue .=' <span class="lbl lbl-disabled">'.lang('rr_disabled').'</span>';
+           }
+        }
+        else
+        {
+           $cocvalue = lang('rr_notset');
+        }
+        $data['sp_details'][$i++]['value'] = $cocvalue;
 
         $data['sp_details'][$i]['name'] = lang('rr_privacystatement');
         $privurl = $sp->getPrivacyUrl();

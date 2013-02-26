@@ -219,7 +219,7 @@ class ServiceLocation
         } 
         else
         {
-            $e = null;
+            $e = NULL;
         }
         return $e;
     }

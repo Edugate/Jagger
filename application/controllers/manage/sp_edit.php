@@ -127,6 +127,7 @@ class Sp_edit extends MY_Controller {
         $this->form_validation->set_rules('discindex[]', 'Discovery  Service index', 'acs_index_check');
         $this->form_validation->set_rules('disc[]', 'Discovery Service url', 'valid_url_or_empty');
         $this->form_validation->set_rules('initdisc[]', 'RequestInitiator', 'valid_url_or_empty');
+        $this->form_validation->set_rules('coc','Data Protection Code of Conduct','xss_clean');
        
         /**
          * @todo add validation of service locations
@@ -334,6 +335,24 @@ class Sp_edit extends MY_Controller {
         $nameids = $this->input->post('nameids');
         $registrationdate = $this->input->post('registerdate');
         $registrar = $this->input->post('registrar');
+        $coc = $this->input->post('coc');
+
+        if(isset($coc))
+        {
+           if($coc == '0') 
+           {
+              $this->sp->setCoc(NULL);
+           }
+           else
+           {
+              $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$coc));
+              if(!empty($c))
+              {
+                   $this->sp->setCoc($c);
+              }
+           }
+
+        }
         if(!empty($registrar))
         {
             $this->sp->setRegistrationAuthority($registrar);

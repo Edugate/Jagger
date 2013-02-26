@@ -715,29 +715,6 @@ class Form_element {
         $tmp .= '</li>';
          
          
-        $tmp .= '<li>'. form_label(lang('rr_privacystatement'), 'privacyurl') . form_input('privacyurl', set_value('privacyurl', $provider->getPrivacyUrl())).'</li>';
-
-
-        $lprivacyurls = $provider->getLocalPrivacyUrl();
-        if(is_array($lprivacyurls))
-        {
-             foreach($lprivacyurls as $k=>$v)
-             {
-                 $tmp .= '<li class="localized">';
-                 $tmp .= form_label(lang('rr_privacystatement') . ' <small>'.$langscodes[$k].'</small>', 'lprivacyurl['.$k.']');
-                 $tmp .= form_input(array('id'=>'lprivacyurl['.$k.']', 'name'=>'lprivacyurl['.$k.']' , 'value'=>set_value('lprivacyurl['.$k.']', $v)));
-             }
-            
-        }
-        else
-        {
-            $lprivacyurls = array();
-        }
-        $tmp .= '<li class="addlprivacyurl localized">';
-        $langscodes2 = array_diff_key($langscodes,$lprivacyurls);
-        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
-        $tmp .= '<button type="button" id="addlprivacyurl" name="addlprivacyurl" value="addlprivacyurl" class="btn">Add localized '.lang('rr_privacystatement').'</button>';
-        $tmp .= '</li>';
 
 
         $tmp .= '<li>'. form_label(lang('rr_validfrom'), 'validfrom');
@@ -802,7 +779,61 @@ class Form_element {
         
 
 
-        $tmp .= '</ol>'. form_fieldset_close() .'</div>'. $this->staticMetadata($provider) . $this->supportedProtocols($provider);
+        $tmp .= '</ol>'. form_fieldset_close() .'</div>';
+
+        $tmp .='<fieldset><legend class="accordionButton">DataProtection/Privacy</legend>';
+        $tmp .= '<ol class="accordionContent">';
+        $current_coc = $provider->getCoc();
+        if(!empty($current_coc))
+        {
+             $current_coc_id = $current_coc->getId();
+        }
+        else
+        {
+             $current_coc_id = 0;
+        }
+        $coc_dropdown['0'] = lang('rr_select');
+        $coccols = $this->em->getRepository("models\Coc")->findAll();
+        if(is_array($coccols) and count($coccols)>0)
+        {
+             $tmp .= '<li>';
+             $tmp .= form_label('Code of Conduct'.showHelp('Please contact to us if required COC url is not listed'),'coc');    
+             foreach($coccols as $c)
+             {
+                $coc_dropdown[$c->getId()] = $c->getName().' ('.$c->getUrl().')';
+             }
+             $tmp .= form_dropdown('coc',$coc_dropdown,$current_coc_id,array('id'=>'coc'));
+             $tmp .= '</li>';
+        
+        }
+
+        $tmp .= '<li>'. form_label(lang('rr_privacystatement'), 'privacyurl') . form_input('privacyurl', set_value('privacyurl', $provider->getPrivacyUrl())).'</li>';
+
+        $lprivacyurls = $provider->getLocalPrivacyUrl();
+        if(is_array($lprivacyurls))
+        {
+             foreach($lprivacyurls as $k=>$v)
+             {
+                 $tmp .= '<li class="localized">';
+                 $tmp .= form_label(lang('rr_privacystatement') . ' <small>'.$langscodes[$k].'</small>', 'lprivacyurl['.$k.']');
+                 $tmp .= form_input(array('id'=>'lprivacyurl['.$k.']', 'name'=>'lprivacyurl['.$k.']' , 'value'=>set_value('lprivacyurl['.$k.']', $v)));
+             }
+            
+        }
+        else
+        {
+            $lprivacyurls = array();
+        }
+        $tmp .= '<li class="addlprivacyurl localized">';
+        $langscodes2 = array_diff_key($langscodes,$lprivacyurls);
+        $tmp .= form_dropdown('langcode',$langscodes2, 'en', array('id'=>'langcode'));
+        $tmp .= '<button type="button" id="addlprivacyurl" name="addlprivacyurl" value="addlprivacyurl" class="btn">Add localized '.lang('rr_privacystatement').'</button>';
+        $tmp .= '</li>';
+          
+        $tmp .= '</ol>';
+        $tmp .= form_fieldset_close();
+
+        $tmp .=  $this->staticMetadata($provider) . $this->supportedProtocols($provider);
         $tmp .= $this->generateCertificatesForm($provider);
         /**
          * @todo add  service locations for sp
@@ -1258,6 +1289,30 @@ class Form_element {
         $result .= form_dropdown('policy', $this->ci->config->item('policy_dropdown'), $arp->getPolicy());
         $result .= '</li></ol>' . form_fieldset_close();
         return $result;
+    }
+    public function generateAddCoc()
+    {
+       $r = form_fieldset('');
+       $r .= '<ol>';
+       $r .= '<li>'.form_label(lang('coc_enabled'), 'cenabled') . form_checkbox('cenabled','accept').'</li>';
+       $r .= '<li>'.form_label(lang('coc_shortname'), 'name') . form_input('name', set_value('name')).'</li>';
+       $r .= '<li>'.form_label(lang('coc_url'), 'url') . form_input('url', set_value('url')).'</li>';
+       $r .= '<li>'.form_label(lang('coc_description'), 'description') . form_textarea('description', set_value('description')).'</li>';
+       $r .= '</ol>';
+       $r .= form_fieldset_close();
+       return $r;
+    }
+    public function generateEditCoc(models\Coc $coc)
+    {
+       $r = form_fieldset('');
+       $r .= '<ol>';
+       $r .= '<li>'.form_label(lang('coc_enabled'), 'cenabled') . form_checkbox('cenabled','accept',set_value('cenabled',$coc->getAvailable())).'</li>';
+       $r .= '<li>'.form_label(lang('coc_shortname'), 'name') . form_input('name', set_value('name',$coc->getName())).'</li>';
+       $r .= '<li>'.form_label(lang('coc_url'), 'url') . form_input('url', set_value('url',$coc->getUrl())).'</li>';
+       $r .= '<li>'.form_label(lang('coc_description'), 'description') . form_textarea('description', set_value('description',$coc->getDescription())).'</li>';
+       $r .= '</ol>';
+       $r .= form_fieldset_close();
+       return $r;
     }
 
 }

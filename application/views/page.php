@@ -197,6 +197,7 @@ $pageTitle .= $this->title;
                                     </a></li>
                                 <li><a href="<?php echo $base_url; ?>"><?php echo lang('general'); ?></a>
                                     <ul>
+                                        <li><a href="<?php echo $base_url; ?>manage/coc/show"><?php echo lang('coc_menulink'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>attributes/attributes/show"><?php echo lang('rr_attr_defs'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>manage/importer"><?php echo lang('rr_meta_importer'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users'); ?> &nbsp;&gt;</a>
