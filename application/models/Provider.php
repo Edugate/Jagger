@@ -1675,6 +1675,95 @@ return $this->is_locked;
         return $p;
 
     }
+
+    /**
+     * localized description into mdui
+     */
+    
+    public function getExtendedDescription($type=NULL)
+    {
+        
+        if(empty($type))
+        {
+            $type = strtolower($this->getType);
+        }
+        else
+        {
+            $type= strtolower($type);
+        }
+        $extends = $this->getExtendMetadata();
+        \log_message('debug','HHHH: '.$extends->count());
+        if(!empty($extends))
+        foreach($extends as $e)
+        {
+           if(($e->getType() == $type) && ($e->getNamespace() == 'mdui') && ($e->getElement() == 'Description'))
+           {
+               continue;
+           }
+           else
+           {
+              $extends->removeElement($e);
+           }
+        }
+        \log_message('debug','HHHH: '.$extends->count());
+        return $extends;
+
+    }
+    /**
+     * $type should be sp or idp
+     */
+    public function getMduiToXML(\DOMElement $parent,$type=NULL)
+    {
+        if(empty($type))
+        {
+            $type = strtolower($this->type);
+        }
+        $this->ci = & get_instance();
+        $this->em = $this->ci->doctrine->em;
+        $this->ci->load->helper('url');
+
+        $ext = $this->getExtendMetadata();
+        /**
+         * leave only elements matching criteria
+         */
+        foreach($ext as $v)
+        {
+            if(($v->getType() == $type) && ($v->getNamespace() == 'mdui'))
+            {
+                continue;
+            }
+            else
+            {
+                $ext->removeElement($v);
+            }
+        }
+        $ext_count = $ext->count();
+        $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
+        $this->logo_baseurl = $this->ci->config->item('rr_logobaseurl');
+        
+        if (empty($this->logo_baseurl))
+        {
+            $this->logo_baseurl = base_url();
+        }        
+        $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
+
+        $en_displayname = FALSE;
+
+        $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
+        /**
+         * setting localized mdui:DisplayName 
+         */
+        foreach($ext as $dm)
+        {
+            if($dm->getElement() == 'DisplayName')
+            {
+                
+            }
+        }
+        
+
+    }
+ 
     public function getWayfList()
     {
          $w = $this->wayflist;
@@ -2317,7 +2406,6 @@ return $this->is_locked;
                     {
                         $Element = $child->getElement();
                         $ElementValue = $child->getElementValue();
-
                         if ($Element == 'Logo')
                         {
                             //$ElementValue = $this->logo_url . $child->getElementValue();

@@ -122,7 +122,7 @@ class Sp_edit extends MY_Controller {
         $this->form_validation->set_rules('registerdate', 'Registration date', 'trim|xss_clean|valid_date_past');
         $this->form_validation->set_rules('registar', 'Registration authority', 'trim|xss_clean|max_length[250]');
         $this->form_validation->set_rules('usestatic', 'Static metdatada', "valid_static[" . base64_encode($this->input->post('staticmetadatabody')) . ":::" . $this->input->post('entityid') . " ]");
-        $this->form_validation->set_rules('acs_index[]', 'Assertion Consumer Service index', 'acs_index_check');
+        $this->form_validation->set_rules('acs_index[]', 'Assertion Consumer Service index', 'trim|acsindex_unique[acs_index[]]');
         $this->form_validation->set_rules('acs_url[]', 'Assertion Consumer Service url', '');
         $this->form_validation->set_rules('discindex[]', 'Discovery  Service index', 'acs_index_check');
         $this->form_validation->set_rules('disc[]', 'Discovery Service url', 'valid_url_or_empty');

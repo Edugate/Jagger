@@ -95,14 +95,17 @@ class Form_element {
         $locations = array();
         foreach ($provider->getServiceLocations() as $srv)
         {
-            $locations[$srv->getType()][] = array(
-                'id' => $srv->getId(),
-                'type' => $srv->getType(),
-                'binding' => $srv->getBindingName(),
-                'url' => $srv->getUrl(),
-                'index_number' => $srv->getOrder(),
-                'is_default' => $srv->getDefault()
-            );
+            if($srv->getType() != 'SingleSignOnService')
+            {
+                $locations[$srv->getType()][] = array(
+                   'id' => $srv->getId(),
+                   'type' => $srv->getType(),
+                   'binding' => $srv->getBindingName(),
+                   'url' => $srv->getUrl(),
+                   'index_number' => $srv->getOrder(),
+                   'is_default' => $srv->getDefault()
+                );
+            }
         }
         /**
          * ad one field for new ACS service
@@ -365,6 +368,17 @@ class Form_element {
         elseif ($type == 'SP')
         {
             $s = $this->generateServiceLocationsSpForm($provider);
+        }
+        elseif(!empty($action))
+        {
+            if($action == 'SP')
+            {
+                 $s = $this->generateServiceLocationsSpForm($provider);
+            }
+            elseif($action == 'IDP')
+            {
+                 $s = $this->generateServiceLocationsIdpForm($provider);
+            }
         }
 
         $t = $s;
@@ -838,7 +852,7 @@ class Form_element {
         /**
          * @todo add  service locations for sp
          */
-        $tmp .= $this->generateServiceLocationsForm($provider) . $this->generateContactsForm($provider);
+        $tmp .= $this->generateServiceLocationsForm($provider,'SP') . $this->generateContactsForm($provider);
         $tmp .= '<fieldset><legend class="accordionButton"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $provider->getId() . '">' . lang('rr_requiredattributes') . '</a></legend></fieldset>';
         $tmp .= '<fieldset><legend class="accordionButton"><a href="' . base_url() . 'manage/logos/provider/sp/' . $provider->getId() . '">' . lang('rr_logo') . '</a></legend></fieldset>';
         $tmp .= '<fieldset><legend class="accordionButton"><a href="' . base_url() . 'geolocation/show/' . $provider->getId() . '/sp">' . lang('rr_geolocation') . '</a></legend></fieldset></div>';

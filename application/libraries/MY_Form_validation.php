@@ -46,7 +46,7 @@ class MY_form_validation extends CI_form_validation {
     function alpha_dash_comma($str)
     {
 
-        $result =  (bool) preg_match('/^[\s-_a-z0-9,\.\@\:]+$/i', $str);
+        $result =  (bool) preg_match('/^[\/\+\=\s-_a-z0-9,\.\@\:]+$/i', $str);
        
         if($result === FALSE)
         {
@@ -384,6 +384,7 @@ class MY_form_validation extends CI_form_validation {
     function acs_index_check($acs_index)
     {
         $result = true;
+        log_message('debug','HHHH:'.$acs_index);
         if (!empty($acs_index) && is_array($acs_index))
         {
             $count = count($acs_index);
@@ -406,6 +407,21 @@ class MY_form_validation extends CI_form_validation {
             }
         }
 
+        return $result;
+    }
+    function acsindex_unique($acs_index,$field)
+    {
+        $a = $this->_field_data[$field]['postdata'];
+        $result = true;
+        if (!empty($a) && is_array($a))
+        {
+            if(count($a) != count(array_unique($a)))
+            {
+                  $this->set_message('acsindex_unique', "Incorrect or no value in one of  \"%s\"" );
+                  return false;
+            }
+
+        }
         return $result;
     }
 
