@@ -676,6 +676,7 @@ class Provider {
      */
     public function updated()
     {
+        \log_message('debug' , 'GG update providers updated time');
         $this->updatedAt = new \DateTime("now");
     }
 
@@ -742,6 +743,7 @@ class Provider {
 
     public function setEntityId($entity)
     {
+        $entity = trim($entity);
         if (!empty($entity))
         {
             $this->entityid = $entity;
@@ -888,7 +890,7 @@ class Provider {
         }
     }
 
-    public function setRegistrationAuthority($reg)
+    public function setRegistrationAuthority($reg=null)
     {
         $this->registrar = $reg;
         return $this;
@@ -944,6 +946,86 @@ class Provider {
         {
             $this->ldescription = NULL;
         }
+    }
+
+    /**
+     * updateLocalizedMdui1 for elements: Description, DisplayName, PrivacyURL, InformationURL
+     */
+    public function updateLocalizedMdui1($elementName,$descriptions,$type)
+    {
+       $this->ci = &get_instance();
+       $this->em = $this->ci->doctrine->em;
+       $ex = $this->getExtendMetadata();
+       $parent = null;
+       foreach($ex as $e)
+       {
+          if(!empty($parent))
+          {
+             break;
+          }
+          else
+          {
+              if(empty($p) && $e->getType() == $type && $e->getNameSpace() == 'mdui' && $e->getElement() == 'UIInfo')
+              {
+                  $parent = $e;
+              }
+          }
+       }
+       foreach($ex as $e)
+       {
+            if($e->getElement() == $elementName && $e->getType() == $type && $e->getNameSpace() == 'mdui')
+            {
+               $value = $e->getElementValue();
+               $t = $e->getAttributes();
+               $lvalue = $t['xml:lang'];
+               if(array_key_exists($lvalue,$descriptions))
+               {
+                   if(!empty($descriptions[$lvalue]))
+                   {
+                       $e->setValue($descriptions[$lvalue]);
+                   }
+                   else
+                   {
+                       $ex->removeElement($e);
+                       $this->em->remove($e);
+                   }
+                   unset($descriptions[$lvalue]);
+               }
+               else
+               {
+                  $ex->removeElement($e);
+                  $this->em->remove($e);
+               }
+          }
+       }
+       if(count($descriptions) > 0)
+       {
+          foreach($descriptions as $k=>$v)
+          {
+             $nelement = new ExtendMetadata();
+             $nelement->setType($type);
+             $nelement->setNameSpace('mdui');
+             $nelement->setElement($elementName);
+             $nelement->setValue($v);
+             $attr=array('xml:lang'=>$k);
+             $nelement->setAttributes($attr);
+             if(empty($parent))
+             {
+                $parent = new ExtendMetadata();
+                $parent->setType($type);
+                $parent->setNameSpace('mdui');
+                $parent->setElement('UIInfo');
+                $ex->add($parent);
+                $parent->setProvider($this);
+                $this->em->persist($parent);
+             }
+             $nelement->setParent($parent);
+             $ex->add($nelement);
+             $nelement->setProvider($this);
+             $this->em->persist($nelement);
+                     
+          }
+       }
     }
 
     public function setWayfList($wayflist = null)
@@ -1436,6 +1518,22 @@ class Provider {
         return unserialize($this->ldisplayname);
     }
 
+    public function getLocalDisplayNamesToArray($type)
+    {
+        $result = array();
+        $ex = $this->getExtendMetadata();
+        foreach($ex as $v)
+        {
+            if($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'DisplayName')
+            {
+               $l = $v->getAttributes();
+               $result[$l['xml:lang']] = $v->getElementValue();
+            }
+        }
+        return $result;   
+        
+    }
+
     public function getDisplayNameLocalized()
     {
         $t['en'] = $this->displayname;
@@ -1595,6 +1693,22 @@ class Provider {
        return unserialize($this->lprivacyurl);
     }
 
+    
+    public function getLocalPrivacyStatementsToArray($type)
+    {
+        $result = array();
+        $ex = $this->getExtendMetadata();
+        foreach($ex as $v)
+        {
+            if($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'PrivacyStatementURL')
+            {
+               $l = $v->getAttributes();
+               $result[$l['xml:lang']] = $v->getElementValue();
+            }
+        }
+        return $result;   
+    }
+
     public function getPrivacyUrlLocalized()
     {
         $t['en'] = $this->privacyurl;
@@ -1645,10 +1759,30 @@ return $this->is_locked;
         return $this->description;
     }
 
+    /**
+     * @todo to remove in 2.x 
+     */
     public function getLocalDescription()
     {
         return unserialize($this->ldescription);
     }
+
+
+    public function getLocalDescriptionsToArray($type)
+    {
+        $result = array();
+        $ex = $this->getExtendMetadata();
+        foreach($ex as $v)
+        {
+            if($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'Description')
+            {
+               $l = $v->getAttributes();
+               $result[$l['xml:lang']] = $v->getElementValue();
+            }
+        }
+        return $result;   
+    }
+
     
     public function getDescriptionLocalized()
     {
@@ -1692,7 +1826,6 @@ return $this->is_locked;
             $type= strtolower($type);
         }
         $extends = $this->getExtendMetadata();
-        \log_message('debug','HHHH: '.$extends->count());
         if(!empty($extends))
         foreach($extends as $e)
         {
@@ -1705,7 +1838,6 @@ return $this->is_locked;
               $extends->removeElement($e);
            }
         }
-        \log_message('debug','HHHH: '.$extends->count());
         return $extends;
 
     }
@@ -1726,41 +1858,195 @@ return $this->is_locked;
         /**
          * leave only elements matching criteria
          */
+        $extarray = array();
         foreach($ext as $v)
         {
             if(($v->getType() == $type) && ($v->getNamespace() == 'mdui'))
             {
-                continue;
-            }
-            else
-            {
-                $ext->removeElement($v);
+                $extarray[$v->getElement()][] = $v;
             }
         }
-        $ext_count = $ext->count();
-        $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
-        $this->logo_baseurl = $this->ci->config->item('rr_logobaseurl');
-        
-        if (empty($this->logo_baseurl))
+        if(array_key_exists('Logo',$extarray))
         {
-            $this->logo_baseurl = base_url();
-        }        
-        $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
+           $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
+           $this->logo_baseurl = $this->ci->config->item('rr_logobaseurl');
+        
+           if (empty($this->logo_baseurl))
+           {
+               $this->logo_baseurl = base_url();
+           }        
+           $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
+        }
 
         $en_displayname = FALSE;
-
+        $en_description = FALSE;
+        $en_informationurl = FALSE;
+        $en_privacyurl = FALSE;
         $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
-        /**
-         * setting localized mdui:DisplayName 
-         */
-        foreach($ext as $dm)
+
+        foreach($extarray as $key=>$value)
         {
-            if($dm->getElement() == 'DisplayName')
+            if($key == 'DisplayName')
             {
-                
+                foreach($value as $dm)
+                {
+                    $lang = $dm->getAttributes();
+                    if(isset($lang['xml:lang']))
+                    {
+                        $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui','mdui:DisplayName',$dm->getElementValue());
+                        $dnode->setAttribute('xml:lang', ''.$lang['xml:lang'].'');
+                        if($lang['xml:lang'] == 'en')
+                        {
+                            $en_displayname = TRUE;
+                        }
+                        $e->appendChild($dnode);
+                    }
+
+                }
+            }
+            elseif($key == 'Description')
+            {
+                foreach($value as $dm)
+                {
+                    $lang = $dm->getAttributes();
+                    if(isset($lang['xml:lang']))
+                    {
+                       $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui','mdui:Description',$dm->getElementValue());
+                       $dnode->setAttribute('xml:lang', ''.$lang['xml:lang'].'');
+                       if($lang['xml:lang'] == 'en')
+                       {
+                          $en_description = TRUE;
+                       }
+                       $e->appendChild($dnode);
+                    }
+
+                }
+            }
+            elseif($key == 'PrivacyStatementURL')
+            {
+                foreach($value as $dm)
+                {
+                    $lang = $dm->getAttributes();
+                    if(isset($lang['xml:lang']))
+                    {
+                       $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui','mdui:PrivacyStatementURL',$dm->getElementValue());
+                       $dnode->setAttribute('xml:lang', ''.$lang['xml:lang'].'');
+                       if($lang['xml:lang'] == 'en')
+                       {
+                          $en_privacyurl = TRUE;
+                       }
+                       $e->appendChild($dnode);
+                    }
+
+                }
+            }
+            elseif($key == 'InformationURL')
+            {
+                foreach($value as $dm)
+                {
+                    $lang = $dm->getAttributes();
+                    if(isset($lang['xml:lang']))
+                    {
+                       $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui','mdui:InformationURL',$dm->getElementValue());
+                       $dnode->setAttribute('xml:lang', ''.$lang['xml:lang'].'');
+                       if($lang['xml:lang'] == 'en')
+                       {
+                          $en_informationurl = TRUE;
+                       }
+                       $e->appendChild($dnode);
+                    }
+
+                }
+            }
+            elseif($key == 'Logo')
+            {
+                foreach($value as $dm)
+                {
+                    if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $dm->getElementValue(), $matches)))
+                    {
+                        $ElementValue = $this->logo_url . $dm->getElementValue();
+                    }
+                    else
+                    {
+                        $ElementValue = $dm->getElementValue();
+                    }
+                    $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:Logo', $ElementValue);
+                    $attrs = $dm->getAttributes();
+                    if (!empty($attrs))
+                    {
+
+                       foreach ($attrs as $akey => $avalue)
+                       {     
+                           $dnode->setAttribute($akey,$avalue);
+                       }
+                    }
+                    $e->appendChild($dnode);
+
+                }
+
+            }
+            elseif($key == 'GeolocationHint')
+            {
+                $disconode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:DiscoHints');
+                foreach($value as $dm)
+                {
+                     $dnode = $disconode->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:GeolocationHint', $dm->getElementValue()); 
+                     $disconode->appendChild($dnode);
+                }
+                $e->appendChild($disconode);
+            }
+
+        }
+        if($en_description !== TRUE)
+        {
+            $gd = $this->getDescription();
+            if(empty($gd))
+            {
+                $gd = 'Description not provided';
+            }
+            $dnode=$e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui','mdui:Description',$gd);
+            $dnode->setAttribute('xml:lang','en');
+            $e->appendChild($dnode);
+        }
+
+
+        if($en_displayname !== TRUE)
+        {
+            $gd = $this->getDisplayName();
+            if(empty($gd))
+            {
+                $gd = $this->getName();
+            }
+            if(empty($gd))
+            {
+                $gd->getEntityId();
+            }
+            $dnode=$e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui','mdui:DisplayName',$gd);
+            $dnode->setAttribute('xml:lang','en');
+            $e->appendChild($dnode);
+        }
+        if($en_informationurl !== TRUE)
+        {
+            $gd = $this->getHelpdeskURL();
+            if(!empty($gd))
+            {
+               $dnode=$e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui','mdui:InformationURL',htmlspecialchars($gd));
+               $dnode->setAttribute('xml:lang','en');
+               $e->appendChild($dnode);
+            }
+        }
+        if($en_privacyurl !== TRUE)
+        {
+            $gd = $this->getPrivacyUrl();
+            if(!empty($gd))
+            {
+               $dnode=$e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui','mdui:PrivacyStatementURL',htmlspecialchars($gd));
+               $dnode->setAttribute('xml:lang','en');
+               $e->appendChild($dnode);
             }
         }
         
+        return $e; 
 
     }
  
@@ -2068,37 +2354,12 @@ return $this->is_locked;
         $Extensions_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
 
         /* UIInfo */
-        $UIInfo_Node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
-        $d_element = 'DisplayName';
+        $UIInfo_Node = $this->getMduiToXML($Extensions_Node,'idp');
+        if(!empty($UIInfo_Node))
+        {
+            $Extensions_Node->appendChild($UIInfo_Node);
+        }
 
-        $localized_dvalues = $this->getDisplayNameLocalized();
-        foreach($localized_dvalues as $k=>$v)
-        {
-            $d_value = htmlspecialchars($v);
-            $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
-            $d_node->setAttribute('xml:lang', ''.$k.'');
-            $UIInfo_Node->appendChild($d_node);
-        }
-        $d_element = 'Description';
-        $localized_dvalues = $this->getDescriptionLocalized();
-        foreach($localized_dvalues as $k=>$v)
-        {
-           $d_value = trim($v);
-           $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', htmlspecialchars($d_value));
-           $d_node->setAttribute('xml:lang', ''.$k.'');
-           $UIInfo_Node->appendChild($d_node);
-        }
-        $d_element = 'PrivacyStatementURL';
-        $localized_dvalues = $this->getPrivacyUrlLocalized();
-        foreach($localized_dvalues as $k=>$v)
-        {
-            if(!empty($v))
-            {
-                 $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $v);
-                 $d_node->setAttribute('xml:lang', ''.$k.'');
-                 $UIInfo_Node->appendChild($d_node);
-            }
-        }
 
 
         $scs = $this->getScopeToArray();
@@ -2112,78 +2373,6 @@ return $this->is_locked;
             }
         }
         $e->appendChild($Extensions_Node);
-
-        $other_extends = $this->getExtendMetadata();
-        $count_extends = count($other_extends);
-        $oextends = array();
-        if ($count_extends > 0)
-        {
-            foreach ($other_extends as $o)
-            {
-                $otype = $o->getType();
-                $oparent = $o->getParent();
-                if ($otype == 'idp' && empty($oparent))
-                {
-                    $oextends[] = $o;
-                }
-            }
-        }
-        if (count($oextends) > 0)
-        {
-            foreach ($oextends as $ex)
-            {
-                $namespace = $ex->getNamespace();
-                if ($namespace == 'mdui')
-                {
-                    $element_name = $ex->getElement();
-                    if ($element_name == 'UIInfo')
-                    {
-                        $root_extends = &$UIInfo_Node;
-                    } else
-                    {
-                        $root_extends = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $ex->getElement() . '');
-                    }
-
-
-                    $children_extends = $ex->getChildren();
-                    $is_extend_displayname = FALSE;
-                    $is_extend_description = FALSE;
-                    foreach ($children_extends as $child)
-                    {
-                        $Element = $child->getElement();
-                        $ElementValue = $child->getElementValue();
-                        if ($Element == 'Logo')
-                        {
-                            if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $child->getElementValue(), $matches)))
-                            {
-                                $ElementValue = $this->logo_url . $child->getElementValue();
-                            } else
-                            {
-                                $ElementValue = $child->getElementValue();
-                            }
-                        }
-                        $ch_node = $root_extends->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $Element . '', $ElementValue);
-                        $attrs = $child->getAttributes();
-                        if (!empty($attrs))
-                        {
-                            foreach ($child->getAttributes() as $akey => $avalue)
-                            {
-                                $ch_node->setAttribute($akey, $avalue);
-                            }
-                        }
-                        $root_extends->appendChild($ch_node);
-                    }
-                    $m_element = $ex->getElement();
-                    if ($root_extends->hasChildNodes())
-                    {
-                        $Extensions_Node->appendChild($root_extends);
-                    }
-                }
-            }
-        }
-
-        $Extensions_Node->appendChild($UIInfo_Node);
-
         $certs = $this->getCertificates();
         log_message('debug', gettype($certs));
         if (!empty($certs))
@@ -2207,7 +2396,7 @@ return $this->is_locked;
             {
                 log_message('debug', 'generating crt to xml');
                 $type = $cert->getType();
-                if ($type == 'sso')
+                if ($type == 'idpsso')
                 {
                     $certusage = $cert->getCertUse();
                     if (empty($certusage))
@@ -2266,6 +2455,13 @@ return $this->is_locked;
             if($srv->getType() == 'SingleSignOnService')
             {
                $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleSignOnService');
+               $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
+               $ServiceLocation_Node->setAttribute("Location", $srv->getUrl());
+               $e->appendChild($ServiceLocation_Node);
+            }
+            elseif($srv->getType() == 'IDPSingleLogoutService')
+            {
+               $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleLogoutService');
                $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
                $ServiceLocation_Node->setAttribute("Location", $srv->getUrl());
                $e->appendChild($ServiceLocation_Node);
@@ -2335,134 +2531,27 @@ return $this->is_locked;
            }
         }
         /* UIInfo */
-        $UIInfo_Node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
-        $d_element = 'DisplayName';
-        $localized_dvalues = $this->getDisplayNameLocalized();
-        foreach($localized_dvalues as $k=>$v)
+       // $UIInfo_Node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
+        $UIInfo_Node = $this->getMduiToXML($Extensions_Node,'sp');
+        if(!empty($UIInfo_Node))
         {
-            $d_value = htmlspecialchars($v);
-            $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
-            $d_node->setAttribute('xml:lang', ''.$k.'');
-            $UIInfo_Node->appendChild($d_node);
+             $Extensions_Node->appendChild($UIInfo_Node);
         }
-        $d_element = 'Description';
-        $localized_dvalues = $this->getDescriptionLocalized();
-        foreach($localized_dvalues as $k=>$v)
-        {
-            $d_value = htmlspecialchars(trim($v));
-            $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $d_value);
-            $d_node->setAttribute('xml:lang', ''.$k.'');
-            $UIInfo_Node->appendChild($d_node);
-        }
-
-        $d_element = 'PrivacyStatementURL';
-        $localized_dvalues = $this->getPrivacyUrlLocalized();
-        foreach($localized_dvalues as $k=>$v)
-        {
-            if(!empty($v))
-            {
-                 $d_node = $UIInfo_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $d_element . '', $v);
-                 $d_node->setAttribute('xml:lang', ''.$k.'');
-                 $UIInfo_Node->appendChild($d_node);
-                 $Extensions_Node->appendChild($UIInfo_Node);
-            }
-        }
-
-
-        $other_extends = $this->getExtendMetadata();
-        $count_extends = count($other_extends);
-        $oextends = array();
-        if ($count_extends > 0)
-        {
-            foreach ($other_extends as $o)
-            {
-                $otype = $o->getType();
-                $oparent = $o->getParent();
-                if ($otype == 'sp' && empty($oparent))
-                {
-                    $oextends[] = $o;
-                }
-            }
-        }
-        if (count($oextends) > 0)
-        {
-            foreach ($oextends as $ex)
-            {
-                $namespace = $ex->getNamespace();
-                if ($namespace == 'mdui')
-                {
-                    $element_name = $ex->getElement();
-                    if ($element_name == 'UIInfo')
-                    {
-                        $root_extends = &$UIInfo_Node;
-                    } else
-                    {
-                        $root_extends = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $ex->getElement() . '');
-                    }
-                    $children_extends = $ex->getChildren();
-                    $is_extend_displayname = FALSE;
-                    $is_extend_description = FALSE;
-                    foreach ($children_extends as $child)
-                    {
-                        $Element = $child->getElement();
-                        $ElementValue = $child->getElementValue();
-                        if ($Element == 'Logo')
-                        {
-                            //$ElementValue = $this->logo_url . $child->getElementValue();
-                            if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $child->getElementValue(), $matches)))
-                            {
-                                $ElementValue = $this->logo_url . $child->getElementValue();
-                            } else
-                            {
-                                if ($Element == 'DisplayName')
-                                {
-                                    $is_extend_displayname = TRUE;
-                                } elseif ($Element == 'Description')
-                                {
-                                    $is_extend_description = TRUE;
-                                }
-                                $ElementValue = $child->getElementValue();
-                            }
-                        } else
-                        {
-                            $ElementValue = $child->getElementValue();
-                        }
-
-                        $ch_node = $root_extends->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:' . $Element . '', $ElementValue);
-                        $attrs = $child->getAttributes();
-                        if (!empty($attrs))
-                        {
-                            foreach ($child->getAttributes() as $akey => $avalue)
-                            {
-                                $ch_node->setAttribute($akey, $avalue);
-                            }
-                        }
-                        $root_extends->appendChild($ch_node);
-                    }
-                    $m_element = $ex->getElement();
-
-
-
-                    if ($root_extends->hasChildNodes())
-                    {
-                        $Extensions_Node->appendChild($root_extends);
-                    }
-                }
-            }
-        }
-        $Extensions_Node->appendChild($UIInfo_Node);
 
 
         /**
          * @todo check if certificates as rtquired fo SP 
          */
-        $certs = $this->getCertificates()->getValues();
+        $certs = $this->getCertificates();
 
         foreach ($certs as $cert)
         {
+            if($cert->getType() == 'spsso')
+            {
 
-            $KeyDescriptor_Node = $cert->getCertificateToXML($e);
-            $e->appendChild($KeyDescriptor_Node);
+               $KeyDescriptor_Node = $cert->getCertificateToXML($e);
+               $e->appendChild($KeyDescriptor_Node);
+            }
         }
 
         $nameid = $this->getNameId()->getValues();
@@ -2490,6 +2579,13 @@ return $this->is_locked;
                    $ServiceLocation_Node->setAttribute("isDefault", 'true');
                }
                $e->appendChild($ServiceLocation_Node);
+             }
+             elseif($srv->getType() == 'SPSingleLogoutService')
+             {
+                $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleLogoutService');
+                $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
+                $ServiceLocation_Node->setAttribute("Location", $srv->getUrl());
+                $e->appendChild($ServiceLocation_Node);
              }
         }
         if(!empty($options) and is_array($options) and array_key_exists('attrs',$options) and !empty($options['attrs']))
@@ -2977,7 +3073,7 @@ return $this->is_locked;
                     }
                 }
 
-                $cert->setType('sso');
+                $cert->setType('idpsso');
                 $cert->setCertUse($c['use']);
                 if (!empty($c['keyname']) )
                 {
@@ -3054,7 +3150,7 @@ return $this->is_locked;
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
-                $cert->setType('sso');
+                $cert->setType('spsso');
                 $cert->setCertUse($c['use']);
                 if (!empty($c['keyname']))
                 {
