@@ -1,5 +1,5 @@
 <div id="pagetitle"><?php echo lang('rr_arpexcl1');?></div>
-<div id="subtitle"><h3><?php echo anchor(base_url().'providers/provider_detail/idp/'.$idp_id, $idp_name ) ;?></h3><h4><?php echo $idp_entityid;?></h4></div>
+<div id="subtitle"><h3><?php echo anchor(base_url().'providers/detail/show/'.$idp_id, $idp_name ) ;?></h3><h4><?php echo $idp_entityid;?></h4></div>
 
 <?php
 

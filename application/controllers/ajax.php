@@ -13,6 +13,25 @@ class Ajax extends MY_Controller {
         parent::__construct();
     }
 
+
+    public function consentCookies()
+    {
+       log_message('debug','GGGG consent');
+        if($this->input->is_ajax_request())
+        {
+           $lc = array(
+             'name'=>'cookieAccept',
+             'value'=>'accepted',
+             'secure'=>TRUE,
+             'expire'=> '2600000',
+          );
+           $this->input->set_cookie($lc);
+            return true;
+
+        }
+
+
+    }
     public function changelanguage($language)
     {
 

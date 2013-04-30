@@ -4,13 +4,18 @@ $lang['title_idplist'] = 'Identity Providers List';
 $lang['title_splist'] = 'Service Providers List';
 $lang['title_fedlist'] = 'Federations List';
 $lang['title_idpedit'] = 'IDP edit form';
+$lang['title_provideredit'] = 'Provider edit form';
 $lang['title_spedit'] = 'SP edit form';
 $lang['title_login'] = 'Login';
 $lang['title_fededit'] = 'Federation edit';
 $lang['title_addcoc'] = 'New Data protection Code of Conduct - Form';
 $lang['title_editcoc'] = 'Data protection Code of Conduct - Edit Form';
 $lang['coc_menulink'] = 'Data protection CoC';
+$lang['rr_accessmngmt'] = 'Access management';
 
+$lang['rr_uii'] = 'User Interface Information';
+$lang['rr_coc'] = 'Data protection Code of Conduct';
+$lang['rr_providername'] = 'Provider name';
 $lang['rr_yes'] = 'yes';
 $lang['rr_no'] = 'no';
 $lang['rr_add'] = 'Add';
@@ -44,6 +49,10 @@ $lang['bothprovidersmembers'] = 'Members who are IdPs and SPs';
 $lang['rr_provider'] = 'Provider';
 $lang['rr_message'] = 'Message';
 $lang['rr_local_authn'] = 'Local authentication';
+$lang['lbl_local'] = 'Local';
+$lang['lbl_external'] = 'External';
+$lang['lbl_static'] = 'Static metadata';
+
 $lang['federated_access'] = 'Federated Access';
 $lang['rr_detvisibletoothers'] = 'Details visible to other users';
 $lang['rr_fedlocalmanaged']= 'Federation localy managed';
@@ -111,6 +120,7 @@ $lang['rr_certificateencrypting'] = 'Certificate for encryption';
 
 $lang['rr_metadatalocation'] = 'Metadata location (optional)';
 $lang['rr_privacystatement'] = 'Privacy Statement URL (optional)';
+$lang['rr_defaultprivacyurl'] = 'Default Privacy Statement URL';
 $lang['rr_scope'] = 'Scope';
 $lang['rr_bindingtypesinglesign'] = 'BindingType of Single Sign-on Handler';
 $lang['rr_singlesignonurl'] = 'URL of Single Sign-on Handler';
@@ -135,6 +145,7 @@ $lang['rr_cnt_type_other'] = 'Other';
 
 
 $lang['rr_homeorganisationurl'] = 'HomeOrg URL';
+$lang['rr_homeurl'] = 'Home URL';
 
 
 $lang['rr_submitwait'] = 'Submit and wait for approval';
@@ -148,6 +159,7 @@ $lang['rr_description'] = 'Description';
 $lang['rr_staticmetadata'] = 'Static Metadata';
 $lang['rr_validto'] = 'Valid To';
 $lang['rr_validfrom'] = 'Valid From';
+$lang['rr_validfromto'] = 'Valid From/To';
 
 
 $lang['rr_noticechangearp'] = 'changing this value will change your ARP and metadata urls';
@@ -241,6 +253,7 @@ $lang['rr_descriptivename'] ='Descriptive Name';
 $lang['rr_regauthority'] = 'Registration Authority';
 $lang['rr_regdate'] = 'Registration Date';
 $lang['rr_regauthority_alt'] = 'It\'s not set but for metadata generation system will be using';
+$lang['rr_regpolicy'] = 'Registration Policy';
 $lang['rr_notset'] = 'not set';
 $lang['rr_unlimited'] ='unlimited';
 $lang['rr_external'] = 'External';
@@ -250,6 +263,7 @@ $lang['rr_metadata']='Metadata';
 $lang['rr_generatedbelow']='It\'s generated based on below informations';
 $lang['rr_memberof'] = 'Member of';
 $lang['rr_editarpexc'] = 'manage';
+$lang['rr_edit'] = 'edit';
 
 $lang['rr_entitymetadataurl'] = 'entity metadata URL';
 $lang['rr_circleoftrust'] = 'Circle of trust metadata URL';
@@ -357,6 +371,7 @@ $lang['rr_customattrscopednote'] = 'If attr type is Scoped and your IDP is shibb
 $lang['rr_userslist'] = 'List users in the system';
 $lang['rr_detforuser'] = 'Details for user';
 
+$lang['rr_providerdetails'] = 'Provider Details';
 $lang['rr_serviceproviderdetails'] = 'Service Provider details';
 $lang['rr_acs'] = 'AssertionConsumerService';
 $lang['rr_acs_fieldset'] = 'AssertionConsumerService';
@@ -402,7 +417,7 @@ $lang['rr_chngentsettings'] ='Change Entity Settings';
 $lang['rr_plsenterentityid'] = 'Please enter entityID';
 $lang['rr_entityactive'] = 'Entity active';
 $lang['rr_entitylocalext']='Entity as locally managed/external';
-$lang['rr_arpoverview'] = 'Attribute release policy overview by entityID';
+$lang['rr_arpoverview'] = 'Attribute release policy overview';
 $lang['rr_attronlyinarp'] = 'only in ARP';
 $lang['rr_attronlyinarpdet'] = 'attribute never appears in metadata';
 $lang['tbl_title_nameandentityid'] = 'Name and entityID';
@@ -430,6 +445,9 @@ $lang['rr_noperm_bulks'] = 'no access to bulk operations';
 $lang['rr_noperm_invmembers'] = 'no access to invite other providers';
 $lang['rr_noperm_accessmngt'] = 'no access to manage permissions';
 $lang['rr_entstate_updated'] = 'Entity status has been updated';
+$lang['rr_asboth'] = 'Identity/Service Provider';
+$lang['rr_msgasboth'] = 'Provider recognized as both IDP and SP';
+
 $lang['noticematrix1'] = 'Identity Providers who excluded your Service from their policy won\'t appear in the matrix. They might have set policy on their local storage';
 $lang['rrerror_noperm_regfed'] = 'You don\'t have permision to register new Federation';
 $lang['rrerror_noperm_viewfed'] = 'You have no access to display details for this federation';

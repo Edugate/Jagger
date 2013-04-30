@@ -15,7 +15,7 @@ $target = current_url();
 ?>
 
 <div id="subtitle">
-<h3><?php echo lang('serviceprovider').': <a href="'.base_url().'providers/provider_detail/sp/'.$spid.'">'.$sp_name.'</a>';?></h3>
+<h3><?php echo lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$spid.'">'.$sp_name.'</a>';?></h3>
 <h4><?php echo $sp_entityid ;?></h4>
 </div>
 

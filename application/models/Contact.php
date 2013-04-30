@@ -196,38 +196,31 @@ class Contact {
     {
         $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ContactPerson');
         $e->setAttribute('contactType', $this->type);
-        $sn = str_replace("@","(at)", $this->surname);
-        $fn = str_replace("@","(at)",$this->givenname);
-        if (empty($fn))
-        {
-            if (!empty($sn))
-            {
-                $sn_array = explode(" ", $sn);
-                $fn = $sn_array[0];
-                if (count($sn_array) > 1)
-                {
-                    unset($sn_array[0]);
-                    $sn = implode(" ", $sn_array);
-                }
-            }
-            else
-            {
-                $sn="unknown";
-                $fn="unknown";
-            }
-        }
         if(empty($sn))
         {
               $sn = "unknown";
         }
- 
-        $Contact_GivenName_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:GivenName', $fn);
-        $e->appendChild($Contact_GivenName_Node);
- 
-        $Contact_Surname_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SurName', $sn);
-        $e->appendChild($Contact_Surname_Node);
+        if(!empty($this->givenname))
+        { 
+           $Contact_GivenName_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:GivenName');
+           $Contact_GivenName_Node->appendChild($e->ownerDocument->createTextNode($this->givenname));
+           $e->appendChild($Contact_GivenName_Node);
+        }
+        if(!empty($this->surname))
+        {
+           $Contact_Surname_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SurName');
+           $Contact_Surname_Node->appendChild($e->ownerDocument->createTextNode($this->surname));
+           $e->appendChild($Contact_Surname_Node);
+        }
+        else
+        {
+           $Contact_Surname_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SurName');
+           $Contact_Surname_Node->appendChild($e->ownerDocument->createTextNode($this->email));
+           $e->appendChild($Contact_Surname_Node);
 
-        $Contact_Email_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EmailAddress', $this->email);
+        }
+        $Contact_Email_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EmailAddress');
+        $Contact_Email_Node->appendChild($e->ownerDocument->createTextNode($this->email));
         $e->appendChild($Contact_Email_Node);
         return $e;
     }

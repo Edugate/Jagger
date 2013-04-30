@@ -28,7 +28,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  *
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="tracker")
+ * @Table(name="tracker",indexes={@Index(name="resourcetype_idx", columns={"resourcetype"}),@Index(name="subtype_idx", columns={"subtype"})})
  * @author janusz
  */
 class Tracker

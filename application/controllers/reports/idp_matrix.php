@@ -69,8 +69,8 @@ class Idp_matrix extends MY_Controller {
             show_error('Identity Provider not found', 404);
         }
       
-        $has_read_access = $this->zacl->check_acl($idpis, 'read', 'idp', '');
-        $has_write_access = $this->zacl->check_acl($idpis, 'write', 'idp', '');
+        $has_read_access = $this->zacl->check_acl($idpid, 'read', 'idp', '');
+        $has_write_access = $this->zacl->check_acl($idpid, 'write', 'idp', '');
         if(!$has_read_access)
         {
             $data['content_view'] = 'nopermission';
@@ -205,11 +205,11 @@ class Idp_matrix extends MY_Controller {
             $t = null;
             if (!empty($arparray[$key]['name']))
             {
-                $t = '<a href="' . base_url() . 'providers/provider_detail/sp/' . $arparray[$key]['spid'] . '" title="' . $key . '">' . substr($arparray[$key]['name'], 0, 30) . '</a>';
+                $t = '<a href="' . base_url() . 'providers/detail/show/' . $arparray[$key]['spid'] . '" title="' . $key . '">' . substr($arparray[$key]['name'], 0, 30) . '</a>';
             }
             else
             {
-                $t = '<a href="' . base_url() . 'providers/provider_detail/sp/' . $arparray[$key]['spid'] . '" title="' . $key . '">' . substr($key, 0, 30) . '</a>';
+                $t = '<a href="' . base_url() . 'providers/detail/show/' . $arparray[$key]['spid'] . '" title="' . $key . '">' . substr($key, 0, 30) . '</a>';
             }
             array_unshift($mrows[$key], $t);
         }

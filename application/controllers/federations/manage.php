@@ -112,18 +112,18 @@ class Manage extends MY_Controller {
        {
            show_error('No members for federation',404);
        }
-       $preurl = base_url().'providers/provider_detail/';
+       $preurl = base_url().'providers/detail/show/';
        //$members = array('idp','sp','both');
        $members = array();
        foreach($fmembers as $m)
        {
-            $type = strtolower($m->getType());
             $name = $m->getName();
+            $type = strtolower($m->getType());
             if(empty($name))
             {
                 $name = $m->getEntityId();
             }
-            $members[''.$type.''][] = array('entityid'=>$m->getEntityId(),'name'=>$name,'url'=>$preurl.$type.'/'.$m->getId());
+            $members[''.$type.''][] = array('entityid'=>$m->getEntityId(),'name'=>$name,'url'=>$preurl.$m->getId());
        }
        
        echo json_encode($members);
@@ -403,9 +403,8 @@ class Manage extends MY_Controller {
         $i = 0;
         foreach ($members as $m)
         {
-            $type = strtolower($m->getType());
             $id = $m->getId();
-            $link = base_url() . "providers/provider_detail/" . $type . "/" . $id;
+            $link = base_url() . 'providers/detail/show/' . $id;
             $data['m_list'][$i]['name'] = $m->getName();
             $data['m_list'][$i]['entity'] = $m->getEntityId();
             $data['m_list'][$i++]['link'] = anchor($link, '&gt;&gt');

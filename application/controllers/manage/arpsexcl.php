@@ -71,8 +71,8 @@ class Arpsexcl extends MY_Controller {
         $is_local = $idp->getLocal();
         if (!$is_local)
         {
-            $data['error_message'] = anchor(base_url() . "providers/provider_detail/idp/" . $idp->getId(), $idp->getName()) . lang('rerror_cannotmanageexternal');
-            $data['content_view'] = "manage/idp_edit_view";
+            $data['error'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), $idp->getName()) .' ' . lang('rerror_cannotmanageexternal');
+            $data['content_view'] = "nopermission";
             $this->load->view('page', $data);
             return;
         }

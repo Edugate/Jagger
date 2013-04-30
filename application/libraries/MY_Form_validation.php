@@ -27,6 +27,7 @@ class MY_form_validation extends CI_form_validation {
     {
         parent::__construct();
         $this->em = $this->CI->doctrine->em;
+        $this->CI->load->helper('metadata_elements');
     }
 
     /*
@@ -43,6 +44,8 @@ class MY_form_validation extends CI_form_validation {
       }
      */
 
+
+
     function alpha_dash_comma($str)
     {
 
@@ -53,6 +56,13 @@ class MY_form_validation extends CI_form_validation {
             $this->set_message('alpha_dash_comma', "%s :  contains incorrect characters");
         }
         return $result;
+    }
+
+    function valid_contact($s)
+    {
+        log_message('debug','HHH : func'.serialize($s));
+        $this->set_message('valid_contact', "%s :  contains incorrect characters");
+        return false;
     }
 
     
@@ -140,6 +150,19 @@ class MY_form_validation extends CI_form_validation {
            return TRUE;
         }
     }
+    function valid_contact_type($str)
+    {
+       $allowed = array('administrative','technical','support','billing','other');
+       if(empty($str) or !in_array($str,$allowed))
+       {
+           $this->set_message('valid_contact_type','Invalid contact type');
+           return FALSE;
+       } 
+       else
+       {
+           return TRUE;
+       }
+    }
     function cocurl_unique_update($url,$id)
     {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url));
@@ -196,6 +219,8 @@ class MY_form_validation extends CI_form_validation {
   
     function entityid_unique_update($entityid,$id)
     {
+         log_message('debug', 'HHHH entity'.$entityid.' :: '.$id);
+        
          $ent = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
          if(!empty($ent))
          {
@@ -480,28 +505,26 @@ class MY_form_validation extends CI_form_validation {
         libxml_use_internal_errors(true);
          $this->CI->load->library('metadata_validator');
          $xmls = simplexml_load_string($metadata);
+         $namespases =  h_metadataNamespaces();
          if(!empty($xmls))
          {
 		//$docxml = new \DomDocument();
                 //$docxml->loadXML($metadata);
                	$docxml = new \DomDocument();
-        	libxml_use_internal_errors(true);
 		$docxml->loadXML($metadata);
 		$xpath = new \DomXPath($docxml);
-                $xpath->registerNamespace('md', 'urn:oasis:names:tc:SAML:2.0:metadata');
-		$xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
-            	$xpath->registerNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
-            	$xpath->registerNamespace('shibmd', 'urn:mace:shibboleth:metadata:1.0');
-            	$xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
-            	$xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
-
+                foreach($namespases as $k=>$v)
+                {
+                    $xpath->registerNamespace(''.$k.'',''.$v.'');
+                }
+                $y = $docxml->saveXML();
                 $first_attempt = $this->CI->metadata_validator->validateWithSchema($metadata);
                 if(empty($first_attempt))
                 {
 			$tmp_metadata = $docxml->saveXML();
                         //log_message('debug',$tmp_metadata);
                         $second_attempt = $this->CI->metadata_validator->validateWithSchema($tmp_metadata);
-                        if(!empty($second_attempt))
+                        if($second_attempt === TRUE)
                         {
                             $result = TRUE;
                         }

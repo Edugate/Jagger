@@ -28,9 +28,9 @@
 <?php
 //$this->load->view('autosuggest_script_view');
 
-$idp_link = anchor(base_url()."providers/provider_detail/idp/".$idpid,'<img src="' . base_url() . 'images/icons/home.png" />');
+$idp_link = anchor(base_url().'providers/detail/show/'.$idpid,'<img src="' . base_url() . 'images/icons/home.png" />');
 
-echo '<div id="subtitle"><h3>'.lang('identityprovider').': <a href="'.base_url().'providers/provider_detail/idp/'.$idpid.'">'.$idp_name.'</a></h3><h4>'.$idp_entityid.'</h4></div>';
+echo '<div id="subtitle"><h3>'.lang('identityprovider').': <a href="'.base_url().'providers/detail/show/'.$idpid.'">'.$idp_name.'</a></h3><h4>'.$idp_entityid.'</h4></div>';
 echo "<div id=\"subtitle\">";
 echo "<dl>";
 echo "<dd>Supported Attributes <a href=\"".base_url()."manage/supported_attributes/idp/".$idpid."\"><img src=\"".base_url()."images/icons/arrow.png\" /></a></dd>";

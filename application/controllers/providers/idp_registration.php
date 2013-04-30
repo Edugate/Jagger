@@ -80,7 +80,16 @@ class Idp_registration extends MY_Controller {
             $idp->setHelpdeskUrl($this->input->post('helpdeskurl'));
             $idp->setHomeUrl($this->input->post('homeurl'));
             $idp->setDefaultState();
-            $idp->setScope($this->input->post('scope'));
+            $scope = $this->input->post('scope');
+            if(empty($scope))
+            {
+               $scopeset = array();
+            }
+            else
+            {
+               $scopeset = explode(',',$scope);
+            }
+            $idp->setScope('idpsso',$scopeset);
             $privurl = $this->input->post('privacyurl');
             if(!empty($privurl))
             {

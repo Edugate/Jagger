@@ -46,6 +46,7 @@ class Arp_generator {
         $result = null;
         if (!empty($res) && is_array($res))
         {
+
             $result = $this->arpArrayToXML($res);
             if (empty($result))
             {
@@ -74,6 +75,8 @@ class Arp_generator {
 
     public function arpArrayToXML(array $release)
     {
+        $excluded = $this->idp->getExcarps();
+        $excluded_comment = implode(', ', $excluded);
         $docXML = new \DOMDocument();
         $docXML->formatOutput = true;
         $xpath = new \DomXPath($docXML);
@@ -91,6 +94,10 @@ class Arp_generator {
 			Attribute Release Policy for " . $this->idp->getName() . " (" . $this->idp->getEntityId() . ")\n
                         generated on " . date("D M j G:i:s T Y") . "\n
 			=======================================================\n";
+        if(!empty($excluded_comment))
+        {
+             $comment .= "\nList of excluded service providers from generated ARP:\n".$excluded_comment."\n";
+        }
         $c = $docXML->createComment(str_replace('--', '-' . chr(194) . chr(173) . '-', $comment));
         $AttributeFilterPolicyGroup->appendChild($c);
 

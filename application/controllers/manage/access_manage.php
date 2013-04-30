@@ -215,8 +215,15 @@ class Access_manage extends MY_Controller
            }
            $i++;
         }
-        $entity_link = anchor(base_url().'providers/provider_detail/'.$group.'/'.$id_of_entity,'<img src="'.base_url().'images/icons/arrow.png"/>');
+        $entity_link = anchor(base_url().'providers/detail/show/'.$id_of_entity,'<img src="'.base_url().'images/icons/arrow.png"/>');
         $data['resource_name'] = $ent->getName() . " (".$ent->getEntityId().")".$entity_link;
+        $data['resourcename'] = $ent->getName();
+        if(empty($data['resourcename']))
+        {
+           $data['resourcename'] = $ent->getEntityId();
+        }
+        $data['entityid'] = $ent->getEntityId();
+        $data['resourceid'] = $id_of_entity;
         $data['row'] = $row;
         $data['content_view'] = 'manage/access_manage_view';
         $this->load->view('page',$data);
@@ -384,11 +391,11 @@ class Access_manage extends MY_Controller
            }
            $i++;
         }
-        $fed_link = anchor(base_url().'federations/manage/show/'. base64url_encode($fed->getName()),'<img src="'.base_url().'images/icons/arrow.png"/>');
-        $data['resource_name'] = $fed->getName() .$fed_link;
+        $data['fedlink'] = base_url().'federations/manage/show/'. base64url_encode($fed->getName());
+        $data['resourcename'] = $fed->getName() ;
         $data['row'] = $row;
         $data['readlegend'] = 'Read: "deny" only applied when federation is not public.';
-        $data['content_view'] = 'manage/access_manage_view';
+        $data['content_view'] = 'manage/fedaccess_manage_view';
         $this->load->view('page',$data);
         
     

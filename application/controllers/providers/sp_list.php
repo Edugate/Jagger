@@ -99,7 +99,7 @@ class Sp_list extends MY_Controller {
             {
                 $regcol = '';
             }
-            $i_link = base_url() . "providers/provider_detail/sp/" . $i->getId();
+            $i_link = base_url() . "providers/detail/show/" . $i->getId();
             $is_available = $i->getAvailable();
             $displayname = $i->getDisplayName(50);
             if(empty($displayname))

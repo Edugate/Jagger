@@ -1,43 +1,43 @@
 @import "blueprint/buttons";
 form {
-       counter-reset: fieldsets;
-   	background: lighten($form-background-color,10%);
-	border-radius: 3px;
-        -khtml-border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	padding: 20px;
-	width: auto;
+    counter-reset: fieldsets;
+    background: lighten($form-background-color,10%);
+    border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    padding: 20px;
+    width: auto;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-        fieldset {
-            border: none;
-            margin-bottom: 10px;
-        }
-           fieldset:last-of-type {
-           margin-bottom: 0;
-        }
-        legend.on:before{
-          content:url(../images/icons/control-270.png);
-          margin-right: 7px;
-          float: left;
-       }
-       legend.off:before{
-          content:url(../images/icons/control.png);
-          margin-right: 7px;
-          float: left;
-       }
-       label {
-          display: block;
-          float: left;
-          padding-right: 10px;
-          //text-align: right;
-          min-width: 40%;
-       }
-       textarea {
-          width: auto;
-       }
-       ol li {
-       background: lighten($form-background-color,25%);
+    fieldset {
+        border: none;
+        margin-bottom: 10px;
+    }
+    fieldset:last-of-type {
+        margin-bottom: 0;
+    }
+    legend.on:before{
+        content:url(../images/icons/control-270.png);
+        margin-right: 7px;
+        float: left;
+    }
+    legend.off:before{
+        content:url(../images/icons/control.png);
+        margin-right: 7px;
+        float: left;
+    }
+    label {
+        display: block;
+        float: left;
+        padding-right: 10px;
+        //text-align: right;
+        min-width: 40%;
+    }
+    textarea {
+        width: auto;
+    }
+    ol li {
+        background: lighten($form-background-color,30%);
         border-color: $form-border-color;
         border-style: solid;
         border-width: 1px;
@@ -46,23 +46,48 @@ form {
         -khtml-border-radius: 3px;
         border-radius: 3px;
         list-style: none;
-       /* padding: 5px 10px;*/
-
-        margin-bottom: 5px;
-        padding: 10px;
-            }
-        ol li.localized {
-          background: lighten($form-background-color,15%);
-        }
-      
-        ol ol li {
-        background: none;
-        border: none;
-        float: left;
-    }
-       input[type='text'],input[type='email'],input[type='password'],input[type='file']{
+        /* padding: 5px 10px;*/
         
-
+        margin-bottom: 2px;
+        padding: 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        
+        margin-left: 0px;
+        margin-right: auto;
+    }
+    ol li.localized {
+        background: lighten($form-background-color,15%);
+    }
+    ol ol {
+        margin-left: 0px;
+    }
+    ol ol li {
+        margin-left: 0px;
+        margin-right: 5;
+        display: block;
+        background: lighten($form-background-color,20%);
+        //  border: 1px solid darken($form-border-color,30%);
+        border: 0px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        -khtml-border-radius: 2px;
+        border-radius: 2px;
+        
+        //float: left;
+        padding: 3px;
+        margin-top: 2px;
+        width: auto;
+        display: block;
+        //  white-space: nowrap;
+        label {
+            min-width: 20%;
+            
+        }
+    }
+    input[type='text'],input[type='email'],input[type='password'],input[type='file']{
+        
+        
         border: 1px solid;
         height: 1.5em;
         line-height: 1em;
@@ -76,8 +101,10 @@ form {
         -khtml-border-radius: 3px;
         -moz-border-radius: 3px;
         -webkit-border-radius: 3px;
+        
     }
-      select {
+    
+    select {
         max-width: 50%;
         overflow: hidden;
         padding: 0px 3px;
@@ -87,8 +114,8 @@ form {
         -moz-border-radius: 3px;
         -webkit-border-radius: 3px;
         
-      }
-      textarea {
+    }
+    textarea {
         border: 1px solid;
         line-height: 1em;
         margin-left: 6px;
@@ -99,72 +126,67 @@ form {
         -khtml-border-radius: 3px;
         -moz-border-radius: 3px;
         -webkit-border-radius: 3px;
-
-
-     }
-    div.error {
-       color: red;
-       font-weight: bolder;
+        
+        
     }
-    input.acsindex {
-        min-width:2px;
-        width: 10px;
-        margin-left: 5px;
+    div.error {
+        color: red;
+        font-weight: bolder;
     }
     input.acsurl {
-        margin-right: 5px;
+        //  margin-right: 5px;
     }
     div.buttons {
-       width: 100%;
-       text-align:  center;
-       margin: auto;
-       span.save:before {
-    content:url(../images/buttons/tick.png);
-    vertical-align: bottom;
-    margin-right: 7px;
-
-}
-span.reset:before{
-    content:url(../images/buttons/cross.png);
-    margin-right: 7px;
-}
-span.cancel:before{
-    content:url(../images/buttons/cross.png);
-    margin-right: 7px;
-}
-span.remove:before{
-    content:url(../images/buttons/cross.png);
-    margin-right: 7px;
-}
-
-       button.btn {
-          margin: 10px 10px 0px;
-       }
-       button.button {
-          margin: 10px 10px 10px 10px;
-       }
-       button.negative {
-
-           color: $button-negative-color;
-      }
+        width: 100%;
+        text-align:  center;
+        margin: auto;
+        span.save:before {
+            content:url(../images/buttons/tick.png);
+            vertical-align: bottom;
+            margin-right: 7px;
+            
+        }
+        span.reset:before{
+            content:url(../images/buttons/cross.png);
+            margin-right: 7px;
+        }
+        span.cancel:before{
+            content:url(../images/buttons/cross.png);
+            margin-right: 7px;
+        }
+        span.remove:before{
+            content:url(../images/buttons/cross.png);
+            margin-right: 7px;
+        }
+        
+        button.btn {
+            margin: 10px 10px 0px;
+        }
+        button.button {
+            margin: 10px 10px 10px 10px;
+        }
+        button.negative {
+            
+            color: $button-negative-color;
+        }
     }
-
-::-webkit-input-placeholder {
-   color: $input-placeholder-color;
-}
-
-:-moz-placeholder { /* Firefox 18- */
-   color: $input-placeholder-color;  
-}
-
-::-moz-placeholder {  /* Firefox 19+ */
-   color: $input-placeholder-color;  
-}
-
-:-ms-input-placeholder {  
-   color: $input-placeholder-color;  
-}
-
+    
+    ::-webkit-input-placeholder {
+        color: $input-placeholder-color;
+    }
+    
+    :-moz-placeholder { /* Firefox 18- */
+        color: $input-placeholder-color;  
+    }
+    
+    ::-moz-placeholder {  /* Firefox 19+ */
+        color: $input-placeholder-color;  
+    }
+    
+    :-ms-input-placeholder {  
+        color: $input-placeholder-color;  
+    }
+    
 }
 form#login {
     font-size: smaller;
@@ -177,80 +199,183 @@ form#login {
     margin-right: auto;
     max-width: 600px;
     legend {
-            font-size: x-large;;
-           // font-weight: bold;
-            font-family: 'PT Serif', serif;
-            //font-family: ‘Metrophobic’, Arial, serif; 
-                font-weight: 400; 
-            border-bottom: dotted 1px black;
-            }
+        font-size: x-large;;
+        // font-weight: bold;
+        font-family: 'PT Serif', serif;
+        //font-family: ‘Metrophobic’, Arial, serif; 
+        font-weight: 400; 
+        border-bottom: dotted 1px black;
+    }
     input { 
-       padding: 2px;
-       margin: 5px;
+        padding: 2px;
+        margin: 5px;
     }
     label {
-       font-weight: bold;
-       font-size: larger;
-
+        font-weight: bold;
+        font-size: larger;
+        
     }
     div.buttons {
-       font-size: larger;
-       width: 100%;
-       text-align:  center;
-       margin: auto;
-       button.btn {
-          margin: 10px 10px 0px;
-       }
+        font-size: larger;
+        width: 100%;
+        text-align:  center;
+        margin: auto;
+        button.btn {
+            margin: 10px 10px 0px;
+        }
     }
     
-
+    
 }
 form#arpexlusions {
-  label { 
-     float: none;
-  }   
-  input[type='checkbox'] {
-    float: left;
-    margin-right: 10px;
- }
-
+    label { 
+        float: none;
+    }   
+    input[type='checkbox'] {
+        float: left;
+        margin-right: 10px;
+    }
+    
 }
 form#formver3 {
     padding: 2px 2px 2px 2px;
-
+    
 }
 form.geoform {
-
+    
 }
 span.geoform {
-     text-align: left;
-     width: 200px;
-    }
+    text-align: left;
+    width: 200px;
+}
 
 form#rejectqueue, form#approvequeue{
     
-   display: inline;
-   background: transparent;
-   border: 0px;
-   margin:auto;
-   width: auto;
-   border-radius: 0px;
-   padding: 10px;
-   box-shadow: 0 0px 0px;
+    display: inline;
+    background: transparent;
+    border: 0px;
+    margin:auto;
+    width: auto;
+    border-radius: 0px;
+    padding: 10px;
+    box-shadow: 0 0px 0px;
 }
 div.permset form {
-   background-color: transparent;
-
+    background-color: transparent;
+    
 }
-div#sortable {
-
-        //float: right;
-        //display: block;
-
-        overflow: auto;
-        span {
-            display: block;
-
-            cursor:move;
-        }
+div#sortable, div.nsortable {
+    
+    //float: right;
+    //display: block;
+    
+    overflow: auto;
+    span {
+        display: block;
+        
+        cursor:move;
     }
+}
+
+input.notice 
+{
+    color: orange;
+    
+}
+li.notice > input, li.notice > select
+{
+    color: orange;
+    
+}
+#formtabs form 
+{
+    fieldset {
+        padding-left: 1px;
+        padding-right: 1px;
+    }
+    
+    legend {
+
+        font-size: larger;
+
+        
+    }
+    fieldset fieldset legend{
+        margin-left: 0px;
+        background-color: transparent;
+        font-size: medium;
+        padding: 0px;
+        width: auto;
+    }
+    ol {
+        
+        padding-left: 0px;
+    }
+    label {
+        font-size: smaller;
+        font-weight: bolder;
+        display: inline-block;
+        float: left;
+    }
+    input {
+        max-width: auto;
+        min-width: 400px;
+        font-size: smaller;
+        display: block-inline;
+        margin-right: 2px;
+        margin-left: auto;
+    }
+    input[type="text"].acsindex {
+        width: 25px;
+        min-width:25px;
+        max-width: 25px;
+        margin-left: 5px;
+        margin-right: auto;
+        margin: auto;
+        //    background-color: red;
+        
+    }
+    select {
+        font-size: smaller;
+    }
+    span.notice input {
+        color: orange;
+    }
+    span.notice select {
+        color: orange;
+    }
+    input.notice[type='radio'] {
+        background-color: orange;
+        border: 1px solid orange;
+        outline: 1px solid orange;
+    }
+    
+    textarea.notice {
+        margin-top: 5px;
+        border: 1px solid orange;
+        color: orange;
+    }
+    textarea.certdata {
+        font-size: x-small;
+        font-family:monospace,Monotype Corsiva, Times, serif;
+    }
+    textarea.metadata {
+            font-size: x-small;
+        font-family:monospace,Monotype Corsiva, Times, serif;
+            }
+    
+    div.section {
+        text-align: center;
+        font-weight: bold;
+        font-size: bigger;
+        padding: 10px;
+        width: 100%;
+        
+    }
+    
+    
+}
+form.cookieconsent {
+    
+    background-color: transparent;
+}

@@ -69,7 +69,7 @@ class Idp_list extends MY_Controller {
         $linktitlediexp = lang('rr_disexp_link_title');
         foreach ($idps as $i)
         {
-            $i_link = base_url() . "providers/provider_detail/idp/" . $i->getId();
+            $i_link = base_url() . "providers/detail/show/" . $i->getId();
             $iconsblock = '';
             
             if($i->getLocked())

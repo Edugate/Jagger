@@ -5,13 +5,11 @@ if (!defined('BASEPATH'))
 
 class Metadata_validator {
 
-//	private  $idp;
-//	private  $tmp_providers;
-
     function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->mid = $this->ci->mid;
+        $this->ci->load->helper('metadata_elements');
     }
 
     public function validateWithSchema($metadata = null) {
@@ -34,13 +32,14 @@ class Metadata_validator {
 
           }
          */
-
+libxml_use_internal_errors(true);
         //$doc->schemaValidate('library.xsd'); 
         $result = $doc->schemaValidate('schemas/saml-schema-metadata-2.0.xsd');
+        $errors = libxml_get_errors();
         if ($result === TRUE) {
             log_message('debug', $this->mid . 'tested metadata is valid');
         } else {
-            log_message('error', $this->mid . 'tested metadata is not valid');
+            log_message('error', $this->mid . 'tested metadata is not valid:'. serialize($errors));
         }
         return $result;
     }

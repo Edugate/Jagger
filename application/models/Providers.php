@@ -73,8 +73,24 @@ class Providers {
 
         return $this->providers;
      }
+     public function getMultiFederationMembers($arrayb)
+     {
+        $dql = 'SELECT p,a,c,s,e   FROM models\Provider p LEFT JOIN p.metadata a LEFT JOIN p.contacts c LEFT JOIN p.certificates s  LEFT JOIN p.extend e WHERE ';
+        foreach ($arrayb as $key=>$value)
+        {
+           $temp[]= '?'.$key.' MEMBER OF p.federations ';
+       }
+        $dql .= implode(" OR ", $temp);
 
+        $query = $this->em->createQuery($dql);
+        foreach($arrayb as $key=>$value)
+        {
+            $query->setParameter($key, $value);
 
+        }
+        return $query->getResult();
+
+     }
 
     public function getCircleMembersSP(Provider $provider, $federations = null)
     {

@@ -5,8 +5,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-$idp_link = anchor(base_url() . 'providers/provider_detail/idp/' . $idp_id, '<img src="' . base_url() . 'images/icons/home.png"/>');
-$sp_link = anchor(base_url() . 'providers/provider_detail/sp/' . $sp_id, '<img src="' . base_url() . 'images/icons/block-share.png"/>');
+$idp_link = anchor(base_url() . 'providers/detail/show/' . $idp_id, '<img src="' . base_url() . 'images/icons/home.png"/>');
+$sp_link = anchor(base_url() . 'providers/detail/show/' . $sp_id, '<img src="' . base_url() . 'images/icons/block-share.png"/>');
 $subtitle = "<div id=\"subtitle\"><dl>";
 $subtitle .="<dt>Provider</dt>";
 if($locked)

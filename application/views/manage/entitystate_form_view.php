@@ -10,7 +10,7 @@ if (!empty($error))
 }
 ?>
 <div id="subtitle"><h3>
-    <?php echo lang('serviceprovider').': <a href="'.base_url().'providers/provider_detail/'.$type.'/'.$id.'">'.$name.'</a>'; ?>
+    <?php echo lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$id.'">'.$name.'</a>'; ?>
 </h3><h4><?php echo $entityid;?></h4></div>
 <?php
 if(!empty($success_message))

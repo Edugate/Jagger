@@ -29,7 +29,7 @@ class Metadata extends MY_Controller {
     public function federation($federationName, $t = NULL) {
         $data = array();
         $name = base64url_decode($federationName);
-        if (!empty($t) AND (($t == 'IDP') OR ($t == 'SP') OR ($t == 'idp') OR ($t == 'sp'))) {
+        if (!empty($t) AND (($t === 'IDP') OR ($t === 'SP') OR ($t === 'idp') OR ($t === 'sp'))) {
             $type = strtoupper($t);
         } else {
             $type = 'all';
@@ -109,7 +109,8 @@ class Metadata extends MY_Controller {
             /**
              * @todo ValidUntil
              */
-            if ($type == 'all') {
+            if ($type === 'all') {
+                log_message('debug' ,'Genereate for all entities');
                 for ($i = 0; $i < $members_count; $i++) {
                     if($members->get($members_keys['' . $i . ''])->getAvailable())
                     {
@@ -118,7 +119,7 @@ class Metadata extends MY_Controller {
                 }
             } else {
                 foreach ($members as $key) {
-                    if ($key->getAvailable() && (($key->getType() == $type) or ($key->getType() == 'BOTH'))) {
+                    if ($key->getAvailable() && (($key->getType() === $type) or ($key->getType() === 'BOTH'))) {
                         $key->getProviderToXML($Entities_Node,$options);
                     }
                 }
@@ -284,7 +285,6 @@ class Metadata extends MY_Controller {
             show_error('unknown provider', 404);
             return;
         }
-
         $p = new models\Providers;
         $p1 = $p->getCircleMembers($me);
         if (empty($p1)) {
@@ -309,19 +309,15 @@ class Metadata extends MY_Controller {
         $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
         $Entities_Node->setAttribute('Name', "circle:" . $me->getEntityId());
 
-        foreach ($p1 as $k=>$v) {
+        foreach ($p1 as $v) {
             if($v->getAvailable())
             {
                 $v->getProviderToXML($Entities_Node);
             }
         }
-
-
         $docXML->appendChild($Entities_Node);
         $this->output->set_content_type('text/xml');
-
         $data['out'] = $docXML->saveXML();
-
         $this->load->view('metadata_view', $data);
     }
 

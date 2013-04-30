@@ -3,6 +3,7 @@
 namespace models;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * ResourceRegistry3
  * 
@@ -12,7 +13,6 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
-
 /**
  * ServiceLocation Class
  * 
@@ -27,11 +27,11 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * This model for ServiceLocations definitions
  * 
  * @Entity
+ * @HasLifecycleCallbacks
  * @Table(name="service_location")
  * @author janusz
  */
-class ServiceLocation
-{
+class ServiceLocation {
 
     /**
      * @Id
@@ -76,16 +76,35 @@ class ServiceLocation
         $this->is_default = FALSE;
     }
 
+    /**
+     * @PreUpdate
+     */
+    public function updated()
+    {
+        \log_message('debug', 'GG update time ');
+        $p = $this->getProvider();
+        if (!empty($p))
+        {
+            $p->updated();
+        }
+        //    $this->updatedAt = new \DateTime("now");
+    }
+
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
     public function setType($type)
     {
         $this->type = $type;
         return $this;
     }
 
-	public function setAsACS()
-	{
-		$this->type = 'AssertionConsumerService';
-	}
+    public function setAsACS()
+    {
+        $this->type = 'AssertionConsumerService';
+    }
 
     public function setBindingName($bindingname)
     {
@@ -105,12 +124,19 @@ class ServiceLocation
         return $this;
     }
 
-    public function setDefault($default=NULL)
+    public function setOrderNull()
+    {
+        $this->ordered_no = null;
+        return $this;
+    }
+
+    public function setDefault($default = NULL)
     {
         if ($default === TRUE)
         {
             $this->is_default = 1;
-        } else
+        }
+        else
         {
             $this->is_default = 0;
         }
@@ -122,11 +148,11 @@ class ServiceLocation
         $this->provider = $provider;
     }
 
-    public function setRequestInitiator($url, $binding=NULL)
+    public function setRequestInitiator($url, $binding = NULL)
     {
         $this->url = $url;
         $this->type = 'RequestInitiator';
-        if(empty($binding))
+        if (empty($binding))
         {
             $this->bindingName = 'urn:oasis:names:tc:SAML:profiles:SSO:request-init';
         }
@@ -136,8 +162,8 @@ class ServiceLocation
         }
         return $this;
     }
-    
-    public function  setDiscoveryResponse($url,$index)
+
+    public function setDiscoveryResponse($url, $index)
     {
         $this->type = 'DiscoveryResponse';
         $this->bindingName = 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol';
@@ -175,17 +201,16 @@ class ServiceLocation
     {
         return $this->is_default;
     }
-    
+
     public function convertToArray()
     {
         $s = array();
         $s['type'] = $this->getType();
         $s['binding'] = $this->getBindingName();
         $s['url'] = $this->getUrl();
-        $s['order'] = $this->getOrder();      
+        $s['order'] = $this->getOrder();
         $s['default'] = $this->getDefault();
         return $s;
- 
     }
 
     public function importFromArray(array $s)
@@ -197,33 +222,34 @@ class ServiceLocation
         $this->setDefault($s['default']);
     }
 
-    public function getServiceLocationToXML(\DOMElement $parent,$options=null)
+    public function getServiceLocationToXML(\DOMElement $parent, $options = null)
     {
         $s_type = $this->type;
-        
-        if(!empty($options))
+
+        if (!empty($options))
         {
             if ($options == 'IDPSSODescriptor' && $s_type == 'SingleSignOnService')
             {
                 $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleSignOnService');
                 $e->setAttribute("Binding", $this->bindingName);
                 $e->setAttribute("Location", $this->url);
-            } elseif ( $options == 'SPSSODescriptor' &&  $s_type == 'AssertionConsumerService')
+            }
+            elseif ($options == 'SPSSODescriptor' && $s_type == 'AssertionConsumerService')
             {
-               $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AssertionConsumerService');
-               $e->setAttribute("Binding", $this->bindingName);
-               $e->setAttribute("Location", $this->url);
-               $e->setAttribute("index", $this->ordered_no);
-               $is_defaultsrc = $this->getDefault();
-               if (!empty($is_defaultsrc))
-               {
-                   $e->setAttribute("isDefault", 'true');
-               }
-           } 
-           else
-           {
-               $e = NULL;
-           }
+                $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AssertionConsumerService');
+                $e->setAttribute("Binding", $this->bindingName);
+                $e->setAttribute("Location", $this->url);
+                $e->setAttribute("index", $this->ordered_no);
+                $is_defaultsrc = $this->getDefault();
+                if (!empty($is_defaultsrc))
+                {
+                    $e->setAttribute("isDefault", 'true');
+                }
+            }
+            else
+            {
+                $e = NULL;
+            }
         }
         else
         {

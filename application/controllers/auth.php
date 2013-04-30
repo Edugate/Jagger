@@ -89,8 +89,8 @@ class Auth extends MY_Controller {
         //validate form input
         $this->form_validation->set_rules('username', lang('rr_username'), 'required|xss_clean');
         $this->form_validation->set_rules('password', lang('rr_password'), 'required');
-
-        if ($this->form_validation->run() == true)
+        $validated = $this->form_validation->run();
+        if ($validated === TRUE)
         {
             if ($this->j_auth->login($this->input->post('username'), $this->input->post('password')))
             {

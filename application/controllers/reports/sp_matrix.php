@@ -98,7 +98,7 @@ class Sp_matrix extends MY_Controller
               }
               $name = $output->CreateElement('Name',$entityname);
               $entityid = $output->CreateElement('entityID',$m->getEntityid());
-              $providerurl = $output->CreateElement('providerURL',base_url().'providers/provider_detail/idp/'.$m->getId());
+              $providerurl = $output->CreateElement('providerURL',base_url().'providers/detail/show/'.$m->getId());
               $arp_url = base_url().'arp/format2/'.base64url_encode($m->getEntityId()).'/arp.xml';
               $location = $output->CreateElement('Location',$arp_url);
               $sites->appendChild($site);

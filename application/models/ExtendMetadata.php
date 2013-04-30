@@ -1,6 +1,9 @@
 <?php
+
 namespace models;
+
 use \Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * ResourceRegistry3
  * 
@@ -10,7 +13,6 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
-
 /**
  * ExtentMetadata Class
  * 
@@ -86,86 +88,120 @@ class ExtendMetadata {
 
     function __construct()
     {
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection(); 
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->etype;
     }
 
-    public function getProvider() {
+    public function getProvider()
+    {
         return $this->provider;
     }
 
-    public function getNamespace() {
+    public function getNamespace()
+    {
         return $this->namespace;
     }
 
-    public function getParent() {
+    public function getParent()
+    {
         return $this->parent;
     }
 
-
-    public function getChildren() {
+    public function getChildren()
+    {
         return $this->children;
     }
 
-    public function getElement() {
+    public function getElement()
+    {
         return $this->element;
     }
 
     public function getEvalue()
     {
-         return $this->evalue;
+        return $this->evalue;
+    }
 
+    public function getLogoValue()
+    {
+        $this->ci = & get_instance();
+        $this->ci->load->helper('url');
+        if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $this->evalue, $matches)))
+        {
+            $logobasepath = $this->ci->config->item('rr_logouriprefix');
+            $logobaseurl = $this->ci->config->item('rr_logobaseurl');
+            if (empty($logobaseurl))
+            {
+                $logobaseurl = base_url();
+            }
+            $logourl = $logobaseurl . $logobasepath;
+            return $logourl . $this->evalue;
+        }
+        else
+        {
+            return $this->evalue;
+        }
     }
 
     public function getElementValue()
     {
-       if(!empty($this->element) && $this->element == 'GeolocationHint')
-       {
-           $val = 'geo:'.$this->evalue;
-           return $val;
-       }
-       else
-       {
-           return $this->evalue;
-       }
+        if (!empty($this->element) && $this->element == 'GeolocationHint')
+        {
+            $val = 'geo:' . $this->evalue;
+            return $val;
+        }
+        else
+        {
+            return $this->evalue;
+        }
     }
 
-    public function getAttributes() {
+    public function getAttributes()
+    {
         return unserialize($this->attrs);
     }
 
-    public function setType($type) {
+    public function setType($type)
+    {
         $this->etype = $type;
     }
 
-    public function setProvider(Provider $provider = null) {
+    public function setProvider(Provider $provider = null)
+    {
         $this->provider = $provider;
     }
 
-    public function setNamespace($namespace) {
+    public function setNamespace($namespace)
+    {
         $this->namespace = $namespace;
     }
 
-    public function setParent($parent = null) {
+    public function setParent($parent = null)
+    {
         $this->parent = $parent;
     }
 
-    public function setElement($element) {
+    public function setElement($element)
+    {
         $this->element = $element;
     }
 
-    public function setValue($value) {
-        
+    public function setValue($value)
+    {
+
         $this->evalue = $value;
     }
-    public function setLogo($filename,Provider $provider,ExtendMetadata $parent,  array $attrs, $type)
+
+    public function setLogo($filename, Provider $provider, ExtendMetadata $parent, array $attrs, $type)
     {
         $this->setValue($filename);
         $this->setProvider($provider);
@@ -175,7 +211,8 @@ class ExtendMetadata {
         $this->setType($type);
         $this->setAttributes($attrs);
     }
-    public function setGeoLocation($location, Provider $provider,ExtendMetadata $parent,$type)
+
+    public function setGeoLocation($location, Provider $provider, ExtendMetadata $parent, $type)
     {
         $this->setNamespace('mdui');
         $this->setElement('GeolocationHint');
@@ -186,21 +223,18 @@ class ExtendMetadata {
         $attrs = array();
         $this->setAttributes($attrs);
     }
-    
 
-    public function setAttributes(array $attrs) {
-        
+    public function setAttributes(array $attrs)
+    {
+
         $this->attrs = serialize($attrs);
     }
-    public function addAttribute($name,$value)
+
+    public function addAttribute($name, $value)
     {
         $attrs = $this->getAttributes();
         $attrs[$name] = $value;
         $this->setAttributes($attrs);
     }
-    
-    
-   
-
 
 }

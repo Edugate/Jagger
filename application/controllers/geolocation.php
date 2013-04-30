@@ -68,8 +68,16 @@ class Geolocation extends MY_Controller {
         {
           $lockicon = '';
         }
-        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', $type, '');
-        $has_read_access = $this->zacl->check_acl($provider->getId(), 'read', $type, '');
+        if($provider->getType() == 'BOTH')
+        {
+           $group = 'entity';
+        }
+        else
+        {
+           $group = $type;
+        }
+        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', $group, '');
+        $has_read_access = $this->zacl->check_acl($provider->getId(), 'read', $group, '');
 
 
         if (!$has_write_access) {
@@ -93,14 +101,14 @@ class Geolocation extends MY_Controller {
             if (!empty($s_action) && !empty($s_idpid) && !empty($s_latinput) && !empty($s_lnginput)) {
                 if ($s_idpid == $provider->getId()) {
                     $newgeo = new models\ExtendMetadata;
-                    $ex = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('provider' => $s_idpid, 'namespace' => 'mdui', 'parent' => null, 'element' => 'DiscoHints'));
+                    $ex = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('provider' => $s_idpid, 'namespace' => 'mdui','etype'=>$type, 'parent' => null, 'element' => 'DiscoHints'));
                     if (empty($ex)) {
                         $ex = new models\ExtendMetadata;
                         $ex->setNamespace('mdui');
                         $ex->setElement('DiscoHints');
                         $ex->setProvider($provider);
                         $ex->setAttributes(array());
-                        $ex->setType(strtolower($provider->getType()));
+                        $ex->setType($type);
                         $this->em->persist($ex);
                     }
                     $newgeo->setParent($ex);
@@ -109,7 +117,7 @@ class Geolocation extends MY_Controller {
                     $newgeo->setValue($e_value);
                     $newgeo->setProvider($provider);
                     $newgeo->setAttributes(array());
-                    $newgeo->setType(strtolower($provider->getType()));
+                    $newgeo->setType($type);
                     $this->em->persist($newgeo);
                     $track_det=array('geo'=>array('before'=>'','after'=>$e_value));
                     $this->tracker->save_track(strtolower($provider->getType()),'modification',$provider->getEntityId(),serialize($track_det),FALSE );
@@ -120,7 +128,7 @@ class Geolocation extends MY_Controller {
                     if (count($s_geoloc) > 0) {
 
 
-                        $geolocations = $this->em->getRepository("models\ExtendMetadata")->findBy(array('provider' => $provider->getId(), 'namespace' => 'mdui', 'element' => 'GeolocationHint', 'evalue' => $s_geoloc));
+                        $geolocations = $this->em->getRepository("models\ExtendMetadata")->findBy(array('provider' => $provider->getId(),'etype'=>$type ,'namespace' => 'mdui', 'element' => 'GeolocationHint', 'evalue' => $s_geoloc));
 
                         if (count($geolocations) > 0) {
                             $g_values = '';
@@ -151,7 +159,7 @@ class Geolocation extends MY_Controller {
         }
 
         
-        $data['subtitle'] = '<div id="subtitle"><h3>'.$lockicon.' &nbsp;&nbsp;' . anchor(base_url() . 'providers/provider_detail/' . $type . '/' . $provider->getId(), $display_name) . '<h3><h4>'.$provider->getEntityId().'</h4> </div>';
+        $data['subtitle'] = '<div id="subtitle"><h3>'.$lockicon.' &nbsp;&nbsp;' . anchor(base_url() . 'providers/detail/show/' . $provider->getId(), $display_name) . '<h3><h4>'.$provider->getEntityId().'</h4> </div>';
         $data['form_errors'] = validation_errors('<p class="error">', '</p>');
 
 

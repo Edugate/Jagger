@@ -81,14 +81,14 @@ class Dashboard extends MY_Controller {
                 {
                     foreach($board['idp'] as $key=>$value)
                     {
-                        $idps[$key] = '<a href="'.base_url().'providers/provider_detail/idp/'.$key.'">'.$value['name'].'</a><br /> <small>'.$value['entity'].'</small>';
+                        $idps[$key] = '<a href="'.base_url().'providers/detail/show/'.$key.'">'.$value['name'].'</a><br /> <small>'.$value['entity'].'</small>';
                     }
                 }
                 if(array_key_exists('sp',$board) && is_array($board['sp'])) 
                 {
                     foreach($board['sp'] as $key=>$value)
                     {
-                        $sps[$key] = '<a href="'.base_url().'providers/provider_detail/sp/'.$key.'">'.$value['name'].'</a><br /><small>'.$value['entity'].'</small>';
+                        $sps[$key] = '<a href="'.base_url().'providers/detail/show/'.$key.'">'.$value['name'].'</a><br /><small>'.$value['entity'].'</small>';
                     }
                 }
                 if(array_key_exists('fed',$board) && is_array($board['fed'])) 

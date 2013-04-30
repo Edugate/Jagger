@@ -36,7 +36,7 @@ class Trackers
 	public function getArpDownloaded(Provider $provider)
 	{
 		$resourcename = $provider->getEntityId();
-		$track = $this->em->getRepository("models\Tracker")->findBy(array('resourcename'=>$resourcename,'resourcetype'=>'idp','subtype'=>'arp_download'),array('createdAt'=>'DESC'), '10');
+		$track = $this->em->getRepository("models\Tracker")->findBy(array('resourcetype'=>'idp','subtype'=>'arp_download','resourcename'=>$resourcename),array('createdAt'=>'DESC'), '10');
 		return $track;
 	
 	}
@@ -59,7 +59,7 @@ class Trackers
 	public function getProviderModifications(Provider $provider, $count)
 	{
 		$resourcename = $provider->getEntityId();
-		$tracks = $this->em->getRepository("models\Tracker")->findBy(array('resourcename'=>$resourcename, 'subtype'=>'modification','resourcetype'=>array('idp','sp','both')),array('createdAt'=>'DESC'), $count);
+		$tracks = $this->em->getRepository("models\Tracker")->findBy(array('subtype'=>'modification','resourcename'=>$resourcename, 'resourcetype'=>array('idp','sp','both')),array('createdAt'=>'DESC'), $count);
 		return $tracks;
 	}
 

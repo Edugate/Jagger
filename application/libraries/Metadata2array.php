@@ -24,13 +24,16 @@ class Metadata2array {
     private $i;
     private $occurance;
     private $metaArray;
+    private $coclist;
 
     function __construct()
     {
         $this->ci = &get_instance();
+        $this->em = $this->ci->doctrine->em;
         $this->i = 0;
         $this->occurance = array();
         $this->metaArray = array();
+        $this->coclist = array();
     }
 
     function rootConvert($xml, $full = false)
@@ -48,6 +51,24 @@ class Metadata2array {
         {
             $this->entitiesConvert($child, $full);
         }
+        if(count($this->coclist)> 0)
+        {
+           $redusedlist = $this->coclist;
+           foreach($redusedlist as $r)
+           {
+               $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$r));
+               if(empty($existing))
+               {
+                   $nconduct = new models\Coc;
+                   $nconduct->setUrl($r);
+                   $nconduct->setName($r);
+                   $nconduct->setDescription($r);
+                   $nconduct->setAvailable(FALSE);
+                   $this->em->persist($nconduct);
+               }
+           }
+           $this->em->flush();
+        }
         return $this->metaArray;
     }
 
@@ -55,7 +76,7 @@ class Metadata2array {
     {
         if ($doc instanceof DOMElement)
         {
-            if ($doc->nodeName == "EntityDescriptor" OR $doc->nodeName == "md:EntityDescriptor")
+            if ($doc->nodeName === "md:EntityDescriptor" OR $doc->nodeName === "EntityDescriptor")
             {
                 $this->entityConvert($doc, $full);
             }
@@ -82,19 +103,16 @@ class Metadata2array {
         $entity['validuntil'] = null;
         $entity['rigistrar'] = null;
         $entity['regdate'] = null;
-        $validuntil = $node->getAttribute('validUntil');
-        if (!empty($validuntil))
-        {
-            $entity['validuntil'] = $validuntil;
-        }
+        $entity['coc'] = null;
+        $entity['validuntil'] = $node->getAttribute('validUntil');
         $is_idp = false;
         $is_sp = false;
-        $entity['details']['organization'] = array();
+        $entity['details']['org'] = array('OrganizationName'=>array(), 'OrganizationDisplayName'=>array(), 'OrganizationURL'=>array());
         $entity['details']['contacts'] = array();
         $entity['details']['regpolicy'] = array();
         foreach ($node->childNodes as $gnode)
         {
-            if ($gnode->nodeName == 'IDPSSODescriptor' OR $gnode->nodeName == 'md:IDPSSODescriptor')
+            if ($gnode->nodeName === 'md:IDPSSODescriptor' OR $gnode->nodeName === 'IDPSSODescriptor')
             {
                 $is_idp = true;
                 $entity['type'] = 'IDP';
@@ -104,7 +122,7 @@ class Metadata2array {
                     $entity['details']['idpssodescriptor'] = $this->IDPSSODescriptorConvert($gnode);
                 }
             }
-            if ($gnode->nodeName == 'SPSSODescriptor' OR $gnode->nodeName == 'md:SPSSODescriptor')
+            if ($gnode->nodeName === 'SPSSODescriptor' OR $gnode->nodeName === 'md:SPSSODescriptor')
             {
                 $is_sp = true;
                 $entity['type'] = 'SP';
@@ -114,7 +132,11 @@ class Metadata2array {
                     $entity['details']['spssodescriptor'] = $this->SPSSODescriptorConvert($gnode);
                 }
             }
-            if ($gnode->nodeName == 'Extensions' OR $gnode->nodeName == 'md:Extensions')
+            if ($gnode->nodeName === 'md:AttributeAuthorityDescriptor' OR $gnode->nodeName === 'AttributeAuthorityDescriptor')
+            {
+                $entity['details']['aadescriptor'] = $this->AADescriptorConvert($gnode);
+            }
+            if ($gnode->nodeName === 'Extensions' OR $gnode->nodeName === 'md:Extensions')
             {
                 if ($gnode->hasChildNodes())
                 {
@@ -134,9 +156,24 @@ class Metadata2array {
                                         $chvalue = $ch->nodeValue;
                                         if (!empty($chlang) && !empty($chvalue))
                                         {
-                                            $entity['details']['regpolicy'][] = array('lang' => $chlang, 'url' => $chvalue);
+                                            $entity['details']['regpolicy'][''.$chlang.''] =  $chvalue;
                                         }
                                     }
+                                }
+                            }
+                        }
+                        elseif($enode->nodeName === 'mdattr:EntityAttributes' && $enode->hasChildNodes())
+                        {
+                            foreach( $enode->getElementsByTagNameNS( 'urn:oasis:names:tc:SAML:2.0:assertion','Attribute') as $enode2)
+                            {
+                                if($enode2->hasAttributes() && $enode2->getAttribute('Name') === 'http://macedir.org/entity-category' && $enode2->hasChildNodes())
+                                {
+                                      foreach($enode2->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue') as $enode3)
+                                      {
+                                          $entity['coc'] = $enode3->nodeValue;
+                                          $this->coclist[] = $enode3->nodeValue;
+                                      }
+
                                 }
                             }
                         }
@@ -144,13 +181,13 @@ class Metadata2array {
                 }
                 //      $entity['details']['extensions'] = $this->ExtensionsToArray($gnode);
             }
-            elseif ($gnode->nodeName == 'ContactPerson' OR $gnode->nodeName == 'md:ContactPerson')
+            elseif ($gnode->nodeName === 'md:ContactPerson' OR $gnode->nodeName === 'ContactPerson' )
             {
                 $entity['details']['contacts'][] = $this->ContactPersonConvert($gnode);
             }
-            elseif ($gnode->nodeName == 'Organization' OR $gnode->nodeName == 'md:Organization')
+            elseif ($gnode->nodeName === 'md:Organization' OR $gnode->nodeName === 'Organization')
             {
-                $entity['details']['organization'] = $this->OrganizationConvert($gnode);
+                $entity['details']['org'] = $this->OrganizationConvert($gnode);
             }
         }
         if ($is_idp && $is_sp)
@@ -172,27 +209,72 @@ class Metadata2array {
         $this->metaArray[$entity['entityid']] = $entity;
     }
 
+    private function AADescriptorConvert(\DOMElement $node)
+    {
+       $result = array();
+       $result['protocols'] = array_filter(explode(' ',$node->getAttribute('protocolSupportEnumeration')),'strlen');
+       foreach ($node->childNodes as $child)
+       {
+          if ($child->nodeName === 'md:Extensions' OR $child->nodeName === 'Extensions' ) 
+          {
+             $result['extensions'] = $this->AAExtensionsToArray($child);
+          }
+           elseif ($child->nodeName === 'md:NameIDFormat' OR $child->nodeName === 'NameIDFormat' )
+          {
+             $result['nameid'][] = $child->nodeValue;
+          }
+          elseif ($child->nodeName === 'AttributeService' OR $child->nodeName === 'md:AttributeService')
+          {
+             $result['attributeservice'][] = array('binding'=>$child->getAttribute('Binding'),'location'=>$child->getAttribute('Location'));
+          }
+          elseif ($child->nodeName == "KeyDescriptor" OR $child->nodeName == "md:KeyDescriptor")
+          {
+              $result['certificate'][] = $this->KeyDescriptorConvert($child);
+          }
+       }
+       return $result;
+       
+    }
+
     private function IDPSSODescriptorConvert(\DOMElement $node)
     {
-        $profiles = $node->getAttribute('protocolSupportEnumeration');
-        $profiles = explode(" ", $profiles);
-        $result['protocols'] = $profiles;
+        $result = array();
+        $result['protocols'] = array_filter(explode(' ',$node->getAttribute('protocolSupportEnumeration')),'strlen');
+        //log_message('debug','GGGG profiles '.serialize($result['protocols']));
         foreach ($node->childNodes as $child)
         {
-            if ($child->nodeName == "Extensions" OR $child->nodeName == "md:Extensions")
+            if ($child->nodeName === 'md:Extensions' OR $child->nodeName === 'Extensions' )
             {
                 $result['extensions'] = $this->ExtensionsToArray($child);
             }
-            elseif ($child->nodeName == "NameIDFormat" OR $child->nodeName == "md:NameIDFormat")
+            elseif ($child->nodeName === 'md:NameIDFormat' OR $child->nodeName === 'NameIDFormat' )
             {
                 $result['nameid'][] = $child->nodeValue;
             }
-            elseif ($child->nodeName == "SingleSignOnService" OR $child->nodeName == "md:SingleSignOnService")
+            elseif ($child->nodeName === 'SingleSignOnService' OR $child->nodeName === 'md:SingleSignOnService')
             {
                 $result['servicelocations']['singlesignonservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
+            }
+            elseif ($child->nodeName === 'md:SingleLogoutService' OR $child->nodeName === 'SingleLogoutService')
+            {
+                $result['servicelocations']['singlelogout'][] = array(
+                    'binding' => $child->getAttribute('Binding'),
+                    'location' => $child->getAttribute('Location')
+                );
+                 
+            }
+            elseif ($child->nodeName === 'md:ArtifactResolutionService' OR $child->nodeName === 'ArtifactResolutionService')
+            {
+                $result['servicelocations']['artifactresolutionservice'][] = array(
+                    'binding' => $child->getAttribute('Binding'),
+                    'location' => $child->getAttribute('Location'),
+                    'order' => $child->getAttribute('index'),
+                    'isdefault' => $child->getAttribute('isDefault')
+                );
+                
             }
             elseif ($child->nodeName == "KeyDescriptor" OR $child->nodeName == "md:KeyDescriptor")
             {
@@ -207,22 +289,22 @@ class Metadata2array {
         $profiles = $node->getAttribute('protocolSupportEnumeration');
         $profiles = explode(" ", $profiles);
         $result['protocols'] = $profiles;
-        $result['servicelocations']['assertionconsumerservice'] = array();
+        $result['servicelocations'] = array('assertionconsumerservice'=> array(), 'singlelogout'=>array());
         $result['extensions']['idpdisc'] = array();
         $result['extensions']['init'] = array();
         $result['extensions']['desc'] = array();
       
         foreach ($node->childNodes as $child)
         {
-            if ($child->nodeName == "md:Extensions" OR $child->nodeName == "Extensions")
+            if ($child->nodeName === 'md:Extensions' OR $child->nodeName === 'Extensions')
             {
                 $result['extensions'] = $this->ExtensionsToArray($child);
             }
-            elseif ($child->nodeName == "md:NameIDFormat" OR $child->nodeName == "NameIDFormat")
+            elseif ($child->nodeName === 'md:NameIDFormat' OR $child->nodeName === 'NameIDFormat')
             {
                 $result['nameid'][] = $child->nodeValue;
             }
-            elseif ($child->nodeName == "md:AssertionConsumerService" OR $child->nodeName == "AssertionConsumerService")
+            elseif ($child->nodeName === 'md:AssertionConsumerService' OR $child->nodeName === 'AssertionConsumerService')
             {
                 $result['servicelocations']['assertionconsumerservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
@@ -231,21 +313,31 @@ class Metadata2array {
                     'isdefault' => $child->getAttribute('isDefault')
                 );
             }
-            elseif ($child->nodeName == "SingleLogoutService" OR $child->nodeName == "md:SingleLogoutService")
+            elseif ($child->nodeName === 'md:ArtifactResolutionService' OR $child->nodeName === 'ArtifactResolutionService')
             {
-                $result['servicelocations']['singlelogoutservice'][] = array(
+                $result['servicelocations']['artifactresolutionservice'][] = array(
+                    'binding' => $child->getAttribute('Binding'),
+                    'location' => $child->getAttribute('Location'),
+                    'order' => $child->getAttribute('index'),
+                    'isdefault' => $child->getAttribute('isDefault')
+                );
+            }
+            elseif ($child->nodeName === 'md:SingleLogoutService' OR $child->nodeName === 'SingleLogoutService')
+            {
+                $result['servicelocations']['singlelogout'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
             }
-            elseif ($child->nodeName == "ManageNameIDService" OR $child->nodeName == "md:ManageNameIDService")
+            elseif ($child->nodeName === 'md:ManageNameIDService' OR $child->nodeName === 'ManageNameIDService')
             {
                 $result['servicelocations']['managenameidservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
             }
-            elseif ($child->nodeName == "KeyDescriptor" OR $child->nodeName == "md:KeyDescriptor")
+          
+            elseif ($child->nodeName === 'KeyDescriptor' OR $child->nodeName === 'md:KeyDescriptor')
             {
                 $result['certificate'][] = $this->KeyDescriptorConvert($child);
             }
@@ -292,11 +384,26 @@ class Metadata2array {
         return $cert;
     }
 
+    private function AAExtensionsToArray($node)
+    {
+       $result = array();
+       foreach ($node->childNodes as $enode)
+       {
+           if ($enode->nodeName === 'shibmd:Scope' OR $enode->nodeName === 'Scope' OR $enode->nodeName === 'saml1md:Scope')
+           {
+                $result['aascope'][] = $enode->nodeValue;
+
+           }
+
+       }      
+       return $result;
+
+    }
     private function ExtensionsToArray($node)
     {
         foreach ($node->childNodes as $enode)
         {
-            if ($enode->nodeName == 'shibmd:Scope' OR $enode->nodeName == 'Scope')
+            if ($enode->nodeName === 'shibmd:Scope' OR $enode->nodeName === 'Scope' OR $enode->nodeName === 'saml1md:Scope')
             {
                 $ext['scope'][] = $enode->nodeValue;
             }
@@ -319,55 +426,77 @@ class Metadata2array {
                     {
                        $ext['desc'][] = array('lang'=>$gnode->getAttribute('xml:lang'),'val'=>$gnode->nodeValue);
                     }
-                    elseif ($gnode->nodeName == 'mdui:DiscoHints' && $gnode->hasChildNodes())
+                    elseif($gnode->nodeName == 'mdui:DisplayName' OR $gnode->nodeName == 'DisplayName')
                     {
-                        foreach ($gnode->childNodes as $agnode)
-                        {
-                            $geovalue = array();
-                            if ($agnode->nodeName == 'mdui:GeolocationHint')
-                            {
-                                $geovalue = explode(',', str_ireplace('geo:', '', $agnode->nodeValue));
-                                if (count($geovalue) == 2)
-                                {
-                                      $numericvalues = true;
-                                      foreach ($geovalue as $g)
-                                      {
-                                          if (!is_numeric($g))
-                                          {
-                                              $numericvalues = false;
-                                          }
-                                      }
-                                      if ($numericvalues === TRUE)
-                                      {
-                                            $ext['geo'][] = array_values($geovalue);
-                                      }
-                                }
-                           }
-                      }
-                  }
+                       $ext['displayname'][] = array('lang'=>$gnode->getAttribute('xml:lang'),'val'=>$gnode->nodeValue);
+                    }
+                    elseif($gnode->nodeName == 'mdui:PrivacyStatementURL' OR $gnode->nodeName == 'PrivacyStatementURL')
+                    {
+                       $ext['privacyurl'][] = array('lang'=>$gnode->getAttribute('xml:lang'),'val'=>$gnode->nodeValue);
+                    }
+                    elseif($gnode->nodeName == 'mdui:InformationURL' OR $gnode->nodeName == 'InformationURL')
+                    {
+                       $ext['informationurl'][] = array('lang'=>$gnode->getAttribute('xml:lang'),'val'=>$gnode->nodeValue);
+                    }
+                    elseif($gnode->nodeName === 'mdui:Logo')
+                    {
+                       $logoval = $gnode->nodeValue;
+                       if(substr( $logoval, 0, 4 ) === "http")
+                       {
+                         $ext['logo'][] = array('height'=>$gnode->getAttribute('height'),'width'=>$gnode->getAttribute('width'),'xml:lang'=>$gnode->getAttribute('xml:lang'),'val'=>$logoval);
+                       }
+                    }
                 }
                 
+            }
+            elseif($enode->nodeName === 'mdui:DiscoHints' && $enode->hasChildNodes())
+            {
+                log_message('debug','GK : DiscoHints found');
+                foreach ($enode->childNodes as $agnode)
+                {
+                    $geovalue = array();
+                    if ($agnode->nodeName == 'mdui:GeolocationHint')
+                    {
+                        $geovalue = explode(',', str_ireplace('geo:', '', $agnode->nodeValue));
+                        if (count($geovalue) == 2)
+                        {
+                           $numericvalues = true;
+                           foreach ($geovalue as $g)
+                           {
+                                if (!is_numeric($g))
+                                {
+                                     $numericvalues = false;
+                                }
+                           }
+                           if ($numericvalues === TRUE)
+                           {
+                               $ext['geo'][] = array_values($geovalue);
+                           }
+                        }
+                  }
+               }
+
             }
         }
         if (empty($ext))
         {
             $ext = array();
         }
-        log_message('debug','HHH7'.serialize($ext['desc']));
         return $ext;
     }
 
     private function OrganizationConvert($node)
     {
-        $org = array();
+        $org = array('OrganizationName'=>array(), 'OrganizationDisplayName'=>array(), 'OrganizationURL'=>array());
         if($node->hasChildNodes())
         {
            foreach ($node->childNodes as $child)
            {
-               if($child->nodeName == 'md:OrganizationName' OR $child->nodeName == 'OrganizationName' OR  $child->nodeName == 'md:OrganizationDisplayName' OR  $child->nodeName == 'OrganizationDisplayName' OR $child->nodeName == 'md:OrganizationURL' OR $child->nodeName == 'OrganizationURL')
-               {
-                  $org['' . str_replace('md:', '', strtolower($child->nodeName)) . ''][] = array('lang'=>$child->getAttribute('xml:lang'),'val'=> trim($child->nodeValue));
-               }
+               log_message('debug', 'GGGG chiold: ' .$child->nodeName);
+                if(! $child instanceOf DOMText)
+                {
+                      $org[''.str_replace('md:', '', $child->nodeName).''][''.$child->getAttribute('xml:lang').''] = trim($child->nodeValue);
+                }
            }
         }
         return $org;

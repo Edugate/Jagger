@@ -47,6 +47,16 @@ $pageTitle .= $this->title;
                     <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
                 <![endif]-->
         <?php
+        $iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
+        if(isset($iscookieconsent['status']) && isset($iscookieconsent['value']))
+        {
+            $this->load->helper('cookie');
+            $cookieaccepted = get_cookie('cookieAccept');
+            if(empty($cookieaccepted) or $cookieaccepted != 'accepted')
+            {
+                $this->load->view('cookiesconsent', $iscookieconsent);
+            }
+        }
         if (!empty($headerjs))
         {
             echo $headerjs;
@@ -67,7 +77,7 @@ $pageTitle .= $this->title;
                 <?php
                 if ($loggedin)
                 {
-                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b>' . htmlentities($_SESSION['username']) . '</b>' . anchor(base_url() . "auth/logout", '<img src="' . base_url() . 'images/icons/external.png" title="Sign out"/>');
+                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b>' . htmlentities($_SESSION['username']) . '</b>' . anchor($base_url . "auth/logout", '<img src="' . $base_url . 'images/icons/external.png" title="Sign out"/>');
                 }
                 else
                 {
@@ -75,6 +85,7 @@ $pageTitle .= $this->title;
                 }
                 ?>
             </div>
+       
             <div id="langicons">
                 <a href="<?php echo $base_url; ?>ajax/changelanguage/english" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-gb.png" alt="en"/></a>
                 <a href="<?php echo $base_url; ?>ajax/changelanguage/pl" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pl.png" alt="pl"/></a>
@@ -262,9 +273,13 @@ $pageTitle .= $this->title;
 
                 <footer>
                     <?php
-                    echo '<small>'.$this->config->item('pageFooter').'</small><br />';
-                    $disp_mem = $this->config->item('rr_display_memory_usage');
-                    if ($disp_mem)
+                    $footer = $this->rrpreference->getPreferences('pageFooter');
+                    if(isset($footer['status']) && isset($footer['value']))
+                    {
+                          echo '<small>'.$footer['value'].'</small><br />';
+                    }
+                    $disp_mem = $this->rrpreference->getPreferences('rr_display_memory_usage');
+                    if (isset($disp_mem['status']))
                     {
                         echo echo_memory_usage();
                     }
@@ -272,9 +287,12 @@ $pageTitle .= $this->title;
                 </footer>
             </div>
         <div id="spinner" class="spinner" style="display:none;">
-            <img id="img-spinner" src="<?php echo base_url(); ?>images/spinner1.gif" alt="Loading"/>
+            <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="Loading"/>
         </div>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <?php
+      //  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    ?>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
         <script type="text/javascript" src="<?php echo $base_url; ?>js/jquery.uitablefilter.js"></script>
         <?php

@@ -67,9 +67,17 @@ class Metadata2import {
         $this->type = $type;
         $this->other = $other;
         $this->defaults = array_merge($this->defaults, $defaults);
+        $coclist = $this->em->getRepository("models\Coc")->findAll();
+        $coclistconverted = array();
+        $coclistarray = array();
+       
+        foreach($coclist as $k=>$c)
+        {
+             $coclistconverted[$c->getId()] = $c;
+             $coclistarray[''.$c->getId().''] = $c->getUrl();
+        }
         if (empty($this->full) && empty($this->defaults['static']))
         {
-            log_message('error', 'Cannot import if metadata if settings full and static are false');
             return false;
         }
         if (array_key_exists('federations', $this->defaults))
@@ -81,11 +89,9 @@ class Metadata2import {
          */
         if (array_key_exists('static', $this->defaults) && $this->defaults['static'] === FALSE)
         {
-            log_message('debug', "l - static false");
             $static = false;
         } else
         {
-            log_message('debug', "l - static true");
             $static = true;
         }
         if (array_key_exists('local', $this->defaults) && $this->defaults['local'] === true)
@@ -150,7 +156,7 @@ class Metadata2import {
                         if ($cmislocal === FALSE)
                         {
                             $cmfederations = $cm->getFederations();
-                            if ($cmfederations->count() == 1)
+                            if ($cmfederations->count() === 1)
                             {
                                 $aclresources = $this->em->getRepository("models\AclResource")->findBy(array('resource' => $cm->getId()));
                                 if (!empty($aclresources))
@@ -193,7 +199,6 @@ class Metadata2import {
         $i = 0;
         foreach ($this->metadata_in_array as $ent)
         {
-            log_message('debug', 'type of entity: ' . $ent['type']);
             if ($ent['type'] == 'BOTH' or $ent['type'] == $type or $type == 'ALL')
             {
                 $importedProvider = new models\Provider;
@@ -207,6 +212,26 @@ class Metadata2import {
                     $importedProvider->setStatic($static);
                     $importedProvider->setLocal($local);
                     $importedProvider->setActive($active);
+                    if(array_key_exists('coc',$ent))
+                    {
+                        if(!empty($ent['coc']))
+                        {
+                           $y = array_search($ent['coc'],$coclistarray);
+                           if($y != NULL OR $y != FALSE)
+                           {
+                               $celement = $coclistconverted[''.$y.''];
+                               if(!empty($celement))
+                               {
+                                  $importedProvider->setCoc($celement);
+                               }
+                           }
+
+                        }
+                        else
+                        {
+                                $importedProvider->setCoc(NULL);
+                        }
+                    }
 
                     /**
                      * insert new entity into database and add it to federations 
@@ -227,6 +252,29 @@ class Metadata2import {
                         $existingProvider->overwriteByProvider($importedProvider);
                         $existingProvider->setLocal($this->defaults['local']);
                         $existingProvider->setStatic($static);
+                        
+                        if(array_key_exists('coc',$ent))
+                        {
+                            if(!empty($ent['coc']))
+                            {
+                                $y = array_search($ent['coc'],$coclistarray);
+                                if($y != NULL OR $y != FALSE)
+                                {
+                                    $celement = $coclistconverted[''.$y.''];
+                                    if(!empty($celement))
+                                    {
+                                         $existingProvider->setCoc($celement);
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                   $existingProvider->setCoc(NULL);
+                            }
+                        }
+                       
+                        
                     }
                     foreach ($federations as $f)
                     {

@@ -1,6 +1,6 @@
 <div id="pagetitle"><?php echo lang('rr_supportedattributes');?></div>
 <?php
-$idp_link = anchor(base_url()."providers/provider_detail/idp/".$idp_id,$idp_name);
+$idp_link = anchor(base_url()."providers/detail/show/".$idp_id,$idp_name);
 ?>
 <div id="subtitle"><h3><?php echo lang('identityprovider');?>: <?php echo $idp_link;?></h3><h4><?php echo $idp_entityid; ?></h4>
     

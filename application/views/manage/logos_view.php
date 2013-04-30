@@ -2,14 +2,13 @@
 if ($provider_detail['type'] == 'sp') {
     $imglink = 'block-share.png';
     $data['spid'] = $provider_detail['id'];
-    $this->load->view('/navigations/floatnav_sp_logos_view', $data);
 } else {
     $imglink = 'home.png';
 
 
     $data['idpid'] = $provider_detail['id'];
-    $this->load->view('/navigations/floatnav_idp_logos_view', $data);
 }
+echo '<div id="pagetitle">Logos management</div>';
 
 ?>
 
@@ -17,7 +16,7 @@ if ($provider_detail['type'] == 'sp') {
     
 <?php 
 echo $provider_detail['locked'];
-echo $sub .' '. $provider_detail['name'] . '<i> (' . $provider_detail['entityid'] . ')</i>' . anchor(base_url() . "providers/provider_detail/" . $provider_detail['type'] . "/" . $provider_detail['id'], '<img src="' . base_url() . 'images/icons/' . $imglink . '" />'); ?>
+echo  '<h3>'.anchor(base_url() . 'providers/detail/show/' . $provider_detail['id'],$provider_detail['name']) . '</h3><h4> ' . $provider_detail['entityid'] . '</h4>'; ?>
     <br />
 <?php
 if (!empty($backlink)) {

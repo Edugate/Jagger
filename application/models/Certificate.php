@@ -42,7 +42,7 @@ class Certificate
 
     /**
      * @Column(type="string",length=12)
-     * types like sso,aa etc
+     * types like idpsso,spsso,idpaa etc
      */
     protected $type;
 
@@ -103,7 +103,7 @@ class Certificate
     {
         
         //      $certdata = preg_replace(array('/\s{2,}/', '/[\t\n]/'), '', $certdata);
-        $this->certdata = $certdata;
+        $this->certdata = trim($certdata);
         return $this;
     }
 
@@ -152,6 +152,16 @@ class Certificate
         $this->type = $type;
         return $this;
     }
+    public function setAsSPSSO()
+    {
+       $this->setType('spsso');
+       return $this;
+    }
+    public function setAsIDPSSO()
+    {
+       $this->setType('idpsso');
+       return $this;
+    }
 
     public function setAsSSO()
     {
@@ -165,9 +175,9 @@ class Certificate
         return $this;
     }
 
-    public function setCertType($type)
+    public function setCertType($type=null)
     {
-        if ($type == 'x509')
+        if (empty($type) or $type == 'x509')
         {
             $type = 'X509Certificate';
         }
@@ -222,7 +232,7 @@ class Certificate
         $cert = $this->getPEM($this->certdata);
         if (!empty($cert))
         {
-            if ($this->getCertType() == 'X509Certificate')
+            if ($this->getCertType() === 'X509Certificate')
             {
                 $resource = openssl_x509_read($cert);
                 $fingerprint = null;
@@ -235,8 +245,8 @@ class Certificate
                     $output = base64_decode($output);
                     $fingerprint = sha1($output);
                 }
+                $this->setFingerprint($fingerprint);
             }
-            $this->setFingerprint($fingerprint);
         }
     }
 
@@ -436,30 +446,27 @@ class Certificate
         /**
          * usage null/singing/encrypting
          */
-        $use = $this->getCertUse();
-        if (!empty($use))
+        //$use = $this->getCertUse();
+        if (!empty($this->certusage))
         {
-            $e->setAttribute('use', $use);
+            $e->setAttribute('use', $this->certusage);
         }
         $KeyInfo_Node = $e->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:KeyInfo');
-        $keyname = $this->getKeyName();
-        if (!empty($keyname))
+        //$keyname = $this->getKeyName();
+        if (!empty($this->keyname))
         {
-            $keynames = explode(',',$keyname);
+            $keynames = explode(',',$this->keyname);
             foreach($keynames as $v)
             {
-                \log_message('debug','HHH8'.serialize($v));
                 $KeyName_Node = $KeyInfo_Node->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:KeyName', $v);
                 $KeyInfo_Node->appendChild($KeyName_Node);
             }
         }
-        $certtype = $this->getCertType();
-        if ($certtype == 'X509Certificate')
+        //$certtype = $this->getCertType();
+        if ($this->getCertType() === 'X509Certificate')
         {
-            //  $CertType_Node = $docXML->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Data');
-            $CertType_Node = $KeyInfo_Node->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Data');
-            //   $CertBody_Node = $docXML->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Certificate');
-            $CertBody_Node = $CertType_Node->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Certificate', $this->getCertDataNoHeaders());
+            $CertType_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Data');
+            $CertBody_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Certificate', $this->getCertDataNoHeaders());
 
             $CertType_Node->appendChild($CertBody_Node);
             $KeyInfo_Node->appendChild($CertType_Node);

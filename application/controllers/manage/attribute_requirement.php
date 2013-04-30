@@ -146,7 +146,7 @@ class Attribute_requirement extends MY_Controller {
             show_error('Service Provider not found', 404);
         }
         $resource = $sp->getId();
-        $group = 'sp';
+        $group = 'entity';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
@@ -224,7 +224,7 @@ class Attribute_requirement extends MY_Controller {
      */
 
     private function _add($provider_id, $attr_req) {
-        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $provider_id, 'type' => 'SP'));
+        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $provider_id, 'type' => array('SP','BOTH')));
         if (!empty($provider) && !empty($attr_req)) {
             $attr_req->setSP($provider);
             $provider->setAttributesRequirement($attr_req);

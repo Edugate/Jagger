@@ -67,7 +67,7 @@ class Joinfed extends MY_Controller {
         {
            $icon = 'block-share.png';
         }
-        $data['subtitle'] = $provider->getName().' ('.$provider->getEntityId().')'.anchor(base_url().'providers/provider_detail/'.strtolower($provider->getType()).'/'.$provider->getId(),'<img src="' . base_url() . 'images/icons/'.$icon.'" />');
+        $data['subtitle'] = $provider->getName().' ('.$provider->getEntityId().')'.anchor(base_url().'providers/detail/show/'.$provider->getId(),'<img src="' . base_url() . 'images/icons/'.$icon.'" />');
         $has_write_access = $this->zacl->check_acl($provider->getId(),'write',strtolower($provider->getType()),'');
         if(!$has_write_access)
         {

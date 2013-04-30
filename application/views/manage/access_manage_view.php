@@ -2,7 +2,8 @@
 
 if(!empty($row))
 {
-        echo '<div id="subtitle"><h3>Identity Provider:&nbsp;'.$resource_name.'</h3></div>';
+        echo '<div id="pagetitle">'.lang('rr_accessmngmt').'</div>';
+        echo '<div id="subtitle"><h3>'.anchor(base_url().'providers/detail/show/'.$resourceid,$resourcename).'</h3><h4>'.$entityid.'</h4></div>';
         $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
         $this->table->set_template($tmpl);
 

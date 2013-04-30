@@ -5,15 +5,18 @@
 // probably be customized for each site
 //-----------------------------------------------
 html {
-    font-size: 14px;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: $font-size;
+    font-family: $font-family;
     
 }
 body, select, input, textarea {
     background-color: $body-background;
     color: $font-color;
 }
+hr {
+  height: 1px;
 
+}
 //-----------------------------------
 // Add your own custom styles below
 //-----------------------------------
@@ -379,12 +382,14 @@ footer,#footer {
     clear: right; 
 }
 
-table#details {
+table#details, table.details {
+    font-size: $font-size;
+    font-family: $font-family;
     width: 100%;
     max-width: 100%;
     border-collapse: collapse; 
     tr>:first-child {
-        // white-space:nowrap;
+        
         font-weight: bolder;
     }
     th,td {
@@ -453,6 +458,9 @@ table#details {
       span.accordionButton.on:before {
         content:url("../images/icons/toggle.png");
      }
+      span.accordionContent {
+          font-size: smaller;
+      }
     }
 }
 
@@ -670,6 +678,7 @@ button.negative {
    color: #d12f19;
 
 }
+
 .ui-button { margin-left: -1px; }
 .ui-button-icon-only .ui-button-text { padding: 2px; }
 .ui-autocomplete-input { margin: 2px; padding: 2px 2px 3px 4px; width: 400px;}
@@ -833,3 +842,116 @@ div.mapform {
         height: 158px; /*hight of the spinner gif +2px to fix IE8 issue */
 }
 
+#cookiesinfo {
+   
+     
+    width: auto;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px dotted grey;
+    #lcookiesinfo {
+          width: 80%;
+          float: left;
+          
+     }
+    #rcookiesinfo {
+         width: 19%;
+          float: right;
+         
+     }
+    #cookiefoot {
+      clear: both;
+    }
+
+
+}
+
+#providertabs table#details tr>:first-child{
+      
+   min-width: 200px;
+   
+}
+
+#providertabs .ui-tabs-nav li { 
+    //margin-top: 0.6em; 
+    font-size: 80%; 
+} 
+#formtabs .ui-tabs-nav li { 
+    //margin-top: 0.6em; 
+    font-size: 80%; 
+} 
+.ui-tabs-nav li.ui-tabs-selected, 
+.ui-tabs-nav li.ui-state-active { 
+    margin-top: 0em; 
+    font-size: 90%; 
+    background: $nav-2ndlevel-background;
+    background: $tab-selected-background;
+    background: $tab-selected-background-gecko;
+    background-color: black;
+    border-top: 1px solid black;
+    .ui-tabs-anchor {
+            color: white;
+            font-weight: bolder;
+            }
+}
+span.alert
+{
+   color: red;
+
+}
+
+#formtabs {
+
+
+
+
+    button.btn {
+        
+        -moz-box-shadow:inset 0px 1px 0px 0px #23395e;
+        -webkit-box-shadow:inset 0px 1px 0px 0px #23395e;
+        box-shadow:inset 0px 1px 0px 0px #23395e;
+        
+        background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #2e466e), color-stop(1, #415989));
+        background:-moz-linear-gradient(top, #2e466e 5%, #415989 100%);
+        background:-webkit-linear-gradient(top, #2e466e 5%, #415989 100%);
+        background:-o-linear-gradient(top, #2e466e 5%, #415989 100%);
+        background:-ms-linear-gradient(top, #2e466e 5%, #415989 100%);
+        background:linear-gradient(to bottom, #2e466e 5%, #415989 100%);
+        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#2e466e', endColorstr='#415989',GradientType=0);
+        
+        background-color:#2e466e;
+        
+        -moz-border-radius:3px;
+        -webkit-border-radius:3px;
+        border-radius:3px;
+        
+        border:1px solid #1f2f47;
+        
+        display:inline-block;
+        color:#ffffff;
+        font-family:arial;
+        font-weight:bold;
+        padding:3px 12px;
+        text-decoration:none;
+        
+        text-shadow:0px 1px 0px #263666;
+        
+    }
+    button.btn:hover {
+        
+        background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #415989), color-stop(1, #2e466e));
+        background:-moz-linear-gradient(top, #415989 5%, #2e466e 100%);
+        background:-webkit-linear-gradient(top, #415989 5%, #2e466e 100%);
+        background:-o-linear-gradient(top, #415989 5%, #2e466e 100%);
+        background:-ms-linear-gradient(top, #415989 5%, #2e466e 100%);
+        background:linear-gradient(to bottom, #415989 5%, #2e466e 100%);
+        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#415989', endColorstr='#2e466e',GradientType=0);
+        
+        background-color:#415989;
+    }
+    button.btn:active {
+        position:relative;
+        top:1px;
+    }
+
+}

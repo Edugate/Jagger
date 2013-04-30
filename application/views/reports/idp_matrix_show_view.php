@@ -10,7 +10,7 @@ if (!defined('BASEPATH'))
 if(!empty($entityid))
 {
    echo '<div id="subtitle"><h3>';
-   echo lang('identityprovider').': '.anchor(''.base_url().'providers/provider_detail/idp/'.$idpid,$idpname) ;
+   echo lang('identityprovider').': '.anchor(''.base_url().'providers/detail/show/'.$idpid,$idpname) ;
    echo '</h3><h4>'.$entityid.'</h4></div>';
 }
 if(!empty($error_message))
