@@ -35,6 +35,7 @@ class Sync_metadata extends CI_Controller {
         public function metadataslist($i=null)
         {
               $this->output->set_content_type('text/plain');
+              $baseurl = base_url();
                $result = array();
                if(empty($i))
                {
@@ -43,11 +44,11 @@ class Sync_metadata extends CI_Controller {
                   {
                      foreach($federations as $f)
                      {
-                        $url = base_url() . "metadata/federation/" . base64url_encode($f->getName()) . "/metadata.xml";
+                        $url = $baseurl . "metadata/federation/" . base64url_encode($f->getName()) . "/metadata.xml";
                         $result[]=array('group'=>'federation','name'=>base64url_encode($f->getName()),'url'=>$url);
                         if($f->getLocalExport() === TRUE)
                         {
-                           $url = base_url() . "metadata/federationexport/" . base64url_encode($f->getName()) . "/metadata.xml";
+                           $url = $baseurl . "metadata/federationexport/" . base64url_encode($f->getName()) . "/metadata.xml";
                            $result[]=array('group'=>'federationexport','name'=>base64url_encode($f->getName()),'url'=>$url);
                         }
                      }
@@ -62,7 +63,7 @@ class Sync_metadata extends CI_Controller {
                {
                    foreach($providers as $p)
                    {
-                      $url =base_url() . "metadata/circle/" . base64url_encode($p->getEntityId()) . "/metadata.xml";
+                      $url =$baseurl . "metadata/circle/" . base64url_encode($p->getEntityId()) . "/metadata.xml";
                       $result[] = array('group'=>'provider','name'=>base64url_encode($p->getEntityId()), 'url'=>$url);
                    }
                }

@@ -1,0 +1,12 @@
+Before update code please make always backup of code and db
+
+After update code from GIT repository:
+
+ go to application folder
+ run:  
+ ./doctrine orm:schema-tool:update --force
+ ./doctrine orm:generate-proxies 
+ 
+ Then sign in and open http://yousite/update/upgrade
+
+ Always compare local index.php with codeigniter's index.php and update local one if needed.
