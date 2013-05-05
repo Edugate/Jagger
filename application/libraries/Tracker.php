@@ -46,6 +46,14 @@ class Tracker {
             $this->em->flush();
         }
     }
+    function renameProviderResourcename($oldname, $newname)
+    {
+       $q = $this->em->createQuery('update models\Tracker t set t.resourcename = ?1 where t.resourcename = ?2 and t.resourcetype in (\'idp\',\'sp\',\'both\',\'ent\')');
+       $q->setParameter(1,$newname);
+       $q->setParameter(2,$oldname);
+       $numUpdated = $q->execute();
+
+    }
     
     function remove_ProviderTrack($entityid)
     {

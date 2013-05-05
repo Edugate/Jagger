@@ -59,7 +59,7 @@ class Trackers
 	public function getProviderModifications(Provider $provider, $count)
 	{
 		$resourcename = $provider->getEntityId();
-		$tracks = $this->em->getRepository("models\Tracker")->findBy(array('subtype'=>'modification','resourcename'=>$resourcename, 'resourcetype'=>array('idp','sp','both')),array('createdAt'=>'DESC'), $count);
+		$tracks = $this->em->getRepository("models\Tracker")->findBy(array('subtype'=>'modification','resourcename'=>$resourcename, 'resourcetype'=>array('idp','sp','both','ent')),array('createdAt'=>'DESC'), $count);
 		return $tracks;
 	}
 

@@ -454,7 +454,7 @@ class Detail extends MY_Controller {
           $d[$i]['value'] = $scopeString;
 
        }
-      
+       $d[++$i]['header'] = 'Metadata'; 
        $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
        $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
        $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml'; 

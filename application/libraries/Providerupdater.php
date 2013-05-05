@@ -28,6 +28,8 @@ class Providerupdater {
     {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
+       
+        $this->ci->load->library('tracker');
     }
 
     public function getChangeProposal(models\Provider $ent, $chg)
@@ -37,6 +39,8 @@ class Providerupdater {
 
     public function updateProvider(models\Provider $ent, array $ch)
     {
+        // $m - array for modifications
+        $m  = array();
         $type = $ent->getType();
         $langCodes = languagesCodes();
         $ex = $ent->getExtendMetadata();
@@ -62,7 +66,7 @@ class Providerupdater {
                 }
             }
         }
-        if ($type != 'SP')
+        if ($type !== 'SP')
         {
             if (empty($idpMDUIparent))
             {
@@ -80,28 +84,48 @@ class Providerupdater {
             
             if(array_key_exists('scopes', $ch))
             {
+               $origscopesso = implode(',',$ent->getScope('idpsso'));
+               $origscopeaa = implode(',',$ent->getScope('aa'));
                if(array_key_exists('idpsso',$ch['scopes']) && !empty($ch['scopes']['idpsso']))
                {
-                     $idpssoscopes=explode(',',$ch['scopes']['idpsso']);
+                     $idpssoscopes=array_filter(explode(',',$ch['scopes']['idpsso']));
                      $ent->setScope('idpsso', $idpssoscopes);
+                     if($origscopesso != implode(',',$idpssoscopes))
+                     {
+                        $m['Scope IDPSSO'] = array('before'=>$origscopesso,'after'=>implode(',',$idpssoscopes));
+                     } 
                }
                else
                {
-
                        $ent->setScope('idpsso', array());
+                       if(!empty($origscopesso))
+                       {
+                          $m['Scope IDPSSO'] = array('before'=>$origscopesso,'after'=>'');
+                       }
                }
                if(array_key_exists('aa',$ch['scopes']) && !empty($ch['scopes']['aa']))
                {
-                       $aascopes = explode(',',$ch['scopes']['aa']);
+                       
+                       $aascopes = array_filter(explode(',',$ch['scopes']['aa']));
                        $ent->setScope('aa',$aascopes);
+                       if($origscopeaa != implode(',',$aascopes))
+                       {
+                          $m['Scope AA'] = array('before'=>$origscopeaa,'after'=>implode(',',$aascopes));
+                       } 
+                      
                }
                else
                {
                       $ent->setScope('aa', array());
+                      if(!empty($origscopeaa))
+                      {
+                         $m['Scope AA'] = array('before'=>$origscopeaa,'after'=>'');
+                      }
                }
+               $origscopesso = null;
             }
         }
-        if ($type != 'IDP')
+        if ($type !== 'IDP')
         {
             $spMDUIparent = new models\ExtendMetadata;
             $spMDUIparent->setType('sp');
@@ -112,10 +136,19 @@ class Providerupdater {
         }
         if (array_key_exists('entityid', $ch) && !empty($ch['entityid']))
         {
+            if($ent->getEntityId() != $ch['entityid'])
+            {
+               $m['EntityID'] = array('before'=>$ent->getEntityId(),'after'=>$ch['entityid']);
+               $this->ci->tracker->renameProviderResourcename($ent->getEntityId(),$ch['entityid']); 
+            }
             $ent->setEntityId($ch['entityid']);
         }
         if (array_key_exists('orgname', $ch) && !empty($ch['orgname']))
         {
+            if($ent->getName() != $ch['orgname'])
+            {
+              $m['Name'] = array('before'=>$ent->getName(),'after'=>$ch['orgname']);
+            }
             $ent->setName($ch['orgname']);
         }
         if (array_key_exists('lname', $ch) && is_array($ch['lname']))
@@ -290,7 +323,7 @@ class Providerupdater {
         }
         if (array_key_exists('prvurl', $ch))
         {
-            if ($type != 'IDP')
+            if ($type !== 'IDP')
             {
                 $origex = array();
                 if (isset($extend['sp']['mdui']['PrivacyStatementURL']))
@@ -339,7 +372,7 @@ class Providerupdater {
                     }
                 }
             }
-            if ($type != 'SP')
+            if ($type !== 'SP')
             {
                 $origex = array();
                 if (isset($extend['idp']['mdui']['PrivacyStatementURL']))
@@ -411,17 +444,17 @@ class Providerupdater {
 
         if (!array_key_exists('nameids', $ch))
         {
-            if ($type != 'SP')
+            if ($type !== 'SP')
             {
                 $ent->setNameIds('idpsso', array());
                 $ent->setNameIds('aa', array());
             }
-            if ($type != 'IDP')
+            if ($type !== 'IDP')
             {
                 $ent->setNameIds('spsso', array());
             }
         }
-        if ($type != 'SP')
+        if ($type !== 'SP')
         {
             if (isset($ch['nameids']['idpsso']) && is_array($ch['nameids']['idpsso']))
             {
@@ -440,7 +473,7 @@ class Providerupdater {
                 $ent->setNameIds('aa', array());
             }
         }
-        if ($type != 'IDP')
+        if ($type !== 'IDP')
         {
             if (isset($ch['nameids']['spsso']) && is_array($ch['nameids']['spsso']))
             {
@@ -750,7 +783,7 @@ class Providerupdater {
                     elseif ($srvtype === 'DiscoveryResponse')
                     {
                         log_message('debug', 'GG:DiscoveryResponse type found');
-                        if ($type == 'IDP')
+                        if ($type === 'IDP')
                         {
                             log_message('debug', 'GG:DiscoveryResponse entity recognized as IDP removin service');
                             $ent->removeServiceLocation($v);
@@ -791,7 +824,7 @@ class Providerupdater {
                     elseif ($srvtype === 'RequestInitiator')
                     {
                         log_message('debug', 'GG:RequestInitiator type found');
-                        if ($type == 'IDP')
+                        if ($type === 'IDP')
                         {
                             log_message('debug', 'GG:RequestInitiator entity recognized as IDP removin service');
                             $ent->removeServiceLocation($v);
@@ -1228,7 +1261,7 @@ class Providerupdater {
         /**
          * start update UII
          */
-        if ($type != 'SP')
+        if ($type !== 'SP')
         {
             $typeFilter = array('idp');
             $idpextend = $ent->getExtendMetadata()->filter(
@@ -1295,7 +1328,7 @@ class Providerupdater {
                 }
             }
         }
-        if ($type != 'IDP')
+        if ($type !== 'IDP')
         {
             $typeFilter = array('sp');
             $spextend = $ent->getExtendMetadata()->filter(
@@ -1398,6 +1431,10 @@ class Providerupdater {
 
 
         }
+        
+        
+        $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(),serialize($m),FALSE);
+        
         return TRUE;
     }
    
