@@ -111,7 +111,7 @@ class Detail extends MY_Controller {
        $edit_link = '';
        if (empty($is_active))
        {
-           $entstatus .= '<span class="lbl lbl-disabled">' . lang('rr_disabled') . '</span>';
+           $entstatus .= '<span class="lbl lbl-disabled">' . lang('rr_disabled') . '</span> ';
        }
        else
        {
@@ -205,7 +205,7 @@ class Detail extends MY_Controller {
        $d = array();
        $i = 0;
        $d[++$i]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation') ; 
-       $d[++$i]['name'] = 'Status';
+       $d[++$i]['name'] = 'Status '.showBubbleHelp('<ul><li><b>enabled</b>: Provider will be included in Metadata</li><li><b>disabled</b>: Provider is excluded from Metadata </li><li><b>managed localy</b>: Provider is managed localy</li><li><b>external</b>: Provider is imported from external resource and is not managed localy</li></ul>').'';
 
        $d[$i]['value'] = '<b>'.$entstatus.'</b>';
        $d[++$i]['name'] = lang('rr_lastmodification');

@@ -56,7 +56,7 @@ class Attributes extends MY_Controller
             {
                 $notice = '<br />'.$excluded;
             }
-            $a_ar[] = array(showHelp($a->getDescription()) . ' '. $a->getName().$notice, $a->getFullname(), $a->getOid(),$a->getUrn());
+            $a_ar[] = array(showBubbleHelp($a->getDescription()) . ' '. $a->getName().$notice, $a->getFullname(), $a->getOid(),$a->getUrn());
         }
         $data['attributes'] = $a_ar;
         $data['content_view'] = 'attribute_list_view';

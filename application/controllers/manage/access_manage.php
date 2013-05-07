@@ -342,7 +342,7 @@ class Access_manage extends MY_Controller
            }
            if(!$isitowner && $owner == $key)
            {
-                $is_owner = "<span class=\"alert\">Owner".showHelp('Owner has always read/write permissions, no matter what ACLs are. Manage permision depends on ACL')."</span>";
+                $is_owner = "<span class=\"alert\">Owner".showBubbleHelp('Owner has always read/write permissions, no matter what ACLs are. Manage permision depends on ACL')."</span>";
                 $isitowner = true;
            }
            
@@ -357,7 +357,7 @@ class Access_manage extends MY_Controller
            }
            if($k)
            {
-                $row[$i] = array($is_me ." ". $key . " (Administrator".showHelp('Administrator group has full access not matter what ACLs say').")  ".$is_owner,'has access','has access','has access');
+                $row[$i] = array($is_me ." ". $key . " (Administrator".showBubbleHelp('Administrator group has full access not matter what ACLs say').")  ".$is_owner,'has access','has access','has access');
            }
            else
            {    

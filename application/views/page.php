@@ -11,6 +11,7 @@ $fed_change_link = base_url();
 $sp_change_link = base_url() . "manage/settings/sp";
 $idp_change_link = base_url() . "manage/settings/idp";
 $pageTitle .= $this->title;
+$jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]> <html lang="<?php echo $this->current_language; ?>" class="no-js ie6 oldie"> <![endif]-->
@@ -38,7 +39,10 @@ $pageTitle .= $this->title;
         <?php
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/style.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
+        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';
+        
         echo '<script src="' . $base_url . 'js/modernizr-2.0.6.min.js"></script>';
+        
         ?>
 
     </head>
@@ -289,10 +293,12 @@ $pageTitle .= $this->title;
         <div id="spinner" class="spinner" style="display:none;">
             <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="Loading"/>
         </div>
+        <button id="jquerybubblepopupthemes" style="display:none;" value="<?php echo $jquerybubblepopupthemes; ?>"></button> 
         <?php
       //  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     ?>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="<?php echo $base_url; ?>js/jquery-migrate-1.2.0.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
         <script type="text/javascript" src="<?php echo $base_url; ?>js/jquery.uitablefilter.js"></script>
         <?php
@@ -302,7 +308,8 @@ $pageTitle .= $this->title;
         echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.highlighter.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.tablesorter.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.inputfocus-0.9.min.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/locals.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery-bubble-popup-v3.min.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v2.js"></script>';
 
 
 

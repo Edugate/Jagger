@@ -50,7 +50,7 @@
                     <input type="text" id="metadataurl" name="metadataurl" value="<?php echo set_value('metadataurl'); ?>"/>
                 </li>
                 <li>
-                    <label for="entity"><?php echo lang('rr_entityid').showHelp(lang('rhelp_entityid'));?></label>
+                    <label for="entity"><?php echo lang('rr_entityid').showBubbleHelp(lang('rhelp_entityid'));?></label>
                     <input type="text" id="entity" name="entity" placeholder="https://idp.example.com/idp/shibboleth"
                            value="<?php echo set_value('entity'); ?>"  <?php echo $required; ?>/>
                 </li>
@@ -64,14 +64,14 @@
                            value="<?php echo set_value('scope'); ?>"  <?php echo $required; ?>/>
                 </li>
                 <li>
-                    <label for="bindingname"><?php echo lang('rr_bindingtypesinglesign').showHelp(lang('rhelp_bindingtype'));?></label>
+                    <label for="bindingname"><?php echo lang('rr_bindingtypesinglesign').showBubbleHelp(lang('rhelp_bindingtype'));?></label>
                     <?php
                     $binding_values = $this->config->item('ssohandler_saml2');
                     echo form_dropdown('bindingname', $binding_values);
                     ?>
                 </li>
                 <li>
-                    <label for="ssohandler"><?php echo lang('rr_singlesignonurl').showHelp(lang('rhelp_urlsinglesign'));?></label>
+                    <label for="ssohandler"><?php echo lang('rr_singlesignonurl').showBubbleHelp(lang('rhelp_urlsinglesign'));?></label>
                     <input type="text" id="ssohandler" name="ssohandler" placeholder="https://idp.example.com/idp/profile/SAML2/Redirect/SSO"
                            value="<?php echo set_value('ssohandler'); ?>"  <?php echo $required; ?>/>
                 </li>
@@ -104,7 +104,7 @@
                        value="<?php echo set_value('phone'); ?>" /><br />
             </li>
             <li>
-                <label for="helpdeskurl"><?php echo lang('rr_helpdeskurl').showHelp(lang('rhelp_helpdeskurl'));?></label>
+                <label for="helpdeskurl"><?php echo lang('rr_helpdeskurl').showBubbleHelp(lang('rhelp_helpdeskurl'));?></label>
                 <input type="text" id="helpdeskurl" name="helpdeskurl"
                        value="<?php echo set_value('helpdeskurl'); ?>"   <?php echo $required; ?>/><br />
             </li>

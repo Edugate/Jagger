@@ -25,6 +25,15 @@ function showHelp($string)
      $h = '&nbsp;<span title="'. htmlentities($string).'"><img src="'.base_url().'images/icons/question.png"></span>';
      return $h;
 }
+
+function showBubbleHelp($string)
+{
+    //$h = '<button type="button" class="bubblepopup" style="background: transparent; border:0px" value="'.htmlspecialchars($string).'"><img src="'.base_url().'images/icons/question.png"></button>';
+    $h = '<button type="button" class="bubblepopup" style="background:url(\''.base_url().'images/icons/question.png\') no-repeat; border:1px" value="'.htmlspecialchars($string).'">&nbsp;</button>';
+    return $h;
+
+}
+
 function genIcon($type, $title=null)
 {
     $preurl = base_url().'images/icons/';

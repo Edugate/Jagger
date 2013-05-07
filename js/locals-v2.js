@@ -1,3 +1,39 @@
+$(document).ready(function() {
+ var bubbletheme = $("button#jquerybubblepopupthemes").val();
+$('.bubblepopup').CreateBubblePopup({
+  
+   position : 'top',
+   align    : 'center',
+   innerHtml: 'click help',
+   innerHtmlStyle: {
+       color:'#FFFFFF',
+       'text-align':'center'
+       },
+   themeName: 'all-black',
+   themePath: bubbletheme
+
+});
+$('.bubblepopup').click(function() {
+     var some = $(this).val();
+     $(this).ShowBubblePopup({
+     closingDelay: 1000,
+     position : 'top',
+     align    : 'center',
+     innerHtml: some,
+
+    innerHtmlStyle: {
+         color:'#000000', 
+         'font-size': '110%',
+        'text-align':'left'
+                   },
+
+  themeName: 'all-yellow',
+  themePath: bubbletheme
+   },false).FreezeBubblePopup()
+
+  }); 
+
+});
 $(function() {
 
 
