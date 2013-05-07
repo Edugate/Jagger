@@ -1,5 +1,15 @@
 <?php
 $base = base_url();
+$localloginbtn = $this->config->item('localloginbtn');
+if(empty($localloginbtn))
+{
+    $localloginbtn = lang('rr_local_authn');
+}
+$fedloginbtn = $this->config->item('fedloginbtn');
+if(empty($fedloginbtn))
+{
+  $fedloginbtn = lang('federated_access');
+}
 $attributes = array('class' => 'span-15', 'id' => 'login');
 ?>
 
@@ -43,10 +53,10 @@ $attributes = array('class' => 'span-15', 'id' => 'login');
         <?php
         if (!empty($shib_url))
         {
-            echo anchor($shib_url, '<button type="button" name="faderated" value="faderated" class="btn" onclick="window.open(\'' . $shib_url . '\',\'_self\')">' . lang('federated_access') . '</button>');
+            echo anchor($shib_url, '<button type="button" name="faderated" value="faderated" class="btn" onclick="window.open(\'' . $shib_url . '\',\'_self\')">' . $fedloginbtn . '</button>');
         }
         ?> 
-        <button type="submit" name="submit" value="Login" class="btn"><?php echo lang('rr_local_authn'); ?></button>
+        <button type="submit" name="submit" value="Login" class="btn"><?php echo $localloginbtn; ?></button>
     </div>
 </fieldset>
 <?php echo form_close(); ?>
