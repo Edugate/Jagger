@@ -151,6 +151,9 @@ class Providerupdater {
             }
             $ent->setName($ch['orgname']);
         }
+        /**
+         * @todo track lname
+         */
         if (array_key_exists('lname', $ch) && is_array($ch['lname']))
         {
             $origs = $ent->getLocalName();
@@ -171,6 +174,9 @@ class Providerupdater {
             }
             $ent->setLocalName($origs);
         }
+        /**
+         * @todo add trck regpolicy
+         */
         if (array_key_exists('regpolicy', $ch) && is_array($ch['regpolicy']))
         {
             $origs = $ent->getRegistrationPolicy();
@@ -193,8 +199,15 @@ class Providerupdater {
         }
         if (array_key_exists('displayname', $ch) && !empty($ch['displayname']))
         {
+            if($ent->getDisplayName() !== $ch['displayname'])
+            {
+               $m['DisplayName']  = array('before'=>$ent->getDisplayName(),'after'=>$ch['displayname']);
+            }
             $ent->setDisplayName($ch['displayname']);
         }
+        /**
+         * @todo track ldisplayname
+         */
         if (array_key_exists('ldisplayname', $ch) && is_array($ch['ldisplayname']))
         {
             $origs = $ent->getLocalDisplayname();
@@ -217,10 +230,27 @@ class Providerupdater {
         }
         if (array_key_exists('regauthority', $ch))
         {
+            if($ent->getRegistrationAuthority() !== $ch['regauthority'])
+            {
+                $m['RegistrationAuthority'] = array('before'=>$ent->getRegistrationAuthority(),'after'=> $ch['regauthority']);
+            }
             $ent->setRegistrationAuthority($ch['regauthority']);
         }
         if (array_key_exists('registrationdate', $ch))
         {
+            $prevregdate = $ent->getRegistrationDate();
+            if(isset($prevregdate))
+            {
+               $prevregdate = $prevregdate->format('Y-m-d');
+            }
+            else
+            {
+               $prevregdate = '';
+            }
+            if($prevregdate !== $ch['registrationdate'])
+            {
+               $m['RegistrationDate'] = array('before'=>$prevregdate,'after'=>$ch['registrationdate']);
+            }
             if (!empty($ch['registrationdate']))
             {
                 $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['registrationdate'] . ' 00:00:00'));
@@ -232,6 +262,19 @@ class Providerupdater {
         }
         if (array_key_exists('validfrom', $ch))
         {
+            $prevvalidfrom = $ent->getValidFrom();
+            if(isset($prevvalidfrom))
+            {
+               $prevvalidfrom = $prevvalidfrom->format('Y-m-d');
+            }
+            else
+            {
+               $prevvalidfrom = '';
+            }
+            if($prevvalidfrom !== $ch['validfrom'])
+            {
+               $m['ValidFrom'] = array('before'=>$prevvalidfrom,'after'=>$ch['validfrom']);
+            }
             if (!empty($ch['validfrom']))
             {
                 $ent->setValidFrom(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['validfrom'] . ' 00:00:00'));
@@ -243,6 +286,19 @@ class Providerupdater {
         }
         if (array_key_exists('validto', $ch))
         {
+            $prevvalidto = $ent->getValidTo();
+            if(isset($prevvalidto))
+            {
+               $prevvalidto = $prevvalidto->format('Y-m-d');
+            }
+            else
+            {
+               $prevvalidto = '';
+            }
+            if($prevvalidto !== $ch['validto'])
+            {
+               $m['ValidTo'] = array('before'=>$prevvalidto,'after'=>$ch['validto']);
+            }
             if (!empty($ch['validto']))
             {
                 $ent->setValidTo(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['validto'] . ' 00:00:00'));
@@ -254,12 +310,23 @@ class Providerupdater {
         }
         if (array_key_exists('homeurl', $ch))
         {
+            if($ent->getHomeUrl() !== $ch['homeurl'])
+            {
+               $m['HomeURL'] = array('before'=>$ent->getHomeUrl(),'after'=>$ch['homeurl']);
+            }
             $ent->setHomeUrl($ch['homeurl']);
         }
         if (array_key_exists('helpdeskurl', $ch))
         {
+            if($ent->getHelpdeskUrl() !== $ch['helpdeskurl'])
+            {
+               $m['HelpdeskURL'] = array('before'=>$ent->getHelpdeskUrl(),'after'=>$ch['helpdeskurl']);
+            }
             $ent->setHelpdeskUrl($ch['helpdeskurl']);
         }
+        /**
+         * @todo track lhelpdesk
+         */
         if (array_key_exists('lhelpdesk', $ch) && is_array($ch['lhelpdesk']))
         {
             $origs = $ent->getLocalHelpdeskUrl();
@@ -283,8 +350,15 @@ class Providerupdater {
 
         if (array_key_exists('description', $ch))
         {
+            if($ent->getDescription() !== $ch['description'])
+            {
+               $m['Description'] = array('before'=>$ent->getDescription(),'after'=>$ch['description']);
+            }
             $ent->setDescription($ch['description']);
         }
+        /**
+         * @todo track ldesc
+         */
         if (array_key_exists('ldesc', $ch) && is_array($ch['ldesc']))
         {
             $origs = $ent->getLocalDescription();
@@ -305,6 +379,9 @@ class Providerupdater {
             }
             $ent->setLocalDescription($origs);
         }
+        /**
+         * @todo track coc changes
+         */
         if (array_key_exists('coc', $ch))
         {
             if (!empty($ch['coc']))
@@ -319,8 +396,15 @@ class Providerupdater {
         }
         if (array_key_exists('privacyurl', $ch))
         {
+            if($ent->getPrivacyURL() !== $ch['privacyurl'])
+            {
+               $m['PrivacyURL general'] = array('before'=>$ent->getPrivacyURL(),'after'=>$ch['privacyurl']);
+            }
             $ent->setPrivacyUrl($ch['privacyurl']);
         }
+        /**
+         * @todo  track prvurl
+         */
         if (array_key_exists('prvurl', $ch))
         {
             if ($type !== 'IDP')
@@ -1432,9 +1516,10 @@ class Providerupdater {
 
         }
         
-        
-        $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(),serialize($m),FALSE);
-        
+        if(count($m)>0)
+        {        
+           $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(),serialize($m),FALSE);
+        }
         return TRUE;
     }
    
