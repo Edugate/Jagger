@@ -283,7 +283,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                           echo '<small>'.$footer['value'].'</small><br />';
                     }
                     $disp_mem = $this->rrpreference->getPreferences('rr_display_memory_usage');
-                    if (isset($disp_mem['status']))
+                    if (isset($disp_mem['status']) && !empty($disp_mem['status']))
                     {
                         echo echo_memory_usage();
                     }
