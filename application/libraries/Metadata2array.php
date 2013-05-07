@@ -53,7 +53,7 @@ class Metadata2array {
         }
         if(count($this->coclist)> 0)
         {
-           $redusedlist = $this->coclist;
+           $redusedlist = array_unique($this->coclist);
            foreach($redusedlist as $r)
            {
                $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$r));
