@@ -2681,6 +2681,10 @@ class Provider {
         $e = $parent->ownerDocument->createElementNS($ns_md, 'md:IDPSSODescriptor');
         $protocol = $this->getProtocolSupport('idpsso');
         $protocols = implode(" ", $protocol);
+        if(empty($protocols))
+        {
+            $protocols = 'urn:oasis:names:tc:SAML:2.0:protocol'; 
+        }
         $e->setAttribute('protocolSupportEnumeration', $protocols);
         $Extensions_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
         $scs = $this->getScope('idpsso');
