@@ -2828,6 +2828,10 @@ class Provider {
 
         $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SPSSODescriptor');
         $protocols = implode(" ", $this->getProtocolSupport('spsso'));
+        if(empty($protocols))
+        {
+            $protocols = 'urn:oasis:names:tc:SAML:2.0:protocol';
+        }
         $e->setAttribute('protocolSupportEnumeration', $protocols);
 
         $Extensions_Node = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
