@@ -29,7 +29,7 @@ class Dashboard extends MY_Controller {
 
         if ($loggedin)
         {
-            $this->session->set_userdata(array('currentMenu' => 'home'));
+            
             $this->load->library('zacl');
             return;
         }
@@ -66,6 +66,7 @@ class Dashboard extends MY_Controller {
                  $u=$this->em->getRepository("models\User")->findOneBy(array('username'=>$cur_user));
 
                  $pref = $u->getUserpref();
+                 
                  if(!empty($pref))
                  {
                     $board = $pref['board'];

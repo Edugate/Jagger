@@ -36,10 +36,7 @@ class MY_Controller extends CI_Controller {
 
     public function __construct()
     {
-//        ini_set("session.cookie_secure", "1");
-//        ini_set("session.cookie_httponly", "1");
-//        session_name('_RR3_SESS');
-//        session_start();
+
         parent::__construct();
         $this->em = $this->doctrine->em;
         $this->title = "";

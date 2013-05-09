@@ -2,14 +2,6 @@
 $loggedin = $this->j_auth->logged_in();
 $pageTitle = $this->config->item('pageTitlePref');
 $base_url = base_url();
-$current_fed_name = $this->session->userdata('current_fed_name');
-$current_sp_name = $this->session->userdata('current_sp_name');
-$current_idp_name = $this->session->userdata('current_idp_name');
-$current_idp_menu = '';
-$current_sp_menu = '';
-$fed_change_link = base_url();
-$sp_change_link = base_url() . "manage/settings/sp";
-$idp_change_link = base_url() . "manage/settings/idp";
 $pageTitle .= $this->title;
 $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 ?>
@@ -39,8 +31,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <?php
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/style.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
-        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';
-        
+        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';     
         echo '<script src="' . $base_url . 'js/modernizr-2.0.6.min.js"></script>';
         
         ?>
@@ -119,52 +110,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                     {
                         ?>
                         <!-- menu -->
-                        <?php
-                        $m_register = '';
-                        $m_federation = '';
-                        $m_home = '';
-                        $m_idp = '';
-                        $m_sp = '';
-                        $m_general = '';
-                        $m_awaiting = '';
-                        $curr = ' class="current"';
-                        $currentMenu = $this->session->userdata('currentMenu');
-                        if (!empty($currentMenu))
-                        {
-                            if ($currentMenu == 'register')
-                            {
-                                $m_register = $curr;
-                            }
-                            elseif ($currentMenu == 'federation')
-                            {
-                                $m_federation = $curr;
-                            }
-                            elseif ($currentMenu == 'home')
-                            {
-                                $m_home = $curr;
-                            }
-                            elseif ($currentMenu == 'awaiting')
-                            {
-                                $m_awaiting = $curr;
-                            }
-                            elseif ($currentMenu == 'idp')
-                            {
-                                $m_idp = $curr;
-                            }
-                            elseif ($currentMenu == 'sp')
-                            {
-                                $m_sp = $curr;
-                            }
-                            elseif ($currentMenu == 'general')
-                            {
-                                $m_general = $curr;
-                            }
-                            else
-                            {
-                                $m_home = $curr;
-                            }
-                        }
-                        ?>
+                     
                         <nav>
                             <a class="toggleMenu" href="#">Menu</a>
 
@@ -177,19 +123,14 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                                     </ul>
                                 </li>
                                 <li><a href="<?php echo $base_url; ?>providers/idp_list/show"><?php echo lang('identityproviders'); ?></a>
-                                    <ul><?php
-                    echo $current_idp_menu;
-                        ?>
-
+                                    <ul>
                                         <li><a href="<?php echo $base_url; ?>providers/idp_list/show"><?php echo lang('rr_list'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>providers/idp_registration"><?php echo lang('register'); ?></a></li>
 
                                     </ul>
                                 </li>
                                 <li><a href="<?php echo $base_url; ?>providers/sp_list/show"><?php echo lang('serviceproviders'); ?></a>
-                                    <ul><?php
-                                    echo $current_sp_menu;
-                        ?>
+                                    <ul>
                                         <li><a href="<?php echo $base_url; ?>providers/sp_list/show"><?php echo lang('rr_list'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>providers/sp_registration"><?php echo lang('register'); ?></a></li>
                                     </ul>

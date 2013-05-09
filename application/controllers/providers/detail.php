@@ -77,6 +77,8 @@ class Detail extends MY_Controller {
        $data['type'] = $type;
        $group = 'entity';
        $entstatus = '';
+       $edit_attributes ='';
+       $edit_policy = '';
        
        if($type == 'both')
        {

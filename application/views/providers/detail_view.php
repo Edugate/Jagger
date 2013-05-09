@@ -11,17 +11,7 @@ else
 <div id="pagetitle"><?php echo lang('rr_providerdetails');?></div>
 
 <div id="subtitle"><div style="float: right; display: block"><?php echo $edit_link.'&nbsp;'.$bookmark; ?></div><h3><?php echo $presubtitle . ': '.$name ; ?> <h3></div>
-<?php
-/**
- * @todo add navbar
- */
-#$this->load->view('/navigations/floatnav_'.$type.'_details_view',$data);
-############
 
-###########
-
-
-?>
 <div id="providertabs">
 <ul>
 <?php

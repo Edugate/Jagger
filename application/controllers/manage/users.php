@@ -205,6 +205,47 @@ class Users extends MY_Controller {
         }
         $det[$i++] = array('key' => 'Access types', 'val' => implode(", ", $access_type_str));
         $det[$i++] = array('key' => 'Assigned roles', 'val' => implode(", ", $user->getRoleNames()));
+        $det[$i++] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
+        $bookmarks = '';
+        $userpref = $user->getUserpref();
+        if(isset($userpref['board']))
+        {
+            $board = $userpref['board'];
+        }
+       
+        if(!empty($board)&& is_array($board))
+        {
+           if(array_key_exists('idp',$board) && is_array($board['idp']))
+           {
+               $bookmarks .= '<p><ul><b>'.lang('identityproviders').'</b>';
+               foreach($board['idp'] as $key=>$value)
+               {
+                   $bookmarks .= '<li><a href="'.base_url().'providers/detail/show/'.$key.'">'.$value['name'].'</a><br /> <small>'.$value['entity'].'</small></li>';
+               }
+               $bookmarks .= '</ul></p>';
+           }
+           if(array_key_exists('sp',$board) && is_array($board['sp']))
+           {
+               $bookmarks .= '<p><ul><b>'.lang('serviceproviders').'</b>';
+               foreach($board['sp'] as $key=>$value)
+               {
+                   $bookmarks .= '<li><a href="'.base_url().'providers/detail/show/'.$key.'">'.$value['name'].'</a><br /><small>'.$value['entity'].'</small></li>';
+               }
+               $bookmarks .= '</ul></p>';
+           }
+           if(array_key_exists('fed',$board) && is_array($board['fed']))
+           {
+              $bookmarks .= '<p><ul><b>'.lang('federations').'</b>';
+              foreach($board['fed'] as $key=>$value)
+              {
+                   $bookmarks .= '<li><a href="'.base_url().'federations/manage/show/'.$value['url'].'">'.$value['name'].'</a></li>';
+              }
+              $bookmarks .= '</ul></p>';
+           }
+        }
+        $det[$i++] = array('key'=>'Bookmarked','val'=>$bookmarks);
+
+
         $det[$i++] = array('data' => array('data' => 'Authn logs - last '.$limit_authn, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authn_logs as $ath) {
             $date = $ath->getCreated()->format('Y-m-d H:i:s');
