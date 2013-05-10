@@ -27,7 +27,6 @@ class MY_Controller extends CI_Controller {
      *
      * @var EntityManager
      */
-    public $mid;
     protected $em;
     protected $authenticated;
     public $current_language;
@@ -40,7 +39,6 @@ class MY_Controller extends CI_Controller {
         parent::__construct();
         $this->em = $this->doctrine->em;
         $this->title = "";
-        $this->mid = "";
         $this->lang->load('rr_lang', 'english');
         $this->current_language = 'en';
         $langs = array('pl', 'pt');

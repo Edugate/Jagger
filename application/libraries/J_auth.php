@@ -23,14 +23,12 @@ class J_auth {
     protected $em;
     protected $ci;
     protected $status;
-    protected $mid;
     protected $messages;
     protected $errors = array();
 
     public function __construct() {
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
-        $this->mid = $this->ci->mid;
         $this->ci->load->library('email');
         $this->ci->load->helper('cookie');
     }
@@ -111,7 +109,7 @@ class J_auth {
     public function logged_in() {
         if(!empty($_SESSION['logged']) && !empty($_SESSION['username']))
         {
-            log_message('debug',$this->ci->mid . 'session is active for: ' . $_SESSION['username']);
+            log_message('debug','session is active for: ' . $_SESSION['username']);
             return TRUE;
         }
         else

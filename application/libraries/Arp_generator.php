@@ -28,8 +28,7 @@ class Arp_generator {
     {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
-        $this->mid = $this->ci->mid;
-        log_message('debug', $this->mid . 'Arp_generator intitiated');
+        log_message('debug', 'Arp_generator intitiated');
         $this->idp = new models\Provider;
         $this->tmp_providers = new models\Providers;
     }
@@ -255,7 +254,7 @@ class Arp_generator {
         $tmp_idp = new models\Providers;
         if (empty($idp))
         {
-            log_message('debug', $this->mid . "IdP not found with id:." . $idp->getId());
+            log_message('debug', "IdP not found with id:." . $idp->getId());
             return null;
         }
         $policies = $idp->getAttributeReleasePolicies()->getValues();
@@ -292,13 +291,13 @@ class Arp_generator {
         }
         else
         {
-            log_message('debug', $this->mid . 'no members found');
+            log_message('debug', 'no members found');
             return null;
         }
 
         $members_requirements = $tmp_requirements->getRequirementsBySPs(array_keys($members_byid));
         
-        log_message('debug', $this->mid . 'Arp: found ' . count($members) . ' for idp (id:' . $idp->getId() . '): ' . $idp->getEntityId() . '');
+        log_message('debug',  'Arp: found ' . count($members) . ' for idp (id:' . $idp->getId() . '): ' . $idp->getEntityId() . '');
 
         $attrs = array();
         /**
@@ -319,7 +318,7 @@ class Arp_generator {
         $custom_policies = array();
         if (!empty($custom_attrs) and count($custom_attrs) > 0)
         {
-            log_message('debug', $this->ci->mid . "Found custom permit/deny for IDP EntityID: " . $idp->getEntityId());
+            log_message('debug',  "Found custom permit/deny for IDP EntityID: " . $idp->getEntityId());
             foreach ($custom_attrs as $key)
             {
                 $sp_requester = $this->tmp_providers->getOneSpById($key->getRequester());
@@ -373,7 +372,7 @@ class Arp_generator {
         }
         if (empty($s_attrs) or (is_array($s_attrs) && count($s_attrs) == 0))
         {
-            log_message('debug', $this->mid . 'Arp:  no supported attributes for idp: ' . $idp->getId());
+            log_message('debug',  'Arp:  no supported attributes for idp: ' . $idp->getId());
             return null;
         }
 

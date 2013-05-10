@@ -25,22 +25,38 @@ class Dashboard extends MY_Controller {
         parent::__construct();
         $this->load->library('j_auth');
         $this->load->helper('url');
-        $loggedin = $this->j_auth->logged_in();
+      //  $loggedin = $this->j_auth->logged_in();
 
-        if ($loggedin)
-        {
+      //  if ($loggedin)
+     //   {
             
-            $this->load->library('zacl');
-            return;
-        }
-        else
-        {
-            redirect('auth/login', 'refresh');
-        }
+      //      $this->load->library('zacl');
+      //      return;
+     //   }
+     //   else
+     //   {
+      //      redirect('auth/login', 'refresh');
+      //  }
     }
 
     function index()
     {
+        $loggedin = $this->j_auth->logged_in();
+
+        if (!$loggedin)
+        {
+            $data['content_view'] = 'staticpages_view' ;
+            $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode'=>'front_page'));
+            if(!empty($frontpage))
+            {
+                $data['pcontent'] = $frontpage->getContent();
+            }
+            $this->load->view('page',$data);
+            return;  
+        }
+        
+         $this->load->library('zacl');
+        
         $this->load->library('table');
         $q = $this->em->getRepository("models\Queue")->findAll();
         $this->inqueue = count($q);
@@ -52,7 +68,7 @@ class Dashboard extends MY_Controller {
         if (empty($acc))
         {
             $this->title = "denied";
-            $data['error'] = $this->mid . 'You have no persmission to view this page';
+            $data['error'] = 'You have no persmission to view this page';
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
         }

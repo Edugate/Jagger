@@ -131,7 +131,8 @@ class Auth extends MY_Controller {
 
             $this->data['dontshowsigning'] = true;
             $this->data['title'] = lang('authn_form');
-            $this->data['content_view'] = 'auth/login';
+            $this->data['showloginform'] = TRUE;
+            $this->data['content_view'] = 'auth/empty_view';
             $this->load->view('page', $this->data);
         }
     }
@@ -182,19 +183,17 @@ class Auth extends MY_Controller {
         $shibb_valid = (bool) $this->get_shib_idp();
         if (!$shibb_valid)
         {
-            log_message('error', $this->mid . 'This location should be protected by shibboleth in apache');
-            show_error($this->mid . 'Internal server error', 500);
+            log_message('error', 'This location should be protected by shibboleth in apache');
+            show_error('Internal server error', 500);
         }
         if ($this->j_auth->logged_in())
         {
-            //$this->j_auth->logout();
-            //show_error($this->mid.'To login via federated access you need to logout first',401);
         }
         $username_set = (bool) $this->get_shib_username();
         if (!$username_set)
         {
-            log_message('error', $this->mid . 'IdP didnt provide username');
-            show_error($this->mid . 'Internal server error', 500);
+            log_message('error', 'IdP didnt provide username');
+            show_error( 'Internal server error', 500);
         }
         $user_var = $this->get_shib_username();
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user_var));
@@ -203,7 +202,7 @@ class Auth extends MY_Controller {
             $can_access = (bool) ($user->isEnabled() && $user->getFederated());
             if (!$can_access)
             {
-                show_error($this->mid . ' ' . lang('rerror_youraccountdisorfeddis'), 403);
+                show_error( lang('rerror_youraccountdisorfeddis'), 403);
             }
             $session_data = $user->getBasic();
             $userprefs = $user->getUserpref();

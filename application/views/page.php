@@ -86,7 +86,16 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 <a href="<?php echo $base_url; ?>ajax/changelanguage/pl" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pl.png" alt="pl"/></a>
                 <a href="<?php echo $base_url; ?>ajax/changelanguage/pt" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pt.png" alt="pt"/></a>
             </div>
+            
         </div>
+        <?php
+         if(!$loggedin && empty($showloginform))
+         {
+        ?>
+       <a id="login_link" href="#"><button class="btn" type="button" style="float: right;">Login</button></a>
+                <?php
+         }
+                ?>
         <div id="container">
 
             <div class="header-container">
@@ -189,8 +198,23 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 
                     <div id="wrapper"   <?php echo $height100 ?> >
                             <?php
+                            if(!$loggedin)
+                            {
+                                $datalogin = array();
+                                if(!empty($showloginform))
+                                {
+                                   $datalogin['showloginform'] = $showloginform;
+                                   $this->load->view('auth/login',$datalogin);
+                                }
+                                else
+                                {
+                                      $this->load->view('auth/login');
+                                 }
+
+                            }
                             $this->load->view($content_view);
                             ?>
+                       
                     </div>
                     <div id="navigation">
                         <?php
@@ -229,6 +253,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                         echo echo_memory_usage();
                     }
                     ?>
+
                 </footer>
             </div>
         <div id="spinner" class="spinner" style="display:none;">
@@ -251,6 +276,8 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.inputfocus-0.9.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery-bubble-popup-v3.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v2.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.simplemodal.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/init.js"></script>';
 
 
 

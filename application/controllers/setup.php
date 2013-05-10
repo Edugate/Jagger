@@ -20,14 +20,12 @@ if (!defined('BASEPATH'))
 
 class Setup extends CI_Controller {
 
-    public $mid;
     protected $em;
     protected $member_role;
 
     function __construct() {
         parent::__construct();
         $this->em = $this->doctrine->em;
-        $this->mid = "[" . uniqid() . "] ";
         
 
         $setup_allowed = $this->config->item('rr_setup_allowed');

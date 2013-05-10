@@ -26,12 +26,10 @@ class Zacl {
 
     // Set the instance variable
     var $ci;
-    protected $mid;
 
     function __construct() {
         // Get the instance
         $this->ci = & get_instance();
-        $this->mid = $this->ci->mid;
         $this->em = $this->ci->doctrine->em;
 
         // Set the include path and require the needed files
@@ -237,7 +235,7 @@ class Zacl {
         $is_allowed = $this->acl->isAllowed('selected_user', $resource, $action);
 
 
-        log_message('debug', $this->mid . $s_user->getUsername() . " is_allowed to " . $action . ' to resource ' . $resource . ' :: ' . (string) $is_allowed);
+        log_message('debug',  $s_user->getUsername() . " is_allowed to " . $action . ' to resource ' . $resource . ' :: ' . (string) $is_allowed);
         $role_exists = $this->acl->hasRole('selected_user');
         if($role_exists)
         {
@@ -254,25 +252,25 @@ class Zacl {
         }
         if (!$user instanceof models\User) {
             $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
-            log_message('debug', $this->mid . 's_user not instance of  models\User search by username=' . $user);
+            log_message('debug', 's_user not instance of  models\User search by username=' . $user);
         } else {
             $s_user = &$user;
         }
         $can_manage = $this->acl->isAllowed('current_user', $resource, 'manage');
         if (!$can_manage) {
-            log_message('debug', $this->mid . 'user has no rights to mamage permission');
+            log_message('debug',  'user has no rights to mamage permission');
             return false;
         } else {
 
-            log_message('debug', $this->mid . 'user can manage permissions');
+            log_message('debug',  'user can manage permissions');
         }
         $already_has_access = $this->check_user_acl($resource, $action, $s_user, $group);
 
         if (!$already_has_access) {
-            log_message('debug', $this->mid . 'no access - creating....');
+            log_message('debug',  'no access - creating....');
             $acl_role = $this->em->getRepository("models\AclRole")->findOneBy(array('type' => 'user', 'name' => $s_user->getUsername()));
             if (empty($acl_role)) {
-                log_message('debug',$this->mid.'no acl_role creating new one...');
+                log_message('debug','no acl_role creating new one...');
                 $acl_role = new models\AclRole;
                 $acl_role->setName($s_user->getUsername());
                 $acl_role->setType('user');
@@ -287,7 +285,7 @@ class Zacl {
 
             $acl_group = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => $group));
             if (empty($acl_group)) {
-                log_message('debug',$this->mid.'no acl_group called: '.$group.' creating one...');
+                log_message('debug','no acl_group called: '.$group.' creating one...');
                 $acl_group = new models\AclResource;
                 $acl_group->setResource($group);
                 $acl_group->setDefaultValue('read');
@@ -295,7 +293,7 @@ class Zacl {
             }
             else
             {
-                log_message('debug',$this->mid.'found acl_group called: '.$group);   
+                log_message('debug','found acl_group called: '.$group);   
             }
             $acl_children = $acl_group->getChildren();
             foreach ($acl_children as $c) {
@@ -306,7 +304,7 @@ class Zacl {
                 }
             }
             if (empty($acl_resource)) {
-                log_message('debug',$this->mid.'not found acl_resource ('.$resource.')in group');
+                log_message('debug','not found acl_resource ('.$resource.')in group');
                 $acl_resource = new models\AclResource;
                 $acl_resource->setResource($resource);
                 $acl_resource->setParent($acl_group);
@@ -315,7 +313,7 @@ class Zacl {
             }
             else
             {
-                log_message('debug',$this->mid.'z found acl_resource ('.$resource.')in group');
+                log_message('debug','z found acl_resource ('.$resource.')in group');
                 
             }
 
@@ -338,21 +336,21 @@ class Zacl {
         
         if (!$user instanceof models\User) {
             $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
-            log_message('debug', $this->mid . 's_user not instance of  models\User search by username=' . $user);
+            log_message('debug',  's_user not instance of  models\User search by username=' . $user);
         } else {
             $s_user = &$user;
         }
         $can_manage = $this->acl->isAllowed('current_user', $resource, 'manage');
         if (!$can_manage) {
-            log_message('debug', $this->mid . 'user has no rights to mamage permission');
+            log_message('debug', 'user has no rights to mamage permission');
             return false;
         } else {
 
-            log_message('debug', $this->mid . 'user can manage permissions');
+            log_message('debug', 'user can manage permissions');
         }
         $already_has_access = $this->check_user_acl($resource, $action, $s_user, $group);
         if (!$already_has_access) {
-                log_message('debug', $this->mid . 'user already has no access to resource, we dont have to deny it');
+                log_message('debug', 'user already has no access to resource, we dont have to deny it');
                 return true;
         }
 
@@ -360,12 +358,12 @@ class Zacl {
         $no_roles = count($roles);
         if($no_roles > 0)
         {
-             log_message('debug',$this->mid.'number of roles is: '.$no_roles);
+             log_message('debug','number of roles is: '.$no_roles);
              foreach($roles as $r)
              {
                 $type=$r->getType();
                 $role_name = $r->getName();
-                log_message('debug',$this->mid.'check role: '.$role_name);
+                log_message('debug','check role: '.$role_name);
                 if($type == 'user' && $role_name == $s_user->getUsername())
                 {
                    $role = $r;
@@ -373,20 +371,20 @@ class Zacl {
                 }
              }
              /* check if user has personal role */
-             log_message('debug',$this->mid.'check if user has personal role');
+             log_message('debug','check if user has personal role');
              if(empty($role))
              {
-                log_message('debug',$this->mid.'user has no personal role set');
+                log_message('debug','user has no personal role set');
                 $tmp_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>$s_user->getUsername(),'type'=>'user'));
                 if(!empty($tmp_role))
                 {
-                        log_message('error',$this->mid.'acl role: '.$tmp_role->getName().' with type \'user\' exists but not linked1 to the user' );
-                        show_error($this->mid.'Internal error',500);
+                        log_message('error','acl role: '.$tmp_role->getName().' with type \'user\' exists but not linked1 to the user' );
+                        show_error('Internal error',500);
                         
                 }
                 else
                 {
-                        log_message('debug',$this->mid.'no acl_role creating new one...');
+                        log_message('debug','no acl_role creating new one...');
                         $acl_role = new models\AclRole;
                         $acl_role->setName($s_user->getUsername());
                         $acl_role->setType('user');
@@ -404,8 +402,8 @@ class Zacl {
              }
              if(! $acl_role instanceof models\AclRole)
              {
-                log_message('error',$this->mid.'\$role to be expected instance of models\AclRole');
-                show_error($this->mid.'Internal server error',500);
+                log_message('error','\$role to be expected instance of models\AclRole');
+                show_error('Internal server error',500);
                 
              }
 
@@ -414,7 +412,7 @@ class Zacl {
         else
         {
                 /* user has no roles , we need to set one */
-                log_message('debug',$this->mid.'user '.$s_user->getUsername().' has  no acl_role creating new personal one...');
+                log_message('debug','user '.$s_user->getUsername().' has  no acl_role creating new personal one...');
                 $acl_role = models\AclRole;
                 $acl_role->setName($s_user->getUsername());
                 $acl_role->setType('user');
@@ -435,7 +433,7 @@ class Zacl {
 
         if(!empty($acl))
         {
-                log_message('debug',$this->mid.'found acl , setting access to deny');
+                log_message('debug','found acl , setting access to deny');
                 $acl->setAccess(false);
         }
         else
@@ -445,7 +443,7 @@ class Zacl {
                 $acl->setRole($acl_role);
                 $acl->setAction($action);
                 $acl->setAccess(false);
-                log_message('debug',$this->mid.'not found acl , creating new acl with  deny access ');
+                log_message('debug','not found acl , creating new acl with  deny access ');
         }
         $this->em->persist($acl);
         $this->em->persist($acl_role);

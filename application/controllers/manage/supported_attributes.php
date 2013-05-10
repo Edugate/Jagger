@@ -46,7 +46,7 @@ class Supported_attributes extends MY_Controller {
          */
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idp_id, 'type' => array('IDP', 'BOTH')));
         if (empty($idp)) {
-            log_message('error', $this->mid . "Lost idp");
+            log_message('error',  "Lost idp");
             show_error('Lost idp', 503);
         }
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'idp', '');
@@ -59,7 +59,7 @@ class Supported_attributes extends MY_Controller {
 
         $new_attrs = $this->input->post('attr');
         if (empty($new_attrs) OR !is_array($new_attrs)) {
-            log_message('debug', $this->mid . 'No supported attrs are submited for idp: ' . $idp->getEntityId());
+            log_message('debug', 'No supported attrs are submited for idp: ' . $idp->getEntityId());
             $new_attrs = array();
         }
 
@@ -71,21 +71,21 @@ class Supported_attributes extends MY_Controller {
         $existingAttrs = $tmp->getSupportedAttributes($idp);
         $changes = array();
         foreach ($existingAttrs as $a) {
-            log_message('debug', $this->mid . 'current ' . $a->getAttribute()->getId());
+            log_message('debug',  'current ' . $a->getAttribute()->getId());
             if (array_key_exists($a->getAttribute()->getId(), $new_attrs)) {
-                log_message('debug', $this->mid . $a->getAttribute()->getName() . "is in current and in selection ");
+                log_message('debug',  $a->getAttribute()->getName() . "is in current and in selection ");
                 unset($new_attrs[$a->getAttribute()->getId()]);
             } else {
                 $this->em->remove($a);
                 $changes['attr: ' . $a->getAttribute()->getName() . '']['before'] = '';
                 $changes['attr: ' . $a->getAttribute()->getName() . '']['after'] = 'support removed';
-                log_message('debug', $this->mid . $a->getAttribute()->getName() . " is removed from supported attributes");
+                log_message('debug',  $a->getAttribute()->getName() . " is removed from supported attributes");
             }
         }
         if (count($new_attrs) > 0) {
-            log_message('debug', $this->mid . 'New attributed to be added to supported pool');
+            log_message('debug',  'New attributed to be added to supported pool');
             foreach ($new_attrs as $key => $value) {
-                log_message('debug', $this->mid . $key . ' will be added to supported pool');
+                log_message('debug',  $key . ' will be added to supported pool');
                 $tempAttr = new models\Attributes();
                 $attribute = $tempAttr->getAttributeById($key);
                 $newOne = new models\AttributeReleasePolicy();

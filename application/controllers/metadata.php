@@ -76,7 +76,7 @@ class Metadata extends MY_Controller {
             $members = $federation->getMembers();
             $members_count = $members->count();
             $members_keys = $members->getKeys();
-            log_message('debug', $this->mid . 'no federation members: ' . $members_count);
+            log_message('debug', 'no federation members: ' . $members_count);
 
             //$count_members = count($members);
             $docXML = new \DOMDocument();
@@ -182,7 +182,7 @@ class Metadata extends MY_Controller {
             $members = $federation->getMembers();
             $members_count = $members->count();
             $members_keys = $members->getKeys();
-            log_message('debug', $this->mid . 'no federation members: ' . $members_count);
+            log_message('debug', 'no federation members: ' . $members_count);
 
             //$count_members = count($members);
             $docXML = new \DOMDocument();
@@ -256,8 +256,8 @@ class Metadata extends MY_Controller {
                 $y = $entity->getProviderToXML($parent=null,$options);
                 if (empty($y))
                 {
-                    log_message('error', $this->mid . 'Got empty xml form Provider model');
-                    log_message('error', $this->mid . "Service metadata for " . $entity->getEntityId() . " couldn't be generated");
+                    log_message('error',  'Got empty xml form Provider model');
+                    log_message('error',  "Service metadata for " . $entity->getEntityId() . " couldn't be generated");
                     show_error("Metadata for " . $entity->getEntityId() . " couldn't be generated", 503);
                  }
                 else

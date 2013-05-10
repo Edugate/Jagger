@@ -34,6 +34,17 @@ $('.bubblepopup').click(function() {
   }); 
 
 });
+//$("#login").hide();
+$("button#loginbtn").click(function(){
+   parent = window;
+   
+   $("#login").css({
+        'position': 'absolute',
+        'top': ((($(parent).height() - $("#login").outerHeight()) / 4) + $(parent).scrollTop() + "px"),
+        'left': ((($(parent).width() - $("#login").outerWidth()) / 2) + $(parent).scrollLeft() + "px"),
+        'z-index': '10'
+   }).show();  
+});
 $(function() {
 
 
@@ -197,11 +208,11 @@ $(function() {
     $("#responsecontainer").load("awaiting/ajaxrefresh");
     var refreshId = setInterval(function() {
         $("#responsecontainer").load('awaiting/ajaxrefresh');
-    }, 9000);
+    }, 18000);
     $("#dashresponsecontainer").load("reports/awaiting/dashajaxrefresh");
     var refreshId = setInterval(function() {
         $("#dashresponsecontainer").load('reports/awaiting/dashajaxrefresh');
-    }, 9000);
+    }, 18000);
 
     $.ajaxSetup({
         cache: false
@@ -635,9 +646,14 @@ var adjustMenu = function() {
 }
 
 $(function() {
-
-	// grab the initial top offset of the navigation 
-	var sticky_navigation_offset_top = $('nav').offset().top;
+        var sticky_navigation_offset_top = 0;
+        try {
+	sticky_navigation_offset_top = $('nav').offset().top;
+        }
+        catch(err)
+        {
+            return false;
+        }
         if($('#submenuProvider').length)
         {
             var sticky_submenu_offset_top = $('#submenuProvider').offset().top;
@@ -664,11 +680,7 @@ $(function() {
 		    }   
                 }
 	};
-	
-	// run our function on load
 	sticky_navigation();
-	
-	// and run it again every time you scroll
 	$(window).scroll(function() {
 		 sticky_navigation();
 	});

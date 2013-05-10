@@ -40,7 +40,7 @@ class Users extends MY_Controller {
         return $this->form_validation->run();
     }
     private function _add_submit_validate() {
-        log_message('debug', $this->mid . '(add user) validating form initialized');
+        log_message('debug',  '(add user) validating form initialized');
         $this->form_validation->set_rules('username', 'Username', 'required|min_length[5]|max_length[128]|user_username_unique[username]|xss_clean');
         $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|user_mail_unique[email]|xss_clean');
         $this->form_validation->set_rules('password', 'Password', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
@@ -150,11 +150,44 @@ class Users extends MY_Controller {
                 $this->tracker->save_track('user', 'create', $username, 'user created in the system', true);
 
 
-                $data['message'] = "user should be added";
+                $data['message'] = 'user has been added';
                 $data['content_view'] = 'manage/new_user_view';
                 $this->load->view('page', $data);
             }
         }
+    }
+
+    public function bookmarkedit($encoded_username,$type=null)
+    {
+        if(empty($type))
+        {
+            show_error( 'Missing type', 404);
+        }
+        $allowedtypes= array('idp','sp','fed');
+        if(!in_array($type,$allowedtypes))
+        {
+           show_error('Incorrect type provided', 404);
+        }
+        $username = base64url_decode($encoded_username);
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        if (empty($user)) {
+            show_error( 'User not found', 404);
+        }
+        $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
+        if (!$write_access) {
+            $data['error'] = 'You have no access';
+            $data['content_view'] = 'nopermission';
+            $this->load->view('page', $data);
+            return;
+        }
+        $userpref = $user->getUserpref();
+        if(isset($userpref['board']))
+        {
+            $board = $userpref['board'];
+        }
+        $data['content_view'] = 'manage/userbookmarkedit_view';
+        $this->load->view('page',$data);  
+
     }
 
     public function show($encoded_username) {
@@ -162,7 +195,7 @@ class Users extends MY_Controller {
         $limit_authn = 15;
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if (empty($user)) {
-            show_error($this->mid . 'User not found', 404);
+            show_error('User not found', 404);
         }
 
         $access = $this->zacl->check_acl('u_' . $user->getId(), 'read', 'user', '');
@@ -174,8 +207,8 @@ class Users extends MY_Controller {
             return;
         }
 
-        $image_link = "<img src=\"" . base_url() . "images/icons/pencil-field.png\"/>";
-        $passedit_link = "<span><a href=\"" . base_url() . "manage/users/passedit/" . $encoded_username . "\" class=\"edit\" title=\"edit\" >" . $image_link . "</a></span>";
+        $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
+        $passedit_link = '<span><a href="' . base_url() . 'manage/users/passedit/' . $encoded_username . '" class="edit" title="edit" >' . $image_link . '</a></span>';
 
         $authn_logs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'),$limit_authn);
 
@@ -290,9 +323,6 @@ class Users extends MY_Controller {
 
     public function showlist() {
         $access = $this->zacl->check_acl('', 'read', 'user', '');
-        //echo "<pre>";
-        //print_r($this->zacl);
-        //echo "</pre>";
         if (!$access) {
             $data['error'] = 'You have no access';
             $data['content_view'] = 'nopermission';
@@ -322,14 +352,14 @@ class Users extends MY_Controller {
     }
 
     private function _remove_submit_validate() {
-        log_message('debug', $this->mid . '(remove user) validating form initialized');
+        log_message('debug', '(remove user) validating form initialized');
         $this->form_validation->set_rules('username', 'Username', 'required|min_length[5]|max_length[128]|user_username_exists[username]');
         return $this->form_validation->run();
     }
     
     private function _accessmodify_submit_validate()
     {
-        log_message('debug', $this->mid . '(modify authz type) validating form initialized');
+        log_message('debug', '(modify authz type) validating form initialized');
         $this->form_validation->set_rules('authz','Access','xss');
         return $this->form_validation->run();
         //return TRUE;
@@ -347,12 +377,12 @@ class Users extends MY_Controller {
                 $action = base_url() . "manage/users/remove";
                 $f = form_open($action, $form_attributes);
                 $f .= form_fieldset('Removing user');
-                $f .="<ol>";
-                $f .= "<li>";
+                $f .='<ol>';
+                $f .= '<li>';
                 $f .= form_label('Username', 'username');
                 $f .= form_input('username');
-                $f .= "</li>";
-                $f .= "</ol>";
+                $f .= '</li>';
+                $f .= '</ol>';
                 $f .= form_fieldset_close();
                 $f .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative"><span class="remove">Remove</span></button></div>';
                 $f .= form_close();
@@ -389,7 +419,7 @@ class Users extends MY_Controller {
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if (empty($user)) 
         {
-           show_error($this->mid . 'User not found', 404);
+           show_error('User not found', 404);
            return;
         }
         $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
@@ -428,7 +458,7 @@ class Users extends MY_Controller {
             $form .= '</ol>';
             $form .= '<div class="buttons"><button type="submit" value="submit" class="btn positive"><span class="save">Save</span></button></div';
             $form .= form_fieldset_close();
-            $form .=form_close();
+            $form .= form_close();
             $data['content_view'] = 'manage/user_access_edit_view';
             $data['form'] = $form;
             $this->load->view('page',$data);
@@ -440,7 +470,7 @@ class Users extends MY_Controller {
         $username = base64url_decode($encoded_username);
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if (empty($user)) {
-            show_error($this->mid . 'User not found', 404);
+            show_error( 'User not found', 404);
         }
 
         $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');

@@ -75,7 +75,7 @@ class Access_manage extends MY_Controller
         $submited = $this->input->post('change_access');
         if(!empty($submited))
         {
-                log_message('debug',$this->mid.'change access submited');
+                log_message('debug','change access submited');
                 if($submited == "deny")
                 {
                         $resource = $ent->getId();
@@ -129,14 +129,14 @@ class Access_manage extends MY_Controller
                 }
                 else
                 {
-                        log_message('error',$this->mid.' access_manage: incorrect submit:'.$submited);
+                        log_message('error','access_manage: incorrect submit:'.$submited);
                         
                 }
         
         }
         else
         {
-                log_message('debug',$this->mid.'no change access submited');
+                log_message('debug','no change access submited');
         }
         $this->em->flush();
         $this->zacl = new Zacl();
@@ -249,7 +249,7 @@ class Access_manage extends MY_Controller
         $submited = $this->input->post('change_access');
         if(!empty($submited))
         {
-              log_message('debug',$this->mid.'change access submited');
+              log_message('debug','change access submited');
               if($submited == "deny")
               {
                    $fresource = 'f_'.$fed->getId();
@@ -300,13 +300,13 @@ class Access_manage extends MY_Controller
               }
               else
               {
-                        log_message('error',$this->mid.' access_manage: incorrect submit:'.$submited);
+                        log_message('error','access_manage: incorrect submit:'.$submited);
  
               }
         }
         else
         {
-               log_message('debug',$this->mid.'no change access submited');
+               log_message('debug','no change access submited');
         }
         $this->em->flush();
         $this->zacl = new Zacl();

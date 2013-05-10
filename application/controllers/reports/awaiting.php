@@ -315,7 +315,7 @@ class Awaiting extends MY_Controller {
 
     function approve()
     {
-        log_message('debug', $this->mid . 'approve');
+        log_message('debug', 'approve');
         $message = "";
         $error_message = null;
         if ($this->input->post('qaction') === 'approve')
@@ -323,7 +323,7 @@ class Awaiting extends MY_Controller {
             $queueObj = $this->em->getRepository("models\Queue")->findOneBy(array('id' => $this->input->post('qid')));
             if (!empty($queueObj))
             {
-                log_message('debug', $this->mid . 'queue object is not empty');
+                log_message('debug',  'queue object is not empty');
                 if (($queueObj->getAction() === 'Create') && ($queueObj->getType() === 'IDP'))
                 {
                     $approve_allowed = $this->zacl->check_acl('idp', 'create', 'entity', '');

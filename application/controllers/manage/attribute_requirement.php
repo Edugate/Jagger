@@ -36,7 +36,7 @@ class Attribute_requirement extends MY_Controller {
         }
 
         $this->current_sp = $this->session->userdata('current_sp');
-        $this->log_prefix = $this->mid . "attribute_requirement: ";
+        $this->log_prefix =  "attribute_requirement: ";
         log_message('debug', $this->log_prefix . "started");
         $this->load->library('zacl');
     }

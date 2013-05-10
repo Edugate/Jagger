@@ -69,14 +69,14 @@ class Arp extends MY_Controller {
         $idp = $tmp_idp->getOneIdpByEntityId(base64url_decode($idp_entityid));
         if (empty($idp))
         {
-            log_message('debug', $this->mid . "IdP not found with id:." . $idp_entityid);
+            log_message('debug', 'IdP not found with id:.' . $idp_entityid);
             show_error("Identity Provider not found", 404);
         }
         $data['out'] = $this->generateXml($idp);
         if (!empty($data['out']))
         {
             $this->load->view('metadata_view', $data);
-            log_message('info', $this->mid . 'Downloaded......');
+            log_message('info', 'Downloaded......');
             $ref = null;
             $reqtype = null;
             if (isset($_SERVER['HTTP_REFERER']))

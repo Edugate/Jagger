@@ -3073,7 +3073,7 @@ class Form_element {
 
     private function generateServiceLocationsSpForm(models\Provider $provider, $action = null)
     {
-        log_message('debug', $this->ci->mid . 'Form_element::generateServiceLocationsSpForm method started');
+        log_message('debug',  'Form_element::generateServiceLocationsSpForm method started');
         $locations = array();
         foreach ($provider->getServiceLocations() as $srv)
         {
@@ -3117,7 +3117,7 @@ class Form_element {
 
         if (array_key_exists('AssertionConsumerService', $locations))
         {
-            log_message('debug', $this->ci->mid . "found ACS for sp: " . $provider->getEntityId());
+            log_message('debug',  "found ACS for sp: " . $provider->getEntityId());
             $i = 0;
             $s_input .=form_fieldset(lang('rr_acs_fieldset'));
 
@@ -3615,7 +3615,7 @@ class Form_element {
 
     private function generateSpForm(models\Provider $provider, $action = null, $template = null)
     {
-        log_message('debug', $this->ci->mid . 'Form_element::generateSpForm method started');
+        log_message('debug', 'Form_element::generateSpForm method started');
         $langscodes = languagesCodes();
         $lnames = $provider->getLocalName();
         $tmp = '<div id="mojtest">';
@@ -4092,7 +4092,7 @@ class Form_element {
 
     public function generateEntityForm(models\Provider $provider, $action = null, $forcetype = null)
     {
-        log_message('debug', $this->ci->mid . 'Form_element::generateEntityForm method started');
+        log_message('debug', 'Form_element::generateEntityForm method started');
         $tform = null;
         $p_type = $provider->getType();
         if ($p_type == 'IDP')

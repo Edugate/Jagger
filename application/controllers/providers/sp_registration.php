@@ -33,7 +33,7 @@ class Sp_registration extends MY_Controller {
     }
 
     function index() {
-        log_message('debug', $this->mid . 'SP registration form opened');
+        log_message('debug',  'SP registration form opened');
         $this->title = "Service Provider Registration";
 
         /**
@@ -188,7 +188,7 @@ class Sp_registration extends MY_Controller {
     }
 
     private function _submit_validate() {
-        log_message('debug', $this->mid . 'validating form initialized');
+        log_message('debug', 'validating form initialized');
 
         $this->form_validation->set_rules('resource', 'Resource name', 'required|min_length[3]|max_length[128]');
         $this->form_validation->set_rules('entityid', 'EntityID', 'required|min_length[3]|max_length[255]|entity_unique[entityid]');

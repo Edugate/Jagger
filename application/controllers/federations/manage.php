@@ -467,8 +467,8 @@ class Manage extends MY_Controller {
         }
         else
         {
-            log_message('error', $this->mid . 'type is expected to be sp or idp but ' . $type . 'given');
-            show_error($this->mid . 'wrong type', 404);
+            log_message('error',  'type is expected to be sp or idp but ' . $type . 'given');
+            show_error( 'wrong type', 404);
         }
         //$rest_providers = array();
         foreach ($providers as $i)
@@ -515,8 +515,8 @@ class Manage extends MY_Controller {
                 }
                 else
                 {
-                    log_message('error', $this->mid . 'missed or wrong membertype while adding new members to federation');
-                    show_error($this->mid . 'Missed members type', 503);
+                    log_message('error',  'missed or wrong membertype while adding new members to federation');
+                    show_error('Missed members type', 503);
                 }
                 foreach ($new_members as $nmember)
                 {

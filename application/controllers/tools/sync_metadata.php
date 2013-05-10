@@ -20,13 +20,11 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Sync_metadata extends CI_Controller {
 	protected $em;
-	public $mid;
 
 	function __construct()
 	{
 		parent::__construct();
 		$this->em = $this->doctrine->em;
-		$this->mid =  "[".uniqid()."] ";
 		$this->load->library('curl');
 
 

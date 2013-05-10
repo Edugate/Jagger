@@ -8,13 +8,12 @@ class Metadata_validator {
     function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
-        $this->mid = $this->ci->mid;
         $this->ci->load->helper('metadata_elements');
     }
 
     public function validateWithSchema($metadata = null) {
         if (empty($metadata)) {
-            log_message('error', $this->mid . 'cannot validate empty metadata');
+            log_message('error', 'cannot validate empty metadata');
             return false;
         }
         libxml_use_internal_errors(true);
@@ -37,9 +36,9 @@ libxml_use_internal_errors(true);
         $result = $doc->schemaValidate('schemas/saml-schema-metadata-2.0.xsd');
         $errors = libxml_get_errors();
         if ($result === TRUE) {
-            log_message('debug', $this->mid . 'tested metadata is valid');
+            log_message('debug',  'tested metadata is valid');
         } else {
-            log_message('error', $this->mid . 'tested metadata is not valid:'. serialize($errors));
+            log_message('error',  'tested metadata is not valid:'. serialize($errors));
         }
         return $result;
     }

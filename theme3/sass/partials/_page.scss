@@ -955,3 +955,10 @@ span.alert
     }
 
 }
+/* Overlay */
+#simplemodal-overlay {background-color:#aaaaaa; cursor:wait;}
+
+/* Container */
+#simplemodal-container a.modalCloseImg {background:url('../images/x.png') no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; left:-18px; cursor:pointer;}
+#simplemodal-container #basicModalContent {padding:8px;}
+

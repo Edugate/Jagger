@@ -74,10 +74,9 @@ class Importer extends MY_Controller {
             show_error('no access', 403);
         }
 
-        log_message('debug', $this->mid . "importer submited");
+        log_message('debug',  "importer submited");
         $data = array();
         if ($this->_submit_validate() === FALSE) {
-            log_message('debug', $this->mid . "ff");
             return $this->index();
         }
         if ($this->_metadatasigner_validate() === FALSE) {
@@ -159,10 +158,9 @@ class Importer extends MY_Controller {
             'local' => $local,
             'federations' => array($fed->getName())
         );
-        log_message('debug', $this->mid . "import");
         foreach ($defaults as $key => $value) {
             if (!is_array($value)) {
-                log_message('debug', $this->mid . 'importer: defaults:' . $key . '=' . $value);
+                log_message('debug', 'importer: defaults:' . $key . '=' . $value);
             }
         }
         $other = null;

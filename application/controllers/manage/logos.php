@@ -92,7 +92,7 @@ class Logos extends MY_Controller {
             $logoname_inputs = explode('_size_', $this->input->post('filename'));
             if (count($logoname_inputs) != 2)
             {
-                log_message('error', $this->mid . 'incorrect  value given:' . $this->input->post('filename') . ' , must be in format: filename_size_widthxheight');
+                log_message('error',  'incorrect  value given:' . $this->input->post('filename') . ' , must be in format: filename_size_widthxheight');
                 show_error('incorrect image name', 500);
             }
             $new_logoname = $logoname_inputs['0'];
