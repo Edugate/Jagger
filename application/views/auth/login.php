@@ -3,7 +3,7 @@ $base = base_url();
 $this->load->helper('form');
 $localloginbtn = $this->config->item('localloginbtn');
 $shib = $this->config->item('Shibboleth');
-        if ($shib['enabled'] === TRUE)
+        if (isset($shib['enabled']) && $shib['enabled'] === TRUE)
         {
             $shib_url = base_url() . $shib['loginapp_uri'];
         }
