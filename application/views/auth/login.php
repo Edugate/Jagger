@@ -124,3 +124,4 @@ if(!empty($showloginform))
     echo '</div>';
 }
 ?>
+</div>

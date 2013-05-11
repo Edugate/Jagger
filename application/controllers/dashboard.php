@@ -42,7 +42,6 @@ class Dashboard extends MY_Controller {
     function index()
     {
         $loggedin = $this->j_auth->logged_in();
-
         if (!$loggedin)
         {
             $data['content_view'] = 'staticpages_view' ;
@@ -50,6 +49,7 @@ class Dashboard extends MY_Controller {
             if(!empty($frontpage))
             {
                 $data['pcontent'] = $frontpage->getContent();
+                $data['ptitle'] = $frontpage->getTitle();
             }
             $this->load->view('page',$data);
             return;  
