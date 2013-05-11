@@ -959,6 +959,15 @@ span.alert
 #simplemodal-overlay {background-color:#aaaaaa; cursor:wait;}
 
 /* Container */
-#simplemodal-container a.modalCloseImg {background:url('../images/x.png') no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; left:-18px; cursor:pointer;}
+#simplemodal-container a.modalCloseImg {background:url('../images/x.png') no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:20px; left:-9px; cursor:pointer;}
 #simplemodal-container #basicModalContent {padding:8px;}
+
+#notification_error { color: red; height: auto; padding: 4px; text-align: center; }
+
+#login_response { overflow: auto; }
+
+#ajax_loading { display: none; font-size: 12px; font-family: Tahoma; }
+
+#logged_in { padding: 5px; margin: 23px 0 100px 43px; padding: 5px; text-align: center; width: 400px; }
+
 
