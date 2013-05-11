@@ -26,6 +26,7 @@ $lang['dashboard'] = 'Dashboard';
 $lang['quick_access'] = 'Quick access';
 $lang['rr_access'] = 'Access';
 $lang['login_form'] = 'Login Form';
+$lang['toploginbtn'] = 'Log in';
 $lang['authn_form'] = 'Authentication form';
 $lang['login_unsuccessful'] = 'Login unsuccessful';
 $lang['login_successful'] = 'Login successful';

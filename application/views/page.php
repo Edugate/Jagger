@@ -76,7 +76,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 }
                 else
                 {
-                    echo "&nbsp";
+                    echo '&nbsp;';
                 }
                 ?>
             </div>
@@ -92,7 +92,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
          if(!$loggedin && empty($showloginform))
          {
         ?>
-       <a id="login_link" href="#"><button class="btn" type="button" style="float: right;">Login</button></a>
+       <a id="login_link" href="#"><button id="loginlink"  type="button"><?php echo lang('toploginbtn'); ?></button></a>
                 <?php
          }
                 ?>

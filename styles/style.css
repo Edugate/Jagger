@@ -1320,12 +1320,53 @@ span.alert {
 }
 
 /* Overlay */
+#login_form {
+  background-color: transparent;
+}
+
 #simplemodal-overlay {
   background-color: #aaaaaa;
   cursor: wait;
 }
 
 /* Container */
+#simplemodal-container, #loginform2 {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background: #93aedf;
+  background-image: -moz-linear-gradient(center top, #93aedf 92%, #6b90d4 100%) repeat scroll 0 0 transparent;
+  background-repeat: repeat-x;
+  background: -webkit-gradient(linear, center top, center bottom, from(#93aedf), to(#6b90d4));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+#loginform2 {
+  display: block;
+}
+
+#simplemodal-container form#login, #simplemodal-container form#federated, #loginform2 form#login, #loginform2 form#federated {
+  background: transparent;
+  border: 0px;
+  border-radius: 0px;
+  box-shadow: 0 0px 0 #FFFFFF inset;
+  margin: auto;
+}
+#simplemodal-container form#login legend, #simplemodal-container form#federated legend, #loginform2 form#login legend, #loginform2 form#federated legend {
+  font-size: large;
+}
+#simplemodal-container form#login ol, #simplemodal-container form#login ol li, #simplemodal-container form#federated ol, #simplemodal-container form#federated ol li, #loginform2 form#login ol, #loginform2 form#login ol li, #loginform2 form#federated ol, #loginform2 form#federated ol li {
+  margin-left: 0px;
+  padding-left: 0px;
+}
+#simplemodal-container form#login ol div.buttons, #simplemodal-container form#login ol li div.buttons, #simplemodal-container form#federated ol div.buttons, #simplemodal-container form#federated ol li div.buttons, #loginform2 form#login ol div.buttons, #loginform2 form#login ol li div.buttons, #loginform2 form#federated ol div.buttons, #loginform2 form#federated ol li div.buttons {
+  margin: 0px;
+  padding: 0px;
+}
+#simplemodal-container form#login ol div.buttons button, #simplemodal-container form#login ol li div.buttons button, #simplemodal-container form#federated ol div.buttons button, #simplemodal-container form#federated ol li div.buttons button, #loginform2 form#login ol div.buttons button, #loginform2 form#login ol li div.buttons button, #loginform2 form#federated ol div.buttons button, #loginform2 form#federated ol li div.buttons button {
+  margin: 0px;
+  padding: 0px;
+}
+
 #simplemodal-container a.modalCloseImg {
   background: url("../images/x.png") no-repeat;
   width: 25px;
@@ -1333,7 +1374,7 @@ span.alert {
   display: inline;
   z-index: 3200;
   position: absolute;
-  top: 20px;
+  top: -20px;
   left: -9px;
   cursor: pointer;
 }
@@ -1343,14 +1384,18 @@ span.alert {
 }
 
 #notification_error {
+  font-weight: bolder;
   color: red;
   height: auto;
-  padding: 4px;
+  padding: 5px;
   text-align: center;
 }
 
 #login_response {
   overflow: auto;
+  background: white;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 #ajax_loading {
@@ -1365,6 +1410,96 @@ span.alert {
   padding: 5px;
   text-align: center;
   width: 400px;
+}
+
+.column {
+  float: left;
+  idisplay: block;
+}
+
+.column.one {
+  width: 50%;
+  max-width: 50%;
+  border-right: 1px grey dotted;
+}
+
+.column.two {
+  height: 90%;
+  max-width: 45%;
+  width: 45%;
+  text-align: center;
+}
+
+#loginlink {
+  float: right;
+  margin-right: 15px;
+}
+
+#loginlink {
+  -moz-box-shadow: 0px 1px 0px 0px #97c4fe;
+  -webkit-box-shadow: 0px 1px 0px 0px #97c4fe;
+  box-shadow: 0px 1px 0px 0px #97c4fe;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3d94f6), color-stop(1, #1e62d0));
+  background: -moz-linear-gradient(center top, #3d94f6 5%, #1e62d0 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3d94f6', endColorstr='#1e62d0');
+  background-color: #3d94f6;
+  -moz-border-radius: 1px;
+  -webkit-border-radius: 1px;
+  border-radius: 1px;
+  border: 1px solid #337fed;
+  display: inline-block;
+  color: #ffffff;
+  font-family: arial;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 6px 24px;
+  text-decoration: none;
+  text-shadow: 1px 1px 0px #1570cd;
+}
+
+#loginlink:hover {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1e62d0), color-stop(1, #3d94f6));
+  background: -moz-linear-gradient(center top, #1e62d0 5%, #3d94f6 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1e62d0', endColorstr='#3d94f6');
+  background-color: #1e62d0;
+}
+
+#loginlink:active {
+  position: relative;
+  top: 1px;
+}
+
+button.loginbtn {
+  -moz-box-shadow: inset 0px 1px 0px 0px #614761;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #614761;
+  box-shadow: inset 0px 1px 0px 0px #614761;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #080808), color-stop(1, #1c121c));
+  background: -moz-linear-gradient(center top, #080808 5%, #1c121c 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#080808', endColorstr='#1c121c');
+  background-color: #080808;
+  -moz-border-radius: 1px;
+  -webkit-border-radius: 1px;
+  border-radius: 1px;
+  border: 0px solid #f7f7f7;
+  display: inline-block;
+  color: #ededed;
+  font-family: arial;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 6px 24px;
+  text-decoration: none;
+}
+
+button.loginbtn:hover {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1c121c), color-stop(1, #080808));
+  background: -moz-linear-gradient(center top, #1c121c 5%, #080808 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1c121c', endColorstr='#080808');
+  background-color: #1c121c;
+}
+
+button.loginbtn:active {
+  position: relative;
+  top: 1px;
 }
 
 form {
@@ -1533,7 +1668,7 @@ form :-ms-input-placeholder {
   color: gray;
 }
 
-form#login {
+form#login, form#federated {
   font-size: smaller;
   margin-top: 50px;
   margin-bottom: auto;
@@ -1544,27 +1679,27 @@ form#login {
   margin-right: auto;
   max-width: 600px;
 }
-form#login legend {
+form#login legend, form#federated legend {
   font-size: x-large;
   font-family: 'PT Serif', serif;
   font-weight: 400;
   border-bottom: dotted 1px black;
 }
-form#login input {
+form#login input, form#federated input {
   padding: 2px;
   margin: 5px;
 }
-form#login label {
+form#login label, form#federated label {
   font-weight: bold;
   font-size: larger;
 }
-form#login div.buttons {
+form#login div.buttons, form#federated div.buttons {
   font-size: larger;
   width: 100%;
   text-align: center;
   margin: auto;
 }
-form#login div.buttons button.btn {
+form#login div.buttons button.btn, form#federated div.buttons button.btn {
   margin: 10px 10px 0px;
 }
 

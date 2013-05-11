@@ -8,7 +8,7 @@ $shibcnf = $this->config->item('Shibboleth');
 </head>
 <body>
 <?php
-   if($shibcnf['enabled'] === TRUE)
+   if(isset($shibcnf['enabled']) && $shibcnf['enabled'] === TRUE && isset($shibcnf['logout_uri']))
    {
 ?>
 <iframe style="visibility:hidden" frameborder=0 marginheight=0 marginwidth=0 scrolling=no src="<?php echo $shibcnf['logout_uri'];?>"></iframe>

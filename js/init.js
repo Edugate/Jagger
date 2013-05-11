@@ -19,7 +19,7 @@ $('#login_form').modal();
 });
 
 // When the form is submitted
-$("#status > form").submit(function(){  
+$("#status form").submit(function(){  
 
 // Hide 'Submit' Button
 $('#submit').hide();
@@ -58,8 +58,7 @@ $('#ajax_loading').hide();
 
 $('a.modalCloseImg').hide();  
 
-$('#simplemodal-container').css("width","500px");
-$('#simplemodal-container').css("height","120px");
+$('#simplemodal-container').css("width","auto").css("height","auto").css("background","transparent").css("box-shadow","none").css("text-align","center");
  
  $(this).html(login_response); // Refers to 'status'
 
