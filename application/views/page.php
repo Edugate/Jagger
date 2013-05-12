@@ -61,7 +61,6 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
             echo $headermap;
         }
         ?>
-        <div style="display: none"><input type="hidden" name="baseurl" value="<?php echo base_url(); ?></div>
         <div id="toppanel">
                                     <span id="logo">
                             <?php
@@ -260,6 +259,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <div id="spinner" class="spinner" style="display:none;">
             <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="Loading"/>
         </div>
+        <div style="display: none"><input type="hidden" name="baseurl" value="<?php echo base_url(); ?>"></div>
         <button id="jquerybubblepopupthemes" style="display:none;" value="<?php echo $jquerybubblepopupthemes; ?>"></button> 
         <?php
       //  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
