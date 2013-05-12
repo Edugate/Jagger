@@ -61,6 +61,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
             echo $headermap;
         }
         ?>
+        <div style="display: none"><input type="hidden" name="baseurl" value="<?php echo base_url(); ?></div>
         <div id="toppanel">
                                     <span id="logo">
                             <?php
