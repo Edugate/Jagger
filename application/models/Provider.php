@@ -2894,7 +2894,7 @@ class Provider {
         {
             $Extensions_Node->appendChild($UIInfo_Node);
         }
-        $DiscoHints_Node = $this->getMduiToXML($Extensions_Node, 'sp');
+        $DiscoHints_Node = $this->getMduiDiscoHintToXML($Extensions_Node, 'sp');
         if (!empty($DiscoHints_Node))
         {
             $Extensions_Node->appendChild($DiscoHints_Node);
