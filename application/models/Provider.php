@@ -2046,6 +2046,37 @@ class Provider {
         return $extends;
     }
 
+    public function getMduiDiscoHintToXML(\DOMElement $parent, $type = NULL)
+    {
+        if (empty($type))
+        {
+            $type = strtolower($this->type);
+        }
+        $ext = $this->getExtendMetadata();
+        $extarray = array();
+        $e = NULL;
+        foreach ($ext as $v)
+        {
+            if (($v->getType() === $type) && ($v->getNamespace() === 'mdui') && ($v->getElement() === 'GeolocationHint'))
+            {
+                $extarray[] = $v;
+            }
+        }
+        if(count($extarray)>0)
+        {
+           $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:DiscoHints'); 
+           foreach($extarray as $dm)
+           {
+               $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:GeolocationHint');
+               $dnode->appendChild($e->ownerDocument->createTextNode($dm->getElementValue()));
+               $e->appendChild($dnode);
+           }
+ 
+        }
+        return $e;
+       
+    }
+
     /**
      * $type should be sp or idp
      */
@@ -2185,17 +2216,6 @@ class Provider {
                     }
                     $e->appendChild($dnode);
                 }
-            }
-            elseif ($key === 'GeolocationHint')
-            {
-                $disconode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:DiscoHints');
-                foreach ($value as $dm)
-                {
-                    $dnode = $disconode->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:GeolocationHint');
-                    $dnode->appendChild($e->ownerDocument->createTextNode($dm->getElementValue()));
-                    $disconode->appendChild($dnode);
-                }
-                $e->appendChild($disconode);
             }
         }
         if ($en_description !== TRUE)
@@ -2704,6 +2724,11 @@ class Provider {
         {
             $Extensions_Node->appendChild($UIInfo_Node);
         }
+        $DiscoHints_Node =  $this->getMduiDiscoHintToXML($Extensions_Node, 'idp');
+        if(!empty($DiscoHints_Node))
+        {
+           $Extensions_Node->appendChild($DiscoHints_Node);
+        }
 
 
 
@@ -2868,6 +2893,11 @@ class Provider {
         if (!empty($UIInfo_Node))
         {
             $Extensions_Node->appendChild($UIInfo_Node);
+        }
+        $DiscoHints_Node = $this->getMduiToXML($Extensions_Node, 'sp');
+        if (!empty($DiscoHints_Node))
+        {
+            $Extensions_Node->appendChild($DiscoHints_Node);
         }
 
 
