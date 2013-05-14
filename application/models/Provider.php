@@ -2540,26 +2540,35 @@ class Provider {
         $lorgnames = $this->getNameLocalized();
         foreach ($lorgnames as $k => $v)
         {
-            $OrganizationName_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationName');
-            $OrganizationName_Node->setAttribute('xml:lang', '' . $k . '');
-            $OrganizationName_Node->appendChild($e->ownerDocument->createTextNode($v));
-            $e->appendChild($OrganizationName_Node);
+            if(!empty($v))
+            {
+               $OrganizationName_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationName');
+               $OrganizationName_Node->setAttribute('xml:lang', '' . $k . '');
+               $OrganizationName_Node->appendChild($e->ownerDocument->createTextNode($v));
+               $e->appendChild($OrganizationName_Node);
+            }
         }
         $ldorgnames = $this->getDisplayNameLocalized();
         foreach ($ldorgnames as $k => $v)
         {
-            $OrganizationDisplayName_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationDisplayName');
-            $OrganizationDisplayName_Node->setAttribute('xml:lang', '' . $k . '');
-            $OrganizationDisplayName_Node->appendChild($e->ownerDocument->createTextNode($v));
-            $e->appendChild($OrganizationDisplayName_Node);
+            if(!empty($v))
+            {
+               $OrganizationDisplayName_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationDisplayName');
+               $OrganizationDisplayName_Node->setAttribute('xml:lang', '' . $k . '');
+               $OrganizationDisplayName_Node->appendChild($e->ownerDocument->createTextNode($v));
+               $e->appendChild($OrganizationDisplayName_Node);
+            }
         }
         $lurls = $this->getHelpdeskUrlLocalized();
         foreach ($lurls as $k => $v)
         {
-            $OrganizationURL_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationURL');
-            $OrganizationURL_Node->setAttribute('xml:lang', '' . $k . '');
-            $OrganizationURL_Node->appendChild($e->ownerDocument->createTextNode($v));
-            $e->appendChild($OrganizationURL_Node);
+            if(!empty($v))
+            {
+               $OrganizationURL_Node = $e->ownerDocument->createElementNS($ns_md, 'md:OrganizationURL');
+               $OrganizationURL_Node->setAttribute('xml:lang', '' . $k . '');
+               $OrganizationURL_Node->appendChild($e->ownerDocument->createTextNode($v));
+               $e->appendChild($OrganizationURL_Node);
+            }
         }
 
         return $e;
@@ -3308,8 +3317,10 @@ class Provider {
         }
 
         $Organization_Node = $this->getOrganizationToXML($EntityDesc_Node);
-        $EntityDesc_Node->appendChild($Organization_Node);
-
+        if($Organization_Node->hasChildNodes())
+        {
+           $EntityDesc_Node->appendChild($Organization_Node);
+        }
         $contacts = $this->getContacts();
 
         foreach ($contacts as $v)
