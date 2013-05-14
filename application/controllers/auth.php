@@ -30,23 +30,11 @@ class Auth extends MY_Controller {
     {
         if (!$this->j_auth->logged_in())
         {
-            //redirect them to the login page
-            //redirect('auth/login', 'refresh');
             return $this->login();
-        }
-        elseif (!$this->j_auth->is_admin())
-        {
-            //redirect them to the home page because they must be an administrator to view this
-            redirect($this->config->item('base_url'), 'refresh');
         }
         else
         {
-            //set the flash data error message if there is one
-            $this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
-
-            //list the users
-            //$this->data['users'] = $this->j_auth->get_users_array();
-            $this->load->view('auth/index', $this->data);
+            redirect($this->config->item('base_url'), 'refresh');
         }
     }
 
