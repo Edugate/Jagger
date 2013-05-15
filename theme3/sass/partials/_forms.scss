@@ -227,6 +227,15 @@ form#login, form#federated {
     
     
 }
+form#login_link {
+     background: transparent;
+     border: none;
+     -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+     box-shadow: none;
+     
+
+}
 form#arpexlusions {
     label { 
         float: none;

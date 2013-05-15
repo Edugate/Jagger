@@ -14,13 +14,13 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
     <!--<![endif]-->
     <head>     
         <meta charset="utf-8">
-        <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible' />
+        <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
         <?php
         echo '<title>' . $pageTitle . '</title>';
         ?>
-        <meta content='' name='description' />
-        <meta content='' name='author' />
-        <meta content='width=device-width, initial-scale=1.0' name='viewport' />
+        <meta content='rr' name='description'>
+        <meta content='' name='author'>
+        <meta content='width=device-width, initial-scale=1.0' name='viewport'>
         <link rel="apple-touch-icon" href="<?php echo $base_url; ?>images/touch-icon-iphone.png" />
         <link rel="apple-touch-icon" sizes="72x72" href="<?php echo $base_url; ?>images/touch-icon-ipad.png" />
         <link rel="apple-touch-icon" sizes="57x57" href="<?php echo $base_url; ?>images/apple-touch-icon-57x57-precomposed.png" />
@@ -64,7 +64,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <div id="toppanel">
                                     <span id="logo">
                             <?php
-                            echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $this->config->item('site_logo') . '" /></a>';
+                            echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $this->config->item('site_logo') . '" alt="Logo"/></a>';
                             echo "\n";
                             ?>
                         </span> 
@@ -92,7 +92,9 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
          if(!$loggedin && empty($showloginform))
          {
         ?>
-       <a id="login_link" href="#"><button id="loginlink"  type="button"><?php echo lang('toploginbtn'); ?></button></a>
+        <form id="login_link" action="#" method="get">
+              <button id="loginlink"  type="button"><?php echo lang('toploginbtn'); ?></button>
+        </form>
                 <?php
          }
                 ?>
