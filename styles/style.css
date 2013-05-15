@@ -1331,6 +1331,7 @@ span.alert {
 
 /* Container */
 #simplemodal-container, #loginform2 {
+  min-width: 600px;
   padding-top: 10px;
   padding-bottom: 10px;
   background: #93aedf;
