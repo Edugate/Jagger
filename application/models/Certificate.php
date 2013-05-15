@@ -447,12 +447,18 @@ class Certificate
          * usage null/singing/encrypting
          */
         //$use = $this->getCertUse();
+
+        $certbody = $this->getCertDataNoHeaders();
+         
+        if(empty($this->keyname) && empty($certbody))
+        {
+           return null;
+        }
         if (!empty($this->certusage))
         {
             $e->setAttribute('use', $this->certusage);
         }
         $KeyInfo_Node = $e->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:KeyInfo');
-        //$keyname = $this->getKeyName();
         if (!empty($this->keyname))
         {
             $keynames = explode(',',$this->keyname);
@@ -462,14 +468,16 @@ class Certificate
                 $KeyInfo_Node->appendChild($KeyName_Node);
             }
         }
-        //$certtype = $this->getCertType();
         if ($this->getCertType() === 'X509Certificate')
         {
-            $CertType_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Data');
-            $CertBody_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Certificate', $this->getCertDataNoHeaders());
+            if(!empty($certbody))
+            {
+               $CertType_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Data');
+               $CertBody_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Certificate', $this->getCertDataNoHeaders());
 
-            $CertType_Node->appendChild($CertBody_Node);
-            $KeyInfo_Node->appendChild($CertType_Node);
+               $CertType_Node->appendChild($CertBody_Node);
+               $KeyInfo_Node->appendChild($CertType_Node);
+            }
         }
         $e->appendChild($KeyInfo_Node);
         return $e;

@@ -1075,7 +1075,7 @@ class Provider {
             }
             else
             {
-                if (empty($p) && $e->getType() == $type && $e->getNameSpace() == 'mdui' && $e->getElement() == 'UIInfo')
+                if (empty($p) && $e->getType() === $type && $e->getNameSpace() === 'mdui' && $e->getElement() === 'UIInfo')
                 {
                     $parent = $e;
                 }
@@ -1083,7 +1083,7 @@ class Provider {
         }
         foreach ($ex as $e)
         {
-            if ($e->getElement() == $elementName && $e->getType() == $type && $e->getNameSpace() == 'mdui')
+            if ($e->getElement() === $elementName && $e->getType() === $type && $e->getNameSpace() === 'mdui')
             {
                 $value = $e->getElementValue();
                 $t = $e->getAttributes();
@@ -2102,7 +2102,7 @@ class Provider {
                 $extarray[''.$v->getElement().''][] = $v;
             }
         }
-        if (array_key_exists('Logo', $extarray))
+        if (isset($extarray['Logo']) || array_key_exists('Logo', $extarray))
         {
             $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
             $this->logo_baseurl = $this->ci->config->item('rr_logobaseurl');
@@ -2625,15 +2625,14 @@ class Provider {
         {
             $ncerts = 0;
         }
-        if ($ncerts == 0)
+        if ($ncerts === 0)
         {
             log_message('debug', 'Provider '.$this->id.': no certificates found for AA ');
             return NULL;
         }
-
-        $tmp_certs = array();
-        if ($ncerts > 0)
+        else
         {
+            $tmp_certs = array();
             foreach ($certs as $cert)
             {
                 $type = $cert->getType();
@@ -2649,7 +2648,10 @@ class Provider {
                         $tmp_certs[$certusage] = $cert;
                     }
                     $KeyDescriptor_Node = $cert->getCertificateToXML($e);
-                    $e->appendChild($KeyDescriptor_Node);
+                    if($KeyDescriptor_Node !== NULL)
+                    {
+                       $e->appendChild($KeyDescriptor_Node);
+                    }
                 }
             }
         }
@@ -2773,7 +2775,10 @@ class Provider {
                         $tmp_certs[$certusage] = $cert;
                     }
                     $KeyDescriptor_Node = $cert->getCertificateToXML($e);
-                    $e->appendChild($KeyDescriptor_Node);
+                    if($KeyDescriptor_Node !== NULL)
+                    {
+                       $e->appendChild($KeyDescriptor_Node);
+                    }
                 }
             }
         }
@@ -2897,7 +2902,6 @@ class Provider {
             }
         }
         /* UIInfo */
-        // $UIInfo_Node = $Extensions_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
         $UIInfo_Node = $this->getMduiToXML($Extensions_Node, 'sp');
         if (!empty($UIInfo_Node))
         {
@@ -2921,7 +2925,10 @@ class Provider {
             {
 
                 $KeyDescriptor_Node = $cert->getCertificateToXML($e);
-                $e->appendChild($KeyDescriptor_Node);
+                if($KeyDescriptor_Node !== NULL)
+                {
+                   $e->appendChild($KeyDescriptor_Node);
+                }
             }
         }
 
