@@ -272,14 +272,21 @@ class Arp_generator {
 
         $members = $tmp_idp->getCircleMembersSP($idp);
         $excluded = $idp->getExcarps();
-        if(is_array($excluded))
+        $excludedById = array();
+        if(is_array($excluded) && count($excluded)>0)
         {
            foreach($excluded as $excv)
            {
                $members->remove($excv);
                log_message('debug', 'ARP for '.$idp->getEntityId().' : excluding '.$excv);
            }
+           $tmpexl = $this->em->getRepository("models\Provider")->findBy(array('entityid'=>$excluded));
+           foreach($tmpexl as $tmpv)
+           {
+              $excludedById[] = $tmpv->getId();
+           }
         } 
+        log_message('debug','excluded SP from arp by id:'.serialize($excludedById));
        
         if (!empty($members))
         {
@@ -345,12 +352,14 @@ class Arp_generator {
                 {
                    $ent = $members_byid[$svalue->getRequester()];
                 }
-                else
+                elseif(!in_array($svalue->getRequester(),$excludedById))
                 {
                    log_message('error','found orphaned arps in db : sprequest:'.$svalue->getRequester() .' doesn exist in provider table');
                 }
-                //echo $svalue->getRequester();
-                //echo $ent;
+                else
+                {
+                   log_message('debug','sprequest:'.$svalue->getRequester() .' is excluded from arp not generating');
+                }
                 if (!empty($ent))
                 {
                     $specific_attributes[$ent->getEntityId()][$svalue->getAttribute()->getName()] = $svalue->getPolicy();
