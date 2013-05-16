@@ -59,3 +59,8 @@ function genIcon($type, $title=null)
     }
 
 }
+
+function makeLabel($status,$title,$str)
+{
+    return '<span class="lbl lbl-'.$status.'" title="'.$title.'">'.$str.'</span>';
+}

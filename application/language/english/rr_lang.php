@@ -22,11 +22,37 @@ $lang['rr_add'] = 'Add';
 $lang['rr_remove'] = 'Remove';
 $lang['rr_modify'] = 'Modify';
 $lang['rr_cancel'] = 'Cancel';
+
+$lang['tabGeneral'] = 'General';
+$lang['tabMembership'] = 'Membership';
+$lang['tabTechnical'] = 'Technical';
+$lang['tabOtherTechnical'] = 'Other Tech';
+$lang['tabStaticMeta'] = 'Static metadata';
+$lang['tabCerts'] = 'Certificates';
+$lang['tabContacts'] = 'Contacts';
+$lang['tabAttrs'] = 'Attributes';
+$lang['tabUII'] = 'UII';
+$lang['tabLogs'] = 'Logs';
+$lang['tabMngt'] = 'Management';
+
+$lang['DisplayName'] = 'DisplayName';
+$lang['Description'] = 'Description';
+$lang['PrivacyStatementURL'] = 'PrivacyStatementURL';
+$lang['InformationURL'] = 'InformationURL';
+$lang['rr_management'] = 'Management';
+
+$lang['nomembers'] = 'No members';
+$lang['certsinidpsso'] = 'Certificates in IDPSSODescriptor';
+$lang['certsinaa'] = 'Certificates in AttributeAuthorityDescriptor';
+$lang['certsinspsso'] = 'Certificates in SPSSODescriptor';
 $lang['dashboard'] = 'Dashboard';
 $lang['quick_access'] = 'Quick access';
 $lang['rr_access'] = 'Access';
 $lang['login_form'] = 'Login Form';
 $lang['toploginbtn'] = 'Log in';
+$lang['loading'] = 'Loading';
+$lang['localized'] = 'localized';
+$lang['loadedfromglobalcnf']= 'loaded from global config';
 $lang['authn_form'] = 'Authentication form';
 $lang['login_unsuccessful'] = 'Login unsuccessful';
 $lang['login_successful'] = 'Login successful';
@@ -49,6 +75,7 @@ $lang['identityprovidersmembers'] = 'Identity Providers members';
 $lang['bothprovidersmembers'] = 'Members who are IdPs and SPs';
 $lang['rr_provider'] = 'Provider';
 $lang['rr_message'] = 'Message';
+$lang['rr_link'] = 'Link';
 $lang['rr_local_authn'] = 'Local authentication';
 $lang['lbl_local'] = 'Local';
 $lang['lbl_external'] = 'External';
@@ -61,6 +88,7 @@ $lang['rr_fedlocalmanaged']= 'Federation localy managed';
 $lang['rr_fededitform'] = 'Federation edit form';
 $lang['coc_list_title'] = 'Data protection Code of Conduct - List'; 
 $lang['rr_addcoc_btn'] = 'Add new Coc';
+$lang['showmemb_btn'] = 'Show members';
 $lang['coc_url'] = 'URL of CoC document';
 $lang['coc_shortname'] = 'CoC short name';
 $lang['coc_description'] = 'CoC Description';
@@ -68,6 +96,7 @@ $lang['coc_enabled'] = 'CoC enabled';
 $lang['help'] = 'Help';
 $lang['general']='General';
 $lang['rr_metadata'] = 'Metadata';
+$lang['signed'] = 'signed';
 $lang['rr_username'] = 'Username';
 $lang['rr_user'] = 'User';
 $lang['rr_users'] = 'Users';
@@ -107,7 +136,8 @@ $lang['rr_homeorganisation']= 'Home Organization' ;
 $lang['rr_technicalinformation'] = 'Technical Information';
 $lang['rr_logos'] = 'Logos';
 
-
+$lang['certsign'] = 'signing';
+$lang['certenc'] = 'encryption';
 
 $lang['rr_disexp_link_title'] = 'disabled or expired';
 
@@ -217,9 +247,10 @@ $lang['rr_selectreq'] = 'Select requirement';
 $lang['rr_select'] = 'Please Select';
 $lang['rr_reqattrreason'] = 'The reason of requirement';
 $lang['rr_reqattr_currenttype'] = 'Current type of requirement';
-$lang['rr_geolocation'] = 'Geolocation';
+$lang['rr_geolocation'] = 'GeoLocation';
 $lang['rr_arpexcl1'] = 'ARP excludes';
 $lang['rr_arpexclist_title'] = 'List of Service Providers which are set to be exluded from ARP';
+$lang['forSPpart'] = 'for SP part';
 
 $lang['rr_resourceurl'] = 'Resource home URL';
 $lang['rr_geolocations_for'] = 'Geolocations for';

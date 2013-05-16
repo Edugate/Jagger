@@ -159,7 +159,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                                         echo lang('rr_queue');
                                         if (!empty($inqueue))
                                         {
-                                            echo "<span class=\"inqueue\">" . $inqueue . "</span>";
+                                            echo '<span class="inqueue">' . $inqueue . '</span>';
                                         }
                                         ?>
                                     </a></li>
@@ -260,13 +260,10 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 </footer>
             </div>
         <div id="spinner" class="spinner" style="display:none;">
-            <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="Loading"/>
+            <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="<?php echo lang('loading');?>"/>
         </div>
         <div style="display: none"><input type="hidden" name="baseurl" value="<?php echo base_url(); ?>"></div>
         <button id="jquerybubblepopupthemes" style="display:none;" value="<?php echo $jquerybubblepopupthemes; ?>"></button> 
-        <?php
-      //  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    ?>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script src="<?php echo $base_url; ?>js/jquery-migrate-1.2.0.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
