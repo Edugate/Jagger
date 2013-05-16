@@ -1598,7 +1598,7 @@ form input[type='text'], form input[type='email'], form input[type='password'], 
   -webkit-border-radius: 3px;
 }
 form select {
-  max-width: 50%;
+  max-width: 100%;
   overflow: hidden;
   padding: 0px 3px;
   border: 1px solid;
