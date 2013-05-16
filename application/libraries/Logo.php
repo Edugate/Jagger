@@ -75,7 +75,17 @@ class Logo {
             $table_curr_images = array();
             foreach($existing_logos as $ex)
             {
-               $cell = '<img src="'.$this->logo_baseurl . $ex->getEvalue().'" class="span-6" /><br />';
+               if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches)))
+               {
+                    $ElementValue = $this->logo_baseurl . $ex->getEvalue();
+               }
+               else
+               {
+                    $ElementValue = $ex->getEvalue();
+               }
+
+        
+               $cell = '<img src="'.$ElementValue.'" /><br />';
                $radio_data = array('id'=>'logoid','name'=>'logoid','value'=>$ex->getId(), 'checked'=>FALSE);
                $cell .= form_radio($radio_data).'<br />';
                $size = $ex->getAttributes();

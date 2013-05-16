@@ -2211,9 +2211,13 @@ class Provider {
 
                         foreach ($attrs as $akey => $avalue)
                         {
-                            $dnode->setAttribute($akey, $avalue);
+                            if(!empty($avalue))
+                            {
+                               $dnode->setAttribute($akey, $avalue);
+                            }
                         }
                     }
+                    
                     $e->appendChild($dnode);
                 }
             }
