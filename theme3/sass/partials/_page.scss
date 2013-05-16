@@ -50,7 +50,7 @@ li {
 }
 #toppanel {
     background: darken($top-panel-background, 10%);
-    color: white;
+    color: $font-color-toppanel;
     margin: 5px;
     margin-top: 1px;
     padding: 3px;
@@ -68,12 +68,12 @@ nav {
     width: 90%;
     max-width: 1024px;
     margin: 10px auto;
-    background-color: #FBFBFB;
+    background-color: $container-background-color;
     background-image: -moz-linear-gradient(center top , #FFFFFF, #F5F5F5);
     background-repeat: repeat-x;
-    border: 1px solid #DDDDDD;
+    border: 1px solid $container-border-color;
     border-radius: 3px 3px 3px 3px;
-    box-shadow: 0 1px 0 #FFFFFF inset;
+    box-shadow: 0 1px 0 $container-box-shadow-color inset;
     list-style: none outside none;
     //  margin: 0 0 18px;
     padding: 7px 14px;

@@ -341,12 +341,12 @@ nav {
   width: 90%;
   max-width: 1024px;
   margin: 10px auto;
-  background-color: #FBFBFB;
+  background-color: #fbfbfb;
   background-image: -moz-linear-gradient(center top, white, whitesmoke);
   background-repeat: repeat-x;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #dddddd;
   border-radius: 3px 3px 3px 3px;
-  box-shadow: 0 1px 0 #FFFFFF inset;
+  box-shadow: 0 1px 0 white inset;
   list-style: none outside none;
   padding: 7px 14px;
   min-height: 80%;
@@ -1550,7 +1550,6 @@ form ol li {
   -khtml-border-radius: 3px;
   border-radius: 3px;
   list-style: none;
-  /* padding: 5px 10px;*/
   margin-bottom: 2px;
   padding: 5px;
   padding-left: 5px;
@@ -1927,7 +1926,7 @@ form.cookieconsent {
 /* Tablet Portrait size to standard 960 (devices and browsers) */
 @media only screen and (min-width: 768px) and (max-width: 959px) {
   body {
-    background-color: green;
+    #      background-color: green;
   }
 }
 /* All Mobile Sizes (devices and browser) */

@@ -83,8 +83,9 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
        
             <div id="langicons">
                 <a href="<?php echo $base_url; ?>ajax/changelanguage/english" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-gb.png" alt="en"/></a>
-                <a href="<?php echo $base_url; ?>ajax/changelanguage/pl" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pl.png" alt="pl"/></a>
                 <a href="<?php echo $base_url; ?>ajax/changelanguage/pt" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pt.png" alt="pt"/></a>
+                <a href="<?php echo $base_url; ?>ajax/changelanguage/it" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-it.png" alt="it"/></a>
+                <a href="<?php echo $base_url; ?>ajax/changelanguage/pl" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pl.png" alt="pl"/></a>
             </div>
             
         </div>
