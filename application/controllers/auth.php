@@ -141,6 +141,22 @@ class Auth extends MY_Controller {
             return '';
         }
     }
+    private function get_shib_mail()
+    {
+        $email_var = $this->config->item('Shib_mail');
+        if (isset($_SERVER[$email_var]))
+        {
+            return $_SERVER[$email_var];
+        }
+        elseif (isset($_SERVER['REDIRECT_' . $email_var]))
+        {
+            return $_SERVER['REDIRECT_' . $email_var];
+        }
+        else
+        {
+            return '';
+        }
+    }
 
     private function get_shib_idp()
     {
@@ -211,6 +227,59 @@ class Auth extends MY_Controller {
             {
                 log_message('error','User authorization failed: '.$user_var.' doesnt exist in RR');
                 show_error('An account for ' . $user_var . ' doesn\'t exist in the Resource Registry. You can request access <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">here</a>', 403);
+            }
+            else
+            {
+               $email_var = $this->get_shib_mail();
+               if(empty($email_var))
+               {
+                   log_message('error','User cannot be autocreated: email address is missing');
+                   show_error('You haven\'t provided email address',403);
+                   return;
+               }
+               $checkuserwithemail = $this->em->getRepository("models\User")->findOneBy(array('email'=>$email_var));
+               if(!empty($checkuserwithemail))
+               {
+                  log_message('error','User cannot be autocreated: email address:'.$email_var.' already exists in db ');
+                  show_error('Email you provided already exists',403);
+                  return;
+               }
+               $user = new models\User;
+               $this->load->helper('random_generator');
+               $randompass = str_generator();
+               $user->setUsername($user_var);
+               $user->setEmail($email_var);
+               $user->setSalt();
+               $user->setPassword($randompass);
+               $user->setLocalDisabled();
+               $user->setFederatedEnabled();
+               $user->setAccepted();
+               $user->setEnabled();
+               $user->setValid();
+               $user->setUserpref(array());
+               $defaultRole = $this->config->item('register_defaultrole');
+               $allowedroles = array('Guest','Member');
+               if(empty($defaultRole) || !in_array($defaultRole,$allowedroles))
+               {
+                   $defaultRole = 'Guest';
+               }
+               $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $defaultRole));
+               if (!empty($member)) {
+                    $user->setRole($member);
+               }
+               $p_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $user_var));
+               if(empty($p_role))
+               {
+                  $p_role = new models\AclRole;
+                  $p_role->setName($user_var);
+                  $p_role->setType('user');
+                  $p_role->setDescription('personal role for user ' . $user_var);
+                  $user->setRole($p_role);
+                  $this->em->persist($p_role);
+               }
+               $this->tracker->save_track('user', 'create', $user_var, 'user autocreated in the system', false);
+
+               
             }
         }
         $ip = $_SERVER['REMOTE_ADDR'];

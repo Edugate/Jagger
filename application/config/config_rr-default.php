@@ -61,6 +61,12 @@ $config['rr_load_gmap_js'] = TRUE;
  * autoregister_federated: if true then user authenticated with shibboleth is created in db 
  */
 $config['autoregister_federated'] = false;
+/**
+ * set default Role for autoregistered user: Guest or Member
+ * Guest has lowest level of permission, he can access only some pages
+ * Member has read access to most pages
+ */
+$config['register_defaultrole'] = 'Guest';
 /** 
  * make sure that all Shib_required are mapped
  * 
