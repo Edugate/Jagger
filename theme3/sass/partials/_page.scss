@@ -69,7 +69,8 @@ nav {
     max-width: 1024px;
     margin: 10px auto;
     background-color: $container-background-color;
-    background-image: -moz-linear-gradient(center top , #FFFFFF, #F5F5F5);
+    background-image: -moz-linear-gradient(center top , $container-background-gradient-1, $container-background-gradient-2);
+    background: -webkit-gradient(linear, center top, center bottom, from($container-background-gradient-1), to($container-background-gradient-2));
     background-repeat: repeat-x;
     border: 1px solid $container-border-color;
     border-radius: 3px 3px 3px 3px;

@@ -343,6 +343,7 @@ nav {
   margin: 10px auto;
   background-color: #fbfbfb;
   background-image: -moz-linear-gradient(center top, white, whitesmoke);
+  background-image: -webkit-gradient(linear, center top, center bottom, from(white), to(whitesmoke));
   background-repeat: repeat-x;
   border: 1px solid #dddddd;
   border-radius: 3px 3px 3px 3px;
