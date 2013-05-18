@@ -97,9 +97,9 @@ class Idp_matrix extends MY_Controller {
             foreach ($extends as $ex)
             {
                 $el = $ex->getElement();
-                if ($el == 'Logo')
+                if ($el === 'Logo')
                 {
-                    $data['provider_logo_url'] = $this->logo_url . $ex->getEvalue();
+                    $data['provider_logo_url'] = $ex->getLogoValue();
                 }
             }
         }

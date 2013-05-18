@@ -6,6 +6,7 @@ figure,
 footer,
 header,
 hgroup,
+main,
 nav,
 section,
 summary {
@@ -82,7 +83,7 @@ h5 {
 }
 
 h6 {
-  font-size: 0.75em;
+  font-size: 0.67em;
   margin: 2.33em 0;
 }
 
@@ -101,6 +102,12 @@ blockquote {
 
 dfn {
   font-style: italic;
+}
+
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0;
 }
 
 mark {
@@ -175,11 +182,15 @@ ul {
   padding: 0 0 0 40px;
 }
 
+nav ul,
+nav ol {
+  list-style: none;
+  list-style-image: none;
+}
+
 img {
   border: 0;
-  /* 1 */
   -ms-interpolation-mode: bicubic;
-  /* 2 */
 }
 
 svg:not(:root) {
@@ -207,6 +218,7 @@ legend {
   *margin-left: -7px;
 }
 
+button,
 input,
 select,
 textarea {
@@ -222,6 +234,11 @@ input {
 }
 
 button,
+select {
+  text-transform: none;
+}
+
+button,
 html input[type="button"],
 input[type="reset"],
 input[type="submit"] {
@@ -231,7 +248,7 @@ input[type="submit"] {
 }
 
 button[disabled],
-input[disabled] {
+html input[disabled] {
   cursor: default;
 }
 
@@ -327,6 +344,30 @@ li {
   display: inline;
   float: right;
 }
+#langicons a img {
+  filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='grayscale'><feColorMatrix type='matrix' values='0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0'/></filter></svg>#grayscale");
+  /* Firefox 10+, Firefox on Android */
+  filter: grayscale(80%);
+  -moz-filter: grayscale(80%);
+  -ms-filter: grayscale(80%);
+  -o-filter: grayscale(80%);
+  filter: gray;
+  /* IE6-9 */
+  -webkit-filter: grayscale(80%);
+  /* Chrome 19+, Safari 6+, Safari 6+ iOS */
+}
+#langicons a:hover img, #langicons a.current img {
+  filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='grayscale'><feColorMatrix type='matrix' values='1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0'/></filter></svg>#grayscale");
+  filter: grayscale(0%);
+  -moz-filter: grayscale(0%);
+  -ms-filter: grayscale(0%);
+  -o-filter: grayscale(0%);
+  filter: none;
+  /* IE6-9 */
+  zoom: 1;
+  -webkit-filter: grayscale(0%);
+  /* Chrome 19+, Safari 6+, Safari 6+ iOS */
+}
 
 nav, ul, li, a {
   margin: 0;
@@ -343,7 +384,7 @@ nav {
   margin: 10px auto;
   background-color: #fbfbfb;
   background-image: -moz-linear-gradient(center top, white, whitesmoke);
-  background-image: -webkit-gradient(linear, center top, center bottom, from(white), to(whitesmoke));
+  background: -webkit-gradient(linear, center top, center bottom, from(white), to(whitesmoke));
   background-repeat: repeat-x;
   border: 1px solid #dddddd;
   border-radius: 3px 3px 3px 3px;
@@ -755,7 +796,7 @@ table#details td span.accordionContent, table.details td span.accordionContent {
 }
 
 form table#details tr:nth-of-type(odd) {
-  background: #eee;
+  background: #eeeeee;
 }
 form table#details tr:nth-of-type(even) {
   background: #d4d4d4;
@@ -1848,7 +1889,7 @@ form.cookieconsent {
   content: "";
   display: block;
   width: 0;
-  height: 100%;
+  height: 150%;
 }
 
 .hidden {

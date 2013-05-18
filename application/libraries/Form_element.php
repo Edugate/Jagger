@@ -4090,40 +4090,6 @@ class Form_element {
         return $tmp;
     }
 
-    public function generateEntityForm(models\Provider $provider, $action = null, $forcetype = null)
-    {
-        log_message('debug', 'Form_element::generateEntityForm method started');
-        $tform = null;
-        $p_type = $provider->getType();
-        if ($p_type == 'IDP')
-        {
-            $tform = $this->generateIdpForm($provider, $action);
-        }
-        elseif ($p_type == 'SP')
-        {
-
-            $tform = $this->generateSpForm($provider, $action);
-        }
-        else
-        {
-            if (!empty($forcetype) && $forcetype == 'idp')
-            {
-                $tform = $this->generateIdpForm($provider, $action);
-            }
-            elseif (!empty($forcetype) && $forcetype == 'sp')
-            {
-                $tform = $this->generateSpForm($provider, $action);
-            }
-
-            /**
-             * @todo display form if type is BOTH
-             */
-            // $tform = $this->generateBothForm($provider, $action);
-        }
-
-        return $tform;
-    }
-
     public function generateFederationEditForm(models\Federation $federation)
     {
         $f = null;
@@ -4140,43 +4106,6 @@ class Form_element {
         return $f;
     }
 
-    /**
-     * function return html of form elements from attributes like:
-     * homeorgname,displayname,homeurl,helpdeskurl,validfrom,validto
-     */
-    public function generateIdpBasicForm($provider)
-    {
-        if (!$provider instanceof models\Provider)
-        {
-            return false;
-        }
-        $tmp = form_fieldset(lang('rr_basicinformation'));
-        $tmp .= '<ol><li>' . form_label(lang('rr_homeorganisationname'), 'homeorgname');
-        $in = array('id' => 'homeorgname', 'name' => 'homeorgname', 'required' => 'required', 'value' => set_value('homeorgname', $provider->getName()));
-        $tmp .= form_input($in);
-        $tmp .= '</li><li>' . form_label(lang('rr_displayname'), 'displayname');
-        $tmp .= form_input('displayname', set_value('displayname', $provider->getDisplayName()));
-        $tmp .= '</li><li>' . form_label(lang('rr_homeorganisationurl'), 'homeurl');
-        $tmp .= form_input('homeurl', set_value('homeurl', $provider->getHomeUrl()));
-        $tmp .= '</li><li>' . form_label(lang('rr_helpdeskurl'), 'helpdeskeurl');
-        $tmp .= form_input('helpdeskurl', set_value('helpdeskurl', $provider->getHelpdeskUrl()));
-        $tmp .= '</li><li>' . form_label(lang('rr_validfrom'), 'validfrom');
-        $tmp .= form_input(array('name' => 'validfrom', 'id' => 'validfrom', 'value' => set_value('validfrom', $provider->getValidFrom()->format('Y-m-d'))));
-        $tmp .= '</li><li>' . form_label(lang('rr_validto'), 'validto');
-        $vtm = $provider->getValidTo();
-        if (!empty($vtm))
-        {
-            $tmp .= form_input(array('name' => 'validto', 'id' => 'validto', 'value' => set_value('validto', $provider->getValidTo()->format('Y-m-d'))));
-        }
-        else
-        {
-            $tmp .= form_input(array('name' => 'validto', 'id' => 'validto', 'value' => set_value('validto')));
-        }
-        $tmp .= '</li><li>' . form_label(lang('rr_description'), 'description');
-        $tmp .= form_textarea('description', set_value('description', $provider->getDescription()));
-        $tmp .= '</li></ol>' . form_fieldset_close();
-        return $tmp;
-    }
 
     public function excludedArpsForm(models\Provider $idp)
     {

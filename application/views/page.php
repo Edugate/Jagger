@@ -82,10 +82,20 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
             </div>
        
             <div id="langicons">
-                <a href="<?php echo $base_url; ?>ajax/changelanguage/english" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-gb.png" alt="en"/></a>
-                <a href="<?php echo $base_url; ?>ajax/changelanguage/pt" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pt.png" alt="pt"/></a>
-                <a href="<?php echo $base_url; ?>ajax/changelanguage/it" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-it.png" alt="it"/></a>
-                <a href="<?php echo $base_url; ?>ajax/changelanguage/pl" class="langset"><img src="<?php echo $base_url; ?>images/lang/flag-pl.png" alt="pl"/></a>
+                <?php
+                  $langs = array(
+                    'en' => array('path'=>'english','img'=>'flag-gb.png','alt'=>'en','a'=>''),
+                    'pt' => array('path'=>'pt','img'=>'flag-pt.png','alt'=>'pt','a'=>''),
+                    'it' => array('path'=>'it','img'=>'flag-it.png','alt'=>'it','a'=>''),
+                    'pl' => array('path'=>'pl','img'=>'flag-pl.png','alt'=>'pl','a'=>''),
+                   );
+                  $langs[''.$this->current_language.'']['a'] = 'current';
+                  foreach($langs as $v)
+                  {
+                      echo '<a href="'.$base_url.'ajax/changelanguage/'.$v['path'].'" class="langset '.$v['a'].'"><img src="'.$base_url.'images/lang/'.$v['img'].'" alt="'.$v['alt'].'"/></a> ';
+                  }
+                  
+                ?>
             </div>
             
         </div>

@@ -80,6 +80,8 @@ $lang['rr_local_authn'] = 'Local authentication';
 $lang['lbl_local'] = 'Local';
 $lang['lbl_external'] = 'External';
 $lang['lbl_static'] = 'Static metadata';
+$lang['lbl_enabled'] = 'Enabled';
+$lang['lbl_disabled'] = 'Disabled';
 
 $lang['federated_access'] = 'Federated Access';
 $lang['rr_detvisibletoothers'] = 'Details visible to other users';

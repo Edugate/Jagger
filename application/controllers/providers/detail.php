@@ -112,32 +112,32 @@ class Detail extends MY_Controller {
         $edit_link = '';
         if (empty($is_active))
         {
-            $entstatus .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
+            $entstatus .= ' '. makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
         }
         else
         {
-            $entstatus .= makeLabel('active', lang('rr_enabled'), lang('rr_enabled'));
+            $entstatus .= ' ' .makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
         }
         if (!$is_validtime)
         {
-            $entstatus .= makeLabel('alert',lang('rr_validfromto_notmatched1') , 'metadata '.lang('rr_expired'));
+            $entstatus .= ' '. makeLabel('alert',lang('rr_validfromto_notmatched1') , 'metadata '.lang('rr_expired'));
         }
         if ($locked)
         {
-            $entstatus .= makeLabel('locked',lang('rr_locked') , lang('rr_locked'));
+            $entstatus .= ' '. makeLabel('locked',lang('rr_locked') , lang('rr_locked'));
         }
         if ($ent->getLocal())
         {
-            $entstatus .= makeLabel('local', lang('rr_managedlocally'), lang('rr_managedlocally'));
+            $entstatus .= ' '. makeLabel('local', lang('rr_managedlocally'), lang('rr_managedlocally'));
         }
         else
         {
-            $entstatus .= makeLabel('local', lang('rr_external'), lang('rr_external'));
+            $entstatus .= ' '. makeLabel('local', lang('rr_external'), lang('rr_external'));
             
         }
         if ($is_static)
         {
-            $entstatus .= makeLabel('static', lang('lbl_static'), lang('lbl_static'));
+            $entstatus .= ' '. makeLabel('static', lang('lbl_static'), lang('lbl_static'));
             $edit_link .= makeLabel('static', lang('lbl_static'), lang('lbl_static'));
         }
 
@@ -171,7 +171,7 @@ class Detail extends MY_Controller {
             {
                 break;
             }
-            if ($v->getElement() == 'Logo')
+            if ($v->getElement() === 'Logo')
             {
                 $data['provider_logo_url'] = $v->getLogoValue();
                 $is_logo = TRUE;
@@ -206,7 +206,7 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
         $d[++$i]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation');
-        $d[++$i]['name'] = 'Status ' . showBubbleHelp('<ul><li><b>enabled</b>: Provider will be included in Metadata</li><li><b>disabled</b>: Provider is excluded from Metadata </li><li><b>managed localy</b>: Provider is managed localy</li><li><b>external</b>: Provider is imported from external resource and is not managed localy</li></ul>') . '';
+        $d[++$i]['name'] = lang('rr_status').' ' . showBubbleHelp('<ul><li><b>'.lang('lbl_enabled').'</b>: Provider will be included in Metadata</li><li><b>'.lang('lbl_disabled').'</b>: Provider is excluded from Metadata </li><li><b>managed localy</b>: Provider is managed localy</li><li><b>external</b>: Provider is imported from external resource and is not managed localy</li></ul>') . '';
 
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
