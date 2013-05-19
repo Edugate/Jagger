@@ -49,6 +49,7 @@ class P extends MY_Controller {
               return;
           }
        }
+       $this->title = $page->getTitle(); 
        $data['ptitle'] = $page->getTitle();
        $data['pcontent'] = $page->getContent();
        $data['content_view'] = 'staticpages_view';
