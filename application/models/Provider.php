@@ -2182,7 +2182,8 @@ class Provider {
                     $lang = $dm->getAttributes();
                     if (isset($lang['xml:lang']))
                     {
-                        $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:InformationURL', $dm->getElementValue());
+                        $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:InformationURL');
+                        $dnode->appendChild($e->ownerDocument->createTextNode($dm->getElementValue()));
                         $dnode->setAttribute('xml:lang', '' . $lang['xml:lang'] . '');
                         if ($lang['xml:lang'] === 'en')
                         {
