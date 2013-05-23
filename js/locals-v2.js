@@ -227,8 +227,8 @@ $(function() {
         $.ajax({
             url: url,
             timeout: 2500,
-            cache: false
-        });
+            cache: false,
+        }).done(function() { setTimeout('go_to_private_page()', 1000); });
 
         return false;
     });
