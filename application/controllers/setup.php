@@ -18,7 +18,7 @@ if (!defined('BASEPATH'))
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 
-class Setup extends CI_Controller {
+class Setup extends MY_Controller {
 
     protected $em;
     protected $member_role;
@@ -121,7 +121,7 @@ class Setup extends CI_Controller {
         $this->_populateResources();
         $this->em->flush();
         $data['content_view'] = 'setup_view';
-        $data['message'] = "Done";
+        $data['message'] = 'Done! Don\'t forget to disable "setup allowed" in config file';
         $this->load->view('page',$data);
         }
         else
