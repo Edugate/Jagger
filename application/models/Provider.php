@@ -2458,8 +2458,8 @@ class Provider {
 
         // $this->setProtocol($r['protocol']);
         $this->setType($r['type']);
-        $this->setScope('idpsso',explode(',',$r['scope']));
-        $this->setScope('aa',explode(',',$r['aascope']));
+        $this->setScope('idpsso',$r['scope']);
+        $this->setScope('aa',$r['aascope']);
         $this->setHomeUrl($r['homeurl']);
         $this->setHelpdeskUrl($r['helpdeskurl']);
         $this->setPrivacyUrl($r['privacyurl']);
