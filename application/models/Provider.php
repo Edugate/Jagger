@@ -1782,23 +1782,20 @@ class Provider {
         if (!empty($this->validfrom))
         {
 
-            $timeFrom = $this->validfrom;
-            if ($currentTime < $timeFrom)
+            if ($currentTime < $this->validfrom)
             {
                 $validBefore = FALSE;
             }
         }
         if (!empty($this->validto))
         {
-            $timeTo = $this->validto;
-            if ($currentTime > $timeTo)
+            if ($currentTime > $this->validto)
             {
                 $validAfter = FALSE;
             }
         }
 
-        $result = $validAfter && $validBefore;
-        return $result;
+        return ($validAfter && $validBefore);
     }
 
     public function getEntityId()
@@ -3114,22 +3111,22 @@ class Provider {
             {
                 $attrs_in_sp = $options['attr_inc'];
             }
-            if (array_key_exists('only_allowed', $options))
-            {
-                $only_allowed = $options['only_allowed'];
-            }
+       //     if (array_key_exists('only_allowed', $options))
+       //     {
+       //         $only_allowed = $options['only_allowed'];
+       //     }
         }
 
         /**
          * do not return if active required and entity disabled
          */
-        $p_active = $this->getAvailable();
+      //  $p_active = $this->getAvailable();
 
-        if ($only_allowed && empty($p_active))
-        {
-            log_message('debug', "skip gen xml for inactive provider with id:" . $this->id);
-            return \NULL;
-        }
+      //  if ($only_allowed && empty($p_active))
+      //  {
+      //      log_message('debug', "skip gen xml for inactive provider with id:" . $this->id);
+      //      return \NULL;
+      //  }
 
 
         $p_entityID = $this->entityid;
@@ -3220,9 +3217,6 @@ class Provider {
 
         $EntityDesc_Node->setAttribute('entityID', $this->getEntityId());
         $ci = & get_instance();
-        $configRegistrar = $ci->config->item('registrationAutority');
-        $configRegistrationPolicy = $ci->config->item('registrationPolicy');
-        $configRegistrarLoad = $ci->config->item('load_registrationAutority');
         if (!empty($this->registrar))
         {
             $EntExtension_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
@@ -3235,17 +3229,23 @@ class Provider {
             }
             $EntExtension_Node->appendChild($RegistrationInfo_Node);
         }
-        elseif (!empty($configRegistrarLoad) && !empty($configRegistrar) && $this->is_local === TRUE)
+        elseif ($this->is_local === TRUE)
         {
-            $EntExtension_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
-            $EntityDesc_Node->appendChild($EntExtension_Node);
-            $RegistrationInfo_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:rpi', 'mdrpi:RegistrationInfo');
-            $RegistrationInfo_Node->setAttribute('registrationAuthority', $configRegistrar);
-            if (!empty($this->registerdate))
+            $configRegistrar = $ci->config->item('registrationAutority');
+            $configRegistrationPolicy = $ci->config->item('registrationPolicy');
+            $configRegistrarLoad = $ci->config->item('load_registrationAutority');
+            if(!empty($configRegistrarLoad) && !empty($configRegistrar))
             {
-                $RegistrationInfo_Node->setAttribute('registrationInstant', $this->registerdate->format('Y-m-d') . 'T' . $this->registerdate->format('H:i:s') . 'Z');
+                $EntExtension_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
+                $EntityDesc_Node->appendChild($EntExtension_Node);
+                $RegistrationInfo_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:rpi', 'mdrpi:RegistrationInfo');
+                $RegistrationInfo_Node->setAttribute('registrationAuthority', $configRegistrar);
+                if (!empty($this->registerdate))
+                {
+                   $RegistrationInfo_Node->setAttribute('registrationInstant', $this->registerdate->format('Y-m-d') . 'T' . $this->registerdate->format('H:i:s') . 'Z');
+                }
+                $EntExtension_Node->appendChild($RegistrationInfo_Node);
             }
-            $EntExtension_Node->appendChild($RegistrationInfo_Node);
         }
         if(!empty($RegistrationInfo_Node))
         {

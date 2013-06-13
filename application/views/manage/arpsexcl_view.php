@@ -3,22 +3,10 @@
 
 <?php
 
-if(!empty($excarray))
-{
-    echo '<pre>';
-    print_r($excarray);
-    echo '</pre>';
-    foreach($excarray as $o)
-     {
-          echo $o;
-    }
-
-}
-
-$attrs = array('id'=>'arpexlusions');
-echo form_open(current_url(),$attrs);
 if(!empty($rows) && is_array($rows))
 {
+    $attrs = array('id'=>'arpexlusions');
+    echo form_open(current_url(),$attrs);
     echo form_fieldset();
     echo '<ol>';
     foreach($rows as $r)
@@ -34,8 +22,11 @@ if(!empty($rows) && is_array($rows))
     echo '<button type="submit" name="modify" value="submit" class="button positive">
                   <span class="save">'.lang('rr_save').'</span></button>';
     echo  '</div>';
-
+    echo form_close();
+}
+else
+{
+   echo '<div>No Service Providers found to be excluded</div>';
 
 }
 
-echo form_close();
