@@ -81,6 +81,10 @@ class Arpsexcl extends MY_Controller {
        if($this->_submit_validate() === TRUE)
        {
            $excarray = $this->input->post('exc');
+           if(empty($excarray))
+           {
+               $excarray = array();
+           }
            foreach($excarray as $k=>$v)
            {
                if(empty($v))

@@ -41,7 +41,7 @@ class Idp_list extends MY_Controller {
         $this->load->library('zacl');
     }
 
-    function show()
+    function show($limit=null)
     {
         $this->title = lang('title_idplist');
         $this->load->helper('iconhelp');
@@ -64,7 +64,21 @@ class Idp_list extends MY_Controller {
         }
         $idprows = array();
         $col = new models\Providers();
-        $idps = $col->getIdpsLight();
+        if(empty($limit))
+        {
+            $data['typeidps'] = 'local';
+            $idps = $col->getIdpsLightLocal();
+        }
+        elseif($limit === 'ext')
+        {
+           $data['typeidps'] = 'external';
+           $idps = $col->getIdpsLightExternal();
+        }
+        else
+        {
+            $data['typeidps'] = 'all';
+            $idps = $col->getIdpsLight();
+        }
         $data['idps_count'] = count($idps);
         $linktitlediexp = lang('rr_disexp_link_title');
         foreach ($idps as $i)

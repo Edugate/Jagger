@@ -378,7 +378,7 @@ $(function() {
               {
                                 var nlist = $('<ul/>');
                                 $.each(data, function(i, v) {
-                                    var div_data = '<li><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                    var div_data = '<li><a href="' + v.url + '">' + v.name + '</a><small><i> (' + v.entityid + ') <i></small></li>';
                                     nlist.append(div_data);
                                 });
                                 value.append(nlist);

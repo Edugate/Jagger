@@ -73,13 +73,64 @@ class Providers {
 
         return $this->providers;
      }
+     /**
+      * getting trusted entities by given provider
+      * if provider is IDP then result give only trusted SPs
+      * if provider is SP then result give only trusted IDPs
+      */
+     public function getCircleMembersByType(Provider $provider)
+     {
+        $entype = $provider->getType();
+        $federations = $provider->getFederations();
+        $feds = array();
+        if(!empty($federations))
+        {
+           foreach($federations as $f)
+           {
+             $feds[] = $f->getId();
+           }
+        }
+        if(count($feds) == 0 )
+        {
+            return array();
+        }
+        $in = implode(',',array_values($feds));
+        $sqlsuffix = ' ';
+        if($entype === 'IDP')
+        {
+           $sql = "SELECT u  FROM models\Provider u WHERE u.type IN ('SP','BOTH') AND (";
+           $sqlsuffix = ' ) ';
+        }
+        elseif($entype === 'SP')
+        {
+           $sql = "SELECT u  FROM models\Provider u WHERE u.type IN ('IDP','BOTH') AND (";
+           $sqlsuffix = ' ) ';
+        }
+        else
+        {
+           $sql = 'SELECT u  FROM models\Provider u WHERE ';
+        }
+        foreach($feds as $key=>$value)
+        {
+            $temp[]= '?'.$key.' MEMBER OF u.federations ';
+        }
+        $sql .= implode(' OR ', $temp) . $sqlsuffix;
+        
+        $query = $this->em->createQuery($sql);
+        foreach($feds as $key=>$value)
+        {
+            $query->setParameter($key, $value);
+        }
+        return $query->getResult(); 
+     }
+
      public function getMultiFederationMembers($arrayb)
      {
         $dql = 'SELECT p,a,c,s,e   FROM models\Provider p LEFT JOIN p.metadata a LEFT JOIN p.contacts c LEFT JOIN p.certificates s  LEFT JOIN p.extend e WHERE ';
         foreach ($arrayb as $key=>$value)
         {
            $temp[]= '?'.$key.' MEMBER OF p.federations ';
-       }
+        }
         $dql .= implode(" OR ", $temp);
 
         $query = $this->em->createQuery($dql);
@@ -168,8 +219,24 @@ class Providers {
     
     public function getIdpsLight()
     {
-        log_message('debug', 'run: models\Providers::getSpsLight()');
+        log_message('debug', 'run: models\Providers::getIdpsLight()');
         $dql = "SELECT p FROM models\Provider p WHERE p.type IN ('IDP','BOTH') ORDER BY p.name ASC ";
+        $query = $this->em->createQuery($dql);
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();  
+    }
+    public function getIdpsLightLocal()
+    {
+        log_message('debug', 'run: models\Providers::getIdpsLightLocal()');
+        $dql = "SELECT p FROM models\Provider p WHERE p.type IN ('IDP','BOTH') AND p.is_local = '1' ORDER BY p.name ASC ";
+        $query = $this->em->createQuery($dql);
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();  
+    }
+    public function getIdpsLightExternal()
+    {
+        log_message('debug', 'run: models\Providers::getIdpsLightExternal()');
+        $dql = "SELECT p FROM models\Provider p WHERE p.type IN ('IDP','BOTH') AND p.is_local = '0' ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();  

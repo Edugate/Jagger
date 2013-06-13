@@ -1384,6 +1384,7 @@ class Provider {
         $this->setRegistrationPolicyFromArray($provider->getRegistrationPolicy(), TRUE);
 
         $this->overwriteWithNameid($provider);
+        log_message('debug','GKS :'.serialize($this->getNameIds())); 
 
         $prototypes = array('idpsso','aa','spsso');
         foreach($prototypes as $a)
@@ -1407,14 +1408,6 @@ class Provider {
         {
             $this->overwriteStaticMetadata($smetadata);
         }
-        /**
-         * overwrite servicelocations
-         */
-        //echo $c1 = $this->getServiceLocations()->count();
-        //echo $c2 = $provider->getServiceLocations()->count();
-        //$c3 = $c1->$c2;
-        //if($c3>0)
-        //{
         foreach ($this->getServiceLocations() as $s)
         {
             $this->removeServiceLocation($s);
@@ -2349,6 +2342,7 @@ class Provider {
     public function overwriteWithNameid(Provider $provider)
     {
         $this->nameids = serialize($provider->getNameIds());
+  
     }
 
     public function convertToArray()

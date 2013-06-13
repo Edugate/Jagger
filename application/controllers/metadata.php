@@ -53,8 +53,6 @@ class Metadata extends MY_Controller {
                 show_error('federation is not active', 404);
             }
 
-            //$tmp_cnt = new models\Contacts;
-            //$contacts = $tmp_cnt->getContacts();
            
             /**
              * check if required attribute must be added to federated metadata 
@@ -286,6 +284,58 @@ class Metadata extends MY_Controller {
             return;
         }
         $p = new models\Providers;
+        $p1 = $p->getCircleMembersByType($me);
+        if (is_null($p1) || !is_array($p1)) {
+            show_error('empty', 404);
+            return;
+        }
+        $docXML = new \DOMDocument();
+        $docXML->encoding = 'UTF-8';
+        $docXML->formatOutput = true;
+
+        $xpath = new \DomXPath($docXML);
+        $namespaces = h_metadataNamespaces();
+        foreach($namespaces as $key=>$value)
+        {
+              $xpath->registerNamespace($key,$value);
+        }
+        $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
+        $validfor = new \DateTime("now");
+        $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
+        $validuntil = $validfor->format('Y-m-d');
+        $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
+        $Entities_Node->setAttribute('Name', 'circle:' . $me->getEntityId());
+        foreach ($p1 as $v) {
+            if($v->getAvailable())
+            {
+                $v->getProviderToXML($Entities_Node);
+            }
+        }
+        $docXML->appendChild($Entities_Node);
+        $this->output->set_content_type('text/xml');
+        $data['out'] = $docXML->saveXML();
+        $this->load->view('metadata_view', $data);
+       
+    }
+    /** 
+     * it default circle function, replaced by new one.
+     * it is kept just in case
+     */
+    private function circleorig($entityId, $m = NULL) {
+        if(!empty($m) && $m != 'metadata.xml')
+        {
+            show_error('Request not allowed',403);
+        }
+        $data = array();
+        $name = base64url_decode($entityId);
+        $tmp = new models\Providers;
+        $me = $tmp->getOneByEntityId($name);
+        if (empty($me)) {
+            log_message('debug', 'Failed generating circle metadata for ' . $name);
+            show_error('unknown provider', 404);
+            return;
+        }
+        $p = new models\Providers;
         $p1 = $p->getCircleMembers($me);
         if (empty($p1)) {
             show_error('empty', 404);
@@ -308,7 +358,7 @@ class Metadata extends MY_Controller {
         $validuntil = $validfor->format('Y-m-d');
         $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
         $Entities_Node->setAttribute('Name', "circle:" . $me->getEntityId());
-
+        
         foreach ($p1 as $v) {
             if($v->getAvailable())
             {

@@ -61,7 +61,7 @@ class Auth extends MY_Controller {
         {
             $this->data['shib_url'] = null;
         }
-        $this->data['title'] = "Login";
+        $this->data['title'] = 'Login';
         /**
          * @todo check if no looping
          */
