@@ -412,6 +412,11 @@ nav {
   margin: 0 0 10px;
 }
 
+#navbuttons1 {
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
 #excarpslist {
   background-color: #FBFBFC;
   background-image: -moz-linear-gradient(center top, white, #f5f5fc);
@@ -1086,6 +1091,22 @@ code, pre {
 
 button.negative {
   color: #d12f19;
+}
+
+button.typelist {
+  font-weight: bold;
+}
+
+button.tchosen {
+  font-weight: bold;
+  background-color: orange;
+  background-image: -ms-linear-gradient(top, orange, orange);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(orange), to(orange));
+  background-image: -webkit-linear-gradient(top, orange, orange);
+  background-image: -o-linear-gradient(top, orange, #e6e6e6);
+  background-image: linear-gradient(top, #ffa500, #e6e6e6);
+  background-image: -moz-linear-gradient(top, orange, orange);
+  background-repeat: repeat-x;
 }
 
 .ui-button {

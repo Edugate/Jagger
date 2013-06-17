@@ -46,7 +46,6 @@ class Idp_list extends MY_Controller {
         $this->title = lang('title_idplist');
         $this->load->helper('iconhelp');
         $lockicon =  '<span class="lbl lbl-locked">'.lang('rr_locked').'</span>';
-        #$disabledicon = genIcon('disabled',lang('rr_disabled')); 
         $disabledicon = '<span class="lbl lbl-disabled">'.lang('rr_disabled').'</span>';
         $expiredicon ='<span class="lbl lbl-disabled">'.lang('rr_expired').'</span>';
         $staticon = '<span class="lbl lbl-static">'.lang('rr_static').'</span>';

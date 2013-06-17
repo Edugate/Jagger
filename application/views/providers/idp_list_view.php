@@ -22,6 +22,41 @@ $form = '<form id="filter-form">'. lang('rr_filter') .': <input name="filter" id
  * and open the template in the editor.
  */
 echo $form;
+
+$prefurl = base_url().'providers/idp_list/';
+?>
+<div id="navbuttons1">
+<?php
+if($typeidps === 'local')
+{
+
+?>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" >all providers</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" >external/imported</button>
+<button type="button" class="btn tchosen" disabled="disabled">locally managed</button>
+<?php
+}
+elseif($typeidps === 'external')
+{
+?>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" >all providers</button>
+<button type="button" class="btn tchosen" disabled="disabled">external/imported</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" >locally managed</button>
+
+<?php
+}
+elseif($typeidps === 'all')
+{
+?>
+<button type="button" class="btn tchosen" disabled="disabled">all providers</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" >external/imported</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" >locally managed</button>
+
+<?php
+}
+?>
+</div>
+<?php
 $tmpl = array('table_open' => '<table  id="details" class="zebra drop-shadow lifted idplist">');
 
 $this->table->set_template($tmpl);

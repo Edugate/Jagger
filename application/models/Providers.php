@@ -388,6 +388,22 @@ class Providers {
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
     }
+    public function getSpsLightExternal()
+    {
+        log_message('debug', 'run: models\Providers::getSpsLightExternal()');
+        $dql = "SELECT p FROM models\Provider p WHERE p.type IN ('SP','BOTH') AND p.is_local = '0' ORDER BY p.name ASC ";
+        $query = $this->em->createQuery($dql);
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();  
+    }
+    public function getSpsLightLocal()
+    {
+        log_message('debug', 'run: models\Providers::getSpsLightLocal()');
+        $dql = "SELECT p FROM models\Provider p WHERE p.type IN ('SP','BOTH') AND p.is_local = '1' ORDER BY p.name ASC ";
+        $query = $this->em->createQuery($dql);
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();  
+    }
     
     public function getProviders()
     {

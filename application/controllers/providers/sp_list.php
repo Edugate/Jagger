@@ -40,7 +40,7 @@ class Sp_list extends MY_Controller {
         $this->load->library('zacl');
     }
 
-    function show()
+    function show($limit=null)
     {
         $this->title = lang('title_splist');
         $this->load->helper('iconhelp');
@@ -62,9 +62,23 @@ class Sp_list extends MY_Controller {
         }
         $sprows = array();
         $tmp_providers = new models\Providers;
-        //$sps = $tmp_providers->getSps_inNative();
+        if(empty($limit))
+        {
+            $data['typesps'] = 'local';
+            $sps = $tmp_providers->getSpsLightLocal();
+        }
+        elseif($limit === 'ext')
+        {
+           $data['typesps'] = 'external';
+           $sps = $tmp_providers->getSpsLightExternal();
+        }
+        else
+        {
+            $data['typesps'] = 'all';
+            $sps = $tmp_providers->getSpsLight();
+        }
+
       
-        $sps = $tmp_providers->getSPsLight();
         $data['sps_count'] = count($sps);
         $linktitle_disexp = lang('rr_disexp_link_title');
         foreach ($sps as $i)
