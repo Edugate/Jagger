@@ -108,7 +108,7 @@ class Sp_registration extends MY_Controller {
         if (!empty($encrypt_cert_body)) {
             $crt_enc = new models\Certificate;
             $crt_enc->setCertUse('encryption');
-            $crt_enc->setAsSSO();
+            $crt_enc->setAsSPSSO();
             $crt_enc->setCertType('x509');
             $crt_enc->setCertData($encrypt_cert_body);
             $crt_enc->setAsDefault();

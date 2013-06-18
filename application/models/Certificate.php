@@ -162,7 +162,7 @@ class Certificate
        $this->setType('idpsso');
        return $this;
     }
-
+/*
     public function setAsSSO()
     {
         $this->setType('sso');
@@ -174,7 +174,7 @@ class Certificate
         $this->setType('aa');
         return $this;
     }
-
+*/
     public function setCertType($type=null)
     {
         if (empty($type) or $type == 'x509')

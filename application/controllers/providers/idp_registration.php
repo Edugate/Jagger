@@ -97,7 +97,7 @@ class Idp_registration extends MY_Controller {
             }
 
             $cert = new models\Certificate;
-            $cert->setAsSSO();
+            $cert->setAsIDPSSO();
             $cert->setAsDefault();
             $certbody = $this->input->post('certbody');
             $cert->setCertdata($certbody);
