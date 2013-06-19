@@ -333,8 +333,8 @@ class Show_element {
         }
         $source = $this->displayFederationsArp($provider);
         $attributes = array();
-        $prefix_url = base_url() . "manage/attribute_policy/detail/";
-        $icon = base_url() . "images/icons/pencil-field.png";
+        $prefix_url = base_url() . 'manage/attribute_policy/detail/';
+        $icon = base_url() . 'images/icons/pencil-field.png';
         if (!empty($source))
         {
             $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
@@ -350,7 +350,7 @@ class Show_element {
                     $edit_link = anchor($prefix_url . "" . $provider->getId() . "/" . $attr_value['attrid'] . "/fed/" . $s['fedid'], '<img src="' . $icon . '"/>');
                     if (!array_key_exists($attr_value['name'], $supported_attrs))
                     {
-                        $attr_name = "<span class=\"alert\" title=\"attribute not supported\">" . $attr_value['name'] . "</span>";
+                        $attr_name = '<span class="alert" title="attribute not supported">' . $attr_value['name'] . '</span>';
                         $attributes[] = array('' . $attr_name . '' . $edit_link . '', $attr_value['release']);
                     }
                     else
@@ -369,8 +369,8 @@ class Show_element {
     {
         $source = $this->displayDefaultArp($provider);
         $attributes = array();
-        $prefix_url = base_url() . "manage/attribute_policy/detail/";
-        $icon = base_url() . "images/icons/pencil-field.png";
+        $prefix_url = base_url() . 'manage/attribute_policy/detail/';
+        $icon = base_url() . 'images/icons/pencil-field.png';
         $supported = $this->tmp_policies->getSupportedAttributes($provider);
         $supported_attrs = array();
         foreach ($supported as $sa)
@@ -385,7 +385,7 @@ class Show_element {
                 if (!array_key_exists($s['name'], $supported_attrs))
                 {
 
-                    $attr_name = "<span class=\"alert\" title=\"attribute not supported\">" . $s['name'] . "</span>";
+                    $attr_name = '<span class="alert" title="attribute not supported">' . $s['name'] . '</span>';
                 }
                 else
                 {
@@ -438,12 +438,9 @@ class Show_element {
      */
     public function IdPMembersToTable(array $members)
     {
-        $cell_with_idp_members = "<div id=\"table2\">\n";
-        $cell_with_idp_members .="<div class=\"firstLine\"><span class=\"col1\">&nbsp;</span><span class=\"col2\">&nbsp;</span><span class=\"col3\">&nbsp;</span></div>";
-        $cell_with_sp_members = "<div id=\"table2\">\n";
-        $cell_with_sp_members .="<div class=\"firstLine\"><span class=\"col1\">&nbsp;</span><span class=\"col2\">&nbsp;</span><span class=\"col3\">&nbsp;</span></div>";
-        $cell_with_both_members = "<div id=\"table2\">\n";
-        $cell_with_both_members .="<div class=\"firstLine\"><span class=\"col1\">&nbsp;</span><span class=\"col2\">&nbsp;</span><span class=\"col3\">&nbsp;</span></div>";
+        $cell_with_idp_members = '<div id="table2"><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
+        $cell_with_sp_members = '<div id="table2"><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
+        $cell_with_both_members = '<div id="table2"><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
         foreach ($members as $m)
         {
             $m_type = $m->getType();
@@ -463,34 +460,22 @@ class Show_element {
             {
                 $m_displayname = $m_entityid;
             }
-            if ($m_type == 'IDP')
+            if ($m_type === 'IDP')
             {
-                $cell_with_idp_members .= "<div " . $alertclass . ">
-                    <span class=\"col1\"></span>\n
-                    <span class=\"homeorg\" class=\"col2\">" . anchor($m_link, $m_displayname, 'title="' . $m->getEntityId() . '"') . "</span>\n
-                    <span class=\"col3\">&nbsp;</span>\n
-					 </div>";
+                $cell_with_idp_members .= '<div ' . $alertclass . '><span class="col1"></span><span class="homeorg" class="col2">'. anchor($m_link, $m_displayname, 'title="' . $m->getDescription() . '"') . ' <small><i>'.$m->getEntityId().'</i></small></span><span class="col3">&nbsp;</span></div>';
             }
-            if ($m_type == 'SP')
+            if ($m_type === 'SP')
             {
-                $cell_with_sp_members .= "<div " . $alertclass . ">
-                    <span class=\"col1\"></span>\n
-                    <span class=\"col2\">" . anchor($m_link, $m_displayname, 'title="' . $m->getEntityId() . '"') . "  </span>\n
-                    <span class=\"col3\">&nbsp;</span>\n
-					 </div>";
+                $cell_with_sp_members .= '<div ' . $alertclass . '> <span class="col1"></span><span class="col2">' . anchor($m_link, $m_displayname, 'title="' . $m->getDescription() . '"') . '  </span> <small><i>'.$m->getEntityId().'</i></small><span class="col3">&nbsp;</span></div>';
             }
             if ($m_type == 'BOTH')
             {
-                $cell_with_both_members .= "<div " . $alertclass . ">
-                    <span class=\"col1\"></span>\n
-                    <span class=\"col2\">" . anchor($m_link, $m_displayname, 'title="' . $m->getEntityId() . '"') . "  </span>\n 
-                    <span class=\"col3\">&nbsp;</span>\n
-					 </div>";
+                $cell_with_both_members .= '<div ' . $alertclass . '><span class="col1"></span> <span class="col2">' . anchor($m_link, $m_displayname, 'title="' . $m->getDescription() . '"') . '  </span><span class="col3">&nbsp;</span></div>';
             }
         }
-        $cell_with_idp_members .= "<div class=\"lastLine\"></div></div><div class=\"cleaner\"></div>\n";
-        $cell_with_sp_members .= "<div class=\"lastLine\"></div></div><div class=\"cleaner\"></div>\n";
-        $cell_with_both_members .= "<div class=\"lastLine\"></div></div><div class=\"cleaner\"></div>\n";
+        $cell_with_idp_members .= '<div class="lastLine"></div></div><div class="cleaner"></div>';
+        $cell_with_sp_members .= '<div class="lastLine"></div></div><div class="cleaner"></div>';
+        $cell_with_both_members .= '<div class="lastLine"></div></div><div class="cleaner"></div>';
 
         $result['IDP'] = $cell_with_idp_members;
         $result['SP'] = $cell_with_sp_members;
@@ -513,7 +498,7 @@ class Show_element {
         }
         $no_results = count($tracks);
 
-        $result = "<ul>";
+        $result = '<ul>';
         foreach ($tracks as $t)
         {
             $modArray = unserialize($t->getDetail());
@@ -532,11 +517,11 @@ class Show_element {
             $user = $t->getUser();
             if (empty($user))
             {
-                $user = "unknown";
+                $user = 'unknown';
             }
-            $result .= "<li><span class=\"accordionButton\"><b>" . $t->getCreated()->format('Y-m-d H:i:s') . "</b> changes made by <b>" . $user . "</b> from <b>" . $t->getIp() . "</b> ... details</span><span class=\"accordionContent\"><br />" . $y . "</span></li>";
+            $result .= '<li><span class="accordionButton"><b>' . $t->getCreated()->format('Y-m-d H:i:s') . '</b> changes made by <b>' . $user . '</b> from <b>' . $t->getIp() . '</b> ... details</span><span class="accordionContent"><br />' . $y . '</span></li>';
         }
-        $result .= "</ul>";
+        $result .= '</ul>';
         return $result;
     }
 

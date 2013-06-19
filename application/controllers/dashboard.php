@@ -42,6 +42,7 @@ class Dashboard extends MY_Controller {
     function index()
     {
         $loggedin = $this->j_auth->logged_in();
+        $baseurl = base_url();
         if (!$loggedin)
         {
             $data['content_view'] = 'staticpages_view' ;
@@ -98,21 +99,21 @@ class Dashboard extends MY_Controller {
                 {
                     foreach($board['idp'] as $key=>$value)
                     {
-                        $idps[$key] = '<a href="'.base_url().'providers/detail/show/'.$key.'">'.$value['name'].'</a><br /> <small>'.$value['entity'].'</small>';
+                        $idps[$key] = '<a href="'.$baseurl.'providers/detail/show/'.$key.'">'.$value['name'].'</a><br /> <small>'.$value['entity'].'</small>';
                     }
                 }
                 if(array_key_exists('sp',$board) && is_array($board['sp'])) 
                 {
                     foreach($board['sp'] as $key=>$value)
                     {
-                        $sps[$key] = '<a href="'.base_url().'providers/detail/show/'.$key.'">'.$value['name'].'</a><br /><small>'.$value['entity'].'</small>';
+                        $sps[$key] = '<a href="'.$baseurl.'providers/detail/show/'.$key.'">'.$value['name'].'</a><br /><small>'.$value['entity'].'</small>';
                     }
                 }
                 if(array_key_exists('fed',$board) && is_array($board['fed'])) 
                 {
                     foreach($board['fed'] as $key=>$value)
                     {
-                        $feds[$key] = '<a href="'.base_url().'federations/manage/show/'.$value['url'].'">'.$value['name'].'</a>';
+                        $feds[$key] = '<a href="'.$baseurl.'federations/manage/show/'.$value['url'].'">'.$value['name'].'</a>';
                     }
                 }
             }

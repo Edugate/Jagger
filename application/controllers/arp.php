@@ -72,7 +72,31 @@ class Arp extends MY_Controller {
             log_message('debug', 'IdP not found with id:.' . $idp_entityid);
             show_error("Identity Provider not found", 404);
         }
-        $data['out'] = $this->generateXml($idp);
+        $ch = $this->config->item('cacheprefix');
+        if(!empty($ch))
+        {
+           $keyprefix = $this->config->item('cacheprefix');
+        }
+        else
+        {
+           $keyprefix = '';
+        }
+        $this->load->driver('cache', array('adapter' => 'memcached','key_prefix'=>$keyprefix));
+        $cacheid = 'arp_'.$idp->getId();
+         
+        $arpcached = $this->cache->get($cacheid);
+        if(empty($arpcached))
+        {
+            $data['out'] = $this->generateXml($idp);
+            if(!empty($data['out']))
+            {
+                $this->cache->save($cacheid, $data['out'], 120); 
+            }
+        }
+        else
+        {
+            $data['out'] = $arpcached;
+        }
         if (!empty($data['out']))
         {
             $this->load->view('metadata_view', $data);

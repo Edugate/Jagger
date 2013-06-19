@@ -755,12 +755,12 @@ class Manage extends MY_Controller {
                         $mail_recipients = array();
                         $mail_sbj = "\"".$provider_name."\" has been removed from federation \"".$federation->getName()."\"";
                         $mail_body = "Hi,\r\nJust few moments ago Administator of federation \"" . $federation->getName() . "\"\r\n"; 
-                        $mail_body .= "just removed ".$provider_name ." (".$inv_member->getEntityId().") from hist federation\r\n";
+                        $mail_body .= "just removed ".$provider_name ." (".$inv_member->getEntityId().") from federation\r\n";
                         if(!empty($message))
                         {
                              $mail_body .= "\r\n\r\n======= additional message attached by administrator ===========\r\n";
                              $mail_body .= $message . "\r\n";
-                             $mail_body .= "=============================================================\r\n";
+                             $mail_body .= "================================================================\r\n";
                         }
                         $contacts = $inv_member->getContacts();
                         if (!empty($contacts))
