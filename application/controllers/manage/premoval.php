@@ -47,8 +47,13 @@ class Premoval extends MY_Controller {
         return $this->form_validation->run();
     }
 
-    public function providertoremove($id)
+    public function providertoremove($id=null)
     {
+        if(empty($id))
+        {
+            show_error('Not found',404);
+            return;
+        }   
         $data['showform'] = false;
         $data['error_message'] = null;
         $data['content_view'] = 'manage/removeprovider_view';
@@ -97,7 +102,7 @@ class Premoval extends MY_Controller {
                         if ($status)
                         {
                             $this->load->library('tracker');
-                            $this->remove_ProviderTrack($data['entityid']);
+                            $this->tracker->remove_ProviderTrack($data['entityid']);
                             $this->em->flush();
                             $recipients = array();
                             $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>'Administrator'));
