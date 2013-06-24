@@ -1,0 +1,224 @@
+/* Top level is idpSelectIdPSelector */
+#idpSelectIdPSelector
+{
+    width: auto;
+    margin: 5px;
+    text-align: left;
+    padding: 10px;
+    z-index: 10000;
+}
+
+/* Next down are the idpSelectPreferredIdPTile, idpSelectIdPEntryTile & idpSelectIdPListTile */
+
+/** 
+ * The preferred IdP tile (if present) has a specified height, so
+ * we can fit the preselected * IdPs in there
+ */
+#idpSelectPreferredIdPTile
+{
+    height:138px; /* Force the height so that the  selector box
+                   * goes below when there is only one preslect 
+                   */
+    z-index: 10000;
+
+}
+
+/***
+ *  The preselect buttons
+ */
+div.IdPSelectPreferredIdPButton
+{
+    z-index: 10000;
+    margin: 3px;
+    width: 120px;  /* Make absolute because 3 of these must fit inside 
+                      div.IdPSelect{width} with not much each side. */
+    float: left;
+}
+
+/*
+ *  Make the entire box look like a hyperlink
+ */
+div.IdPSelectPreferredIdPButton a
+{
+    z-index: 10000;
+    float: left;
+    width: 99%; /* Need a specified width otherwise we'll fit
+                   the contents which we don't want because
+                   they have auto margins */
+    margin-bottom: 40px;
+    
+}
+div.IdPSelectTextDiv{
+    height: 3.5ex; /* Add some height to separate the text from the boxes */
+    font-size: 15px;
+    z-index: 10000;
+    clear: both;
+}
+div#idpSelect select {
+
+    z-index: 10000;
+}
+div.IdPSelectPreferredIdPImg
+{
+/*  max-width: 95%; */
+    height: 69px; /* We need the absolute height to force all buttons to the same size */
+    margin: 2px;
+    z-index: 10000;
+}
+
+div.IdPSelectPreferredIdPButton img
+{
+    display: block;    /* Block display to allow auto centring */
+    max-width:  114px; /* Specify max to allow scaling, percent does work */
+    max-height: 64px;  /* Specify max to allow scaling, percent doesn't work */
+    margin-top: 3px ;
+    margin-bottom: 30px ;
+    border: solid 0px #000000;  /* Strip any embellishments the brower may give us */
+    margin-left: auto; /* Auto centring */
+    margin-right: auto;  /* Auto centring */
+    z-index: 10000;
+    
+
+}
+
+div.IdPSelectPreferredIdPButton div.IdPSelectTextDiv
+{
+    z-index: 10000;
+    text-align: center;
+    font-size: 12px;
+    font-weight: normal;
+    max-width: 95%;
+    height: 30px;       /* Specify max height to allow two lines.  The 
+                         * Javascript controlls the max length of the
+                         * strings 
+                         */
+   clear: both;
+}
+
+/*
+ * Force the size of the selectors and the buttons
+ */
+#idpSelectInput, #idpSelectSelector
+{
+    width: 80%;
+    z-index: 10000;
+}
+/*
+ * For some reason a <select> width includes the border and an
+ * <input> doesn't hence we have to force a margin onto the <select>
+ */
+#idpSelectSelector
+{
+    margin-left: 2px;
+    margin-right: 2px;
+    z-index: 10000;
+
+}
+#idpSelectSelectButton, #idpSelectListButton
+{
+    margin-left: 5px;
+    width: 16%;
+    z-index: 10000;
+}
+#idpSelectSelectButton
+{
+    padding-left: 2px;
+    passing-right: 2px;
+    z-index: 10000;
+background: -moz-linear-gradient(center top , #080808 5%, #1C121C 100%) repeat scroll 0 0 #080808;
+    border: 0 solid #F7F7F7;
+    border-radius: 1px 1px 1px 1px;
+    box-shadow: 0 1px 0 0 #614761 inset;
+    color: #EDEDED;
+    display: inline-block;
+    font-family: arial;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 6px 24px;
+    text-decoration: non
+}
+
+/*
+ * change underlining of HREFS
+ */
+#idpSelectIdPSelector a:link 
+{
+    text-decoration: none;
+    z-index: 10000;
+}
+
+#idpSelectIdPSelector a:visited 
+{
+    text-decoration: none;
+    z-index: 10000;
+}
+
+#idpSelectIdPSelector a:hover 
+{
+    text-decoration: underline;
+    z-index: 10000;
+}
+
+
+
+/* 
+ * Arrange to have the dropdown/list aref on the left and the 
+ * help button on the right 
+ */
+
+a.IdPSelectDropDownToggle
+{
+    display: inline-block;
+    width: 80%;
+    z-index: 10000;
+}
+
+a.IdPSelectHelpButton
+{
+    display: inline-block;
+    text-align: right;
+    width: 20%;
+    z-index: 10000;
+}
+
+/**
+ * Drop down (incremental search) stuff - see the associated javascript for reference
+ */
+
+div.IdPSelectDropDown {
+    -moz-box-sizing: border-box;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: small;
+    box-sizing: border-box;
+    border: 1px solid black;
+    z-index: 10000;
+    position: absolute;   
+    width: 300px;
+    width: auto;
+}
+div.IdPSelectDropDown > div {
+
+    z-index: 20000;
+    background-color: green;
+    min-width: 200px;
+    width: auto;
+}
+
+div.IdPSelectDropDown div {
+    background-color: white;
+    cursor: default;
+    padding: 0px 3px;
+    z-index: 10000;
+}
+
+ div.IdPSelectDropDown div.IdPSelectCurrent {
+    background-color: #3366cc;
+    color: red;
+    z-index: 10000;
+}
+/* END */
+select {
+    z-index: 10000;
+
+
+}

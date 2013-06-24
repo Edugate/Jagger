@@ -15,8 +15,12 @@ img2.src = baseurl + 'images/ajax-loader.gif';
 
 // Launch MODAL BOX if the Login Link is clicked
 $("#login_link").click(function(){
-$('#login_form').modal();
+   $('#login_form').modal();
 });
+if ($("#eds2").is('*')) {
+   $("#idpSelect").modal();
+}
+
 
 // When the form is submitted
 $("#status form").submit(function(){  

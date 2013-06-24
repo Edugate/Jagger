@@ -1,9 +1,9 @@
 /*
- * SimpleModal @VERSION - jQuery Plugin
+ * SimpleModal 1.4.4 - jQuery Plugin
  * http://simplemodal.com/
  * Copyright (c) 2013 Eric Martin
  * Licensed under MIT and GPL
- * Date:
+ * Date: Sun, Jan 20 2013 15:58:56 -0800
  */
 
 /**
@@ -58,7 +58,7 @@
  * @requires jQuery v1.3
  * @cat Plugins/Windows and Overlays
  * @author Eric Martin (http://ericmmartin.com)
- * @version @VERSION
+ * @version 1.4.4
  */
 
 ;(function (factory) {

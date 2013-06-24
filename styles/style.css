@@ -378,7 +378,7 @@ nav {
   margin-bottom: 15px;
 }
 
-#container {
+#container, #idpSelectIdPSelector {
   width: 90%;
   max-width: 1024px;
   margin: 10px auto;
