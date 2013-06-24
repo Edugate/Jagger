@@ -120,7 +120,7 @@ class Sp_registration extends MY_Controller {
         if (!empty($sign_cert_body)) {
             $crt_sign = new models\Certificate;
             $crt_sign->setCertUse('signing');
-            $crt_sign->setAsSSO();
+            $crt_sign->setAsSPSSO();
             $crt_sign->setCertType('x509');
             $crt_sign->setCertData($sign_cert_body);
             $crt_sign->setAsDefault();
