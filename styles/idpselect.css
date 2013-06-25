@@ -125,7 +125,11 @@ div.IdPSelectPreferredIdPButton div.IdPSelectTextDiv
     padding-left: 2px;
     passing-right: 2px;
     z-index: 10000;
+    background-color:  black;
 background: -moz-linear-gradient(center top , #080808 5%, #1C121C 100%) repeat scroll 0 0 #080808;
+background: -moz-linear-gradient(center top , #080808 5%, #1C121C 100%) repeat scroll 0 0 #080808;
+background: -webkit-gradient(linear, center top, center bottom, from(#080808), to(#080808));
+background-repeat: repeat-x;
     border: 0 solid #F7F7F7;
     border-radius: 1px 1px 1px 1px;
     box-shadow: 0 1px 0 0 #614761 inset;
