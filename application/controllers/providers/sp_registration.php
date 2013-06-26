@@ -34,7 +34,7 @@ class Sp_registration extends MY_Controller {
 
     function index() {
         log_message('debug',  'SP registration form opened');
-        $this->title = "Service Provider Registration";
+        $this->title = lang('title_spreg');
 
         /**
          * @todo add select homerorg orn partner optional 
@@ -44,18 +44,18 @@ class Sp_registration extends MY_Controller {
          */
         $fedCollection = $this->tmp_federations->getFederations();
         if (!empty($fedCollection)) {
-            $federations[''] = 'Select one ...';
+            $federations[''] = lang('selectone').'...';
             foreach ($fedCollection as $f) {
                 if (!$f->getActive()) {
-                    $federations[$f->getId()] = $f->getName() . ' (inactive)';
+                    $federations[$f->getId()] = $f->getName() . ' ('.lang('rr_fed_inactive').')';
                 } else {
                     $federations[$f->getId()] = $f->getName();
                 }
             }
-            $federations['none'] = "None at the moment";
+            $federations['none'] = lang('noneatthemoment');
         } else {
-            $federations[''] = 'not found';
-            $federations['none'] = "None at the moment";
+            $federations[''] = lang('notfound');
+            $federations['none'] = lang('noneatthemoment');
         }
         $data['federations'] = $federations;
         $data['acs_dropdown'][''] = 'Select one...';

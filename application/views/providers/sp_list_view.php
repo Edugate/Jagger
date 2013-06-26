@@ -38,26 +38,26 @@ if($typesps === 'local')
 {
 
 ?>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" >all providers</button>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" >external/imported</button>
-<button type="button" class="btn tchosen" disabled="disabled">locally managed</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" ><?php echo lang('allprov');?></button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" ><?php echo lang('extprov');?></button>
+<button type="button" class="btn tchosen" disabled="disabled"><?php echo lang('localprov');?></button>
 <?php
 }
 elseif($typesps === 'external')
 {
 ?>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" >all providers</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" ><?php echo lang('allprov');?></button>
 <button type="button" class="btn tchosen" disabled="disabled">external/imported</button>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" >locally managed</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" ><?php echo lang('localprov');?></button>
 
 <?php
 }
 elseif($typesps === 'all')
 {
 ?>
-<button type="button" class="btn tchosen" disabled="disabled">all providers</button>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" >external/imported</button>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" >locally managed</button>
+<button type="button" class="btn tchosen" disabled="disabled"><?php echo lang('allprov');?></button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" ><?php echo lang('extprov');?></button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" ><?php echo lang('localprov');?></button>
 
 <?php
 }
@@ -70,7 +70,6 @@ $tmpl = array('table_open' => '<table  id="details" class="zebra splist">');
 
 $this->table->set_template($tmpl);
 $this->table->set_heading(lang('tbl_title_nameandentityid'),'#',lang('tbl_title_regdate'), lang('tbl_title_helpurl'));
-#$this->table->set_caption(lang('rr_tbltitle_listsps').' ('.lang('rr_found').' '.$sps_count.')');
 echo $this->table->generate($sprows);
 $this->table->clear();
 ?>

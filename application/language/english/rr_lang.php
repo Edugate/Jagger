@@ -1,5 +1,6 @@
 <?php
 
+$lang['title_spreg'] = 'Service Provider Registration';
 $lang['title_idplist'] = 'Identity Providers List';
 $lang['title_splist'] = 'Service Providers List';
 $lang['title_fedlist'] = 'Federations List';
@@ -7,6 +8,7 @@ $lang['title_idpedit'] = 'IDP edit form';
 $lang['title_provideredit'] = 'Provider edit form';
 $lang['title_spedit'] = 'SP edit form';
 $lang['title_login'] = 'Login';
+$lang['titleimportmeta'] = 'Import Metadata';
 $lang['title_fededit'] = 'Federation edit';
 $lang['title_addcoc'] = 'New Data protection Code of Conduct - Form';
 $lang['title_editcoc'] = 'Data protection Code of Conduct - Edit Form';
@@ -23,6 +25,8 @@ $lang['rr_remove'] = 'Remove';
 $lang['rr_modify'] = 'Modify';
 $lang['rr_cancel'] = 'Cancel';
 
+$lang['notfound'] = 'not found';
+$lang['selectone'] = 'Select one';
 $lang['tabGeneral'] = 'General';
 $lang['tabMembership'] = 'Membership';
 $lang['tabTechnical'] = 'Technical';
@@ -61,6 +65,7 @@ $lang['home'] = 'Home';
 $lang['federations'] = 'Federations';
 $lang['rr_federations'] = 'Federations';
 $lang['register'] = 'Register';
+
 $lang['rr_regform'] = 'Registration form';
 $lang['allentities'] = 'All entities';
 $lang['serviceproviders'] = 'Service Providers';
@@ -82,11 +87,15 @@ $lang['lbl_external'] = 'External';
 $lang['lbl_static'] = 'Static metadata';
 $lang['lbl_enabled'] = 'Enabled';
 $lang['lbl_disabled'] = 'Disabled';
-
+$lang['provinmeta'] = 'Provider will be included in Metadata';
+$lang['provexclmeta'] = 'Provider is excluded from Metadata';
+$lang['provmanlocal'] = 'Provider is managed localy';
+$lang['provexternal'] = 'Provider is imported from external resource and is not managed localy';
 $lang['federated_access'] = 'Federated Access';
 $lang['rr_detvisibletoothers'] = 'Details visible to other users';
 $lang['rr_fedlocalmanaged']= 'Federation localy managed';
-
+$lang['joinfederation'] = 'Join federation';
+$lang['acceptprovtofed'] = 'Accept provider as member of this federation';
 $lang['rr_fededitform'] = 'Federation edit form';
 $lang['coc_list_title'] = 'Data protection Code of Conduct - List'; 
 $lang['rr_addcoc_btn'] = 'Add new Coc';
@@ -112,9 +121,11 @@ $lang['rr_queue'] = 'Queue';
 $lang['rr_attr_defs'] ='Attribute definitions';
 $lang['rr_attr_name'] = 'Attribute name';
 $lang['rr_meta_importer'] = 'Metadata importer';
+$lang['metavalidation'] = 'Metadata validation (optional)';
 $lang['rr_details'] = 'details';
-$lang['rr_noawaitingforapproval'] = 'Nothing is wating for approval';
-$lang['rr_requestawaiting'] ='Request waiting for approval';
+$lang['rr_noawaitingforapproval'] = 'Nothing is awating for approval';
+$lang['rr_requestawaiting'] ='Request awaiting for approval';
+$lang['rr_listawaiting'] = 'Awating list for approval';
 $lang['rr_pleaseselect'] = 'Please select';
 $lang['rr_nofedfound'] = 'no federation found';
 $lang['rr_supported'] = 'supported';
@@ -128,6 +139,10 @@ $lang['rr_ds_white'] = 'White list';
 $lang['rr_ds_black'] = 'Excluded from list';
 $lang['rr_ds_disco_url'] = 'DiscoJuice format'; 
 
+$lang['adminoffed'] = 'Admin of federation';
+$lang['adminofprov'] = 'Admin of provider';
+$lang['askedyourfed'] = 'asked your federation';
+$lang['invyourprov'] = 'invited your Provider';
 $lang['rr_resource'] = "Resource Name";
 $lang['rr_entityid'] = 'EntityID';
 $lang['rr_federation'] = 'Federation';
@@ -137,6 +152,10 @@ $lang['rr_fedinfo_updated'] = 'Basic information for federation %s has been upda
 $lang['rr_homeorganisation']= 'Home Organization' ;
 $lang['rr_technicalinformation'] = 'Technical Information';
 $lang['rr_logos'] = 'Logos';
+
+$lang['newentenabled'] = 'New entities enabled by default';
+$lang['populateallinf'] = 'Populate all information';
+$lang['staticenabledbydefault'] = 'Should static metadata be enabled by default';
 
 $lang['certsign'] = 'signing';
 $lang['certenc'] = 'encryption';
@@ -184,7 +203,7 @@ $lang['rr_homeurl'] = 'Home URL';
 $lang['rr_submitwait'] = 'Submit and wait for approval';
 
 
-
+$lang['rr_details'] = 'Details';
 $lang['rr_detailsfor'] = 'Details for ';
 $lang['rr_displayname'] = 'Display Name';
 $lang['rr_homeorganisationname'] ='HomeOrg Name';
@@ -230,6 +249,7 @@ $lang['rr_keepit'] = 'Keep it';
 $lang['rr_yesremoveit'] = 'Yes, remove it';
 $lang['rr_servicelocations'] = 'Service Locations'; 
 $lang['rr_contacts'] = 'Contacts';
+$lang['rr_contact'] = 'Contact';
 $lang['rr_contacttype'] = 'Contact type';
 $lang['rr_contactdetails'] = 'Contact details';
 $lang['rr_contactfirstname'] = 'Contact first name';
@@ -262,6 +282,11 @@ $lang['rr_addnewacs'] = 'Add new ACS';
 
 $lang['rr_reset'] = 'Reset';
 $lang['rr_save'] = 'Save';
+$lang['request'] = 'Request';
+$lang['reqregnewfed'] = 'Register new federation';
+$lang['type'] = 'Type';
+$lang['requestor'] = 'Requestor';
+$lang['unknown'] = 'unknown';
 $lang['rr_submitapprove'] = 'Accept request';
 $lang['rr_submitreject'] = 'Reject request';
 
@@ -391,7 +416,7 @@ $lang['rr_fedmembersadded'] = 'New members have been added to federation';
 $lang['rr_nomemtype_selected'] = 'no %s were selected';
 $lang['rr_provideralready_member_of'] = 'Provider already member of %s';
 
-
+$lang['noneatthemoment'] = 'None at the moment';
 
 $lang['rr_supportedprotocolsnotset'] = 'Supported protocols are not set';
 $lang['rr_servicelocations'] = 'Service Locations';
@@ -486,6 +511,30 @@ $lang['rr_entstate_updated'] = 'Entity status has been updated';
 $lang['rr_asboth'] = 'Identity/Service Provider';
 $lang['rr_msgasboth'] = 'Provider recognized as both IDP and SP';
 
+$lang['allprov'] = 'all providers';
+$lang['extprov'] = 'external/imported';
+$lang['localprov'] = 'locally managed';
+
+$lang['rr_read'] = 'Read';
+$lang['rr_write'] = 'Write';
+$lang['rr_mngmtperm'] = 'Manage permisions';
+
+
+$lang['metalocation'] = 'Metadata location URL';
+$lang['metatypeent'] = 'Type of entities';
+$lang['rr_options'] = 'Options';
+$lang['importasintext'] = 'Import entities as external or internal';
+$lang['internal'] = 'Local entities';
+$lang['external'] = 'External entities';
+$lang['tooverwritelocal'] = 'Overwrite locally managed entities?';
+
+$lang['metavalidatewithcert'] ='Validate metadata with certificate';
+$lang['urlofcertsigner'] = 'URL  of metadata signing certificate';
+$lang['certsigner'] = 'Metadata signing certificate in X509 format';
+
+$lang['overwritecerturl'] = 'overwrites URL of cert';
+
+$lang['okmetaimported'] = 'Metadata looks to be imported';
 $lang['noticematrix1'] = 'Identity Providers who excluded your Service from their policy won\'t appear in the matrix. They might have set policy on their local storage';
 $lang['rrerror_noperm_regfed'] = 'You don\'t have permision to register new Federation';
 $lang['rrerror_noperm_viewfed'] = 'You have no access to display details for this federation';
@@ -510,5 +559,9 @@ $lang['rerror_qid_noexist'] = 'Specified Queue Id doesn\'t exist';
 $lang['rerror_noperm_approve'] = 'You have no permission to approve it';
 $lang['rerror_noperm_reject'] = 'You have no permission to reject this request';
 $lang['rerror_nothinginqueue'] = 'Nothing is wating for approval';
-
+$lang['error_metaemptyfile'] = 'Metadata location has given empty file';
+$lang['error_invalidmeta'] = 'Metadata is not valid against schema';
+$lang['notworkingyet' ] = 'not working yet!';
+$lang['error404'] = 'Page not found';
+$lang['error404'] = 'Access denied';
 

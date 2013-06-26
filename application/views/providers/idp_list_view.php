@@ -31,17 +31,17 @@ if($typeidps === 'local')
 {
 
 ?>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" >all providers</button>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" >external/imported</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" ><?php echo lang('allprov');?></button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" ><?php echo lang('extprov');?></button>
 <button type="button" class="btn tchosen" disabled="disabled">locally managed</button>
 <?php
 }
 elseif($typeidps === 'external')
 {
 ?>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" >all providers</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" ><?php echo lang('allprov');?></button>
 <button type="button" class="btn tchosen" disabled="disabled">external/imported</button>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" >locally managed</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" ><?php echo lang('localprov');?></button>
 
 <?php
 }
@@ -49,8 +49,8 @@ elseif($typeidps === 'all')
 {
 ?>
 <button type="button" class="btn tchosen" disabled="disabled">all providers</button>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" >external/imported</button>
-<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" >locally managed</button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" ><?php echo lang('extprov');?></button>
+<button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" ><?php echo lang('localprov');?></button>
 
 <?php
 }

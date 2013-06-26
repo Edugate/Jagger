@@ -12,7 +12,7 @@ if(!empty($row))
         {
             $r = showHelp($readlegend);
         } 
-        $this->table->set_heading('Username','Read'.$r,'Write','Manage permissions');
+        $this->table->set_heading(''.lang('rr_username').'',''.lang('rr_read').$r.'',''.lang('rr_write').'',''.lang('rr_mngmtperm').'');
         echo  $this->table->generate($row);
         $this->table->clear();
 

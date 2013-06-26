@@ -1156,3 +1156,17 @@ button.loginbtn:active {
 	position:relative;
 	top:1px;
 }
+.inqueue {
+margin: 2px;
+position: relative;
+top:-5px; 
+
+padding:1px 2px 1px 2px;
+background-color:red;
+color:white;
+border-radius:3px;
+box-shadow:1px 1px 1px gray;
+border: 1px solid white;
+font-weight: bolder;
+
+}

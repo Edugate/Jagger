@@ -35,13 +35,16 @@ class Importer extends MY_Controller {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
-        $this->load->helper(array('cert', 'form'));
-        $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element'));
-        $this->tmp_providers = new models\Providers;
-        $this->tmp_attributes = new models\Attributes;
-        $this->tmp_arps = new models\AttributeReleasePolicies;
-        $this->load->library('zacl');
-        $this->access = $this->zacl->check_acl('importer', 'create', '', '');
+        else
+        {
+           $this->load->helper(array('cert', 'form'));
+           $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element'));
+           $this->tmp_providers = new models\Providers;
+           $this->tmp_attributes = new models\Attributes;
+           $this->tmp_arps = new models\AttributeReleasePolicies;
+           $this->load->library('zacl');
+           $this->access = $this->zacl->check_acl('importer', 'create', '', '');
+        }
     }
 
     /**
@@ -106,7 +109,7 @@ class Importer extends MY_Controller {
         $metadata_body = $this->curl->simple_get($arg['metadataurl']);
 
         if (empty($metadata_body)) {
-            $this->other_error = "Metadata location has given empty file";
+            $this->other_error = lang('error_metaemptyfile');
             return $this->index();
         }
 
@@ -119,7 +122,7 @@ class Importer extends MY_Controller {
 
         $is_valid_metadata = $this->metadata_validator->validateWithSchema($metadata_body);
         if (empty($is_valid_metadata)) {
-            $this->other_error = "Metadata is not valid against schema";
+            $this->other_error = lang('error_invalidmeta');
             return $this->index();
         }
         if ($arg['extorint'] == 'int') {
@@ -168,8 +171,8 @@ class Importer extends MY_Controller {
         $result = $this->metadata2import->import($metadata_body, $type_of_entities, $full, $defaults, $other);
         if ($result) 
         {
-            $data['title'] = "Import metadata";
-            $data['success_message'] = "Metadata looks to be imported";
+            $data['title'] = lang('titleimportmeta');
+            $data['success_message'] = lang('okmetaimported');
             $data['content_view'] = "manage/import_metadata_success_view";
             $this->load->view('page', $data);
         }

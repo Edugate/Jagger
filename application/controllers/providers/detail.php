@@ -56,14 +56,14 @@ class Detail extends MY_Controller {
     {
         if (empty($id) or !is_numeric($id))
         {
-            show_error('Page not found', 404);
+            show_error(lang('error404'), 404);
             return;
         }
         $tmp_providers = new models\Providers();
         $ent = $tmp_providers->getOneById($id);
         if (empty($ent))
         {
-            show_error('Entity not found', 404);
+            show_error(lang('error404'), 404);
             return;
         }
         $is_static = $ent->getStatic();
@@ -120,7 +120,7 @@ class Detail extends MY_Controller {
         }
         if (!$is_validtime)
         {
-            $entstatus .= ' '. makeLabel('alert',lang('rr_validfromto_notmatched1') , 'metadata '.lang('rr_expired'));
+            $entstatus .= ' '. makeLabel('alert',lang('rr_validfromto_notmatched1') , strtolower(lang('metadata')).' '.lang('rr_expired'));
         }
         if ($locked)
         {
@@ -206,7 +206,7 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
         $d[++$i]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation');
-        $d[++$i]['name'] = lang('rr_status').' ' . showBubbleHelp('<ul><li><b>'.lang('lbl_enabled').'</b>: Provider will be included in Metadata</li><li><b>'.lang('lbl_disabled').'</b>: Provider is excluded from Metadata </li><li><b>managed localy</b>: Provider is managed localy</li><li><b>external</b>: Provider is imported from external resource and is not managed localy</li></ul>') . '';
+        $d[++$i]['name'] = lang('rr_status').' ' . showBubbleHelp('<ul><li><b>'.lang('lbl_enabled').'</b>:'.lang('provinmeta').'</li><li><b>'.lang('lbl_disabled').'</b>:'.lang('provexclmeta').' </li><li><b>'.lang('rr_managedlocally').'</b>: '.lang('provmanlocal').'</li><li><b>'.lang('rr_external').'</b>: '.lang('provexternal').'</li></ul>') . '';
 
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
@@ -1222,14 +1222,14 @@ class Detail extends MY_Controller {
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if (empty($ent))
         {
-            show_error('Provider not found', 404);
+            show_error(lang('error404'), 404);
         }
         else
         {
             $has_read_access = $this->zacl->check_acl($providerid, 'read', 'entity', '');
             if (!$has_read_access)
             {
-                show_error('Access denied', 403);
+                show_error(lang('error403'), 403);
             }
 
             $tmp_providers = new models\Providers;

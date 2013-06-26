@@ -24,7 +24,7 @@ if (!empty($list))
     $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
     $this->table->set_template($tmpl);
     $this->table->set_heading(lang('rr_tbltitle_date'), lang('rr_tbltitle_requester'), lang('rr_tbltitle_requesttype'), lang('rr_tbltitle_primcontact'), lang('rr_tbltitle_name'), lang('rr_tbltitle_confirmed'), '');
-    $this->table->set_caption('Awating list for approval');
+    $this->table->set_caption(lang('rr_listawaiting'));
     foreach ($list as $q)
     {
         if ($q['confirmed'])
