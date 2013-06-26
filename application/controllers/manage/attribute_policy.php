@@ -31,7 +31,7 @@ class Attribute_policy extends MY_Controller {
         $this->current_site = current_url();
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
 
         $this->current_idp = $this->session->userdata('current_idp');
@@ -281,7 +281,7 @@ class Attribute_policy extends MY_Controller {
         if (!is_numeric($idp_id)) {
             if (empty($this->current_idp)) {
                 $this->session->set_flashdata('target', $this->current_site);
-                redirect('manage/settings/idp', 'refresh');
+                redirect('manage/settings/idp', 'location');
             }
             $search_idp = $this->current_idp;
         } else {
@@ -386,7 +386,7 @@ class Attribute_policy extends MY_Controller {
         }
 
         if (($this->input->post('fedid')) && empty($fed_id)) {
-            redirect(base_url('manage/attribute_policy/show_feds/' . $idp_id . '/' . $this->input->post('fedid')), 'refresh');
+            redirect(base_url('manage/attribute_policy/show_feds/' . $idp_id . '/' . $this->input->post('fedid')), 'location');
         } elseif (empty($fed_id)) {
             $data = array();
 
@@ -908,7 +908,7 @@ class Attribute_policy extends MY_Controller {
             if ($this->form_validation->run() === FALSE) {
                 show_error( 'Empty value is not allowed', 404);
             } else {
-                redirect(base_url('manage/attribute_policy/multi/' . $idp_id . '/sp/' . $sp_id), 'refresh');
+                redirect(base_url('manage/attribute_policy/multi/' . $idp_id . '/sp/' . $sp_id), 'location');
             }
         }
     }

@@ -26,7 +26,7 @@ class Geolocation extends MY_Controller {
         $this->current_site = current_url();
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->load->library('form_element');
         $this->load->library('form_validation');

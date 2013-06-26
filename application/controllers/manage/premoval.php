@@ -34,7 +34,7 @@ class Premoval extends MY_Controller {
         if (!$loggedin)
         {
             $this->session->set_flashdata('target', base_url());
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
         $this->load->library('form_validation');

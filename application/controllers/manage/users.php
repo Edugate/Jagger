@@ -26,7 +26,7 @@ class Users extends MY_Controller {
         $this->current_site = current_url();
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->load->helper(array('cert', 'form'));
         $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'table', 'zacl'));

@@ -29,7 +29,7 @@ class Attributes extends MY_Controller
         if (!$loggedin)
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->session->set_userdata(array('currentMenu' => 'general'));
         $this->current_idp = $this->session->userdata('current_idp');

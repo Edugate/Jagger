@@ -29,7 +29,7 @@ class Leavefed extends MY_Controller {
         if (!$loggedin) 
         {
            $this->session->set_flashdata('target', $this->current_site);
-           redirect('auth/login', 'refresh');
+           redirect('auth/login', 'location');
         }
         else
         {

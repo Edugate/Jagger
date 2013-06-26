@@ -32,7 +32,7 @@ class Custom_policies extends MY_Controller {
         if (!$loggedin)
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
 
         $this->current_idp = $this->session->userdata('current_idp');

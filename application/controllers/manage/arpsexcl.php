@@ -28,7 +28,7 @@ class Arpsexcl extends MY_Controller {
         if (!$loggedin)
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->tmp_providers = new models\Providers;
         $this->load->library('form_element');

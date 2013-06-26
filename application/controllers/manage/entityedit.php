@@ -34,7 +34,7 @@ class Entityedit extends MY_Controller {
         if (!$loggedin)
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->load->library(array('form_element', 'form_validation', 'zacl'));
         $this->tmp_providers = new models\Providers;
@@ -508,7 +508,7 @@ class Entityedit extends MY_Controller {
         if ($this->input->post('discard'))
         {
             $this->_discard_draft($id);
-            redirect(base_url() . 'manage/entityedit/show/' . $id, 'refresh');
+            redirect(base_url() . 'manage/entityedit/show/' . $id, 'location');
         }
         elseif ($this->_submit_validate($id) === TRUE)
         {

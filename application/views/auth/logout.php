@@ -1,12 +1,23 @@
 <?php 
 $redirect_to = base_url();
-header("Refresh: 1;url=".$redirect_to."");
 $shibcnf = $this->config->item('Shibboleth');
 ?>
 <html>
 <head>
+<script type="text/javascript">
+function Redirect()
+{
+    window.location.href="<?php echo $redirect_to;?>";
+}
+setTimeout('Redirect()', 1000);
+</script>
+
+
 </head>
 <body>
+<noscript>
+JavaScript is not enabled in your browser.
+</noscript>
 <?php
    if(isset($shibcnf['enabled']) && $shibcnf['enabled'] === TRUE && isset($shibcnf['logout_uri']))
    {

@@ -30,7 +30,7 @@ class Logos extends MY_Controller {
         if (!$loggedin)
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->tmp_providers = new models\Providers;
         $this->load->library('form_validation');
@@ -264,7 +264,7 @@ class Logos extends MY_Controller {
             $raction = $this->input->post('remove');
             if (!empty($action) && $action == 'Add new image')
             {
-                redirect(base_url() . 'manage/logos/newlogo/' . $type . '/' . $id, 'refresh');
+                redirect(base_url() . 'manage/logos/newlogo/' . $type . '/' . $id, 'location');
             }
             elseif (!empty($raction) && $raction == 'Remove selected')
             {

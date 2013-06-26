@@ -34,7 +34,7 @@ class Auth extends MY_Controller {
         }
         else
         {
-            redirect($this->config->item('base_url'), 'refresh');
+            redirect($this->config->item('base_url'), 'location');
         }
     }
 
@@ -43,7 +43,6 @@ class Auth extends MY_Controller {
         if ($this->j_auth->logged_in())
         {
             $this->j_auth->logout();
-            //redirect($this->config->item('base_url'), 'refresh');
         }
         $this->load->view('auth/logout');
     }
@@ -71,7 +70,7 @@ class Auth extends MY_Controller {
         if ($this->j_auth->logged_in())
         {
             //already logged in so no need to access this page
-            redirect($this->config->item('base_url'), 'refresh');
+            redirect($this->config->item('base_url'), 'location');
         }
 
         //validate form input
@@ -86,18 +85,18 @@ class Auth extends MY_Controller {
                 $this->session->set_flashdata('message', $this->j_auth->messages());
                 if (!empty($cu))
                 {
-                    redirect($cu, 'refresh');
+                    redirect($cu, 'location');
                 }
                 else
                 {
-                    redirect($this->config->item('base_url'), 'refresh');
+                    redirect($this->config->item('base_url'), 'location');
                 }
             }
             else
             {
                 $this->session->set_flashdata('message', $this->j_auth->errors());
 
-                redirect('auth/login', 'refresh'); //use redirects instead of loading views for compatibility with MY_Controller libraries
+                redirect('auth/login', 'location'); //use redirects instead of loading views for compatibility with MY_Controller libraries
             }
         }
         else
@@ -290,7 +289,7 @@ class Auth extends MY_Controller {
         $track_details = 'authenticated from ' . $ip . ' using federated access';
         $this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
         $this->em->flush();
-        redirect(base_url(), 'refresh');
+        redirect(base_url(), 'location');
     }
 
 }

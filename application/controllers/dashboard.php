@@ -25,18 +25,6 @@ class Dashboard extends MY_Controller {
         parent::__construct();
         $this->load->library('j_auth');
         $this->load->helper('url');
-      //  $loggedin = $this->j_auth->logged_in();
-
-      //  if ($loggedin)
-     //   {
-            
-      //      $this->load->library('zacl');
-      //      return;
-     //   }
-     //   else
-     //   {
-      //      redirect('auth/login', 'refresh');
-      //  }
     }
 
     function index()

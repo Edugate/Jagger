@@ -33,7 +33,7 @@ class Manage extends MY_Controller {
         if (!$loggedin)
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->load->helper(array('cert'));
         $this->session->set_userdata(array('currentMenu' => 'federation'));

@@ -23,6 +23,7 @@ class Authenticate extends MY_Controller {
     function __construct()
     {
         parent::__construct();
+        log_message('debug','DoLogin');
         $this->load->library('form_validation');
     }
 
@@ -37,6 +38,7 @@ class Authenticate extends MY_Controller {
     
     public function dologin()
     {
+        log_message('debug','DoLogin');
         $auth_error = '';
         if($this->input->is_ajax_request())
         {

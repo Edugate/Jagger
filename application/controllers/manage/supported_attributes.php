@@ -27,7 +27,7 @@ class Supported_attributes extends MY_Controller {
         $this->current_site = current_url();
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->current_idp = $this->session->userdata('current_idp');
         $this->current_idp_name = $this->session->userdata('current_idp_name');

@@ -57,7 +57,7 @@ class Idp_matrix extends MY_Controller {
         else
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         if (empty($idpid) OR !is_numeric($idpid))
         {

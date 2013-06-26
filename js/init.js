@@ -96,6 +96,7 @@ function go_to_private_page()
 //var urltoredirect  = baseurl+ 'dashboard';
 //var url2toredicter = urltoredirect.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
 //alert(url2toredicter);
-window.location = '';
+//window.location = '';
+window.location.reload() ;
 //window.location = 'dashboard'; // Members Area
 }

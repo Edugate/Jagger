@@ -32,7 +32,7 @@ class Attribute_requirement extends MY_Controller {
         $this->current_site = current_url();
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
 
         $this->current_sp = $this->session->userdata('current_sp');
@@ -52,7 +52,7 @@ class Attribute_requirement extends MY_Controller {
         if (empty($fedid) or !is_numeric($fedid)) {
             if (empty($this->current_fed)) {
                 $this->session->set_flashdata('target', $this->current_site);
-                redirect('manage/settings/fed', 'refresh');
+                redirect('manage/settings/fed', 'location');
             }
             $fedid = $this->current_fed;
         }
@@ -134,7 +134,7 @@ class Attribute_requirement extends MY_Controller {
         if (empty($spid) or !is_numeric($spid)) {
             if (empty($this->current_sp)) {
                 $this->session->set_flashdata('target', $this->current_site);
-                redirect('manage/settings/sp', 'refresh');
+                redirect('manage/settings/sp', 'location');
             }
             $spid = $this->current_sp;
         }

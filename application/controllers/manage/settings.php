@@ -34,7 +34,7 @@ class Settings extends MY_Controller
         if (!$loggedin)
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
 
         $this->load->helper('form');
@@ -64,7 +64,7 @@ class Settings extends MY_Controller
             $this->session->set_userdata($s_a);
             if (!empty($sent_target))
             {
-                redirect($sent_target, 'refresh');
+                redirect($sent_target, 'location');
             } else
             {
                 $data['message'] = "Service Provider has been set";
@@ -131,7 +131,7 @@ class Settings extends MY_Controller
             $this->session->set_userdata($s_a);
             if (!empty($sent_target))
             {
-                redirect($sent_target, 'refresh');
+                redirect($sent_target, 'location');
             } else
             {
                 $data['message'] = "Identity Provider has been set";

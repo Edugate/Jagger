@@ -45,7 +45,7 @@ class Awaiting extends MY_Controller {
         else
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
     }
 
@@ -712,7 +712,7 @@ class Awaiting extends MY_Controller {
         log_message('debug', $message);
         $this->session->set_flashdata('message', $message);
         $this->session->set_flashdata('error_message', $error_message);
-        redirect(base_url() . "reports/awaiting", 'refresh');
+        redirect(base_url() . "reports/awaiting", 'location');
     }
 
     function reject()

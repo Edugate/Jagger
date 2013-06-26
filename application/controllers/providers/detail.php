@@ -37,7 +37,7 @@ class Detail extends MY_Controller {
         if (!$loggedin)
         {
             $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'refresh');
+            redirect('auth/login', 'location');
         }
         $this->load->helper(array('url', 'cert', 'url_encoder'));
         $this->load->library(array('table', 'geshilib', 'zacl', 'show_element'));
