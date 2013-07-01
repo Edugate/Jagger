@@ -20,7 +20,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         ?>
         <meta content='rr' name='description'>
         <meta content='' name='author'>
-        <meta content='width=device-width, initial-scale=1.0' name='viewport'>
+        <meta content='width=device-width, initial-scale=1.0, user-scalable=0' name='viewport'>
         <link rel="apple-touch-icon" href="<?php echo $base_url; ?>images/touch-icon-iphone.png" />
         <link rel="apple-touch-icon" sizes="72x72" href="<?php echo $base_url; ?>images/touch-icon-ipad.png" />
         <link rel="apple-touch-icon" sizes="57x57" href="<?php echo $base_url; ?>images/apple-touch-icon-57x57-precomposed.png" />

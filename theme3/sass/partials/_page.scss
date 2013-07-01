@@ -955,6 +955,9 @@ span.alert
 
     button.btn {
         
+         box-sizing: content-box;
+         -moz-box-sizing: content-box;
+        cursor: pointer;
         -moz-box-shadow:inset 0px 1px 0px 0px #23395e;
         -webkit-box-shadow:inset 0px 1px 0px 0px #23395e;
         box-shadow:inset 0px 1px 0px 0px #23395e;
@@ -1062,7 +1065,7 @@ span.alert
 
 .column {
   float: left;
-  idisplay: block;
+  display: block;
 }
 .column.one {
   width: 50%;

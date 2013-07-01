@@ -1344,6 +1344,9 @@ span.alert {
 }
 
 #formtabs button.btn {
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  cursor: pointer;
   -moz-box-shadow: inset 0px 1px 0px 0px #23395e;
   -webkit-box-shadow: inset 0px 1px 0px 0px #23395e;
   box-shadow: inset 0px 1px 0px 0px #23395e;
@@ -1478,7 +1481,7 @@ span.alert {
 
 .column {
   float: left;
-  idisplay: block;
+  display: block;
 }
 
 .column.one {
@@ -1720,6 +1723,11 @@ form div.buttons span.remove:before {
   content: url(../images/buttons/cross.png);
   margin-right: 7px;
 }
+form div.buttons button {
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  cursor: pointer;
+}
 form div.buttons button.btn {
   margin: 10px 10px 0px;
 }
@@ -1777,6 +1785,9 @@ form#login div.buttons, form#federated div.buttons {
 }
 form#login div.buttons button.btn, form#federated div.buttons button.btn {
   margin: 10px 10px 0px;
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  cursor: pointer;
 }
 
 form#login_link {
@@ -2256,9 +2267,46 @@ form.cookieconsent {
   }
 }
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
-@media only screen and (max-width: 479px) {
-  body {
-    #  background-color: white;
+@media only screen and (max-width: 480px) {
+  #simplemodal-container {
+    height: auto;
+    max-height: 90%;
+    min-width: 350px;
+    width: 350px;
+    max-width: 350px;
+  }
+
+  #simplemodal-container, #loginform2 {
+    padding: 2px;
+  }
+  #simplemodal-container .column.one, #loginform2 .column.one {
+    display: block;
+    width: 350px;
+    min-width: 250px;
+    clear: both;
+    max-width: 350px;
+    float: none;
+    border: 0px;
+    border-bottom: 1px grey dotted;
+    padding: 0px;
+  }
+  #simplemodal-container .column.one form, #loginform2 .column.one form {
+    padding: 1px;
+    margin: 0px;
+  }
+  #simplemodal-container .column.one form input, #loginform2 .column.one form input {
+    width: 90%;
+    max-width: 340px;
+  }
+  #simplemodal-container .column.two, #loginform2 .column.two {
+    display: block;
+    width: 350px;
+    min-width: 250px;
+    clear: both;
+    max-width: 350px;
+    float: none;
+    border: 0px;
+    padding: 0px;
   }
 }
 @media print {

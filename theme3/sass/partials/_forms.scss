@@ -150,6 +150,13 @@ form {
             content:url(../images/buttons/cross.png);
             margin-right: 7px;
         }
+        button {
+             box-sizing: content-box;
+             -moz-box-sizing: content-box;
+            cursor: pointer;
+
+
+         }
         
         button.btn {
             margin: 10px 10px 0px;
@@ -214,6 +221,9 @@ form#login, form#federated {
         margin: auto;
         button.btn {
             margin: 10px 10px 0px;
+             box-sizing: content-box;
+            -moz-box-sizing: content-box;
+            cursor: pointer;
         }
     }
     
