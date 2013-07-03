@@ -225,7 +225,7 @@ class Auth extends MY_Controller {
             if (!$can_autoregister)
             {
                 log_message('error','User authorization failed: '.$user_var.' doesnt exist in RR');
-                show_error('An account for ' . $user_var . ' doesn\'t exist in the Resource Registry. You can request access <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">here</a>', 403);
+                show_error(' ' . htmlentities($user_var) . ' - '.lang('error_usernotexist').' '.lang('applyforaccount').' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">'.lang('rrhere').'</a>', 403);
             }
             else
             {
@@ -233,14 +233,14 @@ class Auth extends MY_Controller {
                if(empty($email_var))
                {
                    log_message('error','User cannot be autocreated: email address is missing');
-                   show_error('You haven\'t provided email address',403);
+                   show_error(lang('error_noemail'),403);
                    return;
                }
                $checkuserwithemail = $this->em->getRepository("models\User")->findOneBy(array('email'=>$email_var));
                if(!empty($checkuserwithemail))
                {
                   log_message('error','User cannot be autocreated: email address:'.$email_var.' already exists in db ');
-                  show_error('Email you provided already exists',403);
+                  show_error(lang('error_emailexists'),403);
                   return;
                }
                $user = new models\User;
@@ -286,7 +286,7 @@ class Auth extends MY_Controller {
         $user->updated();
         $this->em->persist($user);
         $this->load->library('tracker');
-        $track_details = 'authenticated from ' . $ip . ' using federated access';
+        $track_details = 'Authn from ' . $ip . '  with federated access';
         $this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
         $this->em->flush();
         redirect(base_url(), 'location');

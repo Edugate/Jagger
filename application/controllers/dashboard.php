@@ -56,8 +56,8 @@ class Dashboard extends MY_Controller {
 
         if (empty($acc))
         {
-            $this->title = "denied";
-            $data['error'] = 'You have no persmission to view this page';
+            $this->title = lang('title_accessdenied');
+            $data['error'] = lang('rerror_nopermviewpage');
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
         }

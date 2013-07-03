@@ -56,14 +56,14 @@ class Arpsexcl extends MY_Controller {
         if (!$has_write_access)
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = 'No access to edit idp: ' . $idp->getEntityid();
+            $data['error'] = lang('rrerror_noperm_provedit').': ' . $idp->getEntityid();
             $this->load->view('page', $data);
             return;
         }
         if($locked)
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = 'Identity Provider is locked: ' . $idp->getEntityid();
+            $data['error'] = lang('rr_lockedentity') . $idp->getEntityid();
             log_message('debug',$idp->getEntityid(). ': is locked and cannot be edited');
             $this->load->view('page', $data);
             return;

@@ -63,7 +63,7 @@ class Manage extends MY_Controller {
             }
             if ($f->getActive())
             {
-                $active = '<span class="lbl lbl-active">active</span>';
+                $active = '<span class="lbl lbl-active">'.lang('rr_fed_active').'</span>';
             }
             else
             {
@@ -110,7 +110,7 @@ class Manage extends MY_Controller {
        $fmembers = $federation->getMembers();
        if(empty($fmembers))
        {
-           show_error('No members for federation',404);
+           show_error(lang('error_nomembersforfed'),404);
        }
        $preurl = base_url().'providers/detail/show/';
        //$members = array('idp','sp','both');
@@ -144,21 +144,21 @@ class Manage extends MY_Controller {
        $members_ids = array();
        if(!empty($type) )
        {
-           if($type == 'idp')
+           if($type === 'idp')
            {
                foreach($fed_members as $m)
                {
-                   if($m->getType() == 'IDP' or $m->getType() == 'BOTH')
+                   if($m->getType() === 'IDP' or $m->getType() === 'BOTH')
                    {
                        $members_ids[] = $m->getId();
                    }
                }
            }
-           elseif($type == 'sp')
+           elseif($type === 'sp')
            {
                foreach($fed_members as $m)
                {
-                   if($m->getType() == 'SP' or $m->getType() == 'BOTH')
+                   if($m->getType() === 'SP' or $m->getType() === 'BOTH')
                    {
                        $members_ids[] = $m->getId();
                    }
@@ -180,7 +180,7 @@ class Manage extends MY_Controller {
 
       if(count($members_ids) == 0)
       {   
-           show_error('federation has no members yet',404);
+           show_error(lang('error_nomembersforfed'),404);
            return;
       }   
 
@@ -209,7 +209,7 @@ class Manage extends MY_Controller {
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation))
         {
-            show_error('Federation not found', 404);
+            show_error(lang('error_fednotfound'), 404);
             return;
         }
         $resource = $federation->getId();
@@ -384,7 +384,7 @@ class Manage extends MY_Controller {
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation))
         {
-            show_error('Federation not found', 404);
+            show_error(lang('error_fednotfound'), 404);
         }
         $resource = $federation->getId();
         $action = 'read';
@@ -419,13 +419,13 @@ class Manage extends MY_Controller {
         $form_elements = array();
 
         $this->load->helper('form');
-        if ($type == 'idp')
+        if ($type === 'idp')
         {
             $this->load->library('show_element');
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
             if (empty($federation))
             {
-                show_error('Federation not found', 404);
+                show_error(lang('error_fednotfound'), 404);
             }
             $resource = $federation->getId();
             $action = 'addbulk';
@@ -448,13 +448,13 @@ class Manage extends MY_Controller {
             $memberstype = 'idp';
             $data['memberstype'] = $memberstype;
         }
-        elseif ($type == 'sp')
+        elseif ($type === 'sp')
         {
             $this->load->library('show_element');
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
             if (empty($federation))
             {
-                show_error('Federation not found', 404);
+                show_error(lang('error_fednotfound'), 404);
             }
             $data['federation_name'] = $federation->getName();
             $data['federation_urn'] = $federation->getUrn();
@@ -475,7 +475,6 @@ class Manage extends MY_Controller {
         {
             if (!$federation_members->contains($i))
             {
-                //$rest_providers[] = $i->getEntityId();
                 $checkbox = array(
                     'id' => 'member[' . $i->getId() . ']',
                     'name' => 'member[' . $i->getId() . ']',
@@ -505,11 +504,11 @@ class Manage extends MY_Controller {
             if (!empty($m) && is_array($m) && count($m) > 0)
             {
                 $m_keys = array_keys($m);
-                if ($memberstype == 'idp')
+                if ($memberstype === 'idp')
                 {
                     $new_members = $this->em->getRepository("models\Provider")->findBy(array('type' => array('IDP', 'BOTH'), 'id' => $m_keys));
                 }
-                elseif ($memberstype == 'sp')
+                elseif ($memberstype === 'sp')
                 {
                     $new_members = $this->em->getRepository("models\Provider")->findBy(array('type' => array('SP', 'BOTH'), 'id' => $m_keys));
                 }
@@ -811,7 +810,7 @@ class Manage extends MY_Controller {
         }
         else
         {
-            $data['error_message'] = 'Federation has no members to be removed';
+            $data['error_message'] = lang('error_notfoundmemberstoberm');
         }
         $this->load->helper('form');
         $data['content_view'] = 'federation/remove_provider_view';

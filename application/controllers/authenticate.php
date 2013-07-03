@@ -60,12 +60,12 @@ class Authenticate extends MY_Controller {
                    }
                    else
                    {
-                         $auth_error = '<div id="notification_error">The login info is not correct.</div>';
+                         $auth_error = '<div id="notification_error">'.lang('error_authn').'</div>';
                    }
                }
                else
                {
-                    $auth_error = '<div id="notification_error">Incorrect input.</div>';
+                    $auth_error = '<div id="notification_error">'.lang('error_incorrectinput').'</div>';
                }
 
            }

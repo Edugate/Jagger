@@ -44,20 +44,20 @@ class Geolocation extends MY_Controller {
         $this->load->library('tracker');
         $data = array();
         if (empty($entity) or !is_numeric($entity) or empty($type)) {
-            show_error('Provider Id : wrong or not provided', 404);
+            show_error(lang('rerror_providernotexist'), 404);
         }
-        if (!($type == 'idp' or $type == 'sp')) {
-            show_error('Wrong type of entity', 404);
+        if (!($type === 'idp' or $type === 'sp')) {
+            show_error(lang('rerror_incorrectenttype'), 404);
         }
 
         $tmp_providers = new models\Providers;
         $provider = $tmp_providers->getOneById($entity);
         if (empty($provider)) {
-            show_error('Provider not found', 404);
+            show_error(lang('rerror_providernotexist'), 404);
         }
         $provider_type = strtolower($provider->getType());
         if (!($provider_type == $type or $provider_type == 'both')) {
-            show_error('Wrong type of provider', 404);
+            show_error(lang('rerror_incorrectenttype'), 404);
         }
         $locked = $provider->getLocked();
         if($locked)
@@ -89,7 +89,7 @@ class Geolocation extends MY_Controller {
         if ($this->_submit_validate()) {
             if($locked)
             {
-               show_error('Entity id Locked cannot be modified',403);
+               show_error(lang('error_lockednoedit'),403);
             }
             $s_action = $this->input->post('addPoint');
             $s_raction = $this->input->post('remove');
@@ -123,7 +123,7 @@ class Geolocation extends MY_Controller {
                     $this->tracker->save_track(strtolower($provider->getType()),'modification',$provider->getEntityId(),serialize($track_det),FALSE );
                     $this->em->flush();
                 }
-            } elseif (!empty($s_raction) && $s_raction == 'remove' && !empty($s_geoloc)) {
+            } elseif (!empty($s_raction) && $s_raction === 'remove' && !empty($s_geoloc)) {
                 if (is_array($s_geoloc)) {
                     if (count($s_geoloc) > 0) {
 

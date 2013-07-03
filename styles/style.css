@@ -1015,6 +1015,10 @@ code, pre {
   font-size: smaller;
 }
 
+.lblsubttitlepos {
+  float: right;
+}
+
 .btn, .button, .btn-positive, .btn-negative {
   display: inline-block;
   *display: inline;
