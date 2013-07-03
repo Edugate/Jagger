@@ -6,7 +6,7 @@ if (!defined('BASEPATH'))
  * 
  * @package     RR3
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -52,7 +52,7 @@ class Supported_attributes extends MY_Controller {
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'idp', '');
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
-            $data['error'] = 'No access to edit idp: ' . $idp->getEntityid();
+            $data['error'] = lang('noperm_idpedit').': ' . $idp->getEntityid();
             $this->load->view('page', $data);
             return;
         }
@@ -107,16 +107,16 @@ class Supported_attributes extends MY_Controller {
 
     public function idp($idp_id = null) {
         if (empty($idp_id) OR !is_numeric($idp_id)) {
-            show_error("IdP need to be set", 404);
+            show_error(lang('rerror_idpnotfound'), 404);
         }
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idp_id, 'type' => array('IDP', 'BOTH')));
         if (empty($idp)) {
-            show_error("Identity Provider not found", 404);
+            show_error(lang('rerror_idpnotfound'), 404);
         }
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'idp', '');
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
-            $data['error'] = 'No access to edit idp: ' . $idp->getEntityid();
+            $data['error'] = lang('noperm_idpedit').': ' . $idp->getEntityid();
             $this->load->view('page', $data);
             return;
         }
@@ -124,7 +124,7 @@ class Supported_attributes extends MY_Controller {
 
         $form_attributes = $this->form_element->supportedAttributesForm($idp);
         if (empty($form_attributes)) {
-            show_error('No attributes definitions', 503);
+            show_error(lang('error_noattrdefs'), 503);
         }
 
         $data = array();

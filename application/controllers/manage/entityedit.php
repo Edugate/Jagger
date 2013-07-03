@@ -552,7 +552,7 @@ class Entityedit extends MY_Controller {
 
         if (!empty($showsuccess))
         {
-            $data['success_message'] = 'Updated';
+            $data['success_message'] = lang('updated');
             $data['content_view'] = 'manage/entityedit_success_view';
             $this->load->view('page', $data);
             return;
@@ -564,15 +564,15 @@ class Entityedit extends MY_Controller {
         $data['error_messages2'] = $this->tmp_error;
         $this->session->set_flashdata('entformerror', '');
 
-        $menutabs[] = array('id' => 'general', 'value' => 'General', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
-        $menutabs[] = array('id' => 'dataprotection', 'value' => 'Privacy', 'form' => $this->form_element->NgeneratePrivacy($ent, $entsession));
-        $menutabs[] = array('id' => 'protocols', 'value' => 'ProtEnum/NameIDs', 'form' => $this->form_element->NgenerateProtocols($ent, $entsession));
-        $menutabs[] = array('id' => 'services', 'value' => 'Services Locations', 'form' => $this->form_element->NgenerateServiceLocationsForm($ent, $entsession));
-        $menutabs[] = array('id' => 'certificates', 'value' => 'Certificates', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
-        $menutabs[] = array('id' => 'contacts', 'value' => 'Contacts', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
-        $menutabs[] = array('id' => 'uui', 'value' => 'UII', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
-        $menutabs[] = array('id' => 'staticmetadata', 'value' => 'Static Metadata', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
-        $menutabs[] = array('id' => 'other', 'value' => 'Other forms', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
+        $menutabs[] = array('id' => 'general', 'value' => ''.lang('tabgeneral').'', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
+        $menutabs[] = array('id' => 'dataprotection', 'value' => ''.lang('tabprivacy').'', 'form' => $this->form_element->NgeneratePrivacy($ent, $entsession));
+        $menutabs[] = array('id' => 'protocols', 'value' => ''.lang('tabprotonameid').'', 'form' => $this->form_element->NgenerateProtocols($ent, $entsession));
+        $menutabs[] = array('id' => 'services', 'value' => ''.lang('tabsrvs').'', 'form' => $this->form_element->NgenerateServiceLocationsForm($ent, $entsession));
+        $menutabs[] = array('id' => 'certificates', 'value' => ''.lang('tabcerts').'', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
+        $menutabs[] = array('id' => 'contacts', 'value' => ''.lang('tabcnts').'', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
+        $menutabs[] = array('id' => 'uui', 'value' => ''.lang('tabuii').'', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
+        $menutabs[] = array('id' => 'staticmetadata', 'value' => ''.lang('tabstaticmeta').'', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
+        $menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
 
 
 

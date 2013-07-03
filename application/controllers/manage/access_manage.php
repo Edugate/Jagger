@@ -364,7 +364,7 @@ class Access_manage extends MY_Controller
            }
            if($k)
            {
-                $row[$i] = array(''.$is_me .' '. $key . ' (Administrator'.showBubbleHelp('Administrator group has full access no matter what ACLs say').')  '.$is_owner.'',''.lang('rr_hasaccess').'',''.lang('rr_hasaccess').'',''.lang('rr_hasaccess').'');
+                $row[$i] = array(''.$is_me .' '. $key . ' (Administrator'.showBubbleHelp(''.lang('rhelp_admfullright').'').')  '.$is_owner.'',''.lang('rr_hasaccess').'',''.lang('rr_hasaccess').'',''.lang('rr_hasaccess').'');
            }
            else
            {    

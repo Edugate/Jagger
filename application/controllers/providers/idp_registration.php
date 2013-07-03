@@ -46,16 +46,12 @@ class Idp_registration extends MY_Controller {
         }
         $data['federations']['none'] = '>>None<<';
 
-        // get list of idps
-        //$idpsCollection = $this->em->getRepository('models\Provider')->findAll();
-        // get list of all partners
-        //$partnersCollection = $this->em->getRepository('models\Partner')->findAll();
         $this->load->view('page', $data);
     }
 
     public function submit($i = NULL) {
-        if (!empty($i) AND $i == 'success') {
-            $this->title = "Identity Provider (Home Organization) registration - success";
+        if (!empty($i) AND $i === 'success') {
+            $this->title = lang('idpregsuccess');
             $data['content_view'] = 'idp/idp_register_form_success';
             $this->load->view('page', $data);
         } else {

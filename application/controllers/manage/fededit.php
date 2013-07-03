@@ -49,13 +49,13 @@ class Fededit extends MY_Controller {
     {
         if (!is_numeric($fedid))
         {
-            show_error('Wrong argument provided', 403);
+            show_error(lang('wrongarggiven'), 403);
         }
         $fed_tmp = new models\Federations();
         $fed = $fed_tmp->getOneFederationById($fedid);
         if (empty($fed))
         {
-            show_error('Federation not found', 404);
+            show_error(lang('error_fednotfound'), 404);
         }
         $this->load->library('form_element');
         $resource = $fed->getId();
@@ -66,7 +66,7 @@ class Fededit extends MY_Controller {
         $has_manage_access = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
         if (($has_write_access OR $has_manage_access) === FALSE)
         {
-            show_error('No permission to edit federation details', 403);
+            show_error(lang('noperm_fededit'), 403);
         }
         if ($this->_submit_validate() === TRUE)
         {
