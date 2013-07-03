@@ -653,11 +653,11 @@ class Provider {
                 $parent[$p->getResource()] = $p;
             }
             $stype = $this->type;
-            if ($stype == 'BOTH')
+            if ($stype === 'BOTH')
             {
                 $types = array('entity');
             }
-            elseif ($stype == 'IDP')
+            elseif ($stype === 'IDP')
             {
                 $types = array('idp');
             }

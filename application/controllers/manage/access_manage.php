@@ -58,6 +58,12 @@ class Access_manage extends MY_Controller
                 show_error(lang('rerror_providernotexist'),404);
         }
         $group = strtolower($ent->getType());
+        if($group === 'both')
+        {
+            $group = 'entity';
+        }
+        
+       
         $has_manage_access = $this->zacl->check_acl($ent->getId(),'manage',$group,'');
         if(!$has_manage_access)
         {
