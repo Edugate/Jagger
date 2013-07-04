@@ -109,7 +109,8 @@ class Importer extends MY_Controller {
         $metadata_body = $this->curl->simple_get($arg['metadataurl']);
 
         if (empty($metadata_body)) {
-            $this->other_error = lang('error_metaemptyfile');
+            //$this->other_error = lang('error_metaemptyfile');
+            $this->other_error = $this->curl->error_string;
             return $this->index();
         }
 
