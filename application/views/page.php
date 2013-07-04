@@ -85,18 +85,34 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
             <div id="langicons">
                 <?php
                   $langs = array(
-                    'en' => array('path'=>'english','img'=>'flag-gb.png','alt'=>'en','a'=>''),
-                    'pt' => array('path'=>'pt','img'=>'flag-pt.png','alt'=>'pt','a'=>''),
-                    'it' => array('path'=>'it','img'=>'flag-it.png','alt'=>'it','a'=>''),
-                    'pl' => array('path'=>'pl','img'=>'flag-pl.png','alt'=>'pl','a'=>''),
+                    'en' => array('path'=>'english','val'=>'english'),
+                    'pt' => array('path'=>'pt','val'=>'português'),
+                    'it' => array('path'=>'it','val'=>'italiano'),
+                    'pl' => array('path'=>'pl','val'=>'polski'),
                    );
-                  $langs[''.$this->current_language.'']['a'] = 'current';
-                  foreach($langs as $v)
-                  {
-                      echo '<a href="'.$base_url.'ajax/changelanguage/'.$v['path'].'" class="langset '.$v['a'].'"><img src="'.$base_url.'images/lang/'.$v['img'].'" alt="'.$v['alt'].'"/></a> ';
-                  }
-                  
                 ?>
+                <div id="langchenge">
+                   <span id="langurl" style="display:none;"><?php echo $base_url.'ajax/changelanguage/';?></span>
+                   <label>
+                   <select  name="changelanguage">
+                     <?php
+                       $selset = false;
+                       foreach($langs as $key=>$value)
+                       {
+                          if($key === $this->current_language)
+                          {
+                              echo '<option value="'.$value['path'].'" selected="selected">'.strtoupper($key).'</option>';
+                          }
+                          else
+                          {
+                              echo '<option value="'.$value['path'].'">('.$key.') '.$value['val'].'</option>';
+
+                          }
+                       }
+                     ?>
+                   </select>
+                   </label>
+                </div>
             </div>
             
         </div>

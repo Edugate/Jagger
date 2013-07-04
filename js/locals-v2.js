@@ -221,17 +221,16 @@ $(function() {
     $.ajaxSetup({
         cache: false
     });
-    $("a.langset").click(function() {
-        var link = $(this), url = link.attr("href");
-
+   $('#langchenge select').on('change', function() {
+       var link = document.getElementById('langurl').innerHTML;
+       var url = link+this.value;
         $.ajax({
             url: url,
             timeout: 2500,
             cache: false
         }).done(function(){ setTimeout('go_to_private_page()', 1000);});
-
         return false;
-    });
+   });
     $("button#addlname").click(function() {
         var nf = $("span.lnameadd option:selected").val();
         var nfv = $("span.lnameadd option:selected").text();
