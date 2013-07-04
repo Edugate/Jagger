@@ -26,7 +26,7 @@ if(!empty($rows) && is_array($rows))
 }
 else
 {
-   echo '<div>No Service Providers found to be excluded</div>';
+   echo '<div>'.lang('nospfoundtoexcl').'</div>';
 
 }
 

@@ -47,7 +47,7 @@ elseif($typesps === 'external')
 {
 ?>
 <button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" ><?php echo lang('allprov');?></button>
-<button type="button" class="btn tchosen" disabled="disabled">external/imported</button>
+<button type="button" class="btn tchosen" disabled="disabled"><?php echo lang('extprov');?></button>
 <button type="button" class="btn typelist" onclick="window.location.href='<?php echo $prefurl; ?>show'" ><?php echo lang('localprov');?></button>
 
 <?php

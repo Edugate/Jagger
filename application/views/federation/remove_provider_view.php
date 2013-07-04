@@ -23,15 +23,15 @@ if(!empty($providers))
         echo $errors_v;
         echo "</div>";
     }
-    echo form_fieldset('Remove provider from federation: '.$fedname);
+    echo form_fieldset(lang('rmprovfromfed').': '.$fedname);
     echo '<ol>';
 
     echo '<li>';
-    echo form_label('Providers','provider');
+    echo form_label(lang('rrprovs'),'provider');
     echo form_dropdown('provider',$providers);
     echo '</li>';
     echo '<li>';
-    echo form_label('Message','message');
+    echo form_label(lang('rr_message'),'message');
     echo form_textarea('message');
     echo '</li>';
     echo '</ol>';
@@ -39,7 +39,7 @@ if(!empty($providers))
 ?>
 <div class="buttons">
  <button type="submit" name="submit" value="Remove" class="btn positive">
-    <span class="save">Remove member<span>
+    <span class="save"><?php echo lang('rr_fedrmmember');?><span>
  </button>
 </div>
 <?php

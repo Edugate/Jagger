@@ -6,7 +6,7 @@ $errors_v = validation_errors('<span>', '</span><br />');
         echo $errors_v;
         echo "</div>";
     }
-$attributes = array('id' => 'federeg', 'class'=>'span-18');
+$attributes = array('id' => 'federeg', 'class'=>'');
 echo form_open(base_url() . "federations/federation_registration/submit", $attributes);
 echo form_fieldset(lang('rr_regform'));
 echo '<ol><li>';

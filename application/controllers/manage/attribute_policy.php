@@ -442,11 +442,19 @@ class Attribute_policy extends MY_Controller {
                 $tbl_array[$i] = array($value['name'], $col2);
                 $i++;
             }
-            $submit_buttons_row = '<span class="buttons"><button name="submit" value="delete all"  class="btn negative"><span class="cancel">'.lang('btn_deleteall').'</button><button><span type="submit" name="submit" value="modify" class="save">'.lang('btn_modify').'</span></button></span>';
+            $submit_buttons_row = '<span class="buttons"><button name="submit" value="delete all"  class="btn negative"><span class="cancel">'.lang('btn_deleteall').'</button><button type="submit" name="submit" value="modify" class="btn positive save">'.lang('btn_modify').'</button></span>';
             $tbl_array[$i] = array('data' => array('data' => $submit_buttons_row, 'colspan' => 2));
             $data['tbl_array'] = $tbl_array;
             $data['fedid'] = $fed->getId();
             $data['idpid'] = $idp->getId();
+            $data['fedname'] = $fed->getName();
+            $data['fedencoded'] = base64url_encode($fed->getName());
+            $data['entityid'] = $idp->getEntityId();
+            $data['idpname'] = $idp->getName();
+            if(empty($data['idpname']))
+            {
+               $data['idpname'] = $data['entityid'];
+            }
             $data['caption'] = $idp->getName() . '<br /><br />'.lang('rr_arpforfed').': ' . $fed->getName();
 
             $data['content_view'] = 'manage/attribute_policy_form_for_fed_view';

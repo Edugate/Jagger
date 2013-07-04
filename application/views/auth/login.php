@@ -63,7 +63,7 @@ else
         <input type="hidden" name="baseurl" value="<?php echo base_url(); ?>">
 
         <fieldset>
-            <legend><?php echo 'Log in with local account' ?></legend>
+            <legend><?php echo lang('loginwithlocal'); ?></legend>
             <ol>
                 <li>
 <?php
@@ -80,11 +80,11 @@ echo form_password('password');
                 </li>
             </ol>
             <div class="buttons">
-                <button type="submit" name="Login" id="submit" value="Login" class="loginbtn">Submit</button>
+                <button type="submit" name="Login" id="submit" value="Login" class="loginbtn"><?php echo lang('loginsubmit'); ?></button>
             </div>
         </fieldset>
  <div id="ajax_loading">
-            <img align="absmiddle" src="<?php echo base_url() . 'images/spinner.gif'; ?>">&nbsp;Processing...
+            <img align="absmiddle" src="<?php echo base_url() . 'images/spinner.gif'; ?>">&nbsp;<?php echo lang('processing');?>...
         </div>
         <?php echo form_close(); ?>
 <?php

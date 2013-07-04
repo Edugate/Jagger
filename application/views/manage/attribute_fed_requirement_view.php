@@ -8,11 +8,11 @@ $fed_link = anchor(base_url().'federations/manage/show/'.$fed_encoded,$fed_name)
 
 if (!empty($message))
 {
-    echo "<span class=\"message\">" . $message . "</span>";
+    echo '<span class="message">' . $message . '</span>';
 }
 if (!empty($error))
 {
-    echo "<span class=\"error\">" . $error . "</span>";
+    echo '<span class="error">' . $error . '</span>';
 }
 ?>
 <?php
@@ -24,7 +24,7 @@ if (count($add_attr_final) > 0)
 {
 ?>
 <button class="btn-positive showform"><?php echo lang('rr_addreqattr'); ?></button>
-<button class="btn-negative hideform hidden">Hide</button></div>
+<button class="btn-negative hideform hidden"><?php echo lang('btn_hide');?></button></div>
 
 <?php
     for ($i = 0; $i < $no_new_attr; $i++)
@@ -53,14 +53,10 @@ if (count($add_attr_final) > 0)
         echo form_close();
     }
 }
-//echo "</td></tr>";
-
-//echo '<table id="details" class="tablesorter"><caption>Attributes requirements</caption><tbody>';
-//echo '<span class="span-24 clear-fix">';
 echo '<hr class="span-20 clear"/>';
 if (count($already_in_attr) > 0)
 {
-    echo '<h3>Modify or remove existing requirement(s)</h3>';
+    echo '<h3>'.lang('modremreqs').'</h3>';
     foreach ($already_in_attr as $a)
     {
         $spid_hidden['attribute'] = $a['attr_id'];
@@ -72,18 +68,18 @@ if (count($already_in_attr) > 0)
 			<b>SAML1:</b> " . $a['urn'] . "<br />
 			<b>SAML2:</b> " . $a['oid'] . "</p>";
         echo '<li>';
-        echo form_label('Current state of requirement', 'requirement');
+        echo form_label(''.lang('curstreq').'', 'requirement');
         echo form_dropdown('requirement', array('desired' => 'desired', 'required' => 'required'), $a['status']);
         echo '</li>';
         echo '<li></li>';
         echo '<li>';
-        echo form_label('The reason of requirement', 'reason');
+        echo form_label(lang('reasonofreq'), 'reason');
         echo form_textarea(array('name' => 'reason', 'cols' => 25, 'rows' => 5, 'value' => $a['reason']));
         echo '</li>';
         echo '<ol>';
         echo '<div class="buttons">';
-        echo '<button name="submit" type="submit" value="Remove" class="btn negative"><span class="cancel">Remove</span></button>';
-        echo '<button name="submit" type="submit" value="Modify" class="btn positive"><span class="save">Modify</span></button>';
+        echo '<button name="submit" type="submit" value="Remove" class="btn negative"><span class="cancel">'.lang('rr_remove').'</span></button>';
+        echo '<button name="submit" type="submit" value="Modify" class="btn positive"><span class="save">'.lang('rr_modify').'</span></button>';
         echo '</div>';
         echo form_fieldset_close();
         echo form_close();

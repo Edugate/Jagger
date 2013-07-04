@@ -1,4 +1,4 @@
-<div id="subtitle"><h3>Federations list in the system</h3></div>
+<div id="subtitle"><h3><?php echo lang('rr_federation_list');?></h3></div>
 
 <script type="text/javascript">
 $(function() {    
@@ -9,7 +9,7 @@ $(function() {
 <?php
 $tmpl = array('table_open' => '<table  id="details" class="tablesorter drop-shadow lifted">');
 $this->table->set_template($tmpl);
-$this->table->set_heading('Name','URN','','Description','#');
+$this->table->set_heading(lang('rr_tbltitle_name'),lang('fedurn'),'',lang('Description'),'#');
 echo $this->table->generate($fedlist);
 $this->table->clear();
 ?>

@@ -11,7 +11,7 @@
 
 
 ?>
-<div id="subtitle"><h3>Attributes definitions list</h3></div>
+<div id="subtitle"><h3><?php echo lang('attrsdeflist');?></h3></div>
 <?php
 
 /*
@@ -21,6 +21,6 @@
 $tmpl = array('table_open' => '<table  id="details" class="tablesorter drop-shadow lifted">');
 
     $this->table->set_template($tmpl);
-    $this->table->set_heading('Name','Full name','OID','URN');
+    $this->table->set_heading(''.lang('attrname').'',''.lang('attrfullname').'',''.lang('attroid').'',''.lang('attrurn').'');
     echo $this->table->generate($attributes);
 ?>
