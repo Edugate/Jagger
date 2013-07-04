@@ -42,6 +42,7 @@ $lang['rr_hasaccess'] ="ma dostęp";
 $lang['rr_hasnoaccess'] ="brak dostępu";
 $lang['notfound'] ="nie znaleziono";
 $lang['selectone'] ="Wybierz";
+$lang['importsslcheck'] = "Nie weryfikuj certyfikatu serwera";
 $lang['selectfed'] ="Wybierz Federację";
 $lang['mngtarpforfed'] ="Zarządzanie polityką atrybutów ze względu na Federację";
 $lang['tabGeneral'] ="Ogólne";

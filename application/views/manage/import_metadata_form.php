@@ -30,6 +30,9 @@
     echo '</li><li>';
     echo form_label(lang('metalocation'), 'metadataurl');
     echo form_input(array('name' => 'metadataurl', 'id' => 'metadataurl', 'placeholder' => 'http://example.com/example-metadata.xml', 'value' => set_value('metadataurl'), 'required' => 'required'));
+    echo '</li><li>';
+    echo form_label(lang('importsslcheck'), 'sslcheck');
+    echo form_checkbox('sslcheck', 'ignore', FALSE);
     echo '</li></ol>';
     echo form_fieldset_close();
 

@@ -41,7 +41,7 @@ $lang['rr_add'] = 'Add';
 $lang['rr_remove'] = 'Remove';
 $lang['rr_modify'] = 'Modify';
 $lang['rr_cancel'] = 'Cancel';
-
+$lang['importsslcheck'] = 'Don\'t validate the server\'s certificate';
 $lang['rr_you'] = 'You';
 $lang['rr_hasaccess'] = 'has access';
 $lang['rr_hasnoaccess'] = 'no access';

@@ -95,7 +95,9 @@ class Importer extends MY_Controller {
         $arg['validate'] = $this->input->post('validate');
         $arg['certurl'] = trim($this->input->post('certurl'));
         $arg['cert'] = trim($this->input->post('cert'));
+        $arg['sslcheck'] = trim($this->input->post('sslcheck'));
         $arg['fullinformation'] = trim($this->input->post('fullinformation'));
+        print_r($arg);
 
         /**
          * @todo  check if you have permission to add entities to this federation
@@ -106,8 +108,14 @@ class Importer extends MY_Controller {
         if (empty($fed)) {
             return $this->index();
         }
-        $metadata_body = $this->curl->simple_get($arg['metadataurl']);
-
+        if(!empty($arg['sslcheck']) and ($arg['sslcheck'] === 'ignore'))
+        {
+            $metadata_body = $this->curl->simple_get($arg['metadataurl'],array(), array(CURLOPT_SSL_VERIFYPEER=>FALSE,CURLOPT_SSL_VERIFYHOST=>FALSE));
+        }
+        else
+        {
+            $metadata_body = $this->curl->simple_get($arg['metadataurl']);
+        }
         if (empty($metadata_body)) {
             //$this->other_error = lang('error_metaemptyfile');
             $this->other_error = $this->curl->error_string;
@@ -188,6 +196,7 @@ class Importer extends MY_Controller {
      */
     private function _submit_validate() {
         $this->form_validation->set_rules('metadataurl', 'Metadata URL', 'trim|required|valid_url');
+        $this->form_validation->set_rules('sslcheck', 'SSL check', 'trim');
         $this->form_validation->set_rules('type', 'Type of entities', 'trim|required');
         $this->form_validation->set_rules('extorint', 'Internal/External', 'trim|required');
         $this->form_validation->set_rules('federation', 'Federation', 'trim|required');
