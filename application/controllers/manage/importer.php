@@ -97,7 +97,6 @@ class Importer extends MY_Controller {
         $arg['cert'] = trim($this->input->post('cert'));
         $arg['sslcheck'] = trim($this->input->post('sslcheck'));
         $arg['fullinformation'] = trim($this->input->post('fullinformation'));
-        print_r($arg);
 
         /**
          * @todo  check if you have permission to add entities to this federation
