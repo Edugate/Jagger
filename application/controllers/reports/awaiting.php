@@ -639,7 +639,7 @@ class Awaiting extends MY_Controller {
                         elseif ($type == 'Provider')
  			{
                             $d = $queueObj->getData(); 
-                            $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $d['id'],'name'=>$d['name'],'entityid'=>$d['entityid']));
+                            $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $d['id'],'entityid'=>$d['entityid']));
                             if(empty($provider)) 
                             {
                                 show_error('Provider not found', 404);

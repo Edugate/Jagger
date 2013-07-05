@@ -91,9 +91,14 @@ class Approval {
           $queue->setRecipient($obj->getId());
           $queue->setRecipientType('federation');
           $queue->setCreator($user);
-          $queue->setName($provider->getName());
+          $providername = $provider->getName();
+          if(empty($providername))
+          {
+             $providername = $provider->getEntityId();
+          }
+          $queue->setName($providername);
           $queue->setEmail($user->getEmail());
-          $prov = array('id'=>$provider->getId(), 'name'=>$provider->getName(), 'entityid'=>$provider->getEntityId());
+          $prov = array('id'=>$provider->getId(), 'name'=>$providername, 'entityid'=>$provider->getEntityId());
           if($action == 'Join')
           {
              $queue->inviteFederation($prov);
