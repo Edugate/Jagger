@@ -5,9 +5,17 @@ echo form_fieldset();
 echo '<ul style="list-style-type: none;">';
 foreach($merger as $k=>$v)
 {
+   if($v['english'] == $v['to'])
+   {
+      $bgcolor = 'yellow';
+   }
+   else
+   {
+      $bgcolor = 'transparent';
+   }
    echo '<li style="margin: 5px;background-color: #cfcfcf;"><label style="text-align: left; font-weight: bolder" for="lang['.$k.']" style="word-break: break-word">'.$v['english'].' <span style="font-weight: normal;"><small>['.$k.']</small><span></label>';
    
-   $input = array('name'=>'lang['.$k.']','id'=>'lang['.$k.']','value'=>$v['to'],'style'       => 'width:90%');
+   $input = array('name'=>'lang['.$k.']','id'=>'lang['.$k.']','value'=>$v['to'],'style'       => 'width:90%; background-color: '.$bgcolor.'');
    echo form_input($input);
    echo '</li>';
 }

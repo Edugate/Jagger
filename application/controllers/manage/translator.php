@@ -95,7 +95,7 @@ class Translator extends MY_Controller
              $y = "<?php \n";
              foreach($lang as $k=>$v)
              {
-                $y .= '$lang[\''.$k.'\'] ="'. $v."\";\n";
+                $y .= '$lang[\''.$k.'\'] ="'. htmlspecialchars($v)."\";\n";
              }
              $pathfile = APPPATH.'language/'.$langto.'/rr_lang.php';
              //echo $pathfile;
