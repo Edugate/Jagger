@@ -13,7 +13,7 @@ $('.bubblepopup').CreateBubblePopup({
    themePath: bubbletheme
 
 });
-$('.bubblepopup').click(function() {
+$('.bubblepopup').mouseover(function() {
      var some = $(this).val();
      $(this).ShowBubblePopup({
      closingDelay: 1000,

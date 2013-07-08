@@ -41,7 +41,7 @@ class Users extends MY_Controller {
     }
     private function _add_submit_validate() {
         log_message('debug',  '(add user) validating form initialized');
-        $this->form_validation->set_rules('username', 'Username', 'required|min_length[5]|max_length[128]|user_username_unique[username]|xss_clean');
+        $this->form_validation->set_rules('username', ''.lang('rr_username').'', 'required|min_length[5]|max_length[128]|user_username_unique[username]|xss_clean');
         $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|user_mail_unique[email]|xss_clean');
         $this->form_validation->set_rules('password', 'Password', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
         $this->form_validation->set_rules('passwordconf', 'Password Confirmation', 'required|min_length[5]|max_length[23]');
@@ -54,7 +54,7 @@ class Users extends MY_Controller {
     public function add() {
         $access = $this->zacl->check_acl('user', 'create', 'default', '');
         if (!$access) {
-            $data['error'] = 'You have no access to add new user to the system';
+            $data['error'] = lang('rr_nopermnewuser');
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
         } else {
@@ -63,42 +63,42 @@ class Users extends MY_Controller {
                 $action = base_url() . "manage/users/add";
 
                 $form = form_open($action, $form_attributes);
-                $form .= form_fieldset('User\'s details');
+                $form .= form_fieldset(''.lang('userdetails').'');
                 $form .="<ol>";
                 $form .= "<li>";
-                $form .= form_label('Username', 'username');
+                $form .= form_label(''.lang('rr_username').'', 'username');
                 $form .= form_input('username');
                 $form .="</li>";
                 $form .= "<li>";
-                $form .= form_label('Email', 'email');
+                $form .= form_label(''.lang('rr_uemail').'', 'email');
                 $form .= form_input('email');
                 $form .="</li>";
                 $form .= "<li>";
-                $form .= form_label('Password', 'password');
+                $form .= form_label(''.lang('rr_password').'', 'password');
                 $form .= form_password('password');
                 $form .="</li>";
                 $form .= "<li>";
-                $form .= form_label('Password Confirmation', 'passwordconf');
+                $form .= form_label(''.lang('rr_passwordconf').'', 'passwordconf');
                 $form .= form_password('passwordconf');
                 $form .="</li>";
 
                 $form .= "<li>";
-                $form .= form_label('First name', 'fname');
+                $form .= form_label(''.lang('rr_fname').'', 'fname');
                 $form .= form_input('fname');
                 $form .="</li>";
                 $form .= "<li>";
-                $form .= form_label('Surname', 'sname');
+                $form .= form_label(''.lang('rr_lname').'', 'sname');
                 $form .= form_input('sname');
                 $form .= "</li>";
                 $form .="<li>";
-                $form .= form_label('Type of access', 'access');
-                $access_type = array('' => 'Select ...', 'local' => 'only local authentication', 'fed' => 'only federated access', 'both' => 'local and federated');
+                $form .= form_label(''.lang('rr_typeaccess').'', 'access');
+                $access_type = array('' => ''.lang('rr_select').'', 'local' => ''.lang('rr_onlylocalauthn').'', 'fed' => ''.lang('rr_onlyfedauth').'', 'both' => ''.lang('rr_bothauth').'');
                 $form .= form_dropdown('access', $access_type);
                 $form .= "</li>";
                 $form .= "</ol>";
                 $form .= form_fieldset_close();
                 $form .= '<div class="buttons">';
-                $form .= '<button type="submit"  name="submit", value="submit" class="btn positive"><span class="save">Add user</span></button>';
+                $form .= '<button type="submit"  name="submit", value="submit" class="btn positive"><span class="save">'.lang('adduser_btn').'</span></button>';
                 $form .='</div>';
                 $form .= form_close();
                 $data['message'] = $form;
@@ -161,12 +161,12 @@ class Users extends MY_Controller {
     {
         if(empty($type))
         {
-            show_error( 'Missing type', 404);
+            show_error( lang('error404'), 404);
         }
         $allowedtypes= array('idp','sp','fed');
         if(!in_array($type,$allowedtypes))
         {
-           show_error('Incorrect type provided', 404);
+           show_error(''.lang('rerror_incorrectenttype').'', 404);
         }
         $username = base64url_decode($encoded_username);
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
@@ -175,7 +175,7 @@ class Users extends MY_Controller {
         }
         $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
         if (!$write_access) {
-            $data['error'] = 'You have no access';
+            $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
             return;
@@ -201,7 +201,7 @@ class Users extends MY_Controller {
         $access = $this->zacl->check_acl('u_' . $user->getId(), 'read', 'user', '');
         $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
         if (!$access) {
-            $data['error'] = 'You have no access';
+            $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
             return;
@@ -324,7 +324,7 @@ class Users extends MY_Controller {
     public function showlist() {
         $access = $this->zacl->check_acl('', 'read', 'user', '');
         if (!$access) {
-            $data['error'] = 'You have no access';
+            $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
             return;
@@ -368,7 +368,7 @@ class Users extends MY_Controller {
     public function remove() {
         $access = $this->zacl->check_acl('user', 'remove', 'default', '');
         if (!$access) {
-            $data['error'] = 'You have no access to remove any user from the system';
+            $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
         } else {
@@ -376,15 +376,15 @@ class Users extends MY_Controller {
                 $form_attributes = array('id' => 'formver2', 'class' => 'register');
                 $action = base_url() . "manage/users/remove";
                 $f = form_open($action, $form_attributes);
-                $f .= form_fieldset('Removing user');
+                $f .= form_fieldset(''.lang('rr_rminguser').'');
                 $f .='<ol>';
                 $f .= '<li>';
-                $f .= form_label('Username', 'username');
+                $f .= form_label(''.lang('rr_username').'', 'username');
                 $f .= form_input('username');
                 $f .= '</li>';
                 $f .= '</ol>';
                 $f .= form_fieldset_close();
-                $f .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative"><span class="remove">Remove</span></button></div>';
+                $f .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative"><span class="remove">'.lang('rr_rmuserbtn').'</span></button></div>';
                 $f .= form_close();
 
                 $data['form'] = $f;
@@ -402,10 +402,10 @@ class Users extends MY_Controller {
                         $this->load->library('tracker');
                         $this->tracker->save_track('user', 'remove', $selected_username, 'user removed from the system', true);
                     } else {
-                        $data['message'] = 'you cannot remove youreself';
+                        $data['message'] = lang('error_cannotrmyouself');
                     }
                 } else {
-                    $data['message'] = 'user dosnt exist';
+                    $data['message'] = lang('error_usernotexist');
                 }
                 $data['content_view'] = 'manage/remove_user_view';
                 $this->load->view('page', $data);
@@ -419,13 +419,13 @@ class Users extends MY_Controller {
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if (empty($user)) 
         {
-           show_error('User not found', 404);
+           show_error(lang('error404'), 404);
            return;
         }
         $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
         if(!$manage_access) 
         { 
-            $data['error'] = 'You have no access';
+            $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
             return;

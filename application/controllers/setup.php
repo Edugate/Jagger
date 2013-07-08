@@ -321,6 +321,7 @@ class Setup extends MY_Controller {
             $at[$i]->setOid($attr['oid']);
             $at[$i]->setUrn($attr['urn']);
             $at[$i]->setDescription($attr['description']);
+            $at[$i]->setShowInmetadata(TRUE);
             $i++;
         }
         foreach ($at as $key) {
