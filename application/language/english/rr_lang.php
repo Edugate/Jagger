@@ -1,7 +1,7 @@
 <?php
 /** 
- * Language for Resource Registry 3 - ITALIAN
- * Author: Janusz Ulanowski Marco Malavolti
+ * Language for Resource Registry 3
+ * Author: Janusz Ulanowski 
  * Contact Email: janusz.ulanowski@heanet.ie
  * Organization: HEAnet
  */
@@ -531,6 +531,23 @@ $lang['urlofcertsigner']            = 'URL of metadata signing certificate';
 $lang['certsigner']                 = 'Metadata signing certificate in X509 format';
 $lang['overwritecerturl']           = 'overwrites URL of cert';
 $lang['applyforaccount']            = 'You can apply for an account';
+$lang['localizedregpolicy']         = 'translated RegistrationPolicy in %s';
+$lang['lrr_displayname']            = 'Descriptive name in %s';
+$lang['localizedgeneralinfo']       = 'Localized general informations';
+$lang['incinmetainside']            = 'included in Metadata inside';
+$lang['localizeprovname' ]          = 'Localized Name';
+$lang['localizeprovdisplayname' ]   = 'Localized DisplayName';
+$lang['addlocalizedname']           = 'Add localized Name';
+$lang['addlocalizeddisplayname']           = 'Add localized DisplayName';
+$lang['localizedregpolicyfield']         = 'Localized RegistrationPolicy';
+$lang['addlocalizedregpolicy']         = 'Add localized RegistrationPolicy';
+$lang['localizedhelpdesk']         = 'Localized Helpdesk/Info Urls';
+$lang['addlocalizedhelpdesk']         = 'Add localized HelpdeskURL';
+$lang['localizeddesc']         = 'Localized Description';
+$lang['addlocalizeddesc']         = 'Add localized Description';
+
+
+
 $lang['rrhere']                     = 'here';
 $lang['dropnotset']                 = 'not set';
 $lang['dropnever']                  = 'never permit';

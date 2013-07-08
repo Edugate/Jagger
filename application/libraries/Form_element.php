@@ -270,11 +270,11 @@ class Form_element {
                     'class' => $description_notice,
                     'value' => $f_description,
         ));
-        $result[] = '<div style="width: 100%; text-align: center;"><h5>Localized general informations</h5>Included in Matadata inside &lt;md:Organization/&gt;</div>';
+        $result[] = '<div style="width: 100%; text-align: center;"><h5>'.lang('localizedgeneralinfo').'</h5>'.lang('incinmetainside').' &lt;md:Organization/&gt;</div>';
         /**
          * start lname
          */
-        $result[] = '<h5>Localized Names</h5>';
+        $result[] = '<h5>'.lang('localizeprovname').'</h5>';
         $lnames = $ent->getLocalName();
         $slname = array();
         $origlname = array();
@@ -331,7 +331,7 @@ class Form_element {
             );
             unset($lnamelangs['' . $key . '']);
         }
-        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', $lnamelangs, 'en') . '<button type="button" id="addlname" name="addlname" value="addlname" class="btn">Add localized Name</button></span>';
+        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', $lnamelangs, 'en') . '<button type="button" id="addlname" name="addlname" value="addlname" class="btn">'.lang('addlocalizedname').'</button></span>';
 
         $result[] = '';
         /**
@@ -340,7 +340,7 @@ class Form_element {
         /**
          * start ldisplayname
          */
-        $result[] = '<h5>Localized DisplayNames</h5>';
+        $result[] = '<h5>'.lang('localizeprovdisplayname').'</h5>';
         $ldisplaynames = $ent->getLocalDisplayName();
         $sldisplayname = array();
         $origldisplayname = array();
@@ -397,7 +397,7 @@ class Form_element {
             );
             unset($ldisplaynamelangs['' . $key . '']);
         }
-        $result[] = '<span class="ldisplaynameadd">' . form_dropdown('ldisplaynamelangcode', $ldisplaynamelangs, 'en') . '<button type="button" id="addldisplayname" name="addldisplayname" value="addldisplayname" class="btn">Add localized DisplayName</button></span>';
+        $result[] = '<span class="ldisplaynameadd">' . form_dropdown('ldisplaynamelangcode', $ldisplaynamelangs, 'en') . '<button type="button" id="addldisplayname" name="addldisplayname" value="addldisplayname" class="btn">'.lang('addlocalizeddisplayname').'</button></span>';
 
         $result[] = '';
         /**
@@ -406,7 +406,7 @@ class Form_element {
         /**
          * start regpolicy 
          */
-        $result[] = '<h5>Localized RegistrationPolicy</h5>';
+        $result[] = '<h5>'.lang('localizedregpolicyfield').'</h5>';
         $regpolicies = $ent->getRegistrationPolicy();
         $sregpolicies = array();
         $origrepolicies = array();
@@ -460,7 +460,7 @@ class Form_element {
             );
             unset($regpolicylangs['' . $key . '']);
         }
-        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', $regpolicylangs, 'en') . '<button type="button" id="addregpolicy" name="addregpolicy" value="addregpolicy" class="btn">Add localized RegistrationPolicy</button></span>';
+        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', $regpolicylangs, 'en') . '<button type="button" id="addregpolicy" name="addregpolicy" value="addregpolicy" class="btn">'.lang('addlocalizedregpolicy').'</button></span>';
 
         $result[] = '';
         /**
@@ -469,7 +469,7 @@ class Form_element {
         /**
          * start lhelpdesk
          */
-        $result[] = '<h5>Localized Helpdesk/Info Urls</h5>';
+        $result[] = '<h5>'.lang('localizedhelpdesk').'</h5>';
         $lhelpdesk = $ent->getLocalHelpdeskUrl();
         $slhelpdesk = array();
         $origlhelpdesk = array();
@@ -526,7 +526,7 @@ class Form_element {
             );
             unset($lhelpdesklangs['' . $key . '']);
         }
-        $result[] = '<span class="lhelpdeskadd">' . form_dropdown('lhelpdesklangcode', $lhelpdesklangs, 'en') . '<button type="button" id="addlhelpdesk" name="addlhelpdesk" value="addlhelpdesk" class="btn">Add localized HelpdeskURL</button></span>';
+        $result[] = '<span class="lhelpdeskadd">' . form_dropdown('lhelpdesklangcode', $lhelpdesklangs, 'en') . '<button type="button" id="addlhelpdesk" name="addlhelpdesk" value="addlhelpdesk" class="btn">'.lang('addlocalizedhelpdesk').'</button></span>';
 
         /**
          * end ldisplayname
@@ -534,7 +534,7 @@ class Form_element {
         /**
          * start ldesc
          */
-        $result[] = '<h5>Localized Descriptions</h5>';
+        $result[] = '<h5>'.lang('localizeddesc').'</h5>';
         $ldescriptions = $ent->getLocalDescription();
         $sldesc = array();
         $origldesc = array();
@@ -591,7 +591,7 @@ class Form_element {
             );
             unset($ldesclangs['' . $key . '']);
         }
-        $result[] = '<span class="ldescadd">' . form_dropdown('ldesclangcode', $ldesclangs, 'en') . '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="btn">Add localized Description</button></span>';
+        $result[] = '<span class="ldescadd">' . form_dropdown('ldesclangcode', $ldesclangs, 'en') . '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="btn">'.lang('addlocalizeddesc').'</button></span>';
 
         /**
          * end ldesc

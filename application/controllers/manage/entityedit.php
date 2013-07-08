@@ -102,14 +102,14 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['regpolicy'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[regpolicy][' . $k . ']', 'localicalized RegistrationPolicy in ' . $k, 'xss_clean|trim|valid_url');
+                    $this->form_validation->set_rules('f[regpolicy][' . $k . ']', ''.sprintf(lang('localizedregpolicy'),$k).'' , 'xss_clean|trim|valid_url');
                 }
             }
             if (isset($y['f']['uii']['idpsso']['displayname']) && is_array($y['f']['uii']['idpsso']['displayname']))
             {
                 foreach ($y['f']['uii']['idpsso']['displayname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][displayname][' . $k . ']', 'UUI ' . lang('rr_displayname') . ' in ' . $k . '', 'trim|min_length[5]|max_length[255]|xss_clean');
+                    $this->form_validation->set_rules('f[uii][idpsso][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'),  $k) . '', 'trim|min_length[5]|max_length[255]|xss_clean');
                 }
             }
             if (isset($y['f']['uii']['idpsso']['desc']) && is_array($y['f']['uii']['idpsso']['desc']))
@@ -341,7 +341,6 @@ class Entityedit extends MY_Controller {
                 }
                 if (array_key_exists('IDPArtifactResolutionService', $y['f']['srv']))
                 {
-                    log_message('debug','GGGG : IDPArtifactResolutionService array exists');
                     $idpartindexes = array();
                     $idparturls = array();
                     foreach ($y['f']['srv']['IDPArtifactResolutionService'] as $k => $v)
