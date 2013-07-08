@@ -52,7 +52,7 @@ class Custom_policies extends MY_Controller {
     private function _submit_validate()
     {
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('values', 'Permit/Denied Values', 'trim|alpha_dash_comma|xss_clean');
+        $this->form_validation->set_rules('values', ''.lang('permdenvalue').'', 'trim|alpha_dash_comma|xss_clean');
         $this->form_validation->set_rules('policy', 'Policy', 'trim');
         return $this->form_validation->run();
     }
@@ -63,12 +63,12 @@ class Custom_policies extends MY_Controller {
         $sp = $this->tmp_providers->getOneSpById($sp_id);
         if (empty($idp) or empty($sp))
         {
-            show_error('Identity Provider or Service Provider not found', 404);
+            show_error(''.lang('rerror_providernotexist').'', 404);
         }
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'idp', '');
         if (!$has_write_access)
         {
-            show_error('no access', 403);
+            show_error(lang('error403'), 403);
         }
         $locked = $idp->getLocked();
         if (!empty($attr_id))
@@ -83,7 +83,7 @@ class Custom_policies extends MY_Controller {
             {
                 if($locked)
                 {
-                   show_error('Identity Provider is locked. It cannot be modified', 403);
+                   show_error(''.lang('error_lockednoedit').'', 403);
                 }
                 $custom_arp = $this->tmp_arps->getCustomSpArpByAttribute($idp, $sp, $attribute);
                 $values = trim($this->input->post('values'));
@@ -127,7 +127,7 @@ class Custom_policies extends MY_Controller {
                         $this->em->persist($custom_arp);
                         $this->em->flush();
                         $this->j_cache->library('arp_generator', 'arpToArray', array($idp->getId()), -1);
-                        $data['success_message'] = "custom arp updated";
+                        $data['success_message'] = lang('customarpupdated');
                     }
                 }
             }

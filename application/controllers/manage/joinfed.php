@@ -49,13 +49,13 @@ class Joinfed extends MY_Controller {
     {
         if(empty($providerid) or !is_numeric($providerid))
         {
-             show_error('Incorrect provider id provided',404);
+             show_error(lang('error_incorrectprovid'),404);
              return;
         }
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$providerid));
         if(empty($provider))
         {
-            show_error('Provider not found',404);
+            show_error(lang('rerror_provnotfound'),404);
             return;
         }
         $icon ='';
@@ -67,7 +67,14 @@ class Joinfed extends MY_Controller {
         {
            $icon = 'block-share.png';
         }
-        $data['subtitle'] = $provider->getName().' ('.$provider->getEntityId().')'.anchor(base_url().'providers/detail/show/'.$provider->getId(),'<img src="' . base_url() . 'images/icons/'.$icon.'" />');
+        $data['name'] = $provider->getName();
+        if(empty($data['name']))
+        {
+           $data['name'] = $provider->getEntityId();
+        }
+        $data['entityid'] = $provider->getEntityId();
+        $data['providerid'] = $provider->getId();
+
         $has_write_access = $this->zacl->check_acl($provider->getId(),'write',strtolower($provider->getType()),'');
         if(!$has_write_access)
         {
@@ -76,7 +83,7 @@ class Joinfed extends MY_Controller {
         }
         if($provider->getLocked())
         {
-           show_error('Provider is locked',403);
+           show_error(lang('error_lockednoedit'),403);
            return;
         }
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
@@ -99,7 +106,7 @@ class Joinfed extends MY_Controller {
              $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id'=>$fedid));
              if(empty($federation))
              {
-                 show_error('Federation you want  to join doesnt exist',404);
+                 show_error(''.lang('error_nofedyouwantjoin').'',404);
                  return;
              }
              if(!$federations->contains($federation))
@@ -153,7 +160,7 @@ class Joinfed extends MY_Controller {
                                $this->email_sender->send($mail_recipients, $mail_sbj, $mail_body);
                                
                                $data['content_view'] = 'manage/joinfederation_view';
-                               $data['success_message'] = 'Thank you! Your request has been added to queue';
+                               $data['success_message'] = lang('confirmreqsuccess');
                                $this->load->view('page',$data);
                                return;
                               
@@ -170,9 +177,9 @@ class Joinfed extends MY_Controller {
                   $buttons = '<div class="buttons"><button type="submit" name="modify" value="submit" class="button positive"><span class="save">'.lang('rr_save').'</span></button></div>';
                   
                   $form = form_open(current_url(),array('id'=>'formver2','class'=>'span-15'));
-                  $form .= form_fieldset('Joining federation form');
+                  $form .= form_fieldset(lang('joinfederation'));
                   $form .= '<ol><li>';
-                  $form .= form_label('Select federation you want to join','fedid');
+                  $form .= form_label(''.lang('rr_selectfedtojoin').'','fedid');
                   $form .= form_dropdown('fedid', $feds_dropdown);
                   $form .= '</li></ol>';
                   $form .= $buttons;
