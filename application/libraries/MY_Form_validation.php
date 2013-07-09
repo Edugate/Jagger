@@ -598,11 +598,11 @@ class MY_form_validation extends CI_form_validation {
                     $s = explode(',',$str);
                     foreach($s as $v)
                     {
-                        if(! preg_match('/^[a-z0-9._-]+$/i', $v))
-                        {
-                           $this->set_message('valid_scopes', "%s : invalid characters");
-                           return FALSE;   
-                        }
+                          if(!(preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $v) && preg_match("/^.{1,253}$/", $v) && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $v)))
+                          {
+                              $this->set_message('valid_scopes', "%s : invalid characters");
+                              return FALSE;   
+                          }
                     }
                 }
                 return $result;

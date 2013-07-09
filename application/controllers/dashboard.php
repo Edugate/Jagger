@@ -35,7 +35,7 @@ class Dashboard extends MY_Controller {
         {
             $data['content_view'] = 'staticpages_view' ;
             $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode'=>'front_page'));
-            if(!empty($frontpage))
+            if (!empty($frontpage))
             {
                 $data['pcontent'] = $frontpage->getContent();
                 $data['ptitle'] = $frontpage->getTitle();
@@ -83,7 +83,7 @@ class Dashboard extends MY_Controller {
             $feds = array();
             if(!empty($board)&& is_array($board))
             {
-                if(array_key_exists('idp',$board) && is_array($board['idp'])) 
+                if(array_key_exists('idp',$board) && is_array($board['idp']))
                 {
                     foreach($board['idp'] as $key=>$value)
                     {
