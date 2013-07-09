@@ -141,9 +141,18 @@ class Disco extends MY_Controller {
                                        $geo_set = true;
                                     }
                                 }
-                                elseif ($e_element == 'Logo' && ($logo_set === FALSE))
+                                elseif ($e_element === 'Logo' && ($logo_set === FALSE))
                                 {
-                                    $ElementValue = $ex->getEvalue();
+                                    if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches)))
+                                    {
+                                           $ElementValue = $this->logo_url . $ex->getEvalue();
+                                    }
+                                    else
+                                    {
+                                           $ElementValue = $ex->getEvalue();
+                                   }
+
+                                    //$ElementValue = $ex->getEvalue();
                                     $output[$oi]['icon'] = $ElementValue;
                                     $logo_set = true;
                                 }
