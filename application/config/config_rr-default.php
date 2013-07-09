@@ -162,6 +162,12 @@ $config['cacheprefix'] = 'rr3_';
  * translator access
  * example: $config['translator_access']['pl'] = 'USERNAME_WITH_ACCESS';
  */
+
+
+
+
+
+
 $config['translator_access']['pl'] = null;
 $config['translator_access']['pt'] = null;
 $config['translator_access']['it'] = null;

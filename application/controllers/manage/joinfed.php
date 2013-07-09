@@ -115,29 +115,54 @@ class Joinfed extends MY_Controller {
                   *@todo create queue 
                   */
                  
-//                $provider->removeFederation($federation);
-//                $this->em->persist($provider);
-//                $this->em->flush();
-//                $data['success_message'] = "You just left federation: ".$federation->getName();
-//                $data['content_view'] = 'manage/leavefederation_view';
-//                $this->load->view('page',$data);
                   $this->load->library('approval');
                   $add_to_queue = $this->approval->invitationFederationToQueue($provider ,$federation,'Join');
                   if($add_to_queue)
                   {
                                $mail_recipients = array();
                                $mail_sbj = "Request  to join federation: ".$federation->getName();
-                               $mail_body = "Hi,\r\nJust few moments ago Administator of Provider \"".$provider->getName()." (".$provider->getEntityId().")\"\r\n";
-                               $mail_body .= "sent request to Administrators/Owner of Federation: \"".$federation->getName() ."\"\r\n";
-                               $mail_body .= "to access  him as new federation member.\r\n";
-                               $mail_body .= "To accept or reject this request please go to Resource Registry\r\n";
-                               $mail_body .= base_url()."reports/awaiting\r\n";
-                               $mail_body .= "\r\n\r\n======= additional message attached by requestor ===========\r\n";
-                               if(!empty($message))
+                                
+                            
+                               $providername = $provider->getName();
+                               if(empty($providername))
                                {
-                                       $mail_body .= $message."\r\n";
+                                  $providername = $provider->getEntityId();
                                }
-                               $mail_body .= "=============================================================\r\n";
+                               $providerentityid = $provider->getEntityId();
+                               $awaitingurl = base_url().'reports/awaiting';
+                               $fedname = $federation->getName();
+                               if(empty($message))
+                               {
+                                  $message = '';
+                               }                               
+                               $mail_body = '';
+                             
+                               $overrideconfig = $this->config->item('defaultmail');
+                               if(!empty($overrideconfig) && is_array($overrideconfig) && array_key_exists('joinfed',$overrideconfig) && !empty($overrideconfig['joinfed']))
+                               {
+                                   $b = $overrideconfig['joinfed'];
+                               }
+                               else
+                               {
+                                   $b = "Hi,\r\nJust few moments ago Administator of Provider %s (%s) \r\n";
+                                   $b .= "sent request to Administrators of Federation: %s \r\n";
+                                   $b .= "to access  him as new federation member.\r\n";
+                                   $b .= "To accept or reject this request please go to Resource Registry\r\n %s \r\n";
+                                   $b .= "\r\n\r\n======= additional message attached by requestor ===========\r\n";
+                                   $b .= "%s";
+                                   $b .= "\r\n=============================================================\r\n";
+                               }
+                               $localizedmail = $this->config->item('localizedmail');
+                               if(!empty($localizedmail) && is_array($localizedmail) && array_key_exists('joinfed',$localizedmail) && !empty($localizedmail['joinfed']))
+                               {
+                                   $c = $localizedmail['joinfed'];
+                                   $mail_body .= sprintf($c, $providername, $providerentityid, $fedname, $awaitingurl,$message);
+                                   $mail_body .= "\r\n\r\n".sprintf($b, $providername, $providerentityid, $fedname, $awaitingurl,$message);
+                               }
+                               else
+                               {
+                                    $mail_body .= sprintf($b, $providername, $providerentityid, $fedname, $awaitingurl,$message);    
+                               }
 
                                $fedownerusername = $federation->getOwner();
                                if(!empty($fedownerusername))

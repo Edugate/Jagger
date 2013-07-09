@@ -36,3 +36,39 @@ YOUR FOOTER \r\n
 COMPANY\r\n
 Phone: xxxxxxxxx\r\n
 email:xxxxxxxxxxxx\r\n";
+
+/** 
+ * overwrite builtin messages and localized
+ */
+
+/**
+ * $config['defaultmail']['joinfed'] 
+ * overwrites builtin mailbody of message sent to Adminisrtators
+ * about provider request to join federation. You need to keep %s in proper order as they will be replaced with values of:
+ * providername,entityid,federationname,url,additionalmessage
+ */
+$config['defaultmail']['joinfed'] = "Hi,\r\nJust few moments ago Administator of Provider %s (%s) \r\n
+sent request to Administrators of Federation: %s \r\n
+to access  him as new federation member.\r\n
+To accept or reject this request please go to Resource Registry\r\n %s \r\n
+\r\n\r\n======= additional message attached by requestor ===========\r\n
+%s \r\n=============================================================\r\n
+";
+
+/**
+ * $config['localizedmail']['joinfed'] 
+ * creates localized mailbody of message sent to Adminisrtators
+ * about provider request to join federation. You need to keep %s in proper order as they will be replaced with values of:
+ * providername,entityid,federationname,url,additionalmessage
+ */
+$config['localizedmail']['joinfed'] = NULL;
+
+/**
+ *  if you set $config['localizedmail']['joinfed'] then mail will contain text from $config['localizedmail']['joinfed'] first 
+ *  and then built-in/$config['defaultmail']['joinfed'] on the bottom. ex. in you local language and english
+ *  if you want to use only you local language then set $config['defaultmail']['joinfed'] but not $config['localizedmail']['joinfed']
+ */
+
+
+
+
