@@ -65,8 +65,8 @@ class Entityedit extends MY_Controller {
             }
             $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|min_length[5]|max_length[255]|entityid_unique_update[' . $id . ']');
             $this->form_validation->set_rules('f[orgname]', lang('rr_homeorganisationname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
-            $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|max_length[255]');
-            $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|max_length[255]');
+            $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
+            $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
 
             if($staticisdefault)
             {

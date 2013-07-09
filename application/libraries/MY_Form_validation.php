@@ -590,6 +590,24 @@ class MY_form_validation extends CI_form_validation {
         }
         return $result;
     }
+    function valid_scopes($str)
+    {
+                $result = TRUE;
+                if(!empty($str))
+                {
+                    $s = explode(',',$str);
+                    foreach($s as $v)
+                    {
+                        if(! preg_match('/^[a-z0-9._-]+$/i', $v))
+                        {
+                           $this->set_message('valid_scopes', "%s : invalid characters");
+                           return FALSE;   
+                        }
+                    }
+                }
+                return $result;
+    }
+
 
     function valid_static_old($is_used, $metadata)
     {
