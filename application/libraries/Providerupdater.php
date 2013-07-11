@@ -89,7 +89,7 @@ class Providerupdater {
                if(array_key_exists('idpsso',$ch['scopes']) && !empty($ch['scopes']['idpsso']))
                {
                      $idpssoscopes=array_filter(explode(',',$ch['scopes']['idpsso']));
-                     $ent->setScope('idpsso', $idpssoscopes);
+                     $ent->setScope('idpsso', array_unique($idpssoscopes));
                      if($origscopesso != implode(',',$idpssoscopes))
                      {
                         $m['Scope IDPSSO'] = array('before'=>$origscopesso,'after'=>implode(',',$idpssoscopes));
@@ -107,7 +107,7 @@ class Providerupdater {
                {
                        
                        $aascopes = array_filter(explode(',',$ch['scopes']['aa']));
-                       $ent->setScope('aa',$aascopes);
+                       $ent->setScope('aa',array_unique($aascopes));
                        if($origscopeaa != implode(',',$aascopes))
                        {
                           $m['Scope AA'] = array('before'=>$origscopeaa,'after'=>implode(',',$aascopes));
@@ -180,6 +180,7 @@ class Providerupdater {
         if (array_key_exists('regpolicy', $ch) && is_array($ch['regpolicy']))
         {
             $origs = $ent->getRegistrationPolicy();
+            $origcopy = $origs;
             $langs = array_keys(languagesCodes());
             foreach ($ch['regpolicy'] as $key => $value)
             {
@@ -189,11 +190,17 @@ class Providerupdater {
                     {
                         unset($origs['' . $key . '']);
                     }
-                    else
+                    elseif(!empty($value))
                     {
                         $origs['' . $key . ''] = $value;
                     }
                 }
+            }
+            if($origs != $origcopy)
+            {
+               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origcopy));
+               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
+               $m['RegPolicy'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
             $ent->setRegistrationPolicyFromArray($origs, TRUE);
         }
@@ -211,6 +218,7 @@ class Providerupdater {
         if (array_key_exists('ldisplayname', $ch) && is_array($ch['ldisplayname']))
         {
             $origs = $ent->getLocalDisplayname();
+            $origcopy = $origs;
             $langs = array_keys(languagesCodes());
             foreach ($ch['ldisplayname'] as $key => $value)
             {
@@ -225,6 +233,12 @@ class Providerupdater {
                         $origs['' . $key . ''] = $value;
                     }
                 }
+            }
+            if($origs != $origcopy)
+            {
+               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origcopy));
+               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
+               $m['Localized DisplayName'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
             $ent->setLocalDisplayName($origs);
         }
@@ -324,12 +338,10 @@ class Providerupdater {
             }
             $ent->setHelpdeskUrl($ch['helpdeskurl']);
         }
-        /**
-         * @todo track lhelpdesk
-         */
         if (array_key_exists('lhelpdesk', $ch) && is_array($ch['lhelpdesk']))
         {
             $origs = $ent->getLocalHelpdeskUrl();
+            $origcopy = $origs;
             $langs = array_keys(languagesCodes());
             foreach ($ch['lhelpdesk'] as $key => $value)
             {
@@ -339,11 +351,17 @@ class Providerupdater {
                     {
                         unset($origs['' . $key . '']);
                     }
-                    else
+                    elseif(!empty($value))
                     {
                         $origs['' . $key . ''] = $value;
                     }
                 }
+            }
+            if($origs != $origcopy)
+            {
+               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origcopy));
+               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
+               $m['Localized HelpdeskURL'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
             $ent->setLocalHelpdeskUrl($origs);
         }
@@ -356,12 +374,10 @@ class Providerupdater {
             }
             $ent->setDescription($ch['description']);
         }
-        /**
-         * @todo track ldesc
-         */
         if (array_key_exists('ldesc', $ch) && is_array($ch['ldesc']))
         {
             $origs = $ent->getLocalDescription();
+            $origcopy = $origs;
             $langs = array_keys(languagesCodes());
             foreach ($ch['ldesc'] as $key => $value)
             {
@@ -371,11 +387,17 @@ class Providerupdater {
                     {
                         unset($origs['' . $key . '']);
                     }
-                    else
+                    elseif(!empty($value))
                     {
                         $origs['' . $key . ''] = $value;
                     }
                 }
+            }
+            if($origs != $origcopy)
+            {
+               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origcopy));
+               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
+               $m['Localized Description'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
             $ent->setLocalDescription($origs);
         }

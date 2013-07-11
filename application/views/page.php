@@ -292,6 +292,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <div style="display: none"><input type="hidden" name="baseurl" value="<?php echo base_url(); ?>"></div>
         <button id="jquerybubblepopupthemes" style="display:none;" value="<?php echo $jquerybubblepopupthemes; ?>"></button> 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="<?php echo $base_url; ?>js/jquery-min.js">\x3C/script>')</script>
         <script src="<?php echo $base_url; ?>js/jquery-migrate-1.2.0.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
         <script type="text/javascript" src="<?php echo $base_url; ?>js/jquery.uitablefilter.js"></script>

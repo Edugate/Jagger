@@ -84,13 +84,13 @@ class Show_element {
             {
                 $required_attrs = $tmp_reqs->getRequirementsBySP($sp_requester);
 
-                $name2 = $sp_requester->getName();
-                if (empty($name))
+                $requesterName = $sp_requester->getName();
+                if (empty($requesterName))
                 {
-                    $name2 = $sp_requester->getEntityId();
+                    $requesterName = $sp_requester->getEntityId();
                 }
                 $name = $sp_requester->getEntityId();
-                $this->entitiesmaps[$sp_requester->getEntityId()] = $name2;
+                $this->entitiesmaps[$sp_requester->getEntityId()] = $requesterName;
 
 
                 $result['' . $sp_requester->getEntityId() . ''][$a->getAttribute()->getName()] = array(
@@ -282,14 +282,16 @@ class Show_element {
                         $policy_id = $attr_value['id'];
                     }
                     $link = anchor($prefix_url . "" . $provider->getId() . "/" . $attr_value['attr_id'] . "/sp/" . $attr_value['spid'], '<img src="' . $icon . '"/>');
-                    $permited_values = "";
-                    $denied_values = "";
+                    $permited_values = '';
+                    $denied_values = '';
+                    $lng_permitedval = lang('rr_permvalues');
+                    $lng_denyval = lang('rr_denvalues');
 
                     if (array_key_exists('custom', $attr_value) && !empty($attr_value['custom']))
                     {
                         if (array_key_exists('permit', $attr_value['custom']) && count($attr_value['custom']['permit']) > 0)
                         {
-                            $permited_values .= "<dl><dt>permited values:</dt>";
+                            $permited_values .= '<dl><dt>'.$lng_permitedval.':</dt>';
                             foreach ($attr_value['custom']['permit'] as $per1)
                             {
                                 $permited_values .= "<dd>" . $per1 . "</dd>";
@@ -298,7 +300,7 @@ class Show_element {
                         }
                         if (array_key_exists('deny', $attr_value['custom']) && count($attr_value['custom']['deny']) > 0)
                         {
-                            $denied_values .= "<dl><dt>denied values: </dt>";
+                            $denied_values .= '<dl><dt>'.$lng_denyval.':</dt>';
                             foreach ($attr_value['custom']['deny'] as $per2)
                             {
                                 $denied_values .= "<dd>" . $per2 . "</dd>";
@@ -308,14 +310,14 @@ class Show_element {
                     }
                     $custom_link = anchor(base_url() . "manage/custom_policies/idp/" . $provider->getId() . "/" . $attr_value['spid'] . "/" . $attr_value['attr_id'], '<img src="' . $icon . '"/>');
 
-                    $attributes[] = array($attr_name . $link, $attr_value['status'], $attr_value['policy'] . "<br /><div ><b>custom policy </b>" . $custom_link . "" . $permited_values . "" . $denied_values . "</div>");
+                    $attributes[] = array($attr_name . $link, $attr_value['status'], $attr_value['policy'] . '<br /><div ><b>'.lang('custompolicy').'</b>' . $custom_link .  $permited_values  . $denied_values . '</div>');
                 }
             }
             $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
 
             $this->ci->table->set_template($tmpl);
-            $this->ci->table->set_heading('Attribute name', 'actual status', 'policy');
-            $this->ci->table->set_caption('Specific Policies');
+            $this->ci->table->set_heading(''.lang('rr_attr_name').'', ''.lang('rr_currentstatus').'', ''.lang('policy').'');
+            $this->ci->table->set_caption(''.lang('rr_specpolicies').'');
             $result = $this->ci->table->generate($attributes);
             $this->ci->table->clear();
             return $result;
@@ -339,18 +341,18 @@ class Show_element {
         {
             $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
             $this->ci->table->set_template($tmpl);
-            $this->ci->table->set_heading('Attribute name', 'policy');
-            $this->ci->table->set_caption('Attribute Release Policy for federations');
+            $this->ci->table->set_heading(''.lang('rr_attr_name').'', ''.lang('policy').'');
+            $this->ci->table->set_caption(''.lang('rr_arpforfeds').'');
             foreach ($source as $s)
             {
 
-                $attributes[] = array('data' => array('data' => 'Federation: <b>' . $s['fedname'] . '</b>', 'colspan' => 2, 'class' => 'highlight'));
+                $attributes[] = array('data' => array('data' => ''.lang('rr_federation').': <b>' . $s['fedname'] . '</b>', 'colspan' => 2, 'class' => 'highlight'));
                 foreach ($s['attrs'] as $attr_key => $attr_value)
                 {
                     $edit_link = anchor($prefix_url . "" . $provider->getId() . "/" . $attr_value['attrid'] . "/fed/" . $s['fedid'], '<img src="' . $icon . '"/>');
                     if (!array_key_exists($attr_value['name'], $supported_attrs))
                     {
-                        $attr_name = '<span class="alert" title="attribute not supported">' . $attr_value['name'] . '</span>';
+                        $attr_name = '<span class="alert" title="'.lang('attrnotsupported').'">' . $attr_value['name'] . '</span>';
                         $attributes[] = array('' . $attr_name . '' . $edit_link . '', $attr_value['release']);
                     }
                     else
@@ -385,7 +387,7 @@ class Show_element {
                 if (!array_key_exists($s['name'], $supported_attrs))
                 {
 
-                    $attr_name = '<span class="alert" title="attribute not supported">' . $s['name'] . '</span>';
+                    $attr_name = '<span class="alert" title="'.lang('attrnotsupported').'">' . $s['name'] . '</span>';
                 }
                 else
                 {
@@ -398,10 +400,15 @@ class Show_element {
             $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
 
             $this->ci->table->set_template($tmpl);
-            $this->ci->table->set_heading('Attribute name', 'policy');
+            $this->ci->table->set_heading(''.lang('attrname').'', ''.lang('policy').'');
             if (empty($disable_caption))
             {
-                $this->ci->table->set_caption('Default Attribute Release Policy for <b>' . $provider->getName() . '</b>' . anchor(base_url() . "providers/detail/show/" . $provider->getId(), '<img src="' . base_url() . 'images/icons/home.png" />'));
+                $provname = $provider->getName();
+                if(empty($provname))
+                {
+                     $provname = $provider->getEntityid();
+                }
+                $this->ci->table->set_caption(''.lang('rr_defaultarp').': <b>' . $provname . '</b>' . anchor(base_url() . "providers/detail/show/" . $provider->getId(), '<img src="' . base_url() . 'images/icons/home.png" />'));
             }
             $result = $this->ci->table->generate($attributes);
             $this->ci->table->clear();
@@ -409,8 +416,7 @@ class Show_element {
         }
         else
         {
-            //$result = "<h3>Default Attribute Release Policy for <b>" . $provider->getName() . "</b></h3>\n";
-            $result = "<span class=\"notice\">No default policy is set yet!</span>";
+            $result = '<span class="notice">'.lang('nodefaultpolicysetyet').'</span>';
             return $result;
         }
     }

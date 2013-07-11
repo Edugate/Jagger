@@ -286,8 +286,8 @@ $(function() {
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][prvurl][" + nf + "]\">PrivacyStatementURL in " + nfv + " </label><input id=\"f[uii][spsso][prvurl][" + nf + "]\" name=\"f[uii][spsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
     });
     $("button#addlhelpdesk").click(function() {
-        var nf = $("span.addlhelpdesk option:selected").val();
-        var nfv = $("span.addlhelpdesk option:selected").text();
+        var nf = $("span.lhelpdeskadd option:selected").val();
+        var nfv = $("span.lhelpdeskadd option:selected").text();
         $("li.addlhelpdesk option[value=" + nf + "]").remove();
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">HelpdeskURL in " + nfv + " </label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\"/></li>");
     });
