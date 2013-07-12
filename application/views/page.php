@@ -27,7 +27,6 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <link rel="apple-touch-icon" sizes="114x114" href="<?php echo $base_url; ?>images/apple-touch-icon-114x114-precomposed.png" />
         <link rel="apple-touch-icon" sizes="144x144" href="<?php echo $base_url; ?>images/apple-touch-icon-114x114-precomposed.png" />
         <link rel="stylesheet" type="text/css" href="<?php echo $base_url; ?>styles/jquery-ui.css"/>
-        <link href='//fonts.googleapis.com/css?family=PT+Serif:400,700' rel='stylesheet' type='text/css'>
         <?php
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/style.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
