@@ -116,14 +116,14 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['uii']['idpsso']['desc'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' in ' . $k . '', 'trim|min_length[5]|max_length[500]|xss_clean');
+                    $this->form_validation->set_rules('f[uii][idpsso][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' '.lang('in') .' ' . $k . '', 'trim|min_length[5]|max_length[500]|xss_clean');
                 }
             }
             if (isset($y['f']['uii']['idpsso']['helpdesk']) && is_array($y['f']['uii']['idpsso']['helpdesk']))
             {
                 foreach ($y['f']['uii']['idpsso']['helpdesk'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][helpdesk][' . $k . ']', 'UUI ' . lang('rr_helpdeskurl') . ' in ' . $k . '', 'trim|valid_url|min_length[5]|max_length[500]|xss_clean');
+                    $this->form_validation->set_rules('f[uii][idpsso][helpdesk][' . $k . ']', 'UUI ' . lang('rr_helpdeskurl') . ' '.lang('in').' ' . $k . '', 'trim|valid_url|min_length[5]|max_length[500]|xss_clean');
                 }
             }
             if (array_key_exists('ldisplayname', $y['f']))

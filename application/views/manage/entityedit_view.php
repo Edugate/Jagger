@@ -58,9 +58,9 @@ echo '</pre></div>';
         echo '</fieldset>';
     }
     echo '<div class="buttons">
-        <button type="submit" name="discard" value="discard" class="button negative"><span class="reset">Discard all changes</span></button>
-        <button type="submit" name="modify" value="savedraft" class="button positive"><span class="save">Save Draft</span></button>
-        <button type="submit" name="modify" value="modify" class="button positive"><span class="save">Update</span>
+        <button type="submit" name="discard" value="discard" class="button negative"><span class="reset">'.lang('discardall').'</span></button>
+        <button type="submit" name="modify" value="savedraft" class="button positive"><span class="save">'.lang('savedraft').'</span></button>
+        <button type="submit" name="modify" value="modify" class="button positive"><span class="save">'.lang('btnupdate').'</span>
       </button></div>';
     ?>
 

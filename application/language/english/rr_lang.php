@@ -6,6 +6,9 @@
  * Organization: HEAnet
  */
 
+$lang['in']                         = 'in';
+$lang['for']                        = 'for';
+
 $lang['title_spreg']                = 'Service Provider Registration';
 $lang['title_idpreg']               = 'Identity Provider Registration';
 $lang['title_idplist']              = 'Identity Providers List';
@@ -34,6 +37,7 @@ $lang['tabcerts']                   = 'Certificates';
 $lang['tabuii']                     = 'UII';
 $lang['tabstaticmeta']              = 'Static Metadata';
 $lang['tabotherforms']              = 'Other forms';
+$lang['btnupdate']                  = 'Update';
 $lang['updated']                    = 'Updated';
 $lang['rr_uii']                     = 'User Interface Information';
 $lang['rr_coc']                     = 'Data protection Code of Conduct';
@@ -277,6 +281,14 @@ $lang['rr_contactfirstname']        = 'Contact first name';
 $lang['rr_contactlastname']         = 'Contact last name';
 $lang['rr_contactemail']            = 'Contact Email';
 $lang['rr_newcontact']              = 'New contact details';
+$lang['rr_addnewcoontact']          = 'Add new contact';
+$lang['rr_addnewidpartifactres']    = 'Add new IDP ArtifactResolutionService';
+$lang['addnewacs']                  = 'Add new ACS URL';
+$lang['addnewartresservice']        = 'Add new ArtifactResolutionService';
+$lang['addnewreqinit']              = 'Add new RequestInitiator URL';
+$lang['addnewds']                   = 'Add new DiscoveryResponse URL';             
+$lang['addnewcert']                 = 'Add new Certificate';
+$lang['idpcerts']                   = 'IdP Certificates';
 $lang['rr_attributes']              = 'Attributes';
 $lang['rr_requiredattributes']      = 'Required Attributes';
 $lang['rr_provideingattrsoverview'] = 'Attributes provided overview';
@@ -375,6 +387,7 @@ $lang['rr_informationdetail']       = 'Information detail for ';
 $lang['rr_certusage']               = 'Usage';
 $lang['rr_certsigning']             = 'signing';
 $lang['rr_certencryption']          = 'encryption';
+$lang['rr_certsignandencr']         = 'signing and encryption';
 $lang['rr_staticmetadataactive']    = 'Static metadata is active';
 $lang['rr_staticmetadatanotactive'] = 'Static metadata is not active';
 $lang['rr_isempty']                 = 'is empty';
@@ -406,6 +419,8 @@ $lang['sendinvbtn']                 = 'Send invidation';
 $lang['adduser_btn']                = 'Register user';
 $lang['userdetails']                = 'User details';
 $lang['userregisterform']           = 'User registration form';
+$lang['discardall']                 = 'Discard all changes';
+$lang['savedraft']                  = 'Save draft';
 $lang['rr_fed_active']              = 'active';
 $lang['rr_fed_inactive']            = 'inactive';
 $lang['rr_fed_inactive_full']       = 'Federation is inactive';
@@ -546,6 +561,7 @@ $lang['incinmetainside']            = 'included in Metadata inside';
 $lang['localizeprovname' ]          = 'Localized Name';
 $lang['localizeprovdisplayname' ]   = 'Localized DisplayName';
 $lang['addlocalizedname']           = 'Add localized Name';
+$lang['addlocalized']               = 'Add localized';
 $lang['addlocalizeddisplayname']           = 'Add localized DisplayName';
 $lang['localizedregpolicyfield']         = 'Localized RegistrationPolicy';
 $lang['addlocalizedregpolicy']         = 'Add localized RegistrationPolicy';

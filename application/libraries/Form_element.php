@@ -609,7 +609,7 @@ class Form_element {
             $sessform = TRUE;
         }
 
-        $r = '<fieldset><legend>Privacy Statement URL <i>default</i>' . showHelp('The URL is used as english version if below is not set') . '</legend><ol><li>';
+        $r = '<fieldset><legend>Privacy Statement URL <i>'.lang('rr_default').'</i>' . showHelp('The URL is used as english version if below is not set') . '</legend><ol><li>';
         $f_privacyurl = $ent->getPrivacyUrl();
         $p_privacyurl = $f_privacyurl;
         $privaceurlnotice = '';
@@ -719,7 +719,7 @@ class Form_element {
             $r .= '<li class="addlprivacyurlidpsso localized">';
 
             $r .= form_dropdown('langcode', $idpssolangcodes, 'en');
-            $r .= '<button type="button" id="addlprivacyurlidpsso" name="addlprivacyurlidpsso" value="addlprivacyurlidpsso" class="btn">Add localized ' . lang('rr_privacystatement') . '</button>';
+            $r .= '<button type="button" id="addlprivacyurlidpsso" name="addlprivacyurlidpsso" value="addlprivacyurlidpsso" class="btn">'.lang('addlocalized').' ' . lang('rr_privacystatement') . '</button>';
 
             $r .= '</ol></fieldset>';
             $result[] = $r;
@@ -774,7 +774,7 @@ class Form_element {
             $r .= '<li class="addlprivacyurlspsso localized">';
 
             $r .= form_dropdown('langcode', $spssolangcodes, 'en');
-            $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="btn">Add localized ' . lang('rr_privacystatement') . '</button>';
+            $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="btn">'.lang('addlocalized') .' ' . lang('rr_privacystatement') . '</button>';
 
 
 
@@ -894,7 +894,7 @@ class Form_element {
                 $result[] = $n;
             }
         }
-        $n = '<button class="btn" type="button" id="ncontactbtn">Add new Contact</button>';
+        $n = '<button class="btn" type="button" id="ncontactbtn">'.lang('rr_addnewcoontact').'</button>';
         $result[] = $n;
 
         return $result;
@@ -1154,7 +1154,7 @@ class Form_element {
                 }
             }
             $ACSPart .= implode('', $acs);
-            $newelement = '<li><button class="btn" type="button" id="nidpartifactbtn">Add new IDP ArtifactResolutionService</button></li>';
+            $newelement = '<li><button class="btn" type="button" id="nidpartifactbtn">'.lang('rr_addnewidpartifactres').'</button></li>';
             $ACSPart .= $newelement . '</ol></fieldset>';
             $result[] = $ACSPart;
             /**
@@ -1212,7 +1212,7 @@ class Form_element {
                 $aalo[] = $row;
                 ++$ni;
             }
-            $result[] = '<fieldset><legend>AA</legend><ol>' . implode('', $aalo) . '</ol></fieldset>';
+            $result[] = '<fieldset><legend>AttributeAuthorityDescriptor</legend><ol>' . implode('', $aalo) . '</ol></fieldset>';
 
             /**
              * end AttributeAuthorityDescriptor Location
@@ -1366,7 +1366,7 @@ class Form_element {
                 }
             }
             $ACSPart .= implode('', $acs);
-            $newelement = '<li><button class="btn" type="button" id="nacsbtn">Add new ACS URL</button></li>';
+            $newelement = '<li><button class="btn" type="button" id="nacsbtn">'.lang('addnewacs').'</button></li>';
             $ACSPart .= $newelement . '</ol></fieldset>';
             $result[] = $ACSPart;
             /**
@@ -1478,7 +1478,7 @@ class Form_element {
                 }
             }
             $ACSPart .= implode('', $acs);
-            $newelement = '<li><button class="btn" type="button" id="nspartifactbtn">Add new ArtifactResolutionService</button></li>';
+            $newelement = '<li><button class="btn" type="button" id="nspartifactbtn">'.lang('addnewartresservice').'</button></li>';
             $ACSPart .= $newelement . '</ol></fieldset>';
             $result[] = $ACSPart;
             /**
@@ -1610,7 +1610,7 @@ class Form_element {
                 }
             }
             $RequestInitiatorPart .= implode('', $ri);
-            $newelement = '<li><button class="btn" type="button" id="nribtn">Add new RequestInitiator URL</button></li>';
+            $newelement = '<li><button class="btn" type="button" id="nribtn">'.lang('addnewreqinit').'</button></li>';
             $RequestInitiatorPart .= $newelement . '</ol><fieldset>';
             $result[] = $RequestInitiatorPart;
             /**
@@ -1727,7 +1727,7 @@ class Form_element {
                 }
             }
             $DiscoverResponsePart .= implode('', $dr);
-            $newelement = '<li><button class="btn" type="button" id="ndrbtn">Add new DiscoveryResponse URL</button></li>';
+            $newelement = '<li><button class="btn" type="button" id="ndrbtn">'.lang('addnewds').'</button></li>';
             $DiscoverResponsePart .= $newelement . '</ol><fieldset>';
             $result[] = $DiscoverResponsePart;
         }
@@ -1760,7 +1760,7 @@ class Form_element {
             /**
              * start CERTS IDPSSODescriptor
              */
-            $Part = '<fieldset><legend>IDP Certificates <i>IDPSSODesciptor</i></legend><ol>';
+            $Part = '<fieldset><legend>'.lang('idpcerts').' <i>IDPSSODesciptor</i></legend><ol>';
             $idpssocerts = array();
             if (isset($cert['idpsso']) && is_array($cert['idpsso']))
             {
@@ -1818,7 +1818,7 @@ class Form_element {
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][idpsso][' . $crtid . '][type]');
                     $row .= form_dropdown('f[crt][idpsso][' . $crtid . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][idpsso][' . $crtid . '][usage]');
-                    $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][idpsso][' . $crtid . '][usage]', array('signing' => 'signing', 'encryption' => 'encryption', 'both' => 'signing and encryption'), $fusage) . '</span></li>';
+                    $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][idpsso][' . $crtid . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), $fusage) . '</span></li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][idpsso][' . $crtid . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][idpsso][' . $crtid . '][keyname]',
@@ -1851,7 +1851,7 @@ class Form_element {
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][idpsso][' . $k4 . '][type]');
                     $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][idpsso][' . $k4 . '][usage]');
-                    $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][usage]', array('signing' => 'signing', 'encryption' => 'encryption', 'both' => 'signing and encryption'), set_value('f[crt][idpsso][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
+                    $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), set_value('f[crt][idpsso][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][idpsso][' . $k4 . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][idpsso][' . $k4 . '][keyname]',
@@ -1871,7 +1871,7 @@ class Form_element {
                 }
             }
             $Part .= implode('', $idpssocerts);
-            $newelement = '<li><button class="btn" type="button" id="nidpssocert">Add new Certificate</button></li>';
+            $newelement = '<li><button class="btn" type="button" id="nidpssocert">'.lang('addnewcert').' '.lang('for').' IDPSSODescriptor</button></li>';
             $Part .= $newelement . '</ol></fieldset>';
             $result[] = $Part;
             $Part = '';
@@ -1881,7 +1881,7 @@ class Form_element {
             /**
              * start CERTs for AttributeAuthority
              */
-            $Part = '<fieldset><legend>IDP Certificates <i>AttributeAuthorityDesciptor</i></legend><ol>';
+            $Part = '<fieldset><legend>'.lang('idpcerts').' <i>AttributeAuthorityDesciptor</i></legend><ol>';
             $aacerts = array();
             if (isset($cert['aa']) && is_array($cert['aa']))
             {
@@ -1939,7 +1939,7 @@ class Form_element {
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][aa][' . $crtid . '][type]');
                     $row .= form_dropdown('f[crt][aa][' . $crtid . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][aa][' . $crtid . '][usage]');
-                    $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][aa][' . $crtid . '][usage]', array('signing' => 'signing', 'encryption' => 'encryption', 'both' => 'signing and encryption'), $fusage) . '</span></li>';
+                    $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][aa][' . $crtid . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), $fusage) . '</span></li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][aa][' . $crtid . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][aa][' . $crtid . '][keyname]',
@@ -1972,7 +1972,7 @@ class Form_element {
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][aa][' . $k4 . '][type]');
                     $row .= form_dropdown('f[crt][aa][' . $k4 . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][aa][' . $k4 . '][usage]');
-                    $row .= form_dropdown('f[crt][aa][' . $k4 . '][usage]', array('signing' => 'signing', 'encryption' => 'encryption', 'both' => 'signing and encryption'), set_value('f[crt][aa][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
+                    $row .= form_dropdown('f[crt][aa][' . $k4 . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), set_value('f[crt][aa][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][aa][' . $k4 . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][aa][' . $k4 . '][keyname]',
@@ -1992,7 +1992,7 @@ class Form_element {
                 }
             }
             $Part .= implode('', $aacerts);
-            $newelement = '<li><button class="btn" type="button" id="naacert">Add new Certificate for AttributeAuthorityDescriptor</button></li>';
+            $newelement = '<li><button class="btn" type="button" id="naacert">'.lang('addnewcert').' '.lang('for').' AttributeAuthorityDescriptor</button></li>';
             $Part .= $newelement . '</ol></fieldset>';
             $result[] = $Part;
             $Part = '';
@@ -2058,7 +2058,7 @@ class Form_element {
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][spsso][' . $crtid . '][type]');
                     $row .= form_dropdown('f[crt][spsso][' . $crtid . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][spsso][' . $crtid . '][usage]');
-                    $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][spsso][' . $crtid . '][usage]', array('signing' => 'signing', 'encryption' => 'encryption', 'both' => 'signing and encryption'), $fusage) . '</span></li>';
+                    $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][spsso][' . $crtid . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), $fusage) . '</span></li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][spsso][' . $crtid . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][spsso][' . $crtid . '][keyname]',
@@ -2093,7 +2093,7 @@ class Form_element {
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][spsso][' . $k4 . '][type]');
                     $row .= form_dropdown('f[crt][spsso][' . $k4 . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][spsso][' . $k4 . '][usage]');
-                    $row .= form_dropdown('f[crt][spsso][' . $k4 . '][usage]', array('signing' => 'signing', 'encryption' => 'encryption', 'both' => 'signing and encryption'), set_value('f[crt][spsso][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
+                    $row .= form_dropdown('f[crt][spsso][' . $k4 . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), set_value('f[crt][spsso][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][spsso][' . $k4 . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][spsso][' . $k4 . '][keyname]',
@@ -2113,7 +2113,7 @@ class Form_element {
                 }
             }
             $Part .= implode('', $spssocerts);
-            $newelement = '<li><button class="btn" type="button" id="nspssocert">Add new Certificate</button></li>';
+            $newelement = '<li><button class="btn" type="button" id="nspssocert">'.lang('addnewcert').'</button></li>';
             $Part .= $newelement . '</ol></fieldset>';
             $result[] = $Part;
         }
@@ -2199,7 +2199,7 @@ class Form_element {
             /**
              * IDP protocols 
              */
-            $r = '<fieldset><legend>Supported protocols <i>IDPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>IDPSSODescriptor</i></legend><ol>';
             $idpssoprotocols = $ent->getProtocolSupport('idpsso');
             $selected_options = array();
             $idpssonotice = '';
@@ -2226,7 +2226,7 @@ class Form_element {
             $r .= '</ol></fieldset>';
             $result[] = $r;
 
-            $r = '<fieldset><legend>Supported protocols <i>AttributeAuthorityDescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>AttributeAuthorityDescriptor</i></legend><ol>';
             $aaprotocols = $ent->getProtocolSupport('aa');
             $selected_options = array();
             $aanotice = '';
