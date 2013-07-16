@@ -45,7 +45,8 @@ class Msigner extends MY_Controller {
        {
            show_error('empty tyle or id: '.lang('error404').'',404);
        }
-       if(empty($this->config->item('gearman')))
+       $gearmanenabled = $this->config->item('gearman')
+       if(empty($gearmanenabled))
        {
            show_error('gearman is not enabled '.lang('error404').'',404);
        }       
