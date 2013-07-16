@@ -615,6 +615,7 @@ $lang['rerror_nopermfedlistview']   = 'No access to view federations list';
 $lang['rr_warning']                 = 'warning!';
 $lang['rr_details']                 = 'Details';
 $lang['coldetails']                 = 'Details';
+$lang['taskssent']                  = 'Task(s) sent to job server';
 $lang['confirmreqsuccess']          = 'Thank you! You request has been added to the queue';       
 $lang['rerror_nopermtolistidps']    = 'No access to list all idps';
 $lang['rerror_nopermtolistisps']    = 'No access to list all sps';

@@ -354,6 +354,7 @@ class Manage extends MY_Controller {
         {
             $data['tbl'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link']));
             $data['tbl'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link_signed']));
+            
         }
         else
         {
@@ -367,6 +368,12 @@ class Manage extends MY_Controller {
                    $data['tbl'][] = array(lang('rr_fedmetaexportunsingedlink'), $data['metaexport_link'] . " " . anchor_popup($data['metaexport_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
                    $data['tbl'][] = array(lang('rr_fedmetaexportsingedlink'), $data['metaexport_link_signed'] . " " . anchor_popup($data['metaexport_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
                  
+            }
+
+
+            if($has_write_access && !empty($this->config->item('gearman')))
+            {
+                $data['tbl'][] = array( 'resign','<a href="'.base_url().'msigner/signer/federation/'.$federation->getId().'" id="fedmetasigner"/><button type="button" class="btn">sign</button></a>','');
             }
 
             $data['tbl'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));

@@ -327,6 +327,19 @@ $(function() {
         $("span.spuiidescadd option[value=" + nf + "]").remove();
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][spsso][desc][" + nf + "]\">Description in " + nfv + " </label><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></li>");
     });
+    $("a#fedmetasigner").click(function() {
+        var link = $(this), url = link.attr("href");
+
+        $.ajax({
+            url: url,
+            timeout: 2500,
+            cache: false,
+            success: function(data){
+              alert(data);
+            }
+        });
+        return false;
+    });
     $("a.bookentity").click(function() {
         var link = $(this), url = link.attr("href");
 
