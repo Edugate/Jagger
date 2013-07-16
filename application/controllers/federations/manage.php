@@ -373,7 +373,7 @@ class Manage extends MY_Controller {
             $gearmanenabled = $this->config->item('gearman');
             if($has_write_access && !empty($gearmanenabled))
             {
-                $data['tbl'][] = array( 'resign','<a href="'.base_url().'msigner/signer/federation/'.$federation->getId().'" id="fedmetasigner"/><button type="button" class="btn">sign</button></a>','');
+                $data['tbl'][] = array( 'sign metadatada','<a href="'.base_url().'msigner/signer/federation/'.$federation->getId().'" id="fedmetasigner"/><button type="button" class="btn">sign</button></a>','');
             }
 
             $data['tbl'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
