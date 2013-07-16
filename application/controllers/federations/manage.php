@@ -370,8 +370,8 @@ class Manage extends MY_Controller {
                  
             }
 
-
-            if($has_write_access && !empty($this->config->item('gearman')))
+            $gearmanenabled = $this->config->item('gearman');
+            if($has_write_access && !empty($gearmanenabled))
             {
                 $data['tbl'][] = array( 'resign','<a href="'.base_url().'msigner/signer/federation/'.$federation->getId().'" id="fedmetasigner"/><button type="button" class="btn">sign</button></a>','');
             }
