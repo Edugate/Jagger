@@ -172,3 +172,17 @@ $config['translator_access']['pl'] = null;
 $config['translator_access']['pt'] = null;
 $config['translator_access']['it'] = null;
 
+
+/**
+ * gearman
+ */
+$config['gearman'] = FALSE;
+$config['gearmanconf']['jobserver'] = array(array('ip'=>'127.0.0.1','port'=>'4730'));
+
+/**
+ * disable generating circle metadata for providers who are not managed locally
+ */
+$config['disable_extcirclemeta'] = TRUE;
+
+
+
