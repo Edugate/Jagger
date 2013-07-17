@@ -58,7 +58,7 @@ class Sp_registration extends MY_Controller {
             $federations['none'] = lang('noneatthemoment');
         }
         $data['federations'] = $federations;
-        $data['acs_dropdown'][''] = 'Select one...';
+        $data['acs_dropdown'][''] = lang('selectone');
         $data['acs_dropdown'] = array_merge($data['acs_dropdown'], $this->config->item('acs_binding'));
 
 

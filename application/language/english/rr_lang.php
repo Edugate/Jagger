@@ -105,6 +105,7 @@ $lang['rr_federations']             = 'Federations';
 $lang['register']                   = 'Register';
 $lang['rr_regform']                 = 'Registration form';
 $lang['allentities']                = 'All entities';
+$lang['allmetafilessignedwith']     = 'All metadata files are signed with';
 $lang['serviceproviders']           = 'Service Providers';
 $lang['serviceprovider']            = 'Service Provider';
 $lang['serviceprovidersmembers']    = 'Service Providers members';

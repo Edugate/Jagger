@@ -7,7 +7,6 @@ $required = "required=\"required\"";
 $errors_v = validation_errors('<span class="span-12">', '</span><br />');
 if (!empty($errors_v)) {
     echo '<div class="error">';
-    //echo validation_errors('<span class="span-12">', '</span><br />');
     echo $errors_v;
     echo "</div>";
 }
@@ -22,7 +21,6 @@ echo "<ol>";
  * resource name input
  */
 echo "<li>";
-//echo form_label('Resource Name', 'resource');
 echo lang('rr_resource', 'resource');
 $in1 = array(
     'id' => 'resource',
@@ -37,7 +35,7 @@ echo "</li>";
  * entityID input
  */
 echo "<li>";
-echo form_label(lang('rr_entityid').showHelp(lang('rhelp_entityid')), 'entityid');
+echo form_label(lang('rr_entityid').showBubbleHelp(lang('rhelp_entityid')), 'entityid');
 $in2 = array(
     'id' => 'entityid',
     'name' => 'entityid',
@@ -57,7 +55,7 @@ echo "</li>";
  * helpdesk url
  */
 echo "<li>";
-echo form_label(lang('rr_helpdeskurl').showHelp(lang('rhelp_helpdeskurl')), 'helpdesk_url');
+echo form_label(lang('rr_helpdeskurl').showBubbleHelp(lang('rhelp_helpdeskurl')), 'helpdesk_url');
 $inp = array(
     'id' => 'helpdesk_url',
     'name' => 'helpdesk_url',
@@ -74,9 +72,9 @@ echo "<ol>";
  * assertion consumer service
  */
 echo "<li>";
-echo form_label(lang('rr_assertioncosumerservice').showHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding');
+echo form_label(lang('rr_assertioncosumerservice').showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding');
 echo form_dropdown('acs_bind', $acs_dropdown);
-echo form_label(lang('rr_acsurl').showHelp(lang('rhelp_acsurl')),'acs_url');
+echo form_label(lang('rr_acsurl').showBubbleHelp(lang('rhelp_acsurl')),'acs_url');
 $inp = array(
     'id' => 'acs_url',
     'name' => 'acs_url',
@@ -101,7 +99,7 @@ echo "</li>";
  * certificate use=signing
  */
 echo "<li>";
-echo form_label(lang('rr_certificatesigning'), 'sign_cert_body');
+echo form_label(lang('rr_certificatesigning').' <small>('.lang('rr_optional').')</small>', 'sign_cert_body');
 echo form_textarea(array(
     'id' => 'sign_cert_body',
     'name' => 'sign_cert_body',
@@ -114,7 +112,7 @@ echo "</li>";
  * certificate use=encripting
  */
 echo "<li>";
-echo form_label(lang('rr_certificateencrypting'), 'encrypt_cert_body');
+echo form_label(lang('rr_certificateencrypting').' <small>('.lang('rr_optional').')</small>', 'encrypt_cert_body');
 echo form_textarea(array(
     'id' => 'encrypt_cert_body',
     'name' => 'encrypt_cert_body',
@@ -155,7 +153,7 @@ $in4 = array(
     'value' => set_value('contact_phone'),
 );
 
-echo form_label(lang('rr_contactphone'), 'contact_phone');
+echo form_label(lang('rr_contactphone').' <small>('.lang('rr_optional').')</small>', 'contact_phone');
 echo form_input($in4);
 echo "</li>";
 ?>

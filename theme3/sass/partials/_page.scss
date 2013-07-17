@@ -160,7 +160,7 @@ nav {
     max-height: 20px;
     
 }
-#subtitle,#pagetitle,#excarpslist,#noticeblock{
+#subtitle,#pagetitle,#excarpslist,#noticeblock,.sectiontitle{
     text-align: center;
     background-color: #FBFBFB;
     background-image: -moz-linear-gradient(center top , #FFFFFF, #F5F5F5);
@@ -171,6 +171,13 @@ nav {
     box-shadow: 0 1px 0 #FFFFFF inset;
     list-style: none outside none;
     margin: 0 0 10px;
+}
+div.sectiontitle {
+   margin-top: 15px;
+   font-size: large;
+   padding-top: 10px;
+   padding-bottom: 10px;
+ 
 }
 #navbuttons1 {
 

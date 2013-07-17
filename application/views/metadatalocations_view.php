@@ -1,24 +1,24 @@
 <?php
 if(!empty($metadatasigner_url))
 {
-   echo "<div class=\"notice\">All metadata files are signed with <b><a href=\"".$metadatasigner_url."\">".$metadatasigner_url."</a></b></div>";
+   echo '<div class="notice">'.lang('allmetafilessignedwith').' <b><a href="'.$metadatasigner_url.'">'.$metadatasigner_url.'</a></b></div>';
 }
 if(!empty($tarray))
 {
+echo '<div class="sectiontitle">'.lang('rr_tbltitle_listidps').'</div>';
 $tmpl = array('table_open' => '<table  id="details" class="zebra">');
 $this->table->set_template($tmpl);
-$this->table->set_heading('','Name', 'entityID');
-$this->table->set_caption('Identity Providers List');
+$this->table->set_heading('',lang('rr_tbltitle_name'), 'entityID');
 echo $this->table->generate($tarray);
 $this->table->clear();
 
 }
 if(!empty($sarray))
 {
+echo '<div class="sectiontitle">'.lang('rr_tbltitle_listsps').'</div>';
 $tmpl = array('table_open' => '<table  id="details" class="zebra">');
 $this->table->set_template($tmpl);
-$this->table->set_heading('','Name', 'entityID');
-$this->table->set_caption('Service Providers List');
+$this->table->set_heading('',lang('rr_tbltitle_name'), 'entityID');
 echo $this->table->generate($sarray);
 $this->table->clear();
 
