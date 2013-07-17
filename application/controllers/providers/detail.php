@@ -458,6 +458,7 @@ class Detail extends MY_Controller {
         $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
 
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
+        $gearman_enabled = $this->config->item('gearman');
 
         if(!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
         {
@@ -479,7 +480,7 @@ class Detail extends MY_Controller {
             $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>('.lang('signed').')</i>';
             $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         }
-        if($is_local && $has_write_access)
+        if($is_local && $has_write_access && $gearman_enabled)
         {
            $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
            $d[$i]['value'] = '<a href="'.base_url().'msigner/signer/provider/'.$ent->getId().'" id="providermetasigner"/><button type="button" class="btn">'.lang('btn_signmetadata').'</button></a>';
