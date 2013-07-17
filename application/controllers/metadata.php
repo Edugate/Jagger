@@ -283,6 +283,18 @@ class Metadata extends MY_Controller {
             show_error('unknown provider', 404);
             return;
         }
+        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
+        if(!empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
+        {
+            $is_local = $me->getLocal();
+            if(!$is_local)
+            {
+                log_message('info',' WARNING: cannot generate circle metadata for external provider:'.$me->getEntityId());
+                log_message('debug','To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE'); 
+                show_error($me->getEntityId().': This is external provider. Cannot generate circle metadata',403);
+                return;
+            }
+        }
         $p = new models\Providers;
         $p1 = $p->getCircleMembersByType($me);
         if (is_null($p1) || !is_array($p1)) {

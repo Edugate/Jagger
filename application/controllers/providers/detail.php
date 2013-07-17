@@ -107,6 +107,7 @@ class Detail extends MY_Controller {
         }
         $is_validtime = $ent->getIsValidFromTo();
         $is_active = $ent->getActive();
+        $is_local = $ent->getLocal();
         $locked = $ent->getLocked();
         $lockicon = genIcon('locked', lang('rr_locked'));
         $edit_link = '';
@@ -126,7 +127,7 @@ class Detail extends MY_Controller {
         {
             $entstatus .= ' '. makeLabel('locked',lang('rr_locked') , lang('rr_locked'));
         }
-        if ($ent->getLocal())
+        if ($is_local)
         {
             $entstatus .= ' '. makeLabel('local', lang('rr_managedlocally'), lang('rr_managedlocally'));
         }
@@ -145,7 +146,7 @@ class Detail extends MY_Controller {
         {
             $edit_link .= makeLabel('noperm', lang('rr_nopermission'), lang('rr_nopermission'));          
         }
-        elseif (!$ent->getLocal())
+        elseif (!$is_local)
         {
             $edit_link .= makeLabel('external', lang('rr_externalentity'), lang('rr_external'));
         }
@@ -247,7 +248,7 @@ class Detail extends MY_Controller {
         $regauthoritytext = null;
         if (empty($regauthority))
         {
-            if ($ent->getLocal() && !empty($confRegLoad) && !empty($confRegAuth))
+            if ($is_local && !empty($confRegLoad) && !empty($confRegAuth))
             {
                 $regauthoritytext = lang('rr_regauthority_alt') . ' <b>' . $confRegAuth . '</b>';
             }
@@ -455,15 +456,34 @@ class Detail extends MY_Controller {
         }
         $d[++$i]['header'] = lang('rr_metadata');
         $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
-        $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-        $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-        $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-        $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
 
-        $d[++$i]['name'] = lang('rr_circleoftrust');
-        $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-        $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>('.lang('signed').')</i>';
-        $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
+
+        if(!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
+        {
+           $d[++$i]['name'] = lang('rr_circleoftrust');
+           $d[$i]['value'] = lang('disableexternalcirclemeta');
+           $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>('.lang('signed').')</i>';    
+           $d[$i]['value'] = lang('disableexternalcirclemeta');
+         
+        }
+        else
+        {
+            $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+            $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+            $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+
+            $d[++$i]['name'] = lang('rr_circleoftrust');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>('.lang('signed').')</i>';
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        }
+        if($is_local && $has_write_access)
+        {
+           $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
+           $d[$i]['value'] = '<a href="'.base_url().'msigner/signer/provider/'.$ent->getId().'" id="providermetasigner"/><button type="button" class="btn">'.lang('btn_signmetadata').'</button></a>';
+        }
 
         $result[] = array('section' => 'technical', 'title' => ''.lang('tabTechnical').'', 'data' => $d);
 

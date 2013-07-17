@@ -99,6 +99,36 @@ class Msigner extends MY_Controller {
            echo lang('taskssent'); 
 
        }
+       elseif($type === 'provider' && is_numeric($id))
+       {
+          $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>''.$id.''));
+          if(empty($provider))
+          {     
+               echo lang('rerror_provnotfound');
+               return;
+          }
+          $is_local = $provider->getLocal();
+          if($is_local !== TRUE)
+          {
+               echo lang('error403');
+               return;
+          }
+          $has_write_access = $this->zacl->check_acl($provider->getId(), 'write','entity');
+          if(!$has_write_access)
+          {
+              echo lang('error403');
+              return;
+          }
+          $options = array();
+          $encodedentity = base64url_encode($provider->getEntityId()); 
+          $sourceurl = base_url().'metadata/circle/'.$encodedentity.'/metadata.xml';
+          $options[] = array('src'=>''.$sourceurl.'','type'=>'provider','encname'=>''.$encodedentity.'');
+          foreach($options as $opt)
+          {
+              $result = $client->doBackground('metadatasigner',''.json_encode($opt).'' );
+          }
+          echo lang('taskssent'); 
+       }
         
    }
 

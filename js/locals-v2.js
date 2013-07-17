@@ -329,7 +329,18 @@ $(function() {
     });
     $("a#fedmetasigner").click(function() {
         var link = $(this), url = link.attr("href");
-
+        $.ajax({
+            url: url,
+            timeout: 2500,
+            cache: false,
+            success: function(data){
+              alert(data);
+            }
+        });
+        return false;
+    });
+    $("a#providermetasigner").click(function() {
+        var link = $(this), url = link.attr("href");
         $.ajax({
             url: url,
             timeout: 2500,

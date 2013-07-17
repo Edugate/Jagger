@@ -51,7 +51,15 @@ class Sync_metadata extends CI_Controller {
                         }
                      }
                   }
-                  $providers = $this->em->getRepository("models\Provider")->findAll();
+                  $disableexternalcirclemeta = $this->config->item('disable_extcirclemeta');
+                  if(empty($disableexternalcirclemeta))
+                  {
+                      $providers = $this->em->getRepository("models\Provider")->findAll();
+                  }
+                  else
+                  {
+                      $providers = $this->em->getRepository("models\Provider")->findBy(array('is_local'=>TRUE));
+                  }
                 }
                 else
                 {
