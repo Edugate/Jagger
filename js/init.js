@@ -42,42 +42,48 @@ $.ajax({
     data: str,  
     success: function(msg){  
    
-$("#status").ajaxComplete(function(event, request, settings){  
+       $("#status").ajaxComplete(function(event, request, settings){  
  
- // Show 'Submit' Button
-$('#submit').show();
+        // Show 'Submit' Button
+       $('#submit').show();
 
-// Hide Gif Spinning Rotator
-$('#ajax_loading').hide();  
+      // Hide Gif Spinning Rotator
+      $('#ajax_loading').hide();  
 
- if(msg == 'OK') // LOGIN OK?
- {  
- var login_response = '<div id="logged_in">' +
-	 '<div style="width: 350px; float: left; margin-left: 70px;">' + 
-	 '<div style="width: 40px; float: left;">' +
-	 '<img style="margin: 10px 0px 10px 0px;" align="absmiddle" src="'+baseurl+'images/ajax-loader.gif">' +
-	 '</div>' +
-	 '<div style="margin: 10px 0px 0px 10px; float: right; width: 300px;">'+ 
-	 "You are successfully logged in! <br /> Please wait while you're redirected...</div></div>";  
+      if(msg == 'OK') // LOGIN OK?
+      {  
+         var login_response = '<div id="logged_in">' +
+	    '<div style="width: 350px; float: left; margin-left: 70px;">' + 
+	    '<div style="width: 40px; float: left;">' +
+	    '<img style="margin: 10px 0px 10px 0px;" align="absmiddle" src="'+baseurl+'images/ajax-loader.gif">' +
+	    '</div>' +
+	    '<div style="margin: 10px 0px 0px 10px; float: right; width: 300px;">'+ 
+	     "You are successfully logged in! <br /> Please wait while you're redirected...</div></div>";  
+         $('a.modalCloseImg').hide();  
+         $('#simplemodal-container').css("width","auto").css("height","auto").css("background","transparent").css("box-shadow","none").css("text-align","center");
+         $(this).html(login_response); // Refers to 'status'
 
-$('a.modalCloseImg').hide();  
-
-$('#simplemodal-container').css("width","auto").css("height","auto").css("background","transparent").css("box-shadow","none").css("text-align","center");
- 
- $(this).html(login_response); // Refers to 'status'
-
-// After 3 seconds redirect the 
-setTimeout('go_to_private_page()', 1000); 
- }  
- else // ERROR?
- {  
- var login_response = msg;
- $('#login_response').html(login_response);
- }  
+        // After 3 seconds redirect the 
+         setTimeout('go_to_private_page()', 1000); 
+      }  
+      else // ERROR?
+      {  
+         var login_response = msg;
+         $('#login_response').html(login_response);
+      }  
       
- });  
+      });  
    
- }  
+ },
+ error: function(){
+         $("#status").ajaxComplete(function(event, request, settings){
+         $('#submit').show();
+         $('#ajax_loading').hide();
+         var login_response = "Invalid token, please refresh page and try again";
+         $('#login_response').html(login_response).css("color","red").css("font-weight","bold");
+         });
+   }  
+ 
    
   });  
   
