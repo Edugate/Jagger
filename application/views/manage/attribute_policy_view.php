@@ -12,8 +12,7 @@
     $js = 'id="combobox"';
     
     echo form_dropdown('service',$formdown,'0',$js );
-    //echo form_submit('submit','submit');
-    echo '<span class="buttons"><button type="submit" name="submit" value="submit" class="btn positive v2"><span class="save">Go</span></button></span>';
+    echo '<span class="buttons"><button type="submit" name="submit" value="submit" class="btn positive v2"><span class="save">'.lang('rr_go').'</span></button></span>';
     echo form_fieldset_close();
     echo form_close()
     ?>
@@ -31,16 +30,16 @@
 $idp_link = anchor(base_url().'providers/detail/show/'.$idpid,'<img src="' . base_url() . 'images/icons/home.png" />');
 
 echo '<div id="subtitle"><h3>'.lang('identityprovider').': <a href="'.base_url().'providers/detail/show/'.$idpid.'">'.$idp_name.'</a></h3><h4>'.$idp_entityid.'</h4></div>';
-echo "<div id=\"subtitle\">";
-echo "<dl>";
-echo "<dd>Supported Attributes <a href=\"".base_url()."manage/supported_attributes/idp/".$idpid."\"><img src=\"".base_url()."images/icons/arrow.png\" /></a></dd>";
+echo '<div id="subtitle">';
+echo '<dl>';
+echo '<dd>'.lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_attributes/idp/'.$idpid.'"><img src="'.base_url().'images/icons/arrow.png" /></a></dd>';
 
-echo "<dt>Edit/Add Policies</dt>";
+echo '<dt>'.lang('addeditpolicies').'</dt>';
 
-echo "<dd>";
-echo "</dd>";
-echo "</dl>";
-echo "</div>";
+echo '<dd>';
+echo '</dd>';
+echo '</dl>';
+echo '</div>';
 ?>
 <span class="span-24">
 <?php
@@ -49,13 +48,13 @@ echo "</div>";
 
 if (!empty($message))
 {
-    echo "<div class=\"notice\">" . $message . "</div>";
+    echo '<div class="notice">'. $message . '</div>';
 }
 if (!empty($error))
 {
-    echo "<div class=\"alert\">" . $error . "</div>";
+    echo '<div class="alert">'. $error .'</div>';
 }
-echo "</span>";
+echo '</span>';
 
 $attributes = array('class' => 'email', 'id' => 'formver2');
 $hidden = array('spid' => $spid, 'idpid' => $idpid);
@@ -63,7 +62,7 @@ if(!empty($fedid))
 {
 	$hidden['fedid'] = $fedid;
 }
-$target = base_url() . "manage/attribute_policy/submit_global";
+$target = base_url() . 'manage/attribute_policy/submit_global';
 if (count($attrs_array_newform) > 0)
 {
     echo '<span class="span-22">';
@@ -79,7 +78,7 @@ if (count($attrs_array_newform) > 0)
 
     echo '<li>';
     echo form_label(lang('rr_selectpolicytorelease'), 'policy') . "\n";
-    echo form_dropdown('policy', array('0' => 'never', '1' => 'only if required', '2' => 'always when needed'));
+    echo form_dropdown('policy', array('0' => ''.lang('dropnever').'', '1' => ''.lang('dropokreq').'', '2' => ''.lang('dropokreqdes').''));
     echo '</li></ol>';
     echo '<div class="buttons">';
     echo '<button type="submit" name="submit" value="Cancel" class="btn negative"><span class="cancel">'.lang('rr_cancel').'<span></button>';
@@ -98,7 +97,7 @@ if (!empty($default_policy))
     echo '</span>';
 }
 echo '<div class="buttons clear">';
-echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="btn btn-positive"><span>Federation attribute release policy</span></button></span>');
+echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="btn btn-positive"><span>'.lang('rr_arpforfed').'</span></button></span>');
 echo '</div>';
 
 if (!empty($federations_policy))
