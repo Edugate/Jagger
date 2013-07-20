@@ -85,9 +85,10 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 <?php
                   $langs = array(
                     'en' => array('path'=>'english','val'=>'english'),
-                    'pt' => array('path'=>'pt','val'=>'português'),
                     'it' => array('path'=>'it','val'=>'italiano'),
+                    'lt' => array('path'=>'lt','val'=>'lietuvos'),
                     'pl' => array('path'=>'pl','val'=>'polski'),
+                    'pt' => array('path'=>'pt','val'=>'português'),
                    );
                 ?>
                 <div id="langchenge">
