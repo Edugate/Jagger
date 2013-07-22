@@ -24,9 +24,9 @@ install(){
       echo "Doctrine is not installed"
       echo "downloading...."
       #wget http://www.doctrine-project.org/downloads/DoctrineORM-2.2.2-full.tar.gz -O ${TMPDIR}/DoctrineORM-2.2.2-full.tar.gz
-      wget http://www.doctrine-project.org/downloads/DoctrineORM-2.3.3-full.tar.gz -O ${TMPDIR}/DoctrineORM-2.3.3-full.tar.gz
-      tar zxf ${TMPDIR}/DoctrineORM-2.3.3-full.tar.gz -C ${TMPDIR}/
-      cp -r ${TMPDIR}/DoctrineORM-2.3.3/Doctrine ${LIBRARYPATH}/ 
+      wget http://www.doctrine-project.org/downloads/DoctrineORM-2.3.4-full.tar.gz -O ${TMPDIR}/DoctrineORM-2.3.4-full.tar.gz
+      tar zxf ${TMPDIR}/DoctrineORM-2.3.4-full.tar.gz -C ${TMPDIR}/
+      cp -r ${TMPDIR}/DoctrineORM-2.3.4/Doctrine ${LIBRARYPATH}/ 
       echo ${TMPDIR}
    else
       echo -e "${LIBRARYPATH}/${DOCTRINE} already exists"
