@@ -39,19 +39,19 @@ class Ajax extends MY_Controller {
         {
             log_message('debug', 'ajax');
             $language = substr($language, 0, 2);
-            if ($language == 'pl')
+            if ($language === 'pl')
             {
                 $cookie_value = 'pl';
             }
-            elseif ($language == 'pt')
+            elseif ($language === 'pt')
             {
                 $cookie_value = 'pt';
             }
-            elseif ($language == 'it')
+            elseif ($language === 'it')
             {
                 $cookie_value = 'it';
             }
-            elseif ($language == 'lt')
+            elseif ($language === 'lt')
             {
                 $cookie_value = 'lt';
             }
