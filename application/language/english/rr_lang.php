@@ -8,6 +8,7 @@
 
 $lang['in']                         = 'in';
 $lang['for']                        = 'for';
+$lang['from']                       = 'from';
 
 $lang['title_spreg']                = 'Service Provider Registration';
 $lang['title_idpreg']               = 'Identity Provider Registration';
@@ -126,8 +127,10 @@ $lang['lbl_external']               = 'External';
 $lang['lbl_static']                 = 'Static metadata';
 $lang['lbl_enabled']                = 'Enabled';
 $lang['lbl_disabled']               = 'Disabled';
+$lang['lbl_excluded']               = 'Excluded';
 $lang['provinmeta']                 = 'Provider will be included in Metadata';
 $lang['provexclmeta']               = 'Provider is excluded from Metadata';
+$lang['srvs_excluded_from_arp']      = 'Services excluded from ARP';
 $lang['provmanlocal']               = 'Provider is managed localy';
 $lang['provexternal']               = 'Provider is imported from external resource and is not managed localy';
 $lang['disableexternalcirclemeta']  = 'Provider is not managed locally. Cannot generate circle metadata.';
@@ -214,6 +217,7 @@ $lang['rr_logos']                   = 'Logos';
 $lang['rr_logosmngt']               = 'Logos management';
 $lang['rr_backtoassignedlogos']     = 'Back to assigned logos list';
 $lang['attrnotsupported']           = 'attribute not supported';
+$lang['rr_inactive']                = 'inactive';
 $lang['nodefaultpolicysetyet']      = 'No default policy is set yet';
 $lang['newentenabled']              = 'New entities enabled by default';
 $lang['populateallinf']             = 'Populate all information';
@@ -321,6 +325,7 @@ $lang['rr_upload']                  = 'Upload';
 $lang['request']                    = 'Request';
 $lang['reqregnewfed']               = 'Register new federation';
 $lang['type']                       = 'Type';
+$lang['chng_made_by']               = 'changes made by';
 $lang['requestor']                  = 'Requestor';
 $lang['unknown']                    = 'unknown';
 $lang['rr_submitapprove']           = 'Accept request';

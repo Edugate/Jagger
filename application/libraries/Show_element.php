@@ -252,7 +252,7 @@ class Show_element {
                 $link_sp = '<a href="' . $prefix_multi_url . $provider->getId() . '/sp/' . $tmp_spid . '"><img src="' . $icon . '"/></a>';
                 if (in_array($key, $exluded_arps))
                 {
-                    $lbl = '<span class="lbl lbl-disabled">excluded</span> ';
+                    $lbl = '<span class="lbl lbl-disabled">'.lang('lbl_excluded').'</span> ';
                 }
                 else
                 {
@@ -266,7 +266,7 @@ class Show_element {
                     if (!array_key_exists($attr_key, $supported_attrs))
                     {
 
-                        $attr_name = "<span class=\"alert\" title=\"attribute not supported\">" . $attr_key . "</span>";
+                        $attr_name = '<span class="alert" title="'.lang('attrnotsupported').'">' . $attr_key . '</span>';
                     }
                     else
                     {
@@ -456,7 +456,7 @@ class Show_element {
             $alertclass = '';
             if (!($m->getAvailable()))
             {
-                $inactive = '<span class"alert">inactive</span>';
+                $inactive = '<span class"alert">'.lang('rr_inactive').'</span>';
                 $alertclass = 'class="alert"';
             }
             $m_link = base_url() . 'providers/detail/show/' . $m_id;
@@ -523,9 +523,9 @@ class Show_element {
             $user = $t->getUser();
             if (empty($user))
             {
-                $user = 'unknown';
+                $user = lang('unknown');
             }
-            $result .= '<li><span class="accordionButton"><b>' . $t->getCreated()->format('Y-m-d H:i:s') . '</b> changes made by <b>' . $user . '</b> from <b>' . $t->getIp() . '</b> ... details</span><span class="accordionContent"><br />' . $y . '</span></li>';
+            $result .= '<li><span class="accordionButton"><b>' . $t->getCreated()->format('Y-m-d H:i:s') . '</b> '.lang('chng_made_by').' <b>' . $user . '</b> '.lang('from').' <b>' . $t->getIp() . '</b><br/>'.lang('rr_details').'</span><span class="accordionContent"><br />' . $y . '</span></li>';
         }
         $result .= '</ul>';
         return $result;

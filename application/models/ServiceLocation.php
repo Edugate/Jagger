@@ -224,17 +224,16 @@ class ServiceLocation {
 
     public function getServiceLocationToXML(\DOMElement $parent, $options = null)
     {
-        $s_type = $this->type;
-
+        $stype = $this->type;
         if (!empty($options))
         {
-            if ($options == 'IDPSSODescriptor' && $s_type == 'SingleSignOnService')
+            if (($options === 'IDPSSODescriptor') && ($stype === 'SingleSignOnService'))
             {
                 $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleSignOnService');
                 $e->setAttribute("Binding", $this->bindingName);
                 $e->setAttribute("Location", $this->url);
             }
-            elseif ($options == 'SPSSODescriptor' && $s_type == 'AssertionConsumerService')
+            elseif (($options === 'SPSSODescriptor') && ($stype === 'AssertionConsumerService'))
             {
                 $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AssertionConsumerService');
                 $e->setAttribute("Binding", $this->bindingName);

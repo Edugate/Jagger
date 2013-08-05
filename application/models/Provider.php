@@ -35,6 +35,7 @@ class Provider {
 
     protected $em;
     protected $logo_url;
+    protected $ci;
 
     /**
      * @Id
@@ -286,6 +287,7 @@ class Provider {
      * @Column(name="updated_at", type="datetime")
      */
     private $updatedAt;
+
 
     public function __construct()
     {
@@ -707,6 +709,17 @@ class Provider {
         \log_message('debug', 'GG update providers updated time');
         $this->updatedAt = new \DateTime("now");
     }
+
+    /**
+     * @PostLoad
+     */
+    public function setAddionals()
+    {
+       $this->ci = & get_instance();
+       $this->em = $this->ci->doctrine->em;
+       
+    }
+  
 
     public function setName($name)
     {
@@ -2006,48 +2019,18 @@ class Provider {
         return $p;
     }
 
-    /**
-     * localized description into mdui
-     */
-    public function getExtendedDescription($type = NULL)
-    {
-
-        if (empty($type))
-        {
-            $type = strtolower($this->getType);
-        }
-        else
-        {
-            $type = strtolower($type);
-        }
-        $extends = $this->getExtendMetadata();
-        if (!empty($extends))
-            foreach ($extends as $e)
-            {
-                if (($e->getType() == $type) && ($e->getNamespace() == 'mdui') && ($e->getElement() == 'Description'))
-                {
-                    continue;
-                }
-                else
-                {
-                    $extends->removeElement($e);
-                }
-            }
-        return $extends;
-    }
 
     public function getMduiDiscoHintToXML(\DOMElement $parent, $type = NULL)
     {
         if (empty($type))
         {
-            $type = strtolower($this->type);
+            $type = $this->type;
         }
         $ext = $this->getExtendMetadata();
         $extarray = array();
-        $e = NULL;
         foreach ($ext as $v)
         {
-            if (($v->getType() === $type) && ($v->getNamespace() === 'mdui') && ($v->getElement() === 'GeolocationHint'))
+            if ((strcasecmp($v->getType(), $type) == 0) && ($v->getNamespace() === 'mdui') && ($v->getElement() === 'GeolocationHint'))
             {
                 $extarray[] = $v;
             }
@@ -2061,9 +2044,12 @@ class Provider {
                $dnode->appendChild($e->ownerDocument->createTextNode($dm->getElementValue()));
                $e->appendChild($dnode);
            }
- 
+           return $e;
         }
-        return $e;
+        else
+        {
+           return NULL;
+        }
        
     }
 
@@ -2074,11 +2060,8 @@ class Provider {
     {
         if (empty($type))
         {
-            $type = strtolower($this->type);
+            $type = $this->type;
         }
-        $this->ci = & get_instance();
-        $this->em = $this->ci->doctrine->em;
-        $this->ci->load->helper('url');
 
         $ext = $this->getExtendMetadata();
         /**
@@ -2087,7 +2070,7 @@ class Provider {
         $extarray = array();
         foreach ($ext as $v)
         {
-            if (($v->getType() === $type) && ($v->getNamespace() === 'mdui'))
+            if ((strcasecmp($v->getType(), $type) == 0) && ($v->getNamespace() === 'mdui'))
             {
                 $extarray[''.$v->getElement().''][] = $v;
             }
@@ -2690,7 +2673,7 @@ class Provider {
 
     public function getIDPSSODescriptorToXML(\DOMElement $parent, $options = null)
     {
-        $this->ci = & get_instance();
+  //      $this->ci = & get_instance();
         $services = $this->getServiceLocations();
         if (empty($services))
         {
@@ -2852,8 +2835,8 @@ class Provider {
 
     public function getSPSSODescriptorToXML(\DOMElement $parent, $options = null)
     {
-        $this->ci = & get_instance();
-        $this->em = $this->ci->doctrine->em;
+     //   $this->ci = & get_instance();
+    //    $this->em = $this->ci->doctrine->em;
         $this->ci->load->helper('url');
         $services = $this->getServiceLocations();
 

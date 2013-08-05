@@ -68,7 +68,7 @@ class Geolocation extends MY_Controller {
         {
           $lockicon = '';
         }
-        if($provider->getType() == 'BOTH')
+        if($provider->getType() === 'BOTH')
         {
            $group = 'entity';
         }

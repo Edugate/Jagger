@@ -41,30 +41,30 @@ class Form_element {
         $id = $ent->getId();
         if ($t === 'BOTH')
         {
-            $l[] = anchor($base . 'geolocation/show/' . $id . '/sp', 'Geolocations (ServiceProvider)');
-            $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', 'Geolocations (IdentityProvider)');
-            $l[] = anchor($base . 'manage/logos/provider/idp/' . $id . '', 'Logos (IdentityProvider)');
-            $l[] = anchor($base . 'manage/logos/provider/sp/' . $id . '', 'Logos (ServiceProvider)');
+            $l[] = anchor($base . 'geolocation/show/' . $id . '/sp', ''.lang('rr_geolocation').' ('.lang('serviceprovider').')');
+            $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', ''.lang('rr_geolocation').' ('.lang('identityprovider').')');
+            $l[] = anchor($base . 'manage/logos/provider/idp/' . $id . '', ''.lang('rr_logos').' ('.lang('identityprovider').')');
+            $l[] = anchor($base . 'manage/logos/provider/sp/' . $id . '', ''.lang('rr_logos').' ('.lang('serviceprovider').')');
         }
         elseif ($t === 'IDP')
         {
-            $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', 'Geolocations');
-            $l[] = anchor($base . 'manage/logos/provider/idp/' . $id . '', 'Logos');
+            $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', ''.lang('rr_geolocation').'');
+            $l[] = anchor($base . 'manage/logos/provider/idp/' . $id . '', ''.lang('rr_logos').'');
         }
         else
         {
-            $l[] = anchor($base . 'geolocation/show/' . $id . '/sp', 'Geolocations');
-            $l[] = anchor($base . 'manage/logos/provider/sp/' . $id . '', 'Logos');
+            $l[] = anchor($base . 'geolocation/show/' . $id . '/sp', ''.lang('rr_geolocation').'');
+            $l[] = anchor($base . 'manage/logos/provider/sp/' . $id . '', ''.lang('rr_logos').'');
         }
         if ($t != 'IDP')
         {
-            $l[] = anchor($base . 'manage/attribute_requirement/sp/' . $id . '', 'Attributes Requirement');
+            $l[] = anchor($base . 'manage/attribute_requirement/sp/' . $id . '', ''.lang('rr_requiredattributes').'');
         }
         if ($t != 'SP')
         {
-            $l[] = anchor($base . 'manage/supported_attributes/idp/' . $id . '', 'Supported Attributes');
-            $l[] = anchor($base . 'manage/attribute_policy/globals/' . $id . '', 'Attributes Policies');
-            $l[] = anchor($base . 'manage/arpsexcl/idp/' . $id . '', 'Services excluded from ARP');
+            $l[] = anchor($base . 'manage/supported_attributes/idp/' . $id . '', ''.lang('rr_supportedattributes').'');
+            $l[] = anchor($base . 'manage/attribute_policy/globals/' . $id . '', ''.lang('rr_attributepolicy').'');
+            $l[] = anchor($base . 'manage/arpsexcl/idp/' . $id . '', ''.lang('srvs_excluded_from_arp').'');
         }
         return $l;
     }
@@ -609,7 +609,7 @@ class Form_element {
             $sessform = TRUE;
         }
 
-        $r = '<fieldset><legend>Privacy Statement URL <i>'.lang('rr_default').'</i>' . showHelp('The URL is used as english version if below is not set') . '</legend><ol><li>';
+        $r = '<fieldset><legend>'.lang('PrivacyStatementURL').' <i>'.lang('rr_default').'</i>' . showHelp('The URL is used as english version if below is not set') . '</legend><ol><li>';
         $f_privacyurl = $ent->getPrivacyUrl();
         $p_privacyurl = $f_privacyurl;
         $privaceurlnotice = '';
