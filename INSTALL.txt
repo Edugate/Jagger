@@ -12,7 +12,7 @@ Requirements:
  *) Zend Framework
     Only Zend-ACL (Acl dir, Acl.php,  Exception.php) part from http://framework.zend.com/download/current/
     into APP_PATH/libraries/Zend
-     
+ *) optional -  install gearman-php and gearnam-server     
 
 
 
