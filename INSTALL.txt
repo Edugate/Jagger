@@ -3,10 +3,11 @@ Requirements:
  *) PHP >= 5.3 with modules: php-apc, php5-cli, php5-curl, php5-mysql, php5-mcrypt
  *) Apache >= 2.2 with enabled modules: rewrite, unique_id
  *) Shibboleth-SP >= 2.4 - optional needed for federated access
- *) Codeigniter framework > 2.1 
+ *) Codeigniter framework 3.0 - it's not official release yet
     from git://github.com/EllisLab/CodeIgniter.git
- *) Doctrine 2.2.2
-    http://www.doctrine-project.org/downloads/DoctrineORM-2.2.2-full.tar.gz
+    please use release/3.0 branch
+ *) Doctrine 2.3.3
+    http://www.doctrine-project.org/downloads/DoctrineORM-2.3.3-full.tar.gz
     into APP_PATH/libraries/Doctrine
  *) Zend Framework
     Only Zend-ACL (Acl dir, Acl.php,  Exception.php) part from http://framework.zend.com/download/current/
