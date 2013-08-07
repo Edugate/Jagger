@@ -300,13 +300,13 @@ $(function() {
     $("button#addlprivacyurlspsso").click(function() {
         var nf = $("li.addlprivacyurlspsso option:selected").val();
         var nfv = $("li.addlprivacyurlspsso option:selected").text();
-        $("li.addlprivacyurl option[value=" + nf + "]").remove();
+        $("li.addlprivacyurlspsso option[value=" + nf + "]").remove();
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][spsso][" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/></li>");
     });
     $("button#addlprivacyurlidpsso").click(function() {
         var nf = $("li.addlprivacyurlidpsso option:selected").val();
         var nfv = $("li.addlprivacyurlidpsso option:selected").text();
-        $("li.addlprivacyurl option[value=" + nf + "]").remove();
+        $("li.addlprivacyurlidpsso option[value=" + nf + "]").remove();
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][idpsso][" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/></li>");
     });
     $("button#addldescription").click(function() {

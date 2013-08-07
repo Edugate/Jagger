@@ -609,7 +609,7 @@ class Form_element {
             $sessform = TRUE;
         }
 
-        $r = '<fieldset><legend>'.lang('PrivacyStatementURL').' <i>'.lang('rr_default').'</i>' . showHelp('The URL is used as english version if below is not set') . '</legend><ol><li>';
+        $r = '<fieldset><legend>'.lang('PrivacyStatementURL').' <i>'.lang('rr_default').'</i>' . showBubbleHelp(''.lang('rhelp_privacydefault1').'') . '</legend><ol><li>';
         $f_privacyurl = $ent->getPrivacyUrl();
         $p_privacyurl = $f_privacyurl;
         $privaceurlnotice = '';
@@ -643,11 +643,11 @@ class Form_element {
         }
         $coc_dropdown['0'] = lang('rr_select');
         $coccols = $this->em->getRepository("models\Coc")->findAll();
-        $r = '<fieldset><legend>Code of Conduct</legend><ol>';
+        $r = '<fieldset><legend>'.lang('rr_coc').'</legend><ol>';
         if (is_array($coccols) and count($coccols) > 0)
         {
             $r .= '<li class="' . $cocnotice . '">';
-            $r .= form_label('Code of Conduct' . showHelp('Please contact to us if required COC url is not listed'), 'f[coc]');
+            $r .= form_label(''.lang('rr_cocurl').' ' . showBubbleHelp(''.lang('rrhelp_contactifnococ').''), 'f[coc]');
             foreach ($coccols as $c)
             {
                 $coc_dropdown['' . $c->getId() . ''] = $c->getName() . ' (' . $c->getUrl() . ')';
@@ -671,7 +671,7 @@ class Form_element {
         }
         if ($enttype != 'SP')
         {
-            $r = '<fieldset><legend>Privacy Statement URLs <i>IDPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('PrivacyStatementURL').' <i>IDPSSODescriptor</i></legend><ol>';
             $origs = array();
             $sorig = array();
             if (isset($extend['idp']['mdui']['PrivacyStatementURL']))
@@ -726,7 +726,7 @@ class Form_element {
         }
         if ($enttype != 'IDP')
         {
-            $r = '<fieldset><legend>Privacy Statement URLs <i>SPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('PrivacyStatementURL').' <i>SPSSODescriptor</i></legend><ol>';
             $origs = array();
             $sorig = array();
             if (isset($extend['sp']['mdui']['PrivacyStatementURL']))
@@ -772,17 +772,9 @@ class Form_element {
             }
             $spssolangcodes = array_diff_key($langscodes, $sorig);
             $r .= '<li class="addlprivacyurlspsso localized">';
-
             $r .= form_dropdown('langcode', $spssolangcodes, 'en');
             $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="btn">'.lang('addlocalized') .' ' . lang('rr_privacystatement') . '</button>';
-
-
-
-
-            $r .= '</li>';
-
-
-            $r .= '</ol></fieldset>';
+            $r .= '</li></ol></fieldset>';
             $result[] = $r;
         }
 
@@ -931,7 +923,7 @@ class Form_element {
             /**
              * generate SSO part
              */
-            $SSOPart = '<fieldset><legend>SingleSignOnService</legend><ol>';
+            $SSOPart = '<fieldset><legend>'.lang('SingleSignOnService').'</legend><ol>';
             if (array_key_exists('SingleSignOnService', $g))
             {
                 foreach ($g['SingleSignOnService'] as $k1 => $v1)
@@ -1000,8 +992,7 @@ class Form_element {
             /**
              * IDP SingleLogoutService
              */
-            $IDPSLOPart = '<fieldset><legend>IDP SingleLogoutService</legend><ol>';
-            //$slotmpl = $this->ci->config->item('ssohandler_saml2');
+            $IDPSLOPart = '<fieldset><legend>'.lang('IdPSLO').'</legend><ol>';
             $slotmpl = getBindSingleLogout();
             $idpslo = array();
             if (array_key_exists('IDPSingleLogoutService', $g))
@@ -1051,7 +1042,7 @@ class Form_element {
             /**
              * generate IDP ArtifactResolutionService part
              */
-            $ACSPart = '<fieldset><legend>ArtifactResolutionService <small><i>IDPSSODescriptor</i></small></legend><ol>';
+            $ACSPart = '<fieldset><legend>'.lang('ArtifactResolutionService').' <small><i>IDPSSODescriptor</i></small></legend><ol>';
             $acs = array();
 
             if (isset($g['IDPArtifactResolutionService']) && is_array($g['IDPArtifactResolutionService']))
@@ -1114,9 +1105,7 @@ class Form_element {
                                 'class' => 'acsindex ' . $ordernotice,
                                 'value' => $forder,
                     ));
-                    $r .= '<br /></li>'; 
-
-                    $r .='</ol></li>';
+                    $r .= '<br /></li></ol></li>';
                     $acs[] = $r;
                     if ($sessform && isset($ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']))
                     {
@@ -2179,14 +2168,14 @@ class Form_element {
                 $scopeaanotice = 'notice';
             }
 
-            $r = '<fieldset><legend>Scopes</legend><ol>';
-            $r .= '<li>' . form_label('Scopes IDPSSO', 'f[scopes][idpsso]') . form_input(array(
+            $r = '<fieldset><legend>'.lang('rr_scope').' '.showBubbleHelp(''.lang('rhelp_scopemultivalues').'').'</legend><ol>';
+            $r .= '<li>' . form_label(''.lang('rr_scope').' IDPSSODescirptor', 'f[scopes][idpsso]') . form_input(array(
                         'name' => 'f[scopes][idpsso]',
                         'id' => 'f[scopes][idpsso]',
                         'value' => $scopessovalue,
                         'class' => $scopeidpssonotice,
                     )) . '</li>';
-            $r .= '<li>' . form_label('Scopes AttributeAuthority', 'f[scopes][aa]') . form_input(array(
+            $r .= '<li>' . form_label(''.lang('rr_scope').' AttributeAuthorityDescriptor', 'f[scopes][aa]') . form_input(array(
                         'name' => 'f[scopes][aa]',
                         'id' => 'f[scopes][aa]',
                         'value' => $scopeaavalue,
@@ -2255,13 +2244,12 @@ class Form_element {
         }
         if ($enttype != 'IDP')
         {
-            $r = '<fieldset><legend>Supported protocols <i>SPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>SPSSODescriptor</i></legend><ol>';
             $spssoprotocols = $ent->getProtocolSupport('spsso');
             $selected_options = array();
             $spssonotice = '';
             if ($sessform && isset($entsession['prot']['spsso']) && is_array($entsession['prot']['spsso']))
             {
-                #$selected_options = $entsession['prot']['idpsso'];
                 if (count(array_diff($entsession['prot']['spsso'], $spssoprotocols)) > 0 || count(array_diff($spssoprotocols, $entsession['prot']['spsso'])) > 0)
                 {
                     $spssonotice = 'notice';
@@ -2291,7 +2279,7 @@ class Form_element {
             /**
              * start nameids for IDPSSODescriptor
              */
-            $r = '<fieldset><legend>Supported nameIDs <i>IDPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportednameids').' <i>IDPSSODescriptor</i></legend><ol>';
             $idpssonameids = $ent->getNameIds('idpsso');
             $idpssonameidnotice = '';
             $supportednameids = array();
@@ -2340,7 +2328,7 @@ class Form_element {
             /**
              * start nameids for AttributeAuthorityDescriptor 
              */
-            $r = '<fieldset><legend>Supported nameIDs <i>AttributeAuthorityDescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportednameids').' <i>AttributeAuthorityDescriptor</i></legend><ol>';
             $idpaanameids = $ent->getNameIds('aa');
             $idpaanameidnotice = '';
             $supportednameids = array();
@@ -2389,7 +2377,7 @@ class Form_element {
         }
         if ($enttype != 'IDP')
         {
-            $r = '<fieldset><legend>Supported nameIDs <i>SPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportednameids').' <i>SPSSODescriptor</i></legend><ol>';
             $spssonameids = $ent->getNameIds('spsso');
             $spssonameidnotice = '';
             $supportednameids = array();
@@ -2521,7 +2509,7 @@ class Form_element {
         $result = array();
         if ($type != 'SP')
         {
-            $result[] = '<div class="section">Identity Provider</div>';
+            $result[] = '<div class="section">'.lang('identityprovider').'</div>';
 
             /**
              * start display
@@ -2596,7 +2584,7 @@ class Form_element {
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiidisplayadd">' . form_dropdown('idpuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidisplay" name="idpadduiidisplay" value="idpadduiidisplay" class="btn">Add localized UII DisplayName</button></span></li>';
+            $r .= '<li><span class="idpuiidisplayadd">' . form_dropdown('idpuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidisplay" name="idpadduiidisplay" value="idpadduiidisplay" class="btn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 
@@ -2676,7 +2664,7 @@ class Form_element {
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiihelpdeskadd">' . form_dropdown('idpuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiihelpdesk" name="idpadduiihelpdesk" value="idpadduiihelpdesk" class="btn">Add localized ImformationURL</button></span></li>';
+            $r .= '<li><span class="idpuiihelpdeskadd">' . form_dropdown('idpuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiihelpdesk" name="idpadduiihelpdesk" value="idpadduiihelpdesk" class="btn">'.lang('addlocalizedhelpdesk').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 
@@ -2686,7 +2674,7 @@ class Form_element {
             /**
              * start description
              */
-            $r = form_fieldset('Provider Description');
+            $r = form_fieldset(''.lang('rr_provdesc').'');
             $langsdisplaynames = $langs;
             if (isset($ext['idp']['mdui']['Description']))
             {
@@ -2756,7 +2744,7 @@ class Form_element {
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiidescadd">' . form_dropdown('idpuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidesc" name="idpadduiidesc" value="idpadduiidesc" class="btn">Add localized Description</button></span></li>';
+            $r .= '<li><span class="idpuiidescadd">' . form_dropdown('idpuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidesc" name="idpadduiidesc" value="idpadduiidesc" class="btn">'.lang('addlocalizeddesc').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 
@@ -2766,7 +2754,7 @@ class Form_element {
         }
         if ($type != 'IDP')
         {
-            $result[] = '<div class="section">Service Provider</div>'; {
+            $result[] = '<div class="section">'.lang('serviceprovider').'</div>'; {
 
 
                 /**
@@ -2842,7 +2830,7 @@ class Form_element {
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiidisplayadd">' . form_dropdown('spuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidisplay" name="spadduiidisplay" value="spadduiidisplay" class="btn">Add localized UII DisplayName</button></span></li>';
+                $r .= '<li><span class="spuiidisplayadd">' . form_dropdown('spuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidisplay" name="spadduiidisplay" value="spadduiidisplay" class="btn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
                 $r .= form_fieldset_close();
                 $result[] = $r;
 
