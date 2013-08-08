@@ -55,6 +55,10 @@ class Ajax extends MY_Controller {
             {
                 $cookie_value = 'lt';
             }
+            elseif ($language === 'es')
+            {
+                $cookie_value = 'es';
+            }
             else
             {
                 $cookie_value = 'english';

@@ -89,6 +89,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                     'lt' => array('path'=>'lt','val'=>'lietuvos'),
                     'pl' => array('path'=>'pl','val'=>'polski'),
                     'pt' => array('path'=>'pt','val'=>'português'),
+                    'es' => array('path'=>'es','val'=>'española'),
                    );
                 ?>
                 <div id="langchenge">
@@ -127,12 +128,9 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
          }
                 ?>
         <div id="container">
-
             <div class="header-container">
                 <header class="wrapper clearfix" role="banner">
                     <div class="header-top clearfix" style="text-align: right;">
-
-
                         <?php
                         if (!empty($provider_logo_url))
                         {

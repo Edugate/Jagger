@@ -41,7 +41,7 @@ class MY_Controller extends CI_Controller {
         $this->title = "";
         $this->lang->load('rr_lang', 'english');
         $this->current_language = 'en';
-        $langs = array('pl','pt','it','lt');
+        $langs = array('pl','pt','it','lt','es');
         $cookie_lang = $this->input->cookie('rrlang', TRUE);
         $defaultlang_cookie = array(
             'name' => 'rrlang',
