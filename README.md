@@ -12,3 +12,10 @@ Installation: check INSTALL.txt
 
 
 Upgrades: UPGRADE.txt
+
+----
+Please join discussion list:
+
+https://groups.google.com/d/forum/resourceregistry3
+resourceregistry3(at)googlegroups.com
+
