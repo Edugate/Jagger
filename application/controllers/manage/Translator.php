@@ -59,10 +59,12 @@ class Translator extends MY_Controller
        $translator = $this->config->item('translator_access');
        if(empty($translator))
        {
+           log_message('debug','translator_access not found in config');
            show_error('no perm 1',403);
        }
        if(empty($translator[$langto]))
        {
+          log_message('debug','language code '.$langto.' not found in as key for translator_access');
           show_error('no perm',403);
        }
        else
@@ -70,6 +72,7 @@ class Translator extends MY_Controller
           $config_username = $translator[$langto];
           if(strcasecmp($config_username, $username) != 0)
           {
+             log_message('debug','translation not permited for '.  $username);
               show_error('no perm',403);
           }
        }
