@@ -47,7 +47,7 @@ class Translator extends MY_Controller
     {
        $this->lang->load('rr', 'english');
        $original = $this->lang->language;
-       if($l == 'pt' or $l == 'pl' or $l == 'it')
+       if($l === 'pt' or $l === 'pl' or $l === 'it' or $l === 'es')
        {
           $langto = $l;
        }
@@ -68,7 +68,7 @@ class Translator extends MY_Controller
        else
        {
           $config_username = $translator[$langto];
-          if($config_username != $username)
+          if(strcasecmp($config_username, $username) != 0)
           {
               show_error('no perm',403);
           }
