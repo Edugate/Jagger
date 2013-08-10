@@ -36,6 +36,10 @@ class Detail extends MY_Controller {
         $this->current_site = current_url();
         if (!$loggedin)
         {
+            if($this->input->is_ajax_request())
+            {
+               return null;
+            }
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
@@ -50,6 +54,59 @@ class Detail extends MY_Controller {
         $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
         $this->tmp_attributes = new models\Attributes;
         $this->tmp_attributes->getAttributes();
+    }
+
+
+    function showlogs($id)
+    {
+       if($this->input->is_ajax_request())
+       {
+            $d = array();
+            $group = 'entity';
+            $username = $this->j_auth->current_user();
+            $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+            $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id)); 
+            if(!empty($ent))
+            {
+               $has_write_access = $this->zacl->check_acl($id, 'write', $group, '');
+               if($has_write_access === TRUE)
+               {
+                   $i = 0;
+                   $d[++$i]['header'] = lang('rr_logs');
+                   $d[++$i]['name'] = lang('rr_modifications');
+                   $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 10);
+                   if((strcasecmp($ent->getType(),'IDP') == 0) OR (strcasecmp($ent->getType(),'BOTH') == 0))
+                   {
+                       $tmp_logs = new models\Trackers;
+                       $arp_logs = $tmp_logs->getArpDownloaded($ent);
+                       $logg_tmp = '<ul>';
+                       if (!empty($arp_logs))
+                       {
+                          foreach ($arp_logs as $l)
+                          {
+                              $logg_tmp .= '<li><b>' . $l->getCreated()->format('Y-m-d H:i:s') . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+                          }
+                       }
+                       $logg_tmp .= '</ul>';
+                       $d[++$i]['name'] = lang('rr_recentarpdownload'); 
+                       $d[$i]['value'] = $logg_tmp;
+                  }  
+               }
+               else
+               {
+                   log_message('debug', 'no access to load logs tab');
+               }
+               
+
+            }
+            $data['d'] = $d; 
+            $this->load->view('providers/showlogs_view.php',$data);
+       }
+       else
+       {
+          echo '';
+       }
+
     }
 
     function show($id)
@@ -1178,33 +1235,6 @@ class Detail extends MY_Controller {
         $result[] = array('section' => 'uii', 'title' => ''.lang('tabUII').'', 'data' => $d);
         $d = array();
         $i = 0;
-
-        $d[++$i]['header'] = lang('rr_logs');
-        $d[++$i]['name'] = lang('rr_modifications');
-        $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 3);
-        if ($idppart)
-        {
-            $tmp_logs = new models\Trackers;
-            $arp_logs = $tmp_logs->getArpDownloaded($ent);
-
-            $logg_tmp = '<ul>';
-            if (!empty($arp_logs))
-            {
-                foreach ($arp_logs as $l)
-                {
-                    $logg_tmp .= '<li><b>' . $l->getCreated()->format('Y-m-d H:i:s') . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
-                }
-            }
-            $logg_tmp .= '</ul>';
-            $d[++$i]['name'] = lang('rr_recentarpdownload');
-            $d[$i]['value'] = $logg_tmp;
-        }
-        $result[] = array('section' => 'logs', 'title' => lang('tabLogs'), 'data' => $d);
-        $d = array();
-        $i = 0;
-
-
-
         $d[++$i]['header'] = lang('rr_management');
         $d[++$i]['name'] = lang('rr_managestatus');
         if ($has_manage_access)
