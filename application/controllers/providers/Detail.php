@@ -178,7 +178,7 @@ class Detail extends MY_Controller {
         }
         if (!$is_validtime)
         {
-            $entstatus .= ' '. makeLabel('alert',lang('rr_validfromto_notmatched1') , strtolower(lang('metadata')).' '.lang('rr_expired'));
+            $entstatus .= ' '. makeLabel('alert',lang('rr_validfromto_notmatched1') , strtolower(lang('rr_metadata')).' '.lang('rr_expired'));
         }
         if ($locked)
         {
