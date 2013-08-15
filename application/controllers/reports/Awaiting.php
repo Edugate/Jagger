@@ -42,10 +42,14 @@ class Awaiting extends MY_Controller {
             $this->load->library('j_queue');
             return;
         }
-        else
+        elseif(!$this->input->is_ajax_request())
         {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
+        }
+        else
+        {
+           show_error('session no valid',403);
         }
     }
 
