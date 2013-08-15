@@ -250,11 +250,11 @@ $(function() {
     $("#responsecontainer").load("awaiting/ajaxrefresh");
     var refreshId = setInterval(function() {
         $("#responsecontainer").load('awaiting/ajaxrefresh');
-    }, 18000);
+    }, 36000);
     $("#dashresponsecontainer").load("reports/awaiting/dashajaxrefresh");
     var refreshId = setInterval(function() {
         $("#dashresponsecontainer").load('reports/awaiting/dashajaxrefresh');
-    }, 18000);
+    }, 36000);
 
     $.ajaxSetup({
         cache: false
