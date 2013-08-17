@@ -87,12 +87,6 @@ $config['nameids'] = array(
 	'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
 		);
 
-$config['supported_protocols'] = array(
-	'urn:oasis:names:tc:SAML:2.0:protocol'=>'urn:oasis:names:tc:SAML:2.0:protocol',
-	'urn:oasis:names:tc:SAML:1.1:protocol'=>'urn:oasis:names:tc:SAML:1.1:protocol',
-	'urn:oasis:names:tc:SAML:1.0:protocol'=>'urn:oasis:names:tc:SAML:1.0:protocol',
-        'urn:mace:shibboleth:1.0'=>'urn:mace:shibboleth:1.0',
-	);
 
 $config['ssohandler_saml2'] = array(
     'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
