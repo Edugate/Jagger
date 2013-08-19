@@ -30,6 +30,33 @@ function getBindSingleLogout()
 return $y;   
 }
 
+function getBindSingleSignOn()
+{
+   $y = array(
+    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
+    'urn:oasis:names:tc:SAML:2.0:bindings:SOAP',
+    'urn:mace:shibboleth:1.0:profiles:AuthnRequest'
+  );
+return $y;   
+}
+
+function getBindACS()
+{
+   $y = array(
+     'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+     'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
+     'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
+     'urn:oasis:names:tc:SAML:2.0:bindings:PAOS',
+     'urn:oasis:names:tc:SAML:2.0:profiles:browser-post',
+     'urn:oasis:names:tc:SAML:1.0:profiles:browser-post',
+     'urn:oasis:names:tc:SAML:1.0:profiles:artifact-01',
+   );
+   return $y;
+
+}
+
 function getAllowedProtocolEnum()
 {
      $y = array(

@@ -894,9 +894,21 @@ class Form_element {
 
     public function NgenerateServiceLocationsForm(models\Provider $ent, $ses = null)
     {
-        $ssotmpl = $this->ci->config->item('ssohandler_saml2');
-        $ssotmpl = array_merge($ssotmpl, $this->ci->config->item('ssohandler_saml1'));
-
+        $ssotmpl = array(); 
+        $acsbindprotocols = array();
+        $ssobindprotocols = getBindSingleSignOn();
+        
+        $tmpacsprotocols = getBindACS();
+        foreach($tmpacsprotocols as $v)
+        {
+           $acsbindprotocols[''.$v.''] = $v;
+        }
+       
+        foreach($ssobindprotocols as $v)
+        {
+           $ssotmpl[''.$v.''] = $v;
+        }
+       
         $slotmpl = getBindSingleLogout();
 
         $result = array();
@@ -1257,7 +1269,7 @@ class Form_element {
                     }
                     $r = '<li><ol>';
                     $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]');
-                    $r .= '<span class="' . $bindnotice . '">' . form_dropdown('f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]', $this->ci->config->item('acs_binding'), $fbind) . '</span></li>';
+                    $r .= '<span class="' . $bindnotice . '">' . form_dropdown('f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]', $acsbindprotocols, $fbind) . '</span></li>';
                     $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][AssertionConsumerService][' . $v3->getId() . '][url]') . '';
                     $r .= form_input(array(
                                 'name' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][url]',
@@ -1318,7 +1330,7 @@ class Form_element {
 
                     $r = '<li><ol>';
                     $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][AssertionConsumerService][' . $k4 . '][bind]');
-                    $r .= form_dropdown('f[srv][AssertionConsumerService][' . $k4 . '][bind]', $this->ci->config->item('acs_binding'), $v4['bind']) . '</li>';
+                    $r .= form_dropdown('f[srv][AssertionConsumerService][' . $k4 . '][bind]', $acsbindprotocols, $v4['bind']) . '</li>';
                     $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][AssertionConsumerService][' . $k4 . '][url]');
                     $r .= form_input(array(
                         'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][url]',
@@ -3059,300 +3071,6 @@ class Form_element {
         return $result;
     }
 
-    private function generateServiceLocationsSpForm(models\Provider $provider, $action = null)
-    {
-        log_message('debug',  'Form_element::generateServiceLocationsSpForm method started');
-        $locations = array();
-        foreach ($provider->getServiceLocations() as $srv)
-        {
-            if ($srv->getType() != 'SingleSignOnService')
-            {
-                $locations[$srv->getType()][] = array(
-                    'id' => $srv->getId(),
-                    'type' => $srv->getType(),
-                    'binding' => $srv->getBindingName(),
-                    'url' => $srv->getUrl(),
-                    'index_number' => $srv->getOrder(),
-                    'is_default' => $srv->getDefault()
-                );
-            }
-        }
-        /**
-         * ad one field for new ACS service
-         */
-        $locations['AssertionConsumerService'][] = array(
-            'id' => 'n',
-            'type' => 'AssertionConsumerService',
-            'binding' => 'none',
-            'url' => '',
-            'index_number' => '',
-            'is_default' => null,);
-
-        $locations['DiscoveryResponse'][] = array(
-            'id' => 'n',
-            'type' => 'DiscoveryResponse',
-            'binding' => 'none',
-            'url' => '',
-            'index_number' => '',
-            'is_default' => null,);
-
-
-
-
-
-
-        $s_input = '';
-
-        if (array_key_exists('AssertionConsumerService', $locations))
-        {
-            log_message('debug',  "found ACS for sp: " . $provider->getEntityId());
-            $i = 0;
-            $s_input .=form_fieldset(lang('rr_acs_fieldset'));
-
-
-            foreach ($locations['AssertionConsumerService'] as $acs)
-            {
-                $name = 'srv_' . $acs['id'];
-                $srvid = $acs['id'];
-
-                $select_label = form_label(lang('rr_bindingname'), 'acs_bind[' . $srvid . ']');
-
-                $select_binding = form_dropdown('acs_bind[' . $srvid . ']', $this->ci->config->item('acs_binding'), $acs['binding']);
-
-                $s_row = "" . $select_label . $select_binding . "<br />";
-
-                $url_data = array(
-                    'name' => 'acs_url[' . $srvid . ']',
-                    'id' => 'acs_url[' . $srvid . ']',
-                    'value' => set_value('acs_url', $acs['url']),
-                    'class' => 'acsurl',
-                );
-                $url_label = form_label(lang('rr_url'), 'acs_url[' . $srvid . ']');
-
-                $url_input = form_input($url_data);
-
-                $s_row .="" . $url_label . $url_input;
-
-                $order_data = array(
-                    'name' => 'acs_index[' . $srvid . ']',
-                    'id' => 'acs_index[' . $srvid . ']',
-                    'size' => 3,
-                    'maxlength' => 3,
-                    'class' => 'acsindex',
-                    'value' => set_value('acs_index', $acs['index_number']),
-                );
-
-                $index_input = form_input($order_data);
-                $indexrow = 'index ' . $index_input;
-
-                $is_default_data = array(
-                    'name' => 'acs_default',
-                    'id' => 'acs_default',
-                    'value' => $acs['id'],
-                    'checked' => set_value('acs_default', $acs['is_default'])
-                );
-
-                $is_default_label = form_label(lang('rr_isdefault'), $name . '_default');
-                $is_default_checkbox = form_radio($is_default_data);
-                $isdefaulrow = ' ' . lang('rr_isdefault') . ' ' . $is_default_checkbox;
-                $s_row .= '<span style="white-space: nowrap;">' . $indexrow . $isdefaulrow . '</span><br />';
-                if ($srvid == 'n')
-                {
-                    $s_input .= '<li>' . form_fieldset(lang('rr_addnewacs')) . $s_row . form_fieldset_close() . '</li>';
-                }
-                else
-                {
-                    $s_input .= '<li>' . $s_row . '</li>';
-                }
-            }
-            $s_input .= form_fieldset_close();
-        }
-
-        if (array_key_exists('DiscoveryResponse', $locations))
-        {
-            $s_input .=form_fieldset('Discovery Service Locations');
-            foreach ($locations['DiscoveryResponse'] as $discins)
-            {
-                $discid = $discins['id'];
-                $name = 'disc[' . $discid . ']';
-                $s_row = '';
-                $url_data = array(
-                    'name' => 'disc[' . $discid . ']',
-                    'id' => 'disc[' . $discid . ']',
-                    'value' => set_value('disc', $discins['url']),
-                );
-                $order_data = array(
-                    'name' => 'discindex[' . $discid . ']',
-                    'id' => 'discindex[' . $discid . ']',
-                    'size' => 3,
-                    'maxlength' => 3,
-                    'class' => 'acsindex',
-                    'value' => set_value('discindex', $discins['index_number']),
-                );
-                $index_input = form_input($order_data);
-                $indexrow = 'index ' . $index_input;
-                $url_label = form_label(lang('rr_url'), 'disc[' . $discid . ']');
-                $url_input = form_input($url_data);
-                $s_row .= $url_label . $url_input . $indexrow;
-                $s_input .= '<li>' . $s_row . '</li>';
-            }
-            $s_input .= form_fieldset_close();
-        }
-        if (!array_key_exists('RequestInitiator', $locations))
-        {
-            $locations['RequestInitiator'][] = array(
-                'id' => 'n',
-                'type' => 'RequestInitiator',
-                'binding' => 'none',
-                'url' => '',
-                'index_number' => '',
-                'is_default' => null,);
-        }
-        $s_input .=form_fieldset('RequestInitiator Location');
-        foreach ($locations['RequestInitiator'] as $discins)
-        {
-            $discid = $discins['id'];
-            $name = 'initdisc[' . $discid . ']';
-            $s_row = '';
-            $url_data = array(
-                'name' => 'initdisc[' . $discid . ']',
-                'id' => 'initdisc[' . $discid . ']',
-                'value' => set_value('initdisc', $discins['url']),
-            );
-            $url_label = form_label(lang('rr_url'), 'initdisc[' . $discid . ']');
-            $url_input = form_input($url_data);
-            $s_row .= $url_label . $url_input;
-            $s_input .= '<li>' . $s_row . '</li>';
-        }
-        $s_input .= form_fieldset_close();
-
-
-        $srvform = form_fieldset(lang('rr_servicelocations'));
-        $srvform = '<fieldset><legend class="accordionButton">' . lang('rr_servicelocations') . '</legend>';
-        $srvform .='<ol class="accordionContent">';
-        $srvform .= $s_input;
-
-        $srvform .='</ol>';
-        $srvform .=form_fieldset_close();
-        return $srvform;
-    }
-
-    private function generateServiceLocationsIdpForm(models\Provider $provider, $action = null)
-    {
-        $ssotmpl = $this->ci->config->item('ssohandler_saml2');
-        $ssotmpl = array_merge($ssotmpl, $this->ci->config->item('ssohandler_saml1'));
-        $locations = array();
-        $locations['SingleSignOnService'] = array();
-        $slocations = $provider->getServiceLocations();
-        $i = $provider->getServiceLocations()->getValues();
-        if (!empty($slocations))
-        {
-            /**
-             * mapping collection into array
-             */
-            foreach ($slocations->getValues() as $s)
-            {
-                $s_id = $s->getId();
-                $s_type = $s->getType();
-                $s_bindingname = $s->getBindingName();
-                $s_url = $s->getUrl();
-                $s_order = $s->getOrder();
-                $s_default = $s->getDefault();
-
-
-                $locations[$s_type][$s_bindingname] = array(
-                    'url' => $s_url,
-                    'default' => $s_default,
-                    'order' => $s_order,
-                    'id' => $s_id);
-            }
-        }
-        /**
-         * generate inputs and fill with values
-         */
-        $s_input = form_fieldset(lang('rr_singlesignon_fieldset'));
-
-        $i = 0;
-        foreach ($ssotmpl as $m)
-        {
-
-            /**
-             * if locations is set
-             */
-            if (array_key_exists($m, $locations['SingleSignOnService']))
-            {
-                $name = 'srvsso_' . $locations['SingleSignOnService'][$m]['id'] . '_url';
-                $url = $locations['SingleSignOnService'][$m]['url'];
-                $labelname = $m;
-                $s_input .="<li>";
-                $s_input .= form_label($labelname, $name) . "\n";
-                $s_input .= form_input(array(
-                    'name' => $name,
-                    'id' => $name,
-                    'value' => set_value($name, $url)));
-                $s_input .='</li>';
-            }
-            else
-            {
-                $i++;
-                $name = 'srvsso_' . $i . 'n_url';
-                $hiddenname = 'srvsso_' . $i . 'n_type';
-                $labelname = $m;
-                $s_input .='<li>';
-                $s_input .= form_label($labelname, $name) . "\n";
-                $s_input .= '<div style="display:none">';
-                $s_input .= form_input(array(
-                    'name' => $hiddenname,
-                    'type' => 'hidden',
-                    'value' => $m));
-                $s_input .= '</div>';
-                $s_input .= form_input(array(
-                    'name' => $name,
-                    'id' => $name,
-                    'value' => set_value($name)));
-                $s_input .='</li>';
-            }
-        }
-        $s_input .= form_input(array(
-            'name' => 'nosrvs',
-            'type' => 'hidden',
-            'value' => $i
-        ));
-
-        $s_input .= form_fieldset_close();
-
-        $srvform = '<fieldset><legend class="accordionButton">' . lang('rr_servicelocations') . '</legend><ol class="accordionContent">';
-        $srvform .= $s_input . '</ol>' . form_fieldset_close();
-        return $srvform;
-    }
-
-    private function generateServiceLocationsForm(models\Provider $provider, $action = null)
-    {
-        $type = $provider->getType();
-        $s = null;
-        if ($type == 'IDP')
-        {
-            $s = $this->generateServiceLocationsIdpForm($provider);
-        }
-        elseif ($type == 'SP')
-        {
-            $s = $this->generateServiceLocationsSpForm($provider);
-        }
-        elseif (!empty($action))
-        {
-            if ($action == 'SP')
-            {
-                $s = $this->generateServiceLocationsSpForm($provider);
-            }
-            elseif ($action == 'IDP')
-            {
-                $s = $this->generateServiceLocationsIdpForm($provider);
-            }
-        }
-
-        $t = $s;
-        return $t;
-    }
 
     private function generateContactsForm(models\Provider $provider, $action = null, $template = null)
     {

@@ -59,7 +59,12 @@ class Sp_registration extends MY_Controller {
         }
         $data['federations'] = $federations;
         $data['acs_dropdown'][''] = lang('selectone');
-        $data['acs_dropdown'] = array_merge($data['acs_dropdown'], $this->config->item('acs_binding'));
+        $tmpacsprotocols = getBindACS();
+        foreach($tmpacsprotocols as $v)
+        {
+            $acsbindprotocols[''.$v.''] = $v;
+        }
+        $data['acs_dropdown'] = array_merge($data['acs_dropdown'], $acsbindprotocols);
 
 
         $data['content_view'] = 'sp/sp_registration_form_view';

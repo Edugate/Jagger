@@ -66,7 +66,12 @@
                 <li>
                     <label for="bindingname"><?php echo lang('rr_bindingtypesinglesign').showBubbleHelp(lang('rhelp_bindingtype'));?></label>
                     <?php
-                    $binding_values = $this->config->item('ssohandler_saml2');
+                    $binding_values = array(
+                               'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'=>'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+                               'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+                               'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
+                               'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
+                                     );
                     echo form_dropdown('bindingname', $binding_values);
                     ?>
                 </li>

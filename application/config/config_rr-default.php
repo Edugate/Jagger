@@ -9,20 +9,17 @@ if (!defined('BASEPATH'))
  */
 $config['pageTitlePref'] = 'RR :: ';
 /**
- * text displayed in footer
- */
-$config['pageFooter'] = 'Resource Registry';
+ * text displayed in footer - it's replaced with preferences from database
+ */ 
+// $config['pageFooter'] = 'Resource Registry';
 
 $config['rr_setup_allowed'] = FALSE;
 $config['site_logo'] = 'logo-default.png';
-
-$config['rr_display_memory_usage'] = TRUE;
 
 $config['syncpass'] = 'verystrongpasss';
 
 $config['support_mailto'] = 'support@example.com';
 
-$config['mainfedname'] = 'Edugate';
 
 /**
  * if TRUE feadmin may remove member from his fed without approve queue
@@ -52,10 +49,6 @@ $config['rr_logo_maxheight'] = 300;
 $config['rr_logo_types'] = 'png';
 $config['rr_logo_maxsize'] = 2000;
 
-/**
- * rr_load_gmap_js to TRUE , if you you want to load googlemap api, then you need valid googlemap key https://code.google.com/apis/console
- */
-$config['rr_load_gmap_js'] = TRUE;
 
 /**
  * autoregister_federated: if true then user authenticated with shibboleth is created in db 
@@ -87,30 +80,8 @@ $config['nameids'] = array(
 	'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
 		);
 
-
-$config['ssohandler_saml2'] = array(
-    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
-    'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'=>'urn:oasis:names:tc:SAML:2.0:bindings:SOAP');
-$config['ssohandler_saml1'] = array('urn:mace:shibboleth:1.0:profiles:AuthnRequest'=>'urn:mace:shibboleth:1.0:profiles:AuthnRequest');
-
-$config['acs_binding'] = array(
-	'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'=>'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-	'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact'=>'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
-	'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign'=>'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
-	'urn:oasis:names:tc:SAML:2.0:bindings:PAOS'=>'urn:oasis:names:tc:SAML:2.0:bindings:PAOS',
-	'urn:oasis:names:tc:SAML:2.0:profiles:browser-post'=>'urn:oasis:names:tc:SAML:2.0:profiles:browser-post',
-	'urn:oasis:names:tc:SAML:1.0:profiles:browser-post'=>'urn:oasis:names:tc:SAML:1.0:profiles:browser-post',
-	'urn:oasis:names:tc:SAML:1.0:profiles:artifact-01'=>'urn:oasis:names:tc:SAML:1.0:profiles:artifact-01');
-
-
 $config['metadata_validuntil_days'] = '7';
 
-/**
- * define if attributes requirement should be add to metadata
- */
-$config['metadata_attrreqinc'] = false;
 
 $config['policy_dropdown'] = array('0' => 'never', '1' => 'permit only if required', '2' => 'permit if required or desired');
 
