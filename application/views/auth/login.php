@@ -1,7 +1,6 @@
 <?php
 $base = base_url();
 $this->load->helper('form');
-$localloginbtn = $this->config->item('localloginbtn');
 $shib = $this->config->item('Shibboleth');
 $fedenabled = FALSE;
 $shib_url = null;
@@ -17,11 +16,6 @@ if (isset($shib['enabled']) && $shib['enabled'] === TRUE)
     {
         log_message('error', 'Federation login enabled but fedurl not found');
     }
-}
-
-if (empty($localloginbtn))
-{
-    $localloginbtn = lang('rr_local_authn');
 }
 $fedloginbtn = $this->config->item('fedloginbtn');
 if (empty($fedloginbtn))
