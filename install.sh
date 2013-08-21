@@ -70,6 +70,7 @@ echo -e "config-default.php -> config.php"
 echo -e "config_rr-default.php -> config_rr.php" 
 echo -e "database-default.php -> database.php" 
 echo -e "email-default.php -> email.php"
+echo -e "memcached-default.php -> memcached.php"
 echo -e "=============="
 exit 0
 

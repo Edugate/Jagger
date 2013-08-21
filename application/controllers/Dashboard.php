@@ -24,7 +24,6 @@ class Dashboard extends MY_Controller {
     {
         parent::__construct();
         $this->load->library('j_auth');
-        $this->load->helper('url');
     }
 
     function index()

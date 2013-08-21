@@ -1,6 +1,6 @@
 Requirements: 
  *) mysql > 5.1  (it should work with postgres etc but not tested)
- *) PHP >= 5.3 with modules: php-apc, php5-cli, php5-curl, php5-mysql, php5-mcrypt
+ *) PHP >= 5.3 with modules: php-apc, php5-cli, php5-curl, php5-mysql, php5-mcrypt, php-memcached
  *) Apache >= 2.2 with enabled modules: rewrite, unique_id
  *) Shibboleth-SP >= 2.4 - optional needed for federated access
  *) Codeigniter framework 3.0 - it's not official release yet
@@ -12,6 +12,7 @@ Requirements:
  *) Zend Framework
     Only Zend-ACL (Acl dir, Acl.php,  Exception.php) part from http://framework.zend.com/download/current/
     into APP_PATH/libraries/Zend
+ *) memcached
  *) optional -  install gearman-php and gearnam-server     
 
 
