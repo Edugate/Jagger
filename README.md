@@ -13,6 +13,9 @@ Installation: check INSTALL.txt
 
 Upgrades: UPGRADE.txt
 
+
+Documentation (Admin guide) - https://github.com/Edugate/Documentation  (not final yet)
+
 ----
 Please join discussion list:
 
