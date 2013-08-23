@@ -21,10 +21,6 @@ if (!defined('BASEPATH'))
 class Detail extends MY_Controller {
 
     private
-            $current_idp;
-    private
-            $current_idp_name;
-    private
             $logo_url;
     private
             $tmp_attributes;
@@ -34,37 +30,39 @@ class Detail extends MY_Controller {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin)
+        if ($loggedin)
         {
-            if($this->input->is_ajax_request())
+            $this->load->helper(array('url', 'cert', 'url_encoder'));
+            $this->load->library(array('table', 'geshilib', 'zacl', 'show_element'));
+            $this->logo_basepath = $this->config->item('rr_logouriprefix');
+            $this->logo_baseurl = $this->config->item('rr_logobaseurl');
+            if (empty($this->logo_baseurl))
             {
-               return null;
+                $this->logo_baseurl = base_url();
             }
-            $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'location');
+            $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
+            $this->tmp_attributes = new models\Attributes;
+            $this->tmp_attributes->getAttributes();
         }
-        $this->load->helper(array('url', 'cert', 'url_encoder'));
-        $this->load->library(array('table', 'geshilib', 'zacl', 'show_element'));
-        $this->logo_basepath = $this->config->item('rr_logouriprefix');
-        $this->logo_baseurl = $this->config->item('rr_logobaseurl');
-        if (empty($this->logo_baseurl))
+        elseif(!$this->input->is_ajax_request())
         {
-            $this->logo_baseurl = base_url();
+              redirect('auth/login', 'location');
+
         }
-        $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
-        $this->tmp_attributes = new models\Attributes;
-        $this->tmp_attributes->getAttributes();
     }
 
 
     function showlogs($id)
     {
+       if(!$this->j_auth->logged_in())
+       {
+           show_error('no session', 403);
+
+       }
        if($this->input->is_ajax_request())
        {
             $d = array();
             $group = 'entity';
-            $username = $this->j_auth->current_user();
-            $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
             $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id)); 
             if(!empty($ent))
             {
@@ -1266,11 +1264,16 @@ class Detail extends MY_Controller {
 
     function showmembers($providerid)
     {
-        if (!$this->input->is_ajax_request())
-        {
+       if(!$this->j_auth->logged_in())
+       {
+           show_error('no session', 403);
+
+       }
+       if (!$this->input->is_ajax_request())
+       {
             show_error('Request not allowed', 403);
-        }
-        $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
+       }
+       $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if (empty($ent))
         {
             show_error(lang('error404'), 404);
