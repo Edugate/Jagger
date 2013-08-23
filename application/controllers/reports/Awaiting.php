@@ -49,7 +49,7 @@ class Awaiting extends MY_Controller {
         }
         else
         {
-           show_error('session no valid',403);
+           show_error('session not valid',403);
         }
     }
 
@@ -118,6 +118,10 @@ class Awaiting extends MY_Controller {
     }
     function dashajaxrefresh()
     {
+       if(!$this->j_auth->logged_in())
+       {
+          show_error('invalid session', 403);
+       }
        if($this->input->is_ajax_request())
         {
         $queueArray = $this->em->getRepository("models\Queue")->findAll();

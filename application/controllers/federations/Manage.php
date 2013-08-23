@@ -30,7 +30,7 @@ class Manage extends MY_Controller {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin)
+        if (!$loggedin && !$this->input->is_ajax_request())
         {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
@@ -102,6 +102,12 @@ class Manage extends MY_Controller {
        {
            show_error('Request not allowed',403);
        }
+       if(!$this->j_auth->logged_in())
+       {
+           show_error('Session invalid',403);
+           
+       }
+ 
        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
        if(empty($federation))
        {
