@@ -52,21 +52,21 @@ class Logos extends MY_Controller {
 
     public function newlogo($type, $id)
     {
-        if (!($type == 'idp' or $type == 'sp'))
-        {
-            show_error('wrong type of entity', 404);
-        }
         if (!is_numeric($id))
         {
             show_error('wrong id of entity', 404);
         }
-        if ($type == 'idp')
+        if ($type === 'idp')
         {
             $provider = $this->tmp_providers->getOneIdpById($id);
         }
-        else
+        elseif($type === 'sp')
         {
             $provider = $this->tmp_providers->getOneSpById($id);
+        }
+        else
+        {
+            show_error('wrong type of entity', 404);
         }
         if (empty($provider))
         {
@@ -77,7 +77,7 @@ class Logos extends MY_Controller {
         if (!$has_write_access)
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = 'No access to edit provider\'s logo: ' . $idp->getEntityid();
+            $data['error'] = lang('rr_noperm_edit'). ': ' . $idp->getEntityid();
             $this->load->view('page', $data);
             return;
         }
@@ -138,9 +138,10 @@ class Logos extends MY_Controller {
 
         $this->load->library('logo');
         $attributes = array('class' => 'span-20', 'id' => 'formver2');
+        $availableImages = $this->logo->displayAvailableInGridForm('filename', 3);
+
         $form1 = form_open(base_url() . 'manage/logos/newlogo/' . $type . '/' . $id, $attributes);
-        $form1 .= form_fieldset('Select image you want to assign');
-        $form1 .= '<ol> ';
+        $form1 .= form_fieldset(''.lang('rr_selectimagetoassign').'');
 
         #$form1 .= '<li>';
         #$form1 .= form_label('Width in px (optional)', 'width');
@@ -150,19 +151,26 @@ class Logos extends MY_Controller {
         #$form1 .= form_label('Height in px (optional)', 'height');
         #$form1 .= form_input('height');
         #$form1 .= '</li>';
-        $form1 .= '<li><div class="buttons"><button name="submit" type="submit" value="submit" class="btn positive"><span class="save">Select logo and submit</span></button></div></li>';
-        $form1 .= '</ol>';
-        $form1 .= $this->logo->displayAvailableInGridForm('filename', 3);
+        if(!empty($availableImages))
+        {
+           $form1 .= '<ol><li><div class="buttons"><button name="submit" type="submit" value="submit" class="btn positive">
+                      <span class="save">'.lang('rr_selectlogoandsubmit').'</span></button></div></li></ol>';
+           $form1 .= $availableImages;
+        }
+        else
+        {
+           $form1 .= '<div class="alert">'.lang('rr_nolocalimages').'</div>';
+        }
         $form1 .= form_fieldset_close();
         $form1 .= form_close();
 
 
         $data['form1'] = $form1;
         $data['content_view'] = 'manage/logos_view';
-        $data['sub'] = 'Add new logo for';
+        $data['sub'] = lang('rr_addnewlogofor');
         $data['backlink'] = true;
         $data['upload_enabled'] =  $this->config->item('rr_logoupload');
-        $data['infomessage'] = 'Max allowed image size:'.$this->config->item('rr_logo_maxwidth').'x'.$this->config->item('rr_logo_maxheight').'<br /> Please upload in png format'; 
+        $data['infomessage'] = lang('maxallowedimgdimsize').': '.$this->config->item('rr_logo_maxwidth').'x'.$this->config->item('rr_logo_maxheight').'<br />'.lang('rr_uploadinformat').': png'; 
         $data['show_upload'] = true;
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
@@ -170,7 +178,7 @@ class Logos extends MY_Controller {
         $data['provider_detail']['type'] = $type;
         if ($locked)
         {
-            $data['provider_detail']['locked'] = '<img src="' . base_url() . 'images/icons/lock.png" title="provider is locked and cannot be modified"/>';
+            $data['provider_detail']['locked'] = '<img src="' . base_url() . 'images/icons/lock.png" title="'.lang('rr_lockedentity').'"/>';
         }
         else
         {
@@ -209,7 +217,7 @@ class Logos extends MY_Controller {
              $data['backurl'] = $this->input->post('origurl');
            if( $this->upload->do_upload())
            {
-              $data['message'] = 'Image uploaded';
+              $data['message'] = lang('rr_imguploaded');
               
            }
            else
@@ -242,14 +250,14 @@ class Logos extends MY_Controller {
         }
         if (empty($provider))
         {
-            show_error('Provider not found', 404);
+            show_error(lang('rerror_provnotfound'), 404);
         }
 
         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', $type, '');
         if (!$has_write_access)
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = 'No access to edit provider\'s logo: ' . $provider->getEntityid();
+            $data['error'] = lang('rr_noperm_edit').': ' . $provider->getEntityid();
             $this->load->view('page', $data);
             return;
         }
@@ -262,11 +270,11 @@ class Logos extends MY_Controller {
             }
             $action = $this->input->post('add');
             $raction = $this->input->post('remove');
-            if (!empty($action) && $action == 'Add new image')
+            if (!empty($action) && $action === 'Add new image')
             {
                 redirect(base_url() . 'manage/logos/newlogo/' . $type . '/' . $id, 'location');
             }
-            elseif (!empty($raction) && $raction == 'Remove selected')
+            elseif (!empty($raction) && $raction === 'Remove selected')
             {
                 $logoid = $this->input->post('logoid');
                 if (!empty($logoid) && is_numeric($logoid))
@@ -301,24 +309,24 @@ class Logos extends MY_Controller {
 
         if ($count_existing_logos > 0)
         {
-            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="btn negative"><span class="cancel">Unsign selected</span></button>';
+            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="btn negative"><span class="cancel">'.lang('rr_unsignselectedlogo').'</span></button>';
         }
         $target_url = base_url() . 'manage/logos/newlogo/' . $type . '/' . $id;
-        $form1 .= '<a href="' . $target_url . '"><button name="add" type="button" value="Add new image" class="btn positive" onclick="window.open(\'' . $target_url . '\',\'_self\')"><span class="save">Assign new logo</span></button></a>';
+        $form1 .= '<a href="' . $target_url . '"><button name="add" type="button" value="Add new image" class="btn positive" onclick="window.open(\'' . $target_url . '\',\'_self\')"><span class="save">'.lang('rr_assignnewlogo').'</span></button></a>';
         $form1 .= '</div>';
         $form1 .= form_close();
         $form1 .= '</span>';
 
         $data['form1'] = $form1;
         $data['content_view'] = 'manage/logos_view';
-        $data['sub'] = 'List assigned logos for ';
+        $data['sub'] = lang('assignedlogoslistfor').' ';
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
         $data['provider_detail']['entityid'] = $provider->getEntityId();
         $data['provider_detail']['type'] = $type;
         if ($locked)
         {
-            $data['provider_detail']['locked'] = '<img src="' . base_url() . 'images/icons/lock.png" title="provider is locked and cannot be modified"/>';
+            $data['provider_detail']['locked'] = '<img src="' . base_url() . 'images/icons/lock.png" title="'.lang('rr_lockedentity').'"/>';
         }
         else
         {

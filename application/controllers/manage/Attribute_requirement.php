@@ -45,7 +45,7 @@ class Attribute_requirement extends MY_Controller {
 
         $data['no_new_attr'] = 1;
 
-        $this->title = "Attribute Requirements";
+        $this->title = lang('rr_attributerequirements');
         $data['content_view'] = 'manage/attribute_fed_requirement_view';
         log_message('debug', $this->log_prefix . "fedid= " . $fedid);
         log_message('debug', $this->log_prefix . "current_fed=" . $this->current_fed);
@@ -127,7 +127,7 @@ class Attribute_requirement extends MY_Controller {
          * how many new input forms (new attributes) to display 
          */
         $data['no_new_attr'] = 1;
-        $this->title = "Attribute Requirements";
+        $this->title = lang('rr_attributerequirements');
         $data['content_view'] = 'manage/attribute_requirement_view';
         log_message('debug', $this->log_prefix . "spid= " . $spid);
         log_message('debug', $this->log_prefix . "current_sp=" . $this->current_sp);

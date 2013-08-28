@@ -98,7 +98,7 @@ class Users extends MY_Controller {
                 $form .= "</ol>";
                 $form .= form_fieldset_close();
                 $form .= '<div class="buttons">';
-                $form .= '<button type="submit"  name="submit", value="submit" class="btn positive"><span class="save">'.lang('adduser_btn').'</span></button>';
+                $form .= '<button type="submit"  name="submit" value="submit" class="btn positive"><span class="save">'.lang('adduser_btn').'</span></button>';
                 $form .='</div>';
                 $form .= form_close();
                 $data['message'] = $form;
