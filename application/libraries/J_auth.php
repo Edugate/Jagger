@@ -118,7 +118,6 @@ class J_auth {
         }
     }
     public function current_user() {
-        //return $this->ci->session->userdata('username');
         if(isset($_SESSION['username']))
         {
             return $_SESSION['username'];

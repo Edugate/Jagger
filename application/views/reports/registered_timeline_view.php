@@ -6,7 +6,7 @@ $base_url = base_url();
 if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
 {
 
-    echo '<div class="notice">No entity found with registered date</div>';
+    echo '<div class="notice">'.lang('rr_noentitywithregdate').'</div>';
 } else
 {   
     ksort($grid['known']);  
@@ -68,7 +68,6 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
         $line1 .= ']';
     } else
     {
-        //$today = DateTime::createFromFormat('Y-m-d H:i:s');
         $today = date('Y-m-d');
         $line1 = '[[\'' . $today . '\',0]]';
     }
@@ -83,10 +82,10 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
 
     if (!empty($fedname))
     {
-        $graphTitle = 'Progress for federation ' . $fedname;
+        $graphTitle = lang('rr_progressforfed').': '. '<a href="'.base_url().'federations/manage/show/'.base64url_encode($fedname).'">'.$fedname.'</a>';
     } else
     {
-        $graphTitle = 'Progress of locally registered entities';
+        $graphTitle = lang('rr_progresslocalents');
     }
     ?>
  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -109,8 +108,12 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
             var line1 = <?php echo $line1; ?>;
             var line2 = <?php echo $line2; ?>;
             var line3 = <?php echo $line3; ?>;
+            var spname = "<?php echo lang('serviceproviders'); ?>";
+            var idpname = "<?php echo lang('identityproviders'); ?>";
+            var allentname = "<?php echo lang('allentities'); ?>";
+            var progressname = "<?php echo lang('rr_progress'); ?>";
             var plot1 = $.jqplot('chart1', [line1,line2,line3], {
-                title:'Progress',
+                title:''+progressname+'',
                 axes:{
                    xaxis:{renderer:$.jqplot.DateAxisRenderer},
                    yaxis:{
@@ -124,7 +127,7 @@ highlighter: {
         sizeAdjust: 7.5
       },
                 seriesColors: [ "#66c974", "#a4b9fb", "#c61717"],
-                legend:{show: true, placement:"outsideGrid",location:"s",showSwatch: true,marginLeft:"210px",labels:['Service Providers','Identity Providers','All Entities']},
+                legend:{show: true, placement:"outsideGrid",location:"s",showSwatch: true,marginLeft:"210px",labels:[''+spname+'',''+idpname+'',''+allentname+'']},
             
                 series:[{lineWidth:2 },{lineWidth:2 },{lineWidth:4 }],
                 seriesDefaults: {

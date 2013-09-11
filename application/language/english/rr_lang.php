@@ -24,6 +24,8 @@ $lang['title_fededit']              = 'Federation edit';
 $lang['title_addcoc']               = 'New Data protection Code of Conduct - Form';
 $lang['title_editcoc']              = 'Data protection Code of Conduct - Edit Form';
 $lang['title_accessdenied']         = 'Access denied';
+$lang['title_rsettings']            = 'Application settings management';
+$lang['title_approval']             = 'Approval';
 $lang['coc_menulink']               = 'Data protection CoC';
 $lang['rr_accessmngmt']             = 'Access management';
 $lang['rrprovs']                    = 'Providers';
@@ -604,8 +606,9 @@ $lang['addlocalizeduiidisplayname'] = 'Add localized UII DisplayName';
 $lang['SingleSignOnService']    = 'SingleSignOnService';
 $lang['ArtifactResolutionService'] = 'ArtifactResolutionService';
 $lang['IdPSLO']                 = 'IDP SingleLogoutService';
-
-
+$lang['rr_progressforfed']      = 'Progress for federation';
+$lang['rr_progresslocalents']   = 'Progress of locally registered entities';
+$lang['rr_progress']            = 'Progress';
 
 $lang['rrhere']                     = 'here';
 $lang['dropnotset']                 = 'not set';
@@ -673,6 +676,7 @@ $lang['error_lockednoedit']         = 'Entity is locked and cannot be modified';
 $lang['error_nofedyouwantjoin']     = 'Fedreration you want to join does not exist';
 $lang['error_nomembersforfed']      = 'No members in federation';
 $lang['error_fednotfound']          = 'Federation not found';
+$lang['rr_noentitywithregdate']      = 'No entity found with registreation date';
 $lang['nospfoundtoexcl']            = 'No Service Providers found to be excluded';
 $lang['missedinfoinpost']           = 'Missed informations in post';
 $lang['wrongpolicyval']             = 'Wrong policy value';

@@ -32,7 +32,7 @@ class Awaiting extends MY_Controller {
         $this->load->library('table');
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        $this->title = "Approval";
+        $this->title = lang('title_approval');
 
 
         if ($loggedin)

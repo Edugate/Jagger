@@ -99,10 +99,18 @@ class Doctrine {
             $logger = new \Doctrine\DBAL\Logging\EchoSQLLogger;
             $config->setSQLLogger($logger);
         }
-
+        
+        /** 
+         * keep compatibility with old configs
+         */
+        $dbriver = $db['default']['dbdriver'];
+        if($dbriver === 'mysql')
+        {
+           $dbriver = 'pdo_mysql';
+        }
         // Database connection information
         $connectionOptions = array(
-            'driver' => 'pdo_mysql',
+            'driver' => $dbriver,
             'user' => $db['default']['username'],
             'password' => $db['default']['password'],
             'host' => $db['default']['hostname'],

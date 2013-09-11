@@ -17,7 +17,7 @@ class Timelines extends MY_Controller {
         $this->load->library('table');
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        $this->title = "Timeline";
+        $this->title = lang('rr_timeline');
 
 
         if ($loggedin)
