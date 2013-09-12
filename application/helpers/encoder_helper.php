@@ -4,7 +4,7 @@
  * 
  * @package     RR3
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -29,3 +29,8 @@ function base64url_decode($encoded) {
   return $plainText;
 }
 
+function getCachePrefix()
+{
+  return md5(base_url()).'_rr3_';
+
+}

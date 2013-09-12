@@ -32,7 +32,6 @@ class Detail extends MY_Controller {
         $this->current_site = current_url();
         if ($loggedin)
         {
-            $this->load->helper(array('url', 'cert', 'url_encoder'));
             $this->load->library(array('table', 'geshilib', 'zacl', 'show_element'));
             $this->logo_basepath = $this->config->item('rr_logouriprefix');
             $this->logo_baseurl = $this->config->item('rr_logobaseurl');

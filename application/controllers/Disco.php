@@ -60,15 +60,7 @@ class Disco extends MY_Controller {
             show_error('unknown provider', 404);
             return;
         }
-        $ch = $this->config->item('cacheprefix');
-        if(!empty($ch))
-        {
-           $keyprefix = $this->config->item('cacheprefix');
-        }
-        else
-        {
-           $keyprefix = '';
-        }
+        $keyprefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached','key_prefix'=>$keyprefix));
         $cacheid = 'disco_'.$me->getId();
         $cachedDisco = $this->cache->get($cacheid);
