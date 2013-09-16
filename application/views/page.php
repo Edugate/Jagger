@@ -43,7 +43,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 <![endif]-->
         <?php
         $iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
-        if(isset($iscookieconsent['status']) && isset($iscookieconsent['value']))
+        if(isset($iscookieconsent['status']) && (boolean) $iscookieconsent['status'] === TRUE && isset($iscookieconsent['value']))
         {
             $this->load->helper('cookie');
             $cookieaccepted = get_cookie('cookieAccept');
@@ -271,12 +271,12 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 <footer>
                     <?php
                     $footer = $this->rrpreference->getPreferences('pageFooter');
-                    if(isset($footer['status']) && isset($footer['value']))
+                    if(isset($footer['status']) && (boolean) $footer['status'] === TRUE && isset($footer['value']))
                     {
                           echo '<small>'.$footer['value'].'</small><br />';
                     }
                     $disp_mem = $this->rrpreference->getPreferences('rr_display_memory_usage');
-                    if (isset($disp_mem['status']) && !empty($disp_mem['status']))
+                    if (isset($disp_mem['status']) && (boolean) $disp_mem['status'] === TRUE )
                     {
                         echo echo_memory_usage();
                     }

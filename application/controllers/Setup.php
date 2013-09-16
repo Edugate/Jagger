@@ -285,7 +285,7 @@ class Setup extends MY_Controller {
     private function _populateAttributes() {
         $attributes = array(
             array('name' => 'preferredLanguage', 'fullname' => 'Preferred Language', 'oid' => 'urn:oid:2.16.840.1.113730.3.1.39', 'urn' => 'urn:mace:dir:attribute-def:preferredLanguage', 'description' => 'Preferred language: Users preferred language (see RFC1766)'),
-            array('name' => 'email', 'fullname' => 'Email', 'oid' => '0.9.2342.19200300.100.1.3', 'urn' => 'urn:mace:dir:attribute-def:mail', 'description' => 'E-Mail: Preferred address for e-mail to be sent to this person'),
+            array('name' => 'email', 'fullname' => 'Email', 'oid' => 'urn:oid:0.9.2342.19200300.100.1.3', 'urn' => 'urn:mace:dir:attribute-def:mail', 'description' => 'E-Mail: Preferred address for e-mail to be sent to this person'),
             array('name' => 'homePostalAddress', 'fullname' => 'Home postal address', 'oid' => 'urn:oid:0.9.2342.19200300.100.1.39', 'urn' => 'urn:mace:dir:attribute-def:homePostalAddress', 'description' => 'Home postal address: Home address of the user'),
             array('name' => 'postalAddress', 'fullname' => 'Business postal address', 'oid' => 'urn:oid:2.5.4.16', 'urn' => 'urn:mace:dir:attribute-def:postalAddress', 'description' => 'Business postal address: Campus or office address'),
             array('name' => 'homePhone', 'fullname' => 'Private phone number', 'oid' => 'urn:oid:0.9.2342.19200300.100.1.20', 'urn' => 'urn:mace:dir:attribute-def:homePhone', 'description' => 'Private phone number'),

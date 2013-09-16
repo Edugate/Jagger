@@ -464,6 +464,45 @@ $(function() {
          });
           return false;
       });
+    $("a#synchsettings").click(function() {
+          var link = $(this), url = link.attr("href");
+          var value = $('<ul/>');
+          $.ajax({
+            url: url,
+            timeout: 2500,
+            cache: false,
+            success: function(json) {
+              $('#spinner').hide();
+              var data = $.parseJSON(json);
+              if (!data)
+              {
+                 alert('no data');
+              }
+              else
+              {
+                                var nlist = $('<ul/>');
+                                $.each(data, function(i, v) {
+                                    var div_data = '<li>' + v.result + '</li>';
+                                    nlist.append(div_data);
+                                });
+                                value.append(nlist);
+                 
+              }
+            },
+            beforeSend: function() { $('#spinner').show(); },
+                error: function() {
+                    $('#spinner').hide();
+                    alert('problem with loading data');
+                }
+            
+          }).done(function(){
+                var nextrow =  value.html() ;
+                //$(nextrow).insertAfter(row);
+                $("div#syncresult").replaceWith(nextrow);
+               
+         });
+          return false;
+      });
     $("a.fmembers").click(function() {
         var link = $(this), url = link.attr("href");
         var row = $(this).parent().parent();

@@ -115,5 +115,10 @@ class Preferences {
        $this->is_enabled = FALSE;
        return $this;
    }
+   public function setDescription($d)
+   {
+       $this->description = $d;
+       return $this;
+   }
 
 }
