@@ -34,3 +34,14 @@ function getCachePrefix()
   return md5(base_url()).'_rr3_';
 
 }
+
+function arrayWithKeysToHtml($a)
+{
+     $str = '';
+     foreach($a as $key=>$value)
+     {
+        $str .= htmlentities($key).': '.htmlentities($value).'<br />';
+     }
+     return $str;
+
+}

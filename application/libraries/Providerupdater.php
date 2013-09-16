@@ -151,12 +151,10 @@ class Providerupdater {
             }
             $ent->setName($ch['orgname']);
         }
-        /**
-         * @todo track lname
-         */
         if (array_key_exists('lname', $ch) && is_array($ch['lname']))
         {
             $origs = $ent->getLocalName();
+            $trackorigs = $origs;
             $langs = array_keys(languagesCodes());
             foreach ($ch['lname'] as $key => $value)
             {
@@ -172,7 +170,25 @@ class Providerupdater {
                     }
                 }
             }
+            $lnamediffs = FALSE;
+            $diff1 = array_diff_assoc($trackorigs,$origs);
+            if(count($diff1)>0)
+            {
+               $lnamediffs = TRUE;
+            } 
+            else
+            {
+               $diff1 = array_diff_assoc($origs,$trackorigs);
+               if(count($diff1)>0)
+               {
+                    $lnamediffs = TRUE;
+               }
+            }
             $ent->setLocalName($origs);
+            if($lnamediffs === TRUE)
+            {
+                $m['Localized name'] = array('before'=>arrayWithKeysToHtml($trackorigs),'after'=>arrayWithKeysToHtml($origs));
+            }
         }
         /**
          * @todo add trck regpolicy
