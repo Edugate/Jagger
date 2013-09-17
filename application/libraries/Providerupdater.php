@@ -448,16 +448,20 @@ class Providerupdater {
             if ($type !== 'IDP')
             {
                 $origex = array();
+                $origs = array();
                 if (isset($extend['sp']['mdui']['PrivacyStatementURL']))
                 {
                     foreach ($extend['sp']['mdui']['PrivacyStatementURL'] as $v)
                     {
                         $l = $v->getAttributes();
                         $origex['' . $l['xml:lang'] . ''] = $v;
+                        $origs[''.$l['xml:lang'] .''] = $v->getElementValue();
                     }
                 }
+                $newex = array();
                 if (isset($ch['prvurl']['spsso']))
                 {
+                    $newex = $ch['prvurl']['spsso'];
                     foreach ($origex as $key => $value)
                     {
                         if (array_key_exists($key, $ch['prvurl']['spsso']))
@@ -467,6 +471,7 @@ class Providerupdater {
                                 $value->setProvider(NULL);
                                 $ex->removeElement($value);
                                 $this->em->remove($value);
+                                unset($newex[''.$key.'']);
                             }
                             else
                             {
@@ -492,21 +497,43 @@ class Providerupdater {
                             $this->em->persist($nprvurl);
                         }
                     }
+                    $prvurldiffs = FALSE;
+                    $diff1 = array_diff_assoc($origs,$newex);
+                    if(count($diff1)>0)
+                    {
+                        $prvurldiffs = TRUE;
+                    } 
+                    else
+                    {
+                       $diff1 = array_diff_assoc($newex,$origs);
+                       if(count($diff1)>0)
+                       {
+                          $prvurldiffs = TRUE;
+                       }
+                   }
+                   if($prvurldiffs === TRUE)
+                   {
+                        $m['Privacy Statement URLs (SP)'] = array('before'=>arrayWithKeysToHtml($origs),'after'=>arrayWithKeysToHtml($newex));
+                   }
                 }
             }
             if ($type !== 'SP')
             {
                 $origex = array();
+                $origs = array();
                 if (isset($extend['idp']['mdui']['PrivacyStatementURL']))
                 {
                     foreach ($extend['idp']['mdui']['PrivacyStatementURL'] as $v)
                     {
                         $l = $v->getAttributes();
                         $origex['' . $l['xml:lang'] . ''] = $v;
+                        $origs[''.$l['xml:lang'] .''] = $v->getElementValue();
                     }
                 }
+                $newex = array();
                 if (isset($ch['prvurl']['idpsso']))
                 {
+                    $newex = $ch['prvurl']['idpsso'];
                     foreach ($origex as $key => $value)
                     {
                         if (array_key_exists($key, $ch['prvurl']['idpsso']))
@@ -516,6 +543,7 @@ class Providerupdater {
                                 $value->setProvider(NULL);
                                 $ex->removeElement($value);
                                 $this->em->remove($value);
+                                unset($newex[''.$key.'']);
                             }
                             else
                             {
@@ -541,6 +569,25 @@ class Providerupdater {
                             $this->em->persist($nprvurl);
                         }
                     }
+                    $prvurldiffs = FALSE;
+                    $diff1 = array_diff_assoc($origs,$newex);
+                    if(count($diff1)>0)
+                    {
+                        $prvurldiffs = TRUE;
+                    } 
+                    else
+                    {
+                       $diff1 = array_diff_assoc($newex,$origs);
+                       if(count($diff1)>0)
+                       {
+                          $prvurldiffs = TRUE;
+                       }
+                   }
+                   if($prvurldiffs === TRUE)
+                   {
+                        $m['Privacy Statement URLs (IdP)'] = array('before'=>arrayWithKeysToHtml($origs),'after'=>arrayWithKeysToHtml($newex));
+                   }
+
                 }
             }
         }
