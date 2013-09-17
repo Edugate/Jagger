@@ -304,9 +304,13 @@ class Detail extends MY_Controller {
         {
             if ($is_local && !empty($confRegLoad) && !empty($confRegAuth))
             {
-                $regauthoritytext = lang('rr_regauthority_alt') . ' <b>' . $confRegAuth . '</b>';
+                $regauthoritytext = lang('rr_regauthority_alt') . ' <b>' . $confRegAuth . '</b><br /><small><i>'.lang('loadedfromglobalcnf').'</i></small>';
             }
-            $d[$i]['value'] = $regauthoritytext . '<br /><small><i>'.lang('loadedfromglobalcnf').'</i></small>';
+            else
+            {
+                $regauthoritytext = lang('rr_notset');
+            }
+            $d[$i]['value'] = $regauthoritytext ;
         }
         else
         {
