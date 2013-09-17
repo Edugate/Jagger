@@ -3,24 +3,23 @@ $this->load->helper("cert");
 ?>
 <div id="subtitle"><h3><?php echo lang('rr_sp_register_title');?></h3></div>
 <?php
-$required = "required=\"required\"";
+$required = 'required="required"';
 $errors_v = validation_errors('<span class="span-12">', '</span><br />');
-if (!empty($errors_v)) {
-    echo '<div class="error">';
-    echo $errors_v;
-    echo "</div>";
+if (!empty($errors_v)) 
+{
+    echo '<div class="error">'. $errors_v .'</div>';
 }
 
-echo "<div =\"step1\">";
+echo '<div ="step1">';
 $form_attributes = array('id' => 'formver2', 'class' => 'register');
 $action = base_url() . "providers/sp_registration/submit";
 echo form_open($action, $form_attributes);
 echo form_fieldset(lang('rr_generalinformation'));
-echo "<ol>";
+echo '<ol>';
 /**
  * resource name input
  */
-echo "<li>";
+echo '<li>';
 echo lang('rr_resource', 'resource');
 $in1 = array(
     'id' => 'resource',
@@ -29,12 +28,12 @@ $in1 = array(
     'max-length' => 255,
 );
 echo form_input($in1);
-echo "</li>";
+echo '</li>';
 
 /**
  * entityID input
  */
-echo "<li>";
+echo '<li>';
 echo form_label(lang('rr_entityid').showBubbleHelp(lang('rhelp_entityid')), 'entityid');
 $in2 = array(
     'id' => 'entityid',
@@ -42,36 +41,33 @@ $in2 = array(
     'value' => set_value('entityid'),
 );
 echo form_input($in2);
-echo "</li>";
+echo '</li>';
 /**
  * federation select
  */
-echo "<li>";
+echo '<li>';
 echo form_label(lang('rr_federation'), 'federation');
 echo form_dropdown('federation', $federations);
-echo "</li>";
+echo '</li>';
 
 /**
  * helpdesk url
  */
-echo "<li>";
-echo form_label(lang('rr_helpdeskurl').showBubbleHelp(lang('rhelp_helpdeskurl')), 'helpdesk_url');
+echo '<li>'. form_label(lang('rr_helpdeskurl').showBubbleHelp(lang('rhelp_helpdeskurl')), 'helpdesk_url');
 $inp = array(
     'id' => 'helpdesk_url',
     'name' => 'helpdesk_url',
     'value' => set_value('helpdesk_url'),
 );
-echo form_input($inp);
-echo "</li>";
-echo "</ol>";
+echo form_input($inp).'</li></ol>';
 echo form_fieldset_close();
 echo form_fieldset(lang('rr_technicalinformation'));
-echo "<ol>";
+echo '<ol>';
 
 /**
  * assertion consumer service
  */
-echo "<li>";
+echo '<li>';
 echo form_label(lang('rr_assertioncosumerservice').showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding');
 echo form_dropdown('acs_bind', $acs_dropdown);
 echo form_label(lang('rr_acsurl').showBubbleHelp(lang('rhelp_acsurl')),'acs_url');
@@ -90,7 +86,7 @@ $inp = array(
     'class' => 'acsindex',
 );
 echo form_input($inp);
-echo "</li>";
+echo '</li>';
 
 /**
  * @todo dodac przycisk jquery ktory doda kolejny input 
@@ -98,7 +94,7 @@ echo "</li>";
 /**
  * certificate use=signing
  */
-echo "<li>";
+echo '<li>';
 echo form_label(lang('rr_certificatesigning').' <small>('.lang('rr_optional').')</small>', 'sign_cert_body');
 echo form_textarea(array(
     'id' => 'sign_cert_body',
@@ -107,11 +103,11 @@ echo form_textarea(array(
     'cols' => 65, 
     'rows' => 30
 ));
-echo "</li>";
+echo '</li>';
 /**
  * certificate use=encripting
  */
-echo "<li>";
+echo '<li>';
 echo form_label(lang('rr_certificateencrypting').' <small>('.lang('rr_optional').')</small>', 'encrypt_cert_body');
 echo form_textarea(array(
     'id' => 'encrypt_cert_body',
@@ -121,32 +117,28 @@ echo form_textarea(array(
     'rows' => 30
 ));
 
-echo "</li>";
-echo "</ol>";
+echo '</li></ol>';
 echo form_fieldset_close();
 /**
  * contact detail
  */
 echo form_fieldset(lang('rr_primarycontact'));
-echo "<ol>";
-echo "<li>";
+echo '<ol><li>';
 echo form_label(lang('rr_contactname'), 'contact_name');
 echo form_input(array(
     'id' => 'contact_name',
     'name' => 'contact_name',
     'value' => set_value('contact_name')
 ));
-echo "</li>";
-echo "<li>";
+echo '</li><li>';
 $in3 = array('id' => 'contact_mail',
     'name' => 'contact_mail',
     'value' => set_value('contact_mail')
 );
 echo form_label(lang('rr_contactemail'), 'contact_mail');
-echo form_input($in3);
-echo "</li>";
+echo form_input($in3) .'</li>';
 
-echo "<li>";
+echo '<li>';
 $in4 = array(
     'id' => 'contact_phone',
     'name' => 'contact_phone',
@@ -154,25 +146,18 @@ $in4 = array(
 );
 
 echo form_label(lang('rr_contactphone').' <small>('.lang('rr_optional').')</small>', 'contact_phone');
-echo form_input($in4);
-echo "</li>";
+echo form_input($in4). '</li>';
 ?>
 
 <?php
-echo "</ol>";
+echo '</ol>';
 ?>
 <div class="buttons">
     <button type="submit" name="submit" value="Submit and wait for approval" class="btn positive">
         <span class="save"><?php echo lang('rr_submitwait'); ?><span></button>
                 </div>
                 <?php
-                echo form_fieldset_close();
-
-                echo form_close();
-
-
-
-                echo "</div>";
+                echo form_fieldset_close() . form_close() . '</div>';
 
 
 

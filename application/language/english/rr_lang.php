@@ -177,7 +177,7 @@ $lang['rr_typeaccess']              = 'Type access';
 $lang['rr_onlylocalauthn']          = 'only local authentication';
 $lang['rr_onlyfedauth']             = 'only federated access';
 $lang['rr_bothauth']                = 'local and federated';
-
+$lang['rr_readnotice']              = 'I have read this notice';
 $lang['rr_permvalues']              = 'permited values';
 $lang['rr_denvalues']               = 'denied values';
 $lang['custompolicy']               = 'custom policy';
@@ -231,7 +231,8 @@ $lang['rr_nolocalimages']           = 'No local images found';
 $lang['assignedlogoslistfor']       = 'List assigned logos for';
 $lang['maxallowedimgdimsize']       = 'Max allowed image dimensions';
 $lang['rr_uploadinformat']          = 'Please upload image in format'; 
-
+$lang['rr_msg_sentforapproval']     = 'has been sent for approval';
+$lang['requestsentforapproval']     = 'Your request has been submited for approval';
 $lang['attrnotsupported']           = 'attribute not supported';
 $lang['rr_inactive']                = 'inactive';
 $lang['nodefaultpolicysetyet']      = 'No default policy is set yet';
@@ -657,6 +658,7 @@ $lang['rr_details']                 = 'Details';
 $lang['coldetails']                 = 'Details';
 $lang['taskssent']                  = 'Task(s) sent to job server';
 $lang['confirmreqsuccess']          = 'Thank you! You request has been added to the queue';       
+$lang['rrthankyou']                 = 'Thank you';
 $lang['rerror_nopermtolistidps']    = 'No access to list all idps';
 $lang['rerror_nopermtolistisps']    = 'No access to list all sps';
 $lang['rerror_noperm_viewqueuerequest'] = 'You have no permission to see details of this request';

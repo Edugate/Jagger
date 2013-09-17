@@ -11,8 +11,7 @@
         echo "</div>";
     }
 
-    $required = "required=\"required\"";
-    // $required = "";
+    $required = 'required="required"';
     ?>
 
     <div id="step1">

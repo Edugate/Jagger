@@ -201,27 +201,6 @@ class Attribute_requirement extends MY_Controller {
         $this->load->view('page', $data);
     }
 
-    /*
-      public function manage($sp)
-      {
-      $sep = new models\Provider;
-      $sep = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $sp, 'type' => 'SP'));
-      $this->title = "Attribute Requirements";
-      $data['content_view'] = 'sp/attribute_requirement_form';
-
-      if ($sp)
-      {
-      $attributesRequestCollection = new models\AttributeRequirement;
-      $attributesRequestCollection = $this->em->getRepository("models\AttributeRequirement")->findBy(array('sp_id' => $sp));
-      $attributesCollection = $this->em->getRepository("models\Attribute")->findAll();
-      $list = count($attributesRequestCollection);
-      //print_r($attributesReqColl);
-      } else
-      {
-      $data['error'] = "sp not found";
-      }
-      }
-     */
 
     private function _add($provider_id, $attr_req) {
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $provider_id, 'type' => array('SP','BOTH')));
