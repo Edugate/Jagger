@@ -30,16 +30,6 @@
 $idp_link = anchor(base_url().'providers/detail/show/'.$idpid,'<img src="' . base_url() . 'images/icons/home.png" />');
 
 echo '<div id="subtitle"><h3>'.lang('identityprovider').': <a href="'.base_url().'providers/detail/show/'.$idpid.'">'.$idp_name.'</a></h3><h4>'.$idp_entityid.'</h4></div>';
-echo '<div id="subtitle">';
-echo '<dl>';
-echo '<dd>'.lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_attributes/idp/'.$idpid.'"><img src="'.base_url().'images/icons/arrow.png" /></a></dd>';
-
-echo '<dt>'.lang('addeditpolicies').'</dt>';
-
-echo '<dd>';
-echo '</dd>';
-echo '</dl>';
-echo '</div>';
 ?>
 <span class="span-24">
 <?php
@@ -58,7 +48,7 @@ echo '</span>';
 
 ?>
 <div id="arptabs">
-<ul><li><a href="#defaultarptab"><?php echo lang('rr_defaultarp');?></a></li><li><a href="#fedarptab"><?php echo lang('rr_arpforfeds');?></a></li><li><a href="#specarptab"><?php echo lang('rr_specpolicies'); ?></a></li></ul>
+<ul><li><a href="#defaultarptab"><?php echo lang('rr_defaultarp');?></a></li><li><a href="#fedarptab"><?php echo lang('rr_arpforfeds');?></a></li><li><a href="#specarptab"><?php echo lang('rr_specpolicies'); ?></a></li><li><a href="#supportedattrtab"><?php echo lang('rr_supportedattributes'); ?></a></li></ul>
 
 <div id="defaultarptab">
 <?php
@@ -127,5 +117,10 @@ if (!empty($specific_policy))
 }
 ?>
 </span>
+</div>
+<div id="supportedattrtab">
+<?php
+echo lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_attributes/idp/'.$idpid.'"><img src="'.base_url().'images/icons/arrow.png" /></a>';
+?>
 </div>
 </div>
