@@ -220,7 +220,7 @@ class Show_element {
         return $result;
     }
 
-    public function generateTableSpecificArp(models\Provider $provider)
+    public function generateTableSpecificArp(models\Provider $provider, $captiondisabled = NULL)
     {
         $exluded_arps = $provider->getExcarps();
         if (empty($exluded_arps))
@@ -317,14 +317,17 @@ class Show_element {
 
             $this->ci->table->set_template($tmpl);
             $this->ci->table->set_heading(''.lang('rr_attr_name').'', ''.lang('rr_currentstatus').'', ''.lang('policy').'');
-            $this->ci->table->set_caption(''.lang('rr_specpolicies').'');
+            if(empty($captiondisabled))
+            {
+               $this->ci->table->set_caption(''.lang('rr_specpolicies').'');
+            }
             $result = $this->ci->table->generate($attributes);
             $this->ci->table->clear();
             return $result;
         }
     }
 
-    public function generateTableFederationsArp(models\Provider $provider)
+    public function generateTableFederationsArp(models\Provider $provider, $disabledcaption = NULL)
     {
         $result = null;
         $supported = $this->tmp_policies->getSupportedAttributes($provider);
@@ -342,7 +345,10 @@ class Show_element {
             $tmpl = array('table_open' => '<table  id="details">');
             $this->ci->table->set_template($tmpl);
             $this->ci->table->set_heading(''.lang('rr_attr_name').'', ''.lang('policy').'');
-            $this->ci->table->set_caption(''.lang('rr_arpforfeds').'');
+            if(empty($disabledcaption))
+            {
+               $this->ci->table->set_caption(''.lang('rr_arpforfeds').'');
+            }
             foreach ($source as $s)
             {
 

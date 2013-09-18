@@ -50,19 +50,19 @@ class Attribute_policy extends MY_Controller {
 
     private function display_default_policy($idp) {
         $this->load->library('show_element');
-        $result = $this->show_element->generateTableDefaultArp($idp);
+        $result = $this->show_element->generateTableDefaultArp($idp,TRUE);
         return $result.'<br />';
     }
 
     private function display_specific_policy($idp) {
         $this->load->library('show_element');
-        $result = $this->show_element->generateTableSpecificArp($idp);
+        $result = $this->show_element->generateTableSpecificArp($idp,TRUE);
         return $result;
     }
 
     private function display_federations_policy($idp) {
         $this->load->library('show_element');
-        $result = $this->show_element->generateTableFederationsArp($idp);
+        $result = $this->show_element->generateTableFederationsArp($idp,TRUE);
         return $result.'<br />';
     }
 
