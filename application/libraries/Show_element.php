@@ -313,7 +313,7 @@ class Show_element {
                     $attributes[] = array($attr_name . $link, $attr_value['status'], $attr_value['policy'] . '<br /><div ><b>'.lang('custompolicy').'</b>' . $custom_link .  $permited_values  . $denied_values . '</div>');
                 }
             }
-            $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
+            $tmpl = array('table_open' => '<table  id="details">');
 
             $this->ci->table->set_template($tmpl);
             $this->ci->table->set_heading(''.lang('rr_attr_name').'', ''.lang('rr_currentstatus').'', ''.lang('policy').'');
@@ -339,7 +339,7 @@ class Show_element {
         $icon = base_url() . 'images/icons/pencil-field.png';
         if (!empty($source))
         {
-            $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
+            $tmpl = array('table_open' => '<table  id="details">');
             $this->ci->table->set_template($tmpl);
             $this->ci->table->set_heading(''.lang('rr_attr_name').'', ''.lang('policy').'');
             $this->ci->table->set_caption(''.lang('rr_arpforfeds').'');
@@ -397,7 +397,7 @@ class Show_element {
                 $attributes[] = array('' . $attr_name . '' . $link . '', $s['release']);
             }
 
-            $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
+            $tmpl = array('table_open' => '<table  id="details">');
 
             $this->ci->table->set_template($tmpl);
             $this->ci->table->set_heading(''.lang('attrname').'', ''.lang('policy').'');

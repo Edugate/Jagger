@@ -760,17 +760,22 @@ $(function() {
 
 
 $(function() {
-    $("#details").tablesorter({sortList: [[0, 0], [2, 1]], widgets: ['zebra']});
+    $("#details").tablesorter({sortList: [[0, 0], [1, 0]], widgets: ['zebra']});
     $("#options").tablesorter({sortList: [[0, 0]], headers: {3: {sorter: false}, 4: {sorter: false}}});
-});
-$(function() {
     $("#formtabs").tabs();
-});
-$(function() {
     $("#providertabs").tabs({
         cache:true,
          load: function (event, ui) {
        $('.accordionButton').unbind();
+       GINIT.initialize();
+        }
+
+    });
+    $("#arptabs").tabs({
+        cache:true,
+         load: function (event, ui) {
+       $('.accordionButton').unbind();
+       $('.tablesorter').unbind();
        GINIT.initialize();
         }
 

@@ -56,6 +56,13 @@ if (!empty($error))
 }
 echo '</span>';
 
+?>
+<div id="arptabs">
+<ul><li><a href="#defaultarptab"><?php echo lang('rr_defaultarp');?></a></li><li><a href="#fedarptab"><?php echo lang('rr_arpforfeds');?></a></li><li><a href="#specarptab"><?php echo lang('rr_specpolicies'); ?></a></li></ul>
+
+<div id="defaultarptab">
+<?php
+
 $attributes = array('class' => 'email', 'id' => 'formver2');
 $hidden = array('spid' => $spid, 'idpid' => $idpid);
 if(!empty($fedid))
@@ -95,7 +102,11 @@ if (!empty($default_policy))
     echo '<span class="span-24 clear">';
     echo $default_policy;
     echo '</span>';
+
 }
+echo '</div>';
+echo '<div id="fedarptab">';
+
 echo '<div class="buttons clear">';
 echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="btn btn-positive"><span>'.lang('rr_arpforfed').'</span></button></span>');
 echo '</div>';
@@ -106,7 +117,8 @@ if (!empty($federations_policy))
     echo '<span><div>'.$federations_policy.'</div></span>';
 }
 ?>
-
+</div>
+<div id="specarptab">
 <span class="span-24">
 <?php
 if (!empty($specific_policy))
@@ -115,4 +127,5 @@ if (!empty($specific_policy))
 }
 ?>
 </span>
-
+</div>
+</div>
