@@ -216,6 +216,7 @@ $lang['rr_feddetail']               = 'Federation details for';
 $lang['rr_helpdeskurl']             = 'Helpdesk URL';
 $lang['rr_fedownercreator']         = 'Federation owner/creator';
 $lang['rr_fedinfo_updated']         = 'Basic information for federation %s has been updated';
+$lang['rr_membersoffed']            = 'Members of %s federation';
 $lang['rr_homeorganisation']        = 'Home Organization' ;
 $lang['rr_technicalinformation']    = 'Technical Information';
 $lang['rr_logos']                   = 'Logos';

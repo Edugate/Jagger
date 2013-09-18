@@ -18,3 +18,4 @@ $tmpl = array('table_open'=>'<table id="details" class="zebra">');
 $this->table->set_template($tmpl);
 $this->table->set_heading('',''.lang('coldetails').'');
 echo $this->table->generate($tbl);
+$this->table->clear();
