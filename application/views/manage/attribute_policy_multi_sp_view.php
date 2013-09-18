@@ -1,13 +1,10 @@
-<div id="pagetitle">Specific attribute release policy</div>
+<div id="pagetitle"><?php echo lang('rr_specarpforsp');?></div>
 
 <?php
-$tmpl = array ( 'table_open'  => '<table border=\"0\" id="details" class="tablesorter">' );
+$tmpl = array ( 'table_open'  => '<table id="details">' );
 
 $this->table->set_template($tmpl);
-$this->table->set_heading('Attribute name',  'SP status', 'Reason','Actual policy');
-
-$this->table->set_caption('Specific ARP');
-
+$this->table->set_heading(''.lang('attrname').'',  ''.lang('rr_status').'', ''.lang('reasonofreq').'',''.lang('policy').'');
 $tbl_row = array();
 foreach($arps as $arp)
 {
@@ -15,11 +12,11 @@ foreach($arps as $arp)
 	$attrname = $arp['attr_name'];
 	if(empty($arp['supported']))
 	{
-		$attrname = '<span class="alert">'.$attrname.'</span>';
+		$attrname = '<span class="alert">'.$attrname.'</span>'.showBubbleHelp(''.lang('attrnotsupported').'');
 	}
 	if(empty($arp['req_status']))
 	{
-		$status = 'not required';
+		$status = lang('notrequired');
 		$reason = '';
 	}
 	else
@@ -39,9 +36,7 @@ foreach($arps as $arp)
 	);
 
 }
-//$reset_button = form_reset('reset','reset');
 $reset_button = '';
-//$modify_button = form_submit('submit','modify');
 $modify_button = '<button type="submit" value="modify" class="btn positive"><span class="save">'.lang('rr_modify').'</span></button>';
 $sp_link = anchor(base_url()."providers/detail/show/".$requester_id,$requester);
 $idp_link = anchor(base_url()."providers/detail/show/".$provider_id,$provider);

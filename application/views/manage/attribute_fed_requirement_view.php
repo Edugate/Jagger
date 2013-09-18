@@ -39,7 +39,7 @@ if (count($add_attr_final) > 0)
         echo '</li>';
         echo '<li>';
         echo form_label(lang('rr_selectreq'), 'requirement');
-        echo form_dropdown('requirement', array('desired' => 'desired', 'required' => 'required'));
+        echo form_dropdown('requirement', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''));
         echo '</li>';
         echo '<li>';
         echo form_label(lang('rr_reqattrreason'), 'reason');
@@ -69,7 +69,7 @@ if (count($already_in_attr) > 0)
 			<b>SAML2:</b> " . $a['oid'] . "</p>";
         echo '<li>';
         echo form_label(''.lang('curstreq').'', 'requirement');
-        echo form_dropdown('requirement', array('desired' => 'desired', 'required' => 'required'), $a['status']);
+        echo form_dropdown('requirement', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''), $a['status']);
         echo '</li>';
         echo '<li></li>';
         echo '<li>';
