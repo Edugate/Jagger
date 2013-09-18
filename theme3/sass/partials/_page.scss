@@ -475,7 +475,7 @@ footer,#footer {
     clear: right; 
 }
 
-table#details, table.details {
+table#details, table.details, table#detailsnosort, table.detailsnosort {
     font-size: $font-size;
     font-family: $font-family;
     width: 100%;
@@ -557,7 +557,7 @@ table#details, table.details {
     }
 }
 
-form table#details {
+form table#details, form table#detailsnosort {
 
     tr:nth-of-type(odd) {
         background:  #eee ;
@@ -980,6 +980,11 @@ div.mapform {
 }
 
 #providertabs table#details tr>:first-child{
+      
+   min-width: 200px;
+   
+}
+#providertabs table#detailsnosort tr>:first-child{
       
    min-width: 200px;
    

@@ -103,7 +103,7 @@ only screen and (min-resolution: 144dpi) {
     }
     
     
-    table#details {
+    table#details , table#detailsnosort{
         display: block; 
         caption {
            width: auto;
@@ -122,6 +122,11 @@ only screen and (min-resolution: 144dpi) {
     }
         
      table#details  thead tr { 
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+     table#detailsnosort  thead tr { 
             position: absolute;
             top: -9999px;
             left: -9999px;
