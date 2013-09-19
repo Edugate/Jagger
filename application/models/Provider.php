@@ -148,6 +148,11 @@ class Provider {
      */
     protected $statsdef;
 
+    /**
+     * @OneToMany(targetEntity="ProviderStatsCollection",mappedBy="provider")
+     */
+    protected $statistic;
+
 
     /**
      * registrar is used in metadata for registrationAuthority in mdrpi:RegistrationInfo

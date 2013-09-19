@@ -2,7 +2,6 @@
 
 namespace models;
 
-use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ResourceRegistry3
@@ -51,6 +50,12 @@ class ProviderStatsDef {
      * @ManyToOne(targetEntity="Provider",inversedBy="statsdef")
      */
     protected $provider;
+
+     /**
+     * @OneToMany(targetEntity="ProviderStatsCollection",mappedBy="statdefinition")
+     */
+    protected $statistic;
+
 
     /**
      * definition typ like: system or external source
@@ -118,6 +123,75 @@ class ProviderStatsDef {
     protected $updatedAt;
 
 
+    public function  getName()
+    {
+       return $this->shortname;
+    }
+
+    public function getProvider()
+    {
+       return $this->provider;
+    }
+
+    public function getStatistics()
+    {
+       return $this->statistic;
+    }
+    public function getType()
+    {
+       return $this->type;
+    }
+    public function getHttpProtocol()
+    {
+       return $this->httpprotocol;
+    }
+
+    public function getFormatType()
+    {
+       return $this->formattype;
+    }
+   
+    public function getSourceUrl()
+    {
+       return $this->sourceurl;
+    } 
+
+    public function getAccessType()
+    {
+       return $this->accesstype;
+    }
+    public function getAuthUser()
+    {
+       return $this->authuser;
+    }
+    public function getAuthPass()
+    {
+       return $this->authpass;
+    }
+    public function getOptions()
+    {
+       $result = $this->additionaloptions;
+       if(!empty($result))
+       {
+          $result = unserialize($result);
+       }
+       return $result;
+    }
+    
+    public function getDescription()
+    {
+       return $this->description;
+    } 
+   
+
+   
+    public function setName($name)
+    {
+       $this->shortname = $name;
+       return $this;
+    } 
+
+
     /**
      * @prePersist 
      */
@@ -131,9 +205,9 @@ class ProviderStatsDef {
      */
     public function updated()
     {
-        \log_message('debug', 'GG update providers updated time');
         $this->updatedAt = new \DateTime("now");
     }
+
 
 
 }
