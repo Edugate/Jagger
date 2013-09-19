@@ -142,6 +142,12 @@ class Provider {
      * @ManyToOne(targetEntity="Coc",inversedBy="provider")
      */
     protected $coc;
+   
+    /**
+     * @OneToMany(targetEntity="ProviderStatsDef",mappedBy="provider")
+     */
+    protected $statsdef;
+
 
     /**
      * registrar is used in metadata for registrationAuthority in mdrpi:RegistrationInfo

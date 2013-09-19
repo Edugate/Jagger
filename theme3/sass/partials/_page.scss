@@ -49,12 +49,12 @@ li {
     list-style: none;
 }
 #toppanel {
-    background: darken($top-panel-background, 10%);
+    background: $top-panel-background;
     color: $font-color-toppanel;
     margin: 5px;
     margin-top: 1px;
     padding: 3px;
-    border: solid 1px darken($top-panel-background, 20%);
+    border: solid 1px darken($top-panel-background, 30%);
 }
 #langicons {
     display: inline; 
