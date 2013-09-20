@@ -1,12 +1,7 @@
-<!-- <div id="pagetitle">Edit Form</div> -->
 <div id="subtitle"><h3><a href="<?php echo base_url() . 'providers/detail/show/' . $entdetail['id']; ?>"><?php echo $entdetail['displayname']; ?></a></h3><h4><?php echo $entdetail['entityid']; ?></h4> </div>
 
 <?php
 echo '<div class="alert"><pre>';
-if (!empty($y))
-{
-//  print_r($y);
-}
 if (!empty($error_messages))
 {
     echo $error_messages;

@@ -7,7 +7,7 @@
     $attributes = array('id'=>'formver3');
     echo form_open($action,$attributes);
     echo form_fieldset();
-    echo form_label('Select Service Provider','service');
+    echo form_label(''.lang('rr_selectsp').'','service');
     //echo "<br />";
     $js = 'id="combobox"';
     

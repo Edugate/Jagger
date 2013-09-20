@@ -1,3 +1,3 @@
 <?php
 
-echo '<p><h4>You are not loggedin</h4></p>';
+echo '<p><h4>'.lang('urnotloggedin').'</h4></p>';

@@ -61,7 +61,7 @@ else
             <ol>
                 <li>
 <?php
-echo form_label(lang('rr_username'), 'username');
+echo form_label(''.lang('rr_username').'', 'username');
 echo form_input('username');
 ?>
                 </li>

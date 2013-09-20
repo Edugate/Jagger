@@ -1,11 +1,3 @@
-<script type="text/javascript">
-    $(function() {		
-        $("#details").tablesorter({sortList:[[0,0],[2,1]], widgets: ['zebra']});
-        $("#options").tablesorter({sortList: [[0,0]], headers: { 3:{sorter: false}, 4:{sorter: false}}});
-    });	
-</script>
-
-
 <?php
 if (empty($list))
 {
@@ -38,4 +30,5 @@ if (!empty($list))
         $this->table->add_row($q['idate'], $q['requester'], $q['recipientname'].'<br />'.$q['type'] . " - " . $q['action'], $detail);
     }
     echo $this->table->generate();
+    $this->table->clear();
 }

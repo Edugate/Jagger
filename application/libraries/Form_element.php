@@ -724,7 +724,7 @@ class Form_element {
             $r .= '</ol></fieldset>';
             $result[] = $r;
         }
-        if ($enttype != 'IDP')
+        if (strcmp($enttype,'IDP') != 0)
         {
             $r = '<fieldset><legend>'.lang('PrivacyStatementURL').' <i>SPSSODescriptor</i></legend><ol>';
             $origs = array();
@@ -1213,7 +1213,7 @@ class Form_element {
                 $aalo[] = $row;
                 ++$ni;
             }
-            $result[] = '<fieldset><legend>AttributeAuthorityDescriptor</legend><ol>' . implode('', $aalo) . '</ol></fieldset>';
+            $result[] = '<fieldset><legend>'.lang('atributeauthoritydescriptor').'</legend><ol>' . implode('', $aalo) . '</ol></fieldset>';
 
             /**
              * end AttributeAuthorityDescriptor Location
@@ -1224,7 +1224,7 @@ class Form_element {
             /**
              * generate ACS part
              */
-            $ACSPart = '<fieldset><legend>Assertion Consumer Service</legend><ol>';
+            $ACSPart = '<fieldset><legend>'.lang('assertionconsumerservice').'</legend><ol>';
             $acs = array();
 
             if (isset($g['AssertionConsumerService']) && is_array($g['AssertionConsumerService']))
@@ -1329,7 +1329,7 @@ class Form_element {
 
 
                     $r = '<li><ol>';
-                    $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][AssertionConsumerService][' . $k4 . '][bind]');
+                    $r .= '<li>' . form_label(''.lang('rr_bindingname').'', 'f[srv][AssertionConsumerService][' . $k4 . '][bind]');
                     $r .= form_dropdown('f[srv][AssertionConsumerService][' . $k4 . '][bind]', $acsbindprotocols, $v4['bind']) . '</li>';
                     $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][AssertionConsumerService][' . $k4 . '][url]');
                     $r .= form_input(array(
@@ -1376,7 +1376,7 @@ class Form_element {
             /**
              * generate ArtifactResolutionService part
              */
-            $ACSPart = '<fieldset><legend>ArtifactResolutionService <small><i>SPSSODescriptor</i></small></legend><ol>';
+            $ACSPart = '<fieldset><legend>'.lang('artifactresolutionservice').' <small><i>SPSSODescriptor</i></small></legend><ol>';
             $acs = array();
 
             if (isset($g['SPArtifactResolutionService']) && is_array($g['SPArtifactResolutionService']))
@@ -1497,13 +1497,13 @@ class Form_element {
 
 
 
-
+            
 
 
             /**
              * start SP SingleLogoutService
              */
-            $SPSLOPart = '<fieldset><legend>SP SingleLogoutService</legend><ol>';
+            $SPSLOPart = '<fieldset><legend>'.lang('singlelogoutservice').' <small><i>'.lang('serviceprovider').'</i></small></legend><ol>';
             $spslotmpl = getBindSingleLogout();
             $spslo = array();
             if (array_key_exists('SPSingleLogoutService', $g))
@@ -1553,7 +1553,7 @@ class Form_element {
               /**
              * start RequestInitiator
              */
-            $RequestInitiatorPart = '<fieldset><legend>RequestInitiator Locations</legend><ol>';
+            $RequestInitiatorPart = '<fieldset><legend>'.lang('requestinitatorlocations').'</legend><ol>';
             $ri = array();
             if (array_key_exists('RequestInitiator', $g))
             {
@@ -1620,7 +1620,7 @@ class Form_element {
             /**
              * start DiscoveryResponse
              */
-            $DiscoverResponsePart = '<fieldset><legend>Discovery Response Locations</legend><ol>';
+            $DiscoverResponsePart = '<fieldset><legend>'.lang('discoveryresponselocations').'</legend><ol>';
             $dr = array();
             /**
              * list existing DiscoveryResponse
@@ -1761,7 +1761,7 @@ class Form_element {
             /**
              * start CERTS IDPSSODescriptor
              */
-            $Part = '<fieldset><legend>'.lang('idpcerts').' <i>IDPSSODesciptor</i></legend><ol>';
+            $Part = '<fieldset><legend>'.lang('idpcerts').' <small><i>IDPSSODesciptor</i></small></legend><ol>';
             $idpssocerts = array();
             if (isset($cert['idpsso']) && is_array($cert['idpsso']))
             {
@@ -1820,13 +1820,13 @@ class Form_element {
                     $row .= form_dropdown('f[crt][idpsso][' . $crtid . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][idpsso][' . $crtid . '][usage]');
                     $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][idpsso][' . $crtid . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), $fusage) . '</span></li>';
-                    $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][idpsso][' . $crtid . '][keyname]');
+                    $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][idpsso][' . $crtid . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][idpsso][' . $crtid . '][keyname]',
                                 'id' => 'f[crt][idpsso][' . $crtid . '][keyname]',
                                 'class' => $keynamenotice,
                                 'value' => $fkeyname)) . '</li>';
-                    $row .= '<li>' . form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'f[crt][idpsso][' . $crtid . '][certdata]');
+                    $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), 'f[crt][idpsso][' . $crtid . '][certdata]');
                     $row .= form_textarea(array(
                                 'name' => 'f[crt][idpsso][' . $crtid . '][certdata]',
                                 'id' => 'f[crt][idpsso][' . $crtid . '][certdata]',
@@ -1853,13 +1853,13 @@ class Form_element {
                     $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][idpsso][' . $k4 . '][usage]');
                     $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), set_value('f[crt][idpsso][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
-                    $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][idpsso][' . $k4 . '][keyname]');
+                    $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][idpsso][' . $k4 . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][idpsso][' . $k4 . '][keyname]',
                                 'id' => 'f[crt][idpsso][' . $k4 . '][keyname]',
                                 'class' => 'notice',
                                 'value' => set_value('f[crt][idpsso][' . $k4 . '][keyname]', $v4['keyname']))) . '</li>';
-                    $row .= '<li>' . form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'f[crt][idpsso][' . $k4 . '][certdata]');
+                    $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), 'f[crt][idpsso][' . $k4 . '][certdata]');
                     $row .= form_textarea(array(
                                 'name' => 'f[crt][idpsso][' . $k4 . '][certdata]',
                                 'id' => 'f[crt][idpsso][' . $k4 . '][certdata]',
@@ -1882,7 +1882,7 @@ class Form_element {
             /**
              * start CERTs for AttributeAuthority
              */
-            $Part = '<fieldset><legend>'.lang('idpcerts').' <i>AttributeAuthorityDesciptor</i></legend><ol>';
+            $Part = '<fieldset><legend>'.lang('idpcerts').' <i><small>'.lang('atributeauthoritydescriptor').'</small></i></legend><ol>';
             $aacerts = array();
             if (isset($cert['aa']) && is_array($cert['aa']))
             {
@@ -1941,13 +1941,13 @@ class Form_element {
                     $row .= form_dropdown('f[crt][aa][' . $crtid . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][aa][' . $crtid . '][usage]');
                     $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][aa][' . $crtid . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), $fusage) . '</span></li>';
-                    $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][aa][' . $crtid . '][keyname]');
+                    $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][aa][' . $crtid . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][aa][' . $crtid . '][keyname]',
                                 'id' => 'f[crt][aa][' . $crtid . '][keyname]',
                                 'class' => $keynamenotice,
                                 'value' => $fkeyname)) . '</li>';
-                    $row .= '<li>' . form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'f[crt][aa][' . $crtid . '][certdata]');
+                    $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), 'f[crt][aa][' . $crtid . '][certdata]');
                     $row .= form_textarea(array(
                                 'name' => 'f[crt][aa][' . $crtid . '][certdata]',
                                 'id' => 'f[crt][aa][' . $crtid . '][certdata]',
@@ -1974,13 +1974,13 @@ class Form_element {
                     $row .= form_dropdown('f[crt][aa][' . $k4 . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][aa][' . $k4 . '][usage]');
                     $row .= form_dropdown('f[crt][aa][' . $k4 . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), set_value('f[crt][aa][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
-                    $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][aa][' . $k4 . '][keyname]');
+                    $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][aa][' . $k4 . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][aa][' . $k4 . '][keyname]',
                                 'id' => 'f[crt][aa][' . $k4 . '][keyname]',
                                 'class' => 'notice',
                                 'value' => set_value('f[crt][aa][' . $k4 . '][keyname]', $v4['keyname']))) . '</li>';
-                    $row .= '<li>' . form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'f[crt][aa][' . $k4 . '][certdata]');
+                    $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), 'f[crt][aa][' . $k4 . '][certdata]');
                     $row .= form_textarea(array(
                                 'name' => 'f[crt][aa][' . $k4 . '][certdata]',
                                 'id' => 'f[crt][aa][' . $k4 . '][certdata]',
@@ -1993,21 +1993,20 @@ class Form_element {
                 }
             }
             $Part .= implode('', $aacerts);
-            $newelement = '<li><button class="btn" type="button" id="naacert">'.lang('addnewcert').' '.lang('for').' AttributeAuthorityDescriptor</button></li>';
+            $newelement = '<li><button class="btn" type="button" id="naacert">'.lang('addnewcert').' '.lang('for').' '.lang('atributeauthoritydescriptor').'</button></li>';
             $Part .= $newelement . '</ol></fieldset>';
             $result[] = $Part;
             $Part = '';
         }
         if ($enttype != 'IDP')
         {
-            $Part = '<fieldset><legend>SP Certs</legend><ol>';
+            $Part = '<fieldset><legend>'.lang('rr_certificates').' <small><i>'.lang('serviceprovider').'</i></small></legend><ol>';
             $spssocerts = array();
             if (isset($cert['spsso']) && is_array($cert['spsso']))
             {
                 foreach ($cert['spsso'] as $k => $v)
                 {
                     $crtid = $v->getId();
-                    log_message('debug', 'GGG certid:' . $crtid);
                     $tkeyname = $v->getKeyName();
                     $tusage = $v->getCertUse();
                     $tcertdata = $v->getPEM($v->getCertData());
@@ -2060,13 +2059,13 @@ class Form_element {
                     $row .= form_dropdown('f[crt][spsso][' . $crtid . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][spsso][' . $crtid . '][usage]');
                     $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][spsso][' . $crtid . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), $fusage) . '</span></li>';
-                    $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][spsso][' . $crtid . '][keyname]');
+                    $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][spsso][' . $crtid . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][spsso][' . $crtid . '][keyname]',
                                 'id' => 'f[crt][spsso][' . $crtid . '][keyname]',
                                 'class' => $keynamenotice,
                                 'value' => $fkeyname)) . '</li>';
-                    $row .= '<li>' . form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'f[crt][spsso][' . $crtid . '][certdata]');
+                    $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), 'f[crt][spsso][' . $crtid . '][certdata]');
                     $row .= form_textarea(array(
                                 'name' => 'f[crt][spsso][' . $crtid . '][certdata]',
                                 'id' => 'f[crt][spsso][' . $crtid . '][certdata]',
@@ -2095,13 +2094,13 @@ class Form_element {
                     $row .= form_dropdown('f[crt][spsso][' . $k4 . '][type]', array('x509' => 'x509')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][spsso][' . $k4 . '][usage]');
                     $row .= form_dropdown('f[crt][spsso][' . $k4 . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), set_value('f[crt][spsso][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
-                    $row .= '<li>' . form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'f[crt][spsso][' . $k4 . '][keyname]');
+                    $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][spsso][' . $k4 . '][keyname]');
                     $row .= form_input(array(
                                 'name' => 'f[crt][spsso][' . $k4 . '][keyname]',
                                 'id' => 'f[crt][spsso][' . $k4 . '][keyname]',
                                 'class' => 'notice',
                                 'value' => set_value('f[crt][spsso][' . $k4 . '][keyname]', $v4['keyname']))) . '</li>';
-                    $row .= '<li>' . form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'f[crt][spsso][' . $k4 . '][certdata]');
+                    $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), 'f[crt][spsso][' . $k4 . '][certdata]');
                     $row .= form_textarea(array(
                                 'name' => 'f[crt][spsso][' . $k4 . '][certdata]',
                                 'id' => 'f[crt][spsso][' . $k4 . '][certdata]',
@@ -2181,13 +2180,13 @@ class Form_element {
             }
 
             $r = '<fieldset><legend>'.lang('rr_scope').' '.showBubbleHelp(''.lang('rhelp_scopemultivalues').'').'</legend><ol>';
-            $r .= '<li>' . form_label(''.lang('rr_scope').' IDPSSODescirptor', 'f[scopes][idpsso]') . form_input(array(
+            $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('idpssodescriptor').'', 'f[scopes][idpsso]') . form_input(array(
                         'name' => 'f[scopes][idpsso]',
                         'id' => 'f[scopes][idpsso]',
                         'value' => $scopessovalue,
                         'class' => $scopeidpssonotice,
                     )) . '</li>';
-            $r .= '<li>' . form_label(''.lang('rr_scope').' AttributeAuthorityDescriptor', 'f[scopes][aa]') . form_input(array(
+            $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('atributeauthoritydescriptor').'', 'f[scopes][aa]') . form_input(array(
                         'name' => 'f[scopes][aa]',
                         'id' => 'f[scopes][aa]',
                         'value' => $scopeaavalue,
@@ -2200,7 +2199,7 @@ class Form_element {
             /**
              * IDP protocols 
              */
-            $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>IDPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>'.lang('idpssodescriptor').'</i></legend><ol>';
             $idpssoprotocols = $ent->getProtocolSupport('idpsso');
             $selected_options = array();
             $idpssonotice = '';
@@ -2227,7 +2226,7 @@ class Form_element {
             $r .= '</ol></fieldset>';
             $result[] = $r;
 
-            $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>AttributeAuthorityDescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>'.lang('atributeauthoritydescriptor').'</i></legend><ol>';
             $aaprotocols = $ent->getProtocolSupport('aa');
             $selected_options = array();
             $aanotice = '';
@@ -2256,7 +2255,7 @@ class Form_element {
         }
         if ($enttype != 'IDP')
         {
-            $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>SPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>'.lang('spssodescriptor').'</i></legend><ol>';
             $spssoprotocols = $ent->getProtocolSupport('spsso');
             $selected_options = array();
             $spssonotice = '';
@@ -2291,7 +2290,7 @@ class Form_element {
             /**
              * start nameids for IDPSSODescriptor
              */
-            $r = '<fieldset><legend>'.lang('rr_supportednameids').' <i>IDPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportednameids').' <i>'.lang('idpssodescriptor').'</i></legend><ol>';
             $idpssonameids = $ent->getNameIds('idpsso');
             $idpssonameidnotice = '';
             $supportednameids = array();
@@ -2340,7 +2339,7 @@ class Form_element {
             /**
              * start nameids for AttributeAuthorityDescriptor 
              */
-            $r = '<fieldset><legend>'.lang('rr_supportednameids').' <i>AttributeAuthorityDescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportednameids').' <i>'.lang('atributeauthoritydescriptor').'</i></legend><ol>';
             $idpaanameids = $ent->getNameIds('aa');
             $idpaanameidnotice = '';
             $supportednameids = array();
@@ -2389,7 +2388,7 @@ class Form_element {
         }
         if ($enttype != 'IDP')
         {
-            $r = '<fieldset><legend>'.lang('rr_supportednameids').' <i>SPSSODescriptor</i></legend><ol>';
+            $r = '<fieldset><legend>'.lang('rr_supportednameids').' <i>'.lang('spssodescriptor').'</i></legend><ol>';
             $spssonameids = $ent->getNameIds('spsso');
             $spssonameidnotice = '';
             $supportednameids = array();
@@ -2526,7 +2525,7 @@ class Form_element {
             /**
              * start display
              */
-            $r = form_fieldset('DisplayName');
+            $r = form_fieldset(''.lang('uiiidpdisplayname').'');
             $langsdisplaynames = $langs;
             if (isset($ext['idp']['mdui']['DisplayName']))
             {
@@ -2606,7 +2605,7 @@ class Form_element {
             /**
              * start helpdesk 
              */
-            $r = form_fieldset('HelpdeskURL/InformationURL');
+            $r = form_fieldset(''.lang('uiiinformationurl').'');
             $langsdisplaynames = $langs;
             if (isset($ext['idp']['mdui']['InformationURL']))
             {
@@ -2772,7 +2771,7 @@ class Form_element {
                 /**
                  * start display
                  */
-                $r = form_fieldset('DisplayName');
+                $r = form_fieldset(''.lang('uiispdisplayname').'');
                 $langsdisplaynames = $langs;
                 if (isset($ext['sp']['mdui']['DisplayName']))
                 {
@@ -2852,7 +2851,7 @@ class Form_element {
                 /**
                  * start helpdesk 
                  */
-                $r = form_fieldset('HelpdeskURL/InformationURL');
+                $r = form_fieldset(''.lang('uiiinformationurl').'');
                 $langsdisplaynames = $langs;
                 if (isset($ext['sp']['mdui']['InformationURL']))
                 {
@@ -2922,7 +2921,7 @@ class Form_element {
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiihelpdeskadd">' . form_dropdown('spuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiihelpdesk" name="spadduiihelpdesk" value="spadduiihelpdesk" class="btn">Add localized ImformationURL</button></span></li>';
+                $r .= '<li><span class="spuiihelpdeskadd">' . form_dropdown('spuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiihelpdesk" name="spadduiihelpdesk" value="spadduiihelpdesk" class="btn">'.lang('addlocalizeinformationurl').'</button></span></li>';
                 $r .= form_fieldset_close();
                 $result[] = $r;
 
@@ -2932,7 +2931,7 @@ class Form_element {
                 /**
                  * start description
                  */
-                $r = form_fieldset('Provider Description');
+                $r = form_fieldset(''.lang('rr_provdesc').'');
                 $langsdisplaynames = $langs;
                 if (isset($ext['sp']['mdui']['Description']))
                 {
@@ -3002,7 +3001,7 @@ class Form_element {
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiidescadd">' . form_dropdown('spuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidesc" name="spadduiidesc" value="spadduiidesc" class="btn">Add localized Description</button></span></li>';
+                $r .= '<li><span class="spuiidescadd">' . form_dropdown('spuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidesc" name="spadduiidesc" value="spadduiidesc" class="btn">'.lang('addlocalizeddesc').'</button></span></li>';
                 $r .= form_fieldset_close();
                 $result[] = $r;
 
@@ -3131,96 +3130,6 @@ class Form_element {
         return $cntform;
     }
 
-    private function generateCertificatesForm(models\Provider $provider, $options = null)
-    {
-        if (is_array($options) && array_key_exists('type', $options))
-        {
-            $type = $options['type'];
-        }
-        $crtform = form_fieldset('Certificates');
-        $crtform = '<fieldset><legend class="accordionButton">' . lang('rr_certificates') . '</legend>';
-        $crtform .='<ol class="accordionContent">';
-
-        $crtcollection = $provider->getCertificates();
-        $finalcertcollection = array();
-        if (!empty($type))
-        {
-            foreach ($crtcollection as $c)
-            {
-                if ($c->getType() == $type)
-                {
-                    $finalcertcollection[] = $c;
-                }
-            }
-        }
-        else
-        {
-            $finalcertcollection = $crtcollection;
-        }
-        $no_certs = count($finalcertcollection);
-        if ($no_certs > 0)
-        {
-            foreach ($finalcertcollection as $crt)
-            {
-                $i = $crt->getId();
-                $crtform .='<li>';
-                $crtform .=form_label(lang('rr_pleaseremove'), 'cert_' . $i . '_remove');
-                $crtform .=form_dropdown('cert_' . $i . '_remove', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit')));
-                $crtform .='</li><li>';
-                $crtform .=form_label(lang('rr_certificatetype'), 'cert_' . $i . '_type');
-                $crtform .=form_dropdown('cert_' . $i . '_type', array('x509' => 'x509'), set_value('cert_' . $i . '_type', 'x509'));
-                $crtform .='</li><li>';
-                $crtform .=form_label(lang('rr_certificateuse'), 'cert_' . $i . '_use[]');
-                $m = array('signing' => 'signing', 'encryption' => 'encryption');
-                $mselected = $crt->getCertUse();
-                if (empty($mselected))
-                {
-                    $n = $m;
-                }
-                else
-                {
-                    $n = array($mselected = $mselected);
-                }
-                $crtform .=form_multiselect('cert_' . $i . '_use[]', $m, $n);
-                $crtform .='</li><li>';
-                $crtform .=form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'cert_' . $i . '_keyname');
-                $crtform .=form_input(array('name' => 'cert_' . $i . '_keyname', 'id' => 'cert_' . $i . '_keyname', 'value' => set_value('cert_' . $i . '_keyname', $crt->getKeyName())));
-
-                $crtform .='</li><li>';
-                $crtform .=form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'cert_' . $i . '_data');
-                $crtform .=form_textarea(array(
-                    'name' => 'cert_' . $i . '_data', 'id' => 'cert_' . $i . '_data',
-                    'value' => set_value('cert_' . $i . '_data', $crt->getPEM($crt->getCertData())), 'cols' => 70, 'rows' => 40
-                ));
-                $crtform .='</li>';
-            }
-        }
-        $crtform .= '<div class="ncert">';
-        $crtform .='<li><b>' . lang('rr_newcertificate') . '</b><small>(' . lang('rr_optional') . ')</small></li>';
-        $crtform .='<li>';
-        $crtform .=form_label(lang('rr_certificatetype'), 'cert_0n_type');
-        $crtform .=form_dropdown('cert_0n_type', array('x509' => 'x509'), set_value('cert_0n_type', 'x509'));
-        $crtform .='</li><li>';
-        $crtform .=form_label(lang('rr_certificateuse'), 'cert_0n_use[]');
-        $m = array(
-            'signing' => 'signing',
-            'encryption' => 'encryption'
-        );
-        $crtform .=form_multiselect('cert_0n_use[]', $m, $m);
-        $crtform .='</li><li>';
-        $crtform .=form_label(lang('rr_keyname') . showHelp(lang('rhelp_multikeynames')), 'cert_0n_keyname');
-        $crtform .=form_input(array('name' => 'cert_0n_keyname', 'id' => 'cert_0n_keyname', 'value' => set_value('cert_0n_keyname')));
-        $crtform .='</li><li>';
-        $crtform .=form_label(lang('rr_certificate') . showHelp(lang('rhelp_cert')), 'cert_0n_data');
-        $crtform .=form_textarea(array(
-            'name' => 'cert_0n_data',
-            'id' => 'cert_0n_data',
-            'value' => set_value('cert_0n_data'),
-            'cols' => 65,
-        ));
-        $crtform .='</li></div></ol>' . form_fieldset_close();
-        return $crtform;
-    }
 
     /**
      * return form elements:
@@ -3260,46 +3169,6 @@ class Form_element {
         return $tform;
     }
 
-    /**
-     * @todo add javascript ordering
-     */
-    private function supportedNameIds(models\Provider $provider)
-    {
-        $tform = '';
-        $supported_nameids = array();
-        $tmpl_nameids = $this->ci->config->item('nameids');
-
-
-        $s_nameids = $provider->getNameId();
-        foreach ($s_nameids->getValues() as $n)
-        {
-            $supported_nameids[$n] = $n;
-            $chb[] = array(
-                'name' => 'nameids[]',
-                'id' => 'nameids[]',
-                'value' => $n,
-                'checked' => TRUE);
-        }
-        foreach ($tmpl_nameids as $t)
-        {
-            if (!array_key_exists($t, $supported_nameids))
-            {
-                $chb[] = array(
-                    'name' => 'nameids[]',
-                    'id' => 'nameids[]',
-                    'value' => $t,
-                    'checked' => FALSE);
-            }
-        }
-        $tform .='<li>';
-        $tform .= form_label(lang('rr_supportednameids'), 'nameids[]') . '<div class="nsortable">';
-        foreach ($chb as $n)
-        {
-            $tform .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
-        }
-        $tform .= '</div></li>';
-        return $tform;
-    }
 
     public function generateFederationEditForm(models\Federation $federation)
     {
@@ -3408,24 +3277,18 @@ class Form_element {
         }
         $result .= form_open($action, $attributes, $hidden);
         $result .= $this->generateEditPolicyFormElement($arp);
-        //$result .= form_fieldset('');
         $result .='<div class="buttons">';
         if (!empty($submit_type) && $submit_type == 'create')
         {
-            $cancel_value = 'cancel';
-            $save_value = 'create';
+            $result .= '<button name="submit" type="submit" value="cancel" class="btn negative"><span class="cancel">' .lang('rr_cancel') . '</span></button>';
+            $result .= '<button name="submit" type="submit" value="create" class="btn positive"><span class="save">' . lang('rr_create') . '</span></button>';
         }
         else
         {
-            $save_value = 'modify';
-            $cancel_value = 'delete';
+            $result .= '<button name="submit" type="submit" value="delete" class="btn negative"><span class="cancel">' . lang('rr_remove') . '</span></button>';
+            $result .= '<button name="submit" type="submit" value="modify" class="btn positive"><span class="save">' . lang('rr_modify') . '</span></button>';
         }
-        $result .= '<button name="submit" type="submit" value="' . $cancel_value . '" class="btn negative"><span class="cancel">' . $cancel_value . '</span></button>';
-        $result .= '<button name="submit" type="submit" value="' . $save_value . '" class="btn positive"><span class="save">' . $save_value . '</span></button>';
         $result .='</div>';
-
-        //$result .= form_fieldset_close();
-
         $result .=form_close();
         return $result;
     }

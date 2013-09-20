@@ -7,7 +7,7 @@ $idp_link = anchor(base_url()."providers/detail/show/".$idp_id,$idp_name);
     <?php
 
 
-echo "<dd>Attribute Release Policies<a href=\"".base_url()."manage/attribute_policy/globals/".$idp_id."\"><img src=\"".base_url()."images/icons/arrow.png\" /></a></dd>";
+echo '<dd>'.lang('rr_attributereleasepolicy').'<a href="'.base_url().'manage/attribute_policy/globals/'.$idp_id.'"><img src="'.base_url().'images/icons/arrow.png"/></a></dd>';
 
 
 

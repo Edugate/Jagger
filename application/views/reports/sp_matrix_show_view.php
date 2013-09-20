@@ -5,7 +5,7 @@ if (!empty($entityid))
 
     echo '<div id="subtitle"><h3>';
     $imgsrc = '<img src="' . base_url() . 'images/icons/block-share.png" />';
-    echo $arpcachetimeicon . ' Service Provider: '. anchor('' . base_url() . 'providers/detail/show/' . $spid, $entityname);
+    echo $arpcachetimeicon . ' '.lang('serviceprovider').': '. anchor('' . base_url() . 'providers/detail/show/' . $spid, $entityname);
     echo '</h3><h4>'.$entityid.'<h4></div>';
 
     echo '<div id="noticeblock">'.lang('noticematrix1').'</div>';
