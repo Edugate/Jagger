@@ -216,7 +216,7 @@ class Joinfed extends MY_Controller {
              }
              else
              {
-                $data['error_message'] = "You can't join any federation because no available federations found";
+                $data['error_message'] = lang('cantjoinnonefound');
                 $data['content_view'] = 'manage/joinfederation_view';
                 $this->load->view('page',$data);
               

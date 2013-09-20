@@ -144,7 +144,7 @@ $lang['certenc'] = 'encriptación';
 $lang['rr_disexp_link_title'] = 'deshabilitado o expirado';
 
 
-$lang['rr_assertioncosumerservice'] = 'Protocolo de vinculación AssertionConsumerService';
+$lang['rr_assertionconsumerservicebind'] = 'Protocolo de vinculación AssertionConsumerService';
 $lang['rr_acsurl'] = 'ACS URL';
 $lang['rr_certificatesigning'] = 'Certificado para firma';
 $lang['rr_certificateencrypting'] = 'Certificado para encriptación';

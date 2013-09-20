@@ -111,6 +111,11 @@ class ProviderStatsDef {
      */
     protected $description;
 
+    /**
+     * Column(type=text", nullable=true)
+     */
+    protected $displayoption;
+
 
     /**
      * @Column(name="created_at", type="datetime")
@@ -177,6 +182,17 @@ class ProviderStatsDef {
        }
        return $result;
     }
+
+
+    public function getDisplayOptions()
+    {
+        $result = $this->displayoption;
+        if(!empty($result))
+        {
+           $result = unserialize($result);
+        }
+        return $result;
+    }
     
     public function getDescription()
     {
@@ -190,6 +206,26 @@ class ProviderStatsDef {
        $this->shortname = $name;
        return $this;
     } 
+
+    public function setDisplayOptions($opt=null)
+    {
+        if(!empty($opt))
+        {
+           if(is_array($opt))
+           {
+               $this->displayoption = serialize($opt);
+           }
+           else
+           {
+              log_message('error','array expected');
+           }
+        }
+        else
+        {
+            $this->displayoption = null;
+        }
+        
+    }
 
 
     /**

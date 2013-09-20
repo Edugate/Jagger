@@ -40,7 +40,7 @@ class Leavefed extends MY_Controller {
     private function submit_validate()
     {
           $this->load->library('form_validation');
-          $this->form_validation->set_rules('fedid','Federation','trim|required|numeric|xss_clean');
+          $this->form_validation->set_rules('fedid',lang('rr_federation'),'trim|required|numeric|xss_clean');
           return $this->form_validation->run();
 
     }
@@ -127,7 +127,7 @@ class Leavefed extends MY_Controller {
                    $this->em->flush();
                 }
                 
-                $data['success_message'] = "You just left federation: ".$federation->getName()."<br />";
+                $data['success_message'] = lang('rr_youleftfed').': '.$federation->getName().'<br />';
                 $data['success_message'] .= $rm_arp_msg;
                 $data['content_view'] = 'manage/leavefederation_view';
                 $this->load->view('page',$data);
@@ -135,7 +135,7 @@ class Leavefed extends MY_Controller {
              }
              else
              {
-                $data['error_message'] = "You already left federation";
+                $data['error_message'] = lang('rr_youleftfed');
                 $data['content_view'] = 'manage/leavefederation_view';
                 $this->load->view('page',$data);
                 return;
@@ -149,7 +149,7 @@ class Leavefed extends MY_Controller {
                   $form = form_open(current_url(),array('id'=>'formver2','class'=>'span-15'));
                   $form .= form_fieldset('Leaving federation form');
                   $form .= '<ol><li>';
-                  $form .= form_label('Select federation you want to leave','fedid');
+                  $form .= form_label(''.lang('rr_selectfedtoleave').'','fedid');
                   $form .= form_dropdown('fedid', $feds_dropdown);
                   $form .= '</li></ol>';
                   $form .= $buttons;
@@ -161,7 +161,7 @@ class Leavefed extends MY_Controller {
              }
              else
              {
-                $data['error_message'] = "You can't leave any federation because you are not member of any";
+                $data['error_message'] = lang('cantleavefednonefound');
                 $data['content_view'] = 'manage/leavefederation_view';
                 $this->load->view('page',$data);
               

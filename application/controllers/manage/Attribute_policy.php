@@ -193,7 +193,7 @@ class Attribute_policy extends MY_Controller {
         $attribute = $this->tmp_attrs->getAttributeById($attr_id);
         if (empty($attribute)) {
             log_message('error',  'Attribute not found with id:' . $attr_id);
-            show_error( 'Attribute not found with id:' . $attr_id);
+            show_error( ''.lang('error_attrnotfoundwithid').': ' . $attr_id);
         }
 
 

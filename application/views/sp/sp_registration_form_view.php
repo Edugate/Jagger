@@ -68,7 +68,7 @@ echo '<ol>';
  * assertion consumer service
  */
 echo '<li>';
-echo form_label(lang('rr_assertioncosumerservice').showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding');
+echo form_label(lang('rr_assertionconsumerservicebind').showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding');
 echo form_dropdown('acs_bind', $acs_dropdown);
 echo form_label(lang('rr_acsurl').showBubbleHelp(lang('rhelp_acsurl')),'acs_url');
 $inp = array(

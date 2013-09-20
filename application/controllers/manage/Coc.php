@@ -136,7 +136,7 @@ class Coc extends MY_Controller
            $this->em->persist($ncoc);
            $this->em->flush();
            
-          $data['success_message'] = 'Code of Conduct added';
+          $data['success_message'] = lang('rr_cocadded');
         }
         else
         {
@@ -144,8 +144,8 @@ class Coc extends MY_Controller
             $this->load->library('form_element');
             $f .= $this->form_element->generateAddCoc();
             $f .= '<div class="buttons">';
-            $f .= '<button type="reset" name="reset" value="reset" class="button negative"><span class="reset">Reset</span></button>';
-            $f .= '<button type="submit" name="modify" value="submit" class="button positive"><span class="save">Save</span></button></div>';
+            $f .= '<button type="reset" name="reset" value="reset" class="button negative"><span class="reset">'.lang('rr_reset').'</span></button>';
+            $f .= '<button type="submit" name="modify" value="submit" class="button positive"><span class="save">'.lang('rr_save').'</span></button></div>';
 
             $f .= form_close();
             $data['form'] = $f;
@@ -189,15 +189,15 @@ class Coc extends MY_Controller
            $coc->setDescription($this->input->post('description'));
            $this->em->persist($coc);
            $this->em->flush();
-           $data['success_message'] = 'Data updated';
+           $data['success_message'] = lang('updated');
        }
        $data['coc_name'] = $coc->getName();
        $this->load->library('form_element');
        $f = form_open();
        $f .= $this->form_element->generateEditCoc($coc);
        $f .= '<div class="buttons">';
-       $f .= '<button type="reset" name="reset" value="reset" class="button negative"><span class="reset">Reset</span></button>';
-       $f .= '<button type="submit" name="modify" value="submit" class="button positive"><span class="save">Save</span></button></div>';
+       $f .= '<button type="reset" name="reset" value="reset" class="button negative"><span class="reset">'.lang('rr_reset').'</span></button>';
+       $f .= '<button type="submit" name="modify" value="submit" class="button positive"><span class="save">'.lang('rr_save').'</span></button></div>';
        $f .= form_close();
        $data['form'] = $f;
        $data['content_view'] = 'manage/coc_edit_view';

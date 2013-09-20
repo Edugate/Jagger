@@ -56,7 +56,7 @@ class Importer extends MY_Controller {
         if (!$access)
         {
             $data['content_view'] = "nopermission";
-            $data['error'] = 'You dont have permission to import tool';
+            $data['error'] = lang('error403');
             $this->load->view('page', $data);
         }
         else 
@@ -196,9 +196,9 @@ class Importer extends MY_Controller {
     private function _submit_validate() {
         $this->form_validation->set_rules('metadataurl', 'Metadata URL', 'trim|required|valid_url');
         $this->form_validation->set_rules('sslcheck', 'SSL check', 'trim');
-        $this->form_validation->set_rules('type', 'Type of entities', 'trim|required');
+        $this->form_validation->set_rules('type', lang('typeofents'), 'trim|required');
         $this->form_validation->set_rules('extorint', 'Internal/External', 'trim|required');
-        $this->form_validation->set_rules('federation', 'Federation', 'trim|required');
+        $this->form_validation->set_rules('federation', lang('rr_federation'), 'trim|required');
         $this->form_validation->set_rules('static', 'Static metadata by default', 'trim|required');
         $this->form_validation->set_rules('active', 'Decide if enabled by default', 'trim|required');
         $this->form_validation->set_rules('overwrite', 'Decide if enabled by default', 'trim|required');

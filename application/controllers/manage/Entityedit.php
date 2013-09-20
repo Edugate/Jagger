@@ -95,7 +95,7 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['lname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[lname][' . $k . ']', 'localicalized name in ' . $k, 'xss_clean|trim');
+                    $this->form_validation->set_rules('f[lname][' . $k . ']', lang('localizednamein').' ' . $k, 'xss_clean|trim');
                 }
             }
             if (array_key_exists('regpolicy', $y['f']))
@@ -130,14 +130,14 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['ldisplayname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[ldisplayname][' . $k . ']', 'localicalized displayname in ' . $k, 'xss_clean|trim');
+                    $this->form_validation->set_rules('f[ldisplayname][' . $k . ']', lang('localizeddisplaynamein').' ' . $k, 'xss_clean|trim');
                 }
             }
             if (array_key_exists('lhelpdesk', $y['f']))
             {
                 foreach ($y['f']['lhelpdesk'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', 'localicalized helpdesk url in ' . $k, 'trim|valid_url');
+                    $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', lang('localizedhelpdeskin').' ' . $k, 'trim|valid_url');
                 }
             }
 
@@ -145,7 +145,7 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['ldesc'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[ldesc][' . $k . ']', 'localicalized description in ' . $k, 'xss_clean|trim');
+                    $this->form_validation->set_rules('f[ldesc][' . $k . ']', lang('localizeddescin').' ' . $k, 'xss_clean|trim');
                 }
             }
 
@@ -153,10 +153,10 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['contact'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[contact][' . $k . '][email]', 'contact email', 'trim|valid_email');
-                    $this->form_validation->set_rules('f[contact][' . $k . '][type]', 'contact type', 'trim|valid_contact_type');
-                    $this->form_validation->set_rules('f[contact][' . $k . '][fname]', 'first name', 'trim|xss_clean');
-                    $this->form_validation->set_rules('f[contact][' . $k . '][sname]', 'surname', 'trim|xss_clean');
+                    $this->form_validation->set_rules('f[contact][' . $k . '][email]', ''.lang('rr_contactemail').'', 'trim|valid_email');
+                    $this->form_validation->set_rules('f[contact][' . $k . '][type]', ''.lang('rr_contacttype').'', 'trim|valid_contact_type');
+                    $this->form_validation->set_rules('f[contact][' . $k . '][fname]', ''.lang('rr_contactfirstname').'', 'trim|xss_clean');
+                    $this->form_validation->set_rules('f[contact][' . $k . '][sname]', ''.lang('rr_contactlastname').'', 'trim|xss_clean');
                 }
             }
             if (array_key_exists('prot', $y['f']))
@@ -179,8 +179,8 @@ class Entityedit extends MY_Controller {
                     foreach ($y['f']['crt']['spsso'] as $k => $v)
                     {
                         $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|verify_cert');
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][remove]', 'remove', 'trim');
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', 'cert usage', 'trim|required');
+                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][remove]', ''.lang('rr_remove').'', 'trim');
+                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required');
                     }
                 }
                 if (array_key_exists('idppsso', $y['f']['crt']))
@@ -188,8 +188,8 @@ class Entityedit extends MY_Controller {
                     foreach ($y['f']['crt']['idpsso'] as $k => $v)
                     {
                         $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'cert data', 'trim|verify_cert');
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][remove]', 'remove', 'trim');
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', 'cert usage', 'trim|required');
+                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][remove]', ''.lang('rr_remove').'', 'trim');
+                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required');
                     }
                 }
             }
@@ -254,9 +254,9 @@ class Entityedit extends MY_Controller {
                     $acsdefault = array();
                     foreach ($y['f']['srv']['AssertionConsumerService'] as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][url]', 'ACS URL', 'trim|max_length[254]|valid_url');
-                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][bind]', 'ACS Binding protocol', 'trim|xss_clean');
-                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][order]', 'ACS Index', 'trim|xss_clean');
+                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][url]', 'AssertionConsumerService URL', 'trim|max_length[254]|valid_url');
+                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][bind]', 'AssertionConsumerService Binding protocol', 'trim|xss_clean');
+                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][order]', 'AssertionConsumerService Index', 'trim|xss_clean');
 
                         $tmpurl = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['order']);
@@ -291,13 +291,13 @@ class Entityedit extends MY_Controller {
                         if (count($acsurls) < 1 && empty($staticisdefault))
                         {
 
-                            $this->tmp_error = 'At least one ACS URL must be set';
+                            $this->tmp_error = lang('rr_acsurlatleastone');
                             return false;
                         }
                         if (count($acsdefault) > 1)
                         {
 
-                            $this->tmp_error = 'Only one ACS URL must be set as default';
+                            $this->tmp_error = lang('rr_acsurlonlyonedefault');
                             return false;
                         }
                     }
@@ -310,8 +310,8 @@ class Entityedit extends MY_Controller {
                     $sparturls = array();
                     foreach ($y['f']['srv']['SPArtifactResolutionService'] as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[srv][SPArtifactResolutionService][' . $k . '][url]', 'SP ArtifactResolutionService URL', 'trim|max_length[254]|valid_url');
-                        $this->form_validation->set_rules('f[srv][SPArtifactResolutionService][' . $k . '][bind]', 'SP ArtifactResolutionService Binding protocol', 'trim|xss_clean');
+                        $this->form_validation->set_rules('f[srv][SPArtifactResolutionService][' . $k . '][url]', 'SP '.lang('ArtifactResolutionService').' URL', 'trim|max_length[254]|valid_url');
+                        $this->form_validation->set_rules('f[srv][SPArtifactResolutionService][' . $k . '][bind]', 'SP '.lang('ArtifactResolutionService').' Binding protocol', 'trim|xss_clean');
 
                         $tmpurl = trim($y['f']['srv']['SPArtifactResolutionService']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['SPArtifactResolutionService']['' . $k . '']['order']);

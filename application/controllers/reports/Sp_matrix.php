@@ -137,7 +137,7 @@ class Sp_matrix extends MY_Controller
         $members = $this->_get_members($sp);
 
         $cache_time = $this->config->item('arp_cache_time');
-        $data['arpcachetimeicon'] = showHelp('ARPs are cached for '.$cache_time.' seconds');
+        $data['arpcachetimeicon'] = showBubbleHelp('ARPs are cached for '.$cache_time.' seconds');
         $data['load_matrix_js'] = TRUE; 
         $data['sites_url'] = base_url().'reports/sp_matrix/members_urls/'.$spid;
         $data['entityid'] = $sp->getEntityId();

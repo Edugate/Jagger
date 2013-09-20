@@ -81,14 +81,14 @@ class Attribute_requirement extends MY_Controller {
         }
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
-            $data['error'] = "No access to manage attribute requirements for federation:" . $fed->getName();
+            $data['error'] = lang('rr_noperm_mngtattrforfed').': ' . $fed->getName();
             $this->load->view('page', $data);
             return;
         }
 
 
-        log_message('debug', $this->log_prefix . "preparing for federation: " . $fed->getName());
-        $data['head'] = "Attribute Requirements for " . $fed->getName();
+        log_message('debug', 'preparing for federation: ' . $fed->getName());
+        $data['head'] = lang('rr_attributerequirements').': ' . $fed->getName();
         $add_attr = array();
         $attrs = $this->em->getRepository("models\Attribute")->findAll();
         $already_in_attr = array();
@@ -143,14 +143,14 @@ class Attribute_requirement extends MY_Controller {
             log_message('debug', $this->log_prefix . "found sp = " . $sp->getEntityId());
         } else {
             log_message('debug', $this->log_prefix . "sp not found");
-            show_error('Service Provider not found', 404);
+            show_error(lang('rerror_spnotfound'), 404);
         }
         $resource = $sp->getId();
         $group = 'entity';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
-            $data['error'] = "No access to manage attribute requirements for ServiceProvider: " . $sp->getEntityid();
+            $data['error'] = ''.lang('rr_noperm_mngtattrforsp').': ' . $sp->getEntityid();
             $this->load->view('page', $data);
             return;
         }
@@ -162,7 +162,7 @@ class Attribute_requirement extends MY_Controller {
         } else {
             $b = $a . " (" . $sp->getEntityId() . ")";
         }
-        $data['head'] = "Attribute Requirements for " . $b;
+        $data['head'] = ''.lang('rr_attributerequirements').': ' . $b;
 
         $attrs = $this->em->getRepository("models\Attribute")->findAll();
         $add_attr = array();
@@ -285,14 +285,14 @@ class Attribute_requirement extends MY_Controller {
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
-            $data['error'] = "No access to manage attribute requirements for sp id:" . $dpid;
+            $data['error'] = lang('rr_noperm_mngtattrforsp') . $dpid;
             $this->load->view('page', $data);
             return;
         }
         $locked = $sp->getLocked();
         if ($locked) {
             $data['content_view'] = 'nopermission';
-            $data['error'] = 'No access to manage attribute requirements for sp :' . $sp->getEntityId().': entity is locked';
+            $data['error'] = ''.lang('rr_noperm_mngtattrforsp').':' . $sp->getEntityId().': '.lang('rr_locked');
             $this->load->view('page', $data);
             return;
         }
@@ -313,8 +313,8 @@ class Attribute_requirement extends MY_Controller {
             log_message('debug', $this->log_prefix . 'for spid:' . $spid . ' and attr:' . $attr . ' submited for modification');
             $attr_req = $this->em->getRepository("models\AttributeRequirement")->findOneBy(array('sp_id' => $spid, 'attribute_id' => $attr));
             if (!empty($attr_req)) {
-                log_message('debug', $this->log_prefix . 'requirement found');
-                log_message('debug', $this->log_prefix . 'args passed. reason:' . $reason . ', status:' . $status);
+                log_message('debug',  'requirement found');
+                log_message('debug',  'args passed. reason:' . $reason . ', status:' . $status);
             }
             $attr_req->setReason($reason);
             $attr_req->setStatus($status);
@@ -343,7 +343,7 @@ class Attribute_requirement extends MY_Controller {
             $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
             if (!$has_write_access) {
                 $data['content_view'] = 'nopermission';
-                $data['error'] = "No access to manage attribute requirements for federation:" . $fed->getName();
+                $data['error'] = ''.lang('rr_noperm_mngtattrforfed').': ' . $fed->getName();
                 $this->load->view('page', $data);
                 return;
             }
