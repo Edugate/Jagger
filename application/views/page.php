@@ -89,7 +89,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                     'lt' => array('path'=>'lt','val'=>'lietuvos'),
                     'pl' => array('path'=>'pl','val'=>'polski'),
                     'pt' => array('path'=>'pt','val'=>'português'),
-                    'es' => array('path'=>'es','val'=>'española'),
+                    'es' => array('path'=>'es','val'=>'español'),
                    );
                 ?>
                 <div id="langchenge">
