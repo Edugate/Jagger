@@ -345,6 +345,35 @@ class MY_form_validation extends CI_form_validation {
         }
     }
 
+        function valid_extendedurl($str)
+        {
+		if (empty($str))
+		{
+			return FALSE;
+		}
+		else
+		{
+                        preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
+			if (empty($matches[2]))
+			{
+                               $this->set_message('valid_extendedurl', "incorrect URL  \"%s\" ");
+
+				return FALSE;
+			}
+			elseif ( ! in_array($matches[1], array('http', 'https','ftp','ftps')) OR empty($matches[1]) )
+			{
+                               $this->set_message('valid_extendedurl', "incorrect protocol  \"%s\" ");
+				return FALSE;
+			}
+                        else
+                        {
+                               return TRUE;
+                        }
+
+
+		}
+
+        }
 	function valid_url($str)
 	{
                 
@@ -608,6 +637,18 @@ class MY_form_validation extends CI_form_validation {
                 return $result;
     }
 
+
+    function matches_inarray($str,$serialized_array)
+    {
+       $array = unserialize($serialized_array);
+       $result = TRUE;
+       if(!in_array($str,$array))
+       {
+           $this->set_message('matches_inarray', "%s: doesnt match allowed value");
+           $result = FALSE;
+       }
+       return $result;
+    }
 
     function valid_static_old($is_used, $metadata)
     {

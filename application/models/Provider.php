@@ -1386,6 +1386,13 @@ class Provider {
         return $this->certificates;
     }
 
+    public function setStatDefinition(ProviderStatsDef $p)
+    {
+        $this->getStatDefinitions()->add($p);
+        $p->setProvider($this);
+        return $this;
+    }
+
     /**
      * this object state will be overwriten by $provider object
      */
@@ -1511,6 +1518,11 @@ class Provider {
     public function getCertificates()
     {
         return $this->certificates;
+    }
+
+    public function getStatDefinitions()
+    {
+        return $this->statsdef;
     }
 
     /**

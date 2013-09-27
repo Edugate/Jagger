@@ -47,6 +47,12 @@ class ProviderStatsDef {
     protected $shortname;
 
     /**
+     * title for stats
+     * @Column(type="string", length=128, nullable=false)
+     */
+     protected $titlename;
+
+    /**
      * @ManyToOne(targetEntity="Provider",inversedBy="statsdef")
      */
     protected $provider;
@@ -59,15 +65,22 @@ class ProviderStatsDef {
 
     /**
      * definition typ like: system or external source
+     * allowed values: ext,sys
      * @Column(type="string", length=20, nullable=false)
      */
     protected $type;
 
     /**
-     * httpprotocol for external source , usualy GET
+     * used  if type==sys 
+     * @Column(type="string", length=50, nullable=true)
+     */
+    protected $predefinedcol;
+
+    /**
+     * http methods for external source GET/POST , default GET
      * @Column(type="string", length=5, nullable=true)
      */
-     protected $httpprotocol;
+     protected $method;
 
     /**
      * when external source definition of collected stats format like image, rrd etc
@@ -83,38 +96,42 @@ class ProviderStatsDef {
 
     /**
      * for externa source to define access type like anon, basicauth
-     * Column(type="string", length=20, nullable=true)
+     * @Column(type="string", length=20, nullable=true)
      */
     protected $accesstype;
 
     /**
      * username for authn
-     * Column(type="string", length=20, nullable=true)
+     * @Column(type="string", length=20, nullable=true)
      */
     protected $authuser;
 
     /**
      * pass for authn
-     * Column(type="string", length=50, nullable=true)
+     * @Column(type="string", length=50, nullable=true)
      */
     protected $authpass;
-    
-    /**
-     * additional options to be sent in GET/POST
-     * serialized
-     * Column(type="string", length=512,nullable=true)
-     */
-    protected $additionaloptions;
 
     /**
-     * Column(type="text", nullable=false)
+     * @Column(type="text" , nullable=true)
+     */
+    protected $displayoptions;
+
+    /**
+     * @Column(type="text" , nullable=true)
+     */
+    protected $postoptions;
+    
+
+    /**
+     * @Column(type="text", nullable=false)
      */
     protected $description;
 
     /**
-     * Column(type=text", nullable=true)
+     * @Column(type="boolean", nullable=true)
      */
-    protected $displayoption;
+     protected $overwrite;
 
 
     /**
@@ -127,15 +144,29 @@ class ProviderStatsDef {
      */
     protected $updatedAt;
 
+    public function getId()
+    {
+       return $this->id;
+    }
 
     public function  getName()
     {
        return $this->shortname;
     }
+    
+    public function getTitle()
+    {
+       return $this->titlename;
+    }
 
     public function getProvider()
     {
        return $this->provider;
+    }
+  
+    public function getSysDef()
+    {
+      return $this->predefinedcol;
     }
 
     public function getStatistics()
@@ -146,9 +177,9 @@ class ProviderStatsDef {
     {
        return $this->type;
     }
-    public function getHttpProtocol()
+    public function getHttpMethod()
     {
-       return $this->httpprotocol;
+       return $this->method;
     }
 
     public function getFormatType()
@@ -173,9 +204,9 @@ class ProviderStatsDef {
     {
        return $this->authpass;
     }
-    public function getOptions()
+    public function getPostOptions()
     {
-       $result = $this->additionaloptions;
+       $result = $this->postoptions;
        if(!empty($result))
        {
           $result = unserialize($result);
@@ -186,18 +217,22 @@ class ProviderStatsDef {
 
     public function getDisplayOptions()
     {
-        $result = $this->displayoption;
+        $result = $this->displayoptions;
         if(!empty($result))
         {
            $result = unserialize($result);
         }
         return $result;
     }
-    
     public function getDescription()
     {
        return $this->description;
     } 
+
+    public function getOverwrite()
+    {
+       return $this->overwrite;
+    }
    
 
    
@@ -206,6 +241,73 @@ class ProviderStatsDef {
        $this->shortname = $name;
        return $this;
     } 
+ 
+    public function setTitle($title)
+    {
+       $this->titlename = $title;
+       return $this;
+       
+    }
+    public function setType($t)
+    {
+       $this->type = $t;
+       return $this;
+    }
+    public function setDescription($desc)
+    {
+       $this->description = $desc;
+       return $this;
+    }
+    public function setHttpMethod($method)
+    {
+        $this->method = $method;
+        return $this;
+    }
+    public function setUrl($url)
+    {
+      $this->sourceurl = $url;
+      return $this;
+    }
+    public function setFormatType($t)
+    {
+       $this->formattype = $t;
+       return $this;
+    }
+     
+    public function setAccess($type)
+    {
+       $this->accesstype= $type;
+       return $this;
+    }
+    public function setAuthuser($u)
+    {
+       $this->authuser = $u;
+       return $this;
+    }
+    public function setAuthpass($p)
+    {
+       $this->authpass = $p;
+       return $this;
+    }
+
+    public function setPostOptions($arr=null)
+    {
+       if(!empty($arr))
+       {
+           $this->postoptions = serialize($arr);
+       }
+       else
+       {
+          $this->postoptions = null;
+       }
+       return $this;
+    }
+
+    public function  setProvider(Provider $provider)
+    {
+         $this->provider = $provider;
+         return $this;   
+    }
 
     public function setDisplayOptions($opt=null)
     {
@@ -213,7 +315,7 @@ class ProviderStatsDef {
         {
            if(is_array($opt))
            {
-               $this->displayoption = serialize($opt);
+               $this->displayoptions = serialize($opt);
            }
            else
            {
@@ -222,11 +324,10 @@ class ProviderStatsDef {
         }
         else
         {
-            $this->displayoption = null;
+            $this->displayoptions = null;
         }
         
     }
-
 
     /**
      * @prePersist 
@@ -234,6 +335,7 @@ class ProviderStatsDef {
     public function created()
     {
          $this->createdAt = new \DateTime("now");
+         $this->updatedAt = new \DateTime("now");
     }
 
     /**

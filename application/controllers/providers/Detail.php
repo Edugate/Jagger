@@ -68,7 +68,15 @@ class Detail extends MY_Controller {
                $has_write_access = $this->zacl->check_acl($id, 'write', $group, '');
                if($has_write_access === TRUE)
                {
+ 
                    $i = 0;
+                   /**
+                    * @todo remove stats link later
+                    */
+                   $d[++$i]['header'] = 'Statistics';
+                   $d[++$i]['name'] = '';
+                   $d[$i]['value'] = anchor(base_url().'manage/statdefs/show/'.$ent->getId().'','Link');       
+           
                    $d[++$i]['header'] = lang('rr_logs');
                    $d[++$i]['name'] = lang('rr_modifications');
                    $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 10);
@@ -1260,6 +1268,7 @@ class Detail extends MY_Controller {
         $i = 0;
 
 
+       
         $data['tabs'] = $result;
         $data['content_view'] = 'providers/detail_view.php';
         $this->load->view('page', $data);

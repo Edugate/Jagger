@@ -50,6 +50,11 @@ class ProviderStatsCollection {
     protected $statdefinition;
 
     /**
+     * @Column(type="string",length=15,nullable=false);
+     */
+     protected $format;
+
+    /**
      * @Column(type="string",length=50, nullable=false)
      */
     protected $statfilename;
@@ -59,6 +64,16 @@ class ProviderStatsCollection {
      */
     protected $createdAt;
 
+
+    public function getFilename()
+    {
+        return $this->statfilename;
+    }
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
     /**
      * @prePersist 
      */
@@ -66,6 +81,8 @@ class ProviderStatsCollection {
     {
          $this->createdAt = new \DateTime("now");
     }
+
+    
 
 
 }
