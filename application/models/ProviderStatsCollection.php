@@ -74,6 +74,45 @@ class ProviderStatsCollection {
         return $this->format;
     }
 
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    public function getStatDefinition()
+    {
+        return $this->statdefinition;
+    }
+   
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    public function setProvider($p)
+    {
+        $this->provider = $p;
+        return $this;
+    }
+  
+    public function setStatDefinition($s)
+    {
+        $this->statdefinition = $s;
+        return $this;
+    }
+
+    public function setFormat($f)
+    {
+        $this->format = $f;
+        return $this;
+     }
+    public function setFilename($f)
+    {
+
+        $this->statfilename = $f;
+        return $this;
+    }
+
     /**
      * @prePersist 
      */

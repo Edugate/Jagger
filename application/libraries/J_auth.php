@@ -29,7 +29,7 @@ class J_auth {
     public function __construct() {
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
-        $this->ci->load->library('email');
+       // $this->ci->load->library('email');
         $this->ci->load->helper('cookie');
     }
 

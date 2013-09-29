@@ -393,10 +393,30 @@ $(function() {
         });
         return false;
     });
+    $("a.lateststat").click(function() {
+        var link = $(this), url = link.attr("href");
+
+        $.ajax({
+            url: url,
+            timeout: 2500,
+            cache: false,
+            success: function()
+            {
+                   var i = new Image();
+                   i.src = url;
+
+                  $('#statisticdiag').html(i);
+
+           }
+
+        });
+        return false;
+    });
     $("a.bookentity").click(function() {
         var link = $(this), url = link.attr("href");
 
         $.ajax({
+            type: "GET",
             url: url,
             timeout: 2500,
             cache: false

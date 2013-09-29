@@ -26,13 +26,6 @@ class Gworkers extends MY_Controller {
     }
 
      
-    public function test()
-    {
-       $gmclient= new GearmanClient();
-       $gmclient->addServer('127.0.0.1',4730);
-       $job_handle = $gmclient->doNormal("externalstatcollection","ddd");
-       print($job_handle);
-    }
 
 
     function worker()
