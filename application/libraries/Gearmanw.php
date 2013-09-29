@@ -76,10 +76,7 @@ class Gearmanw {
             return false;
         }
         $expectedformat = $def->getFormatType();
-        echo $expectedformat."\n";
-        echo $provider->getId()."\n";
-        print_r($args);
-        
+              
         $data = $ci->curl->simple_get($def->getSourceUrl());
         if(!empty($data))
         {
@@ -92,7 +89,7 @@ class Gearmanw {
                 
                 if(!array_key_exists($mimeType, $img_mimes))
                 {
-                    echo "image fff \n";
+                    
                     return false;
                 }
                 else

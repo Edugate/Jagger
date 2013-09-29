@@ -65,6 +65,11 @@ class ProviderStatsCollection {
     protected $createdAt;
 
 
+
+    public function getId()
+    {
+        return $this->id;
+    }
     public function getFilename()
     {
         return $this->statfilename;

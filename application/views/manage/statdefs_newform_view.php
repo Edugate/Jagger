@@ -56,7 +56,7 @@ echo form_open(''. base_url() . 'manage/statdefs/newstatdef/'.$providerid.'', $a
     <li>
      <label for"formattype"><?php echo lang('rr_statdefformat'); ?></label>
      <?php
-       $formats = array('image'=>'image','rrd'=>'rrd');
+       $formats = array('image'=>'image (png, jpg, if)','svg'=>'image (svg)','rrd'=>'rrd');
        echo form_dropdown('formattype',$formats, $this->input->post('formattype'), "id='formattype'");
      ?>
     </li>

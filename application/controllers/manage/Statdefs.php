@@ -32,6 +32,12 @@ class Statdefs extends MY_Controller {
         {
             show_error('not found', 404);
         }
+        $isgearman = $this->config->item('gearman');
+        $isstatistics = $this->config->item('statistics');
+        if(empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
+        {
+            show_error('not found', 404);
+        }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
         {
@@ -46,6 +52,11 @@ class Statdefs extends MY_Controller {
         if (empty($provider))
         {
             show_error('not found', 404);
+        }
+        $islocal = $provider->getLocal();
+        if(!$islocal)
+        {
+            show_error('no stats allowed for this entity', 403);
         }
         $this->load->library('zacl');
         $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
@@ -83,6 +94,12 @@ class Statdefs extends MY_Controller {
             show_error('Page not found', 404);
             reurn;
         }
+        $isgearman = $this->config->item('gearman');
+        $isstatistics = $this->config->item('statistics');
+        if(empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
+        {
+            show_error('not found', 404);
+        }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
         {
@@ -94,6 +111,11 @@ class Statdefs extends MY_Controller {
             if (empty($provider))
             {
                 show_error('Provider not found', 404);
+            }
+            $islocal = $provider->getLocal();
+            if(!$islocal)
+            {
+                show_error('No stats allowed for this entity',403);
             }
             $this->load->library('zacl');
 
@@ -123,7 +145,9 @@ class Statdefs extends MY_Controller {
                     foreach ($ed as $v)
                     {
                         $res[] = array('title' => '' . $v->getTitle() . '',
-                            'id' => '' . $v->getId() . ''
+                            'id' => '' . $v->getId() . '',
+                            'desc'=>''.$v->getDescription().'',
+                       
                         );
                     }
 
@@ -180,6 +204,12 @@ class Statdefs extends MY_Controller {
         {
             show_error('Page not found', 404);
         }
+        $isgearman = $this->config->item('gearman');
+        $isstatistics = $this->config->item('statistics');
+        if(empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
+        {
+            show_error('not found', 404);
+        }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
         {
@@ -192,6 +222,11 @@ class Statdefs extends MY_Controller {
             if (empty($provider))
             {
                 show_error('Provider not found', 404);
+            }
+            $islocal = $provider->getLocal();
+            if(!$islocal)
+            {
+                show_error('stats are allowed only for local entities', 403);
             }
             $this->load->library('zacl');
 
@@ -280,7 +315,7 @@ class Statdefs extends MY_Controller {
         $this->form_validation->set_rules('sourceurl', 'Source URL', 'required|trim|valid_extendedurl');
         $allowedmethods = serialize(array('post', 'get'));
         $this->form_validation->set_rules('httpmethod', 'Method', 'required|trim|matches_inarray[' . $allowedmethods . ']');
-        $allowedformats = serialize(array('image', 'rrd'));
+        $allowedformats = serialize(array('image', 'rrd', 'svg'));
         $this->form_validation->set_rules('formattype', 'Format', 'required|trim|matches_inarray[' . $allowedformats . ']');
         $allowedaccess = serialize(array('anon', 'basicauthn'));
         $this->form_validation->set_rules('accesstype', 'Access type', 'required|trim|xss_clean|matches_inarray[' . $allowedaccess . ']');

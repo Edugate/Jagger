@@ -8,10 +8,13 @@ if(!empty($existingStatDefs))
     $tmpl = array ( 'table_open'  => '<table id="details" class="zebra">' );
     $this->table->set_template($tmpl);
     $staimg = base_url().'images/stats_bars.png';
+    $refreshimg = base_url().'images/icons/arrow-circle-315.png';
+    $infoimg = base_url().'images/icons/information.png';
    // print_r($existingStatDefs);
     foreach($existingStatDefs as $v)
     {
-       $r = array(anchor(base_url().'manage/statdefs/show/'.$providerid.'/'.$v['id'].'',$v['title']),'<a class="lateststat" href="'.base_url().'manage/statistics/latest/'.$v['id'].'"><img src="'.$staimg.'"/></a>');
+       $r = array(anchor(base_url().'manage/statdefs/show/'.$providerid.'/'.$v['id'].'',$v['title']).' <span style="float: right;"><a class="lateststat" href="'.base_url().'manage/statistics/latest/'.$v['id'].'"><img src="'.$staimg.'"/></a>
+<a class="downloadstat" href="'.base_url().'manage/statdefs/download/'.$v['id'].'"><img src="'.$refreshimg.'"/></a></span>',''.htmlentities($v['desc']).'');
        $this->table->add_row($r);
     }
     echo $this->table->generate();

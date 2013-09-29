@@ -27,7 +27,10 @@ class Statistics extends MY_Controller {
 
     function latest($id)
     {
-
+        if (!$this->input->is_ajax_request())
+        {
+            show_error('method denied',403);
+        }
         if (empty($id) or !is_numeric($id))
         {
             show_error('Not found');
@@ -66,7 +69,12 @@ class Statistics extends MY_Controller {
         {
             $s = $stats['0'];
         }
-            
+
+        $r=array();
+        $r[]=  array('url'=>base_url().'manage/statistics/show/'.$s->getId().'/'.md5(uniqid(rand(), true)).'','title'=>$def->getTitle(), 'subtitle'=>'created: '.$s->getCreatedAt()->format('Y-m-d H:i:s').'');
+        echo json_encode($r);
+        return;
+        
         $statstorage = $datastorage . 'stats/';
         if (!is_dir($statstorage))
         {

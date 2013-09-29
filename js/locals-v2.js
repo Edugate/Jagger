@@ -393,21 +393,62 @@ $(function() {
         });
         return false;
     });
+
+    
+    $("a.downloadstat").click(function() {
+        var link = $(this), url = link.attr("href");
+        $.ajax({
+           url: url,
+           timeout: 2500,
+           cache: true,
+           success: function(data){
+              
+              //$("div#statisticdiag").replaceWith('<div id="statisticdiag"></a>');  
+              alert(data);
+           }
+        });
+        return false;
+    });
     $("a.lateststat").click(function() {
         var link = $(this), url = link.attr("href");
-
+        var value = $('<div id="#statisticdiag">');
         $.ajax({
             url: url,
             timeout: 2500,
-            cache: false,
-            success: function()
+            cache: true,
+            success: function(json)
             {
-                   var i = new Image();
-                   i.src = url;
+                $('#spinner').hide();
+                var data = $.parseJSON(json);
+                if (!data)
+                {
+                    alert('no data');
+                }
+                else
+                {
+              $("div#statisticdiag").replaceWith('<div id="statisticdiag"></a>');  
+                   $.each(data, function(i, v) {
+                      
+                        i = new Image();
+                        i.src = v.url;
+                  $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">'+v.title+'</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">'+v.subtitle+'</div>').append(i);
 
-                  $('#statisticdiag').html(i);
+                     });
+                }
 
-           }
+                //   i = new Image();
+                //   i.src = url;
+                 // $('#statisticdiag').html('<img src="'+url+'/'+Math.floor(Math.random()*1000)+'" />');
+                  //$('#statisticdiag').replaceWith(i);
+                   i = null;
+
+
+           },
+           beforeSend: function(){  $('#spinner').show(); },
+           error: function() {
+                       $('#spinner').hide();
+                       alert('problem with loading data');
+                 }
 
         });
         return false;

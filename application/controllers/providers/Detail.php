@@ -43,75 +43,75 @@ class Detail extends MY_Controller {
             $this->tmp_attributes = new models\Attributes;
             $this->tmp_attributes->getAttributes();
         }
-        elseif(!$this->input->is_ajax_request())
+        elseif (!$this->input->is_ajax_request())
         {
-              redirect('auth/login', 'location');
-
+            redirect('auth/login', 'location');
         }
     }
 
-
     function showlogs($id)
     {
-       if(!$this->j_auth->logged_in())
-       {
-           show_error('no session', 403);
-
-       }
-       if($this->input->is_ajax_request())
-       {
+        if (!$this->j_auth->logged_in())
+        {
+            show_error('no session', 403);
+        }
+        if ($this->input->is_ajax_request())
+        {
             $d = array();
             $group = 'entity';
-            $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id)); 
-            if(!empty($ent))
+            $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
+            if (!empty($ent))
             {
-               $has_write_access = $this->zacl->check_acl($id, 'write', $group, '');
-               if($has_write_access === TRUE)
-               {
- 
-                   $i = 0;
-                   /**
-                    * @todo remove stats link later
-                    */
-                   $d[++$i]['header'] = 'Statistics';
-                   $d[++$i]['name'] = '';
-                   $d[$i]['value'] = anchor(base_url().'manage/statdefs/show/'.$ent->getId().'','Link');       
-           
-                   $d[++$i]['header'] = lang('rr_logs');
-                   $d[++$i]['name'] = lang('rr_modifications');
-                   $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 10);
-                   if((strcasecmp($ent->getType(),'IDP') == 0) OR (strcasecmp($ent->getType(),'BOTH') == 0))
-                   {
-                       $tmp_logs = new models\Trackers;
-                       $arp_logs = $tmp_logs->getArpDownloaded($ent);
-                       $logg_tmp = '<ul>';
-                       if (!empty($arp_logs))
-                       {
-                          foreach ($arp_logs as $l)
-                          {
-                              $logg_tmp .= '<li><b>' . $l->getCreated()->format('Y-m-d H:i:s') . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
-                          }
-                       }
-                       $logg_tmp .= '</ul>';
-                       $d[++$i]['name'] = lang('rr_recentarpdownload'); 
-                       $d[$i]['value'] = $logg_tmp;
-                  }  
-               }
-               else
-               {
-                   log_message('debug', 'no access to load logs tab');
-               }
-               
+                $has_write_access = $this->zacl->check_acl($id, 'write', $group, '');
+                if ($has_write_access === TRUE)
+                {
 
+                    $i = 0;
+                    /**
+                     * @todo remove stats link later
+                     */
+                    $isactive = $ent->getActive();
+                    $islocal = $ent->getLocal();
+                    $isgearman = $this->config->item('gearman');
+                    $isstats = $this->config->item('statistics');
+                    if (($isactive === TRUE) && ($islocal === TRUE) && !empty($isgearman) && ($isgearman === TRUE) && !empty($isstats))
+                    {
+                        $d[++$i]['header'] = 'Statistics';
+                        $d[++$i]['name'] = '';
+                        $d[$i]['value'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', 'Link');
+                    }
+                    $d[++$i]['header'] = lang('rr_logs');
+                    $d[++$i]['name'] = lang('rr_modifications');
+                    $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 10);
+                    if ((strcasecmp($ent->getType(), 'IDP') == 0) OR (strcasecmp($ent->getType(), 'BOTH') == 0))
+                    {
+                        $tmp_logs = new models\Trackers;
+                        $arp_logs = $tmp_logs->getArpDownloaded($ent);
+                        $logg_tmp = '<ul>';
+                        if (!empty($arp_logs))
+                        {
+                            foreach ($arp_logs as $l)
+                            {
+                                $logg_tmp .= '<li><b>' . $l->getCreated()->format('Y-m-d H:i:s') . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+                            }
+                        }
+                        $logg_tmp .= '</ul>';
+                        $d[++$i]['name'] = lang('rr_recentarpdownload');
+                        $d[$i]['value'] = $logg_tmp;
+                    }
+                }
+                else
+                {
+                    log_message('debug', 'no access to load logs tab');
+                }
             }
-            $data['d'] = $d; 
-            $this->load->view('providers/showlogs_view.php',$data);
-       }
-       else
-       {
-          echo '';
-       }
-
+            $data['d'] = $d;
+            $this->load->view('providers/showlogs_view.php', $data);
+        }
+        else
+        {
+            echo '';
+        }
     }
 
     function show($id)
@@ -175,38 +175,37 @@ class Detail extends MY_Controller {
         $edit_link = '';
         if (empty($is_active))
         {
-            $entstatus .= ' '. makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
+            $entstatus .= ' ' . makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
         }
         else
         {
-            $entstatus .= ' ' .makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
+            $entstatus .= ' ' . makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
         }
         if (!$is_validtime)
         {
-            $entstatus .= ' '. makeLabel('alert',lang('rr_validfromto_notmatched1') , strtolower(lang('rr_metadata')).' '.lang('rr_expired'));
+            $entstatus .= ' ' . makeLabel('alert', lang('rr_validfromto_notmatched1'), strtolower(lang('rr_metadata')) . ' ' . lang('rr_expired'));
         }
         if ($locked)
         {
-            $entstatus .= ' '. makeLabel('locked',lang('rr_locked') , lang('rr_locked'));
+            $entstatus .= ' ' . makeLabel('locked', lang('rr_locked'), lang('rr_locked'));
         }
         if ($is_local)
         {
-            $entstatus .= ' '. makeLabel('local', lang('rr_managedlocally'), lang('rr_managedlocally'));
+            $entstatus .= ' ' . makeLabel('local', lang('rr_managedlocally'), lang('rr_managedlocally'));
         }
         else
         {
-            $entstatus .= ' '. makeLabel('local', lang('rr_external'), lang('rr_external'));
-            
+            $entstatus .= ' ' . makeLabel('local', lang('rr_external'), lang('rr_external'));
         }
         if ($is_static)
         {
-            $entstatus .= ' '. makeLabel('static', lang('lbl_static'), lang('lbl_static'));
+            $entstatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
             $edit_link .= makeLabel('static', lang('lbl_static'), lang('lbl_static'));
         }
 
         if (!$has_write_access)
         {
-            $edit_link .= makeLabel('noperm', lang('rr_nopermission'), lang('rr_nopermission'));          
+            $edit_link .= makeLabel('noperm', lang('rr_nopermission'), lang('rr_nopermission'));
         }
         elseif (!$is_local)
         {
@@ -218,7 +217,7 @@ class Detail extends MY_Controller {
         }
         else
         {
-            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="edit" title="edit" >' . makeLabel('edit', lang('rr_edit'), genIcon('edit') . lang('rr_edit') ) .'</a>';
+            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="edit" title="edit" >' . makeLabel('edit', lang('rr_edit'), genIcon('edit') . lang('rr_edit')) . '</a>';
         }
         $data['edit_link'] = $edit_link;
 
@@ -269,7 +268,7 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
         $d[++$i]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation');
-        $d[++$i]['name'] = lang('rr_status').' ' . showBubbleHelp('<ul><li><b>'.lang('lbl_enabled').'</b>:'.lang('provinmeta').'</li><li><b>'.lang('lbl_disabled').'</b>:'.lang('provexclmeta').' </li><li><b>'.lang('rr_managedlocally').'</b>: '.lang('provmanlocal').'</li><li><b>'.lang('rr_external').'</b>: '.lang('provexternal').'</li></ul>') . '';
+        $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
 
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
@@ -282,7 +281,7 @@ class Detail extends MY_Controller {
         $lvalues = '';
         if (is_array($lname))
         {
-            $d[++$i]['name'] = lang('rr_providername') . ' <small>'.lang('localized').'</small>';
+            $d[++$i]['name'] = lang('rr_providername') . ' <small>' . lang('localized') . '</small>';
             foreach ($lname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
@@ -295,7 +294,7 @@ class Detail extends MY_Controller {
         $lvalues = '';
         if (is_array($ldisplayname))
         {
-            $d[++$i]['name'] = lang('rr_descriptivename') . ' <small>'.lang('localized').'</small>';
+            $d[++$i]['name'] = lang('rr_descriptivename') . ' <small>' . lang('localized') . '</small>';
             foreach ($ldisplayname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
@@ -312,13 +311,13 @@ class Detail extends MY_Controller {
         {
             if ($is_local && !empty($confRegLoad) && !empty($confRegAuth))
             {
-                $regauthoritytext = lang('rr_regauthority_alt') . ' <b>' . $confRegAuth . '</b><br /><small><i>'.lang('loadedfromglobalcnf').'</i></small>';
+                $regauthoritytext = lang('rr_regauthority_alt') . ' <b>' . $confRegAuth . '</b><br /><small><i>' . lang('loadedfromglobalcnf') . '</i></small>';
             }
             else
             {
                 $regauthoritytext = lang('rr_notset');
             }
-            $d[$i]['value'] = $regauthoritytext ;
+            $d[$i]['value'] = $regauthoritytext;
         }
         else
         {
@@ -346,7 +345,7 @@ class Detail extends MY_Controller {
         }
         elseif (!empty($confRegistrationPolicy) && !empty($confRegLoad))
         {
-            $regpolicy_value .= '<b>en:</b> ' . $confRegistrationPolicy . ' <br /><small><i>'.lang('loadedfromglobalcnf').'</i></small>';
+            $regpolicy_value .= '<b>en:</b> ' . $confRegistrationPolicy . ' <br /><small><i>' . lang('loadedfromglobalcnf') . '</i></small>';
         }
         $d[++$i]['name'] = lang('rr_regpolicy');
         $d[$i]['value'] = $regpolicy_value;
@@ -356,7 +355,7 @@ class Detail extends MY_Controller {
         $lvalues = '';
         if (is_array($ldescription))
         {
-            $d[++$i]['name'] = lang('rr_description') . ' <small>'.lang('localized').'</small>';
+            $d[++$i]['name'] = lang('rr_description') . ' <small>' . lang('localized') . '</small>';
             foreach ($ldescription as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> <div>' . $v . '</div>';
@@ -377,7 +376,7 @@ class Detail extends MY_Controller {
             $cocvalue = $coc->getName() . '<br />' . anchor($coc->getUrl());
             if (!$coc->getAvailable())
             {
-                $cocvalue .= makeLabel('disabled',lang('rr_disabled'),lang('rr_disabled'));
+                $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
             }
         }
         else
@@ -411,7 +410,7 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = '<span class="lbl lbl-alert">' . $validfrom . ' <b>--</b> ' . $validto . '</span>';
         }
-        $result[] = array('section' => 'general', 'title' => ''.lang('tabGeneral').'', 'data' => $d);
+        $result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
         /**
          * Federation
          */
@@ -461,11 +460,11 @@ class Detail extends MY_Controller {
         if ($no_feds > 0)
         {
             $d[++$i]['name'] = '';
-            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="btn">'.lang('showmemb_btn').'</button></a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="btn">' . lang('showmemb_btn') . '</button></a>';
 
             $d[++$i]['2cols'] = '<div id="membership"></div>';
         }
-        $result[] = array('section' => 'federation', 'title' => ''.lang('tabMembership').'', 'data' => $d);
+        $result[] = array('section' => 'federation', 'title' => '' . lang('tabMembership') . '', 'data' => $d);
 
         $d = array();
         $i = 0;
@@ -526,13 +525,12 @@ class Detail extends MY_Controller {
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
         $gearman_enabled = $this->config->item('gearman');
 
-        if(!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
+        if (!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
         {
-           $d[++$i]['name'] = lang('rr_circleoftrust');
-           $d[$i]['value'] = lang('disableexternalcirclemeta');
-           $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>('.lang('signed').')</i>';    
-           $d[$i]['value'] = lang('disableexternalcirclemeta');
-         
+            $d[++$i]['name'] = lang('rr_circleoftrust');
+            $d[$i]['value'] = lang('disableexternalcirclemeta');
+            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+            $d[$i]['value'] = lang('disableexternalcirclemeta');
         }
         else
         {
@@ -543,16 +541,16 @@ class Detail extends MY_Controller {
 
             $d[++$i]['name'] = lang('rr_circleoftrust');
             $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>('.lang('signed').')</i>';
+            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
             $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         }
-        if($is_local && $has_write_access && !empty($gearman_enabled))
+        if ($is_local && $has_write_access && !empty($gearman_enabled))
         {
-           $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
-           $d[$i]['value'] = '<a href="'.base_url().'msigner/signer/provider/'.$ent->getId().'" id="providermetasigner"/><button type="button" class="btn">'.lang('btn_signmetadata').'</button></a>';
+            $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
+            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="btn">' . lang('btn_signmetadata') . '</button></a>';
         }
 
-        $result[] = array('section' => 'technical', 'title' => ''.lang('tabTechnical').'', 'data' => $d);
+        $result[] = array('section' => 'technical', 'title' => '' . lang('tabTechnical') . '', 'data' => $d);
 
         $d = array();
         $i = 0;
@@ -579,7 +577,7 @@ class Detail extends MY_Controller {
 
                 $d[++$i]['2cols'] = '<code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
-            $result[] = array('section' => 'staticmeta', 'title' => ''.lang('tabStaticMeta').'', 'data' => $d);
+            $result[] = array('section' => 'staticmeta', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
 
             $d = array();
             $i = 0;
@@ -763,7 +761,7 @@ class Detail extends MY_Controller {
                 $d[$i]['value'] = '<ul>' . $drvalues . '</ul>';
             }
         }
-        $result[] = array('section' => 'otherthec', 'title' => ''.lang('tabOtherTechnical').'', 'data' => $d);
+        $result[] = array('section' => 'otherthec', 'title' => '' . lang('tabOtherTechnical') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $tcerts = $ent->getCertificates();
@@ -784,13 +782,13 @@ class Detail extends MY_Controller {
                     $certusage = $v->getCertuse();
                     if (empty($certusage))
                     {
-                        $cString .= '<i>'.lang('certsign').'/'.lang('certenc').'</i><br />';
+                        $cString .= '<i>' . lang('certsign') . '/' . lang('certenc') . '</i><br />';
                     }
-                    elseif($certusage === 'signing')
+                    elseif ($certusage === 'signing')
                     {
                         $cString .= '<i>' . lang('certsign') . '</i><br />';
                     }
-                    elseif($certusage === 'encryption')
+                    elseif ($certusage === 'encryption')
                     {
                         $cString .= '<i>' . lang('certenc') . '</i><br />';
                     }
@@ -832,13 +830,13 @@ class Detail extends MY_Controller {
                     $certusage = $v->getCertuse();
                     if (empty($certusage))
                     {
-                        $cString .= '<i>'.lang('certsign').'/'.lang('certenc').'</i><br />';
+                        $cString .= '<i>' . lang('certsign') . '/' . lang('certenc') . '</i><br />';
                     }
-                    elseif($certusage === 'signing')
+                    elseif ($certusage === 'signing')
                     {
                         $cString .= '<i>' . lang('certsign') . '</i><br />';
                     }
-                    elseif($certusage === 'encryption')
+                    elseif ($certusage === 'encryption')
                     {
                         $cString .= '<i>' . lang('certenc') . '</i><br />';
                     }
@@ -882,13 +880,13 @@ class Detail extends MY_Controller {
                     $certusage = $v->getCertuse();
                     if (empty($certusage))
                     {
-                        $cString .= '<i>'.lang('certsign').'/'.lang('certenc').'</i><br />';
+                        $cString .= '<i>' . lang('certsign') . '/' . lang('certenc') . '</i><br />';
                     }
-                    elseif($certusage === 'signing')
+                    elseif ($certusage === 'signing')
                     {
                         $cString .= '<i>' . lang('certsign') . '</i><br />';
                     }
-                    elseif($certusage === 'encryption')
+                    elseif ($certusage === 'encryption')
                     {
                         $cString .= '<i>' . lang('certenc') . '</i><br />';
                     }
@@ -924,7 +922,7 @@ class Detail extends MY_Controller {
         /**
          * end certs
          */
-        $result[] = array('section' => 'certs', 'title' => ''.lang('tabCerts').'', 'data' => $d);
+        $result[] = array('section' => 'certs', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $d[++$i]['header'] = lang("rr_contacts");
@@ -934,7 +932,7 @@ class Detail extends MY_Controller {
             $d[++$i]['name'] = $c->getType();
             $d[$i]['value'] = $c->getFullName() . " " . safe_mailto($c->getEmail());
         }
-        $result[] = array('section' => 'contacts', 'title' => ''.lang('tabContacts').'', 'data' => $d);
+        $result[] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
         $d = array();
         $i = 0;
         if ($idppart)
@@ -1025,7 +1023,7 @@ class Detail extends MY_Controller {
                 }
             }
         }
-        $result[] = array('section' => 'attrs', 'title' => ''.lang('tabAttrs').'', 'data' => $d);
+        $result[] = array('section' => 'attrs', 'title' => '' . lang('tabAttrs') . '', 'data' => $d);
         $d = array();
         $i = 0;
 
@@ -1100,7 +1098,7 @@ class Detail extends MY_Controller {
             }
             else
             {
-                $d[$i]['value'] =  lang('rr_notset');
+                $d[$i]['value'] = lang('rr_notset');
             }
             $logoatts = array(
                 'width' => '400',
@@ -1123,7 +1121,7 @@ class Detail extends MY_Controller {
             }
             else
             {
-                $d[$i]['value'] =  lang('rr_notset');
+                $d[$i]['value'] = lang('rr_notset');
             }
             $d[++$i]['name'] = lang('rr_geolocation');
             if (isset($uiiarray['GeolocationHint']))
@@ -1143,7 +1141,7 @@ class Detail extends MY_Controller {
         if ($sppart)
         {
             $uiiarray = array();
-            $d[++$i]['2cols'] = lang('rr_uii') . ' '.lang('forSPpart');
+            $d[++$i]['2cols'] = lang('rr_uii') . ' ' . lang('forSPpart');
             foreach ($extend as $e)
             {
                 if ($e->getNamespace() == 'mdui' && $e->getType() == 'sp')
@@ -1241,7 +1239,7 @@ class Detail extends MY_Controller {
             }
         }
 
-        $result[] = array('section' => 'uii', 'title' => ''.lang('tabUII').'', 'data' => $d);
+        $result[] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $d[++$i]['header'] = lang('rr_management');
@@ -1263,12 +1261,12 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
-        $result[] = array('section' => 'mngt', 'title' => ''.lang('tabMngt').'', 'data' => $d);
+        $result[] = array('section' => 'mngt', 'title' => '' . lang('tabMngt') . '', 'data' => $d);
         $d = array();
         $i = 0;
 
 
-       
+
         $data['tabs'] = $result;
         $data['content_view'] = 'providers/detail_view.php';
         $this->load->view('page', $data);
@@ -1276,16 +1274,15 @@ class Detail extends MY_Controller {
 
     function showmembers($providerid)
     {
-       if(!$this->j_auth->logged_in())
-       {
-           show_error('no session', 403);
-
-       }
-       if (!$this->input->is_ajax_request())
-       {
+        if (!$this->j_auth->logged_in())
+        {
+            show_error('no session', 403);
+        }
+        if (!$this->input->is_ajax_request())
+        {
             show_error('Request not allowed', 403);
-       }
-       $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
+        }
+        $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if (empty($ent))
         {
             show_error(lang('error404'), 404);
@@ -1314,7 +1311,7 @@ class Detail extends MY_Controller {
             }
             if (empty($members))
             {
-                $l[] = array('entityid' => ''.lang('nomembers').'', 'name' => '', 'url' => '');
+                $l[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');
             }
             $preurl = base_url() . 'providers/detail/show/';
             foreach ($members as $m)

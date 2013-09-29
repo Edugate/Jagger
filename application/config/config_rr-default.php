@@ -139,10 +139,26 @@ $config['translator_access']['it'] = null;
 
 
 /**
+ * datastorage_path
+ * it is used for generated stats/report files. it must be outsite application
+ * value must end with forward slash
+ * inside this location you need to create folders : stats , reports 
+
+ */
+/**
+ * $config['datastorage_path'] = '/opt/rr3data/'
+ */
+
+/**
  * gearman
  */
 $config['gearman'] = FALSE;
 $config['gearmanconf']['jobserver'] = array(array('ip'=>'127.0.0.1','port'=>'4730'));
+
+/**
+ * enable statistics collection gearman also has to be enabled
+ */
+$config['statistics'] = FALSE;
 
 /**
  * disable generating circle metadata for providers who are not managed locally
