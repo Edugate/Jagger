@@ -28,14 +28,59 @@ echo form_open(''. base_url() . 'manage/statdefs/newstatdef/'.$providerid.'', $a
      <label for="description"><?php echo lang('rr_statdefdesc');?></label>
      <textarea id="description" name="description" required="required" cols="65" rows="10"><?php echo set_value('description');?></textarea>
    </li>
+   <li>
+     <label for="overwrite"><?php echo lang('rr_overwritestatfile');?></label>
+     <input type="checkbox" name="overwrite" id="overwrite" value="yes" <?php echo set_checkbox('overwrite', 'yes'); ?> style="margin:10px" />
+      
+   </li>
   </ol>
 </fieldset>
+<?php 
+
+ if(!empty($showpredefined) && $showpredefined === TRUE)
+{
+?>
 <fieldset>
- <legend><?php echo lang('rr_statdefconngroup');?></legend>
+<legend><?php echo lang('builtinstatdefs');?></legend>
+<?php
+echo '<div>'.lang('youcanshoose').':<br />'.$workersdescriptions.'</div>';
+?>
+<ol>
+<li>
+<label for="usepredefined"><?php echo lang('plsusepredefstat') ;?></label>
+<input type="checkbox" name="usepredefined" id="usepredefined" value="yes" <?php echo set_checkbox('usepredefined', 'yes'); ?> style="margin:10px" />
+</li>
+<li>
+<label for="gworker"><?php echo lang('listavailableprestats');?></label>
+<?php
+ echo form_dropdown('gworker',$workerdropdown,$this->input->post('gworker'), "id='gworker'");
+?>
+</li>
+</ol>
+</fieldset>
+<?php
+}
+?>
+<fieldset id="stadefext">
+<?php 
+  if(!empty($showpredefined) && $showpredefined === TRUE)
+  {
+?>
+ <legend><?php echo lang('rr_statdefconngroup'). ' '.showBubblehelp(''.lang('rhelp_extstatleg').'').'';?></legend>
+<?php
+  }
+  else
+  {
+?>
+ <legend><?php echo lang('rr_statdefconngroup') ;?></legend>
+
+<?php
+  }
+?>
   <ol>
     <li>
      <label for="sourceurl"><?php echo lang('rr_statdefsourceurl') .' '.showBubbleHelp(''.lang('rr_allowedtransfprots').': http,https,ftp,ftps').'';?> </label>
-     <input type="text" id="sourceurl" name="sourceurl" required="required" value="<?php echo set_value('sourceurl');?>"/>
+     <input type="text" id="sourceurl" name="sourceurl"  value="<?php echo set_value('sourceurl');?>"/>
     </li>
     <li>
      <label for="httpmethod"><?php echo lang('rr_httpmethod');?></label>
@@ -56,7 +101,7 @@ echo form_open(''. base_url() . 'manage/statdefs/newstatdef/'.$providerid.'', $a
     <li>
      <label for"formattype"><?php echo lang('rr_statdefformat'); ?></label>
      <?php
-       $formats = array('image'=>'image (png, jpg, if)','svg'=>'image (svg)','rrd'=>'rrd');
+       $formats = array('image'=>'image (png, jpg, if)','svg'=>'image (svg)');
        echo form_dropdown('formattype',$formats, $this->input->post('formattype'), "id='formattype'");
      ?>
     </li>
@@ -77,13 +122,14 @@ echo form_open(''. base_url() . 'manage/statdefs/newstatdef/'.$providerid.'', $a
    
   
   </ol>
+</fieldset>
+<fieldset>
   <div class="buttons">
       <button type="submit" name="submit" value="submit" class="btn positive">
             <span class="save"><?php echo lang('rr_add');?><span></button>
 
   </div> 
 </fieldset>
-
 
 <?php
 echo form_close();

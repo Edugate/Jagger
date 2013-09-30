@@ -90,6 +90,10 @@ $lang['InformationURL']             = 'InformationURL';
 $lang['rr_provdesc']                = 'Provider Description';
 $lang['rr_management']              = 'Management';
 $lang['attrsdeflist']               = 'Attributes definitions list';
+$lang['builtinstatdefs']            = 'Predefined statistic collections';
+$lang['youcanshoose']               = 'You can choose';
+$lang['plsusepredefstat']           = 'Enable predefined statistic collection'; 
+$lang['listavailableprestats']      = 'List of available stats collections';
 $lang['attrname']                   = 'Attribute name';
 $lang['perattr']                    = 'per attribute';
 $lang['nextstep']                   = 'Next';
@@ -420,6 +424,7 @@ $lang['rr_managedlocallyexternal']  = 'Managed locally/External Import';
 $lang['rr_managedlocally']          = 'Managed locally';
 $lang['rr_metadata']                = 'Metadata';
 $lang['rr_generatedbelow']          = 'It&rsquo;s generated based on below informations';
+$lang['rr_overwritestatfile']       = 'Overwrite old collected stats';
 $lang['rr_memberof']                = 'Member of';
 $lang['rr_editarpexc']              = 'manage';
 $lang['rr_edit']                    = 'edit';
@@ -691,6 +696,8 @@ $lang['uiiidpdisplayname']  = 'Descriptive HomeOrg Name';
 $lang['uiispdisplayname']  = 'Descriptive Resource Name';
 $lang['uiiinformationurl'] = 'HelpdeskURL/InformationURL';
 $lang['addlocalizeinformationurl'] = 'Add localized ImformationURL';
+
+$lang['rhelp_extstatleg']          = 'It needs to be filled only if predefined statistic collection is not enabled';
 
 $lang['rrerror_noperm_regfed']      = 'You don&rsquo;t have permision to register new Federation';
 $lang['rrerror_noperm_viewfed']     = 'You have no access to display details for this federation';

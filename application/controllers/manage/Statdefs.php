@@ -272,6 +272,31 @@ class Statdefs extends MY_Controller {
             $data['providerid'] = $provider->getId();
             $data['providerentity'] = $provider->getEntityId();
             $data['providername'] = $provider->getName();
+            
+            $ispreworkers = $this->config->item('predefinedstats');
+            $workersdescriptions ='<ul>';
+            if(!empty($ispreworkers) && is_array($ispreworkers) && count($ispreworkers)>0)
+            {
+               $workerdropdown = array();
+               foreach($ispreworkers as $key=>$value)
+               {
+                    if(is_array($value) && array_key_exists('worker',$value))
+                    {
+                       $workerdropdown[''.$key.'']=$key;
+                       if(array_key_exists('desc',$value))
+                       {
+                           $workersdescriptions .= '<li><b>'.$key.'</b>: '.htmlentities($value['desc']).'</li>';
+                       }
+                    }
+               }
+               if(count($workerdropdown)>0)
+               {
+                     $data['showpredefined'] = TRUE;
+                     $data['workerdropdown']=$workerdropdown;
+               }
+            }  
+            $workersdescriptions .='</ul>';
+            $data['workersdescriptions'] = $workersdescriptions;
 
             if (empty($data['providername']))
             {
@@ -295,6 +320,9 @@ class Statdefs extends MY_Controller {
                 $passauthn = $this->input->post('passauthn');
                 $formattype = $this->input->post('formattype');
                 $method = $this->input->post('httpmethod');
+                $gworker = $this->input->post('gworker');
+                $overwrite = $this->input->post('overwrite');
+                $usepredefined = $this->input->post('usepredefined');
                 $prepostoptions = $this->input->post('postoptions');
                 $p2 = explode('$$', $prepostoptions);
                 $postoptions = array();
@@ -311,19 +339,32 @@ class Statdefs extends MY_Controller {
                 }
 
                 $s = new models\ProviderStatsDef;
-                $s->setHttpMethod($method);
-                $s->setPostOptions($postoptions);
                 $s->setName($defname);
                 $s->setTitle($titlename);
                 $s->setDescription($description);
-                $s->setUrl($sourceurl);
-                $s->setAccess($accesstype);
-                $s->setType('ext');
-                $s->setFormatType($formattype);
-                if ($accesstype !== 'anon')
+                if(!empty($overwrite) && $overwrite === 'yes')
                 {
-                    $s->setAuthuser($userauthn);
-                    $s->setAuthpass($passauthn);
+                   $s->setOverwriteOn();
+                }
+
+                if(!empty($usepredefined) && $usepredefined === 'yes')
+                {
+                   $s->setType('sys');
+                   $s->setSysDef($gworker);
+                }
+                else
+                { 
+                   $s->setType('ext');
+                   $s->setHttpMethod($method);
+                   $s->setPostOptions($postoptions);
+                   $s->setUrl($sourceurl);
+                   $s->setAccess($accesstype);
+                   $s->setFormatType($formattype);
+                   if ($accesstype !== 'anon')
+                   {
+                       $s->setAuthuser($userauthn);
+                       $s->setAuthpass($passauthn);
+                   }
                 }
                 $provider->getStatDefinitions($s);
                 $s->setProvider($provider);
@@ -344,24 +385,47 @@ class Statdefs extends MY_Controller {
         $this->form_validation->set_rules('defname', 'Short name', 'required|trim|min_length[3]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('titlename', 'Title name', 'required|trim|min_length[3]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('description', 'Description', 'required|trim|min_length[5]|max_length[1024]|xss_clean');
-        $this->form_validation->set_rules('sourceurl', 'Source URL', 'required|trim|valid_extendedurl');
-        $allowedmethods = serialize(array('post', 'get'));
-        $this->form_validation->set_rules('httpmethod', 'Method', 'required|trim|matches_inarray[' . $allowedmethods . ']');
-        $allowedformats = serialize(array('image', 'rrd', 'svg'));
-        $this->form_validation->set_rules('formattype', 'Format', 'required|trim|matches_inarray[' . $allowedformats . ']');
-        $allowedaccess = serialize(array('anon', 'basicauthn'));
-        $this->form_validation->set_rules('accesstype', 'Access type', 'required|trim|xss_clean|matches_inarray[' . $allowedaccess . ']');
-        if ($this->input->post('accesstype') === 'basicauthn')
-        {
-            $this->form_validation->set_rules('userauthn', 'Username', 'trim|required|xss_clean');
-            $this->form_validation->set_rules('passauthn', 'Password', 'trim|required');
+        $this->form_validation->set_rules('overwrite', 'Overwrite', 'trim|max_length[10]|xss_clean');
+
+        $this->form_validation->set_rules('usepredefined','Predefined','trim|max_length[10]|xss_clean');
+        $userpredefined = $this->input->post('usepredefined');
+        if(empty($userpredefined) or $userpredefined !== 'yes')
+        { 
+              $this->form_validation->set_rules('sourceurl', 'Source URL', 'required|trim|valid_extendedurl');
+              $allowedmethods = serialize(array('post', 'get'));
+              $this->form_validation->set_rules('httpmethod', 'Method', 'required|trim|matches_inarray[' . $allowedmethods . ']');
+              $allowedformats = serialize(array('image', 'rrd', 'svg'));
+              $this->form_validation->set_rules('formattype', 'Format', 'required|trim|matches_inarray[' . $allowedformats . ']');
+              $allowedaccess = serialize(array('anon', 'basicauthn'));
+              $this->form_validation->set_rules('accesstype', 'Access type', 'required|trim|xss_clean|matches_inarray[' . $allowedaccess . ']');
+              if ($this->input->post('accesstype') === 'basicauthn')
+             {
+                $this->form_validation->set_rules('userauthn', 'Username', 'trim|required|xss_clean');
+                $this->form_validation->set_rules('passauthn', 'Password', 'trim|required');
+             }
+             else
+             {
+                 $this->form_validation->set_rules('userauthn', 'Username', 'trim|xss_clean');
+                 $this->form_validation->set_rules('passauthn', 'Password', 'trim');
+             }
+             $this->form_validation->set_rules('postoptions', 'Post options', 'trim');
+
         }
         else
         {
-            $this->form_validation->set_rules('userauthn', 'Username', 'trim|xss_clean');
-            $this->form_validation->set_rules('passauthn', 'Password', 'trim');
+            $p = $this->config->item('predefinedstats');
+            $pworkers  = array();
+            if(!empty($p) && is_array($p))
+            {
+                foreach($p as $key=>$value)
+                {
+                   $pworkers[] = $key;
+                }
+            }
+            $allowedworkers = serialize($pworkers);
+            $this->form_validation->set_rules('gworker', 'Predefined stats', 'required|trim|xss_clean|matches_inarray[' . $allowedworkers . ']');
         }
-        $this->form_validation->set_rules('postoptions', 'Post options', 'trim');
+
         return $this->form_validation->run();
     }
 

@@ -117,6 +117,11 @@ class ProviderStatsCollection {
         $this->statfilename = $f;
         return $this;
     }
+      
+    public function updateDate()
+    {
+        $this->createdAt = new \DateTime("now");
+    }
 
     /**
      * @prePersist 

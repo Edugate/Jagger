@@ -401,10 +401,8 @@ $(function() {
            url: url,
            timeout: 2500,
            cache: true,
-           success: function(data){
-              
-              //$("div#statisticdiag").replaceWith('<div id="statisticdiag"></a>');  
-              alert(data);
+           success: function(){
+              alert('request sent to jobserver');
            }
         });
         return false;
@@ -841,6 +839,23 @@ $(function() {
         }
 
     });
+});
+if($('#usepredefined').attr('checked')) {
+     $("fieldset#stadefext").hide();
+}
+$("#usepredefined").click(function(){
+   if ($(this).is(":checked"))
+   {
+        $("#usepredefined").not(this).removeAttr("checked");
+       $("fieldset#stadefext").hide();
+   }
+   else
+   {
+       $("fieldset#stadefext").show();
+        $("#usepredefined").not(this).addAttr("checked");
+
+   }
+
 });
 $(".acsdefault").click(function() {
     if ($(this).is(":checked"))

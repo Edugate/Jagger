@@ -241,6 +241,12 @@ class ProviderStatsDef {
        $this->shortname = $name;
        return $this;
     } 
+    
+    public function setOverwriteOn()
+    {
+          $this->overwrite = TRUE;
+          return $this;
+     }
  
     public function setTitle($title)
     {
@@ -251,6 +257,12 @@ class ProviderStatsDef {
     public function setType($t)
     {
        $this->type = $t;
+       return $this;
+    }
+
+    public function setSysDef($d)
+    {
+       $this->predefinedcol = $d;
        return $this;
     }
     public function setDescription($desc)

@@ -29,12 +29,6 @@ class Gearmanw {
         $this->ci->load->helper('file');
     }
 
-    public function loggg()
-    {
-
-        \log_message('debug', 'PS PSPS ');
-    }
-
     
     static public function fn_externalstatcollection($job)
     {
@@ -76,11 +70,22 @@ class Gearmanw {
             return false;
         }
         $expectedformat = $def->getFormatType();
+        $overwrite = $def->getOverwrite();
+        $s = null;
+        if(!empty($overwrite))
+        {
+           $stats = $this->em->getRepository("models\ProviderStatsCollection")->findBy(array('provider'=>$p->getId(),'statdefinition'=>$def->getId()), array('id'=>'DESC'));
+           if(count($stats)>0)
+           {
+              $s = $stats['0'];
+              $filename = $s->getFilename();
+           }
+        }
+
               
         $data = $ci->curl->simple_get($def->getSourceUrl());
         if(!empty($data))
         {
-            echo "no empty\n";
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             //$fileContents = file_get_contents($_FILES[''.$data.'']['tmp_name']);
             $mimeType = $finfo->buffer($data);
@@ -109,19 +114,30 @@ class Gearmanw {
             
             if(!empty($extension) && !empty($statformat))
             {
-                $filename = $provider->getId().'_'.$def->getId().'_'.mt_rand().'.'.$extension;
+                if(empty($filename))
+                {
+                   $filename = $provider->getId().'_'.$def->getId().'_'.mt_rand().'.'.$extension;
+                }
                 if(!write_file($statstorage.$filename, $data))
                 {
                     echo "couldnt write";
                 }
                 else
                 {
-                    $st = new models\ProviderStatsCollection;
-                    $st->setFilename($filename);
-                    $st->setFormat($statformat);
-                    $st->setProvider($provider);
-                    $st->setStatDefinition($def);
-                    $em->persist($st);
+                    if(empty($s))
+                    {
+                       $st = new models\ProviderStatsCollection;
+                       $st->setFilename($filename);
+                       $st->setFormat($statformat);
+                       $st->setProvider($provider);
+                       $st->setStatDefinition($def);
+                       $em->persist($st);
+                    }
+                    else
+                    {
+                        $s->updateDate();
+                        $em->persist($s);
+                    }
                     $em->flush();
                 }
             }
@@ -136,17 +152,38 @@ class Gearmanw {
         return true;
     }
 
-    private function registerExtStatCollectorWorker()
+    private function registerCollectorWorkers()
     {
         $gm = new GearmanWorker();
         $gm->addServer('127.0.0.1', 4730);
         $gm->addFunction('externalstatcollection', 'Gearmanw::fn_externalstatcollection');
+        $predifend = $this->ci->config->item('predefinedstats');
+        if(!empty($predifend) && is_array($predifend))
+        {
+           echo "predefined exists\n";
+           echo APPPATH."libraries/third_party/Gstatcollectors.php\n";
+
+           if(file_exists(APPPATH."libraries/third_party/Gstatcollectors.php"))
+           {
+              echo "lib Gstatcollectors exists\n";
+              $this->ci->load->library('third_party/Gstatcollectors.php');
+              foreach($predifend as $key=>$value)
+              {
+                 $w = $value['worker'];
+                 echo "www ".$w."\n";
+                 if(!empty($w))
+                 {
+                     $gm->addFunction(''.$w.'', 'Gstatcollectors::fn_'.$w.'');
+                 }
+              }
+           }
+        }
         while ($gm->work());
     }
 
     public function worker()
     {
-        $this->registerExtStatCollectorWorker();
+        $this->registerCollectorWorkers();
     }
 
 }
