@@ -82,8 +82,12 @@ class Gearmanw {
            }
         }
 
-              
-        $data = $ci->curl->simple_get($def->getSourceUrl());
+        $data = null;
+        $method = $def->getHttpMethod();
+        if($method === 'get')
+        {      
+            $data = $ci->curl->simple_get($def->getSourceUrl());
+        }
         if(!empty($data))
         {
             $finfo = new finfo(FILEINFO_MIME_TYPE);
