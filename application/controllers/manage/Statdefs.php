@@ -85,6 +85,21 @@ class Statdefs extends MY_Controller {
             $gmclient->addServer('127.0.0.1', 4730);
             $job_handle = $gmclient->doBackground("externalstatcollection", serialize($params));
         }
+        elseif(($params['type'] === 'sys') && !empty($params['sysdef'])) 
+        {
+            $ispredefined = $this->config->item('predefinedstats');
+            if(!empty($ispredefined) && is_array($ispredefined) && array_key_exists($params['sysdef'],$ispredefined))
+            {
+                 if(array_key_exists('worker',$ispredefined[''.$params['sysdef'].'']) && !empty($ispredefined[''.$params['sysdef'].'']['worker'])) 
+                 {
+                   $workername = $ispredefined[''.$params['sysdef'].'']['worker'];
+                   $gmclient = new GearmanClient();
+                   $gmclient->addServer('127.0.0.1', 4730);
+                   $job_handle = $gmclient->doBackground(''.$workername.'', serialize($params));
+                 }
+            }
+
+        }
     }
 
     public function show($providerid = null, $defid = null)
@@ -142,11 +157,28 @@ class Statdefs extends MY_Controller {
                 if (!empty($ed) && is_array($ed) && count($ed) > 0)
                 {
                     $res = array();
+                    $predefinedstats = array();
+                    $temppred = $this->config->item('predefinedstats');
+                    if(!empty($temppred) && is_array($temppred))
+                    {
+                       $predefinedstats = $temppred;
+                    } 
                     foreach ($ed as $v)
                     {
+                        $is_sys = $v->getType();
+                        $alert = FALSE;
+                        if($is_sys === 'sys')
+                        {
+                            $sysmethod = $v->getSysDef();
+                            if(empty($sysmethod) or !array_key_exists($sysmethod,$predefinedstats))
+                            {
+                                $alert = TRUE;
+                            }
+                        }
                         $res[] = array('title' => '' . $v->getTitle() . '',
                             'id' => '' . $v->getId() . '',
                             'desc'=>''.$v->getDescription().'',
+                            'alert' => $alert,
                        
                         );
                     }

@@ -161,6 +161,13 @@ $config['gearmanconf']['jobserver'] = array(array('ip'=>'127.0.0.1','port'=>'473
 $config['statistics'] = FALSE;
 
 /**
+ *  you may create own gearman worker for collecting stats which can be called if below is enabled.
+ *  below few examples.
+ */
+//$config['predefinedstats']['raptor1'] = array('worker'=>'heanetraptor','desc'=>'predefined stat defitnition');
+//$config['predefinedstats']['thisiskey'] = array('worker'=>'otherwokername','desc'=>'predefined stat defitnition 2');
+
+/**
  * disable generating circle metadata for providers who are not managed locally
  */
 $config['disable_extcirclemeta'] = TRUE;

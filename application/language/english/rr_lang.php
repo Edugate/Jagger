@@ -733,6 +733,7 @@ $lang['rerror_qid_noexist']         = 'Specified Queue Id doesn\'t exist';
 $lang['rerror_noperm_approve']      = 'You have no permission to approve it';
 $lang['rerror_noperm_reject']       = 'You have no permission to reject this request';
 $lang['rerror_noperm_mngperm']      = 'No access to manage permissions';
+$lang['rerror_nopredefinedstat']    = 'This predefined method of collecting stat does not exist';
 $lang['noperm_fededit']             = 'No permission to edit federation details';
 $lang['rerror_nothinginqueue']      = 'Nothing is wating for approval';
 $lang['error_metaemptyfile']        = 'Metadata location has given empty file';

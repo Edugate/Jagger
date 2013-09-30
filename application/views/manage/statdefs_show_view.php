@@ -13,8 +13,15 @@ if(!empty($existingStatDefs))
    // print_r($existingStatDefs);
     foreach($existingStatDefs as $v)
     {
-       $r = array(anchor(base_url().'manage/statdefs/show/'.$providerid.'/'.$v['id'].'',$v['title']).' <span style="float: right;"><a class="lateststat" href="'.base_url().'manage/statistics/latest/'.$v['id'].'"><img src="'.$staimg.'"/></a>
-<a class="downloadstat" href="'.base_url().'manage/statdefs/download/'.$v['id'].'"><img src="'.$refreshimg.'"/></a></span>',''.htmlentities($v['desc']).'');
+       if(empty($v['alert']))
+       {
+           $r = array(anchor(base_url().'manage/statdefs/show/'.$providerid.'/'.$v['id'].'',$v['title']).' <span style="float: right;"><a class="lateststat" href="'.base_url().'manage/statistics/latest/'.$v['id'].'"><img src="'.$staimg.'"/></a> <a class="downloadstat" href="'.base_url().'manage/statdefs/download/'.$v['id'].'"><img src="'.$refreshimg.'"/></a></span>',''.htmlentities($v['desc']).'');
+       }
+       else
+       {
+           $r = array(anchor(base_url().'manage/statdefs/show/'.$providerid.'/'.$v['id'].'',$v['title']).' <span style="float: right;" class="alert">'.lang('rerror_nopredefinedstat').'</span>',''.htmlentities($v['desc']).'');
+
+       }
        $this->table->add_row($r);
     }
     echo $this->table->generate();
