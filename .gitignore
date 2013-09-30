@@ -7,6 +7,8 @@ application/libraries/Doctine/*
 application/libraries/geshi
 application/libraries/geshi/*
 
+application/libraries/third_party/*
+
 application/logs/*
 application/cache/*
 application/models/Proxies/*
