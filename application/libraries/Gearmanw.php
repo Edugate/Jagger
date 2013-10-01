@@ -45,28 +45,33 @@ class Gearmanw {
         );
         if(empty($storage))
         {
+        $em->clear();
             return false;
         }
         $statstorage = $storage.'stats/';
         
         if(empty($args) || !is_array($args))
         {
+            $em->clear();
             return false;
         }
         if(!array_key_exists('defid', $args))
         {
+            $em->clear();
             return false;
         }
         $def = $em->getRepository("models\ProviderStatsDef")->findOneBy(array('id'=>$args['defid'],'type'=>'ext'));
         
         if(empty($def))
         {
+            $em->clear();
             return false;
         }
         $provider = $def->getProvider();
         
         if(empty($provider))
         {
+            $em->clear();
             return false;
         }
         $expectedformat = $def->getFormatType();
@@ -84,10 +89,24 @@ class Gearmanw {
 
         $data = null;
         $method = $def->getHttpMethod();
-        if($method === 'get')
-        {      
-            $data = $ci->curl->simple_get($def->getSourceUrl());
+        $params = $def->getPostOptions();
+        if(empty($params) || !is_array($params))
+        {
+           $params = array();
         }
+        $accesstype = $def->getAccessType();
+
+        $ci->curl->create(''.$def->getSourceUrl().'');
+        if($accesstype === 'basicauthn')
+        {
+          $ci->curl->http_login(''.$def->getAuthUser().'',''.$def->getAuthPass().'');
+        }
+        
+        if($method === 'post')
+        {
+            $ci->curl->post($params);
+        }
+        $data = $ci->curl->execute();
         if(!empty($data))
         {
             $finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -97,8 +116,8 @@ class Gearmanw {
                 
                 if(!array_key_exists($mimeType, $img_mimes))
                 {
-                    
-                    return false;
+                   $em->clear();
+                   return false;
                 }
                 else
                 {
@@ -148,9 +167,11 @@ class Gearmanw {
         }
         else
         {
+            
             echo "empty\n";
         }
             
+        $em->clear();
 
         return true;
     }
