@@ -11,7 +11,6 @@ if(!empty($existingStatDefs))
     $staimg = base_url().'images/stats_bars.png';
     $refreshimg = base_url().'images/icons/arrow-circle-315.png';
     $infoimg = base_url().'images/icons/information.png';
-   // print_r($existingStatDefs);
     foreach($existingStatDefs as $v)
     {
        if(empty($v['alert']))

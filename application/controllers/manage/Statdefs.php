@@ -193,27 +193,122 @@ class Statdefs extends MY_Controller {
                 {
                     show_error('incorrect fedid', 404);
                 }
-                $statdef = null;
-                foreach ($ed as $vk)
-                {
-                    if (!empty($statdef))
-                    {
-                        break;
-                    }
-                    $vkid = $vk->getId();
-                    if ($vkid === $defid)
-                    {
-                        $statdef = $vk;
-                    }
-                }
+                $statdef = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id'=>''.$defid.'','provider'=>''.$providerid.''));
                 if (empty($statdef))
                 {
                     show_error('detail for stat def not found');
                 }
                 else
                 {
-                    $d = array();
+                     $d = array();
+                     $d[] = array(
+                         'name'=>''.lang('rr_statdefshortname').'',
+                         'value'=>''.$statdef->getName().'',
+                       );
+                     $d[] = array(
+                         'name'=>''.lang('rr_statdefshortname').'',
+                         'value'=>''.$statdef->getName().'',
+                       );
+                     $d[] = array(
+                          'name'=>''.lang('rr_title').'',
+                          'value'=>''.$statdef->getTitle().'',
+                        );
+                     $d[] = array('name'=>lang('rr_description'),'value'=>''.$statdef->getDescription().'');
+                     $overwrite = $statdef->getOverwrite();
+                     if($overwrite)
+                     {
+                        $d[] = array('name' => ''.lang('rr_statfiles').'','value'=>''.lang('rr_overwritestatfile').'');
+                     }
+                     else
+                     {
+                        $d[] = array('name'=> ''.lang('rr_statfiles').'','value'=>''.lang('rr_notoverwritestatfile').'');
+                     }
+                     $type = $statdef->getType();
+                     if($type === 'sys')
+                     {
+                        $d[] = array('name'=>''.lang('typeofstaddef').'','value'=>''.lang('builtinstatdef').'');
+                        $sysdef = $statdef->getSysDef();
+                        if(empty($sysdef))
+                        {
+                           $d[] = array('name'=>''.lang('nameofbuiltinstatdef').'', 'value'=>'<span class="alert">empty</span>');
+                           log_message('error','StatDefinition with id:'.$statdef->getId().' is set to use predefined statcollection but name of worker not defined');
+                           
+                        }
+                        else
+                        {
+                            $predefinedstats=$this->config->item('predefinedstats');
+                            if(empty($predefinedstats) || !is_array($predefinedstats) || !array_key_exists($sysdef,$predefinedstats))
+                            {
+                                 $d[] = array('name'=>''.lang('nameofbuiltinstatdef').'', 'value'=>'<span class="alert">'.lang('builtincolnovalid').'</span>');
+                            }
+                            else
+                            {
+                                $sysdefdesc = '';
+                                if(isset($predefinedstats[''.$sysdef.'']['desc']))
+                                {
+                                    $sysdefdesc = $predefinedstats[''.$sysdef.'']['desc'];
+                                }
+                                $d[] = array('name'=>''.lang('nameofbuiltinstatdef').'', 'value'=>''.$sysdef.':<br />'.$sysdefdesc.'');
 
+
+                            }
+                        }
+
+                     }
+                     else
+                     {
+                           $d[] = array('name'=>''.lang('rr_statdefsourceurl').'','value'=>$statdef->getSourceUrl()); 
+                           $d[] = array('name'=>''.lang('rr_statdefformat').'','value'=>$statdef->getFormatType());
+                           $method = $statdef->getHttpMethod();
+                           $d[] = array('name'=>''.lang('rr_httpmethod').'','value'=>strtoupper($method));
+                           if($method === 'post')
+                           {
+                              $params = $statdef->getPostOptions();
+                              $vparams = '';
+                              if(!empty($params) && is_array($params))
+                              {
+                                  foreach($params as $k=>$v)
+                                  {
+                                     $vparams .=''.htmlentities($k).': '.htmlentities($v).'<br />';
+                                  }
+                                  
+                              }
+                              $d[] = array('name'=>''.lang('rr_postoptions').'','value'=>''.$vparams.'');
+                           }
+                           $accesstype = $statdef->getAccessType();
+                           if($accesstype === 'anon')
+                           {
+                               $vaccesstype = lang('rr_anon');
+                               $d[] = array('name'=>''.lang('rr_typeaccess').'','value'=>''.$accesstype.'');
+                           }
+                           else
+                           {
+                                $vaccesstype = 'Basic Authentication';
+                                $d[] = array('name'=>''.lang('rr_typeaccess').'','value'=>''.$vaccesstype.'');
+                                $d[] = array('name'=>''.lang('rr_username').'','value'=>''.htmlentities($statdef->getAuthUser()).'');
+                                $d[] = array('name'=>''.lang('rr_password').'','value'=>'***********');
+          
+                           }
+                     }
+                    $statfiles = $statdef->getStatistics();
+                    
+                    if(!empty($statfiles) and count($statfiles)>0)
+                    {
+                       $statv = '<ul>';
+                       $downurl = base_url().'manage/statistics/show/';
+                       $dowinfo = lang('statfilegenerated');
+                       foreach($statfiles as $st)
+                       {
+                           $statv .= '<li><a href="'.$downurl.$st->getId().'">'.$dowinfo.': '.$st->getCreatedAt()->format('Y-m-d H:i:s').'</a></li>';
+                       }
+                       $statv .= '</ul>';
+                       $d[] = array('name'=>''.lang('generatedstatslist').'','value'=>''.$statv.'');
+                    }
+                    else
+                    {
+                       $d[] = array('name'=>''.lang('generatedstatslist').'','value'=>''.lang('notfound').'');
+                    }
+                    $data['details'] = $d;
                     $data['content_view'] = 'manage/statdef_detail.php';
                     $this->load->view('page', $data);
                 }
