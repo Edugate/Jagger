@@ -51,12 +51,12 @@ class Detail extends MY_Controller {
 
     function showlogs($id)
     {
-        if (!$this->j_auth->logged_in())
-        {
-            show_error('no session', 403);
-        }
         if ($this->input->is_ajax_request())
         {
+            if (!$this->j_auth->logged_in())
+            {
+               show_error('no session', 403);
+            }
             $d = array();
             $group = 'entity';
             $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
@@ -77,8 +77,8 @@ class Detail extends MY_Controller {
                     if (($isactive === TRUE) && ($islocal === TRUE) && !empty($isgearman) && ($isgearman === TRUE) && !empty($isstats))
                     {
                         $d[++$i]['header'] = 'Statistics';
-                        $d[++$i]['name'] = '';
-                        $d[$i]['value'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', 'Link');
+                        $d[++$i]['name'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt'));
+                        $d[$i]['value'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<img src="'.base_url().'images/stats_bars.png">');
                     }
                     $d[++$i]['header'] = lang('rr_logs');
                     $d[++$i]['name'] = lang('rr_modifications');

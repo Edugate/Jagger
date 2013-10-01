@@ -74,7 +74,7 @@ class Gearmanw {
         $s = null;
         if(!empty($overwrite))
         {
-           $stats = $this->em->getRepository("models\ProviderStatsCollection")->findBy(array('provider'=>$p->getId(),'statdefinition'=>$def->getId()), array('id'=>'DESC'));
+           $stats = $em->getRepository("models\ProviderStatsCollection")->findBy(array('provider'=>$provider->getId(),'statdefinition'=>$def->getId()), array('id'=>'DESC'));
            if(count($stats)>0)
            {
               $s = $stats['0'];
@@ -91,7 +91,6 @@ class Gearmanw {
         if(!empty($data))
         {
             $finfo = new finfo(FILEINFO_MIME_TYPE);
-            //$fileContents = file_get_contents($_FILES[''.$data.'']['tmp_name']);
             $mimeType = $finfo->buffer($data);
             if($expectedformat === 'image')
             {

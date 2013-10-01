@@ -22,7 +22,7 @@ foreach($tabs as $t)
    echo '</li>';
 }
 echo '<li>';
-echo '<a href="'.base_url().'providers/detail/showlogs/'.$entid.'">'.lang('tabLogs').'</a>';
+echo '<a href="'.base_url().'providers/detail/showlogs/'.$entid.'">'.lang('tabLogs').'/'.lang('tabStats').'</a>';
 echo '</li>';
 ?>
 </ul>
