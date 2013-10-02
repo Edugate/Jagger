@@ -18,9 +18,9 @@ Requirements:
 
 
 
-Lets presume you want to install rr in /usr/local/www-sites/rr3
+Lets presume you want to install Jagger in /usr/local/www-sites/rr3
 
-1. download ResourceRegistry3 repository into /usr/local/www-sites/rr3
+1. download Jagger (ResourceRegistry3) repository into /usr/local/www-sites/rr3
 
 2. download codeigniter develop branch from git repository
    git://github.com/EllisLab/CodeIgniter.git
