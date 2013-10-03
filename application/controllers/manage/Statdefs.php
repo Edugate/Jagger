@@ -28,6 +28,10 @@ class Statdefs extends MY_Controller {
 
     public function download($defid = null)
     {
+        if(!$this->input->is_ajax_request())
+        {
+           show_error('denied',403);
+        }
         if (empty($defid) or !is_numeric($defid))
         {
             show_error('not found', 404);
@@ -79,11 +83,48 @@ class Statdefs extends MY_Controller {
         $params['displayoptions'] = $def->getDisplayOptions();
         $params['overwrite'] = $def->getOverwrite();
 
+        $gmclient = new GearmanClient();
+        $jobservers = array();
+        $j = $this->config->item('gearmanconf');
+        foreach($j['jobserver'] as $v)
+        {
+            $jobservers[] = ''.$v['ip'].':'.$v['port'].'';
+        } 
+        try
+        {
+            $gmclient->addServers(''.implode(",",$jobservers).'');
+        }
+        catch(Exception $e)
+        {
+            log_message('error', 'GeamanClient cant add job-server');
+            echo "Cant add  job-server(s)";
+            return false;
+        }
+        if(!empty($_SESSION['jobs']['stadef'][''.$defid.'']))
+        {
+           $stat=  $gmclient->jobStatus($_SESSION['jobs']['stadef'][''.$defid.'']); 
+  
+          if (($stat['0'] === TRUE) && ($stat['1'] === FALSE))
+          {
+
+              echo json_encode( array('status' => lang('rr_jobinqueue')));
+              return;
+          }
+          elseif($stat[0] === $stat[1] && $stat[1] === true)
+          {
+              $percent = $stat[2] / $stat[3] * 100;
+              echo json_encode( array('status' => lang('rr_jobdonein').' '. $percent. ' %'));
+              return;
+          }
+
+          
+        }
+         
         if ($params['type'] === 'ext')
         {
-            $gmclient = new GearmanClient();
-            $gmclient->addServer('127.0.0.1', 4730);
             $job_handle = $gmclient->doBackground("externalstatcollection", serialize($params));
+            $_SESSION['jobs']['stadef'][''.$defid.''] = $job_handle;
+            log_message('debug','GEARMAN: Job: '.$job_handle);
         }
         elseif(($params['type'] === 'sys') && !empty($params['sysdef'])) 
         {
@@ -93,13 +134,13 @@ class Statdefs extends MY_Controller {
                  if(array_key_exists('worker',$ispredefined[''.$params['sysdef'].'']) && !empty($ispredefined[''.$params['sysdef'].'']['worker'])) 
                  {
                    $workername = $ispredefined[''.$params['sysdef'].'']['worker'];
-                   $gmclient = new GearmanClient();
-                   $gmclient->addServer('127.0.0.1', 4730);
                    $job_handle = $gmclient->doBackground(''.$workername.'', serialize($params));
+                   $_SESSION['jobs']['stadef'][''.$defid.''] = $job_handle;
                  }
             }
 
         }
+        echo json_encode( array('status' => lang('taskssent').' '));
     }
 
     public function show($providerid = null, $defid = null)

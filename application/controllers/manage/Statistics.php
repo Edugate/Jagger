@@ -69,6 +69,10 @@ class Statistics extends MY_Controller {
         {
             $s = $stats['0'];
         }
+        else
+        {
+            show_error('not found', 404);
+        }
 
         $r=array();
         $r[]=  array('url'=>base_url().'manage/statistics/show/'.$s->getId().'/'.md5(uniqid(rand(), true)).'','title'=>$def->getTitle(), 'subtitle'=>'created: '.$s->getCreatedAt()->format('Y-m-d H:i:s').'');

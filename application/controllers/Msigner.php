@@ -63,7 +63,7 @@ class Msigner extends MY_Controller {
        catch (Exception $e)
        {
               log_message('error', 'GeamanClient couldnt add job-server');
-              echo "GeamanClient couldnt add job-server";
+              echo "Cant connect/add to job-server(s)";
               return false;
        }
 

@@ -35,6 +35,8 @@ class Gearmanw {
         $ci =  & get_instance();
         $em = $ci->doctrine->em;
         $args = unserialize($job->workload());
+        $job->sendStatus(1,10);
+        sleep(1);
         $storage = $ci->config->item('datastorage_path');
         $img_mimes = array(
             'image/jpeg'=>'jpg',
@@ -43,6 +45,7 @@ class Gearmanw {
             'image/x-png'=>'png',
             'image/gif'=>'gif',         
         );
+
         if(empty($storage))
         {
         $em->clear();
@@ -67,6 +70,7 @@ class Gearmanw {
             $em->clear();
             return false;
         }
+        $job->sendStatus(1,10);
         $provider = $def->getProvider();
         
         if(empty($provider))
@@ -74,6 +78,7 @@ class Gearmanw {
             $em->clear();
             return false;
         }
+        $job->sendStatus(2,10);
         $expectedformat = $def->getFormatType();
         $overwrite = $def->getOverwrite();
         $s = null;
@@ -86,6 +91,7 @@ class Gearmanw {
               $filename = $s->getFilename();
            }
         }
+        $job->sendStatus(3,10);
 
         $data = null;
         $method = $def->getHttpMethod();
@@ -109,6 +115,7 @@ class Gearmanw {
         $data = $ci->curl->execute();
         if(!empty($data))
         {
+            $job->sendStatus(5,10);
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             $mimeType = $finfo->buffer($data);
             if($expectedformat === 'image')
@@ -133,6 +140,8 @@ class Gearmanw {
                 $statformat ='svg';
                 
             }
+            sleep(1);
+            $job->sendStatus(7,10);
             
             if(!empty($extension) && !empty($statformat))
             {
@@ -146,6 +155,7 @@ class Gearmanw {
                 }
                 else
                 {
+                    $job->sendStatus(8,10);
                     if(empty($s))
                     {
                        $st = new models\ProviderStatsCollection;
@@ -154,13 +164,16 @@ class Gearmanw {
                        $st->setProvider($provider);
                        $st->setStatDefinition($def);
                        $em->persist($st);
+                       $job->sendStatus(9,10);
                     }
                     else
                     {
                         $s->updateDate();
                         $em->persist($s);
+                        $job->sendStatus(9,10);
                     }
                     $em->flush();
+                    $job->sendStatus(10,10);
                 }
             }
             
@@ -168,10 +181,11 @@ class Gearmanw {
         else
         {
             
-            echo "empty\n";
+            log_message('debug','gworker no data stat retrieved');
         }
             
         $em->clear();
+        sleep(2);
 
         return true;
     }

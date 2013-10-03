@@ -784,3 +784,7 @@ $lang['reqattrnotexist']            = 'Attribute you requested to change doesnt 
 $lang['emptyvalnotallowed']         = 'Empty value is not allowed';
 $lang['error404']                   = 'Page not found';
 $lang['error403']                   = 'Access denied';
+
+
+$lang['rr_jobinqueue']              = 'The job is still on the queue';
+$lang['rr_jobdonein']                 = 'The job done in';

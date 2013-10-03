@@ -397,12 +397,22 @@ $(function() {
     
     $("a.downloadstat").click(function() {
         var link = $(this), url = link.attr("href");
+        var data;
         $.ajax({
            url: url,
            timeout: 2500,
-           cache: true,
-           success: function(){
-              alert('request sent to jobserver');
+           cache: false,
+           success: function(json){
+              data = $.parseJSON(json);
+              if (!data)
+              {
+                    alert('no data');
+              }
+              else
+              {
+                     alert(data.status);
+              }
+
            }
         });
         return false;
