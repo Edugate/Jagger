@@ -42,7 +42,7 @@ class Sp_registration extends MY_Controller {
         /**
          * get federations list
          */
-        $fedCollection = $this->tmp_federations->getFederations();
+        $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE));
         if (!empty($fedCollection)) {
             $federations[''] = lang('selectone').'...';
             foreach ($fedCollection as $f) {
