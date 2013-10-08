@@ -173,4 +173,9 @@ $config['statistics'] = FALSE;
 $config['disable_extcirclemeta'] = TRUE;
 
 
-
+/**
+ * optional add prefix to ID in EntitiesDescriptor
+ */
+//$config['fedmetadataidprefix'] = 'edugate-';
+//$config['fedexportmetadataidprefix'] = 'edugateexport-';
+//$config['circlemetadataidprefix'] = 'edugatecircle-';

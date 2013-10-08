@@ -58,7 +58,7 @@ class ProviderStatsDef {
     protected $provider;
 
      /**
-     * @OneToMany(targetEntity="ProviderStatsCollection",mappedBy="statdefinition")
+     * @OneToMany(targetEntity="ProviderStatsCollection",mappedBy="statdefinition",cascade={"persist", "remove"})
      */
     protected $statistic;
 

@@ -103,6 +103,14 @@ class Metadata extends MY_Controller {
             $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
             $validuntil = $validfor->format('Y-m-d');
             $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
+            $idprefix = '';
+            $prefid = $this->config->item('fedmetadataidprefix');
+            if(!empty($prefid))
+            {
+              $idprefix = $prefid;
+            }
+            $idsuffix = $validfor->format('YmdHisP');
+            $Entities_Node->setAttribute('ID',''.$idprefix.$idsuffix.'');
 
             /**
              * @todo ValidUntil
@@ -212,6 +220,14 @@ class Metadata extends MY_Controller {
             $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
             $validuntil = $validfor->format('Y-m-d');
             $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
+            $idprefix = '';
+            $prefid = $this->config->item('fedexportmetadataidprefix');
+            if(!empty($prefid))
+            {
+              $idprefix = $prefid;
+            }
+            $idsuffix = $validfor->format('YmdHisP');
+            $Entities_Node->setAttribute('ID',''.$idprefix.$idsuffix.'');
 
             /**
              * @todo ValidUntil
@@ -317,6 +333,15 @@ class Metadata extends MY_Controller {
         $validuntil = $validfor->format('Y-m-d');
         $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
         $Entities_Node->setAttribute('Name', 'circle:' . $me->getEntityId());
+        $idprefix = '';
+        $prefid = $this->config->item('circlemetadataidprefix');
+        if(!empty($prefid))
+        {
+           $idprefix = $prefid;
+        }
+        $idsuffix = $validfor->format('YmdHisP');
+        $Entities_Node->setAttribute('ID',''.$idprefix.$idsuffix.'');
+
         foreach ($p1 as $v) {
             if($v->getAvailable())
             {
