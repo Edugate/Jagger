@@ -516,6 +516,7 @@ $lang['rr_fed_external']            = 'external';
 $lang['rr_fed_local']               = 'local';
 $lang['rr_fed_notpublic']           = 'not public';
 $lang['rr_fed_public']              = 'public';
+$lang['rhelp_onlypublicfeds']       = 'Only public federations are listed. Non public federations are available after approval';
 $lang['rr_fed_name']                = 'Federation name';
 $lang['rr_fed_urn']                 = 'Federation URN';
 $lang['rr_fed_cntidps_list']        = 'Contact list of idp members';

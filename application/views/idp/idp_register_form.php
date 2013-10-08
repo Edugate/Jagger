@@ -30,7 +30,7 @@
 
                 <li>
 
-                    <label for="federation"><?php echo lang('rr_federation');?></label>
+                    <label for="federation"><?php echo lang('rr_federation') .' '.showBubbleHelp(lang('rhelp_onlypublicfeds')) ;?></label>
 
 
                     <?php

@@ -46,7 +46,7 @@ echo '</li>';
  * federation select
  */
 echo '<li>';
-echo form_label(lang('rr_federation'), 'federation');
+echo form_label(lang('rr_federation').' '.showBubbleHelp(lang('rhelp_onlypublicfeds')).'', 'federation');
 echo form_dropdown('federation', $federations);
 echo '</li>';
 
