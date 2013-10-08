@@ -109,7 +109,7 @@ class Metadata extends MY_Controller {
             {
               $idprefix = $prefid;
             }
-            $idsuffix = $validfor->format('YmdHisP');
+            $idsuffix = $validfor->format('YmdHis');
             $Entities_Node->setAttribute('ID',''.$idprefix.$idsuffix.'');
 
             /**
@@ -226,7 +226,7 @@ class Metadata extends MY_Controller {
             {
               $idprefix = $prefid;
             }
-            $idsuffix = $validfor->format('YmdHisP');
+            $idsuffix = $validfor->format('YmdHis');
             $Entities_Node->setAttribute('ID',''.$idprefix.$idsuffix.'');
 
             /**
@@ -339,7 +339,7 @@ class Metadata extends MY_Controller {
         {
            $idprefix = $prefid;
         }
-        $idsuffix = $validfor->format('YmdHisP');
+        $idsuffix = $validfor->format('YmdHis');
         $Entities_Node->setAttribute('ID',''.$idprefix.$idsuffix.'');
 
         foreach ($p1 as $v) {
