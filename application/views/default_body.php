@@ -9,7 +9,7 @@
     ?>
  
     <div id="idps" class="box span-11">
-        <div class="box-header"><h4><?php echo lang('identityproviders'); ?></h4></div>
+        <div class="box-header"><h4><?php echo '<a href="'.base_url().'providers/idp_list/show">'.lang('identityproviders').'</a>'; ?></h4></div>
         <div class="box-content">
         <?php
         echo '<ul>';
@@ -23,7 +23,7 @@
     </div>
 
     <div id="sps" class="box span-11 last">
-        <div class="box-header"><h4><?php echo lang('serviceproviders'); ?></h4></div>
+        <div class="box-header"><h4><?php echo '<a href="'.base_url().'providers/sp_list/show">'.lang('serviceproviders').'</a>'; ?></h4></div>
         <div class="box-content">
         <?php
         echo '<ul>';
@@ -37,7 +37,7 @@
 
     </div>
     <div id="feds" class="box span-11">
-        <div class="box-header"><h4><?php echo lang('federations'); ?></h4></div>
+        <div class="box-header"><h4><?php echo '<a href="'.base_url().'federations/manage">'.lang('federations').'</a>'; ?></h4></div>
         <div class="box-content">
         <ul>
 <?php
