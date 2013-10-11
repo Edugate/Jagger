@@ -710,6 +710,7 @@ $lang['uiiinformationurl'] = 'HelpdeskURL/InformationURL';
 $lang['addlocalizeinformationurl'] = 'Add localized ImformationURL';
 
 $lang['rhelp_extstatleg']          = 'It needs to be filled only if predefined statistic collection is not enabled';
+$lang['rhelp_quickaccess']         = 'This page shows list of Entities and Federations you have bookmarked. To add  Entity/Federation to quick access list simply go to Entitie/Federation detail page and click on star icon';
 
 $lang['rrerror_noperm_regfed']      = 'You don&rsquo;t have permision to register new Federation';
 $lang['rrerror_noperm_viewfed']     = 'You have no access to display details for this federation';

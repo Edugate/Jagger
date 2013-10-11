@@ -1,5 +1,5 @@
 <div id="subtitle"> 
-    <h3> <?php echo lang('quick_access'); ?></h3>
+    <h3> <?php echo lang('quick_access').' '.showBubbleHelp(lang('rhelp_quickaccess')); ?></h3>
 </div>
 <div class="row-fluid" >
     <?php
