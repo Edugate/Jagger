@@ -41,11 +41,22 @@ class MY_Controller extends CI_Controller {
         $this->title = "";
         $this->lang->load('rr_lang', 'english');
         $this->current_language = 'en';
-        $langs = array('pl','pt','it','lt','es');
+        $langs = array('pl','pt','it','lt','es','english');
         $cookie_lang = $this->input->cookie('rrlang', TRUE);
+        $cookdefaultlang = $this->config->item('rr_lang');
+        if(empty($cookdefaultlang))
+        {
+           $cookdefaultlang = 'english';
+        }
+        else
+        {
+           $this->lang->load('rr_lang', ''.$cookdefaultlang.'');
+           $this->current_language = ''.$cookdefaultlang.'';
+
+        }
         $defaultlang_cookie = array(
             'name' => 'rrlang',
-            'value' => 'english',
+            'value' => ''.$cookdefaultlang.'',
             'expire' => '2600000',
             'secure' => TRUE
         );
@@ -53,7 +64,14 @@ class MY_Controller extends CI_Controller {
         if (!empty($cookie_lang) && in_array($cookie_lang, $langs))
         {
             $this->lang->load('rr_lang', $cookie_lang);
-            $this->current_language = $cookie_lang;
+            if($cookie_lang === 'english')
+            {
+               $this->current_language = 'en';
+            }
+            else
+            {
+               $this->current_language = $cookie_lang;
+            }
         }
         else
         {
