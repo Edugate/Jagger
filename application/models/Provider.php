@@ -717,7 +717,7 @@ class Provider {
      */
     public function updated()
     {
-        \log_message('debug', 'GG update providers updated time');
+        \log_message('debug', 'GG update providers updated time for:'.$this->entityid);
         $this->updatedAt = new \DateTime("now");
     }
 
@@ -1029,7 +1029,14 @@ class Provider {
 
     public function setRegistrationDate($date = null)
     {
-        $this->registerdate = $date;
+        if(empty($data))
+        {
+           $this->registerdate = NULL;
+        }
+        else
+        {
+           $this->registerdate = $date;
+        }
         return $this;
     }
 
@@ -1411,11 +1418,12 @@ class Provider {
         $this->setScope('aa',$provider->getScope('aa'));
         $this->setEntityId($provider->getEntityId());
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
+        //$regdate = $provider->getRegistrationDate();
         $this->setRegistrationDate($provider->getRegistrationDate());
         $this->setRegistrationPolicyFromArray($provider->getRegistrationPolicy(), TRUE);
 
         $this->overwriteWithNameid($provider);
-        log_message('debug','GKS :'.serialize($this->getNameIds())); 
+        log_message('debug','GG :'.serialize($this->getNameIds())); 
 
         $prototypes = array('idpsso','aa','spsso');
         foreach($prototypes as $a)
