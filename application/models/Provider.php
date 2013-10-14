@@ -1029,7 +1029,7 @@ class Provider {
 
     public function setRegistrationDate($date = null)
     {
-        if(empty($data))
+        if(empty($date))
         {
            $this->registerdate = NULL;
         }
