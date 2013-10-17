@@ -973,7 +973,8 @@ $("a.pCookieAccept").click(function() {
 
         return false;
 });
-$("#eds").click(function() {
-        $(this).parent().append('<iframe src="https://oliwa.heanet.ie/rr3/eds?entityID=https%3A%2F%2Foliwa.heanet.ie%2Fshibboleth&return=https%3A%2F%2Foliwa.heanet.ie%2FShibboleth.sso%2FLogin%3FSAMLDS%3D1%26target%3Dss%253Amem%253A838381405f4006a7c8db7aea545d696400f5ed55" width="160" height="90" frameborder="0"></iframe>');
-        });
+$("[id='f[entityid]']").change(function() { 
+ var entalert = $("div#entitychangealert").text();
+ alert(entalert);  
+}); 
  
