@@ -64,6 +64,7 @@ echo '</pre></div>';
 
 </form>
 </div>
+<div style="display: none" id="entitychangealert"><?php echo lang('alertentchange');?></div>
 <script type="text/javascript">
 
 function stopRKey(evt) {

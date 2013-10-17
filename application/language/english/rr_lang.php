@@ -474,6 +474,7 @@ $lang['rr_certsignandencr']         = 'signing and encryption';
 $lang['rr_staticmetadataactive']    = 'Static metadata is active';
 $lang['rr_staticmetadatanotactive'] = 'Static metadata is not active';
 $lang['rr_isempty']                 = 'is empty';
+$lang['rr_empty']                    = 'empty';
 $lang['rr_setnotactive']            = 'This static metadata is set but not active';
 $lang['rr_setasdefault']            = 'static metadata is set as default';
 $lang['rr_certificateexpired']      = 'Certificate is expired. Some service providers may reject to consume this metadata';
@@ -776,6 +777,8 @@ $lang['rr_noentitywithregdate']      = 'No entity found with registreation date'
 $lang['nospfoundtoexcl']            = 'No Service Providers found to be excluded';
 $lang['missedinfoinpost']           = 'Missed informations in post';
 $lang['wrongpolicyval']             = 'Wrong policy value';
+$lang['alertentchange']             = 'Be aware that changing entityID follows change of URLs of Individual Metadata and Attribute Release Policy. You will need to modify configuration in you IdP/SP';
+
 $lang['wrongarggiven']              = 'Incorrect argument provided';
 $lang['error_notfoundmemberstoberm'] = 'Federation has no members to be removed';
 $lang['error_wrongpolicytype']      = 'Incorrect the type of policy';
