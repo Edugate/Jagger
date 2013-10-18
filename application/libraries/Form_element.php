@@ -3176,6 +3176,7 @@ class Form_element {
         $f .= form_fieldset(lang('rr_basicinformation'));
         $f .='<ol><li>' . form_label(lang('rr_fed_urn'), 'urn');
         $f .= form_input('urn', set_value('urn', $federation->getUrn())) . '</li>';
+        $f .= '<li>' . form_label(lang('rr_isfedpublic').' '.showBubbleHelp(lang('rhelppublicfed')), 'ispublic') . form_checkbox('ispublic', 'accept', set_value('ispublic', $federation->getPublic())) . '</li>';
         $f .= '<li>' . form_label(lang('rr_include_attr_in_meta'), 'incattrs') . form_checkbox('incattrs', 'accept', set_value('incattrs', $federation->getAttrsInmeta())) . '</li>';
         $f .= '<li>' . form_label(lang('rr_lexport_enabled'), 'lexport') . form_checkbox('lexport', 'accept', set_value('lexport', $federation->getLocalExport())) . '</li>';
         $f .='<li>' . form_label(lang('rr_description'), 'description');
