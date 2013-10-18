@@ -247,6 +247,11 @@ class ProviderStatsDef {
           $this->overwrite = TRUE;
           return $this;
      }
+    public function setOverwriteOff()
+    {
+          $this->overwrite = FALSE;
+          return $this;
+     }
  
     public function setTitle($title)
     {

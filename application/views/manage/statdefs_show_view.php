@@ -15,7 +15,7 @@ if(!empty($existingStatDefs))
     {
        if(empty($v['alert']))
        {
-           $r = array(anchor(base_url().'manage/statdefs/show/'.$providerid.'/'.$v['id'].'',$v['title']).' <span style="float: right;"><a class="lateststat" href="'.base_url().'manage/statistics/latest/'.$v['id'].'"><img src="'.$staimg.'"/></a> <a class="downloadstat" href="'.base_url().'manage/statdefs/download/'.$v['id'].'"><img src="'.$refreshimg.'"/></a></span>',''.htmlentities($v['desc']).'');
+           $r = array(anchor(base_url().'manage/statdefs/show/'.$providerid.'/'.$v['id'].'',$v['title']).' <div style="display: inline; text-align: left; width: 99%; margin-right: 0px;margin-left: auto;"><a href="'.base_url().'manage/statdefs/statdefedit/'.$providerid.'/'.$v['id'].'"><img src="'.base_url().'images/icons/ice--pencil.png"></a>&nbsp;&nbsp;<a class="lateststat" href="'.base_url().'manage/statistics/latest/'.$v['id'].'"><img src="'.$staimg.'"/></a> <a class="downloadstat" href="'.base_url().'manage/statdefs/download/'.$v['id'].'"><img src="'.$refreshimg.'"/></a></div>',''.htmlentities($v['desc']).'');
        }
        else
        {
