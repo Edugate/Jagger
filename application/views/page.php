@@ -304,7 +304,6 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery-bubble-popup-v3.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.simplemodal.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v2.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/init.js"></script>';
 
 
 
