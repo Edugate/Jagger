@@ -1,91 +1,88 @@
 var GINIT = {
-   initialize: function(){
-    $('.accordionButton').addClass('off');
-    $('.accordionButton1').addClass('on');
-
-    $('.accordionButton').mouseover(function() {
-        $(this).addClass('over');
-
-        //ON MOUSEOUT REMOVE THE OVER CLASS
-    }).mouseout(function() {
-        $(this).removeClass('over');
-    });
-  
-    $('.accordionButton').click(function() {
-
-
-        //REMOVE THE ON CLASS FROM ALL BUTTONS
-        $('.accordionButton').removeClass('on');
+    initialize: function() {
         $('.accordionButton').addClass('off');
-        //NO MATTER WHAT WE CLOSE ALL OPEN SLIDES
-        $('.accordionContent').slideUp('fast');
+        $('.accordionButton1').addClass('on');
 
-        //IF THE NEXT SLIDE WASN'T OPEN THEN OPEN IT
-        if ($(this).next().is(':hidden') == true) {
+        $('.accordionButton').mouseover(function() {
+            $(this).addClass('over');
 
-            //ADD THE ON CLASS TO THE BUTTON
-            $(this).addClass('on');
-            $(this).removeClass('off');
+            //ON MOUSEOUT REMOVE THE OVER CLASS
+        }).mouseout(function() {
+            $(this).removeClass('over');
+        });
+
+        $('.accordionButton').click(function() {
 
 
-            //OPEN THE SLIDE
-            $(this).next().slideDown('fast');
-        }
+            //REMOVE THE ON CLASS FROM ALL BUTTONS
+            $('.accordionButton').removeClass('on');
+            $('.accordionButton').addClass('off');
+            //NO MATTER WHAT WE CLOSE ALL OPEN SLIDES
+            $('.accordionContent').slideUp('fast');
 
-    });
+            //IF THE NEXT SLIDE WASN'T OPEN THEN OPEN IT
+            if ($(this).next().is(':hidden') == true) {
 
-    $('.accordionContent').hide();
-   }
+                //ADD THE ON CLASS TO THE BUTTON
+                $(this).addClass('on');
+                $(this).removeClass('off');
+
+
+                //OPEN THE SLIDE
+                $(this).next().slideDown('fast');
+            }
+
+        });
+
+        $('.accordionContent').hide();
+    }
 
 };
 
 $(document).ready(function() {
- GINIT.initialize();
- var bubbletheme = $("button#jquerybubblepopupthemes").val();
-$('.bubblepopup').CreateBubblePopup({
-  
-   position : 'top',
-   align    : 'center',
-   innerHtml: 'click help',
-   innerHtmlStyle: {
-       color:'#FFFFFF',
-       'text-align':'center'
-       },
-   themeName: 'all-black',
-   themePath: bubbletheme
+    GINIT.initialize();
+    var bubbletheme = $("button#jquerybubblepopupthemes").val();
+    $('.bubblepopup').CreateBubblePopup({
+        position: 'top',
+        align: 'center',
+        innerHtml: 'click help',
+        innerHtmlStyle: {
+            color: '#FFFFFF',
+            'text-align': 'center'
+        },
+        themeName: 'all-black',
+        themePath: bubbletheme
 
-});
-$('.bubblepopup').mouseover(function() {
-     var some = $(this).val();
-     $(this).ShowBubblePopup({
-     closingDelay: 1000,
-     position : 'top',
-     align    : 'center',
-     innerHtml: some,
+    });
+    $('.bubblepopup').mouseover(function() {
+        var some = $(this).val();
+        $(this).ShowBubblePopup({
+            closingDelay: 1000,
+            position: 'top',
+            align: 'center',
+            innerHtml: some,
+            innerHtmlStyle: {
+                color: '#000000',
+                'font-size': '110%',
+                'text-align': 'left'
+            },
+            themeName: 'all-yellow',
+            themePath: bubbletheme
+        }, false).FreezeBubblePopup()
 
-    innerHtmlStyle: {
-         color:'#000000', 
-         'font-size': '110%',
-        'text-align':'left'
-                   },
-
-  themeName: 'all-yellow',
-  themePath: bubbletheme
-   },false).FreezeBubblePopup()
-
-  }); 
+    });
 
 });
 //$("#login").hide();
-$("button#loginbtn").click(function(){
-   parent = window;
-   
-   $("#login").css({
+$("button#loginbtn").click(function() {
+    parent = window;
+
+    $("#login").css({
         'position': 'absolute',
         'top': ((($(parent).height() - $("#login").outerHeight()) / 4) + $(parent).scrollTop() + "px"),
         'left': ((($(parent).width() - $("#login").outerWidth()) / 2) + $(parent).scrollLeft() + "px"),
         'z-index': '10'
-   }).show();  
+    }).show();
 });
 $(function() {
 
@@ -263,16 +260,18 @@ $(function() {
     $.ajaxSetup({
         cache: false
     });
-   $('#langchenge select').on('change', function() {
-       var link = document.getElementById('langurl').innerHTML;
-       var url = link+this.value;
+    $('#langchenge select').on('change', function() {
+        var link = document.getElementById('langurl').innerHTML;
+        var url = link + this.value;
         $.ajax({
             url: url,
             timeout: 2500,
             cache: false
-        }).done(function(){ setTimeout('go_to_private_page()', 1000);});
+        }).done(function() {
+            setTimeout('go_to_private_page()', 1000);
+        });
         return false;
-   });
+    });
     $("button#addlname").click(function() {
         var nf = $("span.lnameadd option:selected").val();
         var nfv = $("span.lnameadd option:selected").text();
@@ -297,7 +296,7 @@ $(function() {
         $("span.idpuiidisplayadd option[value=" + nf + "]").remove();
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][displayname][" + nf + "]\">DisplayName in " + nfv + " </label><input id=\"f[uii][idpsso][displayname][" + nf + "]\" name=\"f[uii][idpsso][displayname][" + nf + "]\" type=\"text\"/></li>");
     });
-     $("button#spadduiidisplay").click(function() {
+    $("button#spadduiidisplay").click(function() {
         var nf = $("span.spuiidisplayadd option:selected").val();
         var nfv = $("span.spuiidisplayadd option:selected").text();
         $("span.spuiidisplayadd option[value=" + nf + "]").remove();
@@ -309,7 +308,7 @@ $(function() {
         $("span.idpuiihelpdeskadd option[value=" + nf + "]").remove();
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][helpdesk][" + nf + "]\">InformationURL in " + nfv + " </label><input id=\"f[uii][idpsso][helpdesk][" + nf + "]\" name=\"f[uii][idpsso][helpdesk][" + nf + "]\" type=\"text\"/></li>");
     });
-     $("button#spadduiihelpdesk").click(function() {
+    $("button#spadduiihelpdesk").click(function() {
         var nf = $("span.spuiihelpdeskadd option:selected").val();
         var nfv = $("span.spuiihelpdeskadd option:selected").text();
         $("span.spuiihelpdeskadd option[value=" + nf + "]").remove();
@@ -375,8 +374,8 @@ $(function() {
             url: url,
             timeout: 2500,
             cache: false,
-            success: function(data){
-              alert(data);
+            success: function(data) {
+                alert(data);
             }
         });
         return false;
@@ -387,33 +386,33 @@ $(function() {
             url: url,
             timeout: 2500,
             cache: false,
-            success: function(data){
-              alert(data);
+            success: function(data) {
+                alert(data);
             }
         });
         return false;
     });
 
-    
+
     $("a.downloadstat").click(function() {
         var link = $(this), url = link.attr("href");
         var data;
         $.ajax({
-           url: url,
-           timeout: 2500,
-           cache: false,
-           success: function(json){
-              data = $.parseJSON(json);
-              if (!data)
-              {
+            url: url,
+            timeout: 2500,
+            cache: false,
+            success: function(json) {
+                data = $.parseJSON(json);
+                if (!data)
+                {
                     alert('no data');
-              }
-              else
-              {
-                     alert(data.status);
-              }
+                }
+                else
+                {
+                    alert(data.status);
+                }
 
-           }
+            }
         });
         return false;
     });
@@ -434,29 +433,31 @@ $(function() {
                 }
                 else
                 {
-              $("div#statisticdiag").replaceWith('<div id="statisticdiag"></a>');  
-                   $.each(data, function(i, v) {
-                      
+                    $("div#statisticdiag").replaceWith('<div id="statisticdiag"></a>');
+                    $.each(data, function(i, v) {
+
                         i = new Image();
                         i.src = v.url;
-                  $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">'+v.title+'</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">'+v.subtitle+'</div>').append(i);
+                        $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append(i);
 
-                     });
+                    });
                 }
 
                 //   i = new Image();
                 //   i.src = url;
-                 // $('#statisticdiag').html('<img src="'+url+'/'+Math.floor(Math.random()*1000)+'" />');
-                  //$('#statisticdiag').replaceWith(i);
-                   i = null;
+                // $('#statisticdiag').html('<img src="'+url+'/'+Math.floor(Math.random()*1000)+'" />');
+                //$('#statisticdiag').replaceWith(i);
+                i = null;
 
 
-           },
-           beforeSend: function(){  $('#spinner').show(); },
-           error: function() {
-                       $('#spinner').hide();
-                       alert('problem with loading data');
-                 }
+            },
+            beforeSend: function() {
+                $('#spinner').show();
+            },
+            error: function() {
+                $('#spinner').hide();
+                alert('problem with loading data');
+            }
 
         });
         return false;
@@ -495,83 +496,87 @@ $(function() {
         return false;
     });
     $("a#getmembers").click(function() {
-          var link = $(this), url = link.attr("href");
-          var value = $('<ul/>');
-          $.ajax({
+        var link = $(this), url = link.attr("href");
+        var value = $('<ul/>');
+        $.ajax({
             url: url,
             timeout: 2500,
             cache: true,
             success: function(json) {
-              $('#spinner').hide();
-              var data = $.parseJSON(json);
-              if (!data)
-              {
-                 alert('no data');
-              }
-              else
-              {
-                                var nlist = $('<ul/>');
-                                $.each(data, function(i, v) {
-                                    var div_data = '<li><a href="' + v.url + '">' + v.name + '</a><small><i> (' + v.entityid + ') <i></small></li>';
-                                    nlist.append(div_data);
-                                });
-                                value.append(nlist);
-                 
-              }
-            },
-            beforeSend: function() { $('#spinner').show(); },
-                error: function() {
-                    $('#spinner').hide();
-                    alert('problem with loading data');
+                $('#spinner').hide();
+                var data = $.parseJSON(json);
+                if (!data)
+                {
+                    alert('no data');
                 }
-            
-          }).done(function(){
-                var nextrow =  value.html() ;
-                //$(nextrow).insertAfter(row);
-                $("div#membership").replaceWith(nextrow);
-               
-         });
-          return false;
-      });
+                else
+                {
+                    var nlist = $('<ul/>');
+                    $.each(data, function(i, v) {
+                        var div_data = '<li><a href="' + v.url + '">' + v.name + '</a><small><i> (' + v.entityid + ') <i></small></li>';
+                        nlist.append(div_data);
+                    });
+                    value.append(nlist);
+
+                }
+            },
+            beforeSend: function() {
+                $('#spinner').show();
+            },
+            error: function() {
+                $('#spinner').hide();
+                alert('problem with loading data');
+            }
+
+        }).done(function() {
+            var nextrow = value.html();
+            //$(nextrow).insertAfter(row);
+            $("div#membership").replaceWith(nextrow);
+
+        });
+        return false;
+    });
     $("a#synchsettings").click(function() {
-          var link = $(this), url = link.attr("href");
-          var value = $('<ul/>');
-          $.ajax({
+        var link = $(this), url = link.attr("href");
+        var value = $('<ul/>');
+        $.ajax({
             url: url,
             timeout: 2500,
             cache: false,
             success: function(json) {
-              $('#spinner').hide();
-              var data = $.parseJSON(json);
-              if (!data)
-              {
-                 alert('no data');
-              }
-              else
-              {
-                                var nlist = $('<ul/>');
-                                $.each(data, function(i, v) {
-                                    var div_data = '<li>' + v.result + '</li>';
-                                    nlist.append(div_data);
-                                });
-                                value.append(nlist);
-                 
-              }
-            },
-            beforeSend: function() { $('#spinner').show(); },
-                error: function() {
-                    $('#spinner').hide();
-                    alert('problem with loading data');
+                $('#spinner').hide();
+                var data = $.parseJSON(json);
+                if (!data)
+                {
+                    alert('no data');
                 }
-            
-          }).done(function(){
-                var nextrow =  value.html() ;
-                //$(nextrow).insertAfter(row);
-                $("div#syncresult").replaceWith(nextrow);
-               
-         });
-          return false;
-      });
+                else
+                {
+                    var nlist = $('<ul/>');
+                    $.each(data, function(i, v) {
+                        var div_data = '<li>' + v.result + '</li>';
+                        nlist.append(div_data);
+                    });
+                    value.append(nlist);
+
+                }
+            },
+            beforeSend: function() {
+                $('#spinner').show();
+            },
+            error: function() {
+                $('#spinner').hide();
+                alert('problem with loading data');
+            }
+
+        }).done(function() {
+            var nextrow = value.html();
+            //$(nextrow).insertAfter(row);
+            $("div#syncresult").replaceWith(nextrow);
+
+        });
+        return false;
+    });
     $("a.fmembers").click(function() {
         var link = $(this), url = link.attr("href");
         var row = $(this).parent().parent();
@@ -787,44 +792,44 @@ var adjustMenu = function() {
 }
 
 $(function() {
-        var sticky_navigation_offset_top = 0;
-        try {
-	sticky_navigation_offset_top = $('nav').offset().top;
+    var sticky_navigation_offset_top = 0;
+    try {
+        sticky_navigation_offset_top = $('nav').offset().top;
+    }
+    catch (err)
+    {
+        return false;
+    }
+    if ($('#submenuProvider').length)
+    {
+        var sticky_submenu_offset_top = $('#submenuProvider').offset().top;
+    }
+
+    // our function that decides weather the navigation bar should have "fixed" css position or not.
+    var sticky_navigation = function() {
+        var scroll_top = $(window).scrollTop(); // our current vertical position from the top
+        var widthelement = $('nav').width();
+        // if we've scrolled more than the navigation, change its position to fixed to stick to top, otherwise change it back to relative
+        if (scroll_top > sticky_navigation_offset_top) {
+            //$('nav').css({ 'position': 'fixed', 'top':0, 'left':0, 'width': '100%','zIndex':9999});
+            $('nav').css({'position': 'fixed', 'top': 0, 'width': widthelement, 'zIndex': 9999});
+
+        } else {
+            $('nav').css({'position': 'relative', 'width': 'auto', });
         }
-        catch(err)
+        if (sticky_submenu_offset_top != 'undefined')
         {
-            return false;
+            if (scroll_top > sticky_submenu_offset_top) {
+                $('#submenuProvider').css({'position': 'fixed', 'top': 50, 'left': 0, 'width': '100%', 'zIndex': 9999, 'clear': 'both'});
+            } else {
+                $('#submenuProvider').css({'position': 'relative'});
+            }
         }
-        if($('#submenuProvider').length)
-        {
-            var sticky_submenu_offset_top = $('#submenuProvider').offset().top;
-        }
-	
-	// our function that decides weather the navigation bar should have "fixed" css position or not.
-	var sticky_navigation = function(){
-		var scroll_top = $(window).scrollTop(); // our current vertical position from the top
-		var widthelement = $('nav').width();
-		// if we've scrolled more than the navigation, change its position to fixed to stick to top, otherwise change it back to relative
-		if (scroll_top > sticky_navigation_offset_top) { 
-			//$('nav').css({ 'position': 'fixed', 'top':0, 'left':0, 'width': '100%','zIndex':9999});
-                          $('nav').css({ 'position': 'fixed', 'top':0,'width':widthelement ,'zIndex':9999});
-                          
-		} else {
-			$('nav').css({ 'position': 'relative','width':'auto', }); 
-		}   
-                if(sticky_submenu_offset_top != 'undefined')
-                {
-		    if (scroll_top > sticky_submenu_offset_top) { 
-		    	$('#submenuProvider').css({ 'position': 'fixed', 'top':50, 'left':0, 'width': '100%','zIndex':9999,'clear': 'both'});
-		    } else {
-			$('#submenuProvider').css({ 'position': 'relative' }); 
-		    }   
-                }
-	};
-	sticky_navigation();
-	$(window).scroll(function() {
-		 sticky_navigation();
-	});
+    };
+    sticky_navigation();
+    $(window).scroll(function() {
+        sticky_navigation();
+    });
 });
 
 
@@ -833,38 +838,38 @@ $(function() {
     $("#options").tablesorter({sortList: [[0, 0]], headers: {3: {sorter: false}, 4: {sorter: false}}});
     $("#formtabs").tabs();
     $("#providertabs").tabs({
-        cache:true,
-         load: function (event, ui) {
-       $('.accordionButton').unbind();
-       GINIT.initialize();
+        cache: true,
+        load: function(event, ui) {
+            $('.accordionButton').unbind();
+            GINIT.initialize();
         }
 
     });
     $("#arptabs").tabs({
-        cache:true,
-         load: function (event, ui) {
-       $('.accordionButton').unbind();
-       $('.tablesorter').unbind();
-       GINIT.initialize();
+        cache: true,
+        load: function(event, ui) {
+            $('.accordionButton').unbind();
+            $('.tablesorter').unbind();
+            GINIT.initialize();
         }
 
     });
 });
-if($('#usepredefined').attr('checked')) {
-     $("fieldset#stadefext").hide();
+if ($('#usepredefined').attr('checked')) {
+    $("fieldset#stadefext").hide();
 }
-$("#usepredefined").click(function(){
-   if ($(this).is(":checked"))
-   {
+$("#usepredefined").click(function() {
+    if ($(this).is(":checked"))
+    {
         $("#usepredefined").not(this).removeAttr("checked");
-       $("fieldset#stadefext").hide();
-   }
-   else
-   {
-       $("fieldset#stadefext").show();
+        $("fieldset#stadefext").hide();
+    }
+    else
+    {
+        $("fieldset#stadefext").show();
         $("#usepredefined").not(this).addAttr("checked");
 
-   }
+    }
 
 });
 $(".acsdefault").click(function() {
@@ -937,7 +942,7 @@ $("#nidpssocert").click(function() {
     var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    var newelement = '<li><label for="f[crt][idpsso][n'+rname+'][remove]">Please remove it</label><select name="f[crt][idpsso][n'+rname+'][remove]"> <option value="none">Keep it</option> <option value="yes">Yes, remove it</option> </select> </li><li><label for="f[crt][idpsso][n'+rname+'][type]">Certificate type</label><select name="f[crt][idpsso][n'+rname+'][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][idpsso][n'+rname+'][usage]">Certificate use</label><span class=""><select name="f[crt][idpsso][n'+rname+'][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][idpsso][n'+rname+'][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)">?</span></label><input type="text" name="f[crt][idpsso][n'+rname+'][keyname]" value="" id="f[crt][idpsso][n'+rname+'][keyname]" class=""  /> </li><li><label for="f[crt][idpsso][n'+rname+'][certdata]">Certificate&nbsp;<span title="Paste your certificate here.">?</span></label><textarea name="f[crt][idpsso][n'+rname+'][certdata]" cols="65" rows="30" id="f[crt][idpsso][n'+rname+'][certdata]" class="certdata notice" ></textarea> </li>';
+    var newelement = '<li><label for="f[crt][idpsso][n' + rname + '][remove]">Please remove it</label><select name="f[crt][idpsso][n' + rname + '][remove]"> <option value="none">Keep it</option> <option value="yes">Yes, remove it</option> </select> </li><li><label for="f[crt][idpsso][n' + rname + '][type]">Certificate type</label><select name="f[crt][idpsso][n' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][idpsso][n' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][idpsso][n' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][idpsso][n' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)">?</span></label><input type="text" name="f[crt][idpsso][n' + rname + '][keyname]" value="" id="f[crt][idpsso][n' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][idpsso][n' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here.">?</span></label><textarea name="f[crt][idpsso][n' + rname + '][certdata]" cols="65" rows="30" id="f[crt][idpsso][n' + rname + '][certdata]" class="certdata notice" ></textarea> </li>';
     $(this).parent().before(newelement);
 
 });
@@ -947,7 +952,7 @@ $("#naacert").click(function() {
     var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    var newelement = '<li><label for="f[crt][aa][n'+rname+'][remove]">Please remove it</label><select name="f[crt][aa][n'+rname+'][remove]"> <option value="none">Keep it</option> <option value="yes">Yes, remove it</option> </select> </li><li><label for="f[crt][aa][n'+rname+'][type]">Certificate type</label><select name="f[crt][aa][n'+rname+'][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][aa][n'+rname+'][usage]">Certificate use</label><span class=""><select name="f[crt][aa][n'+rname+'][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][aa][n'+rname+'][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)">?</span></label><input type="text" name="f[crt][aa][n'+rname+'][keyname]" value="" id="f[crt][aa][n'+rname+'][keyname]" class=""  /> </li><li><label for="f[crt][aa][n'+rname+'][certdata]">Certificate&nbsp;<span title="Paste your certificate here.">?</span></label><textarea name="f[crt][aa][n'+rname+'][certdata]" cols="65" rows="30" id="f[crt][aa][n'+rname+'][certdata]" class="certdata notice" ></textarea> </li>';
+    var newelement = '<li><label for="f[crt][aa][n' + rname + '][remove]">Please remove it</label><select name="f[crt][aa][n' + rname + '][remove]"> <option value="none">Keep it</option> <option value="yes">Yes, remove it</option> </select> </li><li><label for="f[crt][aa][n' + rname + '][type]">Certificate type</label><select name="f[crt][aa][n' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][aa][n' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][aa][n' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][aa][n' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)">?</span></label><input type="text" name="f[crt][aa][n' + rname + '][keyname]" value="" id="f[crt][aa][n' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][aa][n' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here.">?</span></label><textarea name="f[crt][aa][n' + rname + '][certdata]" cols="65" rows="30" id="f[crt][aa][n' + rname + '][certdata]" class="certdata notice" ></textarea> </li>';
     $(this).parent().before(newelement);
 
 });
@@ -957,153 +962,180 @@ $("#nspssocert").click(function() {
     var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    var newelement = '<li><label for="f[crt][spsso][n'+rname+'][remove]">Please remove it</label><select name="f[crt][spsso][n'+rname+'][remove]"> <option value="none">Keep it</option> <option value="yes">Yes, remove it</option> </select> </li><li><label for="f[crt][spsso][n'+rname+'][type]">Certificate type</label><select name="f[crt][spsso][n'+rname+'][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][spsso][n'+rname+'][usage]">Certificate use</label><span class=""><select name="f[crt][spsso][n'+rname+'][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][spsso][n'+rname+'][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)">?</span></label><input type="text" name="f[crt][spsso][n'+rname+'][keyname]" value="" id="f[crt][spsso][n'+rname+'][keyname]" class=""  /> </li><li><label for="f[crt][spsso][n'+rname+'][certdata]">Certificate&nbsp;<span title="Paste your certificate here.">?</span></label><textarea name="f[crt][spsso][n'+rname+'][certdata]" cols="65" rows="30" id="f[crt][spsso][n'+rname+'][certdata]" class="certdata notice" ></textarea> </li>';
+    var newelement = '<li><label for="f[crt][spsso][n' + rname + '][remove]">Please remove it</label><select name="f[crt][spsso][n' + rname + '][remove]"> <option value="none">Keep it</option> <option value="yes">Yes, remove it</option> </select> </li><li><label for="f[crt][spsso][n' + rname + '][type]">Certificate type</label><select name="f[crt][spsso][n' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][spsso][n' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][spsso][n' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][spsso][n' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)">?</span></label><input type="text" name="f[crt][spsso][n' + rname + '][keyname]" value="" id="f[crt][spsso][n' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][spsso][n' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here.">?</span></label><textarea name="f[crt][spsso][n' + rname + '][certdata]" cols="65" rows="30" id="f[crt][spsso][n' + rname + '][certdata]" class="certdata notice" ></textarea> </li>';
     $(this).parent().before(newelement);
 
 });
 $("a.pCookieAccept").click(function() {
-        var link = $(this), url = link.attr("href");
+    var link = $(this), url = link.attr("href");
 
-        $.ajax({
-            url: url,
-            timeout: 2500,
-            cache: false
-        });
-        $('#cookiesinfo').hide(); 
+    $.ajax({
+        url: url,
+        timeout: 2500,
+        cache: false
+    });
+    $('#cookiesinfo').hide();
 
-        return false;
+    return false;
 });
-$("[id='f[entityid]']").change(function() { 
- var entalert = $("div#entitychangealert").text();
- alert(entalert);  
-}); 
- 
-// When DOM is ready
-$(document).ready(function(){
-var baseurl = $("[name='baseurl']").val();
-if(baseurl == undefined)
-{
-   baseurl = '';
-}
-// Preload Images
-img1 = new Image(16, 16);  
-img1.src = baseurl + 'images/spinner.gif';
+$("[id='f[entityid]']").change(function() {
+    var entalert = $("div#entitychangealert").text();
+    alert(entalert);
+});
 
-img2 = new Image(220, 19);  
-img2.src = baseurl + 'images/ajax-loader.gif';
+// When DOM is ready
+$(document).ready(function() {
+    var baseurl = $("[name='baseurl']").val();
+    if (baseurl === undefined)
+    {
+        baseurl = '';
+    }
+// Preload Images
+    img1 = new Image(16, 16);
+    img1.src = baseurl + 'images/spinner.gif';
+
+    img2 = new Image(220, 19);
+    img2.src = baseurl + 'images/ajax-loader.gif';
 
 // Launch MODAL BOX if the Login Link is clicked
-$("#login_link").click(function(){
-   $('#login_form').modal();
-});
-if ($("#eds2").is('*')) {
-   $("#idpSelect").modal();
-}
+    $("#login_link").click(function() {
+        $('#login_form').modal();
+    });
+    if ($("#eds2").is('*')) {
+        $("#idpSelect").modal();
+    }
 
 
 // When the form is submitted
-$("#status form").submit(function(){  
+    $("#status form").submit(function() {
 
 // Hide 'Submit' Button
-$('#submit').hide();
+        $('#submit').hide();
 
 // Show Gif Spinning Rotator
-$('#ajax_loading').show();
+        $('#ajax_loading').show();
 
 // 'this' refers to the current submitted form  
-var str = $(this).serialize();  
+        var str = $(this).serialize();
 
 // -- Start AJAX Call --
 
-$.ajax({  
-    type: "POST",
-    url: baseurl + 'authenticate/dologin',  // Send the login info to this page
-    data: str,  
-    success: function(msg){  
-   
-       $("#status").ajaxComplete(function(event, request, settings){  
- 
-        // Show 'Submit' Button
-       $('#submit').show();
+        $.ajax({
+            type: "POST",
+            url: baseurl + 'authenticate/dologin', // Send the login info to this page
+            data: str,
+            success: function(msg) {
 
-      // Hide Gif Spinning Rotator
-      $('#ajax_loading').hide();  
+                $("#status").ajaxComplete(function(event, request, settings) {
 
-      if(msg == 'OK') // LOGIN OK?
-      {  
-         var login_response = '<div id="logged_in">' +
-	    '<div style="width: 350px; float: left; margin-left: 70px;">' + 
-	    '<div style="width: 40px; float: left;">' +
-	    '<img style="margin: 10px 0px 10px 0px;" align="absmiddle" src="'+baseurl+'images/ajax-loader.gif">' +
-	    '</div>' +
-	    '<div style="margin: 10px 0px 0px 10px; float: right; width: 300px;">'+ 
-	     "You are successfully logged in! <br /> Please wait while you're redirected...</div></div>";  
-         $('a.modalCloseImg').hide();  
-         $('#simplemodal-container').css("width","auto").css("height","auto").css("background","transparent").css("box-shadow","none").css("text-align","center");
-         $(this).html(login_response); // Refers to 'status'
+                    // Show 'Submit' Button
+                    $('#submit').show();
 
-        // After 3 seconds redirect the 
-         setTimeout('go_to_private_page()', 1000); 
-      }  
-      else // ERROR?
-      {  
-         var login_response = msg;
-         $('#login_response').html(login_response);
-      }  
-      
-      });  
-   
- },
- error: function(){
-         $("#status").ajaxComplete(function(event, request, settings){
-         $('#submit').show();
-         $('#ajax_loading').hide();
-         var login_response = "Invalid token, please refresh page and try again";
-         $('#login_response').html(login_response).css("color","red").css("font-weight","bold");
-         });
-   }  
- 
-   
-  });  
-  
+                    // Hide Gif Spinning Rotator
+                    $('#ajax_loading').hide();
+
+                    if (msg == 'OK') // LOGIN OK?
+                    {
+                        var login_response = '<div id="logged_in">' +
+                                '<div style="width: 350px; float: left; margin-left: 70px;">' +
+                                '<div style="width: 40px; float: left;">' +
+                                '<img style="margin: 10px 0px 10px 0px;" align="absmiddle" src="' + baseurl + 'images/ajax-loader.gif">' +
+                                '</div>' +
+                                '<div style="margin: 10px 0px 0px 10px; float: right; width: 300px;">' +
+                                "You are successfully logged in! <br /> Please wait while you're redirected...</div></div>";
+                        $('a.modalCloseImg').hide();
+                        $('#simplemodal-container').css("width", "auto").css("height", "auto").css("background", "transparent").css("box-shadow", "none").css("text-align", "center");
+                        $(this).html(login_response); // Refers to 'status'
+
+                        // After 3 seconds redirect the 
+                        setTimeout('go_to_private_page()', 1000);
+                    }
+                    else // ERROR?
+                    {
+                        var login_response = msg;
+                        $('#login_response').html(login_response);
+                    }
+
+                });
+
+            },
+            error: function() {
+                $("#status").ajaxComplete(function(event, request, settings) {
+                    $('#submit').show();
+                    $('#ajax_loading').hide();
+                    var login_response = "Invalid token, please refresh page and try again";
+                    $('#login_response').html(login_response).css("color", "red").css("font-weight", "bold");
+                });
+            }
+
+
+        });
+
 // -- End AJAX Call --
 
-return false;
+        return false;
 
-}); // end submit event
+    }); // end submit event
+
+
+    $("#rmstatdef").click(function(ev) {
+        var url = $(this).attr('action');
+        var serializedData = $(this).serialize();
+        sconfirm('', function(ev) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: serializedData,
+                success: function(data) {
+                    $('#resultdialog').modal({
+                        position: ["20%", ],
+                        overlayId: 'simpledialog-overlay',
+                        containerId: 'simpledialog-container',
+                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                    });
+                },
+                error: function(data) {
+                    alert('Error');
+                }
+            });
+        }
+        );
+         ev.preventDefault();   
+    });
+
+    function sconfirm(message, callback) {
+        $('#sconfirm').modal({
+            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+            position: ["20%", ],
+            overlayId: 'simpledialog-overlay',
+            containerId: 'simpledialog-container',
+            onShow: function(dialog) {
+                var modal = this;
+
+                $('.message', dialog.data[0]).append(message);
+
+                // if the user clicks "yes"
+                $('.yes', dialog.data[0]).click(function() {
+                    // call the callback
+                    if ($.isFunction(callback)) {
+                        callback.apply();
+                    }
+                    // close the dialog
+                    modal.close(); // or $.modal.close();
+                });
+            }
+        });
+    }
+
+
 
 });
 
 function go_to_private_page()
 {
-//window.location.assign(baseurl+'dashboard');
-//window.location.replace(baseurl+'dashboard');
-//var urltoredirect  = baseurl+ 'dashboard';
-//var url2toredicter = urltoredirect.replace (/^[a-z]{4}\:\/{2}[a-z]{1,}\:[0-9]{1,4}.(.*)/, '$1');
-//alert(url2toredicter);
-//window.location = '';
-window.location.reload() ;
-//window.location = 'dashboard'; // Members Area
+    window.location.reload();
 }
 
 
-$("#rmstatdef").submit(function(ev){
-    $.ajax({
-            type: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            success: function (data) {
-               $("#statdefremoved").modal({
-                      overlayCss: {backgroundColor:"#fff"},
-              });
-            },
-            error: function(data) {
-               alert('error occurred');
-           },
-
-        });
-  ev.preventDefault();
-
-});
 
 

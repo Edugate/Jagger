@@ -29,11 +29,7 @@ echo form_close();
 <div id="statisticdiag"></div>
 <div style="height: 50px;"></div>
 
-<div id="#statdefremoved" style="display: none">
-                        <div class='header'><span>Confirm</span></div>
-                        <div class='message'></div>
-                        <div class='buttons'>
-                                <div class='no simplemodal-close'>No</div><div class='yes'>Yes</div>
-                        </div>
-</div>
 
+<?php
+echo confirmDialog(''.lang('title_confirm').'', ''.sprintf(lang('douwanttoremove'),lang('statdefinition')).'', ''.lang('rr_yes').'', ''.lang('rr_no').'');
+echo resultDialog(''.lang('title_result').'',''.lang('rr_removed').'! '.lang('gobacktothelist').'',''.lang('rr_close').'');
