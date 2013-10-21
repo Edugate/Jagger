@@ -683,6 +683,7 @@ $lang['rr_progress']            = 'Progress';
 $lang['rr_imgwidth']            = 'width';
 $lang['rr_imgheight']           = 'height';
 $lang['rrhere']                     = 'here';
+$lang['title_result']             = 'Result';
 $lang['dropnotset']                 = 'not set';
 $lang['dropnever']                  = 'never permit';
 $lang['dropokreq']                  = 'permit only if required';
