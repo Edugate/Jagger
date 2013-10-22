@@ -62,6 +62,54 @@ class Ajax extends MY_Controller {
         }
     }
 
+    public function fedcat($id=null)
+    {
+        if(!$this->input->is_ajax_request())
+        {
+           show_error('invalid method',403);
+        }
+        if(!empty($id) && !is_numeric($id))
+        {
+           show_error('not found',404);
+        }
+        $loggedin = $this->j_auth->logged_in();
+        if(!$loggedin)
+        {
+           show_error('permission denied',403);
+        }
+        if(!empty($id))
+        {
+           $fedcat = $this->em->getRepository("models\FederationCategory")->findOneBy(array('id'=>$id));
+           if(empty($fedcat))
+           {
+               show_error('Federation category not found',404);
+           }
+           $federations = $fedcat->getFederations();
+        }
+        else
+        {
+           $federations = $this->em->getRepository("models\Federation")->findAll();
+        }
+
+        $result = array();
+        $imgtoggle ='<img class="toggle" src="'.base_url().'images/icons/control-270.png" />';
+        foreach($federations as $v)
+        {
+          $members =' <a href="'.base_url().'federations/manage/showmembers/'.$v->getId().'" class="fmembers" id="'.$v->getId().'">'.$imgtoggle.'</a>';
+           $result[] = array(
+                'name'=>$v->getName(),
+                'urn'=>$v->getUrn(),
+                'desc'=>$v->getDescription(),
+                'members'=>$members,
+             );
+        }
+        echo json_encode($result);
+
+       
+        
+
+    }
+
     public function bookentity($id)
     {
         if ($this->input->is_ajax_request())

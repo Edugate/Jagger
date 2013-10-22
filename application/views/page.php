@@ -92,7 +92,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                     'es' => array('path'=>'es','val'=>'español'),
                    );
                 ?>
-                <div id="langchenge">
+                <div id="langchange">
                    <span id="langurl" style="display:none;"><?php echo $base_url.'ajax/changelanguage/';?></span>
                    <label>
                    <select  name="changelanguage">
@@ -194,7 +194,6 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                                         <li><a href="<?php echo $base_url; ?>attributes/attributes/show"><?php echo lang('rr_attr_defs'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>manage/importer"><?php echo lang('rr_meta_importer'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users'); ?> &nbsp;&gt;</a>
-
                                             <ul>
                                                 <li><a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users_list'); ?></a>
                                                 <li><a href="<?php echo $base_url; ?>manage/users/add"><?php echo lang('rr_newuser'); ?></a></li>

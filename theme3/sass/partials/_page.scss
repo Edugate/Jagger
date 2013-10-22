@@ -80,7 +80,7 @@ li {
     }
     
 }
-#langchenge{
+#langchange{
     text-align: left;
     select {
         padding:3px;
@@ -1321,7 +1321,7 @@ button.loginbtn {
     padding:6px 24px;
     text-decoration:none;
 }
-button.loginbtn:hover {
+button.loginbtn:hover , button.fedcategory:hover{
     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #1c121c), color-stop(1, #080808) );
     background:-moz-linear-gradient( center top, #1c121c 5%, #080808 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#1c121c', endColorstr='#080808');
@@ -1331,6 +1331,69 @@ button.loginbtn:active {
     position:relative;
     top:1px;
 }
+#fedcategories {
+    padding-bottom: 10px;
+}
+button.fedcategory {
+   color: $btn1color;
+   padding: 10px 20px;
+   background: -moz-linear-gradient(
+		top,
+	         $btn1bgcolortop 0%,
+		$btn1bgcolordown);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from($btn1bgcolortop),
+		to($btn1bgcolordown));
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;
+	border-radius: 0px;
+	border: 1px solid $btn1bordercolor;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,0.7);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,0.7);
+	box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,0.7);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0.4),
+		0px 1px 0px rgba(255,255,255,0.3);
+
+}
+     button.activated {
+   color: $btn1color;
+   font-weight: bolder;
+   padding: 10px 20px;
+   background: -moz-linear-gradient(
+		top,
+	         darken($btn1bgcolortop,25%) 0%,
+		darken($btn1bgcolordown,25%));
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(darken($btn1bgcolortop,25%)),
+		to(darken($btn1bgcolordown,25%)));
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;
+	border-radius: 0px;
+	border: 1px solid $btn1bordercolor;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,0.7);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,0.7);
+	box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,0.7);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0.4),
+		0px 1px 0px rgba(255,255,255,0.3);
+
+       }
+
 .inqueue {
     margin: 2px;
     position: relative;

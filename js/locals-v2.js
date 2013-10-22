@@ -72,6 +72,51 @@ $(document).ready(function() {
 
     });
 
+    $('button#fedcategoryall').addClass('activated');
+
+
+    $('button.fedcategory').click(function(){
+       $('button.fedcategory').removeClass('activated');
+       $(this).addClass('activated');
+       var url = $(this).attr("value");
+       var value = $('table.fedistpercat');
+       var data;
+       $.ajax({
+          url: url,
+          timeout: 2500,
+          cache: true,
+          value: value,
+          success:function(json){
+             $('#spinner').hide();
+             data = $.parseJSON(json);
+             if(!data)
+             {
+                alert('no data in federation category');
+             }
+             else
+             {
+                $("table.fedistpercat tbody tr").remove();
+                $.each(data,function(i,v){
+                   var tr_data = '<tr><td>'+v.name+'</td><td>'+v.urn+'</td><td></td><td>'+v.desc+'</td><td>'+v.members+'</td></tr>';
+                   value.append(tr_data);
+                });
+             }
+                  GINIT.initialize();
+          },
+          beforeSend: function() {
+             $('#spinner').show();
+          },
+          error: function() {
+              $('#spinner').hide();
+               alert('problem with loading data');
+          }
+       }).done(function(){
+                 var nextrow = value.html();
+                 //$("table.fedistpercat").append(nextrow);
+             });
+          return false;
+    });
+
 });
 //$("#login").hide();
 $("button#loginbtn").click(function() {
@@ -260,7 +305,7 @@ $(function() {
     $.ajaxSetup({
         cache: false
     });
-    $('#langchenge select').on('change', function() {
+    $('#langchange select').on('change', function() {
         var link = document.getElementById('langurl').innerHTML;
         var url = link + this.value;
         $.ajax({
@@ -433,7 +478,7 @@ $(function() {
                 }
                 else
                 {
-                    $("div#statisticdiag").replaceWith('<div id="statisticdiag"></a>');
+                    $("div#statisticdiag").replaceWith('<div id="statisticdiag"></div>');
                     $.each(data, function(i, v) {
 
                         i = new Image();
@@ -578,6 +623,7 @@ $(function() {
         return false;
     });
     $("a.fmembers").click(function() {
+
         var link = $(this), url = link.attr("href");
         var row = $(this).parent().parent();
         if ($(row).hasClass('opened') == true)

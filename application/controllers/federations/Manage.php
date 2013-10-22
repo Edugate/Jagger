@@ -44,11 +44,18 @@ class Manage extends MY_Controller {
         $this->load->library('zacl');
     }
 
+
     function index()
     {
         $this->title=lang('title_fedlist');
         $resource = 'fed_list';
         $federations = $this->em->getRepository("models\Federation")->findAll();
+        $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
+        $data['categories'] = array();
+        foreach($federationCategories as $v)
+        {
+            $data['categories'][] = array('catid'=>''.$v->getId().'','name'=>''.$v->getName().'','title'=>''.$v->getFullName().'','desc'=>''.$v->getDescription().'');
+        }
         $i = 0;
         $frow = array();
         foreach ($federations as $f)

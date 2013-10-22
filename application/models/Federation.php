@@ -108,6 +108,12 @@ class Federation
     protected $members;
 
     /**
+     * @ManyToMany(targetEntity="FederationCategory", mappedBy="federations")
+     * @JoinTable(name="fedcategory_members" )
+     */
+    protected $categories;
+
+    /**
      * @ManyToMany(targetEntity="Partner", mappedBy="pfederations")
      * @JoinTable(name="federation_partners" )
      */
@@ -121,6 +127,7 @@ class Federation
     public function __construct()
     {
         $this->members = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->is_protected = FALSE;
         $this->is_local = TRUE;
@@ -254,6 +261,16 @@ class Federation
         return $this->getMembers()->toArray();
     }
 
+    public function addCategory(FederationCategory $category)
+    {
+       $isin = $this->getCategories()->contains($category);
+       if(empty($isin))
+       {
+           $this->getCategories()->add($category);
+       }
+       return $this;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -308,6 +325,11 @@ class Federation
     public function getMembers()
     {
         return $this->members;
+    }
+
+    public function getCategories()
+    {
+        return $this->categories;
     }
 
     public function getAttributesRequirement()
