@@ -13,25 +13,22 @@ class Ajax extends MY_Controller {
         parent::__construct();
     }
 
-
     public function consentCookies()
     {
-       log_message('debug','GGGG consent');
-        if($this->input->is_ajax_request())
+        log_message('debug', 'GGGG consent');
+        if ($this->input->is_ajax_request())
         {
-           $lc = array(
-             'name'=>'cookieAccept',
-             'value'=>'accepted',
-             'secure'=>TRUE,
-             'expire'=> '2600000',
-          );
-           $this->input->set_cookie($lc);
+            $lc = array(
+                'name' => 'cookieAccept',
+                'value' => 'accepted',
+                'secure' => TRUE,
+                'expire' => '2600000',
+            );
+            $this->input->set_cookie($lc);
             return true;
-
         }
-
-
     }
+
     public function changelanguage($language)
     {
 
@@ -39,7 +36,7 @@ class Ajax extends MY_Controller {
         {
             log_message('debug', 'ajax');
             $language = substr($language, 0, 2);
-            if(in_array($language,array('pl','pt','it','lt','es')))
+            if (in_array($language, array('pl', 'pt', 'it', 'lt', 'es')))
             {
                 $cookie_value = $language;
             }
@@ -62,52 +59,75 @@ class Ajax extends MY_Controller {
         }
     }
 
-    public function fedcat($id=null)
+    public function fedcat($id = null)
     {
-        if(!$this->input->is_ajax_request())
+        if (!$this->input->is_ajax_request())
         {
-           show_error('invalid method',403);
+            show_error('invalid method', 403);
         }
-        if(!empty($id) && !is_numeric($id))
+        if (!empty($id) && !is_numeric($id))
         {
-           show_error('not found',404);
+            show_error('not found', 404);
         }
         $loggedin = $this->j_auth->logged_in();
-        if(!$loggedin)
+        if (!$loggedin)
         {
-           show_error('permission denied',403);
+            show_error('permission denied', 403);
         }
-        if(!empty($id))
+        if (!empty($id))
         {
-           $fedcat = $this->em->getRepository("models\FederationCategory")->findOneBy(array('id'=>$id));
-           if(empty($fedcat))
-           {
-               show_error('Federation category not found',404);
-           }
-           $federations = $fedcat->getFederations();
+            $fedcat = $this->em->getRepository("models\FederationCategory")->findOneBy(array('id' => $id));
+            if (empty($fedcat))
+            {
+                show_error('Federation category not found', 404);
+            }
+            $federations = $fedcat->getFederations();
         }
         else
         {
-           $federations = $this->em->getRepository("models\Federation")->findAll();
+            $federations = $this->em->getRepository("models\Federation")->findAll();
         }
 
         $result = array();
-        $imgtoggle ='<img class="toggle" src="'.base_url().'images/icons/control-270.png" />';
-        foreach($federations as $v)
+        $imgtoggle = '<img class="toggle" src="' . base_url() . 'images/icons/control-270.png" />';
+        foreach ($federations as $v)
         {
-          $members =' <a href="'.base_url().'federations/manage/showmembers/'.$v->getId().'" class="fmembers" id="'.$v->getId().'">'.$imgtoggle.'</a>';
-           $result[] = array(
-                'name'=>$v->getName(),
-                'urn'=>$v->getUrn(),
-                'desc'=>$v->getDescription(),
-                'members'=>$members,
-             );
+            $lbs ='';
+            if($v->getPublic())
+            {
+                $lbs .=makeLabel('public', '', lang('rr_fed_public')).' ';
+            }
+            else
+            {
+                $lbs .=makeLabel('notpublic', '', lang('rr_fed_notpublic')).' ';
+            }
+            if($v->getActive())
+            {
+                $lbs .=makeLabel('active', '', lang('rr_fed_active')).' ';
+            }
+            else
+            {
+                $lbs .=makeLabel('disabled', '', lang('rr_fed_inactive')).' ';
+            }
+            if($v->getLocal())
+            {
+                $lbs .=makeLabel('local', '', lang('rr_fed_local')).' ';
+            }
+            else
+            {
+                $lbs .=makeLabel('external', '', lang('rr_fed_external')).' ';
+            }
+            $members = ' <a href="' . base_url() . 'federations/manage/showmembers/' . $v->getId() . '" class="fmembers" id="' . $v->getId() . '">' . $imgtoggle . '</a>';
+            $result[] = array(
+                'name'=>anchor(base_url() . "federations/manage/show/" . base64url_encode($v->getName()), $v->getName()),
+                
+                'urn' => $v->getUrn(),
+                'desc' => $v->getDescription(),
+                'members' => $members,
+                'labels' =>$lbs,
+            );
         }
         echo json_encode($result);
-
-       
-        
-
     }
 
     public function bookentity($id)

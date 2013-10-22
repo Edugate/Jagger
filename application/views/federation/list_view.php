@@ -2,6 +2,7 @@
 
 <div id="fedcategories">
 <?php
+   echo '<button type="button" class="btn fedcategory" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
 if(count($categories)>0)
 {
    foreach($categories as $v)
@@ -9,7 +10,6 @@ if(count($categories)>0)
 
        echo '<button type="button" class="btn fedcategory" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
    }
-   echo '<button type="button" class="btn fedcategory" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">All Federations</button> ';
 }
 
 ?>
@@ -20,10 +20,7 @@ if(count($categories)>0)
 
 
 <?php
-$tmpl = array('table_open' => '<table  id="details" class="fedistpercat tablesorter drop-shadow lifted">');
-$this->table->set_template($tmpl);
-$this->table->set_heading(lang('rr_tbltitle_name'),lang('fedurn'),'',lang('Description'),'#');
-//echo $this->table->generate($fedlist);
-echo $this->table->generate();
-$this->table->clear();
+echo '<table  id="detailsnosort" class="fedistpercat tablesorter drop-shadow lifted"> <thead> <tr>
+<th>'.lang('rr_tbltitle_name').'</th><th>'.lang('fedurn').'</th><th></th><th>'.lang('Description').'</th><th>#</th></tr> </thead>
+<tbody> </tbody> </table> ';
 ?>

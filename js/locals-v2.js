@@ -1,5 +1,139 @@
 var GINIT = {
     initialize: function() {
+        $("a.fmembers").click(function() {
+
+            var link = $(this), url = link.attr("href");
+            var row = $(this).parent().parent();
+            if ($(row).hasClass('opened') == true)
+            {
+                $(row).next().remove();
+                $(row).removeClass('opened').removeClass('highlight');
+
+            }
+            else
+            {
+                var value = $('<ul/>');
+                $.ajax({
+                    url: url,
+                    timeout: 2500,
+                    cache: true,
+                    success: function(json) {
+                        $('#spinner').hide();
+                        var data = $.parseJSON(json);
+                        $(row).addClass('opened').addClass('highlight');
+                        if (!data)
+                        {
+                            alert('no data');
+                        }
+                        else
+                        {
+                            if (!data.idp && !data.sp && !data.both)
+                            {
+                                var div_data = '<li> no members</li>';
+                                value.append(div_data);
+                            }
+                            else
+                            {
+                                if (data.idp)
+                                {
+                                    var stitle = $('<li>Identity Providers</li>');
+                                    var nlist = $('<ol/>');
+                                    $.each(data.idp, function(i, v) {
+                                        var div_data = '<li class="homeorg"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        nlist.append(div_data);
+                                    });
+                                    stitle.append(nlist);
+                                    value.append(stitle);
+                                }
+                                if (data.sp)
+                                {
+                                    var stitle = $('<li>Service Providers</li>');
+                                    var nlist = $('<ol/>');
+                                    $.each(data.sp, function(i, v) {
+                                        var div_data = '<li class="resource"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        nlist.append(div_data);
+                                    });
+                                    stitle.append(nlist);
+                                    value.append(stitle);
+                                }
+                                if (data.both)
+                                {
+                                    var stitle = $('<li>Services are both IdP and SP</li>');
+                                    var nlist = $('<ol/>');
+                                    $.each(data.both, function(i, v) {
+                                        var div_data = '<li class="both"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        nlist.append(div_data);
+                                    });
+                                    stitle.append(nlist);
+                                    value.append(stitle);
+                                }
+                            }
+                        }
+
+
+                    },
+                    beforeSend: function() {
+                        $('#spinner').show();
+                    },
+                    error: function() {
+                        $('#spinner').hide();
+                        alert('problem with loading data');
+                    }
+                }).done(function() {
+                    var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">' + value.html() + '</ul></td></tr>';
+                    $(nextrow).insertAfter(row);
+                }
+                )
+            }
+
+            return false;
+
+
+
+
+
+        });
+        $("a#getmembers").click(function() {
+            var link = $(this), url = link.attr("href");
+            var value = $('<ul/>');
+            $.ajax({
+                url: url,
+                timeout: 2500,
+                cache: true,
+                success: function(json) {
+                    $('#spinner').hide();
+                    var data = $.parseJSON(json);
+                    if (!data)
+                    {
+                        alert('no data');
+                    }
+                    else
+                    {
+                        var nlist = $('<ul/>');
+                        $.each(data, function(i, v) {
+                            var div_data = '<li><a href="' + v.url + '">' + v.name + '</a><small><i> (' + v.entityid + ') <i></small></li>';
+                            nlist.append(div_data);
+                        });
+                        value.append(nlist);
+
+                    }
+                },
+                beforeSend: function() {
+                    $('#spinner').show();
+                },
+                error: function() {
+                    $('#spinner').hide();
+                    alert('problem with loading data');
+                }
+
+            }).done(function() {
+                var nextrow = value.html();
+                //$(nextrow).insertAfter(row);
+                $("div#membership").replaceWith(nextrow);
+
+            });
+            return false;
+        });
         $('.accordionButton').addClass('off');
         $('.accordionButton1').addClass('on');
 
@@ -75,46 +209,78 @@ $(document).ready(function() {
     $('button#fedcategoryall').addClass('activated');
 
 
-    $('button.fedcategory').click(function(){
-       $('button.fedcategory').removeClass('activated');
-       $(this).addClass('activated');
-       var url = $(this).attr("value");
-       var value = $('table.fedistpercat');
-       var data;
-       $.ajax({
-          url: url,
-          timeout: 2500,
-          cache: true,
-          value: value,
-          success:function(json){
-             $('#spinner').hide();
-             data = $.parseJSON(json);
-             if(!data)
-             {
-                alert('no data in federation category');
-             }
-             else
-             {
-                $("table.fedistpercat tbody tr").remove();
-                $.each(data,function(i,v){
-                   var tr_data = '<tr><td>'+v.name+'</td><td>'+v.urn+'</td><td></td><td>'+v.desc+'</td><td>'+v.members+'</td></tr>';
-                   value.append(tr_data);
-                });
-             }
-                  GINIT.initialize();
-          },
-          beforeSend: function() {
-             $('#spinner').show();
-          },
-          error: function() {
-              $('#spinner').hide();
-               alert('problem with loading data');
-          }
-       }).done(function(){
-                 var nextrow = value.html();
-                 //$("table.fedistpercat").append(nextrow);
-             });
-          return false;
+    if ($('button#fedcategoryall').length) {
+        var url = $("button#fedcategoryall").attr('value');
+        var value = $('table.fedistpercat');
+        var data;
+        $.ajax({
+            url: url,
+            timeout: 2500,
+            cache: true,
+            value: $('table.fedistpercat'),
+            success: function(json) {
+                $('#spinner').hide();
+                data = $.parseJSON(json);
+                if (!data)
+                {
+                    alert('no data in federation category');
+                }
+                else
+                {
+                    $("table.fedistpercat tbody tr").remove();
+                    $.each(data, function(i, v) {
+                        var tr_data = '<tr><td>' + v.name + '</td><td>' + v.urn + '</td><td>' + v.labels + '</td><td>' + v.desc + '</td><td>' + v.members + '</td></tr>';
+                        value.append(tr_data);
+                    });
+                }
+                GINIT.initialize();
+            },
+        });
+    }
+    ;
+
+
+    $(".fedcategory").on('click', '', function(event) {
+
+        $('button.fedcategory').removeClass('activated');
+        $(this).addClass('activated');
+        var url = $(this).attr("value");
+        var value = $('table.fedistpercat');
+        var data;
+        $.ajax({
+            url: url,
+            timeout: 2500,
+            cache: true,
+            value: value,
+            success: function(json) {
+                $('#spinner').hide();
+                data = $.parseJSON(json);
+                if (!data)
+                {
+                    alert('no data in federation category');
+                }
+                else
+                {
+                    $("table.fedistpercat tbody tr").remove();
+                    $.each(data, function(i, v) {
+                        var tr_data = '<tr><td>' + v.name + '</td><td>' + v.urn + '</td><td>' + v.labels + '</td><td>' + v.desc + '</td><td>' + v.members + '</td></tr>';
+                        value.append(tr_data);
+                    });
+                }
+                GINIT.initialize();
+            },
+            beforeSend: function() {
+                $('#spinner').show();
+            },
+            error: function() {
+                $('#spinner').hide();
+                alert('problem with loading data');
+            }
+        }).done(function() {
+            var nextrow = value.html();
+            //$("table.fedistpercat").append(nextrow);
+        });
+        return false;
     });
 
 });
@@ -540,47 +706,8 @@ $(function() {
         });
         return false;
     });
-    $("a#getmembers").click(function() {
-        var link = $(this), url = link.attr("href");
-        var value = $('<ul/>');
-        $.ajax({
-            url: url,
-            timeout: 2500,
-            cache: true,
-            success: function(json) {
-                $('#spinner').hide();
-                var data = $.parseJSON(json);
-                if (!data)
-                {
-                    alert('no data');
-                }
-                else
-                {
-                    var nlist = $('<ul/>');
-                    $.each(data, function(i, v) {
-                        var div_data = '<li><a href="' + v.url + '">' + v.name + '</a><small><i> (' + v.entityid + ') <i></small></li>';
-                        nlist.append(div_data);
-                    });
-                    value.append(nlist);
 
-                }
-            },
-            beforeSend: function() {
-                $('#spinner').show();
-            },
-            error: function() {
-                $('#spinner').hide();
-                alert('problem with loading data');
-            }
 
-        }).done(function() {
-            var nextrow = value.html();
-            //$(nextrow).insertAfter(row);
-            $("div#membership").replaceWith(nextrow);
-
-        });
-        return false;
-    });
     $("a#synchsettings").click(function() {
         var link = $(this), url = link.attr("href");
         var value = $('<ul/>');
@@ -622,99 +749,7 @@ $(function() {
         });
         return false;
     });
-    $("a.fmembers").click(function() {
 
-        var link = $(this), url = link.attr("href");
-        var row = $(this).parent().parent();
-        if ($(row).hasClass('opened') == true)
-        {
-            $(row).next().remove();
-            $(row).removeClass('opened').removeClass('highlight');
-
-        }
-        else
-        {
-            var value = $('<ul/>');
-            $.ajax({
-                url: url,
-                timeout: 2500,
-                cache: false,
-                success: function(json) {
-                    $('#spinner').hide();
-                    var data = $.parseJSON(json);
-                    $(row).addClass('opened').addClass('highlight');
-                    if (!data)
-                    {
-                        alert('no data');
-                    }
-                    else
-                    {
-                        if (!data.idp && !data.sp && !data.both)
-                        {
-                            var div_data = '<li> no members</li>';
-                            value.append(div_data);
-                        }
-                        else
-                        {
-                            if (data.idp)
-                            {
-                                var stitle = $('<li>Identity Providers</li>');
-                                var nlist = $('<ol/>');
-                                $.each(data.idp, function(i, v) {
-                                    var div_data = '<li class="homeorg"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
-                                    nlist.append(div_data);
-                                });
-                                stitle.append(nlist);
-                                value.append(stitle);
-                            }
-                            if (data.sp)
-                            {
-                                var stitle = $('<li>Service Providers</li>');
-                                var nlist = $('<ol/>');
-                                $.each(data.sp, function(i, v) {
-                                    var div_data = '<li class="resource"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
-                                    nlist.append(div_data);
-                                });
-                                stitle.append(nlist);
-                                value.append(stitle);
-                            }
-                            if (data.both)
-                            {
-                                var stitle = $('<li>Services are both IdP and SP</li>');
-                                var nlist = $('<ol/>');
-                                $.each(data.both, function(i, v) {
-                                    var div_data = '<li class="both"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
-                                    nlist.append(div_data);
-                                });
-                                stitle.append(nlist);
-                                value.append(stitle);
-                            }
-                        }
-                    }
-
-
-                },
-                beforeSend: function() {
-                    $('#spinner').show();
-                },
-                error: function() {
-                    $('#spinner').hide();
-                    alert('problem with loading data');
-                }
-            }).done(function() {
-                var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">' + value.html() + '</ul></td></tr>';
-                $(nextrow).insertAfter(row);
-            }
-            )
-        }
-
-        return false;
-
-
-
-
-
-    });
     $('table.reqattraddform').addClass('hidden');
     $('button.hideform').addClass('hidden');
     $('form.reqattraddform').addClass('hidden');
@@ -1146,7 +1181,7 @@ $(document).ready(function() {
             });
         }
         );
-         ev.preventDefault();   
+        ev.preventDefault();
     });
 
     function sconfirm(message, callback) {

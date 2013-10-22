@@ -137,6 +137,7 @@ $lang['access_mngmt']               = 'Access management';
 $lang['home']                       = 'Home';
 $lang['federations']                = 'Federations';
 $lang['rr_federations']             = 'Federations';
+$lang['rr_allfeds']                = 'All Federations';
 $lang['register']                   = 'Register';
 $lang['rr_regform']                 = 'Registration form';
 $lang['allentities']                = 'All entities';

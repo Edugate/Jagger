@@ -49,56 +49,12 @@ class Manage extends MY_Controller {
     {
         $this->title=lang('title_fedlist');
         $resource = 'fed_list';
-        $federations = $this->em->getRepository("models\Federation")->findAll();
         $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
         $data['categories'] = array();
         foreach($federationCategories as $v)
         {
             $data['categories'][] = array('catid'=>''.$v->getId().'','name'=>''.$v->getName().'','title'=>''.$v->getFullName().'','desc'=>''.$v->getDescription().'');
         }
-        $i = 0;
-        $frow = array();
-        foreach ($federations as $f)
-        {
-            if ($f->getPublic())
-            {
-                $public = '<span class="lbl lbl-public">'.lang('rr_fed_public').'</span>';
-            }
-            else
-            {
-                $public = '<span class="lbl lbl-notpublic">'.lang('rr_fed_notpublic').'</span>';
-            }
-            if ($f->getActive())
-            {
-                $active = '<span class="lbl lbl-active">'.lang('rr_fed_active').'</span>';
-            }
-            else
-            {
-                $active = '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>';
-            }
-
-            if ($f->getLocal())
-            {
-                $local = '<span class="lbl lbl-local">'.lang('rr_fed_local').'</span>';
-            }
-            else
-            {
-                $local = '<span class="lbl lbl-external">'.lang('rr_fed_external').'<span>';
-            }
-            
-            $imgtoggle ='<img class="toggle" src="'.base_url().'images/icons/control-270.png" />'; 
-            
-
-
-            $frow[$i++] = array(
-                anchor(current_url() . "/show/" . base64url_encode($f->getName()), $f->getName()),
-                $f->getUrn(),
-                $public.'<br />'.$local.'<br />'.$active,
-                $f->getDescription(),
-                '<a href="'.current_url().'/showmembers/'.$f->getId().'" class="fmembers" id="'.$f->getId().'">'.$imgtoggle.'</a>', 
-            );
-        }
-        $data['fedlist'] = $frow;
         $data['content_view'] = 'federation/list_view.php';
         $this->load->view('page', $data);
     }
