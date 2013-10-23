@@ -132,7 +132,7 @@ only screen and (min-resolution: 144dpi) {
         }
         tr { border: 1px solid #ccc; }
         tr>:first-child {
-            background: darken($top-panel-background, 10%);
+            background: darken($toPanelBackground, 10%);
             color: grey;  
             a {
                color: white;

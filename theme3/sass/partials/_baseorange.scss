@@ -1,23 +1,23 @@
 // This file must be imported before loading html5-boilerplate
 
 // base
-$body-background: #f0f0f0;
+$bodyBackground: #f0f0f0;
 $line-height: 1.4 !default;
 $font-color: #333333 !default;
 $font-size: 14px;
 $fomt-family:  "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 
-$linkColor: #ff3c00 !default;
-$linkHoverColor: #ff3c00 !default;
-$linkVisitedColor: #ff3c00 !default;
+$linkColor: #ff3c00;
+$linkHoverColor: #ff3c00;
+$linkVisitedColor: #ff3c00;
 
 $selected-font-color: #fff !default;
 $selected-background-color: #ff5e99 !default;
 
 $invalid-background-color: #f0dddd !default;
 
-$top-panel-background: #ff3c00;
+$toPanelBackground: #ff3c00;
 
 $nav-1stlevel-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #585858), color-stop(40%, #181818), color-stop(100%, #000000));
 $nav-1stlevel-background-gecko: -moz-linear-gradient(top, #585858, #181818, #000000);
@@ -34,7 +34,7 @@ $table-row-odd-background-color: #cbd9e0;
 
 // forms
 $formbackgroundcolor: #ABFF00;
-$form-border-color: #ABFF00;
+$formBorderColor: #ABFF00;
 $formBorderColor: darken(#ABFF00,20%);
 $formBorderRadius: 2px;
 
@@ -59,8 +59,8 @@ $container-border-color: #dddddd;
 $container-box-shadow-color: #ffffff;
 
 
-$response-dialog-bgcolor: #ffffff;
-$response-dialog-bordercolor: #336699;
+$responseDialogBgcolor: #ffffff;
+$responseDialogBorderColor: #336699;
 
 $btn1bgcolor: #080808;
 $btn1bgcolortop: #075b82;

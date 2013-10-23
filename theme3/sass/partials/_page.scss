@@ -10,7 +10,7 @@ html {
     
 }
 body, select, input, textarea {
-    background-color: $body-background;
+    background-color: $bodyBackground;
     color: $font-color;
 }
 hr {
@@ -35,7 +35,7 @@ a:active {
 body {
     
 }
-a {
+a, a:link {
     color: $linkColor;
     text-decoration: none;
 }
@@ -49,14 +49,14 @@ li {
     list-style: none;
 }
 #toppanel {
-    background: $top-panel-background;
+    background: $toPanelBackground;
     color: $font-color-toppanel;
     margin: 5px;
     margin-top: 1px;
     padding: 3px;
     padding-bottom: 5px;
     min-height: 30px;
-    border: solid 1px darken($top-panel-background, 30%);
+    border: solid 1px darken($toPanelBackground, 30%);
 }
 #langicons {
     display: inline; 
@@ -1135,13 +1135,13 @@ span.alert
 }
 
 #simpledialog-container {
-    background: $response-dialog-bgcolor;
+    background: $responseDialogBgcolor;
     height:140px; 
     width:420px; 
     font: 16px/22px 'Trebuchet MS', Verdana, Arial; 
     text-align:left; 
     background:#fff; 
-    border:2px solid $response-dialog-bordercolor;
+    border:2px solid $responseDialogBorderColor;
 }
 #simpledialog-container .message {
     color:#333; 
