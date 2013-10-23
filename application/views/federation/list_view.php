@@ -2,15 +2,43 @@
 
 <div id="fedcategories">
 <?php
-   echo '<button type="button" class="btn fedcategory" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+
+$defaultSet = FALSE;
+$catButtons = '';
+
 if(count($categories)>0)
 {
    foreach($categories as $v)
    {
+       
+       if($defaultSet)
+       {
+           $catButtons .= '<button type="button" class="btn fedcategory" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
+       }
+       elseif(!empty($v['default']))
+       {
+           $catButtons .= '<button type="button" class="btn fedcategory activated" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
+           $defaultSet = TRUE;
+       }
+       else
+       {
+           $catButtons .= '<button type="button" class="btn fedcategory" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
 
-       echo '<button type="button" class="btn fedcategory" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
+       }
    }
 }
+if($defaultSet)
+{
+   $allFedsBtn =  '<button type="button" class="btn fedcategory" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+}
+else
+{
+   $allFedsBtn =  '<button type="button" class="btn fedcategory activated" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+
+}
+
+echo $allFedsBtn;
+echo $catButtons;
 
 ?>
 </div>

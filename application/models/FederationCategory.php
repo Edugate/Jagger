@@ -58,10 +58,16 @@ class FederationCategory
      */
      protected $federations;
 
+    /**
+     * @Column(type="boolean");
+     */
+     protected $isdefault;
+
 
      public function __construct()
      {
         $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->isdefault = FALSE;
 
      }
 
@@ -88,6 +94,11 @@ class FederationCategory
        return $this->federations;
     }
 
+    public function getIsDefault()
+    {
+       return $this->isdefault;
+    }
+
     public function setName($name)
     {
        $this->shortname = $name;
@@ -101,6 +112,11 @@ class FederationCategory
     public function setDescription($desc)
     {
        $this->description = $desc;
+        return $this;
+    }
+    public function setDefault($a)
+    {
+        $this->isdefault = $a;
         return $this;
     }
     public function setFederation(Federation $federation)
@@ -119,6 +135,7 @@ class FederationCategory
         $federation->getCategories()->removeElement($this);
         return $this->federations;
     }
+    
 
 
      

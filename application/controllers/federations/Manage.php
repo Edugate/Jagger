@@ -53,7 +53,11 @@ class Manage extends MY_Controller {
         $data['categories'] = array();
         foreach($federationCategories as $v)
         {
-            $data['categories'][] = array('catid'=>''.$v->getId().'','name'=>''.$v->getName().'','title'=>''.$v->getFullName().'','desc'=>''.$v->getDescription().'');
+            $data['categories'][] = array('catid'=>''.$v->getId().'',
+                                           'name'=>''.$v->getName().'',
+                                          'title'=>''.$v->getFullName().'',
+                                           'desc'=>''.$v->getDescription().'',
+                                        'default'=>''.$v->getIsDefault().'');
         }
         $data['content_view'] = 'federation/list_view.php';
         $this->load->view('page', $data);

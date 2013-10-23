@@ -2,10 +2,10 @@
 form {
     counter-reset: fieldsets;
     background: lighten($formbackgroundcolor,10%);
-    border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
+    border-radius: $formBorderRadius;
+    -khtml-border-radius: $formBorderRadius;
+    -moz-border-radius: $formBorderRadius;
+    -webkit-border-radius: $formBorderRadius;
     padding: 20px;
     width: auto;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
@@ -37,13 +37,13 @@ form {
     }
     ol li {
         background: lighten($formbackgroundcolor,30%);
-        border-color: $form-border-color;
+        border-color: $formBorderColor;
         border-style: solid;
         border-width: 1px;
-        -moz-border-radius: 3px;
-        -webkit-border-radius: 3px;
-        -khtml-border-radius: 3px;
-        border-radius: 3px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        -khtml-border-radius: 2px;
+        border-radius: 2px;
         list-style: none;
         margin-bottom: 2px;
         padding: 5px;
@@ -89,10 +89,10 @@ form {
         width: 55%;
         min-width: 200px;
         width: auto;
-        border-radius: 3px;
-        -khtml-border-radius: 3px;
-        -moz-border-radius: 3px;
-        -webkit-border-radius: 3px;
+        border-radius: 2px;
+        -khtml-border-radius: 2px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
         
     }
     
@@ -101,10 +101,10 @@ form {
         overflow: hidden;
         padding: 0px 3px;
         border: 1px solid;
-        border-radius: 3px;
-        -khtml-border-radius: 3px;
-        -moz-border-radius: 3px;
-        -webkit-border-radius: 3px;
+        border-radius: 2px;
+        -khtml-border-radius: 2px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
         
     }
     textarea {
@@ -114,15 +114,15 @@ form {
         padding: 0px 3px;
         width: 50%;
         min-width: 194px;
-        border-radius: 3px;
-        -khtml-border-radius: 3px;
-        -moz-border-radius: 3px;
-        -webkit-border-radius: 3px;
+        border-radius: 2px;
+        -khtml-border-radius: 2px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
         
         
     }
     div.error {
-        color: $font-color-error;
+        color: $fontColorError;
         font-weight: bolder;
     }
     input.acsurl {
@@ -166,24 +166,24 @@ form {
         }
         button.negative {
             
-            color: $button-negative-color;
+            color: $buttonNegativeFontcolor;
         }
     }
     
     ::-webkit-input-placeholder {
-        color: $input-placeholder-color;
+        color: $inputPlaceholderColor;
     }
     
     :-moz-placeholder { /* Firefox 18- */
-        color: $input-placeholder-color;  
+        color: $inputPlaceholderColor;  
     }
     
     ::-moz-placeholder {  /* Firefox 19+ */
-        color: $input-placeholder-color;  
+        color: $inputPlaceholderColor;  
     }
     
     :-ms-input-placeholder {  
-        color: $input-placeholder-color;  
+        color: $inputPlaceholderColor;  
     }
     
 }
@@ -274,10 +274,6 @@ div.permset form {
     
 }
 div#sortable, div.nsortable {
-    
-    //float: right;
-    //display: block;
-    
     overflow: auto;
     span {
         display: block;
@@ -288,12 +284,12 @@ div#sortable, div.nsortable {
 
 input.notice 
 {
-    color: $font-color-input-notice;
+    color: $fontColorInputNotice;
     
 }
 li.notice > input, li.notice > select
 {
-    color: $font-color-input-notice;
+    color: $fontColorInputNotice;
     
 }
 #formtabs form 
@@ -348,20 +344,20 @@ li.notice > input, li.notice > select
         font-size: smaller;
     }
     span.notice input {
-        color: orange;
+        color: $fontColorInputNotice;
     }
     span.notice select {
-        color: orange;
+        color: $fontColorInputNotice;
     }
     input.notice[type='radio'] {
-        background-color: $color-inputs-notice;
-        border: 1px solid $color-inputs-notice;
-        outline: 1px solid $color-inputs-notice;
+        background-color: $fontColorInputNotice;
+        border: 1px solid $fontColorInputNotice;
+        outline: 1px solid $fontColorInputNotice;
     }
     
     textarea.notice {
         margin-top: 5px;
-        border: 1px solid $color-inputs-notice;
+        border: 1px solid $fontColorInputNotice;
         color: orange;
     }
     textarea.certdata {

@@ -206,11 +206,11 @@ $(document).ready(function() {
 
     });
 
-    $('button#fedcategoryall').addClass('activated');
+   // $('button#fedcategoryall').addClass('activated');
 
 
-    if ($('button#fedcategoryall').length) {
-        var url = $("button#fedcategoryall").attr('value');
+    if ($('button.activated').length) {
+        var url = $("button.activated").attr('value');
         var value = $('table.fedistpercat');
         var data;
         $.ajax({

@@ -102,7 +102,6 @@ only screen and (min-resolution: 144dpi) {
         clear: both; 
     }
     
-    
     table#details , table#detailsnosort{
         display: block; 
         caption {
@@ -241,6 +240,7 @@ only screen and (min-resolution: 144dpi) {
                
         }
         form#login {
+            
             input {
                         width: auto;
                         }
