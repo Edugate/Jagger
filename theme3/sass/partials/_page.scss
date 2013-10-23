@@ -36,12 +36,12 @@ body {
     
 }
 a {
-    color: $link-color;
+    color: $linkColor;
     text-decoration: none;
 }
 
 a:hover {
-    color: $link-hover-color;
+    color: $linkHoverColor;
     text-decoration: underline;
 }
 
