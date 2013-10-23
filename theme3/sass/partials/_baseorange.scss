@@ -17,7 +17,8 @@ $selected-background-color: #ff5e99 !default;
 
 $invalid-background-color: #f0dddd !default;
 
-$top-panel-background: #0f67a1;
+$top-panel-background: #ff3c00;
+
 $nav-1stlevel-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #585858), color-stop(40%, #181818), color-stop(100%, #000000));
 $nav-1stlevel-background-gecko: -moz-linear-gradient(top, #585858, #181818, #000000);
 
@@ -32,10 +33,10 @@ $table-row-background-color: #e6eeee;
 $table-row-odd-background-color: #cbd9e0;
 
 // forms
-$formbackgroundcolor: #6b90d4;
-$form-border-color: #e3ebc3;
-$formBorderColor: #e3ebc3;
-$formBorderRadius: 3px;
+$formbackgroundcolor: #ABFF00;
+$form-border-color: #ABFF00;
+$formBorderColor: darken(#ABFF00,20%);
+$formBorderRadius: 2px;
 
 
 $button-negative-color: #ff0000;

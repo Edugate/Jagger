@@ -54,6 +54,8 @@ li {
     margin: 5px;
     margin-top: 1px;
     padding: 3px;
+    padding-bottom: 5px;
+    min-height: 30px;
     border: solid 1px darken($top-panel-background, 30%);
 }
 #langicons {
@@ -1307,7 +1309,7 @@ button.loginbtn {
     padding:6px 24px;
     text-decoration:none;
 }
-button.loginbtn:hover , button.fedcategory:hover, button.typelist:hover{
+button.loginbtn:hover {
     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #1c121c), color-stop(1, #080808) );
     background:-moz-linear-gradient( center top, #1c121c 5%, #080808 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#1c121c', endColorstr='#080808');
@@ -1349,7 +1351,7 @@ button.fedcategory, button.typelist {
 		0px 1px 0px rgba(255,255,255,0.3);
 
 }
-     button.activated , button.tchosen{
+button.activated , button.tchosen{
    color: $btn1color;
    padding: 10px 15px;
    background: -moz-linear-gradient(
@@ -1378,6 +1380,37 @@ button.fedcategory, button.typelist {
 		0px 1px 0px rgba(255,255,255,0.3);
 
        }
+button.fedcategory:hover, button.typelist:hover {
+
+
+   color: $btn1colorhover;
+   padding: 10px 15px;
+   background: -moz-linear-gradient(
+		top,
+	        $btn1bgcolorhovertop 0%,
+		$btn1bgcolorhoverdown);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from($btn1bgcolorhovertop),
+		to($btn1bgcolorhoverdown));
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;
+	border-radius: 0px;
+	border: 1px solid $btn1bordercolorhover;
+	-moz-box-shadow:
+		0px 1px 1px rgba(000,000,000,0.5),
+		inset 0px 0px 1px rgba(255,255,255,0.7);
+	-webkit-box-shadow:
+		0px 1px 1px rgba(000,000,000,0.5),
+		inset 0px 0px 1px rgba(255,255,255,0.7);
+	box-shadow:
+		0px 1px 1px rgba(000,000,000,0.5),
+		inset 0px 0px 1px rgba(255,255,255,0.7);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0.4),
+		0px 1px 0px rgba(255,255,255,0.3);
+
+}
 
 .inqueue {
     margin: 2px;

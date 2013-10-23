@@ -1,6 +1,11 @@
 <?php
 $loggedin = $this->j_auth->logged_in();
 $pageTitle = $this->config->item('pageTitlePref');
+$colorTheme = $this->config->item('colortheme');
+if(empty($colorTheme))
+{
+   $colorTheme = 'default';
+}
 $base_url = base_url();
 $pageTitle .= $this->title;
 $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
@@ -28,7 +33,8 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <link rel="apple-touch-icon" sizes="144x144" href="<?php echo $base_url; ?>images/apple-touch-icon-114x114-precomposed.png" />
         <link rel="stylesheet" type="text/css" href="<?php echo $base_url; ?>styles/jquery-ui.css"/>
         <?php
-        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/style.css" />';
+        
+        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/'.$colorTheme.'.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';     
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />';
