@@ -1,7 +1,7 @@
 @import "blueprint/buttons";
 form {
     counter-reset: fieldsets;
-    background: lighten($form-background-color,10%);
+    background: lighten($formbackgroundcolor,10%);
     border-radius: 3px;
     -khtml-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -36,7 +36,7 @@ form {
         width: auto;
     }
     ol li {
-        background: lighten($form-background-color,30%);
+        background: lighten($formbackgroundcolor,30%);
         border-color: $form-border-color;
         border-style: solid;
         border-width: 1px;
@@ -53,7 +53,7 @@ form {
         margin-right: auto;
     }
     ol li.localized {
-        background: lighten($form-background-color,15%);
+        background: lighten($formbackgroundcolor,15%);
     }
     ol ol {
         margin-left: 0px;
@@ -62,7 +62,7 @@ form {
         margin-left: 0px;
         margin-right: 5;
         display: block;
-        background: lighten($form-background-color,20%);
+        background: lighten($formbackgroundcolor,20%);
         border: 0px;
         -moz-border-radius: 2px;
         -webkit-border-radius: 2px;
@@ -191,7 +191,7 @@ form#login, form#federated {
     font-size: smaller;
     margin-top: 50px;
     margin-bottom: auto;
-    background: -moz-linear-gradient(center top , lighten($form-background-color,10%) 92%, darken($form-background-color,0%) 100%) repeat scroll 0 0 transparent;
+    background: -moz-linear-gradient(center top , lighten($formbackgroundcolor,10%) 92%, darken($formbackgroundcolor,0%) 100%) repeat scroll 0 0 transparent;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     width: auto;
     margin-left: auto;
@@ -199,9 +199,7 @@ form#login, form#federated {
     max-width: 600px;
     legend {
         font-size: x-large;;
-        // font-weight: bold;
         font-family: 'PT Serif', serif;
-        //font-family: ‘Metrophobic’, Arial, serif; 
         font-weight: 400; 
         border-bottom: dotted 1px black;
     }

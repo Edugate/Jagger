@@ -108,7 +108,7 @@ only screen and (min-resolution: 144dpi) {
         caption {
            width: auto;
            font-weight: bold;
-           background-color: lighten($form-background-color, 0%);
+           background-color: lighten($formbackgroundcolor, 0%);
            min-height: 30px;
            padding: 5 5 5 5;
            margin: auto auto auto auto;
@@ -186,7 +186,7 @@ only screen and (min-resolution: 144dpi) {
             margin-bottom: 5px;
             padding-bottom: 5px;
             width: auto;
-            background-color: darken($form-background-color,40%);
+            background-color: darken($formbackgroundcolor,40%);
             width: 100%;
             border-radius: 3px 3px 3px 3px;
             padding: 1px 4px 2px;

@@ -775,21 +775,7 @@ button.negative {
     
 }
 
-button.typelist {
-    font-weight: bold;
-}
 
-button.tchosen  {
-    font-weight: bold;
-    background-color: orange;
-    background-image: -ms-linear-gradient(top, orange, orange);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(orange), to(orange));
-    background-image: -webkit-linear-gradient(top, orange, orange);
-    background-image: -o-linear-gradient(top, orange, #e6e6e6);
-    background-image: linear-gradient(top, orange, #e6e6e6);
-    background-image: -moz-linear-gradient(top, orange, orange);
-    background-repeat: repeat-x;
-}
 
 
 .ui-button { margin-left: -1px; }
@@ -1088,10 +1074,10 @@ span.alert
     min-width: 600px;
     padding-top: 10px;
     padding-bottom: 10px;
-    background: lighten($form-background-color,10%) ;
-    background-image: -moz-linear-gradient(center top , lighten($form-background-color,10%) 92%, darken($form-background-color,0%) 100%) repeat scroll 0 0 transparent;
+    background: lighten($formbackgroundcolor,10%) ;
+    background-image: -moz-linear-gradient(center top , lighten($formbackgroundcolor,10%) 92%, darken($formbackgroundcolor,0%) 100%) repeat scroll 0 0 transparent;
     background-repeat: repeat-x;
-    background: -webkit-gradient(linear, center top, center bottom, from(lighten($form-background-color,10%)), to(darken($form-background-color,0%)));
+    background: -webkit-gradient(linear, center top, center bottom, from(lighten($formbackgroundcolor,10%)), to(darken($formbackgroundcolor,0%)));
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     
 }
@@ -1321,7 +1307,7 @@ button.loginbtn {
     padding:6px 24px;
     text-decoration:none;
 }
-button.loginbtn:hover , button.fedcategory:hover{
+button.loginbtn:hover , button.fedcategory:hover, button.typelist:hover{
     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #1c121c), color-stop(1, #080808) );
     background:-moz-linear-gradient( center top, #1c121c 5%, #080808 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#1c121c', endColorstr='#080808');
@@ -1334,7 +1320,7 @@ button.loginbtn:active {
 #fedcategories {
     padding-bottom: 10px;
 }
-button.fedcategory {
+button.fedcategory, button.typelist {
    color: $btn1color;
    padding: 10px 15px;
    background: -moz-linear-gradient(
@@ -1363,7 +1349,7 @@ button.fedcategory {
 		0px 1px 0px rgba(255,255,255,0.3);
 
 }
-     button.activated {
+     button.activated , button.tchosen{
    color: $btn1color;
    padding: 10px 15px;
    background: -moz-linear-gradient(
