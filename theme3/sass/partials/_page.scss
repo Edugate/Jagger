@@ -49,6 +49,8 @@ li {
     list-style: none;
 }
 #toppanel {
+    background: $toPanelBackground;
+    @include filter-gradient($toPanelBackground, $downPanelBackground, vertical);
     @include background-image(linear-gradient($toPanelBackground,$downPanelBackground));
     color: $font-color-toppanel;
     margin: 5px;
@@ -145,9 +147,11 @@ nav {
     width: 90%;
     max-width: 1024px;
     margin: 10px auto;
+    background: $container-background-gradient-1;
+    @include filter-gradient($container-background-gradient-1, $container-background-gradient-2, vertical);
     @include background-image(linear-gradient($container-background-gradient-1, $container-background-gradient-2));
+    @include border-radius(3px 3px, 3px 3px);
     border: 1px solid $container-border-color;
-     @include border-radius(3px 3px, 3px 3px);
     box-shadow: 0 1px 0 $container-box-shadow-color inset;
     list-style: none outside none;
     padding: 7px 14px;
@@ -160,6 +164,8 @@ nav {
 }
 #subtitle,#pagetitle,#excarpslist,#noticeblock,.sectiontitle{
     text-align: center;
+    background: $titleBgColorTop;
+    @include filter-gradient($titleBgColorTop, $titleBgColorBottom, vertical);
     @include background-image(linear-gradient($titleBgColorTop, $titleBgColorBottom)); 
     @include border-radius(3px 3px, 3px 3px);
     border: $titleBorderWidth solid $titleBorderColor;
@@ -214,6 +220,8 @@ div.sectiontitle {
 }
 
 .toggleMenu {
+    background: $toggleMenuBgColor1;
+    @include filter-gradient($toggleMenuBgColor1,$toggleMenuBgColor2,vertical);
     @include background-image(linear-gradient(top,$toggleMenuBgColor1,$toggleMenuBgColor2,$toggleMenuBgColor3));
     color: $toggleMenuColor;
     display:  none;
@@ -222,6 +230,8 @@ div.sectiontitle {
 .nav {
     list-style: none;
     *zoom: 1;
+    background: $nav-1stlevel-bgcolor2;
+    @include filter-gradient($nav-1stlevel-bgcolor1,$nav-1stlevel-bgcolor3,vertical);
     @include background-image(linear-gradient(top, $nav-1stlevel-bgcolor1,$nav-1stlevel-bgcolor2,$nav-1stlevel-bgcolor3));
     border-top: 1px solid $nav-1stlevel-bordertop;
 }
@@ -445,6 +455,8 @@ footer,#footer {
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
+    background: $boxHeadeColorTop;
+    @include filter-gradient($boxHeadeColorTop, $boxHeaderColorDown, vertical);
     @include background-image(linear-gradient($boxHeadeColorTop,  $boxHeaderColorDown));
     @include border-radius(1px 1px, 0px 0px);
     border-image: none;
@@ -704,6 +716,8 @@ code,pre {
     vertical-align: middle;
     cursor: pointer;
 
+    background: $defaultBtnBgColor1;;
+    @include filter-gradient($defaultBtnBgColor1, $defaultBtnBgColor3, vertical);
     @include background-image(linear-gradient(top,$defaultBtnBgColor1,$defaultBtnBgColor2,$defaultBtnBgColor3));
     border: $defaultBtnBorderWidth solid $defaultBtnBorderColor;
     *border: 0;
@@ -713,8 +727,9 @@ code,pre {
 
     @include border-radius(4px 4px, 4px 4px);
 
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+//    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
+//    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+
     *zoom: 1;
     -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -1301,6 +1316,8 @@ button.loginbtn:active {
 button.fedcategory, button.typelist {
    color: $btn1color;
    padding: 10px 15px;
+   background: $btn1bgcolortop;
+   @include filter-gradient($btn1bgcolortop, $btn1bgcolordown, vertical);
    background: -moz-linear-gradient(
 		top,
 	         $btn1bgcolortop 0%,
@@ -1328,6 +1345,8 @@ button.fedcategory, button.typelist {
 button.activated , button.tchosen{
    color: $btn1color;
    padding: 10px 15px;
+   background: black;
+   @include filter-gradient($btn1bgcolortop, $btn1bgcolordown, vertical);
    background: -moz-linear-gradient(
 		top,
 	         darken($btn1bgcolortop,25%) 0%,
@@ -1357,6 +1376,8 @@ button.fedcategory:hover, button.typelist:hover {
 
    color: $btn1colorhover;
    padding: 10px 15px;
+   background: $btn1bgcolorhovertop;
+   @include filter-gradient($btn1bgcolorhovertop, $btn1bgcolorhoverdown, vertical);
    background: -moz-linear-gradient(
 		top,
 	        $btn1bgcolorhovertop 0%,
