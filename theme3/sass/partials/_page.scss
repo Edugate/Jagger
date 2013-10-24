@@ -49,7 +49,7 @@ li {
     list-style: none;
 }
 #toppanel {
-    background: $toPanelBackground;
+    @include background-image(linear-gradient($toPanelBackground,$downPanelBackground));
     color: $font-color-toppanel;
     margin: 5px;
     margin-top: 1px;
@@ -145,15 +145,11 @@ nav {
     width: 90%;
     max-width: 1024px;
     margin: 10px auto;
-    background-color: $container-background-color;
-    background-image: -moz-linear-gradient(center top , $container-background-gradient-1, $container-background-gradient-2);
-    background: -webkit-gradient(linear, center top, center bottom, from($container-background-gradient-1), to($container-background-gradient-2));
-    background-repeat: repeat-x;
+    @include background-image(linear-gradient($container-background-gradient-1, $container-background-gradient-2));
     border: 1px solid $container-border-color;
      @include border-radius(3px 3px, 3px 3px);
     box-shadow: 0 1px 0 $container-box-shadow-color inset;
     list-style: none outside none;
-    //  margin: 0 0 18px;
     padding: 7px 14px;
     min-height: 80%;
 }
@@ -164,13 +160,10 @@ nav {
 }
 #subtitle,#pagetitle,#excarpslist,#noticeblock,.sectiontitle{
     text-align: center;
-    background-color: #FBFBFB;
-    background-image: -moz-linear-gradient(center top , #FFFFFF, #F5F5F5);
-    background-repeat: repeat-x;
-    background: -webkit-gradient(linear, center top, center bottom, from(#fff), to(#F5F5F5));
-    border: 1px solid #DDDDDD;
+    @include background-image(linear-gradient($titleBgColorTop, $titleBgColorBottom)); 
     @include border-radius(3px 3px, 3px 3px);
-    box-shadow: 0 1px 0 #FFFFFF inset;
+    border: $titleBorderWidth solid $titleBorderColor;
+    box-shadow: 0 1px 0 $titleShadowColor inset;
     list-style: none outside none;
     margin: 0 0 10px;
 }
@@ -221,18 +214,16 @@ div.sectiontitle {
 }
 
 .toggleMenu {
+    @include background-image(linear-gradient(top,$toggleMenuBgColor1,$toggleMenuBgColor2,$toggleMenuBgColor3));
+    color: $toggleMenuColor;
     display:  none;
-    background: #666;
     padding: 10px 15px;
-    color: #fff;
 }
 .nav {
     list-style: none;
     *zoom: 1;
-    background: $nav-1stlevel-background;
-    background: $nav-1stlevel-background-gecko;
-    background-color: black;
-    border-top: 1px solid black;
+    @include background-image(linear-gradient(top, $nav-1stlevel-bgcolor1,$nav-1stlevel-bgcolor2,$nav-1stlevel-bgcolor3));
+    border-top: 1px solid $nav-1stlevel-bordertop;
 }
 .nav:before,
 .nav:after {
@@ -434,16 +425,14 @@ footer,#footer {
 
 .box {
     
-    border: 1px solid #DEDEDE;
 
-    @include border-radius(2px 5px, 3px 6px);
-    box-shadow: 0 0 0px rgba(189, 189, 189, 0.4);
-    margin-bottom: 10px;
-    margin-top: 10px; 
-    color: #333333;
+    color: $boxBlockFontColor;
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    // font-size: 13px;
     line-height: 18px;
+    border: 1px solid $boxBlockBorderColor;
+    @include border-radius(2px 5px, 3px 6px);
+    margin-top: 10px; 
+    margin-bottom: 10px;
     
     li { 
         display: block;
@@ -456,19 +445,20 @@ footer,#footer {
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.1) 100%) repeat scroll 0 0 transparent;
-    background: -webkit-gradient(linear, center top, center bottom, from(rgba(255, 255, 255, 0)), to(rgba(0, 0, 0, 0.1)));
-    border-color: -moz-use-text-color -moz-use-text-color #DEDEDE;
-    border-image: none;
+    @include background-image(linear-gradient($boxHeadeColorTop,  $boxHeaderColorDown));
     @include border-radius(1px 1px, 0px 0px);
+    border-image: none;
+    //border-color: -moz-use-text-color -moz-use-text-color #DEDEDE;
+
     border-style: none none solid;
-    border-width: medium medium 1px;
+    border-width: medium medium 0px;
     font-size: 16px;
     font-weight: bold;
     //height: 12px;
     margin-bottom: 0;
     min-height: 12px;
     padding-top: 0px;
+    padding-bottom: 4px;
 }
 .box-content {
     padding: 10px;
@@ -705,30 +695,24 @@ code,pre {
     padding: 4px 10px 4px;
     margin-bottom: 0;
     *margin-left: .3em;
-    //  font-size: 13px;
     font-size: 1em;
     line-height: 18px;
     *line-height: 20px;
-    color: #333333;
+    color: $defaultBtnColor;
     text-align: center;
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
     vertical-align: middle;
     cursor: pointer;
-    background-color: #f5f5f5;
-    *background-color: #e6e6e6;
-    background-image: -ms-linear-gradient(top, #ffffff, #e6e6e6);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
-    background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
-    background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
-    background-image: linear-gradient(top, #ffffff, #e6e6e6);
-    background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
-    background-repeat: repeat-x;
-    border: 1px solid #cccccc;
+
+    @include background-image(linear-gradient(top,$defaultBtnBgColor1,$defaultBtnBgColor2,$defaultBtnBgColor3));
+    border: $defaultBtnBorderWidth solid $defaultBtnBorderColor;
     *border: 0;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-    border-bottom-color: #b3b3b3;
+ //   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+ //    border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+//    border-bottom-color: #b3b3b3;
+
     @include border-radius(4px 4px, 4px 4px);
+
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
     filter: progid:dximagetransform.microsoft.gradient(enabled=false);
     *zoom: 1;
