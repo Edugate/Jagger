@@ -32,9 +32,9 @@ class Sp_matrix extends MY_Controller
         $this->current_site = current_url();
     }
 
-    private function _get_members($sp)
+    private function _get_members($sp, $onlylocal=FALSE)
     {
-        $members = $this->tmp_providers->getCircleMembersIDP($sp);
+        $members = $this->tmp_providers->getCircleMembersIDP($sp, NULL, $onlylocal);
         return $members;
     }
     public function members_urls($spid)
@@ -50,7 +50,7 @@ class Sp_matrix extends MY_Controller
             show_error('Service Provider not found',404);
         }
         $sp_entityid = $sp->getEntityId();
-        $members = $this->_get_members($sp);
+        $members = $this->_get_members($sp,TRUE);
         $tmp_attributes = new models\Attributes();
         $attributes = $tmp_attributes->getAttributes();
         $tmp_reqs = new models\AttributeRequirements;
@@ -96,8 +96,10 @@ class Sp_matrix extends MY_Controller
               {
                   $entityname = $m->getEntityid();
               }
-              $name = $output->CreateElement('Name',$entityname);
-              $entityid = $output->CreateElement('entityID',$m->getEntityid());
+              $name = $output->createElement('Name');
+              $name->appendChild( $output->createTextNode(''.$entityname.''));
+              $entityid = $output->CreateElement('entityID');
+              $entityid->appendChild( $output->createTextNode($m->getEntityid()));
               $providerurl = $output->CreateElement('providerURL',base_url().'providers/detail/show/'.$m->getId());
               $arp_url = base_url().'arp/format2/'.base64url_encode($m->getEntityId()).'/arp.xml';
               $location = $output->CreateElement('Location',$arp_url);

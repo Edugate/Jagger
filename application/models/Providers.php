@@ -171,28 +171,34 @@ class Providers {
         return $this->providers;
     }
 
-    public function getCircleMembersIDP(Provider $provider, $federations = null)
+    public function getCircleMembersIDP(Provider $provider, $federations = null, $onlylocal=false)
     {
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
-        /**
-         * @todo add confition only active federations
-         */
         $federations = $provider->getFederations();
 
         foreach ($federations->getValues() as $f)
         {
             if ($f->getActive())
             {
-
-                $y = $f->getMembers();
+                $doFilter['type']= array('IDP','BOTH');
+                $doFilter['local'] = array('1');
+                if(!$onlylocal)
+                {
+                   $doFilter['local'][] = '0';
+                }
+              
+                $y = $f->getMembers()->filter(
+                       function($entry) use($doFilter){
+                            return (in_array($entry->getType(), $doFilter['type']) && in_array($entry->getLocal(),$doFilter['local']));
+                       }
+                     );
                 foreach ($y->getKeys() as $key)
                 {
-                    $type = $y->get($key)->getType();
-                    //  log_message('debug','TYPE::::: '.$type);
-                    if ($type == 'IDP' OR $type == 'BOTH')
-                    {
+                  //  $type = $y->get($key)->getType();
+                  //  if (strcmp($type,'SP')!=0)
+                  //  {
                         $this->providers->set($key, $y->get($key));
-                    }
+                  //  }
                 }
             }
         }

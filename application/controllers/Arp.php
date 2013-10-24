@@ -79,6 +79,7 @@ class Arp extends MY_Controller {
         $arpcached = $this->cache->get($cacheid);
         if(empty($arpcached))
         {
+            log_message('debug', 'not found in memcache');
             $data['out'] = $this->generateXml($idp);
             if(!empty($data['out']))
             {
@@ -87,6 +88,7 @@ class Arp extends MY_Controller {
         }
         else
         {
+            log_message('debug', 'got from memcache');
             $data['out'] = $arpcached;
         }
         if (!empty($data['out']))
