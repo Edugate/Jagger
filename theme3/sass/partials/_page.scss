@@ -87,9 +87,9 @@ li {
     select {
         padding:3px;
         margin: 0;
-        -webkit-border-radius:4px;
-        -moz-border-radius:4px;
-        border-radius:4px;
+        @include border-radius(4px, 4px); 
+
+        
         -webkit-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
         -moz-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
         box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
@@ -150,7 +150,7 @@ nav {
     background: -webkit-gradient(linear, center top, center bottom, from($container-background-gradient-1), to($container-background-gradient-2));
     background-repeat: repeat-x;
     border: 1px solid $container-border-color;
-    border-radius: 3px 3px 3px 3px;
+     @include border-radius(3px 3px, 3px 3px);
     box-shadow: 0 1px 0 $container-box-shadow-color inset;
     list-style: none outside none;
     //  margin: 0 0 18px;
@@ -169,7 +169,7 @@ nav {
     background-repeat: repeat-x;
     background: -webkit-gradient(linear, center top, center bottom, from(#fff), to(#F5F5F5));
     border: 1px solid #DDDDDD;
-    border-radius: 3px 3px 3px 3px;
+    @include border-radius(3px 3px, 3px 3px);
     box-shadow: 0 1px 0 #FFFFFF inset;
     list-style: none outside none;
     margin: 0 0 10px;
@@ -435,7 +435,8 @@ footer,#footer {
 .box {
     
     border: 1px solid #DEDEDE;
-    border-radius: 3px 3px 3px 3px;
+
+    @include border-radius(2px 5px, 3px 6px);
     box-shadow: 0 0 0px rgba(189, 189, 189, 0.4);
     margin-bottom: 10px;
     margin-top: 10px; 
@@ -459,7 +460,7 @@ footer,#footer {
     background: -webkit-gradient(linear, center top, center bottom, from(rgba(255, 255, 255, 0)), to(rgba(0, 0, 0, 0.1)));
     border-color: -moz-use-text-color -moz-use-text-color #DEDEDE;
     border-image: none;
-    border-radius: 1px 1px 0 0;
+    @include border-radius(1px 1px, 0px 0px);
     border-style: none none solid;
     border-width: medium medium 1px;
     font-size: 16px;
@@ -629,7 +630,7 @@ code,pre {
 .lbl {
     text-transform:lowercase;
     white-space:nowrap;
-    border-radius: 3px 3px 3px 3px;
+    @include border-radius(3px 3px, 3px 3px);
     padding: 1px 4px 2px;
     box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
     color: rgba(255, 255, 255, 0.9);
@@ -727,9 +728,7 @@ code,pre {
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
     border-color: #e6e6e6 #e6e6e6 #bfbfbf;
     border-bottom-color: #b3b3b3;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
+    @include border-radius(4px 4px, 4px 4px);
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
     filter: progid:dximagetransform.microsoft.gradient(enabled=false);
     *zoom: 1;
@@ -1029,10 +1028,7 @@ span.alert
         filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#2e466e', endColorstr='#415989',GradientType=0);
         
         background-color:#2e466e;
-        
-        -moz-border-radius:3px;
-        -webkit-border-radius:3px;
-        border-radius:3px;
+        @include border-radius(3px 3px, 3px 3px); 
         
         border:1px solid #1f2f47;
         
@@ -1089,7 +1085,7 @@ span.alert
 #simplemodal-container form#login, #simplemodal-container form#federated, #loginform2 form#login, #loginform2 form#federated  {
     background: transparent;
     border: 0px;
-    border-radius: 0px;
+    @include border-radius(0px 0px, 0px 0px);
     box-shadow: 0 0px 0 #FFFFFF inset;
     margin: auto;
     legend {
@@ -1254,9 +1250,7 @@ span.alert
     background:-moz-linear-gradient( center top, #3d94f6 5%, #1e62d0 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#3d94f6', endColorstr='#1e62d0');
     background-color:#3d94f6;
-    -moz-border-radius:1px;
-    -webkit-border-radius:1px;
-    border-radius:1px;
+    @include border-radius(1px 1px, 1px 1px);
     border:1px solid #337fed;
     display:inline-block;
     color:#ffffff;
@@ -1297,9 +1291,7 @@ button.loginbtn {
     background:-moz-linear-gradient( center top, #080808 5%, #1c121c 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#080808', endColorstr='#1c121c');
     background-color:#080808;
-    -moz-border-radius:1px;
-    -webkit-border-radius:1px;
-    border-radius:1px;
+    @include border-radius(1px 1px, 1px 1px);
     border:0px solid #f7f7f7;
     display:inline-block;
     color:#ededed;
@@ -1333,9 +1325,7 @@ button.fedcategory, button.typelist {
 		linear, left top, left bottom, 
 		from($btn1bgcolortop),
 		to($btn1bgcolordown));
-	-moz-border-radius: 0px;
-	-webkit-border-radius: 0px;
-	border-radius: 0px;
+       @include border-radius(0px 0px, 0px 0px);
 	border: 1px solid $btn1bordercolor;
 	-moz-box-shadow:
 		0px 1px 1px rgba(000,000,000,0.5),
@@ -1362,9 +1352,7 @@ button.activated , button.tchosen{
 		linear, left top, left bottom, 
 		from(darken($btn1bgcolortop,25%)),
 		to(darken($btn1bgcolordown,25%)));
-	-moz-border-radius: 0px;
-	-webkit-border-radius: 0px;
-	border-radius: 0px;
+        @include border-radius(0px 0px, 0px 0px);
 	border: 1px solid $btn1bordercolor;
 	-moz-box-shadow:
 		0px 1px 1px rgba(000,000,000,0.5),
@@ -1393,9 +1381,7 @@ button.fedcategory:hover, button.typelist:hover {
 		linear, left top, left bottom, 
 		from($btn1bgcolorhovertop),
 		to($btn1bgcolorhoverdown));
-	-moz-border-radius: 0px;
-	-webkit-border-radius: 0px;
-	border-radius: 0px;
+        @include border-radius(0px, 0px);
 	border: 1px solid $btn1bordercolorhover;
 	-moz-box-shadow:
 		0px 1px 1px rgba(000,000,000,0.5),
@@ -1420,7 +1406,7 @@ button.fedcategory:hover, button.typelist:hover {
     padding:1px 2px 1px 2px;
     background-color:red;
     color:white;
-    border-radius:3px;
+    @include border-radius(3px 3px, 3px 3px);
     box-shadow:1px 1px 1px gray;
     border: 1px solid white;
     font-weight: bolder;

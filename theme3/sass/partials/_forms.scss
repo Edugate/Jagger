@@ -2,10 +2,7 @@
 form {
     counter-reset: fieldsets;
     background: lighten($formbackgroundcolor,10%);
-    border-radius: $formBorderRadius;
-    -khtml-border-radius: $formBorderRadius;
-    -moz-border-radius: $formBorderRadius;
-    -webkit-border-radius: $formBorderRadius;
+    @include border-radius($formBorderRadius, $formBorderRadius);
     padding: 20px;
     width: auto;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
@@ -40,10 +37,7 @@ form {
         border-color: $formBorderColor;
         border-style: solid;
         border-width: 1px;
-        -moz-border-radius: 2px;
-        -webkit-border-radius: 2px;
-        -khtml-border-radius: 2px;
-        border-radius: 2px;
+        @include border-radius(2px, 2px);
         list-style: none;
         margin-bottom: 2px;
         padding: 5px;
@@ -64,10 +58,8 @@ form {
         display: block;
         background: lighten($formbackgroundcolor,20%);
         border: 0px;
-        -moz-border-radius: 2px;
-        -webkit-border-radius: 2px;
-        -khtml-border-radius: 2px;
-        border-radius: 2px;
+         @include border-radius(2px, 2px);
+
         padding: 3px;
         margin-top: 2px;
         width: auto;
@@ -101,11 +93,8 @@ form {
         overflow: hidden;
         padding: 0px 3px;
         border: 1px solid;
-        border-radius: 2px;
-        -khtml-border-radius: 2px;
-        -moz-border-radius: 2px;
-        -webkit-border-radius: 2px;
-        
+        @include border-radius(2px, 2px);
+ 
     }
     textarea {
         border: 1px solid;
@@ -114,11 +103,8 @@ form {
         padding: 0px 3px;
         width: 50%;
         min-width: 194px;
-        border-radius: 2px;
-        -khtml-border-radius: 2px;
-        -moz-border-radius: 2px;
-        -webkit-border-radius: 2px;
-        
+        @include border-radius(2px, 2px);
+ 
         
     }
     div.error {
@@ -265,7 +251,8 @@ form#rejectqueue, form#approvequeue{
     border: 0px;
     margin:auto;
     width: auto;
-    border-radius: 0px;
+    @include border-radius(0px, 0px);
+
     padding: 10px;
     box-shadow: 0 0px 0px;
 }
