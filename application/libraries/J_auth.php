@@ -154,6 +154,46 @@ class J_auth {
 
         return $_output;
     }
+    public function isAdministrator()
+    {
+        $username = $this->current_user();
+        if(empty($username))
+        {
+           return FALSE;
+        }
+        $u = $this->em->getRepository("models\User")->findOneBy(array('username'=>''.$username.''));
+        if(empty($u))
+        {
+            log_message('error', 'isAdministrator: Browser client session from IP:'.$_SERVER['REMOTE_ADDR'] .' references to nonexist user: '.$username);
+            $this->ci->session->sess_destroy();
+            show_error('Access denied', 403);
+        }
+        $adminRole = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>'Administrator','type'=>'system'));
+        if(empty($adminRole))
+        {
+            log_message('error', 'isAdministrator: Administrator Role is missing in DB AclRoles tbl');
+        }
+        else
+        {
+             $userRoles = $u->getRoles();
+             if($userRoles->contains($adminRole))
+             {
+                log_message('debug','isAdministrator: user '.$u->getUsername().' found in Administrator group'); 
+                return TRUE;
+             }   
+             else
+             {
+                log_message('debug','isAdministrator: user '.$u->getUsername().' not found in Administrator group'); 
+
+             }
+        }
+        return FALSE;
+      
+        
+
+    }
+
+
 
 }
 

@@ -20,7 +20,6 @@ if (!defined('BASEPATH'))
  */
 class Fedcategory extends MY_Controller {
 
-
     public function __construct()
     {
         parent::__construct();
@@ -30,132 +29,150 @@ class Fedcategory extends MY_Controller {
             redirect('auth/login', 'location');
         }
         $this->load->library('form_element');
-        $this->load->library('form_validation');
         $this->load->library('zacl');
         $this->title = lang('title_fedcategory');
     }
-   
+
     private function _submit_validate()
     {
-        return TRUE;
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('fed[]', lang('rrfedcatmembers'), 'integer');
+        $this->form_validation->set_rules('buttonname',lang('tbl_catbtnname'),'required|trim|min_length[5]|max_length[50]|xss_clean');
+        $this->form_validation->set_rules('fullname',lang('tbl_catbtnititlename'),'required|trim|min_length[5]|max_length[200]|xss_clean');
+        $this->form_validation->set_rules('description',lang('rr_description'),'required|trim|min_length[5]|max_length[500]|xss_clean');
+        return $this->form_validation->run();
     }
-    public function edit($cat=null)
-    {
-         show_error('denied',403);
-         if(!empty($cat) && !is_numeric($cat))
-         {
-             show_error('not found',404);
-         }
-         $c=$this->em->getRepository("models\FederationCategory")->findOneBy(array('id'=>$cat));
-         if(empty($c))
-         {
-             show_error('not found',404);
-         }
-         if($this->_submit_validate())
-         {
-            echo '<pre>';
-            print_r($this->input->post('fed'));
-            echo '</pre>';
-            $s =  $this->input->post('fed');
-            if(!empty($s) && is_array($s))
-            {
-               unset($s[0]);
-               $members = $c->getFederations();
-               $federations = $this->em->getRepository("models\Federation")->findAll();
-               foreach($federations as $ff)
-               {
-                  $g[$ff->getId()] = $ff;
-               }
-               $federations = $g;
-               foreach($members as $m)
-               {
-                  $fedid = $m->getId();
-                  if(!array_key_exists($fedid,$s))
-                  {
-                     $c->removeFederation($m);
-                  }
-                  unset($s[$fedid]);
-               }
-               foreach($s as $k=>$v)
-               {
-                    if(array_key_exists($k,$federations))
-                    {
-                       $members->add($federations[$k]);
-                    }
-               }
-               $this->em->persist($c);
-               $this->em->flush();
-                
-            }
-         }
-         $data['buttonname'] = $c->getName();
-         $data['fullname'] = $c->getFullName();
-         $data['description'] = $c->getDescription();
-         $data['isdefault'] = $c->getIsDefault();
-         $members = $c->getFederations();
-         $federations = $this->em->getRepository("models\Federation")->findAll();
-         $mult = array();
-         foreach($federations as $f)
-         {
-            if($members->contains($f))
-            {
-               $mult[] = array('fedname'=>$f->getName(),'fedid'=>$f->getId(),'member'=>'1');
-            }
-            else
-            {
-               $mult[] = array('fedname'=>$f->getName(),'fedid'=>$f->getId(),'member'=>'0');
 
+    public function edit($cat = null)
+    {
+        if (!empty($cat) && !ctype_digit($cat))
+        {
+            show_error('not found', 404);
+        }
+        
+        $isAdmin = $this->j_auth->isAdministrator();
+        if (!$isAdmin)
+        {
+            show_error('perm denied', 403);
+        }
+        $currentCategory = $this->em->getRepository("models\FederationCategory")->findOneBy(array('id' => $cat));
+        if (empty($currentCategory))
+        {
+            show_error('not found', 404);
+        }
+        if ($this->_submit_validate())
+        {
+            $postedFeds = $this->input->post('fed');
+            $buttonname = $this->input->post('buttonname');
+            $fullname = $this->input->post('fullname');
+            $description = $this->input->post('description');
+            if (!empty($postedFeds) && is_array($postedFeds))
+            {
+                log_message('debug', 'Fedcat: post received');
+                unset($postedFeds['controlkey']);
+                $members = $currentCategory->getFederations();
+                $federations = $this->em->getRepository("models\Federation")->findAll();
+                foreach ($federations as $value)
+                {
+                    $g[$value->getId()] = $value;
+                }
+                // all federations
+                $federations = $g;
+
+                foreach ($members as $m)
+                {
+                    $fedid = $m->getId();
+                    $foundKey = array_search($fedid, $postedFeds);
+                    if (is_null($foundKey) || $foundKey === FALSE)
+                    {
+                        $currentCategory->removeFederation($m);
+                    } else
+                    {
+                        unset($postedFeds[$foundKey]);
+                    }
+                }
+                foreach ($postedFeds as $k => $v)
+                {
+                    if (array_key_exists($v, $federations))
+                    {
+                        $members->add($federations[$v]);
+                    }
+                }
+                $currentCategory->setName($buttonname);
+                $currentCategory->setFullName($fullname);
+                $currentCategory->setDescription($description);
+                $this->em->persist($currentCategory);
+                $this->em->flush();
+                $data['success_message'] = lang('updated');
             }
-         }
-       
-      //  echo '<pre>';
-      //  print_r($mult);
-      //  echo '</pre>';
+        }
+        $data['buttonname'] = $currentCategory->getName();
+        $data['fullname'] = $currentCategory->getFullName();
+        $data['description'] = $currentCategory->getDescription();
+        $data['isdefault'] = $currentCategory->getIsDefault();
+        $members = $currentCategory->getFederations();
+        $federations = $this->em->getRepository("models\Federation")->findAll();
+        $mult = array();
+        foreach ($federations as $f)
+        {
+            if ($members->contains($f))
+            {
+                $mult[] = array('fedname' => '' . $f->getName() . '', 'fedid' => $f->getId(), 'member' => '1');
+            } else
+            {
+                $mult[] = array('fedname' => '' . $f->getName() . '', 'fedid' => '' . $f->getId() . '', 'member' => '0');
+            }
+        }
+
         $data['multi'] = $mult;
         $data['content_view'] = 'manage/fedcatedit_view';
-        $this->load->view('page',$data);
-
-
+        $this->load->view('page', $data);
     }
 
-    public function show($cat=NULL)
+    public function show($cat = NULL)
     {
-         if(!empty($cat) && !is_numeric($cat))
-         {
-             show_error('not found',404);
-         }
-         /**
-          * @todo ACL check
-          */
-         if(empty($cat))
-         {
+        if (!empty($cat) && !ctype_digit($cat))
+        {
+            show_error('not found', 404);
+        }
+        /**
+         * @todo ACL check
+         */
+        if (empty($cat))
+        {
             $cats = $this->em->getRepository("models\FederationCategory")->findAll();
             $data['subtitle'] = '';
-         }
-         else
-         {
-            $cats = $this->em->getRepository("models\FederationCategory")->findBy(array('id'=>$cat));
-         }
-         $result = array();
-         foreach($cats as $c)
-         {
+        } else
+        {
+            $cats = $this->em->getRepository("models\FederationCategory")->findBy(array('id' => $cat));
+        }
+        $result = array();
+        $isAdmin = $this->j_auth->isAdministrator();
+        $editLinkLang = lang('rr_edit');
+        $baseurl = base_url();
+        foreach ($cats as $c)
+        {
             $default = '';
-            if($c->getIsDefault())
+            if ($c->getIsDefault())
             {
-                $default = makeLabel('active',lang('rr_default'),lang('rr_default'));
+                $default = makeLabel('active', lang('rr_default'), lang('rr_default'));
+            }
+            $editlink = '';
+            if($isAdmin)
+            {
+                $editlink = '<a href="'.$baseurl.'manage/fedcategory/edit/'.$c->getId().'">'.$editLinkLang.'</a>';
             }
             $result[] = array(
-                    'name'=>$c->getName(). ' '.$default,
-                    'full'=>$c->getFullName(),
-                    'desc'=>$c->getDescription(),
-              );
-         }
-        
-         $data['result']= $result;
-         $data['content_view'] = 'manage/fedcategory_view';
-         $this->load->view('page',$data);
+                'name' => $c->getName() . ' '. $editlink.' ' . $default,
+                'full' => $c->getFullName(),
+                'desc' => $c->getDescription(),
+                
+            );
+        }
 
-        
-
+        $data['result'] = $result;
+        $data['content_view'] = 'manage/fedcategory_view';
+        $this->load->view('page', $data);
     }
+
 }

@@ -116,7 +116,7 @@ class Detail extends MY_Controller {
 
     function show($id)
     {
-        if (empty($id) or !is_numeric($id))
+        if (empty($id) or !ctype_digit($id))
         {
             show_error(lang('error404'), 404);
             return;

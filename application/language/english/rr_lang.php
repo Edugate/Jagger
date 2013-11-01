@@ -70,6 +70,7 @@ $lang['rr_modify']                  = 'Modify';
 $lang['rr_cancel']                  = 'Cancel';
 $lang['rr_create']                  = 'Create';
 $lang['rrfedcatslist']              = 'Federations Categories';
+$lang['rrfedcatmembers']            = 'Federations - category members';
 $lang['typeofents']                 = 'Type of entities';
 $lang['importsslcheck']             = 'Don&rsquo;t validate the server&rsquo;s certificate';
 $lang['gobacktothelist']            = 'Please go back to the list';
