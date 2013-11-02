@@ -15,17 +15,17 @@ echo form_open();
 echo '<fieldset><legend>'.lang('general').'</legend><ol>';
 echo '<li>';
 echo '<label for="buttonname">'.lang('tbl_catbtnname').'</label>';
-echo '<input type="text" id="buttonname" name="buttonname" required="required"
+echo '<input type="text" id="buttonname" name="buttonname" 
                            value="'.$buttonname.'" />';
 echo '</li>';
 echo '<li>';
 echo '<label for="fullname">'.lang('tbl_catbtnititlename').'</label>';
-echo '<input type="text" id="fullname" name="fullname" required="required"
+echo '<input type="text" id="fullname" name="fullname" 
                            value="'.$fullname.'" />';
 echo '</li>';
 echo '<li>';
 echo '<label for="description">'.lang('rr_description').'</label>';
-echo '<textarea id="description" name="description" required="required" rows="5">';
+echo '<textarea id="description" name="description" rows="5">';
 echo $description;
 echo '</textarea>';
                         
@@ -51,7 +51,7 @@ foreach($multi as $m)
     'id'          => 'fed[]',
     'value'       => ''.$fedid.'',
     'checked'     => $c,
-    'style'       => 'margin-right:10px; margin-left: 50px;',
+    'style'       => 'margin-right:10px; margin-left: 70px;',
     );
    echo '<li><label for="fed[]">'.$m['fedname'].'</label>'.form_checkbox($data).'</li>';
 
@@ -59,5 +59,7 @@ foreach($multi as $m)
 echo '</table>';
 echo '</ol>';
 echo '</fieldset>';
-echo '<div class="buttons"><button type="submit" class="btn btn-positive">Save</button></div>';
+echo '<div class="buttons"><button type="submit" id="rmfedcategory" name="formsubmit" value="remove" class="btn btn-negative">'.lang('rr_remove').'</button> <button type="submit" name="formsubmit" value="update" class="btn btn-positive">'.lang('rr_save').'</button></div>';
 echo form_close();
+
+echo confirmDialog(''.lang('title_confirm').'', ''.sprintf(lang('douwanttoremove'),lang('fedcategory')).'', ''.lang('rr_yes').'', ''.lang('rr_no').'');

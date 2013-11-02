@@ -163,6 +163,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                                     <ul>
                                         <li><a href="<?php echo $base_url; ?>federations/manage"><?php echo lang('rr_list'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>federations/federation_registration"><?php echo lang('register'); ?></a></li>
+                                        <li><a href="<?php echo $base_url; ?>manage/fedcategory/show"><?php echo lang('rrfedcatslist'); ?></a></li>
                                     </ul>
                                 </li>
                                 <li><a href="<?php echo $base_url; ?>providers/idp_list/show"><?php echo lang('identityproviders'); ?></a>

@@ -1193,6 +1193,22 @@ $(document).ready(function() {
         ev.preventDefault();
     });
 
+    $("#rmfedcategory").click(function(ev) {
+        var url = $(this).attr('action');
+        var serializedData = $(this).serialize();
+        sconfirm('', function(ev) {
+            $('<input>').attr({
+              type: 'hidden',
+                id: 'formsubmit',
+              name: 'formsubmit',
+              value: 'remove',
+            }).appendTo('form');
+            $("form").submit();
+
+        });
+        ev.preventDefault();
+    });
+
     function sconfirm(message, callback) {
         $('#sconfirm').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
