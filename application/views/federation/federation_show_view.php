@@ -12,10 +12,29 @@ else
 
 <?php
 
+echo '<div id="fedtabs">';
+echo '<ul>
+  <li><a href="#general">'.lang('tabgeneral').'</a></li>
+  <li><a href="#membership">'.lang('tabMembership').'</a></li>
+    <li><a href="#metadata">'.lang('rr_metadata').'</a></li>
+<li><a href="#attrs">'.lang('tabAttrs').'</a></li>
 
 
-$tmpl = array('table_open'=>'<table id="details" class="zebra">');
-$this->table->set_template($tmpl);
-$this->table->set_heading('',''.lang('coldetails').'');
-echo $this->table->generate($tbl);
-$this->table->clear();
+  <li><a href="#management">'.lang('tabMngt').'</a></li>
+  </ul>
+ ';
+
+$tmpl = array('table_open'=>'<table id="detailsnosort" class="zebra">');
+
+
+foreach($result as $k => $v)
+{
+    echo '<div id="'.$k.'" class="nopadding">';
+    $this->table->set_template($tmpl);
+    $this->table->set_heading('',''.lang('coldetails').'');
+    echo $this->table->generate($v);
+    $this->table->clear();
+    echo '</div>';
+}
+
+echo '</div>';

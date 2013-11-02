@@ -27,7 +27,7 @@ echo '</li>';
 ?>
 </ul>
 <?php
-$tmpl = array ( 'table_open'  => '<table id="details" class="zebra">' );
+$tmpl = array ( 'table_open'  => '<table id="detailsnosort" class="zebra">' );
 foreach($tabs as $t)
 {
    $d = $t['data'];
@@ -66,7 +66,7 @@ foreach($tabs as $t)
        }
     
    }
-   echo '<div id="'.$t['section'].'">';
+   echo '<div id="'.$t['section'].'" class="nopadding">';
    echo $this->table->generate();
    $this->table->clear();
    echo '</div>';

@@ -1839,6 +1839,10 @@ button.fedcategory:hover, button.typelist:hover {
   width: 100%;
 }
 
+.nopadding {
+  padding: 2px 2px !important;
+}
+
 form {
   counter-reset: fieldsets;
   background: #bcff33;

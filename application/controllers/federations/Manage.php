@@ -178,6 +178,7 @@ class Manage extends MY_Controller {
 
     function show($fed_name)
     {
+        $result = array();
         $this->load->library('show_element');
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation))
@@ -248,21 +249,22 @@ class Manage extends MY_Controller {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
             $edit_link = '<span><a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="edit" title="edit">' . $image_link . '</a></span>';
         }
-        $data['tbl'][] = array('data' => array('data' => lang('rr_basicinformation').' '.$edit_link, 'class' => 'highlight', 'colspan' => 2));
+        
+        $data['result']['general'][] = array('data' => array('data' => lang('rr_basicinformation').' '.$edit_link, 'class' => 'highlight', 'colspan' => 2));
         if (empty($data['federation_is_active']))
         {
-            $data['tbl'][] = array('<span class="alert">'.lang('rr_warning').'<span>', '<b>'.lang('rr_fed_inactive_full').'</b>');
+            $data['result']['general'][] = array('<span class="alert">'.lang('rr_warning').'<span>', '<b>'.lang('rr_fed_inactive_full').'</b>');
         }
-        $data['tbl'][] = array(lang('rr_fed_name'), $federation->getName());
-        $data['tbl'][] = array(lang('rr_fed_urn'), $federation->getUrn());
-        $data['tbl'][] = array(lang('rr_fed_desc'), $federation->getDescription());
-        $data['tbl'][] = array(lang('rr_fed_tou'), $federation->getTou());
-        $data['tbl'][] = array(lang('rr_fedownercreator'), $federation->getOwner());
+        $data['result']['general'][] = array(lang('rr_fed_name'), $federation->getName());
+        $data['result']['general'][] = array(lang('rr_fed_urn'), $federation->getUrn());
+        $data['result']['general'][] = array(lang('rr_fed_desc'), $federation->getDescription());
+        $data['result']['general'][] = array(lang('rr_fed_tou'), $federation->getTou());
+        $data['result']['general'][] = array(lang('rr_fedownercreator'), $federation->getOwner());
         $idp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/idp', lang('rr_fed_cntidps_list'));
         $sp_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'/sp', lang('rr_fed_cntisps_list'));
         $all_contactlist = anchor(base_url().'federations/manage/showcontactlist/'.$fed_name.'', lang('rr_fed_cnt_list'));
-        $data['tbl'][] = array(lang('rr_downcontactsintxt'), $idp_contactlist.'<br />'.$sp_contactlist.'<br />'.$all_contactlist);
-        $data['tbl'][] = array(lang('rr_timeline'), '<a href="'.base_url().'reports/timelines/showregistered/'.$federation->getId().'">Diagram</a>'); 
+        $data['result']['general'][] = array(lang('rr_downcontactsintxt'), $idp_contactlist.'<br />'.$sp_contactlist.'<br />'.$all_contactlist);
+        $data['result']['general'][] = array(lang('rr_timeline'), '<a href="'.base_url().'reports/timelines/showregistered/'.$federation->getId().'">Diagram</a>'); 
 
         $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
         $edit_attributes_link = '<span><a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="edit">' . $image_link . '</a></span>';
@@ -270,91 +272,91 @@ class Manage extends MY_Controller {
         {
             $edit_attributes_link = '';
         }
-        $data['tbl'][] = array('data' => array('data' => lang('rr_fed_req_attrs') . $edit_attributes_link . '', 'class' => 'highlight', 'colspan' => 2));
+        $data['result']['attrs'][] = array('data' => array('data' => lang('rr_fed_req_attrs') . $edit_attributes_link . '', 'class' => 'highlight', 'colspan' => 2));
         if (!$has_write_access)
         {
-            $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_edit').'</div></small>', 'colspan' => 2));
+            $data['result']['attrs'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_edit').'</div></small>', 'colspan' => 2));
         }
         foreach ($required_attributes as $key)
         {
-            $data['tbl'][] = array($key->getAttribute()->getName(), $key->getStatus() . "<br /><i>(" . $key->getReason() . ")</i>");
+            $data['result']['attrs'][] = array($key->getAttribute()->getName(), $key->getStatus() . "<br /><i>(" . $key->getReason() . ")</i>");
         }
-        $data['tbl'][] = array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2));
+        $data['result']['membership'][] = array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2));
         if (!$has_addbulk_access)
         {
-            $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_bulks').'</div></small>', 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_bulks').'</div></small>', 'colspan' => 2));
         }
         else
         {
-            $data['tbl'][] = array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/idp', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['result']['membership'][] = array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/idp', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
 
-            $data['tbl'][] = array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/sp', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['result']['membership'][] = array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/sp', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
         }
         if ($has_write_access)
         {
-            $data['tbl'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $fed_name . '', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
-            $data['tbl'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $fed_name . '', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['result']['membership'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $fed_name . '', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['result']['membership'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $fed_name . '', '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
         }
         else
         {
-            $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_invmembers').'</div></small>', 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_invmembers').'</div></small>', 'colspan' => 2));
         }
 
         
-        $data['tbl'][] = array('data' => array('data' => lang('access_mngmt'), 'class' => 'highlight', 'colspan' => 2));
+        $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt'), 'class' => 'highlight', 'colspan' => 2));
       
         if($has_manage_access)
         {
-             $data['tbl'][] = array('data' => array('data' => lang('access_mngmt') .anchor(base_url().'manage/access_manage/federation/'.$resource,'<img src="'.base_url().'images/icons/arrow.png"/>'), 'colspan' => 2));
+             $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') .anchor(base_url().'manage/access_manage/federation/'.$resource,'<img src="'.base_url().'images/icons/arrow.png"/>'), 'colspan' => 2));
              
         } 
         else
         {
-             $data['tbl'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_accessmngt').'</div></small>', 'colspan' => 2));
+             $data['result']['management'][] = array('data' => array('data' => '<small><div class="notice">'.lang('rr_noperm_accessmngt').'</div></small>', 'colspan' => 2));
         }
        
-        $data['tbl'][] = array('data' => array('data' => lang('rr_metadata'), 'class' => 'highlight', 'colspan' => 2));
+        $data['result']['metadata'][] = array('data' => array('data' => lang('rr_metadata'), 'class' => 'highlight', 'colspan' => 2));
          if($federation->getAttrsInmeta())
          {
-            $data['tbl'][] = array('data' => array('data' => lang('rr_meta_with_attr'), 'class'=>'lbl lbl-notice', 'colspan' => 2));
+            $data['result']['metadata'][] = array('data' => array('data' => lang('rr_meta_with_attr'), 'class'=>'lbl lbl-notice', 'colspan' => 2));
          }
          else
          {
-            $data['tbl'][] = array('data' => array('data' => lang('rr_meta_with_noattr'),'class'=>'lbl lbl-notice', 'colspan' => 2));
+            $data['result']['metadata'][] = array('data' => array('data' => lang('rr_meta_with_noattr'),'class'=>'lbl lbl-notice', 'colspan' => 2));
          }
         
         if (empty($data['federation_is_active']))
         {
-            $data['tbl'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link']));
-            $data['tbl'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link_signed']));
+            $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link']));
+            $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled">'.lang('rr_fed_inactive').'</span>' . anchor($data['meta_link_signed']));
             
         }
         else
         {
             $table_of_members = $this->show_element->IdPMembersToTable($federation_members);
-            $data['tbl'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor_popup($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
-            $data['tbl'][] = array(lang('rr_fedmetasingedlink'), $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor_popup($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
 
             $lexportenabled = $federation->getLocalExport(); 
             if($lexportenabled === TRUE)
             {
-                   $data['tbl'][] = array(lang('rr_fedmetaexportunsingedlink'), $data['metaexport_link'] . " " . anchor_popup($data['metaexport_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
-                   $data['tbl'][] = array(lang('rr_fedmetaexportsingedlink'), $data['metaexport_link_signed'] . " " . anchor_popup($data['metaexport_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+                   $data['result']['metadata'][] = array(lang('rr_fedmetaexportunsingedlink'), $data['metaexport_link'] . " " . anchor_popup($data['metaexport_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+                   $data['result']['metadata'][] = array(lang('rr_fedmetaexportsingedlink'), $data['metaexport_link_signed'] . " " . anchor_popup($data['metaexport_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
                  
             }
 
             $gearmanenabled = $this->config->item('gearman');
             if($has_write_access && !empty($gearmanenabled))
             {
-                $data['tbl'][] = array( ''.lang('signmetadata').showBubbleHelp(lang('rhelp_signmetadata')).'','<a href="'.base_url().'msigner/signer/federation/'.$federation->getId().'" id="fedmetasigner"/><button type="button" class="btn">'.lang('btn_signmetadata').'</button></a>','');
+                $data['result']['metadata'][] = array( ''.lang('signmetadata').showBubbleHelp(lang('rhelp_signmetadata')).'','<a href="'.base_url().'msigner/signer/federation/'.$federation->getId().'" id="fedmetasigner"/><button type="button" class="btn">'.lang('btn_signmetadata').'</button></a>','');
             }
 
-            $data['tbl'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
-            $data['tbl'][] = array('data' => array('data' => $table_of_members['IDP'], 'colspan' => 2));
-            $data['tbl'][] = array('data' => array('data' => lang('serviceprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
-            $data['tbl'][] = array('data' => array('data' => $table_of_members['SP'], 'colspan' => 2));
-            $data['tbl'][] = array('data' => array('data' => lang('bothprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
-            $data['tbl'][] = array('data' => array('data' => $table_of_members['BOTH'], 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => $table_of_members['IDP'], 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => lang('serviceprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => $table_of_members['SP'], 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => lang('bothprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => $table_of_members['BOTH'], 'colspan' => 2));
         }
         $this->load->view('page', $data);
     }

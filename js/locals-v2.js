@@ -926,6 +926,14 @@ $(function() {
         }
 
     });
+    $("#fedtabs").tabs({
+        cache: true,
+        load: function(event, ui) {
+            $('.accordionButton').unbind();
+            GINIT.initialize();
+        }
+
+    });
     $("#arptabs").tabs({
         cache: true,
         load: function(event, ui) {
@@ -935,6 +943,7 @@ $(function() {
         }
 
     });
+    
 });
 if ($('#usepredefined').attr('checked')) {
     $("fieldset#stadefext").hide();
