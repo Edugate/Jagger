@@ -2,7 +2,7 @@
 
 if(!empty($success_message))
 {
-    echo '<div class="success">'.$success_message.'</div>';
+ echo '<div class="success">'.$success_message.'</div>';
 }
 $redirectto = base_url().'manage/fedcategory/show';
 echo anchor($redirectto,lang('rr_go'));

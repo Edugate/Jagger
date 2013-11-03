@@ -137,6 +137,25 @@ class MY_form_validation extends CI_form_validation {
             return TRUE;
         }
     }
+
+    function fedcategory_unique($name,$id=null)
+    {
+       $ent = $this->em->getRepository("models\FederationCategory")->findOneBy(array('shortname' => $name));
+       if(!empty($ent))
+       {
+           if(!is_null($id) && ((int) $id == $ent->getId()))
+           {
+               return true;
+           }
+           else
+           {
+                $this->set_message('fedcategory_unique','The %s : '.htmlentities($name).' already exists');
+                return false;
+           }
+       }
+       return true;
+
+    }
     function cocurl_unique($url)
     {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url));

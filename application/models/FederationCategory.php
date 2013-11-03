@@ -119,6 +119,15 @@ class FederationCategory
         $this->isdefault = $a;
         return $this;
     }
+
+    public function populate($name,$fullname,$description)
+    {
+        $this->shortname = $name;
+        $this->descname = $fullname;
+        $this->description = $description;
+        return $this;
+
+    }
     public function setFederation(Federation $federation)
     {
         $already_there = $this->getFederations()->contains($federation);

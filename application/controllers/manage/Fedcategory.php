@@ -33,18 +33,52 @@ class Fedcategory extends MY_Controller {
         $this->title = lang('title_fedcategory');
     }
 
-    private function _submit_validate()
+    private function _submit_validate($id=null)
     {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('formsubmit', 'submit', 'required|trim|xss_clean');
-        if ($this->input->post('formsubmit') === 'update')
+        if ($this->input->post('formsubmit') === 'update' || $this->input->post('formsubmit') === 'add')
         {
             $this->form_validation->set_rules('fed[]', lang('rrfedcatmembers'), 'integer');
-            $this->form_validation->set_rules('buttonname', lang('tbl_catbtnname'), 'required|trim|min_length[5]|max_length[50]|xss_clean');
+            $this->form_validation->set_rules('buttonname', lang('tbl_catbtnname'), 'required|trim|min_length[5]|max_length[50]|xss_clean|fedcategory_unique['.$id.']');
             $this->form_validation->set_rules('fullname', lang('tbl_catbtnititlename'), 'required|trim|min_length[5]|max_length[200]|xss_clean');
             $this->form_validation->set_rules('description', lang('rr_description'), 'required|trim|min_length[5]|max_length[500]|xss_clean');
         }
         return $this->form_validation->run();
+    }
+
+    public function addnew()
+    {
+        $isAdmin = $this->j_auth->isAdministrator();
+        if (!$isAdmin)
+        {
+            show_error('perm denied', 403);
+        }
+        if($this->_submit_validate())
+        {
+            $submittype = $this->input->post('formsubmit');
+            if (strcasecmp($submittype, 'add') == 0)
+            {
+                $cat = new models\FederationCategory;
+                $name = $this->input->post('buttonname');
+                $fullname = $this->input->post('fullname');
+                $description = $this->input->post('description');
+                $cat->populate($name,$fullname,$description);
+                $this->em->persist($cat);
+                $this->em->flush();
+                $data['content_view'] = 'manage/fedcatnew_success';
+                $data['success_message'] = lang('newfedcatadded');
+                $this->load->view('page',$data);
+                
+            }
+        }
+        else
+        {
+           $data['content_view'] = 'manage/fedcatnew_view';
+           $this->load->view('page',$data);
+
+        }
+ 
     }
 
     public function edit($cat = null)
@@ -65,7 +99,7 @@ class Fedcategory extends MY_Controller {
         {
             show_error('not found', 404);
         }
-        if ($this->_submit_validate())
+        if ($this->_submit_validate($currentCategory->getId()))
         {
             $submittype = $this->input->post('formsubmit');
             if (strcasecmp($submittype, 'update') == 0)
