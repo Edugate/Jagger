@@ -71,6 +71,7 @@ $lang['rr_cancel']                  = 'Cancel';
 $lang['rr_create']                  = 'Create';
 $lang['rrfedcatslist']              = 'Federations Categories';
 $lang['newfedcategory']             = 'Federations Category :: Form';
+$lang['fedcategory'] = 'Federations Category';
 $lang['nocatsfound']                = 'No categories found';
 $lang['newfedcatadded']             = 'New federation category has been added';
 $lang['rrfedcatmembers']            = 'Federations - category members';
