@@ -39,8 +39,18 @@ class Authenticate extends MY_Controller {
     public function dologin()
     {
         log_message('debug','DoLogin');
+        $isReferrerOK = FALSE;
+        $baseurl = base_url();
+        if(isset($_SERVER['HTTP_REFERER']))
+        {
+           if(strpos($_SERVER['HTTP_REFERER'],$baseurl) === 0)
+           {
+               $isReferrerOK = TRUE;
+           } 
+        }
+        
         $auth_error = '';
-        if($this->input->is_ajax_request())
+        if($this->input->is_ajax_request() && $isReferrerOK && ($_SERVER['REQUEST_METHOD'] === 'POST'))
         {
            if($this->j_auth->logged_in())
            {
@@ -74,6 +84,7 @@ class Authenticate extends MY_Controller {
         }
         else
         {
+             return set_status_header(401);
              $auth_error = '<div id="notification_error">not ajax</div>';
         }
         echo $auth_error;
