@@ -207,6 +207,7 @@ $lang['rr_rmuserbtn']               = 'Remove user';
 $lang['rr_rminguser']               = 'Removing user';
 $lang['rr_password']                = 'Password';
 $lang['rr_passwordconf']            = 'Password confirmation';
+$lang['rr_changepass']              = 'Change password';
 $lang['rr_uemail']                  = 'Email address';
 $lang['rr_fname']                   = 'First name';
 $lang['rr_lname']                   = 'Last name';

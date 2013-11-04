@@ -126,10 +126,10 @@ class Fededit extends MY_Controller {
             $f .= form_open($action, $attributes, $hidden);
             $f .= $this->form_element->generateFederationEditForm($fed);
             $tf = '<div class="buttons">';
-            $tf .='<button type="reset" name="reset" value="reset" class="button negative">
-                  <span class="reset">' . lang('rr_reset') . '</span></button>';
-            $tf .='<button type="submit" name="modify" value="submit" class="button positive">
-                  <span class="save">' . lang('rr_save') . '</span></button>';
+            $tf .='<button type="reset" name="reset" value="reset" class="resetbutton reseticon">
+                  ' . lang('rr_reset') . '</button> ';
+            $tf .='<button type="submit" name="modify" value="submit" class="savebutton saveicon">
+                  ' . lang('rr_save') . '</button>';
             $tf .= '</div>';
 
             $f .=$tf;

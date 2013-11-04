@@ -1695,40 +1695,6 @@ span.alert {
   margin-right: 15px;
 }
 
-#loginlink {
-  -moz-box-shadow: 0px 1px 0px 0px #97c4fe;
-  -webkit-box-shadow: 0px 1px 0px 0px #97c4fe;
-  box-shadow: 0px 1px 0px 0px #97c4fe;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3d94f6), color-stop(1, #1e62d0));
-  background: -moz-linear-gradient(center top, #3d94f6 5%, #1e62d0 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3d94f6', endColorstr='#1e62d0');
-  background-color: #3d94f6;
-  -webkit-border-radius: 1px 1px;
-  -moz-border-radius: 1px 1px / 1px 1px;
-  border-radius: 1px 1px / 1px 1px;
-  border: 1px solid #337fed;
-  display: inline-block;
-  color: #ffffff;
-  font-family: arial;
-  font-size: 15px;
-  font-weight: bold;
-  padding: 6px 24px;
-  text-decoration: none;
-  text-shadow: 1px 1px 0px #1570cd;
-}
-
-#loginlink:hover {
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1e62d0), color-stop(1, #3d94f6));
-  background: -moz-linear-gradient(center top, #1e62d0 5%, #3d94f6 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1e62d0', endColorstr='#3d94f6');
-  background-color: #1e62d0;
-}
-
-#loginlink:active {
-  position: relative;
-  top: 1px;
-}
-
 button.loginbtn {
   -moz-box-shadow: inset 0px 1px 0px 0px #614761;
   -webkit-box-shadow: inset 0px 1px 0px 0px #614761;
@@ -1841,6 +1807,359 @@ button.fedcategory:hover, button.typelist:hover {
 
 .nopadding {
   padding: 2px 2px !important;
+}
+
+a.addbutton, a.addbutton:link, a.addbutton:hover, a.addbutton:active, a.addbutton:visited {
+  color: white;
+  text-decoration: none;
+}
+
+a.savebutton, a.savebutton:link, a.savebutton:hover, a.savebutton:active, a.savebutton:visited {
+  color: white;
+  text-decoration: none;
+}
+
+a.resetbutton, a.resetbutton:link, a.resetbutton:hover, a.resetbutton:active, a.resetbutton:visited {
+  color: white;
+  text-decoration: none;
+}
+
+a.editbutton, a.editbutton:link, a.editbutton:hover, a.editbutton:active, a.editbutton:visited {
+  color: white;
+  text-decoration: none;
+}
+
+a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.loginbutton:visited {
+  color: white;
+  text-decoration: none;
+}
+
+.addbutton, .resetbutton, .savebutton, .editbutton, .loginbutton {
+  min-width: 100px;
+  height: 30px;
+  line-height: 30px;
+}
+
+.smallerbtn {
+  height: 25px;
+  line-height: 25px;
+  font-size: smaller !important;
+}
+
+.addbutton {
+  display: inline-block;
+  white-space: nowrap;
+  background-color: #b8e356;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #b8e356), color-stop(1, #a5cc52));
+  background-image: -webkit-linear-gradient(top, #b8e356, #a5cc52);
+  background-image: -moz-linear-gradient(center top, #b8e356 5%, #a5cc52 100%);
+  background-image: -ms-linear-gradient(top, #b8e356, #a5cc52);
+  background-image: -o-linear-gradient(top, #b8e356, #a5cc52);
+  background-image: linear-gradient(top, #b8e356, #a5cc52);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$addBtnBgColor1', endColorstr='$addBtnBgColor2');
+  -moz-box-shadow: inset 0px 1px 0px 0px #d9fbbe;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #d9fbbe;
+  box-shadow: inset 0px 1px 0px 0px #d9fbbe;
+  -webkit-border-top-left-radius: 0px;
+  -moz-border-radius-topleft: 0px;
+  border-top-left-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  -moz-border-radius-topright: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  -moz-border-radius-bottomright: 0px;
+  border-bottom-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-left-radius: 0px;
+  border: 1px solid #83c41a;
+  padding: 0 1.5em;
+  text-indent: 0;
+  color: white;
+  font-family: Arial;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: normal;
+  text-decoration: none;
+  text-align: center;
+  text-shadow: 1px 1px 0px #86ae47;
+}
+
+.addbutton:hover {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #a5cc52), color-stop(1, #b8e356));
+  background: -moz-linear-gradient(center top, #a5cc52 5%, #b8e356 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$addBtnBgColor2', endColorstr='$addBtnBgColor1');
+  background-color: #a5cc52;
+}
+
+.addbutton:active {
+  position: relative;
+  top: 1px;
+}
+
+.addbutton:before {
+  background: #ccc;
+  background: rgba(0, 0, 0, 0.1);
+  float: left;
+  width: 1em;
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0 1em 0 -1em;
+  padding: 0 .2em;
+  -moz-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -webkit-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -moz-border-radius: .15em 0 0 .15em;
+  -webkit-border-radius: .15em 0 0 .15em;
+  border-radius: .15em 0 0 .15em;
+  pointer-events: none;
+}
+
+.savebutton {
+  display: inline-block;
+  white-space: nowrap;
+  background-color: #b8e356;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #b8e356), color-stop(1, #a5cc52));
+  background-image: -webkit-linear-gradient(top, #b8e356, #a5cc52);
+  background-image: -moz-linear-gradient(center top, #b8e356 5%, #a5cc52 100%);
+  background-image: -ms-linear-gradient(top, #b8e356, #a5cc52);
+  background-image: -o-linear-gradient(top, #b8e356, #a5cc52);
+  background-image: linear-gradient(top, #b8e356, #a5cc52);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$saveBtnBgColor1', endColorstr='$saveBtnBgColor2');
+  -moz-box-shadow: inset 0px 1px 0px 0px #d9fbbe;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #d9fbbe;
+  box-shadow: inset 0px 1px 0px 0px #d9fbbe;
+  -webkit-border-top-left-radius: 0px;
+  -moz-border-radius-topleft: 0px;
+  border-top-left-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  -moz-border-radius-topright: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  -moz-border-radius-bottomright: 0px;
+  border-bottom-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-left-radius: 0px;
+  border: 1px solid #83c41a;
+  padding: 0 1.5em;
+  text-indent: 0;
+  color: white;
+  font-family: Arial;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: normal;
+  text-decoration: none;
+  text-align: center;
+  text-shadow: 1px 1px 0px #86ae47;
+}
+
+.savebutton:hover {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #a5cc52), color-stop(1, #b8e356));
+  background: -moz-linear-gradient(center top, #a5cc52 5%, #b8e356 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$saveBtnBgColor2', endColorstr='$saveBtnBgColor1');
+  background-color: #a5cc52;
+}
+
+.savebutton:active {
+  position: relative;
+  top: 1px;
+}
+
+.savebutton:before {
+  background: #ccc;
+  background: rgba(0, 0, 0, 0.1);
+  float: left;
+  width: 1em;
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0 1em 0 -1em;
+  padding: 0 .2em;
+  -moz-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -webkit-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -moz-border-radius: .15em 0 0 .15em;
+  -webkit-border-radius: .15em 0 0 .15em;
+  border-radius: .15em 0 0 .15em;
+  pointer-events: none;
+}
+
+.resetbutton {
+  display: inline-block;
+  white-space: nowrap;
+  background-color: #fe1a00;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #fe1a00), color-stop(1, #ce0100));
+  background-image: -webkit-linear-gradient(top, #fe1a00, #ce0100);
+  background-image: -moz-linear-gradient(center top, #fe1a00 5%, #ce0100 100%);
+  background-image: -ms-linear-gradient(top, #fe1a00, #ce0100);
+  background-image: -o-linear-gradient(top, #fe1a00, #ce0100);
+  background-image: linear-gradient(top, #fe1a00, #ce0100);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$resetBtnBgColor1', endColorstr='$resetBtnBgColor2');
+  -moz-box-shadow: inset 0px 1px 0px 0px #f29c93;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #f29c93;
+  box-shadow: inset 0px 1px 0px 0px #f29c93;
+  -webkit-border-top-left-radius: 0px;
+  -moz-border-radius-topleft: 0px;
+  border-top-left-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  -moz-border-radius-topright: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  -moz-border-radius-bottomright: 0px;
+  border-bottom-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-left-radius: 0px;
+  border: 1px solid #d83526;
+  padding: 0 1.5em;
+  text-indent: 0;
+  color: white;
+  font-family: Arial;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: normal;
+  text-decoration: none;
+  text-align: center;
+  text-shadow: 1px 1px 0px #b23e35;
+}
+
+.resetbutton:hover {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ce0100), color-stop(1, #fe1a00));
+  background: -moz-linear-gradient(center top, #ce0100 5%, #fe1a00 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$resetBtnBgColor2', endColorstr='$resetBtnBgColor1');
+  background-color: #ce0100;
+}
+
+.resetbutton:active {
+  position: relative;
+  top: 1px;
+}
+
+.resetbutton:before {
+  background: #ccc;
+  background: rgba(0, 0, 0, 0.1);
+  float: left;
+  width: 1em;
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0 1em 0 -1em;
+  padding: 0 .2em;
+  -moz-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -webkit-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -moz-border-radius: .15em 0 0 .15em;
+  -webkit-border-radius: .15em 0 0 .15em;
+  border-radius: .15em 0 0 .15em;
+  pointer-events: none;
+}
+
+.editbutton, .loginbutton {
+  display: inline-block;
+  white-space: nowrap;
+  background-color: #3d94f6;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3d94f6), color-stop(1, #1e62d0));
+  background-image: -webkit-linear-gradient(top, #3d94f6, #1e62d0);
+  background-image: -moz-linear-gradient(center top, #3d94f6 5%, #1e62d0 100%);
+  background-image: -ms-linear-gradient(top, #3d94f6, #1e62d0);
+  background-image: -o-linear-gradient(top, #3d94f6, #ce0100);
+  background-image: linear-gradient(top, #3d94f6, #1e62d0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$editBtnBgColor1', endColorstr='$editBtnBgColor2');
+  -moz-box-shadow: inset 0px 1px 0px 0px #97c4fe;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #97c4fe;
+  box-shadow: inset 0px 1px 0px 0px #97c4fe;
+  -webkit-border-top-left-radius: 0px;
+  -moz-border-radius-topleft: 0px;
+  border-top-left-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  -moz-border-radius-topright: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  -moz-border-radius-bottomright: 0px;
+  border-bottom-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-left-radius: 0px;
+  border: 1px solid #337fed;
+  padding: 0 1.5em;
+  text-indent: 0;
+  color: white;
+  font-family: Arial;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: normal;
+  text-decoration: none;
+  text-align: center;
+  text-shadow: 1px 1px 0px #1570cd;
+}
+
+.editbutton:hover, .loginbutton:hover {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1e62d0), color-stop(1, #3d94f6));
+  background: -moz-linear-gradient(center top, #1e62d0 5%, #3d94f6 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$editBtnBgColor2', endColorstr='$editBtnBgColor1');
+  background-color: #ce0100;
+}
+
+.editbutton:active, .loginbutton:active {
+  position: relative;
+  top: 1px;
+}
+
+.editbutton:before, .loginbutton:before {
+  background: #ccc;
+  background: rgba(0, 0, 0, 0.1);
+  float: left;
+  width: 1em;
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0 1em 0 -1em;
+  padding: 0 .2em;
+  -moz-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -webkit-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -moz-border-radius: .15em 0 0 .15em;
+  -webkit-border-radius: .15em 0 0 .15em;
+  border-radius: .15em 0 0 .15em;
+  pointer-events: none;
+}
+
+.addicon:before {
+  content: "\271A";
+}
+
+.minusicon:before {
+  content: "\2010";
+}
+
+.saveicon:before {
+  content: "\2714";
+}
+
+.reseticon:before {
+  content: "\2718";
+}
+
+.deleteicon:before {
+  content: "\2718";
+}
+
+.staricon:before {
+  content: "\2605";
+}
+
+.arrowdownicon:before {
+  content: "\2304";
+}
+
+.editicon:before {
+  content: "\270E";
+}
+
+.loginicon:before {
+  content: "\271A";
+}
+
+.nexticon:before {
+  content: "\279C";
 }
 
 form {

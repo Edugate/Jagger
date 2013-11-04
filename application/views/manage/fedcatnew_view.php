@@ -35,6 +35,6 @@ echo '</textarea>';
                         
 echo '</li>';
 echo '</ol></fieldset>';
-echo '<div class="buttons"> <button type="submit" name="formsubmit" value="add" class="btn btn-positive">'.lang('rr_save').'</button></div>';
+echo '<div class="buttons"> <button type="submit" name="formsubmit" value="add" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
 echo form_close();
 

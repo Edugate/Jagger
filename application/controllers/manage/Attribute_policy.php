@@ -442,7 +442,7 @@ class Attribute_policy extends MY_Controller {
                 $tbl_array[$i] = array($value['name'], $col2);
                 $i++;
             }
-            $submit_buttons_row = '<span class="buttons"><button name="submit" value="delete all"  class="btn negative"><span class="cancel">'.lang('btn_deleteall').'</button><button type="submit" name="submit" value="modify" class="btn positive save">'.lang('btn_modify').'</button></span>';
+            $submit_buttons_row = '<span class="buttons"><button name="submit" value="delete all"  class="resetbutton deleteicon">'.lang('btn_deleteall').'</button> <button type="submit" name="submit" value="modify" class="savebutton saveicon">'.lang('btn_modify').'</button></span>';
             $tbl_array[$i] = array('data' => array('data' => $submit_buttons_row, 'colspan' => 2));
             $data['tbl_array'] = $tbl_array;
             $data['fedid'] = $fed->getId();

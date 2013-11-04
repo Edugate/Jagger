@@ -331,7 +331,7 @@ class Form_element {
             );
             unset($lnamelangs['' . $key . '']);
         }
-        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', $lnamelangs, 'en') . '<button type="button" id="addlname" name="addlname" value="addlname" class="btn">'.lang('addlocalizedname').'</button></span>';
+        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', $lnamelangs, 'en') . '<button type="button" id="addlname" name="addlname" value="addlname" class="editbutton addicon smallerbtn">'.lang('addlocalizedname').'</button></span>';
 
         $result[] = '';
         /**
@@ -397,7 +397,7 @@ class Form_element {
             );
             unset($ldisplaynamelangs['' . $key . '']);
         }
-        $result[] = '<span class="ldisplaynameadd">' . form_dropdown('ldisplaynamelangcode', $ldisplaynamelangs, 'en') . '<button type="button" id="addldisplayname" name="addldisplayname" value="addldisplayname" class="btn">'.lang('addlocalizeddisplayname').'</button></span>';
+        $result[] = '<span class="ldisplaynameadd">' . form_dropdown('ldisplaynamelangcode', $ldisplaynamelangs, 'en') . '<button type="button" id="addldisplayname" name="addldisplayname" value="addldisplayname" class="editbutton addicon smallerbtn">'.lang('addlocalizeddisplayname').'</button></span>';
 
         $result[] = '';
         /**
@@ -460,7 +460,7 @@ class Form_element {
             );
             unset($regpolicylangs['' . $key . '']);
         }
-        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', $regpolicylangs, 'en') . '<button type="button" id="addregpolicy" name="addregpolicy" value="addregpolicy" class="btn">'.lang('addlocalizedregpolicy').'</button></span>';
+        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', $regpolicylangs, 'en') . '<button type="button" id="addregpolicy" name="addregpolicy" value="addregpolicy" class="editbutton addicon smallerbtn">'.lang('addlocalizedregpolicy').'</button></span>';
 
         $result[] = '';
         /**
@@ -526,7 +526,7 @@ class Form_element {
             );
             unset($lhelpdesklangs['' . $key . '']);
         }
-        $result[] = '<span class="lhelpdeskadd">' . form_dropdown('lhelpdesklangcode', $lhelpdesklangs, 'en') . '<button type="button" id="addlhelpdesk" name="addlhelpdesk" value="addlhelpdesk" class="btn">'.lang('addlocalizedhelpdesk').'</button></span>';
+        $result[] = '<span class="lhelpdeskadd">' . form_dropdown('lhelpdesklangcode', $lhelpdesklangs, 'en') . '<button type="button" id="addlhelpdesk" name="addlhelpdesk" value="addlhelpdesk" class="editbutton addicon smallerbtn">'.lang('addlocalizedhelpdesk').'</button></span>';
 
         /**
          * end ldisplayname
@@ -591,7 +591,7 @@ class Form_element {
             );
             unset($ldesclangs['' . $key . '']);
         }
-        $result[] = '<span class="ldescadd">' . form_dropdown('ldesclangcode', $ldesclangs, 'en') . '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="btn">'.lang('addlocalizeddesc').'</button></span>';
+        $result[] = '<span class="ldescadd">' . form_dropdown('ldesclangcode', $ldesclangs, 'en') . '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="editbutton addicon smallerbtn">'.lang('addlocalizeddesc').'</button></span>';
 
         /**
          * end ldesc
@@ -719,7 +719,7 @@ class Form_element {
             $r .= '<li class="addlprivacyurlidpsso localized">';
 
             $r .= form_dropdown('langcode', $idpssolangcodes, 'en');
-            $r .= '<button type="button" id="addlprivacyurlidpsso" name="addlprivacyurlidpsso" value="addlprivacyurlidpsso" class="btn">'.lang('addlocalized').' ' . lang('rr_privacystatement') . '</button>';
+            $r .= '<button type="button" id="addlprivacyurlidpsso" name="addlprivacyurlidpsso" value="addlprivacyurlidpsso" class="editbutton addicon smallerbtn">'.lang('addlocalized').' ' . lang('rr_privacystatement') . '</button>';
 
             $r .= '</ol></fieldset>';
             $result[] = $r;
@@ -773,7 +773,7 @@ class Form_element {
             $spssolangcodes = array_diff_key($langscodes, $sorig);
             $r .= '<li class="addlprivacyurlspsso localized">';
             $r .= form_dropdown('langcode', $spssolangcodes, 'en');
-            $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="btn">'.lang('addlocalized') .' ' . lang('rr_privacystatement') . '</button>';
+            $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="edibutton addicon smallerbtn">'.lang('addlocalized') .' ' . lang('rr_privacystatement') . '</button>';
             $r .= '</li></ol></fieldset>';
             $result[] = $r;
         }
@@ -886,7 +886,7 @@ class Form_element {
                 $result[] = $n;
             }
         }
-        $n = '<button class="btn" type="button" id="ncontactbtn">'.lang('rr_addnewcoontact').'</button>';
+        $n = '<button class="editbutton addicon smallerbtn" type="button" id="ncontactbtn">'.lang('rr_addnewcoontact').'</button>';
         $result[] = $n;
 
         return $result;
@@ -1155,7 +1155,7 @@ class Form_element {
                 }
             }
             $ACSPart .= implode('', $acs);
-            $newelement = '<li><button class="btn" type="button" id="nidpartifactbtn">'.lang('rr_addnewidpartifactres').'</button></li>';
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nidpartifactbtn">'.lang('rr_addnewidpartifactres').'</button></li>';
             $ACSPart .= $newelement . '</ol></fieldset>';
             $result[] = $ACSPart;
             /**
@@ -1367,7 +1367,7 @@ class Form_element {
                 }
             }
             $ACSPart .= implode('', $acs);
-            $newelement = '<li><button class="btn" type="button" id="nacsbtn">'.lang('addnewacs').'</button></li>';
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nacsbtn">'.lang('addnewacs').'</button></li>';
             $ACSPart .= $newelement . '</ol></fieldset>';
             $result[] = $ACSPart;
             /**
@@ -1479,7 +1479,7 @@ class Form_element {
                 }
             }
             $ACSPart .= implode('', $acs);
-            $newelement = '<li><button class="btn" type="button" id="nspartifactbtn">'.lang('addnewartresservice').'</button></li>';
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nspartifactbtn">'.lang('addnewartresservice').'</button></li>';
             $ACSPart .= $newelement . '</ol></fieldset>';
             $result[] = $ACSPart;
             /**
@@ -1611,7 +1611,7 @@ class Form_element {
                 }
             }
             $RequestInitiatorPart .= implode('', $ri);
-            $newelement = '<li><button class="btn" type="button" id="nribtn">'.lang('addnewreqinit').'</button></li>';
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nribtn">'.lang('addnewreqinit').'</button></li>';
             $RequestInitiatorPart .= $newelement . '</ol><fieldset>';
             $result[] = $RequestInitiatorPart;
             /**
@@ -1728,7 +1728,7 @@ class Form_element {
                 }
             }
             $DiscoverResponsePart .= implode('', $dr);
-            $newelement = '<li><button class="btn" type="button" id="ndrbtn">'.lang('addnewds').'</button></li>';
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="ndrbtn">'.lang('addnewds').'</button></li>';
             $DiscoverResponsePart .= $newelement . '</ol><fieldset>';
             $result[] = $DiscoverResponsePart;
         }
@@ -1872,7 +1872,7 @@ class Form_element {
                 }
             }
             $Part .= implode('', $idpssocerts);
-            $newelement = '<li><button class="btn" type="button" id="nidpssocert">'.lang('addnewcert').' '.lang('for').' IDPSSODescriptor</button></li>';
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nidpssocert">'.lang('addnewcert').' '.lang('for').' IDPSSODescriptor</button></li>';
             $Part .= $newelement . '</ol></fieldset>';
             $result[] = $Part;
             $Part = '';
@@ -1993,7 +1993,7 @@ class Form_element {
                 }
             }
             $Part .= implode('', $aacerts);
-            $newelement = '<li><button class="btn" type="button" id="naacert">'.lang('addnewcert').' '.lang('for').' '.lang('atributeauthoritydescriptor').'</button></li>';
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="naacert">'.lang('addnewcert').' '.lang('for').' '.lang('atributeauthoritydescriptor').'</button></li>';
             $Part .= $newelement . '</ol></fieldset>';
             $result[] = $Part;
             $Part = '';
@@ -2113,7 +2113,7 @@ class Form_element {
                 }
             }
             $Part .= implode('', $spssocerts);
-            $newelement = '<li><button class="btn" type="button" id="nspssocert">'.lang('addnewcert').'</button></li>';
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nspssocert">'.lang('addnewcert').'</button></li>';
             $Part .= $newelement . '</ol></fieldset>';
             $result[] = $Part;
         }
@@ -2595,7 +2595,7 @@ class Form_element {
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiidisplayadd">' . form_dropdown('idpuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidisplay" name="idpadduiidisplay" value="idpadduiidisplay" class="btn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
+            $r .= '<li><span class="idpuiidisplayadd">' . form_dropdown('idpuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidisplay" name="idpadduiidisplay" value="idpadduiidisplay" class="editbutton addicon smallerbtn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 
@@ -2675,7 +2675,7 @@ class Form_element {
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiihelpdeskadd">' . form_dropdown('idpuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiihelpdesk" name="idpadduiihelpdesk" value="idpadduiihelpdesk" class="btn">'.lang('addlocalizedhelpdesk').'</button></span></li>';
+            $r .= '<li><span class="idpuiihelpdeskadd">' . form_dropdown('idpuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiihelpdesk" name="idpadduiihelpdesk" value="idpadduiihelpdesk" class="editbutton addicon smallerbtn">'.lang('addlocalizedhelpdesk').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 
@@ -2755,7 +2755,7 @@ class Form_element {
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiidescadd">' . form_dropdown('idpuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidesc" name="idpadduiidesc" value="idpadduiidesc" class="btn">'.lang('addlocalizeddesc').'</button></span></li>';
+            $r .= '<li><span class="idpuiidescadd">' . form_dropdown('idpuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidesc" name="idpadduiidesc" value="idpadduiidesc" class="editbutton addicon smallerbtn">'.lang('addlocalizeddesc').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 
@@ -2841,7 +2841,7 @@ class Form_element {
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiidisplayadd">' . form_dropdown('spuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidisplay" name="spadduiidisplay" value="spadduiidisplay" class="btn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
+                $r .= '<li><span class="spuiidisplayadd">' . form_dropdown('spuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidisplay" name="spadduiidisplay" value="spadduiidisplay" class="editbutton addicon smallerbtn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
                 $r .= form_fieldset_close();
                 $result[] = $r;
 
@@ -2921,7 +2921,7 @@ class Form_element {
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiihelpdeskadd">' . form_dropdown('spuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiihelpdesk" name="spadduiihelpdesk" value="spadduiihelpdesk" class="btn">'.lang('addlocalizeinformationurl').'</button></span></li>';
+                $r .= '<li><span class="spuiihelpdeskadd">' . form_dropdown('spuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiihelpdesk" name="spadduiihelpdesk" value="spadduiihelpdesk" class="editbutton addicon smallerbtn">'.lang('addlocalizeinformationurl').'</button></span></li>';
                 $r .= form_fieldset_close();
                 $result[] = $r;
 
@@ -3001,7 +3001,7 @@ class Form_element {
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiidescadd">' . form_dropdown('spuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidesc" name="spadduiidesc" value="spadduiidesc" class="btn">'.lang('addlocalizeddesc').'</button></span></li>';
+                $r .= '<li><span class="spuiidescadd">' . form_dropdown('spuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidesc" name="spadduiidesc" value="spadduiidesc" class="editbutton addicon smallerbtn">'.lang('addlocalizeddesc').'</button></span></li>';
                 $r .= form_fieldset_close();
                 $result[] = $r;
 
@@ -3281,13 +3281,13 @@ class Form_element {
         $result .='<div class="buttons">';
         if (!empty($submit_type) && $submit_type == 'create')
         {
-            $result .= '<button name="submit" type="submit" value="cancel" class="btn negative"><span class="cancel">' .lang('rr_cancel') . '</span></button>';
-            $result .= '<button name="submit" type="submit" value="create" class="btn positive"><span class="save">' . lang('rr_create') . '</span></button>';
+            $result .= '<button name="submit" type="submit" value="cancel" class="resetbutton reseticon">' .lang('rr_cancel') . '</button>';
+            $result .= '<button name="submit" type="submit" value="create" class="savebutton saveicon">' . lang('rr_create') . '</button>';
         }
         else
         {
-            $result .= '<button name="submit" type="submit" value="delete" class="btn negative"><span class="cancel">' . lang('rr_remove') . '</span></button>';
-            $result .= '<button name="submit" type="submit" value="modify" class="btn positive"><span class="save">' . lang('rr_modify') . '</span></button>';
+            $result .= '<button name="submit" type="submit" value="delete" class="resetbutton reseticon">' . lang('rr_remove') . '</button>';
+            $result .= '<button name="submit" type="submit" value="modify" class="savebutton saveicon">' . lang('rr_modify') . '</button>';
         }
         $result .='</div>';
         $result .=form_close();

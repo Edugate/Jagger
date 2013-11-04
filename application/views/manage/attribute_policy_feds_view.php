@@ -23,6 +23,6 @@ echo '<div id="subtitle"><h3><a href="'.base_url().'providers/detail/show/'.$idp
     echo $federations;
     echo '</li></ol>';
     echo form_fieldset_close();
-    echo '<div class="buttons"><button type="submit" name="submit" id="submit" value="submit" class="btn positive"><span class="save">'.lang('nextstep').'</span></button></div>';
+    echo '<div class="buttons"><button type="submit" name="submit" id="submit" value="submit" class="savebutton nexticon">'.lang('nextstep').'</button></div>';
     echo form_close();
 

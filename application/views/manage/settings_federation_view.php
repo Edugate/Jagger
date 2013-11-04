@@ -24,7 +24,7 @@ if(!empty($message))
    <li>
                     <label for="submit"></label>
 
-                   <span class="buttons"><button type="submit" name="submit" id="submit" value="submit" class="btn positive"><span>Submit</span></button></span> 
+                   <span class="buttons"><button type="submit" name="submit" id="submit" value="submit" class="savebutton saveicon">Submit</button></span> 
                 </li>
 </ol>
 <?php

@@ -21,7 +21,7 @@ foreach($merger as $k=>$v)
 }
 
 echo '</ul>';
-echo '<input class="btn positive" type="submit" value="submit" name="submit">';
+echo '<input class="savebutton saveicon" type="submit" value="submit" name="submit">';
 echo form_fieldset_close();
 echo form_close();
 echo '</div>';

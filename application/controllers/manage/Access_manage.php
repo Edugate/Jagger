@@ -40,11 +40,11 @@ class Access_manage extends MY_Controller
         $form = '<div class="permset">'.form_open() . form_hidden('user',$user) . form_hidden('action',$action);
         if($access === 'allow')
         {
-        	$form .='<button type="submit" name="change_access"  value="'.$access.'" class="btn positive"><span class="save">'.lang('btn_allow').'</span></button>';
+        	$form .='<button type="submit" name="change_access"  value="'.$access.'" class="addbutton addicon">'.lang('btn_allow').'</button>';
         }
         else
         {
-        	$form .='<button  type="submit" name="change_access"  value="'.$access.'"  class="btn negative"><span class="remove">'.lang('btn_deny').'</span></button>';
+        	$form .='<button  type="submit" name="change_access"  value="'.$access.'"  class="resetbutton deleteicon">'.lang('btn_deny').'</button>';
         }
         $form .= form_close().'</div>';
         return $form;

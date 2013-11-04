@@ -153,8 +153,8 @@ class Logos extends MY_Controller {
         #$form1 .= '</li>';
         if(!empty($availableImages))
         {
-           $form1 .= '<ol><li><div class="buttons"><button name="submit" type="submit" value="submit" class="btn positive">
-                      <span class="save">'.lang('rr_selectlogoandsubmit').'</span></button></div></li></ol>';
+           $form1 .= '<ol><li><div class="buttons"><button name="submit" type="submit" value="submit" class="savebutton saveicon">
+                      '.lang('rr_selectlogoandsubmit').'</button></div></li></ol>';
            $form1 .= $availableImages;
         }
         else
@@ -309,10 +309,10 @@ class Logos extends MY_Controller {
 
         if ($count_existing_logos > 0)
         {
-            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="btn negative"><span class="cancel">'.lang('rr_unsignselectedlogo').'</span></button>';
+            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon">'.lang('rr_unsignselectedlogo').'</button> ';
         }
         $target_url = base_url() . 'manage/logos/newlogo/' . $type . '/' . $id;
-        $form1 .= '<a href="' . $target_url . '"><button name="add" type="button" value="Add new image" class="btn positive" onclick="window.open(\'' . $target_url . '\',\'_self\')"><span class="save">'.lang('rr_assignnewlogo').'</span></button></a>';
+        $form1 .= '<a href="' . $target_url . '"><button name="add" type="button" value="Add new image" class="addbutton addicon" onclick="window.open(\'' . $target_url . '\',\'_self\')">'.lang('rr_assignnewlogo').'</button></a>';
         $form1 .= '</div>';
         $form1 .= form_close();
         $form1 .= '</span>';

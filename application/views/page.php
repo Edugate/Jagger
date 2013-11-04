@@ -128,7 +128,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
          {
         ?>
         <form id="login_link" action="#" method="get">
-              <button id="loginlink"  type="button"><?php echo lang('toploginbtn'); ?></button>
+              <button id="loginlink"  type="button" class="loginbutton"><?php echo lang('toploginbtn'); ?></button>
         </form>
                 <?php
          }

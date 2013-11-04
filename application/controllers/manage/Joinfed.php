@@ -199,7 +199,7 @@ class Joinfed extends MY_Controller {
         {    if(count($feds_dropdown) > 0)
              {
                   $this->load->helper('form');
-                  $buttons = '<div class="buttons"><button type="submit" name="modify" value="submit" class="button positive"><span class="save">'.lang('rr_save').'</span></button></div>';
+                  $buttons = '<div class="buttons"><button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
                   
                   $form = form_open(current_url(),array('id'=>'formver2','class'=>'span-15'));
                   $form .= form_fieldset(lang('joinfederation'));

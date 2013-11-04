@@ -45,10 +45,10 @@ echo '</li></ol>';
 $tf = '';
 
 $tf .='<div class="buttons">';
-$tf .='<button type="reset" name="reset" value="Reset" class="button negative">
-                  <span class="reset">'.lang('rr_reset').'</span></button>';
-$tf .='<button type="submit" name="submit" value="Register" class="button positive">
-                  <span class="save">'.lang('register').'</span></button>';
+$tf .='<button type="reset" name="reset" value="Reset" class="resetbutton reseticon">
+                  '.lang('rr_reset').'</button> ';
+$tf .='<button type="submit" name="submit" value="Register" class="savebutton saveicon">
+                  '.lang('register').'</button>';
 $tf .= '</div>';
 echo $tf;
 echo form_close();

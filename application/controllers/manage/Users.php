@@ -98,7 +98,7 @@ class Users extends MY_Controller {
                 $form .= "</ol>";
                 $form .= form_fieldset_close();
                 $form .= '<div class="buttons">';
-                $form .= '<button type="submit"  name="submit" value="submit" class="btn positive"><span class="save">'.lang('adduser_btn').'</span></button>';
+                $form .= '<button type="submit"  name="submit" value="submit" class="addbutton addicon">'.lang('adduser_btn').'</button>';
                 $form .='</div>';
                 $form .= form_close();
                 $data['message'] = $form;
@@ -384,7 +384,7 @@ class Users extends MY_Controller {
                 $f .= '</li>';
                 $f .= '</ol>';
                 $f .= form_fieldset_close();
-                $f .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative"><span class="remove">'.lang('rr_rmuserbtn').'</span></button></div>';
+                $f .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">'.lang('rr_rmuserbtn').'</button></div>';
                 $f .= form_close();
 
                 $data['form'] = $f;
@@ -456,7 +456,7 @@ class Users extends MY_Controller {
             $form .= '</ol>';
             $form .= '</li>';
             $form .= '</ol>';
-            $form .= '<div class="buttons"><button type="submit" value="submit" class="btn positive"><span class="save">Save</span></button></div';
+            $form .= '<div class="buttons"><button type="submit" value="submit" class="savebutton saveicon">'.lang('rr_save').'</button></div';
             $form .= form_fieldset_close();
             $form .= form_close();
             $data['content_view'] = 'manage/user_access_edit_view';
@@ -506,7 +506,7 @@ class Users extends MY_Controller {
             $form .= "</ol>";
             $form .= form_fieldset_close();
             $form .= '<div class="buttons">';
-            $form .= '<button type="submit"  name="submit", value="submit" class="btn positive"><span class="save">Change password</span></button>';
+            $form .= '<button type="submit"  name="submit", value="submit" class="savebutton saveicon">'.lang('rr_changepass').'</button>';
             $form .='</div>';
             $form .= form_close();
             $data['message'] = $form;

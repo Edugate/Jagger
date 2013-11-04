@@ -127,8 +127,8 @@ echo '<div>'.lang('youcanshoose').':<br />'.$workersdescriptions.'</div>';
 </fieldset>
 <fieldset>
   <div class="buttons">
-      <button type="submit" name="submit" value="submit" class="btn positive">
-            <span class="save"><?php echo lang('rr_add');?><span></button>
+      <button type="submit" name="submit" value="submit" class="savebutton saveicon">
+            <?php echo lang('rr_add');?></button>
 
   </div> 
 </fieldset>

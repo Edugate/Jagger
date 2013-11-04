@@ -19,7 +19,7 @@ if(!empty($backurl))
 		<?php
 		echo form_open_multipart(base_url().'manage/logos/uploadlogos');
 		echo form_upload('userfile');
-                echo '<div class="buttons"><button type="submit" name="upload" value="upload" class="btn positive"><span class="save">'.lang('rr_upload').'</span></button></div>';
+                echo '<div class="buttons"><button type="submit" name="upload" value="upload" class="savebutton saveicon">'.lang('rr_upload').'</button></div>';
 		echo form_close();
 		?>		
 	</div>

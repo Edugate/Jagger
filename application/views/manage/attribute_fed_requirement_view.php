@@ -23,8 +23,8 @@ $target = current_url();
 if (count($add_attr_final) > 0)
 {
 ?>
-<button class="btn-positive showform"><?php echo lang('rr_addreqattr'); ?></button>
-<button class="btn-negative hideform hidden"><?php echo lang('btn_hide');?></button></div>
+<button class="addbutton addicon showform"><?php echo lang('rr_addreqattr'); ?></button>
+<button class="resetbutton minusicon hideform hidden"><?php echo lang('btn_hide');?></button></div>
 
 <?php
     for ($i = 0; $i < $no_new_attr; $i++)
@@ -48,7 +48,7 @@ if (count($add_attr_final) > 0)
         echo '</ol>';
         echo form_fieldset_close();
         echo '<div class="buttons">';
-        echo '<button name="submit" type="submit" id="submit" value="Add" class="btn positive"><span class="save">'.lang('rr_add').'</span></button>';
+        echo '<button name="submit" type="submit" id="submit" value="Add" class="savebutton saveicon">'.lang('rr_add').'</button>';
 	echo '</div>';
         echo form_close();
     }
@@ -78,8 +78,8 @@ if (count($already_in_attr) > 0)
         echo '</li>';
         echo '<ol>';
         echo '<div class="buttons">';
-        echo '<button name="submit" type="submit" value="Remove" class="btn negative"><span class="cancel">'.lang('rr_remove').'</span></button>';
-        echo '<button name="submit" type="submit" value="Modify" class="btn positive"><span class="save">'.lang('rr_modify').'</span></button>';
+        echo '<button name="submit" type="submit" value="Remove" class="resetbutton deleteicon">'.lang('rr_remove').'</button> ';
+        echo '<button name="submit" type="submit" value="Modify" class="savebutton saveicon">'.lang('rr_modify').'</button>';
         echo '</div>';
         echo form_fieldset_close();
         echo form_close();

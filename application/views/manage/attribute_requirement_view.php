@@ -20,8 +20,8 @@ $target = current_url();
 </div>
 
 <div>
-<button class="btn-positive showform"><?php echo lang('rr_addreqattr'); ?></button>
-<button class="btn-negative hideform hidden">Hide</button></div>
+<button class="addbutton addicon showform"><?php echo lang('rr_addreqattr'); ?></button>
+<button class="resetebutton deleteicon hideform hidden"><?php echo lang('btn_hide') ;?></button></div>
 
 <table id="details" class="reqattraddform hidden">
     <caption><?php echo lang('rr_addreqattr');?></caption>
@@ -45,8 +45,8 @@ $target = current_url();
                         echo '</li></ol>';
                         $tf = '';
                         $tf .='<div class="buttons">';
-                        $tf .='<button type="submit" name="submit" id="submit" value="Add" class="button positive">
-                  <span class="save">'.lang('rr_add').'</span></button>';
+                        $tf .='<button type="submit" name="submit" id="submit" value="Add" class="savebutton saveicon">
+                  '.lang('rr_add').'</button>';
                         $tf .= '</div>';
                         echo $tf;
                         echo form_close();
@@ -85,10 +85,10 @@ $target = current_url();
                         echo form_fieldset_close();
                         $tf = '';
                         $tf .='<div class="buttons">';
-                        $tf .='<button type="submit" name="submit" value="Remove" class="button negative">
-                  <span class="reset">'.lang('rr_remove').'</span></button>';
-                        $tf .='<button type="submit" name="submit" value="Modify" class="button positive">
-                  <span class="save">'.lang('rr_modify').'</span></button>';
+                        $tf .='<button type="submit" name="submit" value="Remove" class="resetbutton reseticon">
+                  '.lang('rr_remove').'</button>';
+                        $tf .='<button type="submit" name="submit" value="Modify" class="savebutton saveicon">
+                  '.lang('rr_modify').'</button>';
                         $tf .= '</div>';
                         echo $tf;
                         echo form_close();

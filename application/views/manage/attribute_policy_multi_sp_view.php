@@ -37,7 +37,7 @@ foreach($arps as $arp)
 
 }
 $reset_button = '';
-$modify_button = '<button type="submit" value="modify" class="btn positive"><span class="save">'.lang('rr_modify').'</span></button>';
+$modify_button = '<button type="submit" value="modify" class="savebutton saveicon">'.lang('rr_modify').'</button>';
 $sp_link = anchor(base_url()."providers/detail/show/".$requester_id,$requester);
 $idp_link = anchor(base_url()."providers/detail/show/".$provider_id,$provider);
 $attr_req_link = anchor(base_url()."manage/attribute_requirement/sp/".$requester_id,'<img src="' . base_url() . 'images/icons/arrow.png" />');
