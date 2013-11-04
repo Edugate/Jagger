@@ -39,5 +39,5 @@ echo form_label(lang('rr_entitylocalext'),'extint');
 echo form_dropdown('extint', $extint,$current_extint);
 echo '</li></ol>';
 echo form_fieldset_close();
-echo '<div class="buttons"><button name="submit" type="submit" id="submit" value="Modify" class="btn positive"><span class="save">'.lang('rr_modify').'</span></button></div>';
+echo '<div class="buttons"><button name="submit" type="submit" id="submit" value="Modify" class="savebutton saveicon">'.lang('rr_modify').'</button></div>';
 echo form_close();

@@ -12,7 +12,7 @@
     $js = 'id="combobox"';
     
     echo form_dropdown('service',$formdown,'0',$js );
-    echo '<span class="buttons"><button type="submit" name="submit" value="submit" class="btn positive v2"><span class="save">'.lang('rr_go').'</span></button></span>';
+    echo '<span class="buttons"><button type="submit" name="submit" value="submit" class="savebutton nexticon v2">'.lang('rr_go').'</button></span>';
     echo form_fieldset_close();
     echo form_close()
     ?>
@@ -63,7 +63,7 @@ $target = base_url() . 'manage/attribute_policy/submit_global';
 if (count($attrs_array_newform) > 0)
 {
     echo '<span class="span-22">';
-    echo '<div class="accordionButton buttons"><button class="btn btn-positive">'.lang('setdefaultpolicyfornewsupattrs').'</button> </div>';
+    echo '<div class="accordionButton buttons"><button class="savebutton saveicon">'.lang('setdefaultpolicyfornewsupattrs').'</button> </div>';
     echo '<div class="accordionContent">';
     echo form_open($target, $attributes, $hidden);
     echo form_fieldset(); 
@@ -78,8 +78,8 @@ if (count($attrs_array_newform) > 0)
     echo form_dropdown('policy', array('0' => ''.lang('dropnever').'', '1' => ''.lang('dropokreq').'', '2' => ''.lang('dropokreqdes').''));
     echo '</li></ol>';
     echo '<div class="buttons">';
-    echo '<button type="submit" name="submit" value="Cancel" class="btn negative"><span class="cancel">'.lang('rr_cancel').'<span></button>';
-    echo '<button type="submit" name="submit" value="Add default policy" class="btn positive"><span class="save">'.lang('adddefaultpolicy').'<span></button>';
+    echo '<button type="submit" name="submit" value="Cancel" class="resetbutton reseticon">'.lang('rr_cancel').'</button>';
+    echo '<button type="submit" name="submit" value="Add default policy" class="savebutton saveicon">'.lang('adddefaultpolicy').'</button>';
     echo '</span>';
     echo form_fieldset_close();
 
@@ -98,7 +98,7 @@ echo '</div>';
 echo '<div id="fedarptab">';
 
 echo '<div class="buttons clear">';
-echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="btn btn-positive"><span>'.lang('rr_arpforfed').'</span></button></span>');
+echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="savebutton saveicon">'.lang('rr_arpforfed').'</button></span>');
 echo '</div>';
 
 if (!empty($federations_policy))

@@ -59,7 +59,7 @@ foreach($multi as $m)
 echo '</table>';
 echo '</ol>';
 echo '</fieldset>';
-echo '<div class="buttons"><button type="submit" id="rmfedcategory" name="formsubmit" value="remove" class="btn btn-negative">'.lang('rr_remove').'</button> <button type="submit" name="formsubmit" value="update" class="btn btn-positive">'.lang('rr_save').'</button></div>';
+echo '<div class="buttons"><button type="submit" id="rmfedcategory" name="formsubmit" value="remove" class="resetbutton deleteicon">'.lang('rr_remove').'</button> <button type="submit" name="formsubmit" value="update" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
 echo form_close();
 
 echo confirmDialog(''.lang('title_confirm').'', ''.sprintf(lang('douwanttoremove'),lang('fedcategory')).'', ''.lang('rr_yes').'', ''.lang('rr_no').'');

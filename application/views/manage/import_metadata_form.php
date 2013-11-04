@@ -74,8 +74,8 @@
     echo '</li></ol>';
      ?>
         <div class="buttons">
-              <button type="submit" name="submit" value="Import" class="btn positive">
-                 <span class="save">Import<span></button>
+              <button type="submit" name="submit" value="Import" class="savebutton saveicon">
+                 Import</button>
         </div>
     <?php
     echo form_fieldset_close();

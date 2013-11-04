@@ -220,11 +220,11 @@ class Geolocation extends MY_Controller {
 <label for="lnginput">'.lang('rr_longitude').'</label><input type="text" id="lnginput" name="lnginput" value="" /><br /> ';
         if($locked)
         {
-             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="btn positive" disabled="disabled"><span class="save">'.lang('rerror_cannotaddpoint').' ('.lang('rr_locked').')</span></button></div>';
+             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="addbutton addicon" disabled="disabled">'.lang('rerror_cannotaddpoint').' ('.lang('rr_locked').')</button></div>';
         }
         else
         {
-             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="btn positive"><span class="save">'.lang('rr_addpoint').'</span></button></div>';
+             $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="addbutton addicon">'.lang('rr_addpoint').'</button></div>';
         }
         $formular .= form_close();
         $formular .='</span>';
@@ -238,12 +238,12 @@ class Geolocation extends MY_Controller {
         }
         if($locked)
         {
-            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative" disabled="disabled"><span class="remove">'.lang('rerror_cannotdelete').' ('.lang('rr_locked').')</span></button></div>';
+            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="resetbutton reseticon" disabled="disabled">'.lang('rerror_cannotdelete').' ('.lang('rr_locked').')</button></div>';
            
         }
         else
         {
-            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="btn negative"><span class="remove">'.lang('rr_rmselectedpoints').'</span></button></div>';
+            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="resetbutton reseticon">'.lang('rr_rmselectedpoints').'</button></div>';
         }
         $formular2 .= form_close() . '</span>';
 

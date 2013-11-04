@@ -75,6 +75,8 @@ $formBorderColor: #e3ebc3;
 $formBorderRadius: 3px;
 
 
+
+// buttons  default
 $defaultBtnBgColor1: #fff;
 $defaultBtnBgColor2: #fff;
 $defaultBtnBgColor3:#e6e6e6;
@@ -82,6 +84,50 @@ $defaultBtnBorderColor: #cccccc;
 $defaultBtnBorderWidth: 1px;
 $defaultBtnColor: #333333;
 
+// button "add"
+
+$addBtnBgColor1: #b8e356;
+$addBtnBgColor2: #a5cc52;
+$addBtnBorderColor: #83c41a;
+$addBtnColor: #fff;
+$addBtnTxtShadow: #86ae47;
+$addBtnShadow: #d9fbbe;
+
+// button "save"
+
+$saveBtnBgColor1: #b8e356;
+$saveBtnBgColor2: #a5cc52;
+$saveBtnBorderColor: #83c41a;
+$saveBtnColor: #fff;
+$saveBtnTxtShadow: #86ae47;
+$saveBtnShadow: #d9fbbe;
+
+// button "reset"
+
+$resetBtnBgColor1: #fe1a00;
+$resetBtnBgColor2: #ce0100;
+$resetBtnBorderColor: #d83526;
+$resetBtnColor: #fff;
+$resetBtnTxtShadow:  #b23e35;
+$resetBtnShadow: #f29c93;
+
+// button "edit"
+
+$editBtnBgColor1: #3d94f6;
+$editBtnBgColor2: #1e62d0;
+$editBtnBorderColor: #337fed;
+$editBtnColor: #fff;
+$editBtnTxtShadow:  #1570cd;
+$editBtnShadow: #97c4fe;
+
+// button "login"
+
+$loginBtnBgColor1: #3d94f6;
+$loginBtnBgColor2: #1e62d0;
+$loginBtnBorderColor: #337fed;
+$loginBtnColor: #fff;
+$loginBtnTxtShadow:  #1570cd;
+$loginBtnShadow: #97c4fe;
 
 $button-negative-color: #ff0000;
 $buttonNegativeFontcolor: #ff0000;
@@ -89,22 +135,6 @@ $buttonNegativeFontcolor: #ff0000;
 $input-placeholder-color: #808080;
 $inputPlaceholderColor: #808080;
 
-$font-color-error: #ff0000;
-$fontColorError: #ff0000;
-$font-color-input-notice: #ffa500;
-$fontColorInputNotice: orange;
-$color-inputs-notice: #ffa500;
-$font-color-toppanel: #ffffff;
-
-$container-background-color: #fbfbfb;
-$container-background-gradient-1: #ffffff;
-$container-background-gradient-2: #f5f5f5;
-$container-border-color: #dddddd;
-$container-box-shadow-color: #ffffff;
-
-
-$responseDialogBgcolor: #ffffff;
-$responseDialogBorderColor: #336699;
 
 $btn1bgcolor: #080808;
 $btn1bgcolortop: #075b82;
@@ -126,3 +156,19 @@ $noticeSuccessColor: #4F8A10;
 //$noticeSuccessImg = url('success.png');
 
 
+$font-color-error: #ff0000;
+$fontColorError: #ff0000;
+$font-color-input-notice: #ffa500;
+$fontColorInputNotice: orange;
+$color-inputs-notice: #ffa500;
+$font-color-toppanel: #ffffff;
+
+$container-background-color: #fbfbfb;
+$container-background-gradient-1: #ffffff;
+$container-background-gradient-2: #f5f5f5;
+$container-border-color: #dddddd;
+$container-box-shadow-color: #ffffff;
+
+
+$responseDialogBgcolor: #ffffff;
+$responseDialogBorderColor: #336699;

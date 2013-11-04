@@ -37,8 +37,8 @@ echo '</li></ol>';
 echo form_fieldset_close();
 ?>
 <div class="buttons">
-    <button type="submit" name="submit" value="Save" class="btn positive">
-        <span class="save"><?php echo lang('rr_save'); ?><span></button>
+    <button type="submit" name="submit" value="Save" class="savebutton saveicon">
+        <?php echo lang('rr_save'); ?></button>
 </div>
 <?php
 

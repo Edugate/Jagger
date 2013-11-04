@@ -13,7 +13,7 @@ $hidden = array('prvid'=>''.$providerid.'','defid'=>''.$defid.'');
 echo form_open(''.base_url().'manage/statdefs/remove/'.$defid.'',$formAttrs,$hidden);
 ?>
 
-<button type="submit" value="remove" name="remove" class="btn negative" >remove</button>
+<button type="submit" value="remove" name="remove" class="resetbutton reseticon" ><?php echo lang('rr_remove');?></button>
 <?php
 echo form_close();
 }

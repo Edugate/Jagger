@@ -38,8 +38,8 @@ if(!empty($providers))
     echo form_fieldset_close();
 ?>
 <div class="buttons">
- <button type="submit" name="submit" value="Remove" class="btn positive">
-    <span class="save"><?php echo lang('rr_fedrmmember');?><span>
+ <button type="submit" name="submit" value="Remove" class="resetbutton deleteicon">
+    <?php echo lang('rr_fedrmmember');?>
  </button>
 </div>
 <?php

@@ -31,8 +31,8 @@ echo "</ol>";
 echo form_fieldset_close();
 ?>
 <div class="buttons">
- <button type="submit" name="submit" value="Invitation" class="btn positive">
-    <span class="save"><?php echo lang('sendinvbtn');?><span>
+ <button type="submit" name="submit" value="Invitation" class="savebutton saveicon">
+    <?php echo lang('sendinvbtn');?>
  </button>
 </div>
 <?php

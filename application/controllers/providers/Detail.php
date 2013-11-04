@@ -217,7 +217,8 @@ class Detail extends MY_Controller {
         }
         else
         {
-            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="edit" title="edit" >' . makeLabel('edit', lang('rr_edit'), genIcon('edit') . lang('rr_edit')) . '</a>';
+            //$edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="edit" title="edit" >' . makeLabel('edit', lang('rr_edit'), genIcon('edit') . lang('rr_edit')) . '</a>';
+            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon" title="edit" >' . lang('rr_edit') . '</a>';
         }
         $data['edit_link'] = $edit_link;
 
@@ -460,7 +461,7 @@ class Detail extends MY_Controller {
         if ($no_feds > 0)
         {
             $d[++$i]['name'] = '';
-            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="btn">' . lang('showmemb_btn') . '</button></a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="savebutton arrowdownicon">' . lang('showmemb_btn') . '</button></a>';
 
             $d[++$i]['2cols'] = '<div id="membership"></div>';
         }
@@ -547,7 +548,7 @@ class Detail extends MY_Controller {
         if ($is_local && $has_write_access && !empty($gearman_enabled))
         {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
-            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="btn">' . lang('btn_signmetadata') . '</button></a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon">' . lang('btn_signmetadata') . '</button></a>';
         }
 
         $result[] = array('section' => 'technical', 'title' => '' . lang('tabTechnical') . '', 'data' => $d);
@@ -947,8 +948,8 @@ class Detail extends MY_Controller {
             $exc = $ent->getExcarps();
             if (!$locked && $has_write_access && $ent->getLocal())
             {
-                $mlink = '<a href="' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '"><span class="lbl lbl-alert">' . lang('rr_editarpexc') . '</span></a>';
-                $d[++$i]['name'] = lang('rr_arpexclist_title') . ' ' . $mlink;
+                $mlink = '<a href="' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '" class="editbutton editicon">' . lang('rr_editarpexc') . '</a>';
+                $d[++$i]['name'] = lang('rr_arpexclist_title') . ' <br />' . $mlink;
                 if (is_array($exc) && count($exc) > 0)
                 {
                     $l = '<ul>';
@@ -965,7 +966,7 @@ class Detail extends MY_Controller {
                 }
             }
             $d[++$i]['name'] = lang('rr_arpoverview');
-            $d[$i]['value'] = anchor(base_url('reports/idp_matrix/show/' . $ent->getId()), 'matrix');
+            $d[$i]['value'] = anchor(base_url('reports/idp_matrix/show/' . $ent->getId()), 'matrix', 'class="editbutton"');
         }
         /**
          * supported attributes by IDP part
@@ -975,8 +976,8 @@ class Detail extends MY_Controller {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
             if ($has_write_access)
             {
-                $edit_attributes = '<a href="' . base_url() . 'manage/supported_attributes/idp/' . $id . ' " class="edit"><span class="lbl lbl-edit">' . $image_link . lang('rr_edit') . '</span></a>';
-                $edit_policy = '<a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " class="edit"><span class="lbl lbl-edit">' . $image_link . lang('rr_edit') . '</span></a>';
+                $edit_attributes = '<span style="float: right;"><a href="' . base_url() . 'manage/supported_attributes/idp/' . $id . ' " class="editbutton editicon">'.  lang('rr_edit') . '</a></span>';
+                $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
             }
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;
@@ -1002,10 +1003,10 @@ class Detail extends MY_Controller {
             if ($has_write_access)
             {
                 $d[++$i]['name'] = lang('rr_attrsoverview');
-                $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'));
+                $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'),'class="editbutton"');
 
                 $image_link = '<img src="' . base_url('images/icons/pencil-field.png') . '"/>';
-                $edit_req_attrs_link = '<a href="' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '" class="edit" title="edit" ><span class="lbl lbl-edit">' . genIcon('edit') . lang('rr_edit') . '</span></a>';
+                $edit_req_attrs_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '" class="editbutton editicon" title="edit" >' .  lang('rr_edit') . '</a></span>';
             }
             $d[++$i]['header'] = '<span id="reqattrs"></span>' . lang('rr_requiredattributes') . $edit_req_attrs_link;
             $requiredAttributes = $ent->getAttributesRequirement();

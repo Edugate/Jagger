@@ -1257,35 +1257,6 @@ span.alert
 }
 
 
-#loginlink {
-    -moz-box-shadow: 0px 1px 0px 0px #97c4fe;
-    -webkit-box-shadow: 0px 1px 0px 0px #97c4fe;
-    box-shadow: 0px 1px 0px 0px #97c4fe;
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #3d94f6), color-stop(1, #1e62d0) );
-    background:-moz-linear-gradient( center top, #3d94f6 5%, #1e62d0 100% );
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#3d94f6', endColorstr='#1e62d0');
-    background-color:#3d94f6;
-    @include border-radius(1px 1px, 1px 1px);
-    border:1px solid #337fed;
-    display:inline-block;
-    color:#ffffff;
-    font-family:arial;
-    font-size:15px;
-    font-weight:bold;
-    padding:6px 24px;
-    text-decoration:none;
-    text-shadow:1px 1px 0px #1570cd;
-}
-#loginlink:hover {
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #1e62d0), color-stop(1, #3d94f6) );
-    background:-moz-linear-gradient( center top, #1e62d0 5%, #3d94f6 100% );
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#1e62d0', endColorstr='#3d94f6');
-    background-color:#1e62d0;
-}
-#loginlink:active {
-    position:relative;
-    top:1px;
-}
 
 
 
@@ -1442,4 +1413,379 @@ button.fedcategory:hover, button.typelist:hover {
 .nopadding
 {
  padding: 2px 2px !important;
+}
+
+
+a.addbutton, a.addbutton:link, a.addbutton:hover, a.addbutton:active, a.addbutton:visited {
+         color: $addBtnColor;
+         text-decoration: none;
+}
+a.savebutton, a.savebutton:link, a.savebutton:hover, a.savebutton:active, a.savebutton:visited {
+         color: $saveBtnColor;
+         text-decoration: none;
+}
+a.resetbutton, a.resetbutton:link, a.resetbutton:hover, a.resetbutton:active, a.resetbutton:visited {
+         color: $resetBtnColor;
+         text-decoration: none;
+}
+a.editbutton, a.editbutton:link, a.editbutton:hover, a.editbutton:active, a.editbutton:visited {
+         color: $editBtnColor;
+         text-decoration: none;
+}
+a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.loginbutton:visited {
+         color: $loginBtnColor;
+         text-decoration: none;
+}
+// buttons classess
+.addbutton, .resetbutton, .savebutton, .editbutton, .loginbutton {
+    min-width: 100px;
+    height:30px;
+    line-height:30px;
+}
+.smallerbtn {
+
+    height:25px;
+    line-height:25px;
+    font-size: smaller !important;
+
+}
+.addbutton {
+	display:inline-block;
+        white-space: nowrap;
+
+	background-color:$addBtnBgColor1;
+	background-image:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, $addBtnBgColor1), color-stop(1, $addBtnBgColor2) );
+        background-image: -webkit-linear-gradient(top, $addBtnBgColor1, $addBtnBgColor2);
+	background-image:-moz-linear-gradient( center top, $addBtnBgColor1 5%, $addBtnBgColor2 100% );
+        background-image: -ms-linear-gradient(top, $addBtnBgColor1, $addBtnBgColor2);
+        background-image: -o-linear-gradient(top, $addBtnBgColor1, $addBtnBgColor2);
+        background-image: linear-gradient(top, $addBtnBgColor1,$addBtnBgColor2);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='$addBtnBgColor1', endColorstr='$addBtnBgColor2');
+        
+
+	-moz-box-shadow:inset 0px 1px 0px 0px $addBtnShadow;
+	-webkit-box-shadow:inset 0px 1px 0px 0px $addBtnShadow;
+	box-shadow:inset 0px 1px 0px 0px #d9fbbe;
+	-webkit-border-top-left-radius:0px;
+	-moz-border-radius-topleft:0px;
+	border-top-left-radius:0px;
+	-webkit-border-top-right-radius:0px;
+	-moz-border-radius-topright:0px;
+	border-top-right-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	-moz-border-radius-bottomright:0px;
+	border-bottom-right-radius:0px;
+	-webkit-border-bottom-left-radius:0px;
+	-moz-border-radius-bottomleft:0px;
+	border-bottom-left-radius:0px;
+	border:1px solid $addBtnBorderColor;
+
+        padding: 0 1.5em;
+
+	text-indent:0;
+	color:$addBtnColor;
+	font-family:Arial;
+	font-size:14px;
+	font-weight:bold;
+	font-style:normal;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px $addBtnTxtShadow;
+}
+.addbutton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, $addBtnBgColor2), color-stop(1, $addBtnBgColor1) );
+	background:-moz-linear-gradient( center top, $addBtnBgColor2 5%, $addBtnBgColor1 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='$addBtnBgColor2', endColorstr='$addBtnBgColor1');
+	background-color:$addBtnBgColor2;
+}
+.addbutton:active {
+	position:relative;
+	top:1px;
+}
+.addbutton:before
+{
+	background: #ccc;
+	background: rgba(0,0,0,.1);
+	float: left;        
+	width: 1em;
+	text-align: center;
+	font-size: 1.5em;
+	margin: 0 1em 0 -1em;
+	padding: 0 .2em;
+	-moz-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	-webkit-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	-moz-border-radius: .15em 0 0 .15em;
+	-webkit-border-radius: .15em 0 0 .15em;
+	border-radius: .15em 0 0 .15em;
+        pointer-events: none;        
+}
+.savebutton {
+	display:inline-block;
+        white-space: nowrap;
+
+	background-color:$saveBtnBgColor1;
+	background-image:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, $saveBtnBgColor1), color-stop(1, $saveBtnBgColor2) );
+        background-image: -webkit-linear-gradient(top, $saveBtnBgColor1, $saveBtnBgColor2);
+	background-image:-moz-linear-gradient( center top, $saveBtnBgColor1 5%, $saveBtnBgColor2 100% );
+        background-image: -ms-linear-gradient(top, $saveBtnBgColor1, $saveBtnBgColor2);
+        background-image: -o-linear-gradient(top, $saveBtnBgColor1, $saveBtnBgColor2);
+        background-image: linear-gradient(top, $saveBtnBgColor1,$saveBtnBgColor2);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='$saveBtnBgColor1', endColorstr='$saveBtnBgColor2');
+        
+
+	-moz-box-shadow:inset 0px 1px 0px 0px $saveBtnShadow;
+	-webkit-box-shadow:inset 0px 1px 0px 0px $saveBtnShadow;
+	box-shadow:inset 0px 1px 0px 0px $saveBtnShadow;
+	-webkit-border-top-left-radius:0px;
+	-moz-border-radius-topleft:0px;
+	border-top-left-radius:0px;
+	-webkit-border-top-right-radius:0px;
+	-moz-border-radius-topright:0px;
+	border-top-right-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	-moz-border-radius-bottomright:0px;
+	border-bottom-right-radius:0px;
+	-webkit-border-bottom-left-radius:0px;
+	-moz-border-radius-bottomleft:0px;
+	border-bottom-left-radius:0px;
+	border:1px solid $saveBtnBorderColor;
+
+        padding: 0 1.5em;
+
+	text-indent:0;
+	color:$saveBtnColor;
+	font-family:Arial;
+	font-size:14px;
+	font-weight:bold;
+	font-style:normal;
+
+
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px $saveBtnTxtShadow;
+}
+.savebutton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, $saveBtnBgColor2), color-stop(1, $saveBtnBgColor1) );
+	background:-moz-linear-gradient( center top, $saveBtnBgColor2 5%, $saveBtnBgColor1 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='$saveBtnBgColor2', endColorstr='$saveBtnBgColor1');
+	background-color:$saveBtnBgColor2;
+}
+.savebutton:active {
+	position:relative;
+	top:1px;
+}
+.savebutton:before
+{
+	background: #ccc;
+	background: rgba(0,0,0,.1);
+	float: left;        
+	width: 1em;
+	text-align: center;
+	font-size: 1.5em;
+	margin: 0 1em 0 -1em;
+	padding: 0 .2em;
+	-moz-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	-webkit-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	-moz-border-radius: .15em 0 0 .15em;
+	-webkit-border-radius: .15em 0 0 .15em;
+	border-radius: .15em 0 0 .15em;
+        pointer-events: none;        
+}
+
+
+
+
+
+.resetbutton {
+	display:inline-block;
+        white-space: nowrap;
+
+	background-color:$resetBtnBgColor1;
+	background-image:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, $resetBtnBgColor1), color-stop(1, $resetBtnBgColor2) );
+        background-image: -webkit-linear-gradient(top, $resetBtnBgColor1, $resetBtnBgColor2);
+	background-image:-moz-linear-gradient( center top, $resetBtnBgColor1 5%, $resetBtnBgColor2 100% );
+        background-image: -ms-linear-gradient(top, $resetBtnBgColor1, $resetBtnBgColor2);
+        background-image: -o-linear-gradient(top, $resetBtnBgColor1, $resetBtnBgColor2);
+        background-image: linear-gradient(top, $resetBtnBgColor1,$resetBtnBgColor2);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='$resetBtnBgColor1', endColorstr='$resetBtnBgColor2');
+        
+
+	-moz-box-shadow:inset 0px 1px 0px 0px $resetBtnShadow;
+	-webkit-box-shadow:inset 0px 1px 0px 0px $resetBtnShadow;
+	box-shadow:inset 0px 1px 0px 0px $resetBtnShadow;
+	-webkit-border-top-left-radius:0px;
+	-moz-border-radius-topleft:0px;
+	border-top-left-radius:0px;
+	-webkit-border-top-right-radius:0px;
+	-moz-border-radius-topright:0px;
+	border-top-right-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	-moz-border-radius-bottomright:0px;
+	border-bottom-right-radius:0px;
+	-webkit-border-bottom-left-radius:0px;
+	-moz-border-radius-bottomleft:0px;
+	border-bottom-left-radius:0px;
+	border:1px solid $resetBtnBorderColor;
+
+        padding: 0 1.5em;
+
+	text-indent:0;
+	color:$resetBtnColor;
+	font-family:Arial;
+	font-size:14px;
+	font-weight:bold;
+	font-style:normal;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px $resetBtnTxtShadow;
+}
+.resetbutton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, $resetBtnBgColor2), color-stop(1, $resetBtnBgColor1) );
+	background:-moz-linear-gradient( center top, $resetBtnBgColor2 5%, $resetBtnBgColor1 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='$resetBtnBgColor2', endColorstr='$resetBtnBgColor1');
+	background-color:$resetBtnBgColor2;
+}
+.resetbutton:active {
+	position:relative;
+	top:1px;
+}
+.resetbutton:before
+{
+	background: #ccc;
+	background: rgba(0,0,0,.1);
+	float: left;        
+	width: 1em;
+	text-align: center;
+	font-size: 1.5em;
+	margin: 0 1em 0 -1em;
+	padding: 0 .2em;
+	-moz-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	-webkit-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	-moz-border-radius: .15em 0 0 .15em;
+	-webkit-border-radius: .15em 0 0 .15em;
+	border-radius: .15em 0 0 .15em;
+        pointer-events: none;        
+}
+
+
+
+.editbutton, .loginbutton {
+	display:inline-block;
+        white-space: nowrap;
+
+	background-color:$editBtnBgColor1;
+	background-image:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, $editBtnBgColor1), color-stop(1, $editBtnBgColor2) );
+        background-image: -webkit-linear-gradient(top, $editBtnBgColor1, $editBtnBgColor2);
+	background-image:-moz-linear-gradient( center top, $editBtnBgColor1 5%, $editBtnBgColor2 100% );
+        background-image: -ms-linear-gradient(top, $editBtnBgColor1, $editBtnBgColor2);
+        background-image: -o-linear-gradient(top, $editBtnBgColor1, $resetBtnBgColor2);
+        background-image: linear-gradient(top, $editBtnBgColor1,$editBtnBgColor2);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='$editBtnBgColor1', endColorstr='$editBtnBgColor2');
+        
+
+	-moz-box-shadow:inset 0px 1px 0px 0px $editBtnShadow;
+	-webkit-box-shadow:inset 0px 1px 0px 0px $editBtnShadow;
+	box-shadow:inset 0px 1px 0px 0px $editBtnShadow;
+	-webkit-border-top-left-radius:0px;
+	-moz-border-radius-topleft:0px;
+	border-top-left-radius:0px;
+	-webkit-border-top-right-radius:0px;
+	-moz-border-radius-topright:0px;
+	border-top-right-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	-moz-border-radius-bottomright:0px;
+	border-bottom-right-radius:0px;
+	-webkit-border-bottom-left-radius:0px;
+	-moz-border-radius-bottomleft:0px;
+	border-bottom-left-radius:0px;
+	border:1px solid $editBtnBorderColor;
+
+        padding: 0 1.5em;
+
+	text-indent:0;
+	color:$editBtnColor;
+	font-family:Arial;
+	font-size:14px;
+	font-weight:bold;
+	font-style:normal;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px $editBtnTxtShadow;
+}
+.editbutton:hover, .loginbutton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, $editBtnBgColor2), color-stop(1, $editBtnBgColor1) );
+	background:-moz-linear-gradient( center top, $editBtnBgColor2 5%, $editBtnBgColor1 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='$editBtnBgColor2', endColorstr='$editBtnBgColor1');
+	background-color:$resetBtnBgColor2;
+}
+.editbutton:active , .loginbutton:active{
+	position:relative;
+	top:1px;
+}
+.editbutton:before, .loginbutton:before
+{
+	background: #ccc;
+	background: rgba(0,0,0,.1);
+	float: left;        
+	width: 1em;
+	text-align: center;
+	font-size: 1.5em;
+	margin: 0 1em 0 -1em;
+	padding: 0 .2em;
+	-moz-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	-webkit-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+	-moz-border-radius: .15em 0 0 .15em;
+	-webkit-border-radius: .15em 0 0 .15em;
+	border-radius: .15em 0 0 .15em;
+        pointer-events: none;        
+}
+
+.addicon:before
+{
+	content: "\271A";
+}
+
+.minusicon:before
+{
+	content: "\2010";
+}
+
+
+.saveicon:before
+{
+        content: "\2714";
+}
+.reseticon:before
+{
+	content: "\2718";        
+}
+.deleteicon:before
+{
+	content: "\2718";        
+}
+.staricon:before
+{
+	content: "\2605";        
+}
+.arrowdownicon:before 
+{
+        content: "\2304";
+}
+.editicon:before {
+   content: "\270E";
+
+}
+
+.loginicon:before {
+   content: "\271A";
+
+}
+
+.nexticon:before {
+    content: "\279C";
+
 }

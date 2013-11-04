@@ -120,8 +120,8 @@
 
         </ol>
         <div class="buttons">
-            <button type="submit" name="submit" value="Submit and wait for approval" class="btn positive">
-                <span class="save"><?php echo lang('rr_submitwait');?><span></button>
+            <button type="submit" name="submit" value="Submit and wait for approval" class="savebutton saveicon">
+                <?php echo lang('rr_submitwait');?></button>
                         </div>
                         <?php
                         echo form_fieldset_close();

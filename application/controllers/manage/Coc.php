@@ -78,7 +78,7 @@ class Coc extends MY_Controller
        }
        if($has_write_access)
        {
-         $data['rows'][] = array(anchor(base_url().'manage/coc/add','<button type="submit" class="button positive"><span class="save">'.lang('rr_addcoc_btn').'<span></button>'), '','','');
+         $data['rows'][] = array(anchor(base_url().'manage/coc/add','<button type="submit" class="addbutton addicon">'.lang('rr_addcoc_btn').'</button>'), '','','');
        }
 
        $data['content_view'] = 'manage/coc_show_view';
@@ -144,8 +144,8 @@ class Coc extends MY_Controller
             $this->load->library('form_element');
             $f .= $this->form_element->generateAddCoc();
             $f .= '<div class="buttons">';
-            $f .= '<button type="reset" name="reset" value="reset" class="button negative"><span class="reset">'.lang('rr_reset').'</span></button>';
-            $f .= '<button type="submit" name="modify" value="submit" class="button positive"><span class="save">'.lang('rr_save').'</span></button></div>';
+            $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon">'.lang('rr_reset').'</button> ';
+            $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
 
             $f .= form_close();
             $data['form'] = $f;
@@ -196,8 +196,8 @@ class Coc extends MY_Controller
        $f = form_open();
        $f .= $this->form_element->generateEditCoc($coc);
        $f .= '<div class="buttons">';
-       $f .= '<button type="reset" name="reset" value="reset" class="button negative"><span class="reset">'.lang('rr_reset').'</span></button>';
-       $f .= '<button type="submit" name="modify" value="submit" class="button positive"><span class="save">'.lang('rr_save').'</span></button></div>';
+       $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon">'.lang('rr_reset').'</button> ';
+       $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
        $f .= form_close();
        $data['form'] = $f;
        $data['content_view'] = 'manage/coc_edit_view';

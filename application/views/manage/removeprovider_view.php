@@ -34,6 +34,6 @@ if ($showform)
     echo '</li>';
     echo '</ol>';
     echo form_fieldset_close();
-    echo '<div class="buttons"><button name="submit" type="submit" id="submit" value="Remove" class="btn positive"><span class="save">' . lang('rr_btn_rmprovider') . '</span></button></div>';
+    echo '<div class="buttons"><button name="submit" type="submit" id="submit" value="Remove" class="resetbutton deleteicon">' . lang('rr_btn_rmprovider') . '</button></div>';
     echo form_close();
 }

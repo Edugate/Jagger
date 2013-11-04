@@ -28,6 +28,6 @@ if(!empty($message))
 </ol>
 </fieldset>
 
-        <div class="buttons"><button type="submit" value="Submit" name="submit" id="submit" class="btn positive"><span class="save">Submit</span></button></div>
+        <div class="buttons"><button type="submit" value="Submit" name="submit" id="submit" class="savebutton saveicon">Submit</button></div>
 <?php
 	echo form_close();

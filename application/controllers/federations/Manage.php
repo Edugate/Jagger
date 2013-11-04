@@ -247,7 +247,7 @@ class Manage extends MY_Controller {
         else
         {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-            $edit_link = '<span><a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="edit" title="edit">' . $image_link . '</a></span>';
+            $edit_link = '<span style="float: right;"><a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon" title="edit">' . lang('rr_edit') . '</a></span>';
         }
         
         $data['result']['general'][] = array('data' => array('data' => lang('rr_basicinformation').' '.$edit_link, 'class' => 'highlight', 'colspan' => 2));
@@ -267,7 +267,7 @@ class Manage extends MY_Controller {
         $data['result']['general'][] = array(lang('rr_timeline'), '<a href="'.base_url().'reports/timelines/showregistered/'.$federation->getId().'">Diagram</a>'); 
 
         $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-        $edit_attributes_link = '<span><a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="edit">' . $image_link . '</a></span>';
+        $edit_attributes_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon">' . lang('rr_edit'). ' '. lang('rr_attributes') . '</a></span>';
         if (!$has_write_access)
         {
             $edit_attributes_link = '';
@@ -348,7 +348,7 @@ class Manage extends MY_Controller {
             $gearmanenabled = $this->config->item('gearman');
             if($has_write_access && !empty($gearmanenabled))
             {
-                $data['result']['metadata'][] = array( ''.lang('signmetadata').showBubbleHelp(lang('rhelp_signmetadata')).'','<a href="'.base_url().'msigner/signer/federation/'.$federation->getId().'" id="fedmetasigner"/><button type="button" class="btn">'.lang('btn_signmetadata').'</button></a>','');
+                $data['result']['metadata'][] = array( ''.lang('signmetadata').showBubbleHelp(lang('rhelp_signmetadata')).'','<a href="'.base_url().'msigner/signer/federation/'.$federation->getId().'" id="fedmetasigner"/><button type="button" class="savebutton staricon">'.lang('btn_signmetadata').'</button></a>','');
             }
 
             $data['result']['membership'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
