@@ -50,6 +50,15 @@ $config['rr_logo_types'] = 'png';
 $config['rr_logo_maxsize'] = 2000;
 
 
+
+/**
+ * optional path for nonpublic data used for reports, stats
+ * if enabled pls create reports and stats directories inside specified below path with apache write access
+ */
+// $config['datastorage_path'] = '/opt/rr3data';
+
+
+
 /**
  * autoregister_federated: if true then user authenticated with shibboleth is created in db 
  */
@@ -117,10 +126,10 @@ $config['geocenterpoint']  = array('-6.247856140071235','53.34961629053703');
 /**
  * memcache
  */
-$config['memcached'] = array(
+$config['memcached'] = array('default'=>array(
             'hostname'        => 'localhost',
             'port'            => '11211',
-            'weight'        => '1'        
+            'weight'        => '1')        
     );
 $config['cacheprefix'] = 'rr3_';
 /**
@@ -154,11 +163,24 @@ $config['translator_access']['it'] = null;
  */
 $config['gearman'] = FALSE;
 $config['gearmanconf']['jobserver'] = array(array('ip'=>'127.0.0.1','port'=>'4730'));
+$config['statistics'] = FALSE;
 
 /**
  * enable statistics collection gearman also has to be enabled
  */
 $config['statistics'] = FALSE;
+
+
+$config['disable_extcirclemeta'] = TRUE;
+
+
+$config['fedmetadataidprefix'] = 'prefix-';
+$config['fedexportmetadataidprefix'] = 'prefixexport-';
+$config['circlemetadataidprefix'] = 'prefixcircle-';
+
+//  optional
+//$config['colortheme'] = 'orange';
+
 
 /**
  *  you may create own gearman worker for collecting stats which can be called if below is enabled.
