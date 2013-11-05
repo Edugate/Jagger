@@ -9,9 +9,15 @@ html {
     font-family: $font-family;
     
 }
-body, select, input, textarea {
+select, input, textarea {
+    background-color: $selectBackground;
+    color: $selectColor;
+}
+body {
     background-color: $bodyBackground;
     color: $font-color;
+
+
 }
 hr {
     height: 1px;
@@ -1789,3 +1795,27 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
     content: "\279C";
 
 }
+input, textarea {
+  background: $selectBackground;;
+ 
+
+}
+select {
+     border: 0 !important;.  /*Removes border*/
+     -webkit-appearance: none;  /*Removes default chrome and safari style*/
+     -moz-appearance: none;  /*Removes default style Firefox*/
+     text-indent: 0.01px;
+     text-overflow: "";
+     min-height: 25px;
+     vertical-align: top;
+     min-width: 100px;
+     max-width: 120px;
+     background: white url("../images/br_down.png") no-repeat right center;
+
+}
+input , textarea{
+    border: 1px darken(white,20%) solid !important;
+    min-height: 25px;
+}
+
+

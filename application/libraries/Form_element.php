@@ -773,7 +773,7 @@ class Form_element {
             $spssolangcodes = array_diff_key($langscodes, $sorig);
             $r .= '<li class="addlprivacyurlspsso localized">';
             $r .= form_dropdown('langcode', $spssolangcodes, 'en');
-            $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="edibutton addicon smallerbtn">'.lang('addlocalized') .' ' . lang('rr_privacystatement') . '</button>';
+            $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="editbutton addicon smallerbtn">'.lang('addlocalized') .' ' . lang('rr_privacystatement') . '</button>';
             $r .= '</li></ol></fieldset>';
             $result[] = $r;
         }

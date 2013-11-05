@@ -293,7 +293,12 @@ html {
   font-family: sans-serif;
 }
 
-body, select, input, textarea {
+select, input, textarea {
+  background-color: white;
+  color: #1455a2;
+}
+
+body {
   background-color: #f0f0f0;
   color: #333333;
 }
@@ -2160,6 +2165,31 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
 
 .nexticon:before {
   content: "\279C";
+}
+
+input, textarea {
+  background: white;
+}
+
+select {
+  border: 0 !important;
+  .  
+     -webkit-appearance: none;
+  /*Removes default chrome and safari style*/
+  -moz-appearance: none;
+  /*Removes default style Firefox*/
+  text-indent: 0.01px;
+  text-overflow: "";
+  min-height: 25px;
+  vertical-align: top;
+  min-width: 100px;
+  max-width: 120px;
+  background: white url("../images/br_down.png") no-repeat right center;
+}
+
+input, textarea {
+  border: 1px #cccccc solid !important;
+  min-height: 25px;
 }
 
 form {
