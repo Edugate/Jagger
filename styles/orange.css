@@ -322,9 +322,13 @@ a:active {
   outline: 0;
 }
 
-a, a:link {
+a, a:link, a:visited {
   color: #ff3c00;
   text-decoration: none;
+}
+
+a:visited {
+  color: #ff3c00;
 }
 
 a:hover {
@@ -395,7 +399,6 @@ li {
   -webkit-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
   -moz-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
   box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
-  background: #f8f8f8;
   color: #888;
   border: none;
   outline: none;
@@ -404,7 +407,7 @@ li {
   -moz-appearance: none;
   appearance: none;
   cursor: pointer;
-  width: 50px;
+  max-width: 50px;
 }
 #langchange select:focus {
   width: 200px;
@@ -558,14 +561,14 @@ div.sectiontitle {
 .nav {
   list-style: none;
   *zoom: 1;
-  background: #181818;
+  background: #240672;
   *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF585858', endColorstr='#FF000000');
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #585858), color-stop(50%, #181818), color-stop(100%, #000000));
-  background-image: -webkit-linear-gradient(top, #585858, #181818, #000000);
-  background-image: -moz-linear-gradient(top, #585858, #181818, #000000);
-  background-image: -o-linear-gradient(top, #585858, #181818, #000000);
-  background-image: linear-gradient(top, #585858, #181818, #000000);
+  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF442B83', endColorstr='#FF000000');
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #442b83), color-stop(50%, #240672), color-stop(100%, #000000));
+  background-image: -webkit-linear-gradient(top, #442b83, #240672, #000000);
+  background-image: -moz-linear-gradient(top, #442b83, #240672, #000000);
+  background-image: -o-linear-gradient(top, #442b83, #240672, #000000);
+  background-image: linear-gradient(top, #442b83, #240672, #000000);
   border-top: 1px solid black;
 }
 
@@ -624,7 +627,7 @@ div.sectiontitle {
 
 .nav li li a {
   display: block;
-  background: #0f67a1;
+  background: #3e13af;
   position: relative;
   z-index: 100;
   border-top: 1px solid black;
@@ -1233,15 +1236,15 @@ div.floating-menu {
   margin-left: auto;
   margin-top: 2px;
   margin-bottom: 10px;
-  background: #0f67a1;
-  border: 1px solid ligthen(#0f67a1, 10%);
+  background: #3e13af;
+  border: 1px solid ligthen(#3e13af, 10%);
   width: 130px;
 }
 div.floating-menu span {
   cursor: pointer;
 }
 div.floating-menu span.accordionButton1 {
-  background: #0b4972;
+  background: #2e0e81;
   width: 100%;
   display: block;
 }
@@ -1446,9 +1449,9 @@ div.mapform {
 .ui-tabs-nav li.ui-state-active {
   margin-top: 0em;
   font-size: 90%;
-  background: #0f67a1;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #585858), color-stop(40%, #181818), color-stop(100%, black));
-  background: -moz-linear-gradient(top, #585858, #181818, black);
+  background: #3e13af;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #442b83), color-stop(40%, #240672), color-stop(100%, black));
+  background: -moz-linear-gradient(top, #442b83, #240672, black);
   background-color: black;
   border-top: 1px solid black;
 }
@@ -1519,10 +1522,10 @@ span.alert {
   min-width: 600px;
   padding-top: 10px;
   padding-bottom: 10px;
-  background: #bcff33;
-  background-image: -moz-linear-gradient(center top, #bcff33 92%, #abff00 100%) repeat scroll 0 0 transparent;
+  background: #ffee40;
+  background-image: -moz-linear-gradient(center top, #ffee40 92%, #ffe90d 100%) repeat scroll 0 0 transparent;
   background-repeat: repeat-x;
-  background: -webkit-gradient(linear, center top, center bottom, from(#bcff33), to(#abff00));
+  background: -webkit-gradient(linear, center top, center bottom, from(#ffee40), to(#ffe90d));
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -1854,16 +1857,16 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
 .addbutton {
   display: inline-block;
   white-space: nowrap;
-  background-color: #b8e356;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #b8e356), color-stop(1, #a5cc52));
-  background-image: -webkit-linear-gradient(top, #b8e356, #a5cc52);
-  background-image: -moz-linear-gradient(center top, #b8e356 5%, #a5cc52 100%);
-  background-image: -ms-linear-gradient(top, #b8e356, #a5cc52);
-  background-image: -o-linear-gradient(top, #b8e356, #a5cc52);
-  background-image: linear-gradient(top, #b8e356, #a5cc52);
+  background-color: #a6dc2a;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #a6dc2a), color-stop(1, #8db536));
+  background-image: -webkit-linear-gradient(top, #a6dc2a, #8db536);
+  background-image: -moz-linear-gradient(center top, #a6dc2a 5%, #8db536 100%);
+  background-image: -ms-linear-gradient(top, #a6dc2a, #8db536);
+  background-image: -o-linear-gradient(top, #a6dc2a, #8db536);
+  background-image: linear-gradient(top, #a6dc2a, #8db536);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$addBtnBgColor1', endColorstr='$addBtnBgColor2');
-  -moz-box-shadow: inset 0px 1px 0px 0px #d9fbbe;
-  -webkit-box-shadow: inset 0px 1px 0px 0px #d9fbbe;
+  -moz-box-shadow: inset 0px 1px 0px 0px #bdf88e;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #bdf88e;
   box-shadow: inset 0px 1px 0px 0px #d9fbbe;
   -webkit-border-top-left-radius: 0px;
   -moz-border-radius-topleft: 0px;
@@ -1877,7 +1880,7 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
   -webkit-border-bottom-left-radius: 0px;
   -moz-border-radius-bottomleft: 0px;
   border-bottom-left-radius: 0px;
-  border: 1px solid #83c41a;
+  border: 1px solid #659714;
   padding: 0 1.5em;
   text-indent: 0;
   color: white;
@@ -1887,14 +1890,14 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
   font-style: normal;
   text-decoration: none;
   text-align: center;
-  text-shadow: 1px 1px 0px #86ae47;
+  text-shadow: 1px 1px 0px #6a8a38;
 }
 
 .addbutton:hover {
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #a5cc52), color-stop(1, #b8e356));
-  background: -moz-linear-gradient(center top, #a5cc52 5%, #b8e356 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #8db536), color-stop(1, #a6dc2a));
+  background: -moz-linear-gradient(center top, #8db536 5%, #a6dc2a 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$addBtnBgColor2', endColorstr='$addBtnBgColor1');
-  background-color: #a5cc52;
+  background-color: #8db536;
 }
 
 .addbutton:active {
@@ -1923,17 +1926,17 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
 .savebutton {
   display: inline-block;
   white-space: nowrap;
-  background-color: #b8e356;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #b8e356), color-stop(1, #a5cc52));
-  background-image: -webkit-linear-gradient(top, #b8e356, #a5cc52);
-  background-image: -moz-linear-gradient(center top, #b8e356 5%, #a5cc52 100%);
-  background-image: -ms-linear-gradient(top, #b8e356, #a5cc52);
-  background-image: -o-linear-gradient(top, #b8e356, #a5cc52);
-  background-image: linear-gradient(top, #b8e356, #a5cc52);
+  background-color: #87b51e;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #87b51e), color-stop(1, #6e8e2a));
+  background-image: -webkit-linear-gradient(top, #87b51e, #6e8e2a);
+  background-image: -moz-linear-gradient(center top, #87b51e 5%, #6e8e2a 100%);
+  background-image: -ms-linear-gradient(top, #87b51e, #6e8e2a);
+  background-image: -o-linear-gradient(top, #87b51e, #6e8e2a);
+  background-image: linear-gradient(top, #87b51e, #6e8e2a);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$saveBtnBgColor1', endColorstr='$saveBtnBgColor2');
-  -moz-box-shadow: inset 0px 1px 0px 0px #d9fbbe;
-  -webkit-box-shadow: inset 0px 1px 0px 0px #d9fbbe;
-  box-shadow: inset 0px 1px 0px 0px #d9fbbe;
+  -moz-box-shadow: inset 0px 1px 0px 0px #a1f55e;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #a1f55e;
+  box-shadow: inset 0px 1px 0px 0px #a1f55e;
   -webkit-border-top-left-radius: 0px;
   -moz-border-radius-topleft: 0px;
   border-top-left-radius: 0px;
@@ -1946,7 +1949,7 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
   -webkit-border-bottom-left-radius: 0px;
   -moz-border-radius-bottomleft: 0px;
   border-bottom-left-radius: 0px;
-  border: 1px solid #83c41a;
+  border: 1px solid #476a0e;
   padding: 0 1.5em;
   text-indent: 0;
   color: white;
@@ -1956,14 +1959,14 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
   font-style: normal;
   text-decoration: none;
   text-align: center;
-  text-shadow: 1px 1px 0px #86ae47;
+  text-shadow: 1px 1px 0px #4e6629;
 }
 
 .savebutton:hover {
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #a5cc52), color-stop(1, #b8e356));
-  background: -moz-linear-gradient(center top, #a5cc52 5%, #b8e356 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #6e8e2a), color-stop(1, #87b51e));
+  background: -moz-linear-gradient(center top, #6e8e2a 5%, #87b51e 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$saveBtnBgColor2', endColorstr='$saveBtnBgColor1');
-  background-color: #a5cc52;
+  background-color: #6e8e2a;
 }
 
 .savebutton:active {
@@ -2061,17 +2064,17 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
 .editbutton, .loginbutton {
   display: inline-block;
   white-space: nowrap;
-  background-color: #3d94f6;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3d94f6), color-stop(1, #1e62d0));
-  background-image: -webkit-linear-gradient(top, #3d94f6, #1e62d0);
-  background-image: -moz-linear-gradient(center top, #3d94f6 5%, #1e62d0 100%);
-  background-image: -ms-linear-gradient(top, #3d94f6, #1e62d0);
-  background-image: -o-linear-gradient(top, #3d94f6, #ce0100);
-  background-image: linear-gradient(top, #3d94f6, #1e62d0);
+  background-color: #0961c4;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #0961c4), color-stop(1, #113877));
+  background-image: -webkit-linear-gradient(top, #0961c4, #113877);
+  background-image: -moz-linear-gradient(center top, #0961c4 5%, #113877 100%);
+  background-image: -ms-linear-gradient(top, #0961c4, #113877);
+  background-image: -o-linear-gradient(top, #0961c4, #ce0100);
+  background-image: linear-gradient(top, #0961c4, #113877);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$editBtnBgColor1', endColorstr='$editBtnBgColor2');
-  -moz-box-shadow: inset 0px 1px 0px 0px #97c4fe;
-  -webkit-box-shadow: inset 0px 1px 0px 0px #97c4fe;
-  box-shadow: inset 0px 1px 0px 0px #97c4fe;
+  -moz-box-shadow: inset 0px 1px 0px 0px #328bfd;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #328bfd;
+  box-shadow: inset 0px 1px 0px 0px #328bfd;
   -webkit-border-top-left-radius: 0px;
   -moz-border-radius-topleft: 0px;
   border-top-left-radius: 0px;
@@ -2084,7 +2087,7 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
   -webkit-border-bottom-left-radius: 0px;
   -moz-border-radius-bottomleft: 0px;
   border-bottom-left-radius: 0px;
-  border: 1px solid #337fed;
+  border: 1px solid #0f4fab;
   padding: 0 1.5em;
   text-indent: 0;
   color: white;
@@ -2094,12 +2097,12 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
   font-style: normal;
   text-decoration: none;
   text-align: center;
-  text-shadow: 1px 1px 0px #1570cd;
+  text-shadow: 1px 1px 0px #0c3d70;
 }
 
 .editbutton:hover, .loginbutton:hover {
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1e62d0), color-stop(1, #3d94f6));
-  background: -moz-linear-gradient(center top, #1e62d0 5%, #3d94f6 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #113877), color-stop(1, #0961c4));
+  background: -moz-linear-gradient(center top, #113877 5%, #0961c4 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$editBtnBgColor2', endColorstr='$editBtnBgColor1');
   background-color: #ce0100;
 }
@@ -2194,10 +2197,10 @@ input, textarea {
 
 form {
   counter-reset: fieldsets;
-  background: #bcff33;
-  -webkit-border-radius: 2px 2px;
-  -moz-border-radius: 2px / 2px;
-  border-radius: 2px / 2px;
+  background: #ffe90d;
+  -webkit-border-radius: 3px 3px;
+  -moz-border-radius: 3px / 3px;
+  border-radius: 3px / 3px;
   padding: 20px;
   width: auto;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
@@ -2229,8 +2232,8 @@ form textarea {
   width: auto;
 }
 form ol li {
-  background: #ddff99;
-  border-color: #679900;
+  background: #fff273;
+  border-color: #adc550;
   border-style: solid;
   border-width: 1px;
   -webkit-border-radius: 2px 2px;
@@ -2245,7 +2248,7 @@ form ol li {
   margin-right: auto;
 }
 form ol li.localized {
-  background: #c4ff4d;
+  background: #fff05a;
 }
 form ol ol {
   margin-left: 0px;
@@ -2254,7 +2257,7 @@ form ol ol li {
   margin-left: 0px;
   margin-right: 5;
   display: block;
-  background: #cdff66;
+  background: #fff273;
   border: 0px;
   -webkit-border-radius: 2px 2px;
   -moz-border-radius: 2px / 2px;
@@ -2361,7 +2364,7 @@ form#login, form#federated {
   font-size: smaller;
   margin-top: 50px;
   margin-bottom: auto;
-  background: -moz-linear-gradient(center top, #bcff33 92%, #abff00 100%) repeat scroll 0 0 transparent;
+  background: -moz-linear-gradient(center top, #ffee40 92%, #ffe90d 100%) repeat scroll 0 0 transparent;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   width: auto;
   margin-left: auto;
@@ -2690,7 +2693,7 @@ form.ajform {
   table#details caption, table#detailsnosort caption {
     width: auto;
     font-weight: bold;
-    background-color: #abff00;
+    background-color: #ffe90d;
     min-height: 30px;
     padding: 5 5 5 5;
     margin: auto auto auto auto;
@@ -2769,7 +2772,7 @@ form.ajform {
     margin-bottom: 5px;
     padding-bottom: 5px;
     width: auto;
-    background-color: #223300;
+    background-color: #403a00;
     width: 100%;
     border-radius: 3px 3px 3px 3px;
     padding: 1px 4px 2px;

@@ -38,9 +38,9 @@ $boxHeadeColorTop: white;
 $boxHeaderColorDown:  lighten(black,90%); 
 
 
-$linkColor: #0088cc;
+$linkColor: darken(#0088cc,15%);
 $linkHoverColor: #005580;
-$linkVisitedColor: #0088cc;
+$linkVisitedColor: darken(#0088cc,15%);
 
 $selected-font-color: #fff !default;
 $selected-background-color: #ff5e99 !default;
@@ -76,9 +76,13 @@ $table-row-background-color: #e6eeee;
 $table-row-odd-background-color: #cbd9e0;
 
 // forms
-$formbackgroundcolor: #6b90d4;
+$formbackgroundcolor: lighten(#6b90d4, 10%);
+$formElementBackground: lighten($formbackgroundcolor,20%);
+$formElement2ndLevelBackground: lighten($formbackgroundcolor,20%);
+
+$formElementBorderWidth: 1px;
 $formBorderColor: #e3ebc3;
-$formBorderColor: #e3ebc3;
+
 $formBorderRadius: 3px;
 
 

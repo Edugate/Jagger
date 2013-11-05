@@ -322,9 +322,13 @@ a:active {
   outline: 0;
 }
 
-a, a:link {
-  color: #0088cc;
+a, a:link, a:visited {
+  color: #005580;
   text-decoration: none;
+}
+
+a:visited {
+  color: #005580;
 }
 
 a:hover {
@@ -395,7 +399,6 @@ li {
   -webkit-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
   -moz-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
   box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
-  background: #f8f8f8;
   color: #888;
   border: none;
   outline: none;
@@ -404,7 +407,7 @@ li {
   -moz-appearance: none;
   appearance: none;
   cursor: pointer;
-  width: 50px;
+  max-width: 50px;
 }
 #langchange select:focus {
   width: 200px;
@@ -1519,10 +1522,10 @@ span.alert {
   min-width: 600px;
   padding-top: 10px;
   padding-bottom: 10px;
-  background: #93aedf;
-  background-image: -moz-linear-gradient(center top, #93aedf 92%, #6b90d4 100%) repeat scroll 0 0 transparent;
+  background: #bacbeb;
+  background-image: -moz-linear-gradient(center top, #bacbeb 92%, #93aedf 100%) repeat scroll 0 0 transparent;
   background-repeat: repeat-x;
-  background: -webkit-gradient(linear, center top, center bottom, from(#93aedf), to(#6b90d4));
+  background: -webkit-gradient(linear, center top, center bottom, from(#bacbeb), to(#93aedf));
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -2245,7 +2248,7 @@ form ol li {
   margin-right: auto;
 }
 form ol li.localized {
-  background: #a6bce5;
+  background: #cedaf1;
 }
 form ol ol {
   margin-left: 0px;
@@ -2254,7 +2257,7 @@ form ol ol li {
   margin-left: 0px;
   margin-right: 5;
   display: block;
-  background: #bacbeb;
+  background: #e2e9f6;
   border: 0px;
   -webkit-border-radius: 2px 2px;
   -moz-border-radius: 2px / 2px;
@@ -2361,7 +2364,7 @@ form#login, form#federated {
   font-size: smaller;
   margin-top: 50px;
   margin-bottom: auto;
-  background: -moz-linear-gradient(center top, #93aedf 92%, #6b90d4 100%) repeat scroll 0 0 transparent;
+  background: -moz-linear-gradient(center top, #bacbeb 92%, #93aedf 100%) repeat scroll 0 0 transparent;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   width: auto;
   margin-left: auto;
@@ -2690,7 +2693,7 @@ form.ajform {
   table#details caption, table#detailsnosort caption {
     width: auto;
     font-weight: bold;
-    background-color: #6b90d4;
+    background-color: #93aedf;
     min-height: 30px;
     padding: 5 5 5 5;
     margin: auto auto auto auto;
@@ -2769,7 +2772,7 @@ form.ajform {
     margin-bottom: 5px;
     padding-bottom: 5px;
     width: auto;
-    background-color: #1a3059;
+    background-color: #254681;
     width: 100%;
     border-radius: 3px 3px 3px 3px;
     padding: 1px 4px 2px;

@@ -41,9 +41,14 @@ a:active {
 body {
     
 }
-a, a:link {
+a, a:link, a:visited {
     color: $linkColor;
     text-decoration: none;
+}
+
+a:visited {
+   color: $linkVisitedColor;
+
 }
 
 a:hover {
@@ -101,7 +106,7 @@ li {
         -webkit-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
         -moz-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
         box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
-        background: #f8f8f8;
+        //background: #f8f8f8;
         color:#888;
         border:none;
         outline:none;
@@ -110,16 +115,18 @@ li {
         -moz-appearance:none;
         appearance:none;
         cursor:pointer;
-        width: 50px;
+        max-width: 50px;
     }
     select:focus{
         width:200px;
     }
     option {
-        
         color: red;
     }
-    label {position:relative}
+    label {
+        position:relative;
+      
+    }
     label:after {
         content:'<>';
         font:11px "Consolas", monospace;

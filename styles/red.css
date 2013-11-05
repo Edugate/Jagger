@@ -322,9 +322,13 @@ a:active {
   outline: 0;
 }
 
-a, a:link {
-  color: #0088cc;
+a, a:link, a:visited {
+  color: #005580;
   text-decoration: none;
+}
+
+a:visited {
+  color: #005580;
 }
 
 a:hover {
@@ -395,7 +399,6 @@ li {
   -webkit-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
   -moz-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
   box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
-  background: #f8f8f8;
   color: #888;
   border: none;
   outline: none;
@@ -404,7 +407,7 @@ li {
   -moz-appearance: none;
   appearance: none;
   cursor: pointer;
-  width: 50px;
+  max-width: 50px;
 }
 #langchange select:focus {
   width: 200px;
@@ -2194,7 +2197,7 @@ input, textarea {
 
 form {
   counter-reset: fieldsets;
-  background: #93aedf;
+  background: #6b90d4;
   -webkit-border-radius: 3px 3px;
   -moz-border-radius: 3px / 3px;
   border-radius: 3px / 3px;
@@ -2254,7 +2257,7 @@ form ol ol li {
   margin-left: 0px;
   margin-right: 5;
   display: block;
-  background: #bacbeb;
+  background: #e2e9f6;
   border: 0px;
   -webkit-border-radius: 2px 2px;
   -moz-border-radius: 2px / 2px;

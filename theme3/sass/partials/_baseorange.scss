@@ -1,4 +1,11 @@
 // This file must be imported before loading html5-boilerplate
+// mixins
+
+@mixin my-padding-mixin($some-number) {
+  padding: $some-number;
+}
+
+
 
 // base
 $bodyBackground: #f0f0f0;
@@ -6,6 +13,29 @@ $line-height: 1.4 !default;
 $font-color: #333333 !default;
 $font-size: 14px;
 $fomt-family:  "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+// backround for title,subtitle etc box
+$titleBgColorTop: white;
+$titleBgColorBottom: #f5f5f5;
+$titleBorderColor: #DDDDDD;
+$titleBorderWidth: 1px;
+$titleShadowColor: white;
+
+
+// select
+
+$selectBackground: white;
+$selectColor: #1455a2;
+
+
+// block box
+$boxBlockBorderColor: #DEDEDE;
+$boxBlockFontColor: #333333;
+
+
+// header box
+$boxHeadeColorTop: white;
+$boxHeaderColorDown:  lighten(black,90%); 
 
 
 $linkColor: #ff3c00;
@@ -20,13 +50,25 @@ $invalid-background-color: #f0dddd !default;
 $toPanelBackground: #ff3c00;
 $downPanelBackground: #ff3c00;
 
-$nav-1stlevel-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #585858), color-stop(40%, #181818), color-stop(100%, #000000));
-$nav-1stlevel-background-gecko: -moz-linear-gradient(top, #585858, #181818, #000000);
+$nav-1stlevel-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #442B83), color-stop(40%, #240672), color-stop(100%, #000000));
+$nav-1stlevel-background-gecko: -moz-linear-gradient(top, #442B83, #240672, darken(#240672,40%));
+
+$nav-1stlevel-bgcolor1: #442B83;
+$nav-1stlevel-bgcolor2: #240672;
+$nav-1stlevel-bgcolor3: darken(#240672,30%);
+$nav-1stlevel-bordertop: #000000;
+
+
+$toggleMenuBgColor1: #666;
+$toggleMenuBgColor2: #666;
+$toggleMenuBgColor3: #666;
+$toggleMenuColor: #fff;
+
 
 $tab-selected-background: $nav-1stlevel-background;
 $tab-selected-background-gecko: $nav-1stlevel-background-gecko;
 
-$nav-2ndlevel-background: #0f67a1;
+$nav-2ndlevel-background: #3E13AF;
 
 
 $table-background-color: #3f92d2;
@@ -34,17 +76,96 @@ $table-row-background-color: #e6eeee;
 $table-row-odd-background-color: #cbd9e0;
 
 // forms
-$formbackgroundcolor: #ABFF00;
-$formBorderColor: #ABFF00;
-$formBorderColor: darken(#ABFF00,20%);
-$formBorderRadius: 2px;
+$formbackgroundcolor: lighten(#A69700,20%);
+$formElementBackground: lighten($formbackgroundcolor,20%);
+$formElement2ndLevelBackground: lighten($formbackgroundcolor,20%);
 
+$formElementBorderWidth: 1px;
+$formBorderColor: darken(#e3ebc3,30%);
+
+$formBorderRadius: 3px;
+
+
+
+// buttons  default
+$defaultBtnBgColor1: #fff;
+$defaultBtnBgColor2: #fff;
+$defaultBtnBgColor3:#e6e6e6;
+$defaultBtnBorderColor: #cccccc;
+$defaultBtnBorderWidth: 1px;
+$defaultBtnColor: #333333;
+
+// button "add"
+
+$addBtnBgColor1: darken(#b8e356,10%);
+$addBtnBgColor2: darken(#a5cc52,10%);
+$addBtnBorderColor: darken(#83c41a,10%);
+$addBtnColor: #fff;
+$addBtnTxtShadow: darken(#86ae47,10%);
+$addBtnShadow: darken(#d9fbbe,10%);
+
+// button "save"
+
+$saveBtnBgColor1: darken(#b8e356,20%);
+$saveBtnBgColor2: darken(#a5cc52,20%);
+$saveBtnBorderColor: darken(#83c41a,20%);
+$saveBtnColor: #fff;
+$saveBtnTxtShadow: darken(#86ae47,20%);
+$saveBtnShadow: darken(#d9fbbe,20%);
+
+// button "reset"
+
+$resetBtnBgColor1: #fe1a00;
+$resetBtnBgColor2: #ce0100;
+$resetBtnBorderColor: #d83526;
+$resetBtnColor: #fff;
+$resetBtnTxtShadow:  #b23e35;
+$resetBtnShadow: #f29c93;
+
+// button "edit"
+
+$editBtnBgColor1: darken(#3d94f6,20%);
+$editBtnBgColor2: darken(#1e62d0,20%);
+$editBtnBorderColor: darken(#337fed,20%);
+$editBtnColor: #fff;
+$editBtnTxtShadow:  darken(#1570cd,20%);
+$editBtnShadow: darken(#97c4fe,20%);
+
+// button "login"
+
+$loginBtnBgColor1: #3d94f6;
+$loginBtnBgColor2: #1e62d0;
+$loginBtnBorderColor: #337fed;
+$loginBtnColor: #fff;
+$loginBtnTxtShadow:  #1570cd;
+$loginBtnShadow: #97c4fe;
 
 $button-negative-color: #ff0000;
 $buttonNegativeFontcolor: #ff0000;
 
 $input-placeholder-color: #808080;
 $inputPlaceholderColor: #808080;
+
+
+$btn1bgcolor: #080808;
+$btn1bgcolortop: #075b82;
+$btn1bgcolordown: #3a6580;
+$btn1color: #ededed;
+$btn1bordercolor: #006a7d;
+$btn1colorhover: #000;
+$btn1bordercolorhover: #d53200;
+$btn1bgcolorhover: #ff3c00;
+$btn1bgcolorhovertop: #ff3c00;
+$btn1bgcolorhoverdown: #ff3c00;
+
+
+// notification boxes
+
+$noticeSuccessBgColor: #DFF2BF;
+$noticeSuccessColor: #4F8A10;
+
+//$noticeSuccessImg = url('success.png');
+
 
 $font-color-error: #ff0000;
 $fontColorError: #ff0000;
@@ -62,14 +183,3 @@ $container-box-shadow-color: #ffffff;
 
 $responseDialogBgcolor: #ffffff;
 $responseDialogBorderColor: #336699;
-
-$btn1bgcolor: #080808;
-$btn1bgcolortop: #075b82;
-$btn1bgcolordown: #3a6580;
-$btn1color: #ededed;
-$btn1bordercolor: #006a7d;
-$btn1colorhover: #000;
-$btn1bordercolorhover: #d53200;
-$btn1bgcolorhover: #ff3c00;
-$btn1bgcolorhovertop: #ff3c00;
-$btn1bgcolorhoverdown: #ff3c00;
