@@ -33,6 +33,7 @@ class Gearmanw {
     static public function fn_externalstatcollection($job)
     {
         $ci =  & get_instance();
+        log_message('info', 'GEARMAN ::'.__METHOD__.' received job');
         $em = $ci->doctrine->em;
         $args = unserialize($job->workload());
         $job->sendStatus(1,10);
@@ -48,6 +49,7 @@ class Gearmanw {
 
         if(empty($storage))
         {
+        log_message('error','GEARMAN :: datastorage not found');
         $em->clear();
             return false;
         }
@@ -55,18 +57,42 @@ class Gearmanw {
         
         if(empty($args) || !is_array($args))
         {
+            log_message('error','GEARMAN ::'.__METHOD__.' didnt received args from requester');
             $em->clear();
             return false;
         }
         if(!array_key_exists('defid', $args))
         {
+            log_message('error','GEARMAN ::'.__METHOD__.' definition stat id not found in args');
             $em->clear();
             return false;
         }
-        $def = $em->getRepository("models\ProviderStatsDef")->findOneBy(array('id'=>$args['defid'],'type'=>'ext'));
-        
+        else
+        {
+           log_message('debug','GEARMAN ::'.__METHOD__.' processing job for defid '.$args['defid'].'');
+        }
+        $maxattempts = 2;
+        $attempt = 0;
+        while($attempt < $maxattempts)
+        {
+           try 
+           {
+              $def = $em->getRepository("models\ProviderStatsDef")->findOneBy(array('id'=>$args['defid'],'type'=>'ext'));
+              $attempt = $maxattempts;
+           }
+           catch(Exception $e)
+           {
+              log_message('error','GEARMAN ::'.__METHOD__.' lost connection to database trying to reconnect');
+              $em->getConnection()->close();
+              $em->getConnection()->connect();
+              $attempt++;
+              sleep(2);
+              
+           }
+        }
         if(empty($def))
         {
+            log_message('error', 'GEARMAN ::'.__METHOD__.' defition stat not found with provider defid');
             $em->clear();
             return false;
         }
@@ -75,6 +101,7 @@ class Gearmanw {
         
         if(empty($provider))
         {
+            log_message('debug', 'GEARMAN ::'.__METHOD__.' statdefinition has no provider owner');
             $em->clear();
             return false;
         }
@@ -112,22 +139,26 @@ class Gearmanw {
         {
             $ci->curl->post($params);
         }
+        log_message('debug', 'GEARMAN ::'.__METHOD__.' executing curl');
         $data = $ci->curl->execute();
         if(!empty($data))
         {
+            log_message('debug','GEARMAN ::'.__METHOD__.' received data not empty');
             $job->sendStatus(5,10);
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             $mimeType = $finfo->buffer($data);
             if($expectedformat === 'image')
             {
-                
+                log_message('debug','GEARMAN ::'.__METHOD__.' mimetype of received data: '.$mimeType.' checking if allowed'); 
                 if(!array_key_exists($mimeType, $img_mimes))
                 {
+                   log_message('error', 'GEARMAN ::'.__METHOD__.' not allowed mimetype');
                    $em->clear();
                    return false;
                 }
                 else
                 {
+                    log_message('debug','GEARMAN ::'.__METHOD__.' mimetype is allowed... processing');
                     $extension = $img_mimes[''.$mimeType.''];
                     $statformat = 'image';
                 }
@@ -151,7 +182,8 @@ class Gearmanw {
                 }
                 if(!write_file($statstorage.$filename, $data))
                 {
-                    echo "couldnt write";
+                    log_message('debug','GEARMAN ::'.__METHOD__.' coulnd write file '.$statstorage.$filename.' on disk');
+                    return false;
                 }
                 else
                 {
