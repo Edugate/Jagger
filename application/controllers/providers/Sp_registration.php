@@ -196,7 +196,7 @@ class Sp_registration extends MY_Controller {
         log_message('debug', 'validating form initialized');
 
         $this->form_validation->set_rules('resource', 'Resource name', 'required|min_length[3]|max_length[128]');
-        $this->form_validation->set_rules('entityid', 'EntityID', 'required|min_length[3]|max_length[255]|entity_unique[entityid]');
+        $this->form_validation->set_rules('entityid', 'EntityID', 'required|trim|no_white_spaces|min_length[3]|max_length[255]|entity_unique[entityid]');
         $this->form_validation->set_rules('contact_name', 'Contact name', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('contact_mail', 'Contact mail', 'required|min_length[3]|max_length[255]|valid_email');
         $this->form_validation->set_rules('contact_phone', 'Contact phone', 'numeric');
