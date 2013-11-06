@@ -45,7 +45,17 @@ class MY_form_validation extends CI_form_validation {
      */
 
 
-
+    function no_white_spaces($str)
+    {
+       $y = preg_match('/[\s]/i', $str);
+       if($y)
+       {
+          $this->set_message('no_white_spaces', "%s :  contains whitespaces");
+          return  FALSE;
+       }
+       return TRUE;
+     
+    }
     function alpha_dash_comma($str)
     {
 
