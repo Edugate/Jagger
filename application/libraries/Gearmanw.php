@@ -140,6 +140,13 @@ class Gearmanw {
             $ci->curl->post($params);
         }
         log_message('debug', 'GEARMAN ::'.__METHOD__.' executing curl');
+        $curltimeout = $ci->config->item('curltimeout');
+        if(isset($curltimeout))
+        {
+           $addoptions = array('TIMEOUT'=>(int) $curltimeout);
+           log_message('debug', 'GEARMAN ::'.__METHOD__.' curl setting timeout: '.(int) $curltimeout);
+           $ci->curl->options($addoptions);
+        }
         $data = $ci->curl->execute();
         if(!empty($data))
         {
