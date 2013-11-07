@@ -1168,7 +1168,7 @@ $(document).ready(function() {
     }); // end submit event
 
 
-    $("#rmstatdef").click(function(ev) {
+    $("#rmstatdef button").click(function(ev) {
         var url = $(this).attr('action');
         var serializedData = $(this).serialize();
         sconfirm('', function(ev) {
