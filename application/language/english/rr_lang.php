@@ -797,6 +797,7 @@ $lang['warn_incosistencysettings']  = 'Incosistency found in core settings. Plea
 $lang['rr_noentitywithregdate']      = 'No entity found with registreation date';
 $lang['nospfoundtoexcl']            = 'No Service Providers found to be excluded';
 $lang['missedinfoinpost']           = 'Missed informations in post';
+$lang['staticmeta_info']            = 'Metadata is generated based on static metadata instead of below informations';
 $lang['wrongpolicyval']             = 'Wrong policy value';
 $lang['alertentchange']             = 'Be aware that changing entityID follows change of URLs of Individual Metadata and Attribute Release Policy. You will need to modify configuration in you IdP/SP';
 $lang['douwanttoremove']            = 'Are you sure you want to remove %s';
