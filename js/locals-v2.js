@@ -1105,8 +1105,12 @@ $(document).ready(function() {
 // Show Gif Spinning Rotator
         $('#ajax_loading').show();
 
+// get timeoffset
+        var browsertime = new Date();
+        var browsertimezone =  -browsertime.getTimezoneOffset()/60;
 // 'this' refers to the current submitted form  
-        var str = $(this).serialize();
+        var str = $(this).serializeArray();
+        str.push({name:'browsertimeoffset',value:''+browsertimezone+''});
 
 // -- Start AJAX Call --
 

@@ -11,11 +11,11 @@ $pageTitle .= $this->title;
 $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 ?>
 <!DOCTYPE html>
-<!--[if lt IE 7]> <html lang="<?php echo $this->current_language; ?>" class="no-js ie6 oldie"> <![endif]-->
-<!--[if IE 7]>    <html lang="<?php echo $this->current_language; ?>" class="no-js ie7 oldie"> <![endif]-->
-<!--[if IE 8]>    <html lang="<?php echo $this->current_language; ?>" class="no-js ie8 oldie"> <![endif]-->
+<!--[if lt IE 7]> <html lang="<?php echo MY_Controller::$current_language; ?>" class="no-js ie6 oldie"> <![endif]-->
+<!--[if IE 7]>    <html lang="<?php echo MY_Controller::$current_language; ?>" class="no-js ie7 oldie"> <![endif]-->
+<!--[if IE 8]>    <html lang="<?php echo MY_Controller::$current_language; ?>" class="no-js ie8 oldie"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class='no-js' lang='<?php echo $this->current_language; ?>'>
+<html class='no-js' lang='<?php echo MY_Controller::$current_language; ?>'>
     <!--<![endif]-->
     <head>     
         <meta charset="utf-8">
@@ -106,7 +106,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                        $selset = false;
                        foreach($langs as $key=>$value)
                        {
-                          if($key === $this->current_language)
+                          if($key === MY_Controller::$current_language)
                           {
                               echo '<option value="'.$value['path'].'" selected="selected">'.strtoupper($key).'</option>';
                           }

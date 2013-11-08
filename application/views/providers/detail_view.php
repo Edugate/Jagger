@@ -11,6 +11,22 @@ else
 <div id="pagetitle"><?php echo lang('rr_providerdetails');?></div>
 
 <div id="subtitle"><div style="float: right; display: block"><?php echo $edit_link.'&nbsp;'.$bookmark; ?></div><h3><?php echo $presubtitle . ': '.$name ; ?> <h3></div>
+<?php
+if(!empty($alerts) && is_array($alerts) and count($alerts)>0)
+{
+echo '<div class="warnbox">';
+echo '<ol>';
+foreach($alerts as $v)
+{
+   echo '<li>'.$v.'</li>';
+
+}
+echo '</ol>';
+echo '</div>';
+
+}
+
+?>
 
 <div id="providertabs">
 <ul>

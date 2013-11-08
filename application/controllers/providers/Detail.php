@@ -116,6 +116,7 @@ class Detail extends MY_Controller {
 
     function show($id)
     {
+        
         if (empty($id) or !ctype_digit($id))
         {
             show_error(lang('error404'), 404);
@@ -128,7 +129,9 @@ class Detail extends MY_Controller {
             show_error(lang('error404'), 404);
             return;
         }
+        $alerts = array();
         $is_static = $ent->getStatic();
+        
         $params = array(
             'enable_classes' => true,
         );
@@ -201,6 +204,8 @@ class Detail extends MY_Controller {
         {
             $entstatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
             $edit_link .= makeLabel('static', lang('lbl_static'), lang('lbl_static'));
+            $alerts[] = lang('staticmeta_info');
+            
         }
 
         if (!$has_write_access)
@@ -907,6 +912,8 @@ class Detail extends MY_Controller {
                             if (!$c_certValid)
                             {
                                 $cString .='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
+                                $alerts[] = lang('rr_certificatenotvalid');
+                             
                             }
                         }
                         if (!empty($c_fingerprint))
@@ -928,9 +935,16 @@ class Detail extends MY_Controller {
         $i = 0;
         $d[++$i]['header'] = lang("rr_contacts");
         $contacts = $ent->getContacts();
+        $contactsTypeToTranslate = array(
+             'technical' => lang('rr_cnt_type_tech'),
+             'administrative' => lang('rr_cnt_type_admin'),
+             'support' => lang('rr_cnt_type_support'),
+             'billing' => lang('rr_cnt_type_bill'),
+             'other' => lang('rr_cnt_type_other')
+         );
         foreach ($contacts as $c)
         {
-            $d[++$i]['name'] = $c->getType();
+            $d[++$i]['name'] = $contactsTypeToTranslate[''.strtolower($c->getType()).''];
             $d[$i]['value'] = $c->getFullName() . " " . safe_mailto($c->getEmail());
         }
         $result[] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
@@ -1033,7 +1047,7 @@ class Detail extends MY_Controller {
         if ($idppart)
         {
             $uiiarray = array();
-            $d[++$i]['2cols'] = lang('rr_uii') . ' for IDP part';
+            $d[++$i]['2cols'] = lang('rr_uii') . ' '.lang('forIDPpart');
             foreach ($extend as $e)
             {
                 if ($e->getNamespace() == 'mdui' && $e->getType() == 'idp')
@@ -1269,6 +1283,10 @@ class Detail extends MY_Controller {
 
 
         $data['tabs'] = $result;
+        /**
+         * @todo finish show alert block if some warnings realted to entity 
+         */
+        //$data['alerts'] = $alerts;
         $data['content_view'] = 'providers/detail_view.php';
         $this->load->view('page', $data);
     }

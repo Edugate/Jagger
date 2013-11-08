@@ -29,7 +29,7 @@ class MY_Controller extends CI_Controller {
      */
     protected $em;
     protected $authenticated;
-    public $current_language;
+    public static $current_language = 'en';
     public $title;
     protected $inqueue;
 
@@ -40,7 +40,6 @@ class MY_Controller extends CI_Controller {
         $this->em = $this->doctrine->em;
         $this->title = "";
         $this->lang->load('rr_lang', 'english');
-        $this->current_language = 'en';
         $langs = array('pl','pt','it','lt','es','english');
         $cookie_lang = $this->input->cookie('rrlang', TRUE);
         $cookdefaultlang = $this->config->item('rr_lang');
@@ -51,7 +50,7 @@ class MY_Controller extends CI_Controller {
         else
         {
            $this->lang->load('rr_lang', ''.$cookdefaultlang.'');
-           $this->current_language = ''.$cookdefaultlang.'';
+           self::$current_language = ''.$cookdefaultlang.'';
 
         }
         $defaultlang_cookie = array(
@@ -66,11 +65,11 @@ class MY_Controller extends CI_Controller {
             $this->lang->load('rr_lang', $cookie_lang);
             if($cookie_lang === 'english')
             {
-               $this->current_language = 'en';
+               self::$current_language = 'en';
             }
             else
             {
-               $this->current_language = $cookie_lang;
+               self::$current_language = $cookie_lang;
             }
         }
         else

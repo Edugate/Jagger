@@ -19,7 +19,7 @@ if (!empty($entityid))
     <div class="buttons">
 
 
-        <button class="btn" type="button" onclick="document.getElementById('matrixtable').innerHTML ='<br /><br /><br /><img src=\'<?php echo base_url();?>images/loading.gif\' />'; setTimeout(function(){matrixinit('<?php echo $entityid; ?>');},1000);">Show matrix</button> 
+        <button class="editbutton" type="button" onclick="document.getElementById('matrixtable').innerHTML ='<br /><br /><br /><img src=\'<?php echo base_url();?>images/loading.gif\' />'; setTimeout(function(){matrixinit('<?php echo $entityid; ?>');},1000);"><?php echo lang('rrshowmatrix');?></button> 
     </div>
 
 

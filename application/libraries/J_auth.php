@@ -109,7 +109,15 @@ class J_auth {
     public function logged_in() {
         if(!empty($_SESSION['logged']) && !empty($_SESSION['username']))
         {
-            log_message('debug','session is active for: ' . $_SESSION['username']);
+            if(!empty($_SESSION['timeoffset']))
+            {
+               $timeoffset = $_SESSION['timeoffset'];
+            }
+            else
+            {
+               $timeoffset = 0;
+            }
+            log_message('debug','session is active for: ' . $_SESSION['username'] .' with set timeoffsett '.$timeoffset);
             return TRUE;
         }
         else
