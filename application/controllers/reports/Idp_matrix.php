@@ -109,7 +109,7 @@ class Idp_matrix extends MY_Controller {
             $data['entityid'] = $idp->getEntityId();
             $data['idpid'] = $idp->getId();
             
-            $data['error_message'] = 'To generate matrix IDP needs to support at least one attribute';
+            $data['error_message'] = lang('errormatrixnoattrs');
             $this->load->view('page', $data);
             return;
         }

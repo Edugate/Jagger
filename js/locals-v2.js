@@ -1,5 +1,6 @@
 var GINIT = {
     initialize: function() {
+
         $("a.fmembers").click(function() {
 
             var link = $(this), url = link.attr("href");
@@ -175,6 +176,11 @@ var GINIT = {
 
 $(document).ready(function() {
     GINIT.initialize();
+    var fedloginurl = $('a#fedlogin').attr('href');
+    var browsertime = new Date();
+    var browsertimezone =  -browsertime.getTimezoneOffset();
+    $('a#fedlogin').attr('href',''+fedloginurl+'/'+browsertimezone+'');
+
     var bubbletheme = $("button#jquerybubblepopupthemes").val();
     $('.bubblepopup').CreateBubblePopup({
         position: 'top',
@@ -1105,8 +1111,12 @@ $(document).ready(function() {
 // Show Gif Spinning Rotator
         $('#ajax_loading').show();
 
+// get timeoffset
+        var browsertime = new Date();
+        var browsertimezone =  -browsertime.getTimezoneOffset();
 // 'this' refers to the current submitted form  
-        var str = $(this).serialize();
+        var str = $(this).serializeArray();
+        str.push({name:'browsertimeoffset',value:''+browsertimezone+''});
 
 // -- Start AJAX Call --
 

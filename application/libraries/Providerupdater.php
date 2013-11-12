@@ -271,7 +271,7 @@ class Providerupdater {
             $prevregdate = $ent->getRegistrationDate();
             if(isset($prevregdate))
             {
-               $prevregdate = $prevregdate->format('Y-m-d');
+               $prevregdate = date('Y-m-d',$prevregdate->format('U')+j_auth::$timeOffset);
             }
             else
             {
@@ -280,14 +280,14 @@ class Providerupdater {
             if($prevregdate !== $ch['registrationdate'])
             {
                $m['RegistrationDate'] = array('before'=>$prevregdate,'after'=>$ch['registrationdate']);
-            }
-            if (!empty($ch['registrationdate']))
-            {
-                $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['registrationdate'] . ' 00:00:00'));
-            }
-            else
-            {
-                $ent->setRegistrationDate(null);
+               if (!empty($ch['registrationdate']))
+               {
+                   $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['registrationdate'] . ' 00:00:00'));
+               }
+               else
+               {
+                   $ent->setRegistrationDate(null);
+               }
             }
         }
         if (array_key_exists('validfrom', $ch))
@@ -295,7 +295,7 @@ class Providerupdater {
             $prevvalidfrom = $ent->getValidFrom();
             if(isset($prevvalidfrom))
             {
-               $prevvalidfrom = $prevvalidfrom->format('Y-m-d');
+               $prevvalidfrom = date('Y-m-d',$prevvalidfrom->format('U')+j_auth::$timeOffset);
             }
             else
             {
@@ -304,14 +304,14 @@ class Providerupdater {
             if($prevvalidfrom !== $ch['validfrom'])
             {
                $m['ValidFrom'] = array('before'=>$prevvalidfrom,'after'=>$ch['validfrom']);
-            }
-            if (!empty($ch['validfrom']))
-            {
-                $ent->setValidFrom(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['validfrom'] . ' 00:00:00'));
-            }
-            else
-            {
-                $ent->setValidFrom(null);
+               if (!empty($ch['validfrom']))
+               {
+                   $ent->setValidFrom(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['validfrom'] . ' 00:00:00'));
+               }
+               else
+               {
+                  $ent->setValidFrom(null);
+               }
             }
         }
         if (array_key_exists('validto', $ch))
@@ -319,7 +319,7 @@ class Providerupdater {
             $prevvalidto = $ent->getValidTo();
             if(isset($prevvalidto))
             {
-               $prevvalidto = $prevvalidto->format('Y-m-d');
+               $prevvalidto = date('Y-m-d',$prevvalidto->format('U')+j_auth::$timeOffset);
             }
             else
             {
@@ -328,14 +328,14 @@ class Providerupdater {
             if($prevvalidto !== $ch['validto'])
             {
                $m['ValidTo'] = array('before'=>$prevvalidto,'after'=>$ch['validto']);
-            }
-            if (!empty($ch['validto']))
-            {
-                $ent->setValidTo(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['validto'] . ' 00:00:00'));
-            }
-            else
-            {
-                $ent->setValidTo(null);
+               if (!empty($ch['validto']))
+               {
+                   $ent->setValidTo(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['validto'] . ' 00:00:00'));
+               }
+               else
+               {
+                   $ent->setValidTo(null);
+               }
             }
         }
         if (array_key_exists('homeurl', $ch))

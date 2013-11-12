@@ -121,7 +121,7 @@ class Idp_list extends MY_Controller {
             $regdate = $i->getRegistrationDate();
             if(isset($regdate))
             {
-                $col2 = $regdate->format('Y-m-d');
+                $col2 = date('Y-m-d',$regdate->format('U')+j_auth::$timeOffset);
             }
             else
             {

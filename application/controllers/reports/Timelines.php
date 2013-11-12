@@ -55,7 +55,7 @@ class Timelines extends MY_Controller {
                 $regdate = $p->getRegistrationDate();
                 if (!empty($regdate))
                 {
-                    $d = $regdate->format('Ymd');
+                    $d = date('Ymd',$regdate->format('U')+j_auth::$timeOffset);
                     $diag['known'][$d][$p->getId()] = array('n' => $p->getName(), 't' => $p->getType());
                 } else
                 {

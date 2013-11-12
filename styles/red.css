@@ -1817,6 +1817,11 @@ button.fedcategory:hover, button.typelist:hover {
   padding: 2px 2px !important;
 }
 
+a.fedloginbutton, a.fedloginbutton:link, a.fedloginbutton:hover, a.fedloginbutton:active, a.fedloginbutton:visited {
+  color: #ededed;
+  text-decoration: none;
+}
+
 a.addbutton, a.addbutton:link, a.addbutton:hover, a.addbutton:active, a.addbutton:visited {
   color: white;
   text-decoration: none;
@@ -1842,7 +1847,7 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
   text-decoration: none;
 }
 
-.addbutton, .resetbutton, .savebutton, .editbutton, .loginbutton {
+.fedlogin, .addbutton, .resetbutton, .savebutton, .editbutton, .loginbutton {
   min-width: 100px;
   height: 30px;
   line-height: 30px;
@@ -2113,6 +2118,75 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
 }
 
 .editbutton:before, .loginbutton:before {
+  background: #ccc;
+  background: rgba(0, 0, 0, 0.1);
+  float: left;
+  width: 1em;
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0 1em 0 -1em;
+  padding: 0 .2em;
+  -moz-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -webkit-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -moz-border-radius: .15em 0 0 .15em;
+  -webkit-border-radius: .15em 0 0 .15em;
+  border-radius: .15em 0 0 .15em;
+  pointer-events: none;
+}
+
+.fedloginbutton {
+  display: inline-block;
+  white-space: nowrap;
+  background-color: #080808;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #080808), color-stop(1, #1c121c));
+  background-image: -webkit-linear-gradient(top, #080808, #1c121c);
+  background-image: -moz-linear-gradient(center top, #080808 5%, #1c121c 100%);
+  background-image: -ms-linear-gradient(top, #080808, #1c121c);
+  background-image: -o-linear-gradient(top, #080808, #1c121c);
+  background-image: linear-gradient(top, #080808, #1c121c);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$fedloginBtnBgColor1', endColorstr='$fedloginBtnBgColor2');
+  -moz-box-shadow: inset 0px 1px 0px 0px black;
+  -webkit-box-shadow: inset 0px 1px 0px 0px black;
+  box-shadow: inset 0px 1px 0px 0px black;
+  -webkit-border-top-left-radius: 0px;
+  -moz-border-radius-topleft: 0px;
+  border-top-left-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  -moz-border-radius-topright: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  -moz-border-radius-bottomright: 0px;
+  border-bottom-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-left-radius: 0px;
+  border: 1px solid black;
+  padding: 1em 1em 1em 1em;
+  text-indent: 0;
+  color: #ededed;
+  fonti-family: Arial;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: normal;
+  text-decoration: none;
+  text-align: center;
+  text-shadow: 1px 1px 0px transparent;
+}
+
+.fedlogin:hover {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1c121c), color-stop(1, #080808));
+  background: -moz-linear-gradient(center top, #1c121c 5%, #080808 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$fedloginBtnBgColor2', endColorstr='$fedloginBtnBgColor1');
+  background-color: #1c121c;
+}
+
+.fedlogin:active {
+  position: relative;
+  top: 1px;
+}
+
+.fedlogin:before {
   background: #ccc;
   background: rgba(0, 0, 0, 0.1);
   float: left;

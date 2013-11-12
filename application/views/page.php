@@ -11,11 +11,11 @@ $pageTitle .= $this->title;
 $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 ?>
 <!DOCTYPE html>
-<!--[if lt IE 7]> <html lang="<?php echo $this->current_language; ?>" class="no-js ie6 oldie"> <![endif]-->
-<!--[if IE 7]>    <html lang="<?php echo $this->current_language; ?>" class="no-js ie7 oldie"> <![endif]-->
-<!--[if IE 8]>    <html lang="<?php echo $this->current_language; ?>" class="no-js ie8 oldie"> <![endif]-->
+<!--[if lt IE 7]> <html lang="<?php echo MY_Controller::$current_language; ?>" class="no-js ie6 oldie"> <![endif]-->
+<!--[if IE 7]>    <html lang="<?php echo MY_Controller::$current_language; ?>" class="no-js ie7 oldie"> <![endif]-->
+<!--[if IE 8]>    <html lang="<?php echo MY_Controller::$current_language; ?>" class="no-js ie8 oldie"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class='no-js' lang='<?php echo $this->current_language; ?>'>
+<html class='no-js' lang='<?php echo MY_Controller::$current_language; ?>'>
     <!--<![endif]-->
     <head>     
         <meta charset="utf-8">
@@ -78,7 +78,19 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 <?php
                 if ($loggedin)
                 {
-                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b>' . htmlentities($_SESSION['username']) . '</b>' . anchor($base_url . "auth/logout", '<img src="' . $base_url . 'images/icons/external.png" title="Sign out"/>');
+                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b>' . htmlentities($_SESSION['username']) . '</b>' . anchor($base_url . "auth/logout", '<img src="' . $base_url . 'images/icons/external.png" title="Sign out"/>') ;
+                   if(empty(j_auth::$timeOffset))
+                   {
+                     echo ' <small>UTC+0</small>';
+                   }
+                   elseif(j_auth::$timeOffset > 0)
+                   {
+                     echo ' <small>UTC+'.j_auth::$timeOffset/60/60 .'</small>';
+                   }
+                   else
+                   {
+                     echo ' <small>UTC'.j_auth::$timeOffset/60/60 .'</small>';
+                   }
                 }
                 else
                 {
@@ -106,7 +118,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                        $selset = false;
                        foreach($langs as $key=>$value)
                        {
-                          if($key === $this->current_language)
+                          if($key === MY_Controller::$current_language)
                           {
                               echo '<option value="'.$value['path'].'" selected="selected">'.strtoupper($key).'</option>';
                           }

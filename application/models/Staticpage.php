@@ -31,6 +31,8 @@ namespace models;
  */
 class Staticpage {
 
+    protected $timezone;
+
     /**
      * @Id
      * @Column(type="bigint", nullable=false)
@@ -79,7 +81,8 @@ class Staticpage {
     public function __construct()
     {
 
-        $this->updatedAt = new \DateTime("now");
+        $this->timezone = new \DateTimeZone('UTC');
+        $this->updatedAt = new \DateTime("now",$this->timezone);
     }
 
 
@@ -117,7 +120,7 @@ class Staticpage {
      */
     public function created()
     {
-        $this->createdAt = new \DateTime("now");
+        $this->createdAt = new \DateTime("now",$this->timezone);
     }
     /**
      * @PreUpdate
@@ -125,6 +128,13 @@ class Staticpage {
     public function updated()
     {
         \log_message('debug', 'GG update providers updated time');
-        $this->updatedAt = new \DateTime("now");
+        $this->updatedAt = new \DateTime("now",$this->timezone);
+    }
+    /**
+     * @PostLoad
+     */
+    public function additionalOptions()
+    {
+        $this->timezone = new \DateTimeZone('UTC');
     }
 }
