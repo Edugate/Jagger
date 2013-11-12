@@ -32,6 +32,8 @@ namespace models;
  */
 class ProviderStatsDef {
 
+
+    protected $timezone;
    
     /**
      * @Id
@@ -143,6 +145,12 @@ class ProviderStatsDef {
      * @Column(name="updated_at", type="datetime")
      */
     protected $updatedAt;
+
+
+    public function __construct()
+    {
+       $this->timezone = new \DateTimeZone('UTC');
+    }
 
     public function getId()
     {
@@ -351,8 +359,8 @@ class ProviderStatsDef {
      */
     public function created()
     {
-         $this->createdAt = new \DateTime("now");
-         $this->updatedAt = new \DateTime("now");
+         $this->createdAt = new \DateTime("now",$this->timezone);
+         $this->updatedAt = new \DateTime("now",$this->timezone);
     }
 
     /**
@@ -360,9 +368,16 @@ class ProviderStatsDef {
      */
     public function updated()
     {
-        $this->updatedAt = new \DateTime("now");
+        $this->updatedAt = new \DateTime("now",$this->timezone);
     }
 
+    /**
+     * @PostLoad
+     */
+    public function setAddionals()
+    {
+       $this->timezone =  new \DateTimeZone('UTC');
+    }
 
 
 }

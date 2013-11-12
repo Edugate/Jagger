@@ -30,6 +30,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
 class User {
 
     protected $em;
+    protected $timezone;
 
     /**
      * The User currently logged in
@@ -135,6 +136,7 @@ class User {
         log_message('debug', 'User model initiated');
         $this->in_queue = new \Doctrine\Common\Collections\ArrayCollection();
         $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->timezone = new \DateTimeZone('UTC');
     }
 
     /**
@@ -183,8 +185,6 @@ class User {
     public function encryptPassword($password)
     {
         log_message('debug', 'Model User: encryptPassword(' . $password . ')');
-        //    $CI = & get_instance();
-        //$salt = $CI->config->item('encryption_key');
         $salt = $this->getSalt();
         log_message('debug', 'Model User: encryptPassword: got slat:' . $salt);
         $encrypted_password = sha1($password . $salt);
@@ -368,7 +368,7 @@ class User {
         $this->setUserpref($pref);
     }
 
-    public function addEntityToBookmark($entid, $entname, $enttype,$entityid)
+    public function addEntityToBookmark($entid, $entname, $enttype, $entityid)
     {
         log_message('debug', 'addEntityToBookmark');
         $pref = $this->getUserpref();
@@ -380,17 +380,17 @@ class User {
         {
             log_message('debug', 'addEntityToBookmark : IDP');
 
-            $pref['board']['idp'][$entid] = array('name' => $entname,'entity'=>$entityid);
+            $pref['board']['idp'][$entid] = array('name' => $entname, 'entity' => $entityid);
         }
         elseif ($enttype == 'SP')
         {
             log_message('debug', 'addEntityToBookmark : SP');
-            $pref['board']['sp'][$entid] = array('name' => $entname,'entity'=>$entityid);
+            $pref['board']['sp'][$entid] = array('name' => $entname, 'entity' => $entityid);
         }
         else
         {
-            $pref['board']['idp'][$entid] = array('name' => $entname,'entity'=>$entityid);
-            $pref['board']['sp'][$entid] = array('name' => $entname,'entity'=>$entityid);
+            $pref['board']['idp'][$entid] = array('name' => $entname, 'entity' => $entityid);
+            $pref['board']['sp'][$entid] = array('name' => $entname, 'entity' => $entityid);
         }
         $this->setUserpref($pref);
     }
@@ -422,7 +422,7 @@ class User {
      */
     public function updated()
     {
-        $this->lastlogin = new \DateTime("now");
+        $this->lastlogin = new \DateTime("now",$this->timezone);
     }
 
     public function getId()
@@ -511,6 +511,14 @@ class User {
             $rolename[] = $r->getName();
         }
         return $rolename;
+    }
+    
+    /**
+     * @PostLoad
+     */
+    public function additionalOptions()
+    {
+        $this->timezone = new \DateTimeZone('UTC');
     }
 
     // End method stubs
