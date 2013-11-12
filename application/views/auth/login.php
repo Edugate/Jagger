@@ -97,7 +97,7 @@ if ($fedenabled === TRUE)
         <?php
  //   echo anchor($shib_url, '<button type="button" name="faderated" value="faderated" class="loginbtn" onclick="window.open(\'' . $shib_url . '\',\'_self\')">' . $fedloginbtn . '</button>');
 
-         echo '<a href="'.$shib_url.'" class="fedloginbutton" id="fedlogin">'.$fedloginbtn.'</a>'
+         echo '<a href="'.$shib_url.'" class="fedloginbutton" id="fedlogin">'.lang('loginsubmit').'</a>'
     ?>
             </div>
         </form>
