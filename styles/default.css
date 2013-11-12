@@ -408,6 +408,8 @@ li {
   appearance: none;
   cursor: pointer;
   max-width: 50px;
+  min-width: 20px;
+  width: auto;
 }
 #langchange select:focus {
   width: 200px;
@@ -2161,17 +2163,17 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
   -webkit-border-bottom-left-radius: 0px;
   -moz-border-radius-bottomleft: 0px;
   border-bottom-left-radius: 0px;
-  border: 1px solid black;
-  padding: 1em 1em 1em 1em;
+  border: 0px solid black;
+  padding: 6px 24px;
   text-indent: 0;
   color: #ededed;
-  fonti-family: Arial;
-  font-size: 14px;
+  fonti-family: arial;
+  font-size: 15px;
   font-weight: bold;
   font-style: normal;
   text-decoration: none;
   text-align: center;
-  text-shadow: 1px 1px 0px transparent;
+  text-shadow: 0px 0px 0px transparent;
 }
 
 .fedlogin:hover {

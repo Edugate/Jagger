@@ -106,6 +106,7 @@ li {
         -webkit-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
         -moz-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
         box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
+      
         //background: #f8f8f8;
         color:#888;
         border:none;
@@ -116,6 +117,8 @@ li {
         appearance:none;
         cursor:pointer;
         max-width: 50px;
+        min-width: 20px;
+        width: auto;
     }
     select:focus{
         width:200px;
@@ -1793,19 +1796,19 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
 	-webkit-border-bottom-left-radius:0px;
 	-moz-border-radius-bottomleft:0px;
 	border-bottom-left-radius:0px;
-	border:1px solid $fedloginBtnBorderColor;
+	border:0px solid $fedloginBtnBorderColor;
 
-        padding: 1em 1em 1em 1em;
+        padding: 6px 24px;;
 
 	text-indent:0;
 	color:$fedloginBtnColor;
-	fonti-family:Arial;
-	font-size:14px;
+	fonti-family:arial;
+	font-size:15px;
 	font-weight:bold;
 	font-style:normal;
 	text-decoration:none;
 	text-align:center;
-	text-shadow:1px 1px 0px $fedloginBtnTxtShadow;
+	text-shadow:0px 0px 0px $fedloginBtnTxtShadow;
 }
 .fedlogin:hover {
 	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, $fedloginBtnBgColor2), color-stop(1, $fedloginBtnBgColor1) );
