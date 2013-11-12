@@ -25,12 +25,17 @@ class J_auth {
     protected $status;
     protected $messages;
     protected $errors = array();
+    public static $timeOffset = 0;
 
     public function __construct() {
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
-       // $this->ci->load->library('email');
         $this->ci->load->helper('cookie');
+        if(isset($_SESSION['timeoffset']))
+        {
+            self::$timeOffset = (int) $_SESSION['timeoffset'] * 60;
+        }
+        log_message('debug','TimeOffset  :'.self::$timeOffset);
     }
 
     public function login($identity, $password) {
@@ -109,6 +114,7 @@ class J_auth {
     public function logged_in() {
         if(!empty($_SESSION['logged']) && !empty($_SESSION['username']))
         {
+            log_message('debug' , 'J_auth::$timeOffset : '.J_auth::$timeOffset);
             if(!empty($_SESSION['timeoffset']))
             {
                $timeoffset = $_SESSION['timeoffset'];

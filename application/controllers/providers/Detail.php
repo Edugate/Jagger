@@ -92,7 +92,7 @@ class Detail extends MY_Controller {
                         {
                             foreach ($arp_logs as $l)
                             {
-                                $logg_tmp .= '<li><b>' . $l->getCreated()->format('Y-m-d H:i:s') . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+                                $logg_tmp .= '<li><b>' . date('Y-m-d H:i:s',$l->getCreated()->format('U')+j_auth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
                             }
                         }
                         $logg_tmp .= '</ul>';
@@ -278,7 +278,7 @@ class Detail extends MY_Controller {
 
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
-        $d[$i]['value'] = '<b>' . $ent->getLastModified()->format('Y-m-d H:i:s') . '</b>';
+        $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s',$ent->getLastModified()->format('U')+j_auth::$timeOffset) . '</b>';
         $d[++$i]['name'] = lang('rr_providername');
         $d[$i]['value'] = $ent->getName();
         $d[++$i]['name'] = lang('rr_entityid');
@@ -334,7 +334,7 @@ class Detail extends MY_Controller {
         $regdate = $ent->getRegistrationDate();
         if (isset($regdate))
         {
-            $d[$i]['value'] = $regdate->format('Y-m-d');
+            $d[$i]['value'] = date('Y-m-d',$regdate->format('U')+j_auth::$timeOffset);
         }
         else
         {
@@ -394,7 +394,7 @@ class Detail extends MY_Controller {
         $d[++$i]['name'] = lang('rr_validfromto');
         if ($ent->getValidFrom())
         {
-            $validfrom = $ent->getValidFrom()->format('Y M d');
+            $validfrom = date('Y M d',$ent->getValidFrom()->format('U')+j_auth::$timeOffset);
         }
         else
         {
@@ -402,7 +402,7 @@ class Detail extends MY_Controller {
         }
         if ($ent->getValidTo())
         {
-            $validto = $ent->getValidTo()->format('Y M d');
+            $validto = date('Y M d',$ent->getValidTo()->format('U')+j_auth::$timeOffset);
         }
         else
         {

@@ -181,7 +181,7 @@ class Auth extends MY_Controller {
         }
     }
 
-    public function fedauth()
+    public function fedauth($timeoffset=null)
     {
         $shibb_valid = (bool) $this->get_shib_idp();
         if (!$shibb_valid)
@@ -196,7 +196,7 @@ class Auth extends MY_Controller {
         if (!$username_set)
         {
             log_message('error', 'IdP didnt provide username');
-            show_error( 'Internal server error', 500);
+            show_error( 'Internal server error: missing attribute from IdP', 500);
         }
         $user_var = $this->get_shib_username();
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user_var));
@@ -218,6 +218,10 @@ class Auth extends MY_Controller {
             $_SESSION['username'] = $session_data['username'];
             $_SESSION['user_id'] = $session_data['user_id'];
             $_SESSION['logged'] = 1;
+            if(!empty($timeoffset) && is_numeric($timeoffset))
+            {
+               $_SESSION['timeoffset'] = (int) $timeoffset;
+            }
         }
         else
         {

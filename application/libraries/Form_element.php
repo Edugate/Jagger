@@ -90,8 +90,8 @@ class Form_element {
         $tmpregdate = $ent->getRegistrationDate();
         if (!empty($tmpregdate))
         {
-            $t_regdate = $tmpregdate->format('Y-m-d');
-            $origregdate = $tmpregdate->format('Y-m-d');
+            $t_regdate = date('Y-m-d',$tmpregdate->format('U')+j_auth::$timeOffset);
+            $origregdate = date('Y-m-d',$tmpregdate->format('U')+j_auth::$timeOffset);
         }
         $t_homeurl = $ent->getHomeUrl();
         $t_helpdeskurl = $ent->getHelpdeskUrl();
@@ -101,16 +101,16 @@ class Form_element {
         $tmpvalidfrom = $ent->getValidFrom();
         if (!empty($tmpvalidfrom))
         {
-            $t_validfrom = $tmpvalidfrom->format('Y-m-d');
-            $origvalidfrom = $tmpvalidfrom->format('Y-m-d');
+            $t_validfrom = date('Y-m-d',$tmpvalidfrom->format('U')+j_auth::$timeOffset);
+            $origvalidfrom = date('Y-m-d',$tmpvalidfrom->format('U')+j_auth::$timeOffset);
         }
         $t_validto = '';
         $origvalidto = '';
         $tmpvalidto = $ent->getValidTo();
         if (!empty($tmpvalidto))
         {
-            $t_validto = $tmpvalidto->format('Y-m-d');
-            $origvalidto = $tmpvalidto->format('Y-m-d');
+            $t_validto = date('Y-m-d',$tmpvalidto->format('U')+j_auth::$timeOffset);
+            $origvalidto = date('Y-m-d',$tmpvalidto->format('U')+j_auth::$timeOffset);
         }
         $t_description = $ent->getDescription();
 

@@ -78,7 +78,19 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 <?php
                 if ($loggedin)
                 {
-                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b>' . htmlentities($_SESSION['username']) . '</b>' . anchor($base_url . "auth/logout", '<img src="' . $base_url . 'images/icons/external.png" title="Sign out"/>');
+                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b>' . htmlentities($_SESSION['username']) . '</b>' . anchor($base_url . "auth/logout", '<img src="' . $base_url . 'images/icons/external.png" title="Sign out"/>') ;
+                   if(empty(j_auth::$timeOffset))
+                   {
+                     echo ' <small>UTC+0</small>';
+                   }
+                   elseif(j_auth::$timeOffset > 0)
+                   {
+                     echo ' <small>UTC+'.j_auth::$timeOffset/60/60 .'</small>';
+                   }
+                   else
+                   {
+                     echo ' <small>UTC'.j_auth::$timeOffset/60/60 .'</small>';
+                   }
                 }
                 else
                 {

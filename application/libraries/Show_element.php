@@ -531,7 +531,7 @@ class Show_element {
             {
                 $user = lang('unknown');
             }
-            $result .= '<li><span class="accordionButton"><b>' . $t->getCreated()->format('Y-m-d H:i:s') . '</b> '.lang('chng_made_by').' <b>' . $user . '</b> '.lang('from').' <b>' . $t->getIp() . '</b><br/>'.lang('rr_details').'</span><span class="accordionContent"><br />' . $y . '</span></li>';
+            $result .= '<li><span class="accordionButton"><b>' . date('Y-m-d H:i:s',$t->getCreated()->format('U')+j_auth::$timeOffset) . '</b> '.lang('chng_made_by').' <b>' . $user . '</b> '.lang('from').' <b>' . $t->getIp() . '</b><br/>'.lang('rr_details').'</span><span class="accordionContent"><br />' . $y . '</span></li>';
         }
         $result .= '</ul>';
         return $result;

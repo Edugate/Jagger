@@ -52,9 +52,9 @@ class Authenticate extends MY_Controller {
         $auth_error = '';
         if($this->input->is_ajax_request() && $isReferrerOK && ($_SERVER['REQUEST_METHOD'] === 'POST'))
         {
-               $timeOffset = (int) $this->input->post('browsertimeoffset');
-               log_message('debug','client browser timeffset: '.$timeOffset);
-               $_SESSION['timeoffset'] = $timeOffset;
+               J_auth::$timeOffset = (int) $this->input->post('browsertimeoffset');
+               log_message('debug','client browser timeffset: '.J_auth::$timeOffset);
+               $_SESSION['timeoffset'] = J_auth::$timeOffset;
            if($this->j_auth->logged_in())
            {
                echo 'OK';

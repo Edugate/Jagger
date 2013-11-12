@@ -281,7 +281,7 @@ class Users extends MY_Controller {
 
         $det[$i++] = array('data' => array('data' => 'Authn logs - last '.$limit_authn, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authn_logs as $ath) {
-            $date = $ath->getCreated()->format('Y-m-d H:i:s');
+            $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U')+ j_auth::$timeOffset);
             $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
             $det[$i++] = array('key' => $date, 'val' => $detail);
         }
@@ -289,7 +289,7 @@ class Users extends MY_Controller {
         foreach ($action_logs as $ath) {
             $subtype = $ath->getSubType();
             if ($subtype == 'modification') {
-                $date = $ath->getCreated()->format('Y-m-d H:i:s');
+                $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U')+ j_auth::$timeOffset);
                 $d = unserialize($ath->getDetail());
                 $dstr ='<br />';
                 if(is_array($d))
@@ -298,10 +298,21 @@ class Users extends MY_Controller {
                    {
                         $dstr .= '<b>'.$k .':</b><br />';
                         if(is_array($v))
-                        foreach($v as $h=>$l)
                         {
-
-                          $dstr .= $h .':'.$l.'<br />';
+                           foreach($v as $h=>$l)
+                           {
+                              if(!is_array($l))
+                              {
+                                 $dstr .= $h .':'.$l.'<br />';
+                              }
+                               else
+                              {  
+                                 foreach($l as $lk=>$lv)
+                                {
+                                    $dstr .= $h .':'.$lk.'::'.$lv.'<br />';
+                                }
+                              }
+                           }
                         }
                    }
                 }
@@ -310,7 +321,7 @@ class Users extends MY_Controller {
             }
             elseif($subtype == 'create' or $subtype == 'remove')
             {
-                $date = $ath->getCreated()->format('Y-m-d H:i:s');
+                $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U')+ j_auth::$timeOffset);
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
                 $det[$i++] = array('key' => $date, 'val' => $detail);
             }
@@ -338,7 +349,7 @@ class Users extends MY_Controller {
             $encoded_username = base64url_encode($u->getUsername());
             $last = $u->getLastlogin();
             if (!empty($last)) {
-                $lastlogin = $last->format('Y-m-d H:i:s');
+                $lastlogin = date('Y-m-d H:i:s', $last->format('U')+ j_auth::$timeOffset);
             } else {
                 $lastlogin = 'never';
             }

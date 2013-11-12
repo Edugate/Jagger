@@ -341,7 +341,7 @@ class Statdefs extends MY_Controller {
                        $dowinfo = lang('statfilegenerated');
                        foreach($statfiles as $st)
                        {
-                           $statv .= '<li><a href="'.$downurl.$st->getId().'">'.$dowinfo.': '.$st->getCreatedAt()->format('Y-m-d H:i:s').'</a></li>';
+                           $statv .= '<li><a href="'.$downurl.$st->getId().'">'.$dowinfo.': '.date('Y-m-d H:i:s',$st->getCreatedAt()->format('U')+j_auth::$timeOffset).'</a></li>';
                        }
                        $statv .= '</ul>';
                        $d[] = array('name'=>''.lang('generatedstatslist').'','value'=>''.$statv.'');
