@@ -107,7 +107,7 @@ class Sp_list extends MY_Controller {
             $regdate = $i->getRegistrationDate();
             if (isset($regdate))
             {
-                $regcol = date('Y-m-d',$regdate->format('Y-m-d')+j_auth::$timeOffset);
+                $regcol = date('Y-m-d',$regdate->format('U')+j_auth::$timeOffset);
             } else
             {
                 $regcol = '';
