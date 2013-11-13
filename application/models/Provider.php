@@ -36,7 +36,7 @@ class Provider {
     protected $em;
     protected $logo_url;
     protected $ci;
-    protected $timezone;
+
 
     /**
      * @Id
@@ -303,7 +303,6 @@ class Provider {
 
     public function __construct()
     {
-        $this->timezone = new \DateTimeZone('UTC');
 
         $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->contacts = new \Doctrine\Common\Collections\ArrayCollection();
@@ -314,7 +313,7 @@ class Provider {
         $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->extend = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->updatedAt = new \DateTime("now",$this->timezone);
+        $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
         $this->is_approved = TRUE;
         $this->is_locked = FALSE;
 
@@ -634,7 +633,7 @@ class Provider {
      */
     public function created()
     {
-        $this->createdAt = new \DateTime("now",$this->timezone);
+        $this->createdAt = new \DateTime("now",new \DateTimeZone('UTC'));
         if (empty($this->nameidformat))
         {
             $this->setNameId();
@@ -720,7 +719,7 @@ class Provider {
     public function updated()
     {
         \log_message('debug', 'GG update providers updated time for:'.$this->entityid);
-        $this->updatedAt = new \DateTime("now",$this->timezone);
+        $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
     }
 
     /**
@@ -728,7 +727,6 @@ class Provider {
      */
     public function setAddionals()
     {
-       $this->timezone =  new \DateTimeZone('UTC');
        $this->ci = & get_instance();
        $this->em = $this->ci->doctrine->em;
        
@@ -1038,7 +1036,7 @@ class Provider {
         }
         else
         {
-           $this->registerdate = $date->setTimezone($this->timezone);
+           $this->registerdate = $date->setTimezone(new \DateTimeZone('UTC'));
         }
         return $this;
     }
@@ -1055,7 +1053,7 @@ class Provider {
         else
         {
             // $date->setTime(23, 59, 59);
-            $this->validto = $date->setTimezone($this->timezone);
+            $this->validto = $date->setTimezone(new \DateTimeZone('UTC'));
         }
         return $this;
     }
@@ -1069,7 +1067,7 @@ class Provider {
         else
         {
             //$date->setTime(00, 01, 00);
-            $this->validfrom = $date->setTimezone($this->timezone);
+            $this->validfrom = $date->setTimezone(new \DateTimeZone('UTC'));
         }
         return $this;
     }
@@ -1823,7 +1821,7 @@ class Provider {
         /**
          * @todo fix broken time for the momemnt reurns true
          */
-        $currentTime = new \DateTime("now",$this->timezone);
+        $currentTime = new \DateTime("now",new \DateTimeZone('UTC'));
         $validAfter = TRUE;
         $validBefore = TRUE;
         if (!empty($this->validfrom))

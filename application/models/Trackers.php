@@ -25,13 +25,11 @@ use \Doctrine\ORM\Query\ResultSetMapping;
 class Trackers {
 
     protected $em;
-    protected $timezone;
 
     function __construct()
     {
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
-        $this->timezone = new \DateTimeZone('UTC');
     }
 
     public function getArpDownloaded(Provider $provider)
@@ -43,7 +41,7 @@ class Trackers {
 
     public function getArpDownloadedByTime($d)
     {
-        $datetime = new \DateTime('now',$this->timezone);
+        $datetime = new \DateTime('now',new \DateTimeZone('UTC'));
         $datetime->modify('- ' . $d . ' minutes');
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('models\Tracker', 'u');

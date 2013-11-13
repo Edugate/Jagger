@@ -30,7 +30,6 @@ use \Doctrine\Common\Collections\ArrayCollection;
 class User {
 
     protected $em;
-    protected $timezone;
 
     /**
      * The User currently logged in
@@ -136,7 +135,6 @@ class User {
         log_message('debug', 'User model initiated');
         $this->in_queue = new \Doctrine\Common\Collections\ArrayCollection();
         $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->timezone = new \DateTimeZone('UTC');
     }
 
     /**
@@ -422,7 +420,7 @@ class User {
      */
     public function updated()
     {
-        $this->lastlogin = new \DateTime("now",$this->timezone);
+        $this->lastlogin = new \DateTime("now",new \DateTimeZone('UTC'));
     }
 
     public function getId()
@@ -513,13 +511,6 @@ class User {
         return $rolename;
     }
     
-    /**
-     * @PostLoad
-     */
-    public function additionalOptions()
-    {
-        $this->timezone = new \DateTimeZone('UTC');
-    }
 
     // End method stubs
 }

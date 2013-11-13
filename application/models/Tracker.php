@@ -33,7 +33,6 @@ use \Doctrine\Common\Collections\ArrayCollection;
  */
 class Tracker {
 
-    protected $timezone;
 
     /**
      * @Id
@@ -86,10 +85,6 @@ class Tracker {
      */
     private $detail;
 
-    public function __construct()
-    {
-        $this->timezone = new \DateTimeZone('UTC');
-    }
 
     public function setResourceType($type = null)
     {
@@ -182,7 +177,7 @@ class Tracker {
      */
     public function created()
     {
-        $this->createdAt = new \DateTime("now", $this->timezone);
+        $this->createdAt = new \DateTime("now", new \DateTimeZone('UTC'));
         if (isset($_SERVER['REMOTE_ADDR']))
         {
             $this->sourceip = $_SERVER['REMOTE_ADDR'];
