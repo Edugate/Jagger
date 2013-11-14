@@ -476,13 +476,10 @@ footer,#footer {
     @include background-image(linear-gradient($boxHeadeColorTop,  $boxHeaderColorDown));
     @include border-radius(1px 1px, 0px 0px);
     border-image: none;
-    //border-color: -moz-use-text-color -moz-use-text-color #DEDEDE;
-
     border-style: none none solid;
     border-width: medium medium 0px;
     font-size: 16px;
     font-weight: bold;
-    //height: 12px;
     margin-bottom: 0;
     min-height: 12px;
     padding-top: 0px;
@@ -597,10 +594,29 @@ form table#details, form table#detailsnosort {
     }
     
 }
+table.details, table#details {
+    th.header{
+       white-space: nowrap;
+    } 
+    th.header:before {
+       background: rgba(255, 255, 255, 0.3);
+       content: url('../images/ascdesc.gif');
+       margin-right: 5px;
+    }
+    th.headerSortDown:before{
+        content: url('../images/asc.gif');
+    } 
+    th.headerSortUp:before{
+        content: url('../images/desc.gif');
+    } 
+
+}
 
 .userlist {
+    td {
     font-size: smaller;
-    
+      width: auto;
+    } 
 }
 code,pre {
     font-size: x-small;

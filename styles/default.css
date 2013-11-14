@@ -931,8 +931,24 @@ form table#details .attr_supported tr:nth-of-type(even), form table#detailsnosor
   background: white;
 }
 
-.userlist {
+table.details th.header, table#details th.header {
+  white-space: nowrap;
+}
+table.details th.header:before, table#details th.header:before {
+  background: rgba(255, 255, 255, 0.3);
+  content: url("../images/ascdesc.gif");
+  margin-right: 5px;
+}
+table.details th.headerSortDown:before, table#details th.headerSortDown:before {
+  content: url("../images/asc.gif");
+}
+table.details th.headerSortUp:before, table#details th.headerSortUp:before {
+  content: url("../images/desc.gif");
+}
+
+.userlist td {
   font-size: smaller;
+  width: auto;
 }
 
 code, pre {
