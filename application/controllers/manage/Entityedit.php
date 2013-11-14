@@ -24,8 +24,8 @@ class Entityedit extends MY_Controller {
     protected $tmp_providers;
     protected $tmp_error;
     protected $type;
+    protected $disallowedparts = array();
 
-    //protected $current_site;
     public function __construct()
     {
         parent::__construct();
@@ -41,7 +41,10 @@ class Entityedit extends MY_Controller {
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmp_error = '';
         $this->type = null;
-       
+        if(!empty($this->config->item('entpartschangesdisallowed')) && is_array($this->config->item('entpartschangesdisallowed')))
+        {
+           $this->disallowedparts = $this->config->item('entpartschangesdisallowed');
+        }
     }
 
     private function _submit_validate($id)

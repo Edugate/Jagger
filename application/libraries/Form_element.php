@@ -263,7 +263,7 @@ class Form_element {
         }
         else
         {
-            $result[] = form_label(lang('rr_entityid'), 'f[entityid]') . form_input(array('id' => 'f[entityid]', 'class' => $class_ent, 'name' => 'f[entityid]', 'required' => 'required','disabled'=>'disabled', 'value' => $t1));
+            $result[] = form_label(lang('rr_entityid'), 'f[entityid]') . form_input(array('id' => 'f[entityid]', 'class' => $class_ent, 'name' => 'f[entityid]', 'required' => 'required','readonly'=>'readonly', 'value' => $t1));
 
         }
         $result[] = form_label(lang('rr_resource'), 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'required' => 'required', 'value' => $t2));
@@ -2212,14 +2212,14 @@ class Form_element {
                 $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('idpssodescriptor').'', 'f[scopes][idpsso]') . form_input(array(
                         'name' => 'f[scopes][idpsso]',
                         'id' => 'f[scopes][idpsso]',
-                        'disabled'=>'disabled',
+                        'readonly'=>'readonly',
                         'value' => $scopessovalue,
                         'class' => $scopeidpssonotice,
                     )) . '</li>';
                 $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('atributeauthoritydescriptor').'', 'f[scopes][aa]') . form_input(array(
                         'name' => 'f[scopes][aa]',
                         'id' => 'f[scopes][aa]',
-                        'disabled'=>'disabled',
+                        'readonly'=>'readonly',
                         'value' => $scopeaavalue,
                         'class' => $scopeaanotice,
                     )) . '</li>';

@@ -1926,3 +1926,8 @@ input[type="text"]:disabled
 {
     background: rgba(0,0,0,0.1);
 }
+input[readonly='readonly'] {
+
+    background: rgba(0,0,0,0.1);
+
+}
