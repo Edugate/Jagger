@@ -21,7 +21,7 @@ $target = current_url();
 
 <div>
 <button class="addbutton addicon showform"><?php echo lang('rr_addreqattr'); ?></button>
-<button class="resetebutton deleteicon hideform hidden"><?php echo lang('btn_hide') ;?></button></div>
+<button class="resetbutton deleteicon hideform hidden"><?php echo lang('btn_hide') ;?></button></div>
 
 <table id="details" class="reqattraddform hidden">
     <caption><?php echo lang('rr_addreqattr');?></caption>
