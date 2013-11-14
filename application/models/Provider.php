@@ -2627,7 +2627,7 @@ class Provider {
         }
         $e->appendChild($Extensions_Node);
         $certs = $this->getCertificates();
-        log_message('debug', gettype($certs));
+        log_message('debug',__METHOD__.' '. gettype($certs));
         if (!empty($certs))
         {
             $ncerts = $certs->count();
@@ -2705,7 +2705,6 @@ class Provider {
 
     public function getIDPSSODescriptorToXML(\DOMElement $parent, $options = null)
     {
-  //      $this->ci = & get_instance();
         $services = $this->getServiceLocations();
         if (empty($services))
         {
@@ -2756,7 +2755,8 @@ class Provider {
 
         $e->appendChild($Extensions_Node);
         $certs = $this->getCertificates();
-        log_message('debug', gettype($certs));
+        log_message('debug',__LINE__ .' '. __METHOD__.': '. $certs->count());
+        log_message('debug',__LINE__ .' '. __METHOD__.': '. gettype($certs));
         if (!empty($certs))
         {
             $ncerts = $certs->count();
@@ -2771,6 +2771,7 @@ class Provider {
         $tmp_certs = array();
         if ($ncerts > 0)
         {
+            $idpssocerts = 0;
             foreach ($certs as $cert)
             {
                 $type = $cert->getType();
@@ -2789,8 +2790,14 @@ class Provider {
                     if($KeyDescriptor_Node !== NULL)
                     {
                        $e->appendChild($KeyDescriptor_Node);
+                       ++$idpssocerts;
                     }
                 }
+            }
+            if($idpssocerts == 0)
+            {
+               log_message('error','line '.__LINE__ .' '.__METHOD__.' '.$this->entityid.' no idpsso certs ');
+               return NULL;
             }
         }
         /**
@@ -3106,7 +3113,7 @@ class Provider {
      */
     public function getProviderToXML(\DOMElement $parent = NULL, $options = NULL)
     {
-        log_message('debug', "Provider model: gen xml for " . $this->getEntityId());
+        log_message('debug', __METHOD__. ' start:  ' . $this->getEntityId());
         $comment = "\"" . $this->getEntityId() . "\" \n";
         $l = 1;
 
@@ -3126,10 +3133,6 @@ class Provider {
             {
                 $attrs_in_sp = $options['attr_inc'];
             }
-       //     if (array_key_exists('only_allowed', $options))
-       //     {
-       //         $only_allowed = $options['only_allowed'];
-       //     }
         }
 
         /**
@@ -3151,7 +3154,8 @@ class Provider {
         $p_validUntil = $this->getValidTo();
         if (!empty($p_validUntil))
         {
-            $valid_until = $p_validUntil->format('Y-m-d') . "T00:00:00Z";
+            //$valid_until = $p_validUntil->format('Y-m-d') . "T00:00:00Z";
+            $valid_until = $p_validUntil->format('Y-m-d\TH:i:s\Z');
         }
 
 
@@ -3166,7 +3170,7 @@ class Provider {
             }
             else
             {
-                log_message('error', 'Static metadata is enabled but doesnt exist for entity (id: ' . $this->id . '):' . $this->entityid);
+                log_message('error', __METHOD__.': Static metadata is enabled but doesnt exist for entity (id: ' . $this->id . '):' . $this->entityid);
                 return null;
             }
         }
@@ -3295,7 +3299,7 @@ class Provider {
             }
             else
             {
-                \log_message('error', "Provider model: IDP type but IDPSSODescriptor is null. Metadata for " . $this->getEntityId() . " couldnt be generated");
+                \log_message('error', __FILE__.' line '.__LINE__ . ' '.__METHOD__."Provider model: IDP/BOTH type but IDPSSODescriptor is null. Metadata for " . $this->getEntityId() . " couldnt be generated");
                 return null;
             }
             $AA_Node = $this->getIDPAADescriptorToXML($EntityDesc_Node);
@@ -3332,7 +3336,7 @@ class Provider {
             }
             else
             {
-                log_message('error', "Provider model: SP type but SPSSODescriptor is null - null returned");
+                \log_message('error', ' line '.__LINE__.' '.__METHOD__.' SP/BOTH type but SPSSODescriptor is null cant genereate metadata for: '.$this->entityid);
                 return null;
             }
         }
@@ -3386,7 +3390,7 @@ class Provider {
         }
         if (array_key_exists('geo', $ext) && is_array($ext['geo']))
         {
-            \log_message('debug','GK : geo');
+            \log_message('debug',__METHOD__.': geo');
             $parentgeo = new ExtendMetadata;
             $parentgeo->setNamespace('mdui');
             $parentgeo->setElement('DiscoHints');

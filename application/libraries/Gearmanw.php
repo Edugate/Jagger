@@ -159,7 +159,7 @@ class Gearmanw {
                 log_message('debug','GEARMAN ::'.__METHOD__.' mimetype of received data: '.$mimeType.' checking if allowed'); 
                 if(!array_key_exists($mimeType, $img_mimes))
                 {
-                   log_message('error', 'GEARMAN ::'.__METHOD__.' not allowed mimetype');
+                   log_message('error', 'GEARMAN ::'.__METHOD__.' not allowed mimetype: '.$mimeType);
                    $em->clear();
                    return false;
                 }

@@ -99,10 +99,10 @@ class Metadata extends MY_Controller {
             }
             $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
             $Entities_Node->setAttribute('Name', $federation->getUrn());
-            $validfor = new \DateTime("now");
+            $validfor = new \DateTime("now", new \DateTimezone('UTC'));
             $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
-            $validuntil = $validfor->format('Y-m-d');
-            $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
+            $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
+            $Entities_Node->setAttribute('validUntil', $validuntil);
             $idprefix = '';
             $prefid = $this->config->item('fedmetadataidprefix');
             if(!empty($prefid))
@@ -216,10 +216,10 @@ class Metadata extends MY_Controller {
             }
             $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
             $Entities_Node->setAttribute('Name', $federation->getUrn());
-            $validfor = new \DateTime("now");
+            $validfor = new \DateTime("now",new \DateTimezone('UTC'));
             $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
-            $validuntil = $validfor->format('Y-m-d');
-            $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
+            $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
+            $Entities_Node->setAttribute('validUntil', $validuntil);
             $idprefix = '';
             $prefid = $this->config->item('fedexportmetadataidprefix');
             if(!empty($prefid))
@@ -328,10 +328,10 @@ class Metadata extends MY_Controller {
               $xpath->registerNamespace($key,$value);
         }
         $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
-        $validfor = new \DateTime("now");
+        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
-        $validuntil = $validfor->format('Y-m-d');
-        $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
+        $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
+        $Entities_Node->setAttribute('validUntil', $validuntil);
         $Entities_Node->setAttribute('Name', 'circle:' . $me->getEntityId());
         $idprefix = '';
         $prefid = $this->config->item('circlemetadataidprefix');
