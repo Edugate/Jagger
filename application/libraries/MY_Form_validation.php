@@ -49,7 +49,7 @@ class MY_form_validation extends CI_form_validation {
     {
        $result = false;
        $ar = unserialize($ar);
-       if(empty($str) || empty(trim($str)))
+       if(empty($str))
        {
           if(count($ar) == 0)
           {
