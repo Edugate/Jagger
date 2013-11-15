@@ -48,6 +48,7 @@ class Sp_list extends MY_Controller {
         $expiredicon = '<span class="lbl lbl-disabled">'.lang('rr_expired').'</span>';
         $staticon = '<span class="lbl lbl-static">'.lang('rr_static').'</span>';
         $exticon = '<span class="lbl lbl-external">'.lang('rr_external').'</span>';
+        $hiddenicon = '<span class="lbl lbl-disabled">'.lang('lbl_publichidden').'</span>';
         $resource = 'sp_list';
         $action = 'read';
         $group = 'default';
@@ -103,6 +104,10 @@ class Sp_list extends MY_Controller {
             if($i->getStatic())
             {
                $iconsblock .= $staticon .' ';
+            }
+            if(!$i->getPublicVisible())
+            {
+               $iconsblock .= $hiddenicon .' ';
             }
             $regdate = $i->getRegistrationDate();
             if (isset($regdate))
