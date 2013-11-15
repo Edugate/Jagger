@@ -288,6 +288,30 @@ class Providers {
 
         return $this->providers;
     }
+    public function getPublicIdps_inNative()
+    {
+
+        $rsm = new ResultSetMapping;
+
+        $rsm->addEntityResult('models\Provider', 'u');
+        $rsm->addFieldResult('u', 'id', 'id');
+        $rsm->addFieldResult('u', 'name', 'name');
+        $rsm->addFieldResult('u', 'entityid', 'entityid');
+        $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
+        $rsm->addFieldResult('u', 'homeurl', 'homeurl');
+        $rsm->addFieldResult('u', 'is_active', 'is_active');
+        $rsm->addFieldResult('u', 'is_approved', 'is_approved');
+        $rsm->addFieldResult('u', 'validfrom', 'validfrom');
+        $rsm->addFieldResult('u', 'validto', 'validto');
+        $rsm->addFieldResult('u', 'displayname', 'displayname');
+        $rsm->addFieldResult('u', 'contacts', 'contacts');
+        $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' AND hidepublic = \'0\' ORDER BY name ASC', $rsm);
+        $query->setParameter(1, 'IDP');
+        $query->setParameter(2, 'BOTH');
+        $this->providers = $query->execute();
+
+        return $this->providers;
+    }
 
     public function getSps_inNative($local = null)
     {
@@ -318,6 +342,30 @@ class Providers {
             $query->setParameter(1, 'SP');
             $query->setParameter(2, 'BOTH');
         }
+        $this->providers = $query->execute();
+
+        return $this->providers;
+    }
+    public function getPublicSps_inNative()
+    {
+
+        $rsm = new ResultSetMapping;
+
+        $rsm->addEntityResult('models\Provider', 'u');
+        $rsm->addFieldResult('u', 'id', 'id');
+        $rsm->addFieldResult('u', 'name', 'name');
+        $rsm->addFieldResult('u', 'entityid', 'entityid');
+        $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
+        $rsm->addFieldResult('u', 'homeurl', 'homeurl');
+        $rsm->addFieldResult('u', 'displayname', 'displayname');
+        $rsm->addFieldResult('u', 'is_active', 'is_active');
+        $rsm->addFieldResult('u', 'is_approved', 'is_approved');
+        $rsm->addFieldResult('u', 'validfrom', 'validfrom');
+        $rsm->addFieldResult('u', 'validto', 'validto');
+        $rsm->addFieldResult('u', 'contacts', 'contacts');
+        $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' AND hidepublic = \'0\' ORDER BY name ASC', $rsm);
+        $query->setParameter(1, 'SP');
+        $query->setParameter(2, 'BOTH');
         $this->providers = $query->execute();
 
         return $this->providers;
