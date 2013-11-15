@@ -240,6 +240,13 @@ class Provider {
     protected $is_local;
 
     /**
+     * if true then it is not listed on public lists
+     * @Column(type="boolean")
+     */
+    protected $hidepublic;
+
+
+    /**
      * it can be member of many federations
      * @ManyToMany(targetEntity="Federation", inversedBy="members")
      * @JoinTable(name="federation_members" )
@@ -315,6 +322,7 @@ class Provider {
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
         $this->is_approved = TRUE;
+        $this->hidepublic = FALSE;
         $this->is_locked = FALSE;
 
         $this->ci = & get_instance();
@@ -634,6 +642,10 @@ class Provider {
     public function created()
     {
         $this->createdAt = new \DateTime("now",new \DateTimeZone('UTC'));
+        if(!isset($this->hidepublic))
+        {
+           $this->hidepublic = false;
+        }
         if (empty($this->nameidformat))
         {
             $this->setNameId();
@@ -903,6 +915,18 @@ class Provider {
         return $this;
     }
 
+
+    public function setVisiblePublic()
+    {
+         $this->hidepublic = false;
+         return $this;
+    }
+
+    public function setHidePublic()
+    {
+         $this->hidepublic = true;
+         return $this;
+    }
     public function resetProtocol()
     {
         $this->protocol = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1980,6 +2004,11 @@ class Provider {
     {
 
         return $this->is_locked;
+    }
+
+    public function  getPublicVisible()
+    {
+        return !($this->hidepublic);
     }
 
     public function getAvailable()

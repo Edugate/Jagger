@@ -3,6 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
+//$config['defaultfedname']= 'Edugate';
 
 /**
  * page title prefix
