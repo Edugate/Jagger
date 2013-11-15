@@ -44,7 +44,8 @@ class Entityedit extends MY_Controller {
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmp_error = '';
         $this->type = null;
-        if(!empty($this->config->item('entpartschangesdisallowed')) && is_array($this->config->item('entpartschangesdisallowed')))
+        $entpartschangesdisallowed = $this->config->item('entpartschangesdisallowed');
+        if(!empty($entpartschangesdisallowed) && is_array($entpartschangesdisallowed))
         {
            $this->disallowedparts = $this->config->item('entpartschangesdisallowed');
         }
