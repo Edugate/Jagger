@@ -49,6 +49,7 @@ class Idp_list extends MY_Controller {
         $expiredicon ='<span class="lbl lbl-disabled">'.lang('rr_expired').'</span>';
         $staticon = '<span class="lbl lbl-static">'.lang('rr_static').'</span>';
         $exticon = '<span class="lbl lbl-external">'.lang('rr_external').'</span>';
+        $hiddenicon = '<span class="lbl lbl-disabled">'.lang('lbl_publichidden').'</span>';
         $resource = 'idp_list';
         $action = 'read';
         $group = 'default';
@@ -103,6 +104,10 @@ class Idp_list extends MY_Controller {
             if($i->getStatic())
             {
                $iconsblock .= $staticon .' ';
+            }
+            if(!$i->getPublicVisible())
+            {
+               $iconsblock .= $hiddenicon .' ';
             }
             $displayname = $i->getDisplayName();
             if(empty($displayname))
