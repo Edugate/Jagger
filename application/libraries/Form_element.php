@@ -23,6 +23,7 @@ class Form_element {
 
     protected $ci;
     protected $em;
+    protected $disallowedparts = array();
 
     function __construct()
     {
@@ -31,6 +32,20 @@ class Form_element {
         $this->ci->load->helper('form');
         $this->ci->load->helper('shortcodes');
         log_message('debug', 'lib/Form_element initialized');
+        $isAdmin = $this->ci->j_auth->isAdministrator();
+        if($isAdmin)
+        {
+            $disallowedparts = array();
+        } 
+        else
+        {
+            $disallowedparts = $this->ci->config->item('entpartschangesdisallowed');
+            if(empty($disallowedparts) || !is_array($disallowedparts))
+            {
+                $disallowedparts = array();
+            } 
+        }
+        $this->disallowedparts = $disallowedparts;
     }
 
     public function NgenerateOtherFormLinks(models\Provider $ent)
@@ -74,6 +89,8 @@ class Form_element {
      */
     public function NgenerateEntityGeneral(models\Provider $ent, $ses = null)
     {
+
+         
         $sessform = FALSE;
         if (!empty($ses) && is_array($ses))
         {
@@ -240,7 +257,15 @@ class Form_element {
             $class_displ = '';
         }
         $result = array();
-        $result[] = form_label(lang('rr_entityid'), 'f[entityid]') . form_input(array('id' => 'f[entityid]', 'class' => $class_ent, 'name' => 'f[entityid]', 'required' => 'required', 'value' => $t1));
+        if(!in_array('entityid',$this->disallowedparts))
+        {
+            $result[] = form_label(lang('rr_entityid'), 'f[entityid]') . form_input(array('id' => 'f[entityid]', 'class' => $class_ent, 'name' => 'f[entityid]', 'required' => 'required', 'value' => $t1));
+        }
+        else
+        {
+            $result[] = form_label(lang('rr_entityid'), 'f[entityid]') . form_input(array('id' => 'f[entityid]', 'class' => $class_ent, 'name' => 'f[entityid]', 'required' => 'required','readonly'=>'readonly', 'value' => $t1));
+
+        }
         $result[] = form_label(lang('rr_resource'), 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'required' => 'required', 'value' => $t2));
         $result[] = form_label(lang('rr_displayname'), 'f[displayname]') . form_input(array('id' => 'f[displayname]', 'class' => $class_displ, 'name' => 'f[displayname]', 'required' => 'required', 'value' => $f_displayname));
         $result[] = form_label(lang('rr_regauthority'), 'f[regauthority]') . form_input(array('id' => 'f[regauthority]', 'class' => $regauthority_notice, 'name' => 'f[regauthority]', 'value' => $f_regauthority));
@@ -2179,19 +2204,41 @@ class Form_element {
                 $scopeaanotice = 'notice';
             }
 
+
             $r = '<fieldset><legend>'.lang('rr_scope').' '.showBubbleHelp(''.lang('rhelp_scopemultivalues').'').'</legend><ol>';
-            $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('idpssodescriptor').'', 'f[scopes][idpsso]') . form_input(array(
+
+            if(in_array('scope',$this->disallowedparts))
+            {
+                $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('idpssodescriptor').'', 'f[scopes][idpsso]') . form_input(array(
+                        'name' => 'f[scopes][idpsso]',
+                        'id' => 'f[scopes][idpsso]',
+                        'readonly'=>'readonly',
+                        'value' => $scopessovalue,
+                        'class' => $scopeidpssonotice,
+                    )) . '</li>';
+                $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('atributeauthoritydescriptor').'', 'f[scopes][aa]') . form_input(array(
+                        'name' => 'f[scopes][aa]',
+                        'id' => 'f[scopes][aa]',
+                        'readonly'=>'readonly',
+                        'value' => $scopeaavalue,
+                        'class' => $scopeaanotice,
+                    )) . '</li>';
+            }
+            else
+            {
+                $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('idpssodescriptor').'', 'f[scopes][idpsso]') . form_input(array(
                         'name' => 'f[scopes][idpsso]',
                         'id' => 'f[scopes][idpsso]',
                         'value' => $scopessovalue,
                         'class' => $scopeidpssonotice,
                     )) . '</li>';
-            $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('atributeauthoritydescriptor').'', 'f[scopes][aa]') . form_input(array(
+                $r .= '<li>' . form_label(''.lang('rr_scope').' '.lang('atributeauthoritydescriptor').'', 'f[scopes][aa]') . form_input(array(
                         'name' => 'f[scopes][aa]',
                         'id' => 'f[scopes][aa]',
                         'value' => $scopeaavalue,
                         'class' => $scopeaanotice,
                     )) . '</li>';
+            }
             $r .= '</ol></fieldset>';
             $result[] = $r;
 

@@ -48,6 +48,7 @@ class Entitystate extends MY_Controller {
         $this->form_validation->set_rules('elock', lang('rr_lock_entity'), 'max_length[1]');
         $this->form_validation->set_rules('eactive', lang('rr_entityactive'), 'max_length[1]');
         $this->form_validation->set_rules('extint', lang('rr_entitylocalext'), 'max_length[1]');
+        $this->form_validation->set_rules('publicvisible','public visible', 'max_length[1]');
         return $this->form_validation->run();
     }
 
@@ -69,6 +70,7 @@ class Entitystate extends MY_Controller {
         $data['current_locked'] = $this->entity->getLocked();
         $data['current_active'] = $this->entity->getActive();
         $data['current_extint'] = $this->entity->getLocal();
+        $data['current_publicvisible'] = (int) $this->entity->getPublicVisible();
         $has_manage_access = $this->zacl->check_acl($this->entity->getId(), 'manage', 'entity', '');
         if (!$has_manage_access)
         {
@@ -81,6 +83,7 @@ class Entitystate extends MY_Controller {
             $locked = $this->input->post('elock');
             $active = $this->input->post('eactive');
             $extint = $this->input->post('extint');
+            $publicvisible = $this->input->post('publicvisible');
             $changed = false;
             $differ = array();
             if (isset($locked))
@@ -118,6 +121,23 @@ class Entitystate extends MY_Controller {
                     $changed = true;
                 }
             }
+            if (isset($publicvisible))
+            {
+                if ($data['current_publicvisible'] != $publicvisible)
+                {
+                    if ($publicvisible == '1')
+                    {
+                        $this->entity->setVisiblePublic();
+                        $differ['PublicVisible'] = array('before'=>'disabled','after'=>'enabled');
+                    }
+                    elseif ($publicvisible == '0')
+                    {
+                        $this->entity->setHidePublic();
+                        $differ['PublicVisible'] = array('before'=>'enabled','after'=>'disabled');
+                    }
+                    $changed = true;
+                }
+            }
             if (isset($extint))
             {
                 if ($data['current_extint'] != $extint)
@@ -150,6 +170,7 @@ class Entitystate extends MY_Controller {
         $data['current_locked'] = $this->entity->getLocked();
         $data['current_active'] = $this->entity->getActive();
         $data['current_extint'] = $this->entity->getLocal();
+        $data['current_publicvisible'] = (int) $this->entity->getPublicVisible();
         $data['entityid'] = $this->entity->getEntityId();
         $data['name'] = $this->entity->getName();
         $data['id'] = $this->entity->getId();

@@ -216,6 +216,11 @@ class Providers {
         $this->providers = $this->em->getRepository("models\Provider")->findBy(array('is_local' => TRUE), array('name' => 'ASC'));
         return $this->providers;
     }
+    public function getLocalPublicVisibleProviders()
+    {
+        $this->providers = $this->em->getRepository("models\Provider")->findBy(array('is_local' => TRUE,'hidepublic'=>FALSE,'is_active'=>TRUE), array('name' => 'ASC'));
+        return $this->providers;
+    }
 
     public function getIdps()
     {

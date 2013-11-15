@@ -45,6 +45,46 @@ class MY_form_validation extends CI_form_validation {
      */
 
 
+    function str_matches_array( $str, $ar)
+    {
+       $result = false;
+       $ar = unserialize($ar);
+       if(empty($str))
+       {
+          if(count($ar) == 0)
+          {
+             $result = true;
+          }
+       }
+       else
+       {
+           $ar1 = explode(",",$str);
+           if(count(array_diff($ar1,$ar))==0 && count(array_diff($ar,$ar1))==0)
+           {
+              $result = true;
+           }
+           
+       }
+       if(!$result)
+       {
+           $this->set_message('str_matches_array', 'The %s  must not been changed to '.htmlentities($str));
+       }
+       return $result;
+    }
+    function matches_value($str1,$str2)
+    {
+         log_message('debug','GKS '.__METHOD__.' '.$str1 .' :: '.$str2);
+         if(strcmp($str1,$str2) === 0)
+         {
+             return TRUE;
+         }
+         else
+         {
+             $this->set_message('matches_value','The %s: '.htmlentities($str2).' must not been changed to '.htmlentities($str1));
+             return  FALSE;
+         }
+
+    }
     function no_white_spaces($str)
     {
        $y = preg_match('/[\s]/i', $str);

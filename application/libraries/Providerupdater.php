@@ -51,6 +51,20 @@ class Providerupdater {
         $spartidx = array();
         $idpartidx = array('-1');
         $acsidx = array();
+        $isAdmin = $this->ci->j_auth->isAdministrator();
+        if($isAdmin)
+        {
+            $dissalowedparts = array();
+        } 
+        else
+        {
+            $dissalowedparts = $this->ci->config->item('entpartschangesdisallowed');
+            if(empty($dissalowedparts) || !is_array($dissalowedparts))
+            {
+                $dissalowedparts = array();
+            } 
+        }
+        log_message('debug','disallowedpart: '.serialize($dissalowedparts));
         foreach ($ex as $e)
         {
             $extend['' . $e->getType() . '']['' . $e->getNamespace() . '']['' . $e->getElement() . ''][] = $e;
@@ -82,7 +96,7 @@ class Providerupdater {
              * set scopes
              */
             
-            if(array_key_exists('scopes', $ch))
+            if(array_key_exists('scopes', $ch) && !in_array('scope',$dissalowedparts))
             {
                $origscopesso = implode(',',$ent->getScope('idpsso'));
                $origscopeaa = implode(',',$ent->getScope('aa'));
@@ -136,12 +150,12 @@ class Providerupdater {
         }
         if (array_key_exists('entityid', $ch) && !empty($ch['entityid']))
         {
-            if($ent->getEntityId() != $ch['entityid'])
+            if(strcmp($ent->getEntityId(), $ch['entityid'])!=0 && !in_array('entityid',$dissalowedparts))
             {
                $m['EntityID'] = array('before'=>$ent->getEntityId(),'after'=>$ch['entityid']);
                $this->ci->tracker->renameProviderResourcename($ent->getEntityId(),$ch['entityid']); 
+               $ent->setEntityId($ch['entityid']);
             }
-            $ent->setEntityId($ch['entityid']);
         }
         if (array_key_exists('orgname', $ch) && !empty($ch['orgname']))
         {

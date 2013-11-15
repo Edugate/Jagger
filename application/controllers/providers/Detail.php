@@ -173,9 +173,14 @@ class Detail extends MY_Controller {
         $is_validtime = $ent->getIsValidFromTo();
         $is_active = $ent->getActive();
         $is_local = $ent->getLocal();
+        $is_publiclisted = $ent->getPublicVisible();
         $locked = $ent->getLocked();
         $lockicon = genIcon('locked', lang('rr_locked'));
         $edit_link = '';
+        if(empty($is_publiclisted))
+        {
+            $entstatus .= ' ' . makeLabel('disabled', lang('lbl_publichidden'), lang('lbl_publichidden'));
+        }
         if (empty($is_active))
         {
             $entstatus .= ' ' . makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));

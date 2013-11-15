@@ -3,6 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
+//$config['defaultfedname']= 'Edugate';
 
 /**
  * page title prefix
@@ -201,3 +202,8 @@ $config['disable_extcirclemeta'] = TRUE;
 //$config['fedmetadataidprefix'] = 'edugate-';
 //$config['fedexportmetadataidprefix'] = 'edugateexport-';
 //$config['circlemetadataidprefix'] = 'edugatecircle-';
+
+// set if you want to disable change entityid and/or scope for no Admins
+$config['entpartschangesdisallowed'] = array('entityid','scope');
+
+

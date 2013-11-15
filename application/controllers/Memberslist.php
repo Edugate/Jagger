@@ -45,17 +45,36 @@ class Memberslist extends MY_Controller {
     public function currentmembers()
     {
         $tmp_feds = new models\Federations;
-        $fed = $tmp_feds->getOneByName('Edugate');
-        $fedmembers = $fed->getMembers();
-        $localProviders = $this->tmp_providers->getLocalProviders();
+        $defaultfedname = $this->config->item('defaultfedname');
+        if(!empty($defaultfedname))
+        {
+           $fed = $tmp_feds->getOneByName(''.$defaultfedname.'');    
+           if(!empty($fed))
+           {
+             $fedmembers = $fed->getMembers();
+           }
+        }
+        else
+        {
+           $defaultfedname = '';
+        }
+        $localProviders = $this->tmp_providers->getLocalPublicVisibleProviders();
 
-        $providers = array('idp' => array('edugate' => array(), 'others' => array()), 'sp' => array('edugate' => array(), 'others' => array()));
+        if(!empty($fed))
+        {
+           $providers = array('idp' => array(''.$defaultfedname.'' => array(), 'others' => array()), 'sp' => array(''.$defaultfedname.'' => array(), 'others' => array()));
+        }
+        else
+        {
+           $providers = array('idp' => array('others' => array()), 'sp' => array('edugate' => array(), 'others' => array()));
+
+        }
 
         foreach ($localProviders as $p)
         {
-            if ($fedmembers->contains($p))
+            if (!empty($fedmembers) && $fedmembers->contains($p))
             {
-                $group = 'edugate';
+                $group = ''.$defaultfedname.'';
             }
             else
             {
@@ -78,18 +97,21 @@ class Memberslist extends MY_Controller {
                     }</script>';
         $display .="\n";
         $display .= '<h2>Service Providers</h2>';
-        $display .= '<h3>Edugate</h3>';
         $i = 1;
         $y = 0;
-        foreach ($providers['sp']['edugate'] as $p)
+        if(!empty($defaultfedname) && array_key_exists($defaultfedname,$providers['sp']))
         {
-            $display .= '<img src="/images/resource.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
-            $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
-            $display .="\n";
-            $y++;
-            $i++;
+            $display .= '<h3>'.$defaultfedname.'</h3>';
+            foreach ($providers['sp'][''.$defaultfedname.''] as $p)
+            {
+                $display .= '<img src="/images/resource.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
+                $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
+                $display .="\n";
+                $y++;
+                $i++;
+            }
         }
-        $display .= '<h3>non Edugate</h3>';
+        $display .= '<h3>Others</h3>';
         foreach ($providers['sp']['others'] as $p)
         {
             $display .= '<img src="/images/resource.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
@@ -101,17 +123,20 @@ class Memberslist extends MY_Controller {
 
         $i = 1;
         $display .= '<br /><br /><h2>Identity Providers</h2>';
-        $display .= '<h3>Edugate</h3>';
-        foreach ($providers['idp']['edugate'] as $p)
+        if(!empty($defaultfedname) && array_key_exists($defaultfedname,$providers['idp']))
         {
-            $display .= '<img src="/images/homeorg.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
-            $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
-            $display .="\n";
-            $y++;
-            $i++;
+            $display .= '<h3>'.$defaultfedname.'</h3>';
+            foreach ($providers['idp'][''.$defaultfedname.''] as $p)
+            {
+                $display .= '<img src="/images/homeorg.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
+                $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
+                $display .="\n";
+                $y++;
+                $i++;
+            }
         }
 
-        $display .= '<h3>non Edugate</h3>';
+        $display .= '<h3>Others</h3>';
         foreach ($providers['idp']['others'] as $p)
         {
             $display .= '<img src="/images/homeorg.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';

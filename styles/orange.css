@@ -2287,6 +2287,14 @@ input, textarea {
   min-height: 25px;
 }
 
+input[type="text"]:disabled {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+input[readonly='readonly'] {
+  background: rgba(0, 0, 0, 0.1);
+}
+
 form {
   counter-reset: fieldsets;
   background: #ffe90d;
