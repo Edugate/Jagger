@@ -25,6 +25,9 @@ class Entityedit extends MY_Controller {
     protected $tmp_error;
     protected $type;
     protected $disallowedparts = array();
+    protected $entityid;
+    protected $idpsscoscope = array();
+    protected $aascope = array();
 
     public function __construct()
     {
@@ -56,7 +59,6 @@ class Entityedit extends MY_Controller {
         if (isset($y['f']))
         {
 
-          //  $this->form_validation->set_rules('f[static]', 'Static metadata', 'trim|xss_clean');
             $this->form_validation->set_rules('f[usestatic]', 'use metadata',"valid_static[".base64_encode($this->input->post('f[static]')).":::".$this->input->post('f[entityid]')." ]");
 
 
@@ -66,11 +68,26 @@ class Entityedit extends MY_Controller {
                $staticisdefault = TRUE;
             
             }
-            $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entityid_unique_update[' . $id . ']');
+            if(in_array('entityid',$this->disallowedparts))
+            {
+                $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|matches_value['.$this->entityid.']');
+                
+            }
+            else
+            {
+                $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entityid_unique_update[' . $id . ']');
+            }
             $this->form_validation->set_rules('f[orgname]', lang('rr_homeorganisationname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
-            $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
-            $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
-
+            if(in_array('scope',$this->disallowedparts))
+            {
+               $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope').' (IDPSSO)', 'trim|xss_clean|valid_scopes|max_length[255]|str_matches_array['.serialize($this->idpssoscope).']');
+               $this->form_validation->set_rules('f[scopes][aa]',  lang('rr_scope').' (AA)', 'trim|xss_clean|valid_scopes|max_length[255]|str_matches_array['.serialize($this->aascope).']');
+            }
+            else
+            {
+               $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
+               $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
+            }
             if($staticisdefault)
             {
                 $this->form_validation->set_rules('f[homeurl]', lang('rr_homeurl'), 'trim|xss_clean|valid_url');
@@ -502,7 +519,9 @@ class Entityedit extends MY_Controller {
         {
              show_error('Access Denied. Identity/Service Provider is locked and cannod be modified.', 403);
         }
-        
+        $this->entityid = $ent->getEntityId(); 
+        $this->idpssoscope = $ent->getScope('idpsso');
+        $this->aascope = $ent->getScope('aa');
         $this->type = $ent->getType();
         $this->_check_perms($id);
         $n = 'entform' . $id;
