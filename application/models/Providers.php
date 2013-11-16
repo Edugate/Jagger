@@ -363,7 +363,7 @@ class Providers {
         $rsm->addFieldResult('u', 'validfrom', 'validfrom');
         $rsm->addFieldResult('u', 'validto', 'validto');
         $rsm->addFieldResult('u', 'contacts', 'contacts');
-        $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' AND hidepublic = \'0\' AND is_active = \'1\' AND ORDER BY name ASC', $rsm);
+        $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' AND hidepublic = \'0\' AND is_active = \'1\' ORDER BY name ASC', $rsm);
         $query->setParameter(1, 'SP');
         $query->setParameter(2, 'BOTH');
         $this->providers = $query->execute();
