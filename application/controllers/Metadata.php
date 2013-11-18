@@ -399,6 +399,7 @@ class Metadata extends MY_Controller
         }
         $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
         $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+        $idsuffix = $validfor->format('YmdHis');
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
         $Entities_Node->setAttribute('validUntil', $validuntil);
@@ -408,11 +409,17 @@ class Metadata extends MY_Controller
         if (!empty($prefid)) {
             $idprefix = $prefid;
         }
-        $idsuffix = $validfor->format('YmdHis');
         $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
 
         foreach ($p1 as $v) {
             if ($v->getAvailable()) {
+                $comment = " \n\"" . htmlspecialchars($v->getEntityId()) . "\"\n";
+                if($v->getStatic())
+                {
+                   $comment .= "static\n";
+                }
+                $c = $Entities_Node->ownerDocument->createComment(str_replace('--', '-' . chr(194) . chr(173) . '-', $comment));
+                $Entities_Node->appendChild($c);
                 $cacheId = 'mcircle_' . $v->getId() . '';
                 $metadataCached = $this->cache->get($cacheId);
                 if (!empty($metadataCached)) {
@@ -431,13 +438,13 @@ class Metadata extends MY_Controller
                 if (!empty($y)) {
                     $z = new XMLReader();
                     $z->XML($y);
-
                     while ($z->read()) {
                         if ($z->nodeType == XMLReader::ELEMENT &&
                                 ($z->name === 'md:EntityDescriptor' || $z->name === 'EntityDescriptor')) {
                              
                             $y = $Entities_Node->ownerDocument->importNode($z->expand(), true);
                             $Entities_Node->appendChild($y);
+                            break;
                         }
                     }
                     $z->close();
@@ -448,7 +455,6 @@ class Metadata extends MY_Controller
         $this->output->set_content_type('text/xml');
         log_message('debug', __METHOD__ . ' memory: ' . memory_get_usage());
         $data['out'] = $docXML->saveXML();
-
         $this->load->view('metadata_view', $data);
     }
 
