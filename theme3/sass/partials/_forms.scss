@@ -260,15 +260,6 @@ div.permset form {
     background-color: transparent;
     
 }
-div#sortable, div.nsortable {
-    overflow: auto;
-    span {
-        display: block;
-        
-        cursor:move;
-    }
-}
-
 input.notice 
 {
     color: $fontColorInputNotice;
@@ -366,7 +357,30 @@ li.notice > input, li.notice > select
     }
     
     
+div.nsortable {
+    overflow: auto;
+    span {
+        input {
+           min-width: 10px;
+        }
+        display: block;
+        cursor:move;
+    }
 }
+}
+div#sortable, div.nsortable {
+    overflow: auto;
+    span {
+        input {
+           min-width: 10px;
+           width: 10px;
+           max-width: 10px;
+        }
+        display: block;
+        cursor:move;
+    }
+}
+
 form.cookieconsent {
     
     background-color: transparent;
