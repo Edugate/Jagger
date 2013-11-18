@@ -2540,14 +2540,6 @@ div.permset form {
   background-color: transparent;
 }
 
-div#sortable, div.nsortable {
-  overflow: auto;
-}
-div#sortable span, div.nsortable span {
-  display: block;
-  cursor: move;
-}
-
 input.notice {
   color: orange;
 }
@@ -2628,6 +2620,29 @@ li.notice > input, li.notice > select {
   font-size: bigger;
   padding: 10px;
   width: 100%;
+}
+#formtabs form div.nsortable {
+  overflow: auto;
+}
+#formtabs form div.nsortable span {
+  display: block;
+  cursor: move;
+}
+#formtabs form div.nsortable span input {
+  min-width: 10px;
+}
+
+div#sortable, div.nsortable {
+  overflow: auto;
+}
+div#sortable span, div.nsortable span {
+  display: block;
+  cursor: move;
+}
+div#sortable span input, div.nsortable span input {
+  min-width: 10px;
+  width: 10px;
+  max-width: 10px;
 }
 
 form.cookieconsent {
