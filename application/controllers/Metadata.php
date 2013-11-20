@@ -32,7 +32,7 @@ class Metadata extends MY_Controller
     {
         $data = array();
         $name = base64url_decode($federationName);
-        if (!empty($t) AND (($t === 'IDP') OR ($t === 'SP') OR ($t === 'idp') OR ($t === 'sp'))) {
+        if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);
         }
         else {
@@ -144,7 +144,7 @@ class Metadata extends MY_Controller
     {
         $data = array();
         $name = base64url_decode($federationName);
-        if (!empty($t) AND (($t == 'IDP') OR ($t == 'SP') OR ($t == 'idp') OR ($t == 'sp'))) {
+        if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);
         }
         else {
@@ -399,7 +399,7 @@ class Metadata extends MY_Controller
         }
         $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
         $validfor = new \DateTime("now", new \DateTimezone('UTC'));
-        $idsuffix = $validfor->format('YmdHis');
+        $idsuffix = $validfor->format('Ymd\THis');
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
         $Entities_Node->setAttribute('validUntil', $validuntil);
