@@ -107,13 +107,18 @@ class Importer extends MY_Controller {
         if (empty($fed)) {
             return $this->index();
         }
+        $curl_timeout=$this->config->item('curl_timeout');
+        if(!isset($curl_timeout))
+        {
+           $curl_timeout = 30;
+        }
         if(!empty($arg['sslcheck']) and ($arg['sslcheck'] === 'ignore'))
         {
-            $metadata_body = $this->curl->simple_get($arg['metadataurl'],array(), array(CURLOPT_SSL_VERIFYPEER=>FALSE,CURLOPT_SSL_VERIFYHOST=>FALSE));
+            $metadata_body = $this->curl->simple_get($arg['metadataurl'],array(), array(CURLOPT_SSL_VERIFYPEER=>FALSE,CURLOPT_SSL_VERIFYHOST=>FALSE,CURLOPT_TIMEOUT=>$curl_timeout));
         }
         else
         {
-            $metadata_body = $this->curl->simple_get($arg['metadataurl']);
+            $metadata_body = $this->curl->simple_get($arg['metadataurl'],array(),array(CURLOPT_TIMEOUT=>$curl_timeout));
         }
         if (empty($metadata_body)) {
             //$this->other_error = lang('error_metaemptyfile');

@@ -1,6 +1,6 @@
 <?php
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -17,21 +17,25 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Metadata extends MY_Controller {
+class Metadata extends MY_Controller
+{
 
     //put your code here
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         $this->output->set_content_type('text/xml');
     }
 
-    public function federation($federationName, $t = NULL) {
+    public function federation($federationName, $t = NULL)
+    {
         $data = array();
         $name = base64url_decode($federationName);
-        if (!empty($t) AND (($t === 'IDP') OR ($t === 'SP') OR ($t === 'idp') OR ($t === 'sp'))) {
+        if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);
-        } else {
+        }
+        else {
             $type = 'all';
         }
 
@@ -41,7 +45,8 @@ class Metadata extends MY_Controller {
 
         if (empty($federation)) {
             show_404('page', 'log_error');
-        } else {
+        }
+        else {
             /**
              * check if federation is active
              */
@@ -53,22 +58,20 @@ class Metadata extends MY_Controller {
                 show_error('federation is not active', 404);
             }
 
-           
+
             /**
              * check if required attribute must be added to federated metadata 
              */
             $include_attrs = $federation->getAttrsInmeta();
             $reqattrs_by_fed = null;
             $options = array();
-            if($include_attrs)
-            {
-              $options['attrs'] = 1;
-              $attrfedreq_tmp = new models\AttributeRequirements;
-              $reqattrs_by_fed = $attrfedreq_tmp->getRequirementsByFed($federation);
-              if(!empty($reqattrs_by_fed))
-              {
-                 $options['fedreqattrs'] = $reqattrs_by_fed ;
-              }
+            if ($include_attrs) {
+                $options['attrs'] = 1;
+                $attrfedreq_tmp = new models\AttributeRequirements;
+                $reqattrs_by_fed = $attrfedreq_tmp->getRequirementsByFed($federation);
+                if (!empty($reqattrs_by_fed)) {
+                    $options['fedreqattrs'] = $reqattrs_by_fed;
+                }
             }
 
             $members = $federation->getMembers();
@@ -85,7 +88,7 @@ class Metadata extends MY_Controller {
 
             if (!empty($termsofuse)) {
                 $termsofuse = "TERMS OF USE\n" . $termsofuse;
-                $termsofuse = h_metadataComment($termsofuse); 
+                $termsofuse = h_metadataComment($termsofuse);
                 $comment = $docXML->createComment($termsofuse);
                 $docXML->appendChild($comment);
             }
@@ -93,9 +96,8 @@ class Metadata extends MY_Controller {
              * get metadata namespaces from metadata_elements_helper
              */
             $namespaces = h_metadataNamespaces();
-            foreach($namespaces as $key=>$value)
-            {
-                $xpath->registerNamespace($key,$value);
+            foreach ($namespaces as $key => $value) {
+                $xpath->registerNamespace($key, $value);
             }
             $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
             $Entities_Node->setAttribute('Name', $federation->getUrn());
@@ -105,28 +107,27 @@ class Metadata extends MY_Controller {
             $Entities_Node->setAttribute('validUntil', $validuntil);
             $idprefix = '';
             $prefid = $this->config->item('fedmetadataidprefix');
-            if(!empty($prefid))
-            {
-              $idprefix = $prefid;
+            if (!empty($prefid)) {
+                $idprefix = $prefid;
             }
             $idsuffix = $validfor->format('YmdHis');
-            $Entities_Node->setAttribute('ID',''.$idprefix.$idsuffix.'');
+            $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
 
             /**
              * @todo ValidUntil
              */
             if ($type === 'all') {
-                log_message('debug' ,'Genereate for all entities');
+                log_message('debug', 'Genereate for all entities');
                 for ($i = 0; $i < $members_count; $i++) {
-                    if($members->get($members_keys['' . $i . ''])->getAvailable())
-                    {
-                        $members->get($members_keys['' . $i . ''])->getProviderToXML($Entities_Node,$options);
+                    if ($members->get($members_keys['' . $i . ''])->getAvailable()) {
+                        $members->get($members_keys['' . $i . ''])->getProviderToXML($Entities_Node, $options);
                     }
                 }
-            } else {
+            }
+            else {
                 foreach ($members as $key) {
                     if ($key->getAvailable() && (($key->getType() === $type) or ($key->getType() === 'BOTH'))) {
-                        $key->getProviderToXML($Entities_Node,$options);
+                        $key->getProviderToXML($Entities_Node, $options);
                     }
                 }
             }
@@ -138,22 +139,26 @@ class Metadata extends MY_Controller {
             $this->load->view('metadata_view', $data);
         }
     }
-    public function federationexport($federationName, $t = NULL) {
+
+    public function federationexport($federationName, $t = NULL)
+    {
         $data = array();
         $name = base64url_decode($federationName);
-        if (!empty($t) AND (($t == 'IDP') OR ($t == 'SP') OR ($t == 'idp') OR ($t == 'sp'))) {
+        if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);
-        } else {
+        }
+        else {
             $type = 'all';
         }
 
 
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $name, 'is_lexport'=>TRUE));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $name, 'is_lexport' => TRUE));
 
 
         if (empty($federation)) {
             show_404('page', 'log_error');
-        } else {
+        }
+        else {
             /**
              * check if federation is active
              */
@@ -167,22 +172,20 @@ class Metadata extends MY_Controller {
 
             //$tmp_cnt = new models\Contacts;
             //$contacts = $tmp_cnt->getContacts();
-           
+
             /**
              * check if required attribute must be added to federated metadata 
              */
             $include_attrs = $federation->getAttrsInmeta();
             $reqattrs_by_fed = null;
             $options = array();
-            if($include_attrs)
-            {
-              $options['attrs'] = 1;
-              $attrfedreq_tmp = new models\AttributeRequirements;
-              $reqattrs_by_fed = $attrfedreq_tmp->getRequirementsByFed($federation);
-              if(!empty($reqattrs_by_fed))
-              {
-                 $options['fedreqattrs'] = $reqattrs_by_fed ;
-              }
+            if ($include_attrs) {
+                $options['attrs'] = 1;
+                $attrfedreq_tmp = new models\AttributeRequirements;
+                $reqattrs_by_fed = $attrfedreq_tmp->getRequirementsByFed($federation);
+                if (!empty($reqattrs_by_fed)) {
+                    $options['fedreqattrs'] = $reqattrs_by_fed;
+                }
             }
 
             $members = $federation->getMembers();
@@ -196,13 +199,13 @@ class Metadata extends MY_Controller {
             $docXML->formatOutput = true;
             $xpath = new \DomXPath($docXML);
             $termsofuse = $federation->getTou();
-            
+
             $topcomment = "\n===============================================================\n= Federation metadata containing only localy managed entities.=\n===============================================================\n";
-            $tcomment  = $docXML->createComment($topcomment);
+            $tcomment = $docXML->createComment($topcomment);
             $docXML->appendChild($tcomment);
             if (!empty($termsofuse)) {
                 $termsofuse = "TERMS OF USE\n" . $termsofuse;
-                $termsofuse = h_metadataComment($termsofuse); 
+                $termsofuse = h_metadataComment($termsofuse);
                 $comment = $docXML->createComment($termsofuse);
                 $docXML->appendChild($comment);
             }
@@ -210,39 +213,37 @@ class Metadata extends MY_Controller {
              * get metadata namespaces from metadata_elements_helper
              */
             $namespaces = h_metadataNamespaces();
-            foreach($namespaces as $key=>$value)
-            {
-                $xpath->registerNamespace($key,$value);
+            foreach ($namespaces as $key => $value) {
+                $xpath->registerNamespace($key, $value);
             }
             $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
             $Entities_Node->setAttribute('Name', $federation->getUrn());
-            $validfor = new \DateTime("now",new \DateTimezone('UTC'));
+            $validfor = new \DateTime("now", new \DateTimezone('UTC'));
             $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
             $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
             $Entities_Node->setAttribute('validUntil', $validuntil);
             $idprefix = '';
             $prefid = $this->config->item('fedexportmetadataidprefix');
-            if(!empty($prefid))
-            {
-              $idprefix = $prefid;
+            if (!empty($prefid)) {
+                $idprefix = $prefid;
             }
             $idsuffix = $validfor->format('YmdHis');
-            $Entities_Node->setAttribute('ID',''.$idprefix.$idsuffix.'');
+            $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
 
             /**
              * @todo ValidUntil
              */
             if ($type == 'all') {
                 for ($i = 0; $i < $members_count; $i++) {
-                    if($members->get($members_keys['' . $i . ''])->getLocalAvailable())
-                    {
-                        $members->get($members_keys['' . $i . ''])->getProviderToXML($Entities_Node,$options);
+                    if ($members->get($members_keys['' . $i . ''])->getLocalAvailable()) {
+                        $members->get($members_keys['' . $i . ''])->getProviderToXML($Entities_Node, $options);
                     }
                 }
-            } else {
+            }
+            else {
                 foreach ($members as $key) {
                     if ($key->getLocalAvailable() && (($key->getType() == $type) or ($key->getType() == 'BOTH'))) {
-                        $key->getProviderToXML($Entities_Node,$options);
+                        $key->getProviderToXML($Entities_Node, $options);
                     }
                 }
             }
@@ -255,40 +256,42 @@ class Metadata extends MY_Controller {
         }
     }
 
-    public function service($entityId,$m = null) {
-        if(!empty($m) && $m != 'metadata.xml')
-        {
-             show_error('Request not allowed',403);
+    public function service($entityId, $m = null)
+    {
+        if (!empty($m) && $m != 'metadata.xml') {
+            show_error('Request not allowed', 403);
         }
         $data = array();
 
         $name = base64url_decode($entityId);
         $options = array();
         $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
-        if (!empty($entity))
-         {
-                $y = $entity->getProviderToXML($parent=null,$options);
-                if (empty($y))
-                {
-                    log_message('error',  'Got empty xml form Provider model');
-                    log_message('error',  "Service metadata for " . $entity->getEntityId() . " couldn't be generated");
-                    show_error("Metadata for " . $entity->getEntityId() . " couldn't be generated", 503);
-                 }
-                else
-                {
-                   $data['out'] = $y->saveXML();
-                   $this->load->view('metadata_view', $data);
-                }
-        } else {
+        if (!empty($entity)) {
+            $y = $entity->getProviderToXML($parent = null, $options);
+            log_message('debug', get_class($y));
+            if (empty($y)) {
+                log_message('error', 'Got empty xml form Provider model');
+                log_message('error', "Service metadata for " . $entity->getEntityId() . " couldn't be generated");
+                show_error("Metadata for " . $entity->getEntityId() . " couldn't be generated", 503);
+            }
+            else {
+                $data['out'] = $y->saveXML();
+                $this->load->view('metadata_view', $data);
+            }
+        }
+        else {
             log_message('debug', 'Identity Provider not found');
             show_error('Identity Provider not found', 404);
         }
     }
 
-    public function circle($entityId, $m = NULL) {
-        if(!empty($m) && $m != 'metadata.xml')
-        {
-            show_error('Request not allowed',403);
+   /**
+    * original function circle kept ig bugs found in new one
+    */
+    private function circleOrig($entityId, $m = NULL)
+    {
+        if (!empty($m) && $m != 'metadata.xml') {
+            show_error('Request not allowed', 403);
         }
         $data = array();
         $name = base64url_decode($entityId);
@@ -300,14 +303,12 @@ class Metadata extends MY_Controller {
             return;
         }
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
-        if(!empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
-        {
+        if (!empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE) {
             $is_local = $me->getLocal();
-            if(!$is_local)
-            {
-                log_message('info',' WARNING: cannot generate circle metadata for external provider:'.$me->getEntityId());
-                log_message('debug','To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE'); 
-                show_error($me->getEntityId().': This is external provider. Cannot generate circle metadata',403);
+            if (!$is_local) {
+                log_message('info', ' WARNING: cannot generate circle metadata for external provider:' . $me->getEntityId());
+                log_message('debug', 'To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE');
+                show_error($me->getEntityId() . ': This is external provider. Cannot generate circle metadata', 403);
                 return;
             }
         }
@@ -323,9 +324,8 @@ class Metadata extends MY_Controller {
 
         $xpath = new \DomXPath($docXML);
         $namespaces = h_metadataNamespaces();
-        foreach($namespaces as $key=>$value)
-        {
-              $xpath->registerNamespace($key,$value);
+        foreach ($namespaces as $key => $value) {
+            $xpath->registerNamespace($key, $value);
         }
         $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
         $validfor = new \DateTime("now", new \DateTimezone('UTC'));
@@ -335,33 +335,28 @@ class Metadata extends MY_Controller {
         $Entities_Node->setAttribute('Name', 'circle:' . $me->getEntityId());
         $idprefix = '';
         $prefid = $this->config->item('circlemetadataidprefix');
-        if(!empty($prefid))
-        {
-           $idprefix = $prefid;
+        if (!empty($prefid)) {
+            $idprefix = $prefid;
         }
         $idsuffix = $validfor->format('YmdHis');
-        $Entities_Node->setAttribute('ID',''.$idprefix.$idsuffix.'');
+        $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
 
         foreach ($p1 as $v) {
-            if($v->getAvailable())
-            {
+            if ($v->getAvailable()) {
                 $v->getProviderToXML($Entities_Node);
             }
         }
         $docXML->appendChild($Entities_Node);
+        log_message('debug', __METHOD__ . ' memory: ' . memory_get_usage());
         $this->output->set_content_type('text/xml');
         $data['out'] = $docXML->saveXML();
         $this->load->view('metadata_view', $data);
-       
     }
-    /** 
-     * it default circle function, replaced by new one.
-     * it is kept just in case
-     */
-    private function circleorig($entityId, $m = NULL) {
-        if(!empty($m) && $m != 'metadata.xml')
-        {
-            show_error('Request not allowed',403);
+
+    public function circle($entityId, $m = NULL)
+    {
+        if (!empty($m) && $m != 'metadata.xml') {
+            show_error('Request not allowed', 403);
         }
         $data = array();
         $name = base64url_decode($entityId);
@@ -372,38 +367,93 @@ class Metadata extends MY_Controller {
             show_error('unknown provider', 404);
             return;
         }
+        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
+        if (!empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE) {
+            $is_local = $me->getLocal();
+            if (!$is_local) {
+                log_message('info', ' WARNING: cannot generate circle metadata for external provider:' . $me->getEntityId());
+                log_message('debug', 'To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE');
+                show_error($me->getEntityId() . ': This is external provider. Cannot generate circle metadata', 403);
+                return;
+            }
+        }
+        $keyPrefix = getCachePrefix();
+        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
+        $cacheId = 'circlemeta_' . $me->getId();
+
+
         $p = new models\Providers;
-        $p1 = $p->getCircleMembers($me);
-        if (empty($p1)) {
+        $p1 = $p->getCircleMembersByType($me);
+        if (is_null($p1) || !is_array($p1)) {
             show_error('empty', 404);
             return;
         }
-
         $docXML = new \DOMDocument();
         $docXML->encoding = 'UTF-8';
         $docXML->formatOutput = true;
 
         $xpath = new \DomXPath($docXML);
         $namespaces = h_metadataNamespaces();
-        foreach($namespaces as $key=>$value)
-        {
-              $xpath->registerNamespace($key,$value);
+        foreach ($namespaces as $key => $value) {
+            $xpath->registerNamespace($key, $value);
         }
         $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
-        $validfor = new \DateTime("now");
+        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+        $idsuffix = $validfor->format('Ymd\THis');
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
-        $validuntil = $validfor->format('Y-m-d');
-        $Entities_Node->setAttribute('validUntil', $validuntil . "T00:00:00Z");
-        $Entities_Node->setAttribute('Name', "circle:" . $me->getEntityId());
-        
+        $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
+        $Entities_Node->setAttribute('validUntil', $validuntil);
+        $Entities_Node->setAttribute('Name', 'circle:' . $me->getEntityId());
+        $idprefix = '';
+        $prefid = $this->config->item('circlemetadataidprefix');
+        if (!empty($prefid)) {
+            $idprefix = $prefid;
+        }
+        $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
+
         foreach ($p1 as $v) {
-            if($v->getAvailable())
-            {
-                $v->getProviderToXML($Entities_Node);
+            if ($v->getAvailable()) {
+                $comment = " \n\"" . htmlspecialchars($v->getEntityId()) . "\"\n";
+                if($v->getStatic())
+                {
+                   $comment .= "static\n";
+                }
+                $c = $Entities_Node->ownerDocument->createComment(str_replace('--', '-' . chr(194) . chr(173) . '-', $comment));
+                $Entities_Node->appendChild($c);
+                $cacheId = 'mcircle_' . $v->getId() . '';
+                $metadataCached = $this->cache->get($cacheId);
+                if (!empty($metadataCached)) {
+                    $y = $metadataCached;
+                }
+                else {
+                    $y = $v->getProviderToXML();
+                    if (!empty($y)) {
+                        $y = $y->saveXML();
+                    }
+                    if(!empty($y))
+                    {
+                        $this->cache->save($cacheId,$y,600);
+                    }
+                }
+                if (!empty($y)) {
+                    $z = new XMLReader();
+                    $z->XML($y);
+                    while ($z->read()) {
+                        if ($z->nodeType == XMLReader::ELEMENT &&
+                                ($z->name === 'md:EntityDescriptor' || $z->name === 'EntityDescriptor')) {
+                             
+                            $y = $Entities_Node->ownerDocument->importNode($z->expand(), true);
+                            $Entities_Node->appendChild($y);
+                            break;
+                        }
+                    }
+                    $z->close();
+                }
             }
         }
         $docXML->appendChild($Entities_Node);
         $this->output->set_content_type('text/xml');
+        log_message('debug', __METHOD__ . ' memory: ' . memory_get_usage());
         $data['out'] = $docXML->saveXML();
         $this->load->view('metadata_view', $data);
     }
