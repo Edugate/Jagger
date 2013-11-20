@@ -2736,20 +2736,11 @@ form.ajform {
 }
 /* Smaller than standard 960 (devices and browsers) */
 @media only screen and (max-width: 959px) {
-  body {
-    #  background-color: blue;
-  }
-
   #container {
     max-width: 850px;
   }
 }
 /* Tablet Portrait size to standard 960 (devices and browsers) */
-@media only screen and (min-width: 768px) and (max-width: 959px) {
-  body {
-    #      background-color: green;
-  }
-}
 /* All Mobile Sizes (devices and browser) */
 @media only screen and (max-width: 767px) {
   body {
