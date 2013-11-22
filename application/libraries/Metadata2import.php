@@ -68,6 +68,13 @@ class Metadata2import {
         $this->other = $other;
         $this->defaults = array_merge($this->defaults, $defaults);
         $coclist = $this->em->getRepository("models\Coc")->findAll();
+        $attrtmp = $this->em->getRepository("models\Attribute")->findAll();
+        $attributes = array();
+        foreach($attrtmp as $v)
+        {
+           $attributes[''.$v->getOid().''] = $v;
+        }
+        log_message('debug','IMPORT attr in table: '.serialize(array_keys($attributes)));
         $coclistconverted = array();
         $coclistarray = array();
        
@@ -232,6 +239,35 @@ class Metadata2import {
                                 $importedProvider->setCoc(NULL);
                         }
                     }
+                    if(isset($ent['details']['reqattrs']))
+                    {
+                       foreach($ent['details']['reqattrs'] as $r)
+                       {
+                          if(array_key_exists($r['name'],$attributes))
+                          {
+                              $reqattr = new models\AttributeRequirement;
+                              $reqattr->setAttribute($attributes[''.$r['name'].'']);
+                              $reqattr->setType('SP');
+                              $reqattr->setSP($importedProvider);
+                              if(isset($r['req']) && strcasecmp($r['req'],'true') == 0)
+                              {
+                                 $reqattr->setStatus('required');
+                              }
+                              else
+                              {
+                                 $reqattr->setStatus('desired');
+                              }
+                              $reqattr->setReason('');
+                              $importedProvider->setAttributesRequirement($reqattr);
+                              $this->em->persist($reqattr);
+                              
+                          }
+                          else
+                          {
+                              log_message('error', 'Attr couldnt be set as required becuase doesnt exist in attrs table: '.$r['name']);
+                          }
+                       }
+                    }
 
                     /**
                      * insert new entity into database and add it to federations 
@@ -272,6 +308,109 @@ class Metadata2import {
                             {
                                    $existingProvider->setCoc(NULL);
                             }
+                        }
+                        $existingRequiredAttrs = array();
+                        $requiteAttrs = $existingProvider->getAttributesRequirement();
+                        foreach($requiteAttrs as $a)
+                        {
+                            $existingRequiredAttrs[''.$a->getAttribute()->getOid().''] = $a;
+                        }
+                        $duplicatesFound = FALSE;
+                        $duplicates = array();
+                        foreach($requiteAttrs as $pl)
+                        {
+                           $duplicates[] = $pl->getAttribute()->getOid();
+                           
+                        }
+                        if(count($duplicates) != count(array_unique($duplicates)))
+                        {
+                           $duplicatesFound = TRUE;
+                           log_message('error', __METHOD__.' found duplicates in attrs requirements, doing cleanning');
+                        }
+                        if($duplicatesFound === TRUE)
+                        {
+                            foreach($requiteAttrs as $pl)
+                            {
+                                unset($existingRequiredAttrs[''.$pl->getAttribute()->getOid().'']);
+                                $requiteAttrs->removeElement($pl);
+                                $this->em->remove($pl);
+                            }
+                        }
+                        
+                        if(isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs']))
+                        {
+                             $convertedReqs = array();
+                             foreach($ent['details']['reqattrs'] as $k=>$v)
+                             {
+                               $convertedReqs[$v['name']] = array('k'=>$k, 'req'=>$v['req']);
+                             } 
+                             foreach($requiteAttrs as $v)
+                             {
+                                 if(!array_key_exists($v->getAttribute()->getOid(),$convertedReqs))
+                                 {
+                                    $requiteAttrs->removeElement($v);
+                                    unset($existingRequiredAttrs[''.$convertedReqs[''.$v->getAttribute()->getOid().'']['k'].'']);
+                                    $this->em->remove($v);
+                                 }
+                                 else
+                                 {
+                                   $tmpattr = $ent['details']['reqattrs'][''.$convertedReqs[''.$v->getAttribute()->getOid().'']['k'].''];
+                                   if(isset($tmpattr['req']) && strcasecmp($tmpattr['req'],'true') == 0)
+                                   {
+                                       $v->setStatus('required');
+                                   }
+                                   else
+                                   {
+                                       $v->setStatus('desired');
+                                   }
+                                   $this->em->persist($v);
+                                   
+                                   unset($ent['details']['reqattrs'][''.$convertedReqs[''.$v->getAttribute()->getOid().'']['k'].'']);
+                                 }
+                             }
+                             foreach($ent['details']['reqattrs'] as $r)
+                             {
+                                 if(array_key_exists($r['name'],$attributes))
+                                 {
+                                     if(array_key_exists($r['name'],$existingRequiredAttrs))
+                                     {
+                                         if(isset($r['req']) && strcasecmp($r['req'],'true') == 0)
+                                         {
+                                             $existingRequiredAttrs[''.$r['name'].'']->setStatus('required');
+                                         }
+                                         else
+                                         {
+                                             $existingRequiredAttrs[''.$r['name'].'']->setStatus('desired');
+                                         }
+                                         $this->em->persist($existingRequiredAttrs[''.$r['name'].'']);
+                                     }
+                                     else
+                                     {
+                                         $reqattr = new models\AttributeRequirement;
+                                         $reqattr->setAttribute($attributes[''.$r['name'].'']);
+                                         $reqattr->setType('SP');
+                                         $reqattr->setSP($existingProvider);
+                                         if(isset($r['req']) && strcasecmp($r['req'],'true') == 0)
+                                         {
+                                            $reqattr->setStatus('required');
+                                         }
+                                         else
+                                         {
+                                            $reqattr->setStatus('desired');
+                                         }
+                                         $reqattr->setReason('');
+                                         $existingProvider->setAttributesRequirement($reqattr);
+                                         $this->em->persist($reqattr);
+
+                                     }
+
+                                 }
+                                 else
+                                 {
+                                        log_message('error', 'Attr couldnt be set as required becuase doesnt exist in attrs table: '.$r['name']);
+                                 }
+                             }
+          
                         }
                        
                         
