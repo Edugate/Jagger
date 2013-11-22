@@ -110,6 +110,7 @@ class Metadata2array {
         $entity['details']['org'] = array('OrganizationName'=>array(), 'OrganizationDisplayName'=>array(), 'OrganizationURL'=>array());
         $entity['details']['contacts'] = array();
         $entity['details']['regpolicy'] = array();
+        $entity['details']['reqattrs'] = array();
         foreach ($node->childNodes as $gnode)
         {
             if ($gnode->nodeName === 'md:IDPSSODescriptor' OR $gnode->nodeName === 'IDPSSODescriptor')
@@ -122,7 +123,7 @@ class Metadata2array {
                     $entity['details']['idpssodescriptor'] = $this->IDPSSODescriptorConvert($gnode);
                 }
             }
-            if ($gnode->nodeName === 'SPSSODescriptor' OR $gnode->nodeName === 'md:SPSSODescriptor')
+            if ($gnode->nodeName === 'md:SPSSODescriptor' OR $gnode->nodeName === 'SPSSODescriptor')
             {
                 $is_sp = true;
                 $entity['type'] = 'SP';
@@ -130,6 +131,14 @@ class Metadata2array {
                 {
 
                     $entity['details']['spssodescriptor'] = $this->SPSSODescriptorConvert($gnode);
+                }
+                foreach($gnode->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:metadata','RequestedAttribute') as $reqattr)
+                {
+                    if(strcasecmp($reqattr->getAttribute('NameFormat'),'urn:oasis:names:tc:SAML:2.0:attrname-format:uri')==0)
+                    {
+                        $entity['details']['reqattrs'][] = array('name'=>''.$reqattr->getAttribute('Name').'',
+                                                              'req'=>$reqattr->getAttribute('isRequired')); 
+                    } 
                 }
             }
             if ($gnode->nodeName === 'md:AttributeAuthorityDescriptor' OR $gnode->nodeName === 'AttributeAuthorityDescriptor')
