@@ -281,7 +281,8 @@ class Metadata2import {
                 } else
                 {
                     $elocal = $existingProvider->getLocal();
-                    $update_allowed = (($elocal AND $overwritelocal) OR !$elocal);
+                    $islocked = $existingProvider->getLocked();
+                    $update_allowed = (($elocal AND $overwritelocal AND !$is_locked) OR !$elocal);
                     if ($update_allowed)
                     {
                         log_message('debug', 'update_allowed is: ' . $update_allowed . ' and local is :' . $this->defaults['local']);
@@ -417,7 +418,11 @@ class Metadata2import {
                     }
                     foreach ($federations as $f)
                     {
-                        $existingProvider->setFederation($f);
+                        $lock = $existingProvider->getLocked();
+                        if(!$lock)
+                        {
+                           $existingProvider->setFederation($f);
+                        }
                     }
 
                     /**
