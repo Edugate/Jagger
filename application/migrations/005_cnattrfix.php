@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Migration_attributesupdate extends CI_Migration {
+class Migration_cnattrfix extends CI_Migration {
 
    function up() {
         $this->em = $this->doctrine->em;
