@@ -2269,17 +2269,12 @@ input, textarea {
 select {
   border: 0 !important;
   .  
-     -webkit-appearance: none;
-  /*Removes default chrome and safari style*/
-  -moz-appearance: none;
-  /*Removes default style Firefox*/
-  text-indent: 0.01px;
+     text-indent: 0.01px;
   text-overflow: "";
   min-height: 25px;
   vertical-align: top;
   min-width: 100px;
   max-width: 120px;
-  background: white url("../images/br_down.png") no-repeat right center;
 }
 
 input, textarea {
