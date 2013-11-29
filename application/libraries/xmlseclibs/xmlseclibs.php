@@ -2,7 +2,7 @@
 /**
  * xmlseclibs.php
  *
- * Copyright (c) 2007-2010, Robert Richards <rrichards@cdatazone.org>.
+ * Copyright (c) 2007-2013, Robert Richards <rrichards@cdatazone.org>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,9 +35,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author     Robert Richards <rrichards@cdatazone.org>
- * @copyright  2007-2011 Robert Richards <rrichards@cdatazone.org>
+ * @copyright  2007-2013 Robert Richards <rrichards@cdatazone.org>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    1.3.0
+ * @version    1.3.1
  */
 
 /*
@@ -180,6 +180,8 @@ class XMLSecurityKey {
     const DSA_SHA1 = 'http://www.w3.org/2000/09/xmldsig#dsa-sha1';
     const RSA_SHA1 = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
     const RSA_SHA256 = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256';
+    const RSA_SHA384 = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384';
+    const RSA_SHA512 = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512';
 
     private $cryptParams = array();
     public $type = 0;
@@ -282,6 +284,28 @@ class XMLSecurityKey {
                 }
                 throw new Exception('Certificate "type" (private/public) must be passed via parameters');
                 break;
+            case (XMLSecurityKey::RSA_SHA384):
+                $this->cryptParams['library'] = 'openssl';
+                $this->cryptParams['method'] = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384';
+                $this->cryptParams['padding'] = OPENSSL_PKCS1_PADDING;
+                $this->cryptParams['digest'] = 'SHA384';
+                if (is_array($params) && ! empty($params['type'])) {
+                    if ($params['type'] == 'public' || $params['type'] == 'private') {
+                        $this->cryptParams['type'] = $params['type'];
+                        break;
+                    }
+                }
+            case (XMLSecurityKey::RSA_SHA512):
+                $this->cryptParams['library'] = 'openssl';
+                $this->cryptParams['method'] = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512';
+                $this->cryptParams['padding'] = OPENSSL_PKCS1_PADDING;
+                $this->cryptParams['digest'] = 'SHA512';
+                if (is_array($params) && ! empty($params['type'])) {
+                    if ($params['type'] == 'public' || $params['type'] == 'private') {
+                        $this->cryptParams['type'] = $params['type'];
+                        break;
+                    }
+                }
             default:
                 throw new Exception('Invalid Key Type');
                 return;
@@ -632,6 +656,7 @@ class XMLSecurityDSig {
     const XMLDSIGNS = 'http://www.w3.org/2000/09/xmldsig#';
     const SHA1 = 'http://www.w3.org/2000/09/xmldsig#sha1';
     const SHA256 = 'http://www.w3.org/2001/04/xmlenc#sha256';
+    const SHA384 = 'http://www.w3.org/2001/04/xmldsig-more#sha384';
     const SHA512 = 'http://www.w3.org/2001/04/xmlenc#sha512';
     const RIPEMD160 = 'http://www.w3.org/2001/04/xmlenc#ripemd160';
 
@@ -798,6 +823,9 @@ class XMLSecurityDSig {
                 break;
             case XMLSecurityDSig::SHA256:
                 $alg = 'sha256';
+                break;
+            case XMLSecurityDSig::SHA384:
+                $alg = 'sha384';
                 break;
             case XMLSecurityDSig::SHA512:
                 $alg = 'sha512';
@@ -1057,7 +1085,7 @@ class XMLSecurityDSig {
         if (! $node instanceof DOMDocument) {
             $uri = NULL;
             if (! $overwrite_id) {
-                $uri = $node->getAttributeNS($prefix_ns, $attname);
+                $uri = $node->getAttributeNS($prefix_ns, $id_name);
             }
             if (empty($uri)) {
                 $uri = XMLSecurityDSig::generate_GUID();
@@ -1288,56 +1316,88 @@ class XMLSecurityDSig {
         }
     }
 
-    static function staticAdd509Cert($parentRef, $cert, $isPEMFormat=TRUE, $isURL=False, $xpath=NULL) {
-          if ($isURL) {
+    static function staticAdd509Cert($parentRef, $cert, $isPEMFormat=TRUE, $isURL=False, $xpath=NULL, $options=NULL) {
+        if ($isURL) {
             $cert = file_get_contents($cert);
-          }
-          if (! $parentRef instanceof DOMElement) {
+        }
+        if (! $parentRef instanceof DOMElement) {
             throw new Exception('Invalid parent Node parameter');
-          }
-          $baseDoc = $parentRef->ownerDocument;
+        }
+        $baseDoc = $parentRef->ownerDocument;
+        
+        if (empty($xpath)) {
+            $xpath = new DOMXPath($parentRef->ownerDocument);
+            $xpath->registerNamespace('secdsig', XMLSecurityDSig::XMLDSIGNS);
+        }
+        
+        $query = "./secdsig:KeyInfo";
+        $nodeset = $xpath->query($query, $parentRef);
+        $keyInfo = $nodeset->item(0);
+        if (! $keyInfo) {
+            $inserted = FALSE;
+            $keyInfo = $baseDoc->createElementNS(XMLSecurityDSig::XMLDSIGNS, 'ds:KeyInfo');
+        
+            $query = "./secdsig:Object";
+            $nodeset = $xpath->query($query, $parentRef);
+            if ($sObject = $nodeset->item(0)) {
+                $sObject->parentNode->insertBefore($keyInfo, $sObject);
+                $inserted = TRUE;
+            }
+        
+            if (! $inserted) {
+                $parentRef->appendChild($keyInfo);
+            }
+        }
+        
+        // Add all certs if there are more than one
+        $certs = XMLSecurityDSig::staticGet509XCerts($cert, $isPEMFormat);
 
-          if (empty($xpath)) {
-              $xpath = new DOMXPath($parentRef->ownerDocument);
-              $xpath->registerNamespace('secdsig', XMLSecurityDSig::XMLDSIGNS);
-          }
+        // Attach X509 data node
+        $x509DataNode = $baseDoc->createElementNS(XMLSecurityDSig::XMLDSIGNS, 'ds:X509Data');
+        $keyInfo->appendChild($x509DataNode);
 
-         $query = "./secdsig:KeyInfo";
-         $nodeset = $xpath->query($query, $parentRef);
-         $keyInfo = $nodeset->item(0);
-         if (! $keyInfo) {
-              $inserted = FALSE;
-              $keyInfo = $baseDoc->createElementNS(XMLSecurityDSig::XMLDSIGNS, 'ds:KeyInfo');
-
-               $query = "./secdsig:Object";
-               $nodeset = $xpath->query($query, $parentRef);
-               if ($sObject = $nodeset->item(0)) {
-                    $sObject->parentNode->insertBefore($keyInfo, $sObject);
-                    $inserted = TRUE;
-               }
-
-              if (! $inserted) {
-                   $parentRef->appendChild($keyInfo);
-              }
-         }
-
-         // Add all certs if there are more than one
-         $certs = XMLSecurityDSig::staticGet509XCerts($cert, $isPEMFormat);
-
-         // Atach X509 data node
-         $x509DataNode = $baseDoc->createElementNS(XMLSecurityDSig::XMLDSIGNS, 'ds:X509Data');
-         $keyInfo->appendChild($x509DataNode);
-
-         // Atach all certificate nodes
-         foreach ($certs as $X509Cert){
+        $issuerSerial = FALSE;
+        $subjectName = FALSE;
+        if (is_array($options)) {
+            if (! empty($options['issuerSerial'])) {
+                $issuerSerial = TRUE;
+            }
+        }
+        
+        // Attach all certificate nodes and any additional data
+        foreach ($certs as $X509Cert){
+            if ($issuerSerial) {
+                if ($certData = openssl_x509_parse("-----BEGIN CERTIFICATE-----\n".chunk_split($X509Cert, 64, "\n")."-----END CERTIFICATE-----\n")) {
+                    if ($issuerSerial && ! empty($certData['issuer']) && ! empty($certData['serialNumber'])) {
+                        if (is_array($certData['issuer'])) {
+                            $parts = array();
+                            foreach ($certData['issuer'] AS $key => $value) {
+                                array_unshift($parts, "$key=$value" . $issuer);
+                            }
+                            $issuerName = implode(',', $parts);
+                        } else {
+                            $issuerName = $certData['issuer'];
+                        }
+                        
+                        $x509IssuerNode = $baseDoc->createElementNS(XMLSecurityDSig::XMLDSIGNS, 'ds:X509IssuerSerial');
+                        $x509DataNode->appendChild($x509IssuerNode);
+                        
+                        $x509Node = $baseDoc->createElementNS(XMLSecurityDSig::XMLDSIGNS, 'ds:X509IssuerName', $issuerName);
+                        $x509IssuerNode->appendChild($x509Node);
+                        $x509Node = $baseDoc->createElementNS(XMLSecurityDSig::XMLDSIGNS, 'ds:X509SerialNumber', $certData['serialNumber']);
+                        $x509IssuerNode->appendChild($x509Node);
+                    }
+                }
+                
+            }
             $x509CertNode = $baseDoc->createElementNS(XMLSecurityDSig::XMLDSIGNS, 'ds:X509Certificate', $X509Cert);
-         $x509DataNode->appendChild($x509CertNode);
-         }
-     }
+            $x509DataNode->appendChild($x509CertNode);
+        }
+    }
 
-    public function add509Cert($cert, $isPEMFormat=TRUE, $isURL=False) {
+    public function add509Cert($cert, $isPEMFormat=TRUE, $isURL=False, $options=NULL) {
          if ($xpath = $this->getXPathObj()) {
-            self::staticAdd509Cert($this->sigNode, $cert, $isPEMFormat, $isURL, $xpath);
+            self::staticAdd509Cert($this->sigNode, $cert, $isPEMFormat, $isURL, $xpath, $options);
          }
     }
     
@@ -1399,6 +1459,13 @@ class XMLSecEnc {
         $this->rawNode = $node;
     }
 
+    /**
+     * Encrypt the selected node with the given key.
+     *
+     * @param XMLSecurityKey $objKey  The encryption key and algorithm.
+     * @param bool $replace  Whether the encrypted node should be replaced in the original tree. Default is TRUE.
+     * @return DOMElement  The <xenc:EncryptedData>-element.
+     */
     public function encryptNode($objKey, $replace=TRUE) {
         $data = '';
         if (empty($this->rawNode)) {
@@ -1458,6 +1525,8 @@ class XMLSecEnc {
                     return $importEnc;
                     break;
             }
+        } else {
+            return $this->encdoc->documentElement;
         }
     }
 
