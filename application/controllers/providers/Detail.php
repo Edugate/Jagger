@@ -208,7 +208,7 @@ class Detail extends MY_Controller {
         if ($is_static)
         {
             $entstatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
-            $edit_link .= makeLabel('static', lang('lbl_static'), lang('lbl_static'));
+         //   $edit_link .= makeLabel('static', lang('lbl_static'), lang('lbl_static'));
             $alerts[] = lang('staticmeta_info');
             
         }
@@ -227,7 +227,6 @@ class Detail extends MY_Controller {
         }
         else
         {
-            //$edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="edit" title="edit" >' . makeLabel('edit', lang('rr_edit'), genIcon('edit') . lang('rr_edit')) . '</a>';
             $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon" title="edit" >' . lang('rr_edit') . '</a>';
         }
         $data['edit_link'] = $edit_link;
