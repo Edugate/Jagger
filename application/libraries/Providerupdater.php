@@ -398,7 +398,7 @@ class Providerupdater {
 
         if (array_key_exists('description', $ch))
         {
-            if($ent->getDescription() !== $ch['description'])
+            if(strcmp($ent->getDescription(), $ch['description'])!=0)
             {
                $m['Description'] = array('before'=>$ent->getDescription(),'after'=>$ch['description']);
             }
@@ -609,6 +609,9 @@ class Providerupdater {
         /**
          * START update protocols enumeration
          */
+        $protocolSupport['idpsso'] = $ent->getProtocolSupport('idpsso');
+        $protocolSupport['spsso'] = $ent->getProtocolSupport('spsso');
+        $protocolSupport['aa'] = $ent->getProtocolSupport('aa');
         if (array_key_exists('prot', $ch) && !empty($ch['prot']) && is_array($ch['prot']))
         {
             if (isset($ch['prot']['aa']) && is_array($ch['prot']['aa']))
@@ -623,8 +626,23 @@ class Providerupdater {
             {
                 $ent->setProtocolSupport('spsso', $ch['prot']['spsso']);
             }
+            $newProtocolSupport['idpsso'] = $ent->getProtocolSupport('idpsso');
+            $newProtocolSupport['spsso'] = $ent->getProtocolSupport('spsso');
+            $newProtocolSupport['aa'] = $ent->getProtocolSupport('aa');
+            foreach($newProtocolSupport as $k=>$v)
+            {
+                if(count(array_diff_assoc($newProtocolSupport[''.$k.''],$protocolSupport[''.$k.'']))>0 || count(array_diff_assoc($protocolSupport[''.$k.''],$newProtocolSupport[''.$k.'']))>0)
+                {
+                     $m['ProtocolEnumeration '.$k.''] = array('before'=>arrayWithKeysToHtml($protocolSupport[''.$k.'']),'after'=>arrayWithKeysToHtml($newProtocolSupport[''.$k.'']));
+                    
+                }
+            }
+            
         }
 
+        /**
+         * @todo add track for nameids
+         */
         if (!array_key_exists('nameids', $ch))
         {
             if ($type !== 'SP')
