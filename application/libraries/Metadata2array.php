@@ -25,6 +25,7 @@ class Metadata2array {
     private $occurance;
     private $metaArray;
     private $coclist;
+    private $nameidsattrs = array();
 
     function __construct()
     {
@@ -34,6 +35,12 @@ class Metadata2array {
         $this->occurance = array();
         $this->metaArray = array();
         $this->coclist = array();
+        $tmpnemaids = $this->em->getRepository("models\Attribute")->findBy(array('name'=>array('persistentId','transientId')));
+        foreach($tmpnemaids as $p)
+        {
+           $this->nameidsattrs[''.$p->getName().''] = $p->getOid();
+
+        }
     }
 
     function rootConvert($xml, $full = false)
@@ -202,6 +209,40 @@ class Metadata2array {
         if ($is_idp && $is_sp)
         {
             $entity['type'] = 'BOTH';
+        }
+
+        if($is_sp && isset($entity['details']['spssodescriptor']['nameid'])&& is_array($entity['details']['spssodescriptor']['nameid']) && count($entity['details']['spssodescriptor']['nameid'])>0)
+        {
+             if(in_array('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',$entity['details']['spssodescriptor']['nameid']) && array_key_exists('persistentId',$this->nameidsattrs))
+             {
+                    $entity['details']['reqattrs'][] = array('name'=>$this->nameidsattrs['persistentId'],'req'=>'True');
+
+             }
+             elseif(in_array('urn:oasis:names:tc:SAML:2.0:nameid-format:transient',$entity['details']['spssodescriptor']['nameid']) && array_key_exists('transientId',$this->nameidsattrs))
+             {
+                    $entity['details']['reqattrs'][] = array('name'=>$this->nameidsattrs['transientId'],'req'=>'True');
+                    
+             }
+
+        }
+        /**
+         * check for duplicates
+         */
+        if(isset($entity['details']['reqattrs']) && is_array($entity['details']['reqattrs']))
+        {
+           $attrssets = array();
+           foreach($entity['details']['reqattrs'] as $k=>$v)
+           {
+              if(in_array($v['name'],$attrssets))
+              {
+                  unset($entity['details']['reqattrs'][''.$k.'']);
+              }
+              else
+              {
+                  $attrssets[] = $v['name'];
+              }
+           }
+
         }
 
         /**

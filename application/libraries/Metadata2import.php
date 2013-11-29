@@ -241,25 +241,30 @@ class Metadata2import {
                     }
                     if(isset($ent['details']['reqattrs']))
                     {
+                       $attrsset = array();
                        foreach($ent['details']['reqattrs'] as $r)
                        {
-                          if(array_key_exists($r['name'],$attributes))
+                          if(array_key_exists($r['name'],$attributes) )
                           {
-                              $reqattr = new models\AttributeRequirement;
-                              $reqattr->setAttribute($attributes[''.$r['name'].'']);
-                              $reqattr->setType('SP');
-                              $reqattr->setSP($importedProvider);
-                              if(isset($r['req']) && strcasecmp($r['req'],'true') == 0)
+                              if(!in_array($r['name'],$attrsset))
                               {
-                                 $reqattr->setStatus('required');
+                                  $reqattr = new models\AttributeRequirement;
+                                  $reqattr->setAttribute($attributes[''.$r['name'].'']);
+                                  $reqattr->setType('SP');
+                                  $reqattr->setSP($importedProvider);
+                                  if(isset($r['req']) && strcasecmp($r['req'],'true') == 0)
+                                  {
+                                     $reqattr->setStatus('required');
+                                  }
+                                  else
+                                  {
+                                    $reqattr->setStatus('desired');
+                                  }
+                                  $reqattr->setReason('');
+                                  $importedProvider->setAttributesRequirement($reqattr);
+                                  $this->em->persist($reqattr);
+                                  $attrsset[] = $r['name'];
                               }
-                              else
-                              {
-                                 $reqattr->setStatus('desired');
-                              }
-                              $reqattr->setReason('');
-                              $importedProvider->setAttributesRequirement($reqattr);
-                              $this->em->persist($reqattr);
                               
                           }
                           else
