@@ -211,12 +211,8 @@ $(document).ready(function() {
         }, false).FreezeBubblePopup()
 
     });
-
-   // $('button#fedcategoryall').addClass('activated');
-
-
     if ($('button.activated').length) {
-        var url = $("button.activated").attr('value');
+        var url = $('button.activated').attr('value');
         var value = $('table.fedistpercat');
         var data;
         $.ajax({
@@ -1100,7 +1096,69 @@ $(document).ready(function() {
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal();
     }
-
+$("button#vschema").click(function(){
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: baseurl+'smanage/reports/vschema',
+                timeout: 2500,
+                success: function(data){
+                  $('#spinner').hide();
+                  $("#rvschema").show();
+                  $("tr#rvschema td:first-child").html(data);
+                },
+                beforeSend: function() {
+                  $('#spinner').show();
+                },
+                error: function(){
+                   $('#spinner').hide();
+                   alert('Error ocured');
+                }, 
+            }) ;
+            return false;
+});
+$("button#vschemadb").click(function(){
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: baseurl+'smanage/reports/vschemadb',
+                timeout: 2500,
+                success: function(data){
+                  $('#spinner').hide();
+                  $("#rvschemadb").show();
+                  $("tr#rvschemadb td:first-child").html(data);
+                },
+                beforeSend: function() {
+                  $('#spinner').show();
+                },
+                error: function(){
+                  $('#spinner').hide();
+                   alert('Error ocured');
+                }, 
+            }) ;
+            return false;
+});
+$("button#vmigrate").click(function(){
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: baseurl+'smanage/reports/vmigrate',
+                timeout: 2500,
+                success: function(data){
+                  $('#spinner').hide();
+                  $("#rvmigrate").show();
+                  $("tr#rvmigrate td:first-child").html(data);
+                },
+                beforeSend: function() {
+                  $('#spinner').show();
+                },
+                error: function(){
+                  $('#spinner').hide();
+                   alert('Error ocured');
+                }, 
+            }) ;
+            return false;
+});
 
 // When the form is submitted
     $("#status form").submit(function() {
