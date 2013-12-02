@@ -13,50 +13,15 @@ class Update extends MY_Controller {
            $this->session->set_flashdata('target', $this->current_site);
            redirect('auth/login', 'location');
        }
-       $i = $this->em->getRepository("models\Migration")->findAll();
-       if(count($i) == 0)
-       {
-          $y = new models\Migration;
-          $y->setVersion(0);
-          $this->em->persist($y);
-          $this->em->flush();
-       } 
        $this->load->library(array('zacl'));
 
     }
 
     function upgrade()
     {
-         $upgradeaccess = $this->zacl->check_acl('migration', 'edit', 'default');
-         if(!$upgradeaccess)
-         {
-             $data['error'] = 'No permission';
-              $data['content_view'] = 'nopermission';
-             $this->load->view('page',$data);
-         }
-         else
-         {
-
-         
-            $this->load->library('migration');
-            
-            if($this->migration->current() === $this->migration->latest())
-            {
-                $data['message'] = 'System is uptodate';
-                $data['content_view'] = 'update_view';
-                $this->load->view('page',$data);
-            }
-            else
-            {
-                $data['message'] = 'Target version: '.$this->migration->current().'<br />';
-                //if ( ! $this->migration->current())
-                //{
-      	        //    show_error($this->migration->error_string());
-                //}
-                $data['content_view'] = 'update_view';
-                $this->load->view('page',$data);
-            }
-         }
+        $data['error'] = anchor(base_url().'smanage/reports','Go to new location');
+        $data['content_view'] = 'nopermission';
+        $this->load->view('page',$data);
     }
        
 }
