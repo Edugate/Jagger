@@ -1,5 +1,10 @@
 <?php
 $loggedin = $this->j_auth->logged_in();
+$isAdministrator = FALSE;
+if($loggedin)
+{
+   $isAdministrator = (boolean) $this->j_auth->isAdministrator();
+}
 $pageTitle = $this->config->item('pageTitlePref');
 $colorTheme = $this->config->item('colortheme');
 if(empty($colorTheme))
@@ -209,6 +214,12 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                                     </a></li>
                                 <li><a href="<?php echo $base_url; ?>"><?php echo lang('general'); ?></a>
                                     <ul>
+                                        <?php
+                                           if($isAdministrator)
+                                           {
+                                              echo '<li><a href="'.$base_url.'smanage/reports">'.lang('sys_menulink').'</a></li>';
+                                           }
+                                        ?>
                                         <li><a href="<?php echo $base_url; ?>manage/coc/show"><?php echo lang('coc_menulink'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>attributes/attributes/show"><?php echo lang('rr_attr_defs'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>manage/importer"><?php echo lang('rr_meta_importer'); ?></a></li>

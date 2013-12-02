@@ -91,13 +91,30 @@ class Reports extends MY_Controller {
        $result = $validator->schemaInSyncWithMetadata();
        if($result)
        {
-          echo '<div class="success">The database schema is in sync with the mapping files</div>';
+          echo '<div class="success">'.lang('rr_dbinsync').'</div>';
        }
        else
        {
-          echo '<div class="error">The database schema is not in sync with the current mapping file</div>';
+          echo '<div class="error">'.lang('rerror_dbinsync').'</div>';
        }
- 
+    }
+
+    /**
+     * @todofinish 
+     */
+    private function cleanarplogs()
+    {
+       if(!$this->input->is_ajax_request()){
+           show_error('Bad request',401);
+           return;
+       }
+       if(!$this->j_auth->logged_in()){
+           show_error('Unauthorized request',403);
+       }
+       if(!$this->j_auth->isAdministrator()){
+           show_error('Unauthorized request',403);
+       }
+       
 
     }
 
@@ -114,7 +131,44 @@ class Reports extends MY_Controller {
            show_error('No perm',403);
        }
 
+       $validator = new SchemaValidator($this->em);
+       $errors = $validator->validateMapping();
+       $errors2 = $validator->schemaInSyncWithMetadata();
+       if(count($errors)>0 || !$errors2)
+       {
+           echo '<h5 class="error">'.lang('rerror_migrate1').'</h5>';
+           if(count($errors)>0)
+           {
+              echo '<div class="error"><ul>'.recurseTree($errors).'</ul></div>';
+           }
+           if(!$errors2)
+           {
+              echo '<div class="error">'.lang('rerror_dbinsync').'</div>';
+           }
+       }
+       else
+       {
+           $i = $this->em->getRepository("models\Migration")->findAll();
+           if(count($i) == 0)
+           {
+               $y = new models\Migration;
+               $y->setVersion(0);
+               $this->em->persist($y);
+               $this->em->flush();
+           }
 
+           $this->load->library('migration');
+           if($this->migration->current() === $this->migration->latest())
+           {
+                echo  '<div class="success">'.lang('rr_sysuptodate').'</div>';
+           }
+           else
+           {
+                echo 'Target version: '.$this->migration->current();
+           }
+       }
+      
+       
     }
 
 
