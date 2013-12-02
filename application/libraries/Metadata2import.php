@@ -287,7 +287,7 @@ class Metadata2import {
                 {
                     $elocal = $existingProvider->getLocal();
                     $islocked = $existingProvider->getLocked();
-                    $update_allowed = (($elocal AND $overwritelocal AND !$is_locked) OR !$elocal);
+                    $update_allowed = (($elocal AND $overwritelocal AND !$islocked) OR !$elocal);
                     if ($update_allowed)
                     {
                         log_message('debug', 'update_allowed is: ' . $update_allowed . ' and local is :' . $this->defaults['local']);
