@@ -225,6 +225,10 @@ class Metadata2array {
              }
 
         }
+        elseif($is_sp && array_key_exists('transientId',$this->nameidsattrs))
+        {
+            $entity['details']['reqattrs'][] = array('name'=>$this->nameidsattrs['transientId'],'req'=>'True');
+        }
         /**
          * check for duplicates
          */
