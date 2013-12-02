@@ -1096,6 +1096,27 @@ $(document).ready(function() {
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal();
     }
+$("button#vormversion").click(function(){
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: baseurl+'smanage/reports/vormversion',
+                timeout: 2500,
+                success: function(data){
+                  $('#spinner').hide();
+                  $("#rvormversion").show();
+                  $("tr#rvormversion td:first-child").html(data);
+                },
+                beforeSend: function() {
+                  $('#spinner').show();
+                },
+                error: function(){
+                   $('#spinner').hide();
+                   alert('Error occurred');
+                }, 
+            }) ;
+            return false;
+});
 $("button#vschema").click(function(){
             $.ajax({
                 cache: false,
