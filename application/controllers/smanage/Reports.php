@@ -1,7 +1,8 @@
 <?php
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
-use Doctrine\ORM\Tools\SchemaValidator;
+use Doctrine\ORM\Tools\SchemaValidator,
+    Doctrine\ORM\Version;
 
 /**
  * ResourceRegistry3
@@ -47,6 +48,33 @@ class Reports extends MY_Controller {
 
     }
 
+    public function vormversion()
+    {
+       if(!$this->input->is_ajax_request()){
+           show_error('Bad request',401);
+           return;
+       }
+       if(!$this->j_auth->logged_in()){
+           show_error('Session lost',403);
+       }
+       if(!$this->j_auth->isAdministrator()){
+           show_error('No perm',403);
+       }
+
+       $currentVersion=Doctrine\ORM\Version::VERSION;
+       $minRequiredVersion='2.3.3';
+       $compared=Doctrine\ORM\Version::compare($minRequiredVersion);
+       if($compared>0)
+       {
+          echo '<div class="error">'.lang('rr_doctrinever').': '.$currentVersion.'</div>';
+          echo '<div class="error">'.lang('rr_mimumreqversion').': '.$minRequiredVersion.'</div>';
+       }
+       else
+       {
+          echo '<div class="success">'.lang('rr_doctrinever').': '.$currentVersion.' : '.lang('rr_meetsminimumreq').'</div>';
+       }
+
+    }
     public function vschema()
     {
        if(!$this->input->is_ajax_request()){
