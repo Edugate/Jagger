@@ -125,15 +125,6 @@ $config['geocenterpoint']  = array('-6.247856140071235','53.34961629053703');
  * styles
  */
 /**
- * memcache
- */
-$config['memcached'] = array('default'=>array(
-            'hostname'        => 'localhost',
-            'port'            => '11211',
-            'weight'        => '1')        
-    );
-$config['cacheprefix'] = 'rr3_';
-/**
  * translator access
  * example: $config['translator_access']['pl'] = 'USERNAME_WITH_ACCESS';
  */
