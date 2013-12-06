@@ -45,6 +45,7 @@ class Metadata2import {
             'federation' => null,
             'live' => false,
             'removeexternal' => false,
+            'mailreport' => false,
         );
         $this->other = null;
     }
@@ -70,18 +71,28 @@ class Metadata2import {
         $coclist = $this->em->getRepository("models\Coc")->findAll();
         $attrtmp = $this->em->getRepository("models\Attribute")->findAll();
         $attributes = array();
-        foreach($attrtmp as $v)
+        $report = array(
+            'subject' => '',
+            'body' => array(),
+            'provider' => array(
+                'new' => array(),
+                'del' => array(),
+                'joinfed' => array(),
+                'leavefed' => array(),
+            ),
+        );
+        foreach ($attrtmp as $v)
         {
-           $attributes[''.$v->getOid().''] = $v;
+            $attributes['' . $v->getOid() . ''] = $v;
         }
-        log_message('debug','IMPORT attr in table: '.serialize(array_keys($attributes)));
+        log_message('debug', 'IMPORT attr in table: ' . serialize(array_keys($attributes)));
         $coclistconverted = array();
         $coclistarray = array();
-       
-        foreach($coclist as $k=>$c)
+
+        foreach ($coclist as $k => $c)
         {
-             $coclistconverted[$c->getId()] = $c;
-             $coclistarray[''.$c->getId().''] = $c->getUrl();
+            $coclistconverted[$c->getId()] = $c;
+            $coclistarray['' . $c->getId() . ''] = $c->getUrl();
         }
         if (empty($this->full) && empty($this->defaults['static']))
         {
@@ -130,19 +141,27 @@ class Metadata2import {
         {
             $removeexternal = false;
         }
-
-
+        $mailReport = FALSE;
+        $mailAddresses = array();
+        if (array_key_exists('mailreport', $this->defaults) && $this->defaults['mailreport'] === TRUE)
+        {
+            $mailReport = TRUE;
+            if (array_key_exists('email', $this->defaults) && !empty($this->defaults['email']))
+            {
+                $mailAddresses[] = $this->defaults['email'];
+            } else
+            {
+                $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
+                $a_members = $a->getMembers();
+                foreach ($a_members as $m)
+                {
+                    $mailAddresses[] = $m->getEmail();
+                }
+            }
+        }
         $this->metadata_in_array = $this->ci->metadata2array->rootConvert($metadata, $full);
 
-        if (empty($this->metadata_in_array))
-        {
-            return null;
-        }
-        if (!is_array($this->metadata_in_array))
-        {
-            return null;
-        }
-        if (count($this->metadata_in_array) == 0)
+        if (!(empty($this->metadata_in_array) || is_array($this->metadata_in_array) || count($this->metadata_in_array) == 0))
         {
             return null;
         }
@@ -179,7 +198,9 @@ class Metadata2import {
                                     $this->em->remove($cmstaticmetadata);
                                 }
 
+                                $report['provider']['del'][] = $cm->getEntityId();
                                 $this->em->remove($cm);
+
                                 $this->em->flush();
                             } else
                             {
@@ -192,6 +213,7 @@ class Metadata2import {
                                         $this->em->remove($r);
                                     }
                                 }
+                                $report['provider']['leavefed'][] = $cm->getEntityId();
                                 $cm->removeFederation($f);
                                 $this->em->persist($cm);
                                 $this->em->flush();
@@ -202,7 +224,7 @@ class Metadata2import {
             }
         }
 
-
+        $tmpProviders = new models\Providers;
         $i = 0;
         foreach ($this->metadata_in_array as $ent)
         {
@@ -210,68 +232,63 @@ class Metadata2import {
             {
                 $importedProvider = new models\Provider;
                 $importedProvider->setProviderFromArray($ent);
-                $tmp = new models\Providers;
-                $existingProvider = new models\Provider;
-                $existingProvider = $tmp->getOneByEntityId($importedProvider->getEntityId());
-
+                //$tmp = new models\Providers;
+                //              $existingProvider = new models\Provider;
+                //$existingProvider = $tmp->getOneByEntityId($importedProvider->getEntityId());
+                $existingProvider = $tmpProviders->getOneByEntityId($importedProvider->getEntityId());
                 if (empty($existingProvider))
                 {
                     $importedProvider->setStatic($static);
                     $importedProvider->setLocal($local);
                     $importedProvider->setActive($active);
-                    if(array_key_exists('coc',$ent))
+                    if (array_key_exists('coc', $ent))
                     {
-                        if(!empty($ent['coc']))
+                        if (!empty($ent['coc']))
                         {
-                           $y = array_search($ent['coc'],$coclistarray);
-                           if($y != NULL OR $y != FALSE)
-                           {
-                               $celement = $coclistconverted[''.$y.''];
-                               if(!empty($celement))
-                               {
-                                  $importedProvider->setCoc($celement);
-                               }
-                           }
-
-                        }
-                        else
+                            $y = array_search($ent['coc'], $coclistarray);
+                            if ($y != NULL OR $y != FALSE)
+                            {
+                                $celement = $coclistconverted['' . $y . ''];
+                                if (!empty($celement))
+                                {
+                                    $importedProvider->setCoc($celement);
+                                }
+                            }
+                        } else
                         {
-                                $importedProvider->setCoc(NULL);
+                            $importedProvider->setCoc(NULL);
                         }
                     }
-                    if(isset($ent['details']['reqattrs']))
+                    if (isset($ent['details']['reqattrs']))
                     {
-                       $attrsset = array();
-                       foreach($ent['details']['reqattrs'] as $r)
-                       {
-                          if(array_key_exists($r['name'],$attributes) )
-                          {
-                              if(!in_array($r['name'],$attrsset))
-                              {
-                                  $reqattr = new models\AttributeRequirement;
-                                  $reqattr->setAttribute($attributes[''.$r['name'].'']);
-                                  $reqattr->setType('SP');
-                                  $reqattr->setSP($importedProvider);
-                                  if(isset($r['req']) && strcasecmp($r['req'],'true') == 0)
-                                  {
-                                     $reqattr->setStatus('required');
-                                  }
-                                  else
-                                  {
-                                    $reqattr->setStatus('desired');
-                                  }
-                                  $reqattr->setReason('');
-                                  $importedProvider->setAttributesRequirement($reqattr);
-                                  $this->em->persist($reqattr);
-                                  $attrsset[] = $r['name'];
-                              }
-                              
-                          }
-                          else
-                          {
-                              log_message('error', 'Attr couldnt be set as required becuase doesnt exist in attrs table: '.$r['name']);
-                          }
-                       }
+                        $attrsset = array();
+                        foreach ($ent['details']['reqattrs'] as $r)
+                        {
+                            if (array_key_exists($r['name'], $attributes))
+                            {
+                                if (!in_array($r['name'], $attrsset))
+                                {
+                                    $reqattr = new models\AttributeRequirement;
+                                    $reqattr->setAttribute($attributes['' . $r['name'] . '']);
+                                    $reqattr->setType('SP');
+                                    $reqattr->setSP($importedProvider);
+                                    if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0)
+                                    {
+                                        $reqattr->setStatus('required');
+                                    } else
+                                    {
+                                        $reqattr->setStatus('desired');
+                                    }
+                                    $reqattr->setReason('');
+                                    $importedProvider->setAttributesRequirement($reqattr);
+                                    $this->em->persist($reqattr);
+                                    $attrsset[] = $r['name'];
+                                }
+                            } else
+                            {
+                                log_message('error', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
+                            }
+                        }
                     }
 
                     /**
@@ -281,152 +298,143 @@ class Metadata2import {
                     {
                         $importedProvider->setFederation($f);
                     }
-
+                    $report['provider']['new'][] = $importedProvider->getEntityId();
                     $this->em->persist($importedProvider);
                 } else
                 {
                     $elocal = $existingProvider->getLocal();
-                    $islocked = $existingProvider->getLocked();
-                    $update_allowed = (($elocal AND $overwritelocal AND !$islocked) OR !$elocal);
-                    if ($update_allowed)
+                    $isLocked = $existingProvider->getLocked();
+                    $updateAllowed = (($elocal AND $overwritelocal AND !$isLocked) OR !$elocal);
+                    if ($updateAllowed)
                     {
-                        log_message('debug', 'update_allowed is: ' . $update_allowed . ' and local is :' . $this->defaults['local']);
+                        log_message('debug', 'updateAllowed is: ' . $updateAllowed . ' and local is :' . $this->defaults['local']);
                         $existingProvider->overwriteByProvider($importedProvider);
                         $existingProvider->setLocal($this->defaults['local']);
                         $existingProvider->setStatic($static);
-                        
-                        if(array_key_exists('coc',$ent))
+
+                        if (array_key_exists('coc', $ent))
                         {
-                            if(!empty($ent['coc']))
+                            if (!empty($ent['coc']))
                             {
-                                $y = array_search($ent['coc'],$coclistarray);
-                                if($y != NULL OR $y != FALSE)
+                                $y = array_search($ent['coc'], $coclistarray);
+                                if ($y != NULL OR $y != FALSE)
                                 {
-                                    $celement = $coclistconverted[''.$y.''];
-                                    if(!empty($celement))
+                                    $celement = $coclistconverted['' . $y . ''];
+                                    if (!empty($celement))
                                     {
-                                         $existingProvider->setCoc($celement);
+                                        $existingProvider->setCoc($celement);
                                     }
                                 }
-
-                            }
-                            else
+                            } else
                             {
-                                   $existingProvider->setCoc(NULL);
+                                $existingProvider->setCoc(NULL);
                             }
                         }
                         $existingRequiredAttrs = array();
                         $requiteAttrs = $existingProvider->getAttributesRequirement();
-                        foreach($requiteAttrs as $a)
+                        foreach ($requiteAttrs as $a)
                         {
-                            $existingRequiredAttrs[''.$a->getAttribute()->getOid().''] = $a;
+                            $existingRequiredAttrs['' . $a->getAttribute()->getOid() . ''] = $a;
                         }
                         $duplicatesFound = FALSE;
                         $duplicates = array();
-                        foreach($requiteAttrs as $pl)
+                        foreach ($requiteAttrs as $pl)
                         {
-                           $duplicates[] = $pl->getAttribute()->getOid();
-                           
+                            $duplicates[] = $pl->getAttribute()->getOid();
                         }
-                        if(count($duplicates) != count(array_unique($duplicates)))
+                        if (count($duplicates) != count(array_unique($duplicates)))
                         {
-                           $duplicatesFound = TRUE;
-                           log_message('error', __METHOD__.' found duplicates in attrs requirements, doing cleanning');
+                            $duplicatesFound = TRUE;
+                            log_message('error', __METHOD__ . ' found duplicates in attrs requirements, doing cleanning');
                         }
-                        if($duplicatesFound === TRUE)
+                        if ($duplicatesFound === TRUE)
                         {
-                            foreach($requiteAttrs as $pl)
+                            foreach ($requiteAttrs as $pl)
                             {
-                                unset($existingRequiredAttrs[''.$pl->getAttribute()->getOid().'']);
+                                unset($existingRequiredAttrs['' . $pl->getAttribute()->getOid() . '']);
                                 $requiteAttrs->removeElement($pl);
                                 $this->em->remove($pl);
                             }
                         }
-                        
-                        if(isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs']))
+
+                        if (isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs']))
                         {
-                             $convertedReqs = array();
-                             foreach($ent['details']['reqattrs'] as $k=>$v)
-                             {
-                               $convertedReqs[$v['name']] = array('k'=>$k, 'req'=>$v['req']);
-                             } 
-                             foreach($requiteAttrs as $v)
-                             {
-                                 if(!array_key_exists($v->getAttribute()->getOid(),$convertedReqs))
-                                 {
+                            $convertedReqs = array();
+                            foreach ($ent['details']['reqattrs'] as $k => $v)
+                            {
+                                $convertedReqs[$v['name']] = array('k' => $k, 'req' => $v['req']);
+                            }
+                            foreach ($requiteAttrs as $v)
+                            {
+                                if (!array_key_exists($v->getAttribute()->getOid(), $convertedReqs))
+                                {
                                     $requiteAttrs->removeElement($v);
-                                    unset($existingRequiredAttrs[''.$convertedReqs[''.$v->getAttribute()->getOid().'']['k'].'']);
+                                    unset($existingRequiredAttrs['' . $convertedReqs['' . $v->getAttribute()->getOid() . '']['k'] . '']);
                                     $this->em->remove($v);
-                                 }
-                                 else
-                                 {
-                                   $tmpattr = $ent['details']['reqattrs'][''.$convertedReqs[''.$v->getAttribute()->getOid().'']['k'].''];
-                                   if(isset($tmpattr['req']) && strcasecmp($tmpattr['req'],'true') == 0)
-                                   {
-                                       $v->setStatus('required');
-                                   }
-                                   else
-                                   {
-                                       $v->setStatus('desired');
-                                   }
-                                   $this->em->persist($v);
-                                   
-                                   unset($ent['details']['reqattrs'][''.$convertedReqs[''.$v->getAttribute()->getOid().'']['k'].'']);
-                                 }
-                             }
-                             foreach($ent['details']['reqattrs'] as $r)
-                             {
-                                 if(array_key_exists($r['name'],$attributes))
-                                 {
-                                     if(array_key_exists($r['name'],$existingRequiredAttrs))
-                                     {
-                                         if(isset($r['req']) && strcasecmp($r['req'],'true') == 0)
-                                         {
-                                             $existingRequiredAttrs[''.$r['name'].'']->setStatus('required');
-                                         }
-                                         else
-                                         {
-                                             $existingRequiredAttrs[''.$r['name'].'']->setStatus('desired');
-                                         }
-                                         $this->em->persist($existingRequiredAttrs[''.$r['name'].'']);
-                                     }
-                                     else
-                                     {
-                                         $reqattr = new models\AttributeRequirement;
-                                         $reqattr->setAttribute($attributes[''.$r['name'].'']);
-                                         $reqattr->setType('SP');
-                                         $reqattr->setSP($existingProvider);
-                                         if(isset($r['req']) && strcasecmp($r['req'],'true') == 0)
-                                         {
+                                } else
+                                {
+                                    $tmpattr = $ent['details']['reqattrs']['' . $convertedReqs['' . $v->getAttribute()->getOid() . '']['k'] . ''];
+                                    if (isset($tmpattr['req']) && strcasecmp($tmpattr['req'], 'true') == 0)
+                                    {
+                                        $v->setStatus('required');
+                                    } else
+                                    {
+                                        $v->setStatus('desired');
+                                    }
+                                    $this->em->persist($v);
+
+                                    unset($ent['details']['reqattrs']['' . $convertedReqs['' . $v->getAttribute()->getOid() . '']['k'] . '']);
+                                }
+                            }
+                            foreach ($ent['details']['reqattrs'] as $r)
+                            {
+                                if (array_key_exists($r['name'], $attributes))
+                                {
+                                    if (array_key_exists($r['name'], $existingRequiredAttrs))
+                                    {
+                                        if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0)
+                                        {
+                                            $existingRequiredAttrs['' . $r['name'] . '']->setStatus('required');
+                                        } else
+                                        {
+                                            $existingRequiredAttrs['' . $r['name'] . '']->setStatus('desired');
+                                        }
+                                        $this->em->persist($existingRequiredAttrs['' . $r['name'] . '']);
+                                    } else
+                                    {
+                                        $reqattr = new models\AttributeRequirement;
+                                        $reqattr->setAttribute($attributes['' . $r['name'] . '']);
+                                        $reqattr->setType('SP');
+                                        $reqattr->setSP($existingProvider);
+                                        if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0)
+                                        {
                                             $reqattr->setStatus('required');
-                                         }
-                                         else
-                                         {
+                                        } else
+                                        {
                                             $reqattr->setStatus('desired');
-                                         }
-                                         $reqattr->setReason('');
-                                         $existingProvider->setAttributesRequirement($reqattr);
-                                         $this->em->persist($reqattr);
-
-                                     }
-
-                                 }
-                                 else
-                                 {
-                                        log_message('error', 'Attr couldnt be set as required becuase doesnt exist in attrs table: '.$r['name']);
-                                 }
-                             }
-          
+                                        }
+                                        $reqattr->setReason('');
+                                        $existingProvider->setAttributesRequirement($reqattr);
+                                        $this->em->persist($reqattr);
+                                    }
+                                } else
+                                {
+                                    log_message('error', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
+                                }
+                            }
                         }
-                       
-                        
                     }
+
                     foreach ($federations as $f)
                     {
-                        $lock = $existingProvider->getLocked();
-                        if(!$lock)
+                        if (!$isLocked)
                         {
-                           $existingProvider->setFederation($f);
+                            $existingProviderFederations = $existingProvider->getFederations();
+                            if (!$existingProviderFederations->contains($f))
+                            {
+                                $report['provider']['joinfed'] = $existingProvider->getEntityId();
+                                $existingProvider->setFederation($f);
+                            }
                         }
                     }
 
@@ -440,12 +448,59 @@ class Metadata2import {
                 {
                     $this->em->flush();
                     $i = 0;
+                    $tmpProviders = new models\Providers;
                 }
             }
         }
         $this->em->flush();
-        //  echo count($importedProvider);  
-        //  print_r($metadata_in_array);
+        log_message('debug', __METHOD__ . ' import ' . serialize($report));
+        if($mailReport)
+        {
+            $this->ci->load->librayr('email_sender');
+            $body = 'Report'.PHP_EOL;
+            $structureChanged = FALSE;
+            if(count($report['provider']['new'])> 0)
+            {
+                $structureChanged = TRUE;
+                $body .='List new providers registered during sync:'.PHP_EOL;
+                foreach($report['provider']['new'] as $a)
+                {
+                    $body .= $a.PHP_EOL;
+                }
+            }
+            if(count($report['provider']['joinfed'])> 0)
+            {
+                $structureChanged = TRUE;
+                $body .='List existing providers added to federation during sync:'.PHP_EOL;
+                foreach($report['provider']['joinfed'] as $a)
+                {
+                    $body .= $a.PHP_EOL;
+                }
+            }
+            if(count($report['provider']['del'])> 0)
+            {
+                $structureChanged = TRUE;
+                $body .='List providers removed from the system during sync:'.PHP_EOL;
+                foreach($report['provider']['jdel'] as $a)
+                {
+                    $body .= $a.PHP_EOL;
+                }
+            }
+            if(count($report['provider']['leavefed'])> 0)
+            {
+                $structureChanged = TRUE;
+                $body .='List providers removed from federation during sync:'.PHP_EOL;
+                foreach($report['provider']['leavefed'] as $a)
+                {
+                    $body .= $a.PHP_EOL;
+                }
+            }
+            if(!$structureChanged)
+            {
+                $body .='No entities have been added/removed after sync/import'.PHP_EOL;
+            }
+            $this->ci->email_sender->send($mailAddresses,'Federation sync/import report',$body);
+        }
         return true;
     }
 
