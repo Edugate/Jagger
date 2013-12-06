@@ -111,6 +111,7 @@ class Sync_metadata extends CI_Controller {
             'default_static' => true,
             'removeexternal' => false,
             'mailreport'=>false,
+            'email'=>null,
         );
 //		$cli = $this->input->is_cli_request();
 //		if(empty($cli))
@@ -163,6 +164,7 @@ class Sync_metadata extends CI_Controller {
             'local' => $conditions['is_local'],
             'federations' => array($fed->getName()),
             'removeexternal' => $conditions['removeexternal'],
+            'email'=>$conditions['email'],
         );
         $other = null;
         $result = $this->metadata2import->import($metadata_body, $type_of_entities, $full, $defaults, $other);
