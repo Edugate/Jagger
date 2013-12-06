@@ -164,6 +164,7 @@ class Sync_metadata extends CI_Controller {
             'local' => $conditions['is_local'],
             'federations' => array($fed->getName()),
             'removeexternal' => $conditions['removeexternal'],
+            'mailreport' => $conditions['mailreport'],
             'email'=>$conditions['email'],
         );
         $other = null;

@@ -101,6 +101,10 @@ class Metadata2import {
         if (array_key_exists('federations', $this->defaults))
         {
             $federations = $this->em->getRepository("models\Federation")->findBy(array('name' => $this->defaults['federations']));
+            foreach($federations as $ff)
+            {
+                $report['body'][] = 'Sync with federation: '.$ff->getName();
+            }
         }
         /**
          * if param static is not provided then static is set to true 
@@ -456,8 +460,15 @@ class Metadata2import {
         log_message('debug', __METHOD__ . ' import ' . serialize($report));
         if($mailReport)
         {
-            $this->ci->load->librayr('email_sender');
+            $this->ci->load->library('email_sender');
             $body = 'Report'.PHP_EOL;
+
+            foreach($report['body']  as $bb)
+            {
+                $body .= $bb.PHP_EOL;
+            }
+
+
             $structureChanged = FALSE;
             if(count($report['provider']['new'])> 0)
             {
