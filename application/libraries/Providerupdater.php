@@ -1365,6 +1365,9 @@ class Providerupdater {
         /**
          * BEGIN update certs
          */
+         /**
+          @todo add track
+          */
         if (array_key_exists('crt', $ch) && !empty($ch['crt']) && is_array($ch['crt']))
         {
             $crts = $ch['crt'];
@@ -1461,9 +1464,11 @@ class Providerupdater {
         {
             $ncnt = $ch['contact'];
             $orgcnt = $ent->getContacts();
+            $origcntArray=array();
             foreach ($orgcnt as $v)
             {
                 $i = $v->getId();
+                $origcntArray[$i]=''.$v->getType(). ' ::: '.$v->getEmail();
                 if (array_key_exists($i, $ncnt))
                 {
                     if (empty($ncnt['' . $i . '']['email']))
@@ -1494,7 +1499,27 @@ class Providerupdater {
                     $ent->setContact($ncontact);
                     $ncontact->setProvider($ent);
                     $this->em->persist($ncontact);
+                    
                 }
+            }
+            $newcnts = $ent->getContacts();
+            $newcntArray = array();
+            $ii=0;
+            foreach($newcnts as $v)
+            {
+               $ii++;
+               $idc = $v->getId();
+               if(empty($idc))
+               {
+                 $idc = 'n'.$ii;
+               }
+               $newcntArray[$idc] = ''.$v->getType(). ' ::: '.$v->getEmail(); 
+            }
+            $diff1 = array_diff_assoc($newcntArray,$origcntArray);
+            $diff2 = array_diff_assoc($origcntArray,$newcntArray);
+            if(count($diff1) > 0 || count($diff2) > 0) 
+            {
+               $m['Contacts'] = array('before'=>arrayWithKeysToHtml($diff2),'after'=>arrayWithKeysToHtml($diff1));
             }
         }
 
