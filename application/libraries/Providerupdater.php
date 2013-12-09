@@ -242,9 +242,6 @@ class Providerupdater {
             }
             $ent->setDisplayName($ch['displayname']);
         }
-        /**
-         * @todo track ldisplayname
-         */
         if (array_key_exists('ldisplayname', $ch) && is_array($ch['ldisplayname']))
         {
             $origs = $ent->getLocalDisplayname();
@@ -454,9 +451,6 @@ class Providerupdater {
             }
             $ent->setPrivacyUrl($ch['privacyurl']);
         }
-        /**
-         * @todo  track prvurl
-         */
         if (array_key_exists('prvurl', $ch))
         {
             if ($type !== 'IDP')
@@ -643,6 +637,9 @@ class Providerupdater {
         /**
          * @todo add track for nameids
          */
+        $origNameIds['idpsso'] = $ent->getNameIds('idpsso');
+        $origNameIds['spsso'] = $ent->getNameIds('spsso');
+        $origNameIds['aa'] = $ent->getNameIds('aa');
         if (!array_key_exists('nameids', $ch))
         {
             if ($type !== 'SP')
@@ -685,7 +682,21 @@ class Providerupdater {
                 $ent->setNameIds('spsso', array());
             }
         }
-
+        $newNameIds['idpsso'] = $ent->getNameIds('idpsso');
+        $newNameIds['spsso'] = $ent->getNameIds('spsso');
+        $newNameIds['aa'] = $ent->getNameIds('aa');
+        if(count(array_diff_assoc($newNameIds['idpsso'],$origNameIds['idpsso'])) > 0 || count(array_diff_assoc($origNameIds['idpsso'],$newNameIds['idpsso'])) > 0) 
+        {
+            $m['NameID: idpsso'] = array('before'=>arrayWithKeysToHtml($origNameIds['idpsso']),'after'=>arrayWithKeysToHtml($newNameIds['idpsso']));
+        }
+        if(count(array_diff_assoc($newNameIds['aa'],$origNameIds['aa'])) > 0 || count(array_diff_assoc($origNameIds['aa'],$newNameIds['aa'])) > 0) 
+        {
+            $m['NameID: idpaa'] = array('before'=>arrayWithKeysToHtml($origNameIds['aa']),'after'=>arrayWithKeysToHtml($newNameIds['aa']));
+        }
+        if(count(array_diff_assoc($newNameIds['spsso'],$origNameIds['spsso'])) > 0 || count(array_diff_assoc($origNameIds['spsso'],$newNameIds['spsso'])) > 0) 
+        {
+            $m['NameID: spsso'] = array('before'=>arrayWithKeysToHtml($origNameIds['spsso']),'after'=>arrayWithKeysToHtml($newNameIds['spsso']));
+        }
 
 
         /**
@@ -704,8 +715,10 @@ class Providerupdater {
         {
             $srvs = $ch['srv'];
             $orgsrvs = $ent->getServiceLocations();
+            $origServicesInArray=array();
             foreach ($orgsrvs as $v)
             {
+                $origServicesInArray[''.$v->getId().''] = ''.$v->getType().' ::: '.$v->getBindingName().' ::: '.$v->getUrl().' ::: '.$v->getOrder().' ::: '.$v->getDefault().''; 
                 $srvtype = $v->getType();
                 if (array_key_exists($srvtype, $srvs))
                 {
@@ -729,6 +742,7 @@ class Providerupdater {
                                     {
                                         if (!in_array($v->getBindingName(), $ssobinds))
                                         {
+                                            
                                             $v->setUrl($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']);
                                             $this->em->persist($v);
                                             $ssobinds[] = $v->getBindingName();
@@ -1046,6 +1060,7 @@ class Providerupdater {
                     }
                 }
             }
+            
             /**
              * adding new service locations from form
              */
@@ -1319,6 +1334,29 @@ class Providerupdater {
                     }
                 }
             }
+        }
+
+        $newsrvs=$ent->getServiceLocations();
+        $newServicesInArray=array();
+        $ii = 0;
+        foreach($newsrvs as $v)
+        {
+             if(empty($v->getId()))
+             {
+                $d = 'n'.$ii;
+             }
+             else
+             {
+                $d=$v->getId();
+             }
+             $newServicesInArray[$d] = ''.$v->getType().' ::: '.$v->getBindingName().' ::: '.$v->getUrl().' ::: '.$v->getOrder().' ::: '.$v->getDefault().''; 
+             $ii++;
+        }
+        $diff1 = array_diff_assoc($newServicesInArray,$origServicesInArray);
+        $diff2 = array_diff_assoc($origServicesInArray,$newServicesInArray);
+        if(count($diff1) > 0 || count($diff2) > 0) 
+        {
+            $m['ServiceLocations'] = array('before'=>arrayWithKeysToHtml($diff2),'after'=>arrayWithKeysToHtml($diff1));
         }
         /**
          * END update service locations
