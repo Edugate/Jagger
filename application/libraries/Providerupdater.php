@@ -1341,7 +1341,8 @@ class Providerupdater {
         $ii = 0;
         foreach($newsrvs as $v)
         {
-             if(empty($v->getId()))
+             $vid = $v->getId();
+             if(empty($vid))
              {
                 $d = 'n'.$ii;
              }
