@@ -91,7 +91,7 @@ class MY_Log extends CI_Log {
 	 *
 	 * @var array
 	 */
-	protected $_levels		= array('ERROR' => 1, 'DEBUG' => 2, 'INFO' => 3, 'ALL' => 4);
+	protected $_levels		= array('ERROR' => 1, 'WARNING' => 2 , 'INFO' => 3,'DEBUG' => 4 , 'ALL' => 5);
 
 	// --------------------------------------------------------------------
 
@@ -143,7 +143,7 @@ class MY_Log extends CI_Log {
 	 * @param	bool	whether the error is a native PHP error
 	 * @return	bool
 	 */
-	public function write_log($level = 'error', $msg, $php_error = FALSE)
+	public function write_log($level, $msg)
 	{
 		if ($this->_enabled === FALSE)
 		{

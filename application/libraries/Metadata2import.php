@@ -290,7 +290,7 @@ class Metadata2import {
                                 }
                             } else
                             {
-                                log_message('error', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
+                                log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
                             }
                         }
                     }
@@ -349,7 +349,7 @@ class Metadata2import {
                         if (count($duplicates) != count(array_unique($duplicates)))
                         {
                             $duplicatesFound = TRUE;
-                            log_message('error', __METHOD__ . ' found duplicates in attrs requirements, doing cleanning');
+                            log_message('warning', __METHOD__ . ' found duplicates in attrs requirements, doing cleanning');
                         }
                         if ($duplicatesFound === TRUE)
                         {
@@ -423,7 +423,7 @@ class Metadata2import {
                                     }
                                 } else
                                 {
-                                    log_message('error', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
+                                    log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
                                 }
                             }
                         }
