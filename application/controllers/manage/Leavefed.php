@@ -151,6 +151,15 @@ class Leavefed extends MY_Controller {
                   $form .= '<ol><li>';
                   $form .= form_label(''.lang('rr_selectfedtoleave').'','fedid');
                   $form .= form_dropdown('fedid', $feds_dropdown);
+                  $type = $provider->getType();
+                  if(strcmp($type,'IDP')!=0)
+                  {
+                      $form .='<div class="alert"><p>'.lang('rr_alertrmspecpoliciecsp').'</p></div>';
+                  }
+                  else
+                  {
+                      $form .='<div class="alert"><p>'.lang('rr_alertrmspecpoliciecidp').'</p></div>';
+                  }
                   $form .= '</li></ol>';
                   $form .= $buttons;
                   $form .= form_fieldset_close();
