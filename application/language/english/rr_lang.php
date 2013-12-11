@@ -57,6 +57,7 @@ $lang['tabuii']                     = 'UII';
 $lang['tabstaticmeta']              = 'Static Metadata';
 $lang['tabotherforms']              = 'Other forms';
 $lang['btnupdate']                  = 'Update';
+$lang['clearcache']                 = 'Clear cache';
 $lang['btnsynch']                   = 'Synchronize';
 $lang['updated']                    = 'Updated';
 $lang['rr_uii']                     = 'User Interface Information';
