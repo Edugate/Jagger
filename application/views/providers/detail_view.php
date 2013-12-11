@@ -24,7 +24,7 @@ else
                 echo '</div>';
             }
             ?>
-<div style="width: 100%; display: block; text-align: right"><a class="editbutton clearcache" title="<?php echo lang('clearcache'); ?>" href="<?php echo base_url().'providers/detail/refreshentity/17'; ?>"><?php echo lang('clearcache');?></a></div>
+<div style="width: 100%; display: block; text-align: right"><a class="editbutton clearcache" title="<?php echo lang('clearcache'); ?>" href="<?php echo base_url().'providers/detail/refreshentity/'.$entid.''; ?>"><?php echo lang('clearcache');?></a></div>
             <div id="providertabs">
                 <ul>
 <?php
