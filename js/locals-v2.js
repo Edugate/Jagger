@@ -675,6 +675,19 @@ $(function() {
         });
         return false;
     });
+    $("a.clearcache").click(function() {
+        var link = $(this), url = link.attr("href");
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            timeout: 2500,
+            cache: false,
+            success: $(this).parent().remove()
+        });
+        return false;
+    });
+    
     $("a.bookentity").click(function() {
         var link = $(this), url = link.attr("href");
 

@@ -49,6 +49,39 @@ class Detail extends MY_Controller {
         }
     }
 
+    function refreshentity($id)
+    {
+       if ($this->input->is_ajax_request())
+       {
+           if (!$this->j_auth->logged_in())
+           {
+              show_error('no session', 403);
+           }
+           if(!is_numeric($id))
+           {
+              show_error('denied', 403);
+           }
+           $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
+           if ($has_write_access === TRUE)
+           {
+               $id=trim($id);
+               $keyPrefix = getCachePrefix();
+               $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
+               $cache1 = 'mcircle_' . $id;
+               $this->cache->delete($cache1);
+               $cache2 = 'arp_'.$id;
+               $this->cache->delete($cache2);
+               $this->j_cache->library('arp_generator', 'arpToArray', array($id), -1);
+               echo 'OK';
+           }
+           else
+           {
+              show_error('denied', 403);
+           } 
+       }
+       show_error('denied', 403);
+    }
+
     function showlogs($id)
     {
         if ($this->input->is_ajax_request())
