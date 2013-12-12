@@ -23,8 +23,14 @@ else
                 echo '</ol>';
                 echo '</div>';
             }
+if(!empty($showclearcache)){
             ?>
+
 <div style="width: 100%; display: block; text-align: right"><a class="editbutton clearcache" title="<?php echo lang('clearcache'); ?>" href="<?php echo base_url().'providers/detail/refreshentity/'.$entid.''; ?>"><?php echo lang('clearcache');?></a></div>
+
+<?php
+}
+?>
             <div id="providertabs">
                 <ul>
 <?php
