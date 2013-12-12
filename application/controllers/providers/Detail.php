@@ -261,6 +261,7 @@ class Detail extends MY_Controller {
         else
         {
             $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon" title="edit" >' . lang('rr_edit') . '</a>';
+            $data['showclearcache'] = TRUE;
         }
         $data['edit_link'] = $edit_link;
 
