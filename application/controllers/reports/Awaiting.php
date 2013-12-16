@@ -396,9 +396,11 @@ class Awaiting extends MY_Controller {
                             }
                             $admin_recipients = array_unique($admin_recipients);
                             $mail_sbj = "Identity Provider has been approved";
-                            $mail_body ="Hi,\r\n";
-                            $mail_body .= $idp->getEntityId()." has been just approved and added to Resource Registry\r\n";
-                            $mail_body .= "on ".base_url()."\r\n";
+                            $mail_body ='Hi,'.PHP_EOL;
+                            $mail_body .= 'Registration request: '.$idp->getName() .' ('.$idp->getEntityId().')'.PHP_EOL;
+                            $mail_body .= 'Requested by: '.$requester_recipient.''.PHP_EOL;
+                            $mail_body .= 'Request has been just approved by '.$this->j_auth->current_user().' and added to the system'.PHP_EOL;
+                            $mail_body .= 'It can be reviewed on '.base_url().' '.PHP_EOL;
 
  
                             $this->em->flush();
