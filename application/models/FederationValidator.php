@@ -53,7 +53,7 @@ class FederationValidator {
     protected $federation;
 
     /**
-     * @Column(name="enabled",type="boolean", nullable=false)
+     * @Column(name="is_enabled",type="boolean", nullable=false)
      */
     protected $isEnabled;
 
@@ -81,9 +81,9 @@ class FederationValidator {
 
     /**
      * args seprator
-     * @Column(type="string",length=10, nullable=true)
+     * @Column(type="string", length=10, nullable=true)
      */
-     protected $separator;
+     protected $argseparator;
 
      /**
       * @Column(name="documenttype",type="string",length=20,nullable=false)
@@ -166,7 +166,7 @@ class FederationValidator {
     }
     public function getSeparator()
     {
-      return $this->separator;
+      return $this->argseparator;
     }
     public function getDocutmentType()
     {
@@ -221,7 +221,7 @@ class FederationValidator {
 
     public function  setSeparator($separator)
     {
-        $this->separator = trim($separator);
+        $this->argseparator = trim($separator);
     }
     public function  setOptargs(array $args=null)
     {
