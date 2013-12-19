@@ -13,13 +13,25 @@
     	echo $errors_v;
     	echo "</div>";
     }
-    if(!empty($other_error))
+    if(!empty($other_error) && count($other_error)>0)
     {
-    	echo '<div class="error">';
-    	echo $other_error;
-    	echo "</div>";
+        foreach($other_error as $v)
+        {
+    	  echo '<div class="error">';
+    	  echo htmlentities($v);
+    	  echo "</div>";
+        }
     }
-
+    if(!empty($global_erros) && count($global_erros)>0)
+    {
+       foreach($global_erros as $v)
+       {
+    	echo '<div class="error">';
+    	echo $v;
+    	echo "</div>";
+           
+       }
+    }
     echo form_fieldset(lang('metalocation')) ;
     echo '<ol><li>';
     echo form_label(lang('metatypeent'), 'type');
@@ -32,7 +44,10 @@
     echo form_input(array('name' => 'metadataurl', 'id' => 'metadataurl', 'placeholder' => 'http://example.com/example-metadata.xml', 'value' => set_value('metadataurl'), 'required' => 'required'));
     echo '</li><li>';
     echo form_label(lang('importsslcheck'), 'sslcheck');
-    echo form_checkbox('sslcheck', 'ignore', FALSE);
+    ?>
+    <input type="checkbox" id="sslcheck" name="sslcheck" value="ignore" <?php echo set_checkbox('sslcheck', 'ignore'); ?> />
+    <?php
+    
     echo '</li></ol>';
     echo form_fieldset_close();
 
@@ -61,10 +76,11 @@
     echo form_fieldset_close();
    
     echo form_fieldset(''.lang('metavalidation').'');
-    echo '<span class="alert"> '.lang('notworkingyet').'</span>';
     echo '<ol><li>';
     echo form_label(''.lang('metavalidatewithcert').'', 'validate');
-    echo form_checkbox('validate', 'accept', FALSE);
+    ?>
+    <input type="checkbox" id="validate" name="validate" value="accept" <?php echo set_checkbox('validate', 'accept',TRUE); ?> />
+    <?php
     echo '</li><li>';
     echo form_label(''.lang('urlofcertsigner').'', 'certurl');
     echo form_input(array('name' => 'certurl', 'id' => 'certurl', 'value' => set_value('certurl'), 'placeholder' => 'http://example.com/metadata-signer.crt'));

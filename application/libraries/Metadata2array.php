@@ -46,9 +46,17 @@ class Metadata2array {
     function rootConvert($xml, $full = false)
     {
         $result = array('IDP' => array(), 'SP' => array());
-        $this->doc = new \DOMDocument();
-        $this->xpath = new \DomXPath($this->doc);
-        $this->doc->loadXML($xml);
+        if(! $xml instanceOf \DOMDocument)
+        {
+           $this->doc = new \DOMDocument();
+           $this->xpath = new \DomXPath($this->doc);
+           $this->doc->loadXML($xml);
+        }
+        else
+        {
+           $this->doc = $xml;
+           $this->xpath = new \DomXPath($this->doc);
+        }
         $namespaces = h_metadataNamespaces();
         foreach ($namespaces as $key => $value)
         {

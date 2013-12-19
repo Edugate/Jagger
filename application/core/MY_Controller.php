@@ -32,6 +32,7 @@ class MY_Controller extends CI_Controller {
     public static $current_language = 'en';
     public $title;
     protected $inqueue;
+    public $globalerrors = array();
 
     public function __construct()
     {
