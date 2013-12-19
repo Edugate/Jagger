@@ -461,6 +461,7 @@ class Awaiting extends MY_Controller {
                             $creator = $queueObj->getCreator();
                             $this->em->persist($sp);
                             $this->em->remove($queueObj);
+                            $requester_recipient ='';
                             if (!empty($creator) && ($creator instanceOf models\User))
                             {
                             /*
@@ -484,10 +485,12 @@ class Awaiting extends MY_Controller {
                                 $admin_recipients[] = $m->getEmail();
                             }
                             $admin_recipients = array_unique($admin_recipients);
-                            $mail_sbj = "Service Provider has been approved";
-                            $mail_body ="Hi,\r\n";
-                            $mail_body .= $sp->getEntityId()." has been just approved and added to Resource Registry\r\n";
-                            $mail_body .= "on ".base_url()."\r\n";
+                            $mail_sbj = 'Service Provider has been approved';
+                            $mail_body = 'Hi,'.PHP_EOL;
+                            $mail_body .= 'Registration request: '.$sp->getName(). '('.$sp->getEntityId().')'.PHP_EOL;
+                            $mail_body .='Requested by: '.$requester_recipient.''.PHP_EOL;
+                            $mail_body .='Request has been just approved by '.$this->j_auth->current_user().' and added to the system'.PHP_EOL;
+                            $mail_body .= 'It can be reviewed on '.base_url().' '.PHP_EOL;
                             
                             $this->em->flush();
                             $this->load->library('email_sender');
