@@ -119,6 +119,12 @@ class Federation
      */
     protected $partners;
 
+
+    /** 
+     * @OneToMany(targetEntity="FederationValidator",mappedBy="federation")
+     */
+    protected $fvalidator;
+
     /**
      * @Column(type="string", length=255, nullable=true)
      */
@@ -127,6 +133,7 @@ class Federation
     public function __construct()
     {
         $this->members = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fvalidator = new \Doctrine\Common\Collections\ArrayCollection();
         $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->is_protected = FALSE;
@@ -251,6 +258,15 @@ class Federation
         return $this;
     }
 
+    public function addValidator(FederationValidator $validator)
+    {
+        $exist = $this->getValidators()->contains($validator);
+        if(empty($exist))
+        {
+            $this->getValidators()->add($validator);
+        }
+        return $this;
+    }
     public function addMember(Provider $provider)
     {
         $already_there = $this->getMembers()->contains($provider);
@@ -320,6 +336,11 @@ class Federation
     public function getDescription()
     {
         return $this->description;
+    }
+
+    public function getValidators()
+    {
+        return $this->fvalidator;
     }
 
     public function getMembers()
