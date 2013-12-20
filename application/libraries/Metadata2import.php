@@ -492,7 +492,7 @@ class Metadata2import {
             {
                 $structureChanged = TRUE;
                 $body .='List providers removed from the system during sync:'.PHP_EOL;
-                foreach($report['provider']['jdel'] as $a)
+                foreach($report['provider']['del'] as $a)
                 {
                     $body .= $a.PHP_EOL;
                 }
