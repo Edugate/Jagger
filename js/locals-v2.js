@@ -1310,6 +1310,21 @@ $("button#vmigrate").click(function(){
         });
         ev.preventDefault();
     });
+    $("#rmfedvalidator").click(function(ev) {
+        var url = $(this).attr('action');
+        var serializedData = $(this).serialize();
+        sconfirm('', function(ev) {
+            $('<input>').attr({
+              type: 'hidden',
+                id: 'formsubmit',
+              name: 'formsubmit',
+              value: 'remove',
+            }).appendTo('form');
+            $("form").submit();
+
+        });
+        ev.preventDefault();
+    });
 
     function sconfirm(message, callback) {
         $('#sconfirm').modal({
