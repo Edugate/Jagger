@@ -2393,9 +2393,9 @@ class Provider {
         $r['name'] = $this->getName();
         $r['displayname'] = $this->getDisplayname();
         $r['entityid'] = $this->getEntityid();
-
+        
         $r['nameid'] = array();
-        $nameids = $this->getNameid()->getValues();
+        $nameids = $this->getNameids();
         if (!empty($nameids))
         {
             $r['nameid'] = $nameids;
@@ -2477,9 +2477,9 @@ class Provider {
         $this->setEntityid($r['entityid']);
         if (is_array($r['nameid']) && count($r['nameid'] > 0))
         {
-            foreach ($r['nameid'] as $n)
+            foreach ($r['nameid'] as $k=>$n)
             {
-                $this->setNameid($n);
+                $this->setNameids($k, $n);
             }
         }
 
