@@ -52,7 +52,7 @@ class Fvalidatoredit extends MY_Controller {
       {
           return FALSE;
       }
-      public function vedit($fedid=NULL,$fvalidatorid=NULL)
+      private function vedit($fedid=NULL,$fvalidatorid=NULL)
       {
           $loggedin = $this->j_auth->logged_in();
           if(!$loggedin)
