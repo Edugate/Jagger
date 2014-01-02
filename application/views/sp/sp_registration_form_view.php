@@ -110,7 +110,7 @@ echo form_fieldset_close();
 <!-- step3 -->
 
 <?php
-echo form_fieldset(lang('rr_technical'));
+echo form_fieldset(lang('rr_technicalinformation'));
 echo '<ol>';
 
 
