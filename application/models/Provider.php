@@ -145,12 +145,12 @@ class Provider {
     protected $coc;
    
     /**
-     * @OneToMany(targetEntity="ProviderStatsDef",mappedBy="provider")
+     * @OneToMany(targetEntity="ProviderStatsDef",mappedBy="provider",cascade={"persist","remove"})
      */
     protected $statsdef;
 
     /**
-     * @OneToMany(targetEntity="ProviderStatsCollection",mappedBy="provider")
+     * @OneToMany(targetEntity="ProviderStatsCollection",mappedBy="provider",cascade={"persist","remove"})
      */
     protected $statistic;
 
