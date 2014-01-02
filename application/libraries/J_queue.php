@@ -1,6 +1,6 @@
 <?php
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,8 +18,8 @@ if (!defined('BASEPATH'))
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
-class J_queue {
+class J_queue
+{
 
     private $ci;
     private $em;
@@ -55,16 +55,16 @@ class J_queue {
         $reject_form .= form_close();
 
 
-        $result = '<div class="buttons" >' . $reject_form .'&nbsp;'  . $approve_form . '</div>';
+        $result = '<div class="buttons" >' . $reject_form . '&nbsp;' . $approve_form . '</div>';
         return $result;
     }
 
     function displayRegisterFederation(models\Queue $q)
     {
         $objData = new models\Federation;
-        
+
         $objData->importFromArray($q->getData());
-       
+
 
 
         $fedrows = array();
@@ -72,13 +72,11 @@ class J_queue {
         $fedrows[] = array('name' => lang('type'), 'value' => lang('reqregnewfed'));
 
         $creator = $q->getCreator();
-        if ($creator)
-        {
+        if ($creator) {
             $fedrows[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
             $objData->setOwner($creator->getUsername());
         }
-        else
-        {
+        else {
             $fedrows[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
         }
 
@@ -88,9 +86,8 @@ class J_queue {
         $fedrows[] = array('name' => lang('rr_fed_urn'), 'value' => $objData->getUrn());
         $fedrows[] = array('name' => lang('Description'), 'value' => $objData->getDescription());
         $fedrows[] = array('name' => lang('rr_fed_tou'), 'value' => $objData->getTou());
-        
+
         return $fedrows;
-        
     }
 
     function displayRegisterProvider(models\Queue $q)
@@ -106,41 +103,57 @@ class J_queue {
         $provider[$i++]['value'] = $objData->getName();
 
         $provider[$i]['name'] = 'entityID';
-        $provider[$i++]['value'] = $objData->getEntityId();
 
+        $provider[$i++]['value'] = $objData->getEntityId();
+        $type = $objData->getType();
+        $provider[$i]['name'] = lang('type');
+        if ($type === 'IDP') {
+            $provider[$i++]['value'] = lang('identityprovider');
+        }
+        elseif ($type === 'SP') {
+            $provider[$i++]['value'] = lang('serviceprovider');
+        }
         $provider[$i]['name'] = lang('rr_homeurl');
         $provider[$i++]['value'] = $objData->getHomeUrl();
 
         $provider[$i]['name'] = lang('rr_helpdeskurl');
         $provider[$i++]['value'] = $objData->getHelpdeskUrl();
 
-        foreach ($objData->getFederations() as $fed)
-        {
+        foreach ($objData->getFederations() as $fed) {
             $provider[$i]['name'] = lang('rr_federation');
             $provider[$i]['value'] = $fed->getName();
             $i++;
         }
         $provider[$i++]['header'] = lang('rr_servicelocations');
-        foreach ($objData->getServiceLocations() as $service)
-        {
+        foreach ($objData->getServiceLocations() as $service) {
             $provider[$i]['name'] = $service->getType();
             $provider[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . "</small><br />";
             $i++;
         }
+        $provider[$i++]['header'] = lang('rr_supportednameids');
+        $provider[$i]['name'] = lang('nameid');
+        if($type === 'IDP')
+        {
+          $provider[$i++]['value'] = implode(', ', $objData->getNameIds('idpsso'));
+        }
+        elseif($type ==='SP')
+        {
+            $provider[$i++]['value'] = implode(', ', $objData->getNameIds('spsso'));
+        }
+
+
 
         $provider[$i++]['header'] = lang('rr_certificates');
-        foreach ($objData->getCertificates() as $cert)
-        {
+        foreach ($objData->getCertificates() as $cert) {
             $provider[$i]['name'] = "Certificate (" . $cert->getCertUse() . ")";
             //$provider[$i]['value'] = "<code>" . PEMtoHTML($cert->getCertData()) . "</code>";
-                  $certdatacell = $cert->getCertdata();
-                  $g = explode("\n",$cert->getCertdata());
-                  $c = count($g);
-                  if($c < 2)
-                  {
-                      $pem = chunk_split($cert->getCertdata(), 64, "<br />");
-                      $certdatacell = $pem;
-                  }
+            $certdatacell = $cert->getCertdata();
+            $g = explode("\n", $cert->getCertdata());
+            $c = count($g);
+            if ($c < 2) {
+                $pem = chunk_split($cert->getCertdata(), 64, "<br />");
+                $certdatacell = $pem;
+            }
 
 
 
@@ -149,9 +162,8 @@ class J_queue {
         }
 
         $provider[$i++]['header'] = lang('rr_contacts');
-        foreach ($objData->getContacts() as $contact)
-        {
-            $provider[$i]['name'] = lang('rr_contact').' (' . $contact->getType() . ')';
+        foreach ($objData->getContacts() as $contact) {
+            $provider[$i]['name'] = lang('rr_contact') . ' (' . $contact->getType() . ')';
             $provider[$i]['value'] = $contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt;";
             $i++;
         }
@@ -162,12 +174,10 @@ class J_queue {
     {
 
         $this->ci->load->library('table');
-        if ($queue->getRecipientType() == 'provider')
-        {
+        if ($queue->getRecipientType() == 'provider') {
             $provider = $this->tmp_providers->getOneById($queue->getRecipient());
         }
-        if (empty($provider))
-        {
+        if (empty($provider)) {
             return false;
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');
@@ -175,7 +185,7 @@ class J_queue {
         $this->ci->table->set_caption(lang('rr_requestawaiting'));
 
 
-        $text = '<span style="white-space: normal">'.lang('adminoffed').': ' . $queue->getName() . ' '.lang('invyourprov').': (' . $provider->getEntityId() . ')';
+        $text = '<span style="white-space: normal">' . lang('adminoffed') . ': ' . $queue->getName() . ' ' . lang('invyourprov') . ': (' . $provider->getEntityId() . ')';
         $text .= "</span>";
         $cell = array('data' => $text, 'colspan' => 2);
         $this->ci->table->add_row($cell);
@@ -189,7 +199,7 @@ class J_queue {
         $this->ci->table->add_row($cell);
         $cell = array(lang('request'), lang('joinfederation'));
         $this->ci->table->add_row($cell);
-        $cell = array('data'=>$this->displayFormsButtons($queue->getId()), 'colspan'=>2);
+        $cell = array('data' => $this->displayFormsButtons($queue->getId()), 'colspan' => 2);
         $this->ci->table->add_row($cell);
         $result = '';
         $result .= $this->ci->table->generate();
@@ -202,12 +212,10 @@ class J_queue {
     {
 
         $this->ci->load->library('table');
-        if ($queue->getRecipientType() == 'federation')
-        {
+        if ($queue->getRecipientType() == 'federation') {
             $federation = $this->tmp_federations->getOneFederationById($queue->getRecipient());
         }
-        if (empty($federation))
-        {
+        if (empty($federation)) {
             return false;
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');
@@ -215,7 +223,7 @@ class J_queue {
         $this->ci->table->set_caption(lang('rr_requestawaiting'));
 
 
-        $text = '<span style="white-space: normal">'.lang('adminofprov').': ' . $queue->getName() . ' '.lang('askedyourfed').': (' . $federation->getName() . ')';
+        $text = '<span style="white-space: normal">' . lang('adminofprov') . ': ' . $queue->getName() . ' ' . lang('askedyourfed') . ': (' . $federation->getName() . ')';
         $text .= "</span>";
         $cell = array('data' => $text, 'colspan' => 2);
         $this->ci->table->add_row($cell);
@@ -230,7 +238,7 @@ class J_queue {
         $this->ci->table->add_row($cell);
         $cell = array(lang('request'), lang('acceptprovtofed'));
         $this->ci->table->add_row($cell);
-        $cell = array('data'=>$this->displayFormsButtons($queue->getId()), 'colspan'=>2);
+        $cell = array('data' => $this->displayFormsButtons($queue->getId()), 'colspan' => 2);
         $this->ci->table->add_row($cell);
         $result = '';
         $result .= $this->ci->table->generate();

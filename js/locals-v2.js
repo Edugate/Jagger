@@ -178,8 +178,8 @@ $(document).ready(function() {
     GINIT.initialize();
     var fedloginurl = $('a#fedlogin').attr('href');
     var browsertime = new Date();
-    var browsertimezone =  -browsertime.getTimezoneOffset();
-    $('a#fedlogin').attr('href',''+fedloginurl+'/'+browsertimezone+'');
+    var browsertimezone = -browsertime.getTimezoneOffset();
+    $('a#fedlogin').attr('href', '' + fedloginurl + '/' + browsertimezone + '');
 
     var bubbletheme = $("button#jquerybubblepopupthemes").val();
     $('.bubblepopup').CreateBubblePopup({
@@ -313,51 +313,51 @@ $(function() {
                     .insertAfter(select)
                     .val(value)
                     .autocomplete({
-                delay: 0,
-                minLength: 0,
-                source: function(request, response) {
-                    var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-                    response(select.children("option").map(function() {
-                        var text = $(this).text();
-                        if (this.value && (!request.term || matcher.test(text)))
-                            return {
-                                label: text.replace(
-                                        new RegExp(
-                                        "(?![^&;]+;)(?!<[^<>]*)(" +
-                                        $.ui.autocomplete.escapeRegex(request.term) +
-                                        ")(?![^<>]*>)(?![^&;]+;)", "gi"
-                                        ), "<strong>$1</strong>"),
-                                value: text,
-                                option: this
-                            };
-                    }));
-                },
-                select: function(event, ui) {
-                    ui.item.option.selected = true;
-                    self._trigger("selected", event, {
-                        item: ui.item.option
-                    });
-                },
-                change: function(event, ui) {
-                    if (!ui.item) {
-                        var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex($(this).val()) + "$", "i"),
-                                valid = false;
-                        select.children("option").each(function() {
-                            if ($(this).text().match(matcher)) {
-                                this.selected = valid = true;
-                                return false;
+                        delay: 0,
+                        minLength: 0,
+                        source: function(request, response) {
+                            var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
+                            response(select.children("option").map(function() {
+                                var text = $(this).text();
+                                if (this.value && (!request.term || matcher.test(text)))
+                                    return {
+                                        label: text.replace(
+                                                new RegExp(
+                                                        "(?![^&;]+;)(?!<[^<>]*)(" +
+                                                        $.ui.autocomplete.escapeRegex(request.term) +
+                                                        ")(?![^<>]*>)(?![^&;]+;)", "gi"
+                                                        ), "<strong>$1</strong>"),
+                                        value: text,
+                                        option: this
+                                    };
+                            }));
+                        },
+                        select: function(event, ui) {
+                            ui.item.option.selected = true;
+                            self._trigger("selected", event, {
+                                item: ui.item.option
+                            });
+                        },
+                        change: function(event, ui) {
+                            if (!ui.item) {
+                                var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex($(this).val()) + "$", "i"),
+                                        valid = false;
+                                select.children("option").each(function() {
+                                    if ($(this).text().match(matcher)) {
+                                        this.selected = valid = true;
+                                        return false;
+                                    }
+                                });
+                                if (!valid) {
+                                    // remove invalid value, as it didn't match anything
+                                    $(this).val("");
+                                    select.val("");
+                                    input.data("autocomplete").term = "";
+                                    return false;
+                                }
                             }
-                        });
-                        if (!valid) {
-                            // remove invalid value, as it didn't match anything
-                            $(this).val("");
-                            select.val("");
-                            input.data("autocomplete").term = "";
-                            return false;
                         }
-                    }
-                }
-            })
+                    })
                     .addClass("ui-widget ui-widget-content ui-corner-left");
 
             input.data("autocomplete")._renderItem = function(ul, item) {
@@ -372,27 +372,27 @@ $(function() {
                     .attr("title", "Show All Items")
                     .insertAfter(input)
                     .button({
-                icons: {
-                    primary: "ui-icon-triangle-1-s"
-                },
-                text: false
-            })
+                        icons: {
+                            primary: "ui-icon-triangle-1-s"
+                        },
+                        text: false
+                    })
                     .removeClass("ui-corner-all")
                     .addClass("ui-corner-right ui-button-icon")
                     .click(function() {
-                // close if already visible
-                if (input.autocomplete("widget").is(":visible")) {
-                    input.autocomplete("close");
-                    return;
-                }
+                        // close if already visible
+                        if (input.autocomplete("widget").is(":visible")) {
+                            input.autocomplete("close");
+                            return;
+                        }
 
-                // work around a bug (likely same cause as #5265)
-                $(this).blur();
+                        // work around a bug (likely same cause as #5265)
+                        $(this).blur();
 
-                // pass empty string as value to search for, displaying all results
-                input.autocomplete("search", "");
-                input.focus();
-            });
+                        // pass empty string as value to search for, displaying all results
+                        input.autocomplete("search", "");
+                        input.focus();
+                    });
         },
         destroy: function() {
             this.input.remove();
@@ -687,7 +687,7 @@ $(function() {
         });
         return false;
     });
-    
+
     $("a.bookentity").click(function() {
         var link = $(this), url = link.attr("href");
 
@@ -958,7 +958,7 @@ $(function() {
         }
 
     });
-    
+
 });
 if ($('#usepredefined').attr('checked')) {
     $("fieldset#stadefext").hide();
@@ -1109,90 +1109,90 @@ $(document).ready(function() {
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal();
     }
-$("button#vormversion").click(function(){
-            $.ajax({
-                cache: false,
-                type: "GET",
-                url: baseurl+'smanage/reports/vormversion',
-                timeout: 2500,
-                success: function(data){
-                  $('#spinner').hide();
-                  $("#rvormversion").show();
-                  $("tr#rvormversion td:first-child").html(data);
-                },
-                beforeSend: function() {
-                  $('#spinner').show();
-                },
-                error: function(){
-                   $('#spinner').hide();
-                   alert('Error occurred');
-                }, 
-            }) ;
-            return false;
-});
-$("button#vschema").click(function(){
-            $.ajax({
-                cache: false,
-                type: "GET",
-                url: baseurl+'smanage/reports/vschema',
-                timeout: 2500,
-                success: function(data){
-                  $('#spinner').hide();
-                  $("#rvschema").show();
-                  $("tr#rvschema td:first-child").html(data);
-                },
-                beforeSend: function() {
-                  $('#spinner').show();
-                },
-                error: function(){
-                   $('#spinner').hide();
-                   alert('Error ocured');
-                }, 
-            }) ;
-            return false;
-});
-$("button#vschemadb").click(function(){
-            $.ajax({
-                cache: false,
-                type: "GET",
-                url: baseurl+'smanage/reports/vschemadb',
-                timeout: 2500,
-                success: function(data){
-                  $('#spinner').hide();
-                  $("#rvschemadb").show();
-                  $("tr#rvschemadb td:first-child").html(data);
-                },
-                beforeSend: function() {
-                  $('#spinner').show();
-                },
-                error: function(){
-                  $('#spinner').hide();
-                   alert('Error ocured');
-                }, 
-            }) ;
-            return false;
-});
-$("button#vmigrate").click(function(){
-            $.ajax({
-                cache: false,
-                type: "GET",
-                url: baseurl+'smanage/reports/vmigrate',
-                timeout: 2500,
-                success: function(data){
-                  $('#spinner').hide();
-                  $("#rvmigrate").show();
-                  $("tr#rvmigrate td:first-child").html(data);
-                },
-                beforeSend: function() {
-                  $('#spinner').show();
-                },
-                error: function(){
-                  $('#spinner').hide();
-                   alert('Error ocured');
-                }, 
-            }) ;
-            return false;
-});
+    $("button#vormversion").click(function() {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: baseurl + 'smanage/reports/vormversion',
+            timeout: 2500,
+            success: function(data) {
+                $('#spinner').hide();
+                $("#rvormversion").show();
+                $("tr#rvormversion td:first-child").html(data);
+            },
+            beforeSend: function() {
+                $('#spinner').show();
+            },
+            error: function() {
+                $('#spinner').hide();
+                alert('Error occurred');
+            },
+        });
+        return false;
+    });
+    $("button#vschema").click(function() {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: baseurl + 'smanage/reports/vschema',
+            timeout: 2500,
+            success: function(data) {
+                $('#spinner').hide();
+                $("#rvschema").show();
+                $("tr#rvschema td:first-child").html(data);
+            },
+            beforeSend: function() {
+                $('#spinner').show();
+            },
+            error: function() {
+                $('#spinner').hide();
+                alert('Error ocured');
+            },
+        });
+        return false;
+    });
+    $("button#vschemadb").click(function() {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: baseurl + 'smanage/reports/vschemadb',
+            timeout: 2500,
+            success: function(data) {
+                $('#spinner').hide();
+                $("#rvschemadb").show();
+                $("tr#rvschemadb td:first-child").html(data);
+            },
+            beforeSend: function() {
+                $('#spinner').show();
+            },
+            error: function() {
+                $('#spinner').hide();
+                alert('Error ocured');
+            },
+        });
+        return false;
+    });
+    $("button#vmigrate").click(function() {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: baseurl + 'smanage/reports/vmigrate',
+            timeout: 2500,
+            success: function(data) {
+                $('#spinner').hide();
+                $("#rvmigrate").show();
+                $("tr#rvmigrate td:first-child").html(data);
+            },
+            beforeSend: function() {
+                $('#spinner').show();
+            },
+            error: function() {
+                $('#spinner').hide();
+                alert('Error ocured');
+            },
+        });
+        return false;
+    });
 
 // When the form is submitted
     $("#status form").submit(function() {
@@ -1205,10 +1205,10 @@ $("button#vmigrate").click(function(){
 
 // get timeoffset
         var browsertime = new Date();
-        var browsertimezone =  -browsertime.getTimezoneOffset();
+        var browsertimezone = -browsertime.getTimezoneOffset();
 // 'this' refers to the current submitted form  
         var str = $(this).serializeArray();
-        str.push({name:'browsertimeoffset',value:''+browsertimezone+''});
+        str.push({name: 'browsertimeoffset', value: '' + browsertimezone + ''});
 
 // -- Start AJAX Call --
 
@@ -1300,10 +1300,10 @@ $("button#vmigrate").click(function(){
         var serializedData = $(this).serialize();
         sconfirm('', function(ev) {
             $('<input>').attr({
-              type: 'hidden',
+                type: 'hidden',
                 id: 'formsubmit',
-              name: 'formsubmit',
-              value: 'remove',
+                name: 'formsubmit',
+                value: 'remove',
             }).appendTo('form');
             $("form").submit();
 
@@ -1315,10 +1315,10 @@ $("button#vmigrate").click(function(){
         var serializedData = $(this).serialize();
         sconfirm('', function(ev) {
             $('<input>').attr({
-              type: 'hidden',
+                type: 'hidden',
                 id: 'formsubmit',
-              name: 'formsubmit',
-              value: 'remove',
+                name: 'formsubmit',
+                value: 'remove',
             }).appendTo('form');
             $("form").submit();
 
@@ -1359,6 +1359,201 @@ function go_to_private_page()
     window.location.reload();
 }
 
+// parsemetadata
 
+$("button#parsemetadatasp").click(function() {
+    var xmlsource = $('textarea#metadatabody').val();
+    try {
+      var xmlDoc = $.parseXML(xmlsource);
+    }
+    catch(err)
+    {
+      alert(err);
+      return false;
+    }
 
+    var xml = $(xmlDoc);
+    $entity = null;
+
+    xml.find("md\\:SPSSODescriptor,SPSSODescriptor").each(function() {
+        if ($(this).attr("protocolSupportEnumeration"))
+        {
+            $entity = $(this).parent();
+            return false;
+        }
+        return true;
+    });
+    if ($entity === null)
+    {
+        alert("SP not found");
+        return false;
+    }
+    $("#entityid").val($entity.attr("entityID"));
+    $orgname = $entity.find("md\\:OrganizationName,OrganizationName");
+    $orgdisname = $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName");
+    $helpdeskurl = $entity.find("md\\:OrganizationURL,OrganizationURL");
+    $("#resource").val($orgname.text());
+    $("#descresource").val($orgdisname.text());
+    $("#helpdeskurl").val($helpdeskurl.text());
+    $("#homeurl").val($helpdeskurl.text());
+    $entity.find("md\\:AssertionConsumerService,AssertionConsumerService").each(function() {
+        if ($(this).attr("isDefault"))
+        {
+            $("#acs_url").val($(this).attr("Location"));
+            $("#acs_order").val($(this).attr("index"));
+            $('#acs_bind').val($(this).attr('Binding'));
+            return false;
+        }
+        else
+        {
+            if ($(this).attr('Binding') === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
+            {
+                $("#acs_url").val($(this).attr("Location"));
+                $("#acs_order").val($(this).attr("index"));
+                $('#acs_bind').val($(this).attr('Binding'));
+            }
+        }
+    });
+
+    var nameids ='';
+    $entity.find("md\\:NameIDFormat, NameIDFormat").each(function(){
+        nameids = nameids + ' ' + $(this).text();
+    });
+   
+    $("#nameids").val(nameids);
+
+    var certsign = false;
+    var certenc = false;
+    $entity.find("md\\:KeyDescriptor, KeyDescriptor").each(function() {
+        if (!certsign || !certenc)
+        {
+            if ($(this).attr("use") === "signing")
+            {
+                if (!certsign)
+                {
+                    var cert = $(this).find("ds\\:X509Certificate");
+                    $("#sign_cert_body").val(cert.text());
+                    certsign = true;
+                }
+            }
+            else if ($(this).attr("use") === "encryption")
+            {
+                if (!certenc)
+                {
+                    var cert = $(this).find("ds\\:X509Certificate");
+                    $("#encrypt_cert_body").val(cert.text());
+                    certenc = true;
+                }
+            }
+            else
+            {
+                var cert = $(this).find("ds\\:X509Certificate");
+                if (!certenc)
+                {
+                    $("#encrypt_cert_body").val(cert.text());
+                    certenc = true;
+                }
+                if (!certsign)
+                {
+                    $("#sign_cert_body").val(cert.text());
+                    certsign = true;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    });
+});
+
+//  spregister
+
+var current_fs, next_fs, previous_fs; 
+var left, opacity, scale; 
+var animating; 
+var index2;
+var addheight = $("#progressbar").height() + 30;
+var fieldsetheight = $("#multistepform fieldset").height() + addheight;
+$("form#multistepform").css({'height': fieldsetheight});
+$(".next").click(function() {
+     var canproceed = true;
+     $(this).parent().find('input.required').each(function(){
+        if(!$.trim($(this).val()))
+        {
+            alert("Missing input");
+            canproceed = false;
+            return false;
+        }
+    });
+    if(!canproceed)
+    {
+        return false;
+    }
+    if (animating)
+        return false;
+    animating = true;
+    current_fs = $(this).parent();
+    next_fs = $(this).parent().next();
+    fieldsetheight = next_fs.height() + addheight;
+    $("form#multistepform").css({'height': fieldsetheight});
+    $("#progressbar li").eq($("#multistepform fieldset").index(next_fs)).addClass("active");
+    next_fs.show();
+    current_fs.animate({opacity: 0}, {
+        step: function(now, mx) {
+            scale = 1 - (1 - now) * 0.2;
+            left = (now * 50) + "%";
+            opacity = 1 - now;
+            current_fs.css({'transform': 'scale(' + scale + ')'});
+            next_fs.css({'left': left, 'opacity': opacity});
+        },
+        duration: 200, 
+        complete: function() {
+            current_fs.hide();
+            animating = false;
+        },
+    });
+});
+
+$(".previous").click(function() {
+    if (animating)
+        return false;
+    animating = true;
+
+    current_fs = $(this).parent();
+    previous_fs = $(this).parent().prev();
+    fieldsetheight = previous_fs.height() + addheight;
+    $("form#multistepform").css({'height': fieldsetheight});
+
+    //de-activate current step on progressbar
+    $("#progressbar li").eq($("#multistepform fieldset").index(current_fs)).removeClass("active");
+
+    //show the previous fieldset
+    previous_fs.show();
+    //hide the current fieldset with style
+    current_fs.animate({opacity: 0}, {
+        step: function(now, mx) {
+            //as the opacity of current_fs reduces to 0 - stored in "now"
+            //1. scale previous_fs from 80% to 100%
+            scale = 0.8 + (1 - now) * 0.2;
+            //2. take current_fs to the right(50%) - from 0%
+            left = ((1 - now) * 50) + "%";
+            //3. increase opacity of previous_fs to 1 as it moves in
+            opacity = 1 - now;
+            current_fs.css({'left': left});
+            previous_fs.css({'transform': 'scale(' + scale + ')', 'opacity': opacity});
+        },
+        duration: 200,
+        complete: function() {
+            current_fs.hide();
+            animating = false;
+        },
+        //this comes from the custom easing plugin
+        //easing: 'easeInOutBack'
+    });
+});
+
+$(".submit").click(function() {
+    return false;
+})
 

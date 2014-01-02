@@ -1635,8 +1635,6 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
 
 
 
-
-
 .resetbutton {
 	display:inline-block;
         white-space: nowrap;
@@ -1864,7 +1862,18 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
 	content: "\2010";
 }
 
-
+.nexticon:before
+{
+       content: "\279C";
+}
+.previcon:before
+{
+       content: "\279C";
+       -moz-transform: rotate(-180deg);
+    -webkit-transform: rotate(-180deg);
+    transform: rotate(-180deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2)
+}
 .saveicon:before
 {
         content: "\2714";
@@ -1927,4 +1936,123 @@ input[readonly='readonly'] {
 
     background: rgba(0,0,0,0.1);
 
+}
+
+// TEST
+
+
+form#multistepform {
+	margin: 50px auto; 
+	text-align: center;
+	position: relative;
+        padding: 10px;
+        margin: 0 0 0 0;
+}
+
+form#multistepform fieldset {
+	width: auto;
+        padding: 0;	
+        position: absolute;
+        left: 10px;
+        right: 10px;
+    ol {
+    list-style:none;
+    padding-left:5px;
+    }
+    legend{
+      text-align: left;
+      font-weight: bolder;
+    }
+}
+form#multistepform label {
+      text-align: left;
+
+}
+
+#multistepform fieldset:not(:first-of-type) {
+	display: none;
+}
+#multistepform input, #multistepform textarea {
+	border-radius: 3px;
+	margin-bottom: 10px;
+	box-sizing: border-box;
+	color: #2C3E50;
+	font-size: 13px;
+}
+#multistepform .action-button {
+	width: 100px;
+	background: #27AE60;
+	font-weight: bold;
+	color: white;
+	border: 0 none;
+	border-radius: 1px;
+	cursor: pointer;
+	padding: 10px 5px;
+	margin: 10px 5px;
+}
+#multistepform .action-button:hover, #multistepform .action-button:focus {
+	box-shadow: 0 0 0 2px white, 0 0 0 3px #27AE60;
+}
+.fs-subtitle {
+	font-weight: normal;
+	font-size: 13px;
+	color: #666;
+	margin-bottom: 20px;
+}
+/*progressbar*/
+#progressbar {
+	margin-bottom: 30px;
+	overflow: hidden;
+	/*CSS counters to number the steps*/
+	counter-reset: step;
+}
+#progressbar li {
+	list-style-type: none;
+	color: white;
+	text-transform: uppercase;
+	font-size: 9px;
+	float: left;
+	position: relative;
+}
+ul.freesteps li {
+       width: 33.33%;
+}
+ul.foursteps li {
+        width: 25%;
+}
+ul.fivesteps li {
+        width: 20%;
+}
+#progressbar li:before {
+	content: counter(step);
+	counter-increment: step;
+	width: 20px;
+	line-height: 20px;
+	display: block;
+	font-size: 10px;
+	color: #333;
+	background: white;
+	border-radius: 3px;
+	margin: 0 auto 5px auto;
+}
+/*progressbar connectors*/
+#progressbar li:after {
+	content: '';
+	width: 100%;
+	height: 2px;
+	background: white;
+	position: absolute;
+	left: -50%;
+	top: 9px;
+	z-index: -1; /*put it behind the numbers*/
+}
+#progressbar li:first-child:after {
+	/*connector not needed before the first step*/
+	content: none; 
+}
+/*marking active/completed steps green*/
+/*The number of the step and the connector before it = green*/
+#progressbar li.active:before,  #progressbar li.active:after{
+	background: $progressBarActiveBgColor;
+	color: $progressBarActiveColor;
 }

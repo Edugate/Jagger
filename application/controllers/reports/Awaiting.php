@@ -443,7 +443,7 @@ class Awaiting extends MY_Controller {
                         }
                         else
                         {
-                            $sp->setNameId();
+                            //$sp->setNameId();
                             $sp->setAsLocal();
                             $tfeds = $sp->getFederations();
                             if(!empty($tfeds) && $tfeds->count() > 0)
