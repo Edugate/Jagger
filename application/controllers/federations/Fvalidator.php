@@ -209,7 +209,7 @@ class Fvalidator extends MY_Controller {
               $result['returncode'] = 'unknown';
            }
            $result['message'] = array();
-           foreach($expectedReturnValues as $v)
+           foreach($elementWithMessage as $v)
            {
               $o = $docxml->getElementsByTagName($v);
               if($o->length >0)
