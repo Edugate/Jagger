@@ -193,6 +193,7 @@ class Fvalidator extends MY_Controller {
               show_error('Expected return code not received',404);
            } 
            $codeDomeValue = $codeDoms->item(0)->nodeValue;
+           log_message('debug',__METHOD__.' found expected value '. $codeDomeValue);
            $expectedReturnValues = $fvalidator->getReturnCodeValues();
            $elementWithMessage = $fvalidator->getMessageCodeElements();
            $result = array();
@@ -211,19 +212,21 @@ class Fvalidator extends MY_Controller {
            $result['message'] = array();
            foreach($elementWithMessage as $v)
            {
+               log_message('debug',__METHOD__.' searching for '.$v.' element');
               $o = $docxml->getElementsByTagName($v);
               if($o->length >0)
               {
-                 $g = $o->nodeValue;
+                 $g = $o->item(0)->nodeValue;
+                 log_message('debug',__METHOD__.' value for '.$v.' element: '.$g);
                  if(!empty($g))
                  {
-                   $result['message'][]  = htmlspecialchars($g);
+                   $result['message'][$v]  = htmlspecialchars($g);
                  }
               }
            }
            if(count($result['message']) == 0)
            {
-              $result['message'][] = 'no response message';
+              $result['message']['unknown'] = 'no response message';
            }
            echo json_encode($result);
      
