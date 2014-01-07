@@ -180,18 +180,18 @@ class Fvalidator extends MY_Controller {
            }
            foreach($returncodeElements as $v)
            {
-               $codeDoms = $docxml->getElementsByTagName($v)->item(0);
-               if(!empty($codeDoms))
+               $codeDoms = $docxml->getElementsByTagName($v);
+               if(!empty($codeDoms->length))
                {
                   break;
                }
            }
            $codeDomeValue = null;
-           if(empty($codeDoms))
+           if(empty($codeDoms->length))
            {
               show_error('Expected return code not received',404);
            } 
-           $codeDomeValue = $codeDoms->nodeValue;
+           $codeDomeValue = $codeDoms->item(0)->nodeValue;
            $expectedReturnValues = $fvalidator->getReturnCodeValues();
            $elementWithMessage = $fvalidator->getMessageCodeElements();
            $result = array();
@@ -210,7 +210,15 @@ class Fvalidator extends MY_Controller {
            $result['message'] = array();
            foreach($expectedReturnValues as $v)
            {
-              $result['message'][]  = htmlspecialchars($docxml->getElementsByTagName($v)->item(0)->nodeValue);
+              $o = $docxml->getElementsByTagName($v);
+              if($o->length >0)
+              {
+                 $g = $o->nodeValue;
+                 if(!empty($g))
+                 {
+                   $result['message'][]  = htmlspecialchars($g);
+                 }
+              }
            }
            if(count($result['message']) == 0)
            {
