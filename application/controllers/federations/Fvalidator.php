@@ -158,6 +158,7 @@ class Fvalidator extends MY_Controller {
         {
            show_error('No data received from external validator',500);
         }
+        log_message('debug',__METHOD__.' data received: '.$data);
         $expectedDocumentType = $fvalidator->getDocutmentType();
         if(strcmp($expectedDocumentType,'xml')!=0)
         {
