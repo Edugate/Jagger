@@ -13,14 +13,16 @@ else
 <?php
 echo '<div id="fedtabs">';
 echo '<ul>
-  <li><a href="#general">' . lang('tabgeneral') . '</a></li>
-  <li><a href="#membership">' . lang('tabMembership') . '</a></li>
-    <li><a href="#metadata">' . lang('rr_metadata') . '</a></li>
-<li><a href="#attrs">' . lang('tabAttrs') . '</a></li>
-
-
-  <li><a href="#management">' . lang('tabMngt') . '</a></li>
-  </ul>
+ <li><a href="#general">' . lang('tabgeneral') . '</a></li>
+ <li><a href="#membership">' . lang('tabMembership') . '</a></li>
+ <li><a href="#metadata">' . lang('rr_metadata') . '</a></li>
+ <li><a href="#attrs">' . lang('tabAttrs') . '</a></li>';
+if(!empty($fvalidator))
+{
+  echo '<li><a href="#fvalidators">' . lang('tabFvalidators') . '</a></li>';
+}
+echo '<li><a href="#management">' . lang('tabMngt') . '</a></li>
+ </ul>
  ';
 
 $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');

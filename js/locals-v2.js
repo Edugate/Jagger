@@ -1,6 +1,32 @@
 var GINIT = {
     initialize: function() {
 
+$('form#fvform').submit(function(e){
+   e.preventDefault();
+   var str = $(this).serializeArray();
+   var url = $("form#fvform").attr('action');
+   $.ajax({
+     type: "POST",
+     url: url,
+     data: str,
+     timeout: 5000,
+     success: function(json){
+        $('#spinner').hide();
+        var data = $.parseJSON(json);
+     },
+     beforeSend: function() {
+        $('#spinner').show();
+     },
+     error: function(){
+        $('#spinner').hide();
+         alert("problem");
+     },
+     
+   });
+
+   //return false; 
+});
+
         $("a.fmembers").click(function() {
 
             var link = $(this), url = link.attr("href");
@@ -1557,3 +1583,56 @@ $(".submit").click(function() {
     return false;
 })
 
+$('#joinfed select#fedid').on('change',function(){
+    var csrfname = $("[name='csrfname']").val();
+    var csrfhash = $("[name='csrfhash']").val();
+    if(csrfname === undefined)
+    {
+        csrfname ='';
+    }
+    if(csrfhash === undefined)
+    {
+       csrfhash ='';
+    }
+      var soption = $(this).find("option:selected").val();
+      var sval = $(this).find("option:selected").text();
+      var jsurl = $('div#retrfvalidatorjson').text();
+      var postdata = {};
+      postdata[csrfname] = csrfhash;
+      postdata['fedid'] = soption;
+      if(soption != 0)
+      {
+         $.ajax({
+           type: "POST",
+           url: jsurl,
+           timeout: 2500,
+           cache: true,
+           data: postdata,
+           success: function(json){
+                $('#spinner').hide();
+                var data = $.parseJSON(json);
+                if (data)
+                {
+                   var vfedid = data.fedid;
+                   var fvalidid = data.id;
+                   var fvalidname = data.name;
+                   var fvaliddesc = data.desc;
+                   $('#fvform input[name="fedid"]').val(vfedid);  
+                   $('#fvform input[name="fvid"]').val(fvalidid);  
+                   $("div#fvalidesc").replaceWith('<div id="fvalidesc"><b>'+fvalidname+'</b><p>'+fvaliddesc+'</p></div>');
+                   $('#fvform').show();
+                  // GINIT.initialize();
+                }
+           },
+           beforeSend: function() {
+              $('#spinner').show();
+           },
+           error: function() {
+               $('#spinner').hide();
+               $('#fvform').hide();
+               $('#fvresult').hide();
+           } 
+         }).done(function(){
+           })
+      }
+});

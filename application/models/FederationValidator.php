@@ -178,8 +178,31 @@ class FederationValidator {
     }
     public function getReturnCodeElement()
     {
-      return unserialize($this->returncodeelement);
+      if(!empty($this->returncodeelement))
+      {
+         return unserialize($this->returncodeelement);
+      }
+      else
+      {
+         return array();
+      }
     }
+    public function getReturnCodeValues()
+    {
+        if(!empty($this->returncodevalue))
+        {
+           return unserialize($this->returncodevalue);
+        }
+        else{
+           return array();
+       }
+    }
+
+    public function getMessageCodeElements()
+    {
+         return unserialize($this->messagecodeelement);
+    }
+
 
     public function  setName($name)
     {

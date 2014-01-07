@@ -2432,6 +2432,11 @@ ul.fivesteps li {
   color: white;
 }
 
+.desc {
+  font-weight: normal;
+  font-size: smaller;
+}
+
 form {
   counter-reset: fieldsets;
   background: #ffe90d;

@@ -28,39 +28,40 @@ class Manage extends MY_Controller {
     function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin && !$this->input->is_ajax_request())
-        {
-            $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'location');
-        }
         $this->load->helper(array('cert'));
         $this->session->set_userdata(array('currentMenu' => 'federation'));
         /**
          * @todo add check loggedin
          */
         $this->tmp_providers = new models\Providers;
-        $this->load->library('zacl');
     }
 
 
     function index()
     {
-        $this->title=lang('title_fedlist');
-        $resource = 'fed_list';
-        $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
-        $data['categories'] = array();
-        foreach($federationCategories as $v)
+        if (!$this->j_auth->logged_in() )
         {
-            $data['categories'][] = array('catid'=>''.$v->getId().'',
+           redirect('auth/login', 'location');
+        }
+        else
+        {
+           $this->load->library('zacl');
+           $this->title=lang('title_fedlist');
+           $resource = 'fed_list';
+           $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
+           $data['categories'] = array();
+           foreach($federationCategories as $v)
+           {
+               $data['categories'][] = array('catid'=>''.$v->getId().'',
                                            'name'=>''.$v->getName().'',
                                           'title'=>''.$v->getFullName().'',
                                            'desc'=>''.$v->getDescription().'',
                                         'default'=>''.$v->getIsDefault().'');
+           }
+           $data['content_view'] = 'federation/list_view.php';
+           $this->load->view('page', $data);
         }
-        $data['content_view'] = 'federation/list_view.php';
-        $this->load->view('page', $data);
     }
 
     function showmembers($fedid)
@@ -74,6 +75,8 @@ class Manage extends MY_Controller {
            show_error('Session invalid',403);
            
        }
+
+       $this->load->library('zacl');
  
        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
        if(empty($federation))
@@ -86,7 +89,6 @@ class Manage extends MY_Controller {
            show_error(lang('error_nomembersforfed'),404);
        }
        $preurl = base_url().'providers/detail/show/';
-       //$members = array('idp','sp','both');
        $members = array();
        foreach($fmembers as $m)
        {
@@ -107,6 +109,12 @@ class Manage extends MY_Controller {
     }
     function showcontactlist($fed_name,$type=NULL)
     {
+       if(!$this->j_auth->logged_in())
+       {
+           show_error('no per',403);
+       }
+       $this->load->library('zacl');
+
        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
        if (empty($federation))
        {
@@ -178,6 +186,12 @@ class Manage extends MY_Controller {
 
     function show($fed_name)
     {
+        if(!$this->j_auth->logged_in())
+        {
+           redirect('auth/login', 'location');
+           
+        }
+        $this->load->library('zacl');
         $result = array();
         $this->load->library('show_element');
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
@@ -358,11 +372,79 @@ class Manage extends MY_Controller {
             $data['result']['membership'][] = array('data' => array('data' => lang('bothprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
             $data['result']['membership'][] = array('data' => array('data' => $table_of_members['BOTH'], 'colspan' => 2));
         }
+
+        $fvalidators = $federation->getValidators();
+
+        if($fvalidators->count() > 0)
+        {
+           $data['fvalidator'] = TRUE;
+           $data['result']['fvalidators'] = array();
+
+           if($has_write_access)
+           {
+               foreach($fvalidators as $f)
+               {
+                   $data['result']['fvalidators'][] =  array('data' => array('data' => $f->getName(), 'class' => 'highlight', 'colspan' => 2));
+                   $isenabled = $f->getEnabled();
+                   $method = $f->getMethod();
+                   if($isenabled)
+                   {
+                       $data['result']['fvalidators'][] = array('data' => array('data' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')), 'colspan' => 2));
+
+                   }
+                   else
+                   {
+                       $data['result']['fvalidators'][] = array('data' => array('data' => makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled')), 'colspan' => 2));
+
+                   }
+                   $data['result']['fvalidators'][] = array('data' => lang('Description'),'value'=>$f->getDescription());
+		   $data['result']['fvalidators'][] = array('data' => lang('fvalid_doctype'),'value'=>$f->getDocutmentType());
+                   $data['result']['fvalidators'][] = array('data' => lang('fvalid_url'),'value'=>$f->getUrl());
+                   $data['result']['fvalidators'][] = array('data' => lang('rr_httpmethod'),'value'=>$method);
+                   $data['result']['fvalidators'][] = array('data' => lang('fvalid_entparam'),'value'=>$f->getEntityParam());
+                   if(strcmp($method,'POST') == 0)
+                   {
+                      $data['result']['fvalidators'][] = array('data' => lang('fvalid_optargs'),'value'=>implode('<br />',$f->getOptargs()));
+                   }
+                   else
+                   {
+                      $data['result']['fvalidators'][] = array('data' => lang('rr_argsep'),'value'=>$f->getSeparator());
+                   }
+                   $data['result']['fvalidators'][] = array('data' => lang('fvalid_retelements'),'value'=>implode('<br />',$f->getReturnCodeElement()));
+                   
+                   $retvalues = $f->getReturnCodeValues();
+                   $retvaluesToHtml = '';
+                   foreach($retvalues as $k=>$v)
+                   {
+                       $retvaluesToHtml .= '<div>'.$k.': ';
+                       if(!empty($v) && is_array($v))
+                       {
+                            foreach($v as $v1)
+                            {
+                                $retvaluesToHtml .= '"'.$v1.'"; ';
+                            }
+                       }
+                   } 
+                   $data['result']['fvalidators'][] = array('data' => lang('fvalid_retelements'),'value'=>$retvaluesToHtml); 
+                   $data['result']['fvalidators'][] = array('data' => lang('fvalid_msgelements'),'value'=>implode('<br />',$f->getMessageCodeElements())); 
+               }
+           }
+           else
+           {
+               $data['result']['fvalidators'][] = array('data' => array('data' => '<div class="alert">'.lang('rr_noperm').'</div>', 'colspan' => 2));
+           }
+        }
+
         $this->load->view('page', $data);
     }
 
     function members($fed_name)
     {
+        if (!$this->j_auth->logged_in() )
+        {
+           redirect('auth/login', 'location');
+        }
+        $this->load->library('zacl');
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation))
         {
@@ -398,6 +480,11 @@ class Manage extends MY_Controller {
 
     function addbulk($fed_name, $type, $message = null)
     {
+        if (!$this->j_auth->logged_in() )
+        {
+           redirect('auth/login', 'location');
+        }
+        $this->load->library('zacl');
         $form_elements = array();
 
         $this->load->helper('form');
@@ -476,6 +563,11 @@ class Manage extends MY_Controller {
 
     public function bulkaddsubmit()
     {
+        if (!$this->j_auth->logged_in() )
+        {
+           redirect('auth/login', 'location');
+        }
+        $this->load->library('zacl');
         $message = null;
         $fed_name = $this->input->post('fed');
         $memberstype = $this->input->post('memberstype');
@@ -537,6 +629,11 @@ class Manage extends MY_Controller {
 
     public function inviteprovider($fed_name)
     {
+        if (!$this->j_auth->logged_in() )
+        {
+           redirect('auth/login', 'location');
+        }
+        $this->load->library('zacl');
         $this->load->library('show_element');
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation))
@@ -656,7 +753,12 @@ class Manage extends MY_Controller {
     public function removeprovider($fed_name)
     {
 
-
+        
+        if (!$this->j_auth->logged_in() )
+        {
+           redirect('auth/login', 'location');
+        }
+        $this->load->library('zacl');
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation))
         {
