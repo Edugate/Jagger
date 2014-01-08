@@ -2,7 +2,7 @@
 
 
 <?php
-if(!empty($subtitle))
+if(empty($subtitle))
 {
    echo '<div id="subtitle"><h3><a href="'.base_url().'providers/detail/show/'.$providerid.'">'.$name.'</a></h3><h4>'.$entityid.'</h4></div>';
 }
@@ -18,6 +18,7 @@ if(!empty($error_message))
 $attrs = array('id'=>'fvform','style'=>'display:none;');
 $hidden = array('fedid'=>'','provid'=>''.$providerid.'','fvid'=>'');
 echo form_open(base_url().'federations/fvalidator/validate',$attrs,$hidden);
+echo '<div id="fvresult" style="display:none;"><div><b>'.lang('fvalidcodereceived').'</b>: <span id="fvreturncode"></span></div><div><p><b>'.lang('fvalidmsgsreceived').'</b>:</p><div id="fvmessages"></div></div></div>';
 echo '<p><b>'.lang('validatewithfedvalid').'</b></p>';
 echo '<div id="fvalidesc"></div>';
 echo '<div class="buttons"><button type="submit" id="fvalidate" name="fvalidate" value="fvalidate" class="editbutton saveicon">'.lang('rr_submit').'</button></div>'; 
@@ -25,7 +26,6 @@ echo '<div class="buttons"><button type="submit" id="fvalidate" name="fvalidate"
 ?>
 </form>
 <br />
-<div id="fvresult" style="display:none;"></div>
 <?php
 if(!empty($form))
 {

@@ -5,6 +5,7 @@ $('form#fvform').submit(function(e){
    e.preventDefault();
    var str = $(this).serializeArray();
    var url = $("form#fvform").attr('action');
+    
    $.ajax({
      type: "POST",
      url: url,
@@ -13,8 +14,32 @@ $('form#fvform').submit(function(e){
      success: function(json){
         $('#spinner').hide();
         var data = $.parseJSON(json);
+        if(!data)
+        {
+           alert('no data received from upstream server');
+        }
+        else
+        {
+           if(data.returncode) 
+           {
+              $("span#fvreturncode").append(data.returncode);
+              $("div#fvresult").show();
+           }
+           if(data.message)
+           {
+               var msgdata ;
+               $.each(data.message,function(i,v){
+                    msgdata ='<div>'+ i + ': '+ v + '</div>' ;
+                    $("div#fvmessages").append(msgdata);
+               });
+                
+           }
+          
+        }
      },
      beforeSend: function() {
+        $("span#fvreturncode").text('');
+        $("div#fvmessages").text('');
         $('#spinner').show();
      },
      error: function(){
