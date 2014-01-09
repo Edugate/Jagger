@@ -374,17 +374,23 @@ class Manage extends MY_Controller {
         }
 
         $fvalidators = $federation->getValidators();
-
-        if($fvalidators->count() > 0)
-        {
+        
+          if($has_write_access)
+          {
            $data['fvalidator'] = TRUE;
            $data['result']['fvalidators'] = array();
+           $addbtn = '<span style="float: right;"><a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '" class="addbutton addicon">' . lang('rr_add'). '</a></span>';
+           $data['result']['fvalidators'][] =  array('data' => array('data' => $addbtn, 'class' => 'highlight', 'colspan' => 2));
+          }
+        if($fvalidators->count() > 0)
+        {
 
            if($has_write_access)
            {
                foreach($fvalidators as $f)
                {
-                   $data['result']['fvalidators'][] =  array('data' => array('data' => $f->getName(), 'class' => 'highlight', 'colspan' => 2));
+                   $editbtn = '<span style="float: right;"><a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/'.$f->getId().'" class="editbutton editicon">' . lang('rr_edit'). '</a></span>';
+                   $data['result']['fvalidators'][] =  array('data' => array('data' => $f->getName(). ' '.$editbtn, 'class' => 'highlight', 'colspan' => 2));
                    $isenabled = $f->getEnabled();
                    $method = $f->getMethod();
                    if($isenabled)
@@ -539,7 +545,6 @@ class Manage extends MY_Controller {
             log_message('error',  'type is expected to be sp or idp but ' . $type . 'given');
             show_error( 'wrong type', 404);
         }
-        //$rest_providers = array();
         foreach ($providers as $i)
         {
             if (!$federation_members->contains($i))

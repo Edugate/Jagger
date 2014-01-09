@@ -49,6 +49,9 @@ $lang['rrprovs']                    = 'Providers';
 $lang['idpregsuccess']              = 'Identity Provider (Home Organization) registration - success';
 $lang['stadefadded']                = 'New statistic definition has been added';
 $lang['spregsuccess']               = 'Service Provider  registration - success';
+$lang['fvalidaddsuccess']           = 'Federation validator has been added';
+$lang['fvalidupdatesuccess']           = 'Federation validator has been updated';
+
 $lang['tabgeneral']                 = 'General';
 $lang['tabprivacy']                 = 'Privacy';
 $lang['tabprotonameid']             = 'ProtEnum/NameIDs';

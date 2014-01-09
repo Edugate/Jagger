@@ -25,7 +25,7 @@ if(!isset($vurl))
 }
 if(!isset($vmethod))
 {
-  $vmethod = 'get';
+  $vmethod = 'GET';
 }
 if(!isset($vparam))
 {
@@ -67,12 +67,23 @@ if(!isset($vmsgelements))
 {
  $vmsgelements = null;
 }
+if(!isset($venabled))
+{
+ $venabled = false;
+}
+
 echo form_open();
 echo '<fieldset><legend>'.lang('general').'</legend><ol>';
 echo '<li>';
 echo '<label for="vname">'.lang('fvalid_name').'</label>';
 echo '<input type="text" id="vname" name="vname" 
                            value="'.set_value('vname',$vname).'" maxlength="31"/>';
+echo '</li>';
+echo '<li>';
+echo '<label for="venabled">'.lang('rr_enabled').'</label>';
+?>
+<input type="checkbox" name="venabled" id="venabled" value="yes" <?php echo set_checkbox('venabled', 'yes',$venabled); ?> style="margin:10px" />
+<?php
 echo '</li>';
 echo '<li>';
 echo '<label for="vdesc">'.lang('rr_description').'</label>';
