@@ -316,7 +316,12 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <div id="spinner" class="spinner" style="display:none;">
             <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="<?php echo lang('loading');?>"/>
         </div>
-        <div style="display: none"><input type="hidden" name="baseurl" value="<?php echo base_url(); ?>"></div>
+        <div style="display: none">
+             <input type="hidden" name="baseurl" value="<?php echo base_url(); ?>">
+             <input type="hidden" name="csrfname" value="<?php echo $this->security->get_csrf_token_name(); ?>">
+             <input type="hidden" name="csrfhash" value="<?php echo $this->security->get_csrf_hash(); ?>">
+        </div>
+        
         <button id="jquerybubblepopupthemes" style="display:none;" value="<?php echo $jquerybubblepopupthemes; ?>"></button> 
         <script src="<?php echo $base_url;?>js/jquery-min.js"></script>
         <script>window.jQuery || document.write('<script src="<?php echo $base_url; ?>js/jquery-min.js">\x3C/script>')</script>

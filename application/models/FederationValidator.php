@@ -164,6 +164,31 @@ class FederationValidator {
     {
       return unserialize($this->optargs);
     }
+    public function getOptargsToInputStr()
+    {
+        $result ='';
+        $notfirst = false;
+        $o = $this->getOptargs();
+        foreach($o as $k=>$v)
+        {
+           if($notfirst)
+           {
+              $notfirst = true;
+              $result .= '$$'.$k;
+           }
+           else
+           {
+              $result .= $k;
+           }
+           if(isset($v))
+           {
+              $result .= '$:$'.$v;
+           }
+           
+
+        }
+        return $result;
+    }
     public function getSeparator()
     {
       return $this->argseparator;
@@ -178,8 +203,31 @@ class FederationValidator {
     }
     public function getReturnCodeElement()
     {
-      return unserialize($this->returncodeelement);
+      if(!empty($this->returncodeelement))
+      {
+         return unserialize($this->returncodeelement);
+      }
+      else
+      {
+         return array();
+      }
     }
+    public function getReturnCodeValues()
+    {
+        if(!empty($this->returncodevalue))
+        {
+           return unserialize($this->returncodevalue);
+        }
+        else{
+           return array();
+       }
+    }
+
+    public function getMessageCodeElements()
+    {
+         return unserialize($this->messagecodeelement);
+    }
+
 
     public function  setName($name)
     {
@@ -227,11 +275,11 @@ class FederationValidator {
     {
         if(!empty($args))
         {
-           $this->optargs = serialized($args);
+           $this->optargs = serialize($args);
         }
         else
         {
-           $this->optargs = serialized(array());
+           $this->optargs = serialize(array());
         }
     }
     public function addOptarg($arg, $value=null)
@@ -277,11 +325,19 @@ class FederationValidator {
      */
     public function setReturnCodeValue(array $values)
     {
+       if(empty($values))
+       {
+          $values=array();
+       }
         $this->returncodevalue = serialize($values);
         return $this;
     }
     public function setMessageElement(array $msgs)
     {
+        if(empty($msgs))
+        {
+            $msgs = array();
+        }
         $this->messagecodeelement = serialize($msgs);
         return $this;
 
