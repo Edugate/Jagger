@@ -192,17 +192,26 @@ class Fvalidator extends MY_Controller {
            {
               show_error('Expected return code not received',404);
            } 
-           $codeDomeValue = $codeDoms->item(0)->nodeValue;
+           $codeDomeValue = trim($codeDoms->item(0)->nodeValue);
            log_message('debug',__METHOD__.' found expected value '. $codeDomeValue);
            $expectedReturnValues = $fvalidator->getReturnCodeValues();
            $elementWithMessage = $fvalidator->getMessageCodeElements();
            $result = array();
            foreach($expectedReturnValues as $k => $v )
            {
-              if(is_array($v) && in_array($codeDomeValue,$v))
+             
+              if(is_array($v))
               {
-                  $result['returncode'] = $k;
-                  break;
+ 
+                  foreach($v as $v1)
+                  {
+                      if(strcasecmp($codeDomeValue,$v1) == 0)
+                      {
+                         $result['returncode'] = $k;
+                         break;
+                      }
+ 
+                  }
               }
            }
            if(!isset($result['returncode']))
@@ -216,7 +225,7 @@ class Fvalidator extends MY_Controller {
               $o = $docxml->getElementsByTagName($v);
               if($o->length >0)
               {
-                 $g = $o->item(0)->nodeValue;
+                 $g = trim($o->item(0)->nodeValue);
                  log_message('debug',__METHOD__.' value for '.$v.' element: '.$g);
                  if(!empty($g))
                  {
