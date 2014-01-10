@@ -37,9 +37,16 @@ class Arp extends MY_Controller
      * @param models\Provider $idp
      * @return string|null
      */
-    private function generateXml($idp)
+    private function generateXml($idp, $inherit=FALSE)
     {
-        $result1 = $this->arp_generator->arpToXML($idp);
+        if($inherit)
+        {
+           $result1 = $this->arp_generator->arpToXML($idp,FALSE,TRUE);
+        }
+        else
+        {
+           $result1 = $this->arp_generator->arpToXML($idp,FALSE,FALSE);
+        }
         if (!empty($result1)) {
             $result = $result1->saveXML();
         }
@@ -76,7 +83,15 @@ class Arp extends MY_Controller
         $arpcached = $this->cache->get($cacheid);
         if (empty($arpcached)) {
             log_message('debug', 'not found in memcache');
-            $data['out'] = $this->generateXml($idp);
+            $inherit = $this->config->item('arpbyinherit');
+            if(empty($inherit))
+            {
+               $data['out'] = $this->generateXml($idp,FALSE);
+            }
+            else
+            {
+               $data['out'] = $this->generateXml($idp,TRUE);
+            }
             if (!empty($data['out'])) {
                 $this->cache->save($cacheid, $data['out'], 120);
             }

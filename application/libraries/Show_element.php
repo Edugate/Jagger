@@ -69,7 +69,14 @@ class Show_element {
         $c_arps = array();
         foreach ($custom_arps as $key)
         {
+            $c_arps[$key->getRequester()][$key->getAttribute()->getName()]['id'] = $key->getId();
             $c_arps[$key->getRequester()][$key->getAttribute()->getName()]['custom'] = $key->getRawdata();
+            $c_arps[$key->getRequester()][$key->getAttribute()->getName()]['attr_id'] = $key->getAttribute()->getId();
+            $c_arps[$key->getRequester()][$key->getAttribute()->getName()]['status'] = null;
+            $spid = $key->getRequester();
+            $sp_requester = $this->tmp_providers->getOneSpById($spid);
+            $requesterName = $sp_requester->getName();
+            $this->entitiesmaps[$sp_requester->getEntityId()] = $requesterName;
         }
         $tmp_reqs = new models\AttributeRequirements;
         foreach ($arps as $a)
@@ -110,12 +117,39 @@ class Show_element {
                     $result2[$name][$attr_name]['spid'] = $r->getSP()->getId();
                     $result2[$name][$attr_name]['name'] = $r->getSP()->getName();
                 }
-                if (array_key_exists($spid, $c_arps) && array_key_exists($a->getAttribute()->getName(), $c_arps[$spid]))
+                if (isset($c_arps[$spid][$a->getAttribute()->getName()]['custom']))
                 {
                     $result[$name][$a->getAttribute()->getName()]['custom'] = $c_arps[$spid][$a->getAttribute()->getName()]['custom'];
+                    unset($c_arps[$spid]);
                 }
             }
         }
+        foreach($c_arps as $k=>$v)
+        {
+            $sp_requester = $this->tmp_providers->getOneSpById($k);
+            $required_attrs = $tmp_reqs->getRequirementsBySP($sp_requester);
+            
+            foreach($v as $k1=>$v1)
+            {
+                $result[$sp_requester->getEntityId()][$k1] = array (
+                    'id'=>$v1['id'],
+                    'name'=>$sp_requester->getName(),
+                    'custom' => $v1['custom'],
+                    'attr_id'=>$v1['attr_id'],
+                    'spid' => $k,
+                    'policy'=> 'not set',
+                    'status'=>$v1['status'],
+                 );
+            }
+            foreach($required_attrs as $p)
+            {
+               $pattrname = $p->getAttribute()->getName();
+               if(array_key_exists($pattrname,$result[$sp_requester->getEntityId()]))
+               {
+                  $result[$sp_requester->getEntityId()][$pattrname]['status'] = $p->getStatus();
+               }
+            }
+        } 
         $result3 = array();
         if (!empty($result2) && is_array($result2) && count($result) > 0)
         {
@@ -142,6 +176,7 @@ class Show_element {
             }
         }
         return $result;
+
     }
 
     public function displayFederationsArp(models\Provider $provider)
@@ -258,9 +293,8 @@ class Show_element {
                 {
                     $lbl = '';
                 }
-
+               
                 $attributes[] = array('data' => array('data' => $lbl . $this->entitiesmaps[$key] . $link_sp . ' <small>' . $key . '</small>', 'colspan' => 3, 'class' => 'highlight'));
-
                 foreach ($value as $attr_key => $attr_value)
                 {
                     if (!array_key_exists($attr_key, $supported_attrs))
