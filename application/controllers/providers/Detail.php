@@ -59,11 +59,13 @@ class Detail extends MY_Controller {
            }
            if(!is_numeric($id))
            {
-              show_error('denied', 403);
+              show_error('denied 1', 403);
            }
            $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
+           log_message('debug','TEST access '.$has_write_access);
            if ($has_write_access === TRUE)
            {
+               log_message('debug','TEST access '.$has_write_access);
                $id=trim($id);
                $keyPrefix = getCachePrefix();
                $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
@@ -71,8 +73,18 @@ class Detail extends MY_Controller {
                $this->cache->delete($cache1);
                $cache2 = 'arp_'.$id;
                $this->cache->delete($cache2);
-               $this->j_cache->library('arp_generator', 'arpToArray', array($id), -1);
+               $arpByInherit = $this->config->item('arpbyinherit');
+               if(!empty($arpByInherit))
+               {
+                   $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($id), -1);
+
+               }
+               else
+               {
+                   $this->j_cache->library('arp_generator', 'arpToArray', array($id), -1);
+               }
                echo 'OK';
+               return TRUE;
            }
            else
            {

@@ -624,7 +624,6 @@ class Arp_generator {
             $members_byid[$m_value->getId()] = $m_value;
         }
 
-        log_message('debug', 'TEST ' . serialize(array_keys($members_byid)));
         $members_requirements = $tmp_requirements->getRequirementsBySPs(array_keys($members_byid));
 
         log_message('debug', 'Arp: found ' . count($members) . ' for idp (id:' . $idp->getId() . '): ' . $idp->getEntityId() . '');
@@ -720,7 +719,6 @@ class Arp_generator {
                 $m_policy[$k] = 0;
             }
         }
-        log_message('debug', 'TEST '.__METHOD__.' m_policy: '.serialize($m_policy));
         
         
         foreach ($members as $m)
@@ -758,9 +756,7 @@ class Arp_generator {
                     }
                 }
             }
-            log_message('debug', 'TEST before replace: '.serialize($attrs[$m->getEntityId()]));
             $attrs[$m->getEntityId()] = array_replace($attrs[$m->getEntityId()], $overwritePolicy);
-            log_message('debug', 'TEST after replace: '.serialize($attrs[$m->getEntityId()]));
         }
         $i = 0;
 
