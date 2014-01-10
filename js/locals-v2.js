@@ -1,56 +1,63 @@
 var GINIT = {
     initialize: function() {
 
-$('form#fvform').submit(function(e){
-   e.preventDefault();
-   var str = $(this).serializeArray();
-   var url = $("form#fvform").attr('action');
-    
-   $.ajax({
-     type: "POST",
-     url: url,
-     data: str,
-     timeout: 5000,
-     success: function(json){
-        $('#spinner').hide();
-        var data = $.parseJSON(json);
-        if(!data)
-        {
-           alert('no data received from upstream server');
-        }
-        else
-        {
-           if(data.returncode) 
-           {
-              $("span#fvreturncode").append(data.returncode);
-              $("div#fvresult").show();
-           }
-           if(data.message)
-           {
-               var msgdata ;
-               $.each(data.message,function(i,v){
-                    msgdata ='<div>'+ i + ': '+ v + '</div>' ;
-                    $("div#fvmessages").append(msgdata);
-               });
-                
-           }
-          
-        }
-     },
-     beforeSend: function() {
-        $("span#fvreturncode").text('');
-        $("div#fvmessages").text('');
-        $('#spinner').show();
-     },
-     error: function(){
-        $('#spinner').hide();
-         alert("problem");
-     },
-     
-   });
+        $('form#fvform').submit(function(e) {
+            e.preventDefault();
+            var str = $(this).serializeArray();
+            var url = $("form#fvform").attr('action');
 
-   //return false; 
-});
+            $.ajax({
+                type: "POST",
+                url: url,
+                cache: false,
+                data: str,
+                timeout: 10000,
+                success: function(json) {
+                    $('#spinner').hide();
+                    var data = $.parseJSON(json);
+                    if (!data)
+                    {
+                        alert('no data received from upstream server');
+                    }
+                    else
+                    {
+                        if (data.returncode)
+                        {
+                            $("span#fvreturncode").append(data.returncode);
+                            $("div#fvresult").show();
+                        }
+                        if (data.message)
+                        {
+                            var msgdata;
+                            $.each(data.message, function(i, v) {
+                                msgdata = '<div>' + i + ': ' + v + '</div>';
+                                $("div#fvmessages").append(msgdata);
+                            });
+
+                        }
+
+                    }
+                },
+                beforeSend: function() {
+                    $("span#fvreturncode").text('');
+                    $("div#fvmessages").text('');
+                    $('#spinner').show();
+                },
+                error: function(x, t, m) {
+                    $('#spinner').hide();
+                    if (t === 'timeout')
+                    {
+                        alert('got timeout from validation server');
+                    }
+                    else
+                    {
+                        alert("unknown problem with receiving data");
+                    }
+                }
+            });
+
+            //return false; 
+        });
 
         $("a.fmembers").click(function() {
 
@@ -706,14 +713,7 @@ $(function() {
 
                     });
                 }
-
-                //   i = new Image();
-                //   i.src = url;
-                // $('#statisticdiag').html('<img src="'+url+'/'+Math.floor(Math.random()*1000)+'" />');
-                //$('#statisticdiag').replaceWith(i);
                 i = null;
-
-
             },
             beforeSend: function() {
                 $('#spinner').show();
@@ -1415,12 +1415,12 @@ function go_to_private_page()
 $("button#parsemetadatasp").click(function() {
     var xmlsource = $('textarea#metadatabody').val();
     try {
-      var xmlDoc = $.parseXML(xmlsource);
+        var xmlDoc = $.parseXML(xmlsource);
     }
-    catch(err)
+    catch (err)
     {
-      alert(err);
-      return false;
+        alert(err);
+        return false;
     }
 
     var xml = $(xmlDoc);
@@ -1466,11 +1466,11 @@ $("button#parsemetadatasp").click(function() {
         }
     });
 
-    var nameids ='';
-    $entity.find("md\\:NameIDFormat, NameIDFormat").each(function(){
+    var nameids = '';
+    $entity.find("md\\:NameIDFormat, NameIDFormat").each(function() {
         nameids = nameids + ' ' + $(this).text();
     });
-   
+
     $("#nameids").val(nameids);
 
     var certsign = false;
@@ -1520,24 +1520,24 @@ $("button#parsemetadatasp").click(function() {
 
 //  spregister
 
-var current_fs, next_fs, previous_fs; 
-var left, opacity, scale; 
-var animating; 
+var current_fs, next_fs, previous_fs;
+var left, opacity, scale;
+var animating;
 var index2;
 var addheight = $("#progressbar").height() + 30;
 var fieldsetheight = $("#multistepform fieldset").height() + addheight;
 $("form#multistepform").css({'height': fieldsetheight});
 $(".next").click(function() {
-     var canproceed = true;
-     $(this).parent().find('input.required').each(function(){
-        if(!$.trim($(this).val()))
+    var canproceed = true;
+    $(this).parent().find('input.required').each(function() {
+        if (!$.trim($(this).val()))
         {
             alert("Missing input");
             canproceed = false;
             return false;
         }
     });
-    if(!canproceed)
+    if (!canproceed)
     {
         return false;
     }
@@ -1558,7 +1558,7 @@ $(".next").click(function() {
             current_fs.css({'transform': 'scale(' + scale + ')'});
             next_fs.css({'left': left, 'opacity': opacity});
         },
-        duration: 200, 
+        duration: 200,
         complete: function() {
             current_fs.hide();
             animating = false;
@@ -1608,56 +1608,56 @@ $(".submit").click(function() {
     return false;
 })
 
-$('#joinfed select#fedid').on('change',function(){
+$('#joinfed select#fedid').on('change', function() {
     var csrfname = $("[name='csrfname']").val();
     var csrfhash = $("[name='csrfhash']").val();
-    if(csrfname === undefined)
+    if (csrfname === undefined)
     {
-        csrfname ='';
+        csrfname = '';
     }
-    if(csrfhash === undefined)
+    if (csrfhash === undefined)
     {
-       csrfhash ='';
+        csrfhash = '';
     }
-      var soption = $(this).find("option:selected").val();
-      var sval = $(this).find("option:selected").text();
-      var jsurl = $('div#retrfvalidatorjson').text();
-      var postdata = {};
-      postdata[csrfname] = csrfhash;
-      postdata['fedid'] = soption;
-      if(soption != 0)
-      {
-         $.ajax({
-           type: "POST",
-           url: jsurl,
-           timeout: 2500,
-           cache: true,
-           data: postdata,
-           success: function(json){
+    var soption = $(this).find("option:selected").val();
+    var sval = $(this).find("option:selected").text();
+    var jsurl = $('div#retrfvalidatorjson').text();
+    var postdata = {};
+    postdata[csrfname] = csrfhash;
+    postdata['fedid'] = soption;
+    if (soption != 0)
+    {
+        $.ajax({
+            type: "POST",
+            url: jsurl,
+            timeout: 2500,
+            cache: true,
+            data: postdata,
+            success: function(json) {
                 $('#spinner').hide();
                 var data = $.parseJSON(json);
                 if (data)
                 {
-                   var vfedid = data.fedid;
-                   var fvalidid = data.id;
-                   var fvalidname = data.name;
-                   var fvaliddesc = data.desc;
-                   $('#fvform input[name="fedid"]').val(vfedid);  
-                   $('#fvform input[name="fvid"]').val(fvalidid);  
-                   $("div#fvalidesc").replaceWith('<div id="fvalidesc"><b>'+fvalidname+'</b><p>'+fvaliddesc+'</p></div>');
-                   $('#fvform').show();
-                  // GINIT.initialize();
+                    var vfedid = data.fedid;
+                    var fvalidid = data.id;
+                    var fvalidname = data.name;
+                    var fvaliddesc = data.desc;
+                    $('#fvform input[name="fedid"]').val(vfedid);
+                    $('#fvform input[name="fvid"]').val(fvalidid);
+                    $("div#fvalidesc").replaceWith('<div id="fvalidesc"><b>' + fvalidname + '</b><p>' + fvaliddesc + '</p></div>');
+                    $('#fvform').show();
+                    // GINIT.initialize();
                 }
-           },
-           beforeSend: function() {
-              $('#spinner').show();
-           },
-           error: function() {
-               $('#spinner').hide();
-               $('#fvform').hide();
-               $('#fvresult').hide();
-           } 
-         }).done(function(){
-           })
-      }
+            },
+            beforeSend: function() {
+                $('#spinner').show();
+            },
+            error: function() {
+                $('#spinner').hide();
+                $('#fvform').hide();
+                $('#fvresult').hide();
+            }
+        }).done(function() {
+        })
+    }
 });

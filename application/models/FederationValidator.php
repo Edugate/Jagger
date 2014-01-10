@@ -167,17 +167,17 @@ class FederationValidator {
     public function getOptargsToInputStr()
     {
         $result ='';
-        $notfirst = false;
+        $first = true;
         $o = $this->getOptargs();
         foreach($o as $k=>$v)
         {
-           if($notfirst)
+           if(!$first)
            {
-              $notfirst = true;
               $result .= '$$'.$k;
            }
            else
            {
+              $first=false;
               $result .= $k;
            }
            if(isset($v))
