@@ -197,4 +197,17 @@ $config['disable_extcirclemeta'] = TRUE;
 // set if you want to disable change entityid and/or scope for no Admins
 $config['entpartschangesdisallowed'] = array('entityid','scope');
 
-
+/**
+ * there are two logic ways to generate ARP files:
+ * 1) old: by overwrite with exclusion - for example: there are: default policy, per federation, per SP
+ *    if you have set specific policy for SP then default/perFederation are completely ignored for example:
+ *    default policy is to release MAIL, EPPN if required and  you set SP policy for only MAIL . As global policy is ignored that follows EPPN is not set - it means DENY
+ *    It may cause a lot of trouble with later management
+ *
+ * 2) by inherit: this new logic. Inherit: GLOBAL->PERFED (+ overwriting) ->SPECIFIC (+overwrite)
+ *      So in above example: EPPN is set -> overwrite global policy; MAIL is not set -> inherits from FED/GLOBAL
+ *
+ * To keep backward compatibility as default is set old logic. If you want to use new one (by inherit) you need to set: $config['arpbyinherit'] = TRUE; 
+ *    
+ */
+$config['arpbyinherit'] = FALSE;
