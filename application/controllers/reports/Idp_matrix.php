@@ -88,8 +88,16 @@ class Idp_matrix extends MY_Controller {
            $data['idpname'] = $idp->getEntityId();
         }
         $members = $this->_get_members($idp);
-        $arparray = $this->arp_generator->arpToXML($idp, TRUE);
+        $arpinherit = $this->config->item('arpbyinherit');
+        if(empty($arpinherit))
+        {
+           $arparray = $this->arp_generator->arpToXML($idp, TRUE, FALSE);
+        }
+        else
+        {
+           $arparray = $this->arp_generator->arpToXML($idp, TRUE, TRUE);
 
+        }
         $extends = $idp->getExtendMetadata();
         if (count($extends) > 0)
         {

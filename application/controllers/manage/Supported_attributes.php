@@ -98,7 +98,16 @@ class Supported_attributes extends MY_Controller {
         if (count($changes) > 0) {
             $idp->updated();
             $this->em->persist($idp);
-            $this->j_cache->library('arp_generator', 'arpToArray', array($idp->getId()),-1);
+            $arpinherit = $this->config->item('arpbyinherit');
+            if(empty($arpinherit))
+            {
+                $this->j_cache->library('arp_generator', 'arpToArray', array($idp->getId()),-1);
+            }
+            else
+            {
+                $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idp->getId()),-1);
+
+            }
             $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
         }
         $this->em->flush();
