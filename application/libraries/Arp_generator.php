@@ -756,17 +756,21 @@ class Arp_generator {
                     }
                 }
             }
-            $attrs[$m->getEntityId()] = array_replace($attrs[$m->getEntityId()], $overwritePolicy);
+            //$attrs[$m->getEntityId()] = array_replace($attrs[$m->getEntityId()], $overwritePolicy);
+            $attrs[$m->getEntityId()] = array_replace($attrs[$m->getEntityId()], array_intersect_key($overwritePolicy,$attrs[$m->getEntityId()]));
         }
         $i = 0;
+        print_r($attrs);
 
         foreach ($specific_attributes as $pkey => $pvalue)
         {          
             if (array_key_exists($pkey, $attrs))
             {
-                $attrs[$pkey] = array_replace($attrs[$pkey], $pvalue);             
+                //$attrs[$pkey] = array_replace($attrs[$pkey], $pvalue);             
+                $attrs[$pkey] = array_merge($attrs[$pkey], array_intersect_key($pvalue, $attrs[$pkey]));
             }
         }
+        print_r($attrs);
         foreach ($members as $m)
         {
             $r = null;
