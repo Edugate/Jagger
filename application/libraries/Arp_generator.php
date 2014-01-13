@@ -760,7 +760,6 @@ class Arp_generator {
             $attrs[$m->getEntityId()] = array_replace($attrs[$m->getEntityId()], array_intersect_key($overwritePolicy,$attrs[$m->getEntityId()]));
         }
         $i = 0;
-        print_r($attrs);
 
         foreach ($specific_attributes as $pkey => $pvalue)
         {          
