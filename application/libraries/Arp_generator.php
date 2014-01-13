@@ -769,7 +769,6 @@ class Arp_generator {
                 $attrs[$pkey] = array_merge($attrs[$pkey], array_intersect_key($pvalue, $attrs[$pkey]));
             }
         }
-        print_r($attrs);
         foreach ($members as $m)
         {
             $r = null;
