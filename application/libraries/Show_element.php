@@ -376,7 +376,7 @@ class Show_element {
         $icon = base_url() . 'images/icons/pencil-field.png';
         if (!empty($source))
         {
-            $tmpl = array('table_open' => '<table  id="details">');
+            $tmpl = array('table_open' => '<table  id="detailsnosort">');
             $this->ci->table->set_template($tmpl);
             $this->ci->table->set_heading(''.lang('rr_attr_name').'', ''.lang('policy').'');
             if(empty($disabledcaption))
@@ -437,7 +437,7 @@ class Show_element {
                 $attributes[] = array('' . $attr_name . '' . $link . '', $s['release']);
             }
 
-            $tmpl = array('table_open' => '<table  id="details">');
+            $tmpl = array('table_open' => '<table  id="detailsnosort">');
 
             $this->ci->table->set_template($tmpl);
             $this->ci->table->set_heading(''.lang('attrname').'', ''.lang('policy').'');
