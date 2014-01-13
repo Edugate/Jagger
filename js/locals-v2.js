@@ -234,6 +234,16 @@ var GINIT = {
 
 $(document).ready(function() {
     GINIT.initialize();
+
+$('#idpmatrix tr th').each(function(i) {
+     var tds = $(this).parents('table').find('tr td:nth-child(' + (i + 1) + ')');
+        if(tds.length == tds.filter(':empty').length) { 
+            $(this).hide();
+            tds.hide();
+        } 
+}); 
+
+
     var fedloginurl = $('a#fedlogin').attr('href');
     var browsertime = new Date();
     var browsertimezone = -browsertime.getTimezoneOffset();

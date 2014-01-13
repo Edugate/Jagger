@@ -42,7 +42,7 @@ if(!empty($result))
 {
    $tmpl = array('table_open' => '<table  id="idpmatrix" class="zebra">');
    $this->table->set_template($tmpl);
-   $this->table->set_empty('&nbsp;');
+   $this->table->set_empty('');
    echo   $this->table->generate($result);
    $this->table->clear();
 }

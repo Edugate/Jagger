@@ -125,7 +125,7 @@ class Idp_matrix extends MY_Controller {
         $attrmatrix_template = array();
         foreach ($attrs as $a)
         {
-            $attrmatrix_template[$a->getName()] = '<div class="dis">&nbsp;</div>';
+            $attrmatrix_template[$a->getName()] = '';
         }
 
         foreach ($arparray as $entityid => $spv)
