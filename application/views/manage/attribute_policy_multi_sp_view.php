@@ -1,7 +1,7 @@
 <div id="pagetitle"><?php echo lang('rr_specarpforsp');?></div>
 
 <?php
-$tmpl = array ( 'table_open'  => '<table id="details">' );
+$tmpl = array ( 'table_open'  => '<table id="detailsnosort">' );
 
 $this->table->set_template($tmpl);
 $this->table->set_heading(''.lang('attrname').'',  ''.lang('rr_status').'', ''.lang('reasonofreq').'',''.lang('policy').'');
