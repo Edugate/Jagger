@@ -277,7 +277,7 @@ class Importer extends MY_Controller {
                                   CURLOPT_NOPROGRESS=>FALSE,
                                   CURLOPT_PROGRESSFUNCTION=>function($DownloadSize, $Downloaded, $UploadSize, $Uploaded)  use ($maxsize)
                                                          {
-                                                             return ($Downloaded > ($this->curl_maxsize * 1024)) ? 1 : 0;
+                                                             return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
                                                          }
                           ));
 
@@ -292,7 +292,7 @@ class Importer extends MY_Controller {
                                   CURLOPT_NOPROGRESS=>FALSE,
                                   CURLOPT_PROGRESSFUNCTION=>function($DownloadSize, $Downloaded, $UploadSize, $Uploaded)  use ($maxsize)
                                                          {
-                                                             return ($Downloaded > ($this->curl_maxsize * 1024)) ? 1 : 0;
+                                                             return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
                                                          }
                           ));
           }
