@@ -268,13 +268,14 @@ class Importer extends MY_Controller {
          {
              $this->curl_maxsize = 20000;
          }
+         $maxsize = $this->curl_maxsize;
          if($sslvalidate)
          {
              $this->xmlbody = $this->curl->simple_get(''.$metadataurl.'', array(), array(
                                   CURLOPT_TIMEOUT => $curl_timeout,
                                   CURLOPT_BUFFERSIZE=>128,
                                   CURLOPT_NOPROGRESS=>FALSE,
-                                  CURLOPT_PROGRESSFUNCTION=>function($DownloadSize, $Downloaded, $UploadSize, $Uploaded)
+                                  CURLOPT_PROGRESSFUNCTION=>function($DownloadSize, $Downloaded, $UploadSize, $Uploaded)  use ($maxsize)
                                                          {
                                                              return ($Downloaded > ($this->curl_maxsize * 1024)) ? 1 : 0;
                                                          }
@@ -289,7 +290,7 @@ class Importer extends MY_Controller {
                                   CURLOPT_TIMEOUT => $curl_timeout,
                                   CURLOPT_BUFFERSIZE=>128,
                                   CURLOPT_NOPROGRESS=>FALSE,
-                                  CURLOPT_PROGRESSFUNCTION=>function($DownloadSize, $Downloaded, $UploadSize, $Uploaded)
+                                  CURLOPT_PROGRESSFUNCTION=>function($DownloadSize, $Downloaded, $UploadSize, $Uploaded)  use ($maxsize)
                                                          {
                                                              return ($Downloaded > ($this->curl_maxsize * 1024)) ? 1 : 0;
                                                          }
