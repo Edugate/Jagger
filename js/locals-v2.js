@@ -244,6 +244,7 @@ $('#idpmatrix tr th').each(function(i) {
 }); 
 
 
+
     var fedloginurl = $('a#fedlogin').attr('href');
     var browsertime = new Date();
     var browsertimezone = -browsertime.getTimezoneOffset();
@@ -1330,6 +1331,52 @@ $(document).ready(function() {
         return false;
 
     }); // end submit event
+$("#idpmatrix tr td").dblclick(function(ev){
+    var col = $(this).parent().children().index($(this));
+    var cell = $.trim($(this).text());
+    var oko = $('div', this);
+    if(col > 0 && cell.length>0)
+    {
+    var row = $(this).parent().parent().children().index($(this).parent());
+    var attrname = $("#idpmatrix th:eq("+col+") text").text();
+    var spname = $("#idpmatrix tbody tr:eq("+row+") td:first a").attr('title');
+    $("form#idpmatrixform #attribute").val(attrname);
+    $("form#idpmatrixform #requester").val(spname);
+    $("form#idpmatrixform span.mrequester").html(spname);
+    $("form#idpmatrixform span.mattribute").html(attrname);
+    var url = $("form#idpmatrixform").attr('action');
+       idpmatrixform('', function(ev) {
+    var serializedData = $("form#idpmatrixform").serializeArray();
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: serializedData,
+                success: function(data) {
+                    if(!oko.hasClass('dis'))
+                    {
+                    if((data == "2" && (cell == "R" || cell == "D")) || (data == "1" && cell == "R"))
+                    {
+                        oko.attr('class','perm');
+                    }
+                    else
+                    {
+                       if ((data == "1" && cell == "D") || (data == "0"))
+                       {
+                        oko.attr('class','den');
+                       }
+
+                    }
+                    }
+                },
+                error: function(data) {
+                    alert('Error occured');
+                }
+            });
+        }
+        );
+        };
+        ev.preventDefault();
+});
 
 
     $("#rmstatdef button").click(function(ev) {
@@ -1387,6 +1434,33 @@ $(document).ready(function() {
         });
         ev.preventDefault();
     });
+    function idpmatrixform(message, callback) {
+        $('#idpmatrixform').modal({
+            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+            position: ["20%", ],
+            overlayId: 'simpledialog-overlay',
+            minHeight: '190px',
+            containerId: 'simpledialog-container',
+            onShow: function(dialog) {
+                var modal = this;
+
+                $('.message', dialog.data[0]).append(message);
+
+                // if the user clicks "yes"
+                $('.yes', dialog.data[0]).click(function() {
+                    // call the callback
+                    if ($.isFunction(callback)) {
+                        callback.apply();
+                    }
+                    // close the dialog
+                    modal.close(); // or $.modal.close();
+                });
+            }
+        });
+    }
+
+
+
 
     function sconfirm(message, callback) {
         $('#sconfirm').modal({
