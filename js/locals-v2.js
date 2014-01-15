@@ -1439,7 +1439,7 @@ $("#idpmatrix tr td").click(function(ev){
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%", ],
             overlayId: 'simpledialog-overlay',
-            minHeight: '190px',
+            minHeight: '220px',
             containerId: 'simpledialog-container',
             onShow: function(dialog) {
                 var modal = this;
