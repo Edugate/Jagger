@@ -48,7 +48,7 @@ if(!empty($result))
 
    //echo confirmDialog(''.lang('title_confirm').'', ''.sprintf(lang('douwanttoremove'),lang('statdefinition')).'', ''.lang('rr_yes').'', ''.lang('rr_no').'');
    $arpinherit = $this->config->item('arpbyinherit');
-   if(!empty($arpinherit)))
+   if(!empty($arpinherit))
    {
    $rrs = array('id'=>'idpmatrixform','style'=>'display: none');
 
