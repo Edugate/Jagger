@@ -68,6 +68,7 @@ $lang['nameid']                    = 'NameIDFormat';
 $lang['clearcache']                 = 'Clear cache';
 $lang['btnsynch']                   = 'Synchronize';
 $lang['updated']                    = 'Updated';
+$lang['confirmupdpolicy']           = 'Update policy';
 $lang['rr_formstep']                    = 'step';
 $lang['rr_uii']                     = 'User Interface Information';
 $lang['rr_coc']                     = 'Data protection Code of Conduct';

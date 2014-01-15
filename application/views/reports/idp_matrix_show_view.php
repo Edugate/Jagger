@@ -45,4 +45,45 @@ if(!empty($result))
    $this->table->set_empty('');
    echo   $this->table->generate($result);
    $this->table->clear();
+
+   //echo confirmDialog(''.lang('title_confirm').'', ''.sprintf(lang('douwanttoremove'),lang('statdefinition')).'', ''.lang('rr_yes').'', ''.lang('rr_no').'');
+   if(!empty($this->config->item('arpbyinherit')))
+   {
+   $rrs = array('id'=>'idpmatrixform','style'=>'display: none');
+
+   $this->load->helper('form');
+   echo form_open(base_url().'manage/attribute_policyajax/submit_sp/'.$idpid,$rrs);
+   echo form_input(array('name'=>'attribute','id'=>'attribute','type'=>'hidden','value'=>''));
+   echo form_input(array('name'=>'idpid','id'=>'idpid','type'=>'hidden','value'=>''.$idpid.''));
+   echo form_input(array('name'=>'requester','id'=>'requester','type'=>'hidden','value'=>''));
+   ?>
+      <div class="header">
+      <span><?php echo lang('confirmupdpolicy');?></span>
+      </div>
+      <p class="message"><?php echo lang('rr_tbltitle_requester').': ' ;?><span class="mrequester"></span><br /><?php echo lang('attrname').': ';?><span class="mattribute"></span></p>
+     <div>
+      <?php
+       $dropdown = $this->config->item('policy_dropdown');
+       $dropdown = array_merge( array(''=>lang('rr_select')), $dropdown);
+       echo form_dropdown('policy', $dropdown);
+     ?>
+    </div>
+      <div class="buttons">
+      <div class="yes"><?php echo lang('btnupdate');?></div>
+      <div class="no simplemodal-close"><?php echo lang('rr_cancel');?></div>
+     </div>
+   <?php
+   echo form_close();
+   }
+   else
+   {
+  ?>
+    <div id="idpmatrixform"><div class="header"><span>Problem</span></div>
+  <p class="message">Function inactive</p>
+  <div class="buttons">
+  <div class="no simplemodal-close"><?php echo lang('rr_close');?></div>
+  </div>
+  </div>
+<?php
+   }
 }

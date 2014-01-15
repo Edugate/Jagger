@@ -883,20 +883,32 @@ div.perm {
     text-transform: uppercase;
     font-weight: bold;
 }
+div.perm:not(:empty){
+   cursor: pointer;
+}
 div.dis {
     background-color: #E3E5FF;
     text-transform: uppercase;
     font-weight: bold;
+}
+div.dis:not(:empty){
+   cursor: pointer;
 }
 div.spec {
     background-color: #FFFF00;
     text-transform: uppercase;
     font-weight: bold;
 }
+div.spec:not(:empty){
+   cursor: pointer;
+}
 div.den {
     background-color: red;
     text-transform: uppercase;
     font-weight: bold;
+}
+div.den:not(:empty){
+   cursor: pointer;
 }
 div.alert {
     color: red;
@@ -1167,8 +1179,13 @@ span.alert
 #simplemodal-container #basicModalContent {
     padding:8px;
 }
-#sconfirm {
+#sconfirm, #idpmatrixform {
     display:none;
+    box-shadow: 0 0 0 ;
+}
+form#idpmatrixform{
+  background-color: white;  
+
 }
 #resultdialog {
     display: none;
