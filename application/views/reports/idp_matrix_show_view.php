@@ -63,7 +63,9 @@ if(!empty($result))
       <p class="message"><?php echo lang('rr_tbltitle_requester').': ' ;?><span class="mrequester"></span><br /><?php echo lang('attrname').': ';?><span class="mattribute"></span></p>
      <div>
       <?php
-  echo form_dropdown('policy', $this->config->item('policy_dropdown'));
+       $dropdown = $this->config->item('policy_dropdown');
+       $dropdown = array_merge( array(''=>lang('rr_select')), $dropdown);
+       echo form_dropdown('policy', $dropdown);
      ?>
     </div>
       <div class="buttons">

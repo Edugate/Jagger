@@ -1331,7 +1331,7 @@ $(document).ready(function() {
         return false;
 
     }); // end submit event
-$("#idpmatrix tr td").dblclick(function(ev){
+$("#idpmatrix tr td").click(function(ev){
     var col = $(this).parent().children().index($(this));
     var cell = $.trim($(this).text());
     var oko = $('div', this);
