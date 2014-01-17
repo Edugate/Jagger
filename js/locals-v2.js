@@ -1357,12 +1357,12 @@ $(document).ready(function() {
                   else
                   {
                       var tbody_data= $('<tbody></tbody>');
-                      var thdata = '<thead><th>Flow</th><th></th></thead>';
+                      var thdata = '<thead><th colspan="2">Current attribute flow</th></thead>';
                       $.each(json.details, function(i,v){
                             var trdata = '<tr><td>'+v.name+'</td><td>'+v.value+'</td/></tr>'; 
                             tbody_data.append(trdata);
                       });
-                      var tbl = $('<table/>').css({ 'border':'1px solid'}).css({'width':'90%'}).css({'margin':'10px'}).addClass('detailsnosort');;
+                      var tbl = $('<table/>').css({'font-size':'smaller'}).css({ 'border':'1px solid'}).css({'width':'99%'}).css({'margin':'10px'}).addClass('detailsnosort');;
                       var pl = $('<div/>');
                       tbl.append(thdata);
                       tbl.append(tbody_data);
@@ -1473,7 +1473,7 @@ $(document).ready(function() {
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%", ],
             overlayId: 'simpledialog-overlay',
-            minHeight: '400px',
+            minHeight: '500px',
             containerId: 'simpledialog-container',
             onShow: function(dialog) {
                 var modal = this;
