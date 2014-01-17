@@ -252,6 +252,16 @@ class AttributeReleasePolicies {
                 ));
         return $policy;
     }
+    public function getOneSPCustomPolicy($idpid, $attrid, $requester)
+    {
+        $policy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array(
+            'idp' => $idpid,
+            'attribute' => $attrid,
+            'requester' => $requester,
+            'type' => 'customsp',
+                ));
+        return $policy;
+    }
 
     public function getSPPolicy($idpid)
     {

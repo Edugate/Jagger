@@ -61,6 +61,7 @@ if(!empty($result))
       <div class="header">
       <span><?php echo lang('confirmupdpolicy');?></span>
       </div>
+      <div class="attrflow"></div>
       <p class="message"><?php echo lang('rr_tbltitle_requester').': ' ;?><span class="mrequester"></span><br /><?php echo lang('attrname').': ';?><span class="mattribute"></span></p>
      <div>
       <?php
