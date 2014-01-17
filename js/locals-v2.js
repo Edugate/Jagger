@@ -235,13 +235,13 @@ var GINIT = {
 $(document).ready(function() {
     GINIT.initialize();
 
-$('#idpmatrix tr th').each(function(i) {
-     var tds = $(this).parents('table').find('tr td:nth-child(' + (i + 1) + ')');
-        if(tds.length == tds.filter(':empty').length) { 
+    $('#idpmatrix tr th').each(function(i) {
+        var tds = $(this).parents('table').find('tr td:nth-child(' + (i + 1) + ')');
+        if (tds.length == tds.filter(':empty').length) {
             $(this).hide();
             tds.hide();
-        } 
-}); 
+        }
+    });
 
 
 
@@ -1331,52 +1331,86 @@ $(document).ready(function() {
         return false;
 
     }); // end submit event
-$("#idpmatrix tr td").click(function(ev){
-    var col = $(this).parent().children().index($(this));
-    var cell = $.trim($(this).text());
-    var oko = $('div', this);
-    if(col > 0 && cell.length>0)
-    {
-    var row = $(this).parent().parent().children().index($(this).parent());
-    var attrname = $("#idpmatrix th:eq("+col+") text").text();
-    var spname = $("#idpmatrix tbody tr:eq("+row+") td:first a").attr('title');
-    $("form#idpmatrixform #attribute").val(attrname);
-    $("form#idpmatrixform #requester").val(spname);
-    $("form#idpmatrixform span.mrequester").html(spname);
-    $("form#idpmatrixform span.mattribute").html(attrname);
-    var url = $("form#idpmatrixform").attr('action');
-       idpmatrixform('', function(ev) {
-    var serializedData = $("form#idpmatrixform").serializeArray();
+    $("#idpmatrix tr td:not(:first-child)").click(function(ev) {
+        var col = $(this).parent().children().index($(this));
+        var cell = $.trim($(this).text());
+        var oko = $('div', this);
+        var lpath = window.location.pathname;
+        var lastsegment = lpath.substring(lpath.lastIndexOf('/')+1);
+        if (col > 0 && cell.length > 0)
+        {
+            var row = $(this).parent().parent().children().index($(this).parent());
+            var attrname = $("#idpmatrix th:eq(" + col + ") text").text();
+            var spname = $("#idpmatrix tbody tr:eq(" + row + ") td:first a").attr('title');
+            $("form#idpmatrixform #attribute").val(attrname);
+            $("form#idpmatrixform #requester").val(spname);
+            $("form#idpmatrixform span.mrequester").html(spname);
+            $("form#idpmatrixform span.mattribute").html(attrname);
+            var url = $("form#idpmatrixform").attr('action');
             $.ajax({
-                type: "POST",
-                url: url,
-                data: serializedData,
-                success: function(data) {
-                    if(!oko.hasClass('dis'))
-                    {
-                    if((data == "2" && (cell == "R" || cell == "D")) || (data == "1" && cell == "R"))
-                    {
-                        oko.attr('class','perm');
-                    }
-                    else
-                    {
-                       if ((data == "1" && cell == "D") || (data == "0"))
-                       {
-                        oko.attr('class','den');
-                       }
+               type: "POST",
+               url: baseurl+"manage/attribute_policyajax/retrieveattrpath/"+lastsegment,
+               data: $("form#idpmatrixform").serializeArray(),
+               success: function(json) {
+                  if(!json)
+                  {}
+                  else
+                  {
+                      var tbody_data= $('<tbody></tbody>');
+                      var thdata = '<thead><th colspan="2">Current attribute flow</th></thead>';
+                      $.each(json.details, function(i,v){
+                            var trdata = '<tr><td>'+v.name+'</td><td>'+v.value+'</td/></tr>'; 
+                            tbody_data.append(trdata);
+                      });
+                      var tbl = $('<table/>').css({'font-size':'smaller'}).css({ 'border':'1px solid'}).css({'width':'99%'}).css({'margin':'10px'}).addClass('detailsnosort');;
+                      var pl = $('<div/>');
+                      tbl.append(thdata);
+                      tbl.append(tbody_data);
+                      pl.append(tbl);
+                      $("div.attrflow").replaceWith('<div class="attrflow">'+pl.html()+'</div>');
 
-                    }
-                    }
-                },
-                error: function(data) {
-                    alert('Error occured');
-                }
+                  }  //end else
+               }
+ 
             });
+            idpmatrixform('', function(ev) {
+                var serializedData = $("form#idpmatrixform").serializeArray();
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: serializedData,
+                    success: function(data) {
+                        if (!oko.hasClass('dis'))
+                        {
+                            if ((data == "2" && (cell == "R" || cell == "D")) || (data == "1" && cell == "R"))
+                            {
+                                oko.attr('class', 'perm');
+                            }
+                            else if ((data == "2c" && (cell == "R" || cell == "D")) || (data == "1c" && cell == "R"))
+                            {
+                                oko.attr('class', 'spec');
+                            }
+                            else if ((data == "1" && cell == "D") || (data == "0"))
+                            {
+                                oko.attr('class', 'den');
+                            }
+                            else if ((data == "1c" && cell == "D") || (data == "0c"))
+                            {
+                                oko.attr('class', 'den');
+                            }
+
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error occured: ' + errorThrown);
+                    }
+                });
+            }
+            );
         }
-        );
-        };
+        ;
         ev.preventDefault();
-});
+    });
 
 
     $("#rmstatdef button").click(function(ev) {
@@ -1439,7 +1473,7 @@ $("#idpmatrix tr td").click(function(ev){
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%", ],
             overlayId: 'simpledialog-overlay',
-            minHeight: '220px',
+            minHeight: '500px',
             containerId: 'simpledialog-container',
             onShow: function(dialog) {
                 var modal = this;
