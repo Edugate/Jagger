@@ -970,7 +970,7 @@ $(function() {
         // if we've scrolled more than the navigation, change its position to fixed to stick to top, otherwise change it back to relative
         if (scroll_top > sticky_navigation_offset_top) {
             //$('nav').css({ 'position': 'fixed', 'top':0, 'left':0, 'width': '100%','zIndex':9999});
-            $('nav').css({'position': 'fixed', 'top': 0, 'width': widthelement, 'zIndex': 9999});
+            $('nav').css({'position': 'fixed', 'top': 0, 'width': widthelement, 'zIndex': 999});
 
         } else {
             $('nav').css({'position': 'relative', 'width': 'auto', });
