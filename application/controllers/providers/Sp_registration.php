@@ -214,9 +214,9 @@ class Sp_registration extends MY_Controller
         $this->form_validation->set_rules('contact_name', '' . lang('rr_contactname') . '', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('contact_mail', '' . lang('rr_contactemail') . '', 'required|min_length[3]|max_length[255]|valid_email');
         $this->form_validation->set_rules('contact_phone', '' . lang('rr_contactphone') . '', 'numeric');
-        $this->form_validation->set_rules('acs_url', 'AccertionConsumerService URL', 'required|valid_url[acs_url]');
-        $this->form_validation->set_rules('acs_bind', 'AccertionConsumerService Binding', 'required');
-        $this->form_validation->set_rules('acs_order', 'AccertionConsumerService index', 'required|numeric');
+        $this->form_validation->set_rules('acs_url', 'AssertionConsumerService URL', 'required|valid_url[acs_url]');
+        $this->form_validation->set_rules('acs_bind', 'AssertionConsumerService Binding', 'required');
+        $this->form_validation->set_rules('acs_order', 'AssertionConsumerService index', 'required|numeric');
         $this->form_validation->set_rules('nameids', 'NameIdFormat', 'trim|xss_clean');
         $this->form_validation->set_rules('encrypt_cert_body', '' . lang('rr_certificateencrypting') . '', 'trim|verify_cert[encrypt_cert_body]');
         $this->form_validation->set_rules('sign_cert_body', '' . lang('rr_certificatesigning') . '', 'trim|verify_cert[sign_cert_body]');
