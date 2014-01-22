@@ -1362,7 +1362,7 @@ $(document).ready(function() {
                             var trdata = '<tr><td>'+v.name+'</td><td>'+v.value+'</td/></tr>'; 
                             tbody_data.append(trdata);
                       });
-                      var tbl = $('<table/>').css({'font-size':'smaller'}).css({ 'border':'1px solid'}).css({'width':'99%'}).css({'margin':'10px'}).addClass('detailsnosort');;
+                      var tbl = $('<table/>').css({'font-size':'smaller'}).css({ 'border':'1px solid'}).css({'width':'100%'}).addClass('detailsnosort');;
                       var pl = $('<div/>');
                       tbl.append(thdata);
                       tbl.append(tbody_data);

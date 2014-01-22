@@ -1185,6 +1185,12 @@ span.alert
 }
 form#idpmatrixform{
   background-color: white;  
+  padding: 0px;
+  width: auto;
+}
+form#idpmatrixform div {
+   width: 100%;
+   
 
 }
 #resultdialog {
@@ -1212,10 +1218,10 @@ form#idpmatrixform{
 #simpledialog-container .header {
     height:30px; 
     line-height:30px;
-    width:100%; 
-    
-    background-color: blue; 
-    color:#fff; 
+    text-align: center;
+    width:auto; 
+    background-color: $titleBgSimpleModal; 
+    color:$titleColorSimpleModal; 
     font-weight:bold;
 }
 #simpledialog-container .header span {
