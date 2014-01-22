@@ -1,6 +1,8 @@
 <?php
 namespace models;
-use \Doctrine\Common\Collections\ArrayCollection;
+use \Doctrine\Common\Collections\ArrayCollection,
+    \Doctrine\ORM\Events;
+
 /**
  * ResourceRegistry3
  * 
@@ -25,6 +27,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * This model for federations definitions
  * 
  * @Entity
+ * @HasLifecycleCallbacks
  * @Table(name="federation")
  * @author janusz
  */
@@ -124,6 +127,12 @@ class Federation
      * @OneToMany(targetEntity="FederationValidator",mappedBy="federation")
      */
     protected $fvalidator;
+
+
+    /**
+     * @OneToMany(targetEntity="NotificationList", mappedBy="federation", cascade={"persist", "remove"})
+     */
+    protected $notifications;
 
     /**
      * @Column(type="string", length=255, nullable=true)
@@ -287,6 +296,16 @@ class Federation
        return $this;
     }
 
+    public function addNotification(NotificationList $notification)
+    {
+        $isin = $this->getNotifications()->contains($notification);
+        if(empty($isin))
+        {
+          $this->getNotifications()->add($notification);
+        }
+        return $this;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -353,6 +372,11 @@ class Federation
         return $this->categories;
     }
 
+    public function getNotifications()
+    {
+         return $this->notifications;
+    }
+
     public function getAttributesRequirement()
     {
         return $this->attributeRequirement;
@@ -401,6 +425,18 @@ class Federation
        $r['tou'] = $this->getTou();
        return $r;
     }
+    /**
+     * @preUpdate
+     */
+    public function notifyByMail(\Doctrine\Common\Persistence\Event\PreUpdateEventArgs $eventArgs)
+    {
+       if ($eventArgs->hasChangedField('description')) {
+           \log_message('debug','GKS desc changes');
+       }
+        
+    }
+  
+
 
 }
 
