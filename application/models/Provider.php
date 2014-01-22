@@ -3199,7 +3199,7 @@ class Provider {
             }
             else
             {
-                log_message('error', __METHOD__.': Static metadata is enabled but doesnt exist for entity (id: ' . $this->id . '):' . $this->entityid);
+                log_message('error', __METHOD__.': Static metadata is enabled but empty for entity (id: ' . $this->id . '):' . $this->entityid);
                 return null;
             }
         }
@@ -3219,12 +3219,16 @@ class Provider {
              */
             if (!empty($s_metadata))
             {
-                //$node = $this->getStaticMetadata()->getMetadataToXML();
                 $node = $static_meta->getMetadataToXML();
                 if (!empty($node))
                 {
                     $node = $docXML->importNode($node, true);
                     $docXML->appendChild($node);
+                }
+                else
+                {
+                    \log_message('error',__METHOD__.' '.$this->entityid .' : static is enabled but cant import into domnode'); 
+                    return null;
                 }
                 return $docXML;
             }

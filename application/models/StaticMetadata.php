@@ -75,7 +75,7 @@ class StaticMetadata
 		if($addNS)
 		{
 			$top = '<EntitiesDescriptor 
-				xmlns="urn:oasis:names:tc:SAML:2.0:metadata" 
+				xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" 
 			 xmlns:ds="http://www.w3.org/2000/09/xmldsig#" 
 			 xmlns:elab="http://eduserv.org.uk/labels" 
 			 xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" 
@@ -111,15 +111,19 @@ class StaticMetadata
     {
 		error_reporting(0);
 
-        $staticMetadata = new \DOMDocument;
-		$add = true;
-		if( $staticMetadata->loadXML($this->getMetadata($add)))
-		{
+                $staticMetadata = new \DOMDocument;
         	$xpath = new \DomXPath($staticMetadata);
        		$xpath->registerNamespace('md', 'urn:oasis:names:tc:SAML:2.0:metadata');    
+       		$xpath->registerNamespace('idpdisc', 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol');    
+       		$xpath->registerNamespace('init', 'urn:oasis:names:tc:SAML:profiles:SSO:request-init');    
+       		$xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');    
+       		$xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');    
         	$xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
         	$xpath->registerNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
         	$xpath->registerNamespace('shibmd', 'urn:mace:shibboleth:metadata:1.0');
+		$add = true;
+		if( $staticMetadata->loadXML($this->getMetadata($add)))
+		{
         	$node = $staticMetadata->getElementsByTagName("EntityDescriptor")->item(0);
 		}
 		else
