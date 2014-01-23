@@ -27,7 +27,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * 
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="mailqueue")
+ * @Table(name="mailqueue",indexes={@Index(name="freq_idx", columns={"frequence"}),@Index(name="issent_idx", columns={"issent"})})
  * @author janusz
  */
 class MailQueue {
@@ -38,6 +38,11 @@ class MailQueue {
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
+    /**
+     * @Column(type="string", length=10,nullable=false,options={"default":"mail"})
+     */
+    protected $deliverytype;
 
     /**
      * list of mail addresses seperated by comma
@@ -57,8 +62,8 @@ class MailQueue {
     protected $mbody;
 
     /**
-     * 1,H,D,W
-     * @Column(type="string", length=5, nullable=false)
+     * 1,H,D,W,Hp,Dp,Wp
+     * @Column(type="string", length=2, nullable=false)
      */ 
     protected $frequence;
  
@@ -80,6 +85,8 @@ class MailQueue {
     function __construct()
     {
         $this->issent = false;
+        $this->frequence = '1';
+        $this->createdAt = new \DateTime("now",new \DateTimeZone('UTC'));
     }
 
     public function getMailToArray()
@@ -90,6 +97,29 @@ class MailQueue {
           'data'=>''.$this->mbody.''
           );
         return $result;
+    }
+
+    public function setRcptto($r)
+    {
+        $this->rcptto = $r;
+        return $this;
+    }
+    public function  setSubject($s)
+    {
+        $this->msubject = $s;
+        return $this;
+    }
+    public function setBody($b)
+    {
+        $this->mbody = $b;
+        return $this;
+    }
+
+    public function setDeliveryType($type)
+    {
+         $this->deliverytype = $type;
+         return $this;
+
     }
 
 }

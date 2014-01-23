@@ -45,6 +45,11 @@ class NotificationList
         protected $subscriber;
 
         /**
+         * @Column(type="string", length=10, nullable=false,options={"default":"mail"})
+         */
+        protected $notificationtype ;
+
+        /**
          * @Column(type="string", length=15, nullable=false)
          */
         protected $type;
@@ -65,6 +70,11 @@ class NotificationList
          * @Column(type="string", length=256, nullable=true)
          */
         protected $email;
+
+        /**
+         * @Column(type="string", length=15, nullable=true)
+         */
+        protected $mobile;
 
         /**
          * @Column(name="isenabled",type="boolean")
@@ -97,6 +107,11 @@ class NotificationList
        {
            return $this->id;
        } 
+ 
+       public function getNotificationType()
+       {
+          return $this->notificationtype;
+       }
 
        public function getSubscriber()
        {
@@ -122,11 +137,18 @@ class NotificationList
       
        public function getRcpt()
        {
-           if(empty($this->email))
+           if($this->notificationtype == 'mail')
            {
-              return $this->getSubcriber()->getEmail();
+              if(empty($this->email))
+              {
+                 return $this->getSubscriber()->getEmail();
+              }
+              return $this->email;
            }
-           return $this->email;
+           else
+           {
+              return $this->mobile;
+           }
        }
        public function getEnabled()
        {
@@ -136,6 +158,11 @@ class NotificationList
        public function getApproved()
        {
            return $this->is_approved;
+       }
+
+       public function getMobile()
+       {
+           return $this->mobile;
        }
  
        public function getAvailable()

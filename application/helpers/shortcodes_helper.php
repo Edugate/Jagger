@@ -1,5 +1,23 @@
 <?php
 
+/**
+ * returns array if valid notificationtypes as key , and values are descriptive name for lang
+ */
+function notificationCodes()
+{
+   $result = array(
+     'greqisterreq'=>array('desc'=>'global idp/sp/federation registration request','desclang'=>'greqisterreq'),
+     'gfedreqisterreq'=>array('desc'=>'global fed registration','desclang'=>'gfedreqisterreq'),
+     'gidpregisterreq'=>array('desc'=>'global IDP registration','desclang'=>'gidpregisterreq'),
+     'gspregisterreq'=>array('desc'=>'global SP registration','desclang'=>'gspregisterreq'),
+     'gjoinfedreq'=>array('desc'=>'global join federation request','desclang'=>'gjoinfedreq'),
+     'joinfedreq'=>array('desc'=>'join federation request','desclang'=>'joinfedreq')
+   );
+
+   return $result;
+}
+
+
 function languagesCodes()
 {
 return array(
