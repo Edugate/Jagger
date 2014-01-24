@@ -1613,13 +1613,12 @@ span.alert {
   box-shadow: 0 0 0;
 }
 
-form#idpmatrixform {
+form#idpmatrixform, form#notificationupdateform {
   background-color: white;
   padding: 0px;
   width: auto;
 }
-
-form#idpmatrixform div {
+form#idpmatrixform div, form#notificationupdateform div {
   width: 100%;
 }
 

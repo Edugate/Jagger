@@ -1331,6 +1331,35 @@ $(document).ready(function() {
         return false;
 
     }); // end submit event
+
+    $("button.updatenotifactionstatus").click(function(ev){
+            var notid = $(this).attr('value');
+            var ctr = $(this).closest("tr");
+            var posturl = baseurl+'notifications/subscriber/updatestatus/'+notid;
+            $("form#notificationupdateform").attr('action',posturl);
+            $("form#notificationupdateform #noteid").val(notid);
+            notificationupdate('', function(ev) {
+                var serializedData = $("form#notificationupdateform").serializeArray();
+                $.ajax({
+                    type: "POST",
+                    url: posturl,
+                    data: serializedData,
+                    success: function(data) {
+                       if(data =="R")
+                       {
+                          ctr.remove();
+                       }
+                       else if ((data =="A") || (data=="DA") || (data=="E") || (data =="D"))
+                       {
+                          alert("updated : refresh page to see the changes");
+                       }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error occured: ' + errorThrown);
+                    }
+                });
+            });
+    });
     $("#idpmatrix tr td:not(:first-child)").click(function(ev) {
         var col = $(this).parent().children().index($(this));
         var cell = $.trim($(this).text());
@@ -1468,6 +1497,27 @@ $(document).ready(function() {
         });
         ev.preventDefault();
     });
+
+    function notificationupdate(message, callback) {
+        $('#notificationupdateform').modal({
+            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+            position: ["20%", ],
+            overlayId: 'simpledialog-overlay',
+            minHeight: '20px',
+            containerId: 'simpledialog-container',
+            onShow: function(dialog) {
+                var modal = this;
+                $('.message', dialog.data[0]).append(message);
+                $('.yes', dialog.data[0]).click(function() {
+                    if ($.isFunction(callback)) {
+                        callback.apply();
+                    }
+                    modal.close(); // or $.modal.close();
+                });
+            }
+        });
+    }
+
     function idpmatrixform(message, callback) {
         $('#idpmatrixform').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
@@ -1477,16 +1527,11 @@ $(document).ready(function() {
             containerId: 'simpledialog-container',
             onShow: function(dialog) {
                 var modal = this;
-
                 $('.message', dialog.data[0]).append(message);
-
-                // if the user clicks "yes"
                 $('.yes', dialog.data[0]).click(function() {
-                    // call the callback
                     if ($.isFunction(callback)) {
                         callback.apply();
                     }
-                    // close the dialog
                     modal.close(); // or $.modal.close();
                 });
             }

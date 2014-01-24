@@ -1183,15 +1183,13 @@ span.alert
     display:none;
     box-shadow: 0 0 0 ;
 }
-form#idpmatrixform{
+form#idpmatrixform, form#notificationupdateform{
   background-color: white;  
   padding: 0px;
   width: auto;
-}
-form#idpmatrixform div {
-   width: 100%;
-   
-
+ div {
+    width: 100%;
+ }
 }
 #resultdialog {
     display: none;

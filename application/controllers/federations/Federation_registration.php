@@ -88,28 +88,29 @@ class Federation_registration extends MY_Controller
         $federation->setTou($this->input->post('termsofuse'));
         $q = $this->approval->addToQueue($federation,'Create');
         $this->em->persist($q);
-        $this->em->flush();
         /**
          * @todo send mail to confirm link if needed, and to admin for approval
          */
             /**
              * send email
              */
-            $recipients = array();
-            $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>'Administrator'));
-            $a_members = $a->getMembers();
-            foreach($a_members as $m)
-            {
-                $recipients[] = $m->getEmail();
-            }
             $sbj = "Federation registration request";
             $body = "Dear Administrator\r\n";
             $body .= "".$q->getEmail()." just filled Federation Registration form\r\n";
             $body .= "Federation name: ".$fedname. "\r\n";
             $body .="You can approve or reject it on ".base_url()."reports/awaiting/detail/".$q->getToken()."\r\n";
-            $this->load->library('email_sender');
-            $this->email_sender->send($recipients,$sbj,$body);
-
+            $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
+                          array('type'=>array('greqisterreq','gfedreqisterreq'),'is_enabled'=>true,'is_approved'=>true));
+            foreach($subscribers as $s)
+            {
+                $m = new models\MailQueue();
+                $m->setSubject($sbj);
+                $m->setBody($body);
+                $m->setDeliveryType($s->getNotificationType());
+                $m->setRcptto($s->getRcpt());
+                $this->em->persist($m);
+            }
+        $this->em->flush();
         $data['success'] = lang('rr_fed_req_sent');
         $data['content_view'] = 'federation/success_view';
         $this->load->view('page',$data);

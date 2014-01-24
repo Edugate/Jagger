@@ -71,6 +71,14 @@ $lang['btnsynch']                   = 'Synchronize';
 $lang['updated']                    = 'Updated';
 $lang['updatedat']                  = 'Updated at';
 $lang['confirmupdpolicy']           = 'Update policy';
+
+$lang['greqisterreq']               = 'Every IdP/SP/Federation registration request';
+$lang['gfedreqisterreq']            = 'Every Federation registration request';
+$lang['gidpregisterreq']            = 'Every IdP registration request';
+$lang['gspregisterreq']             = 'Every SP registration request';
+$lang['gjoinfedreq']                = 'Join any federation request';
+$lang['joinfedreq']                 = 'Join specific federation request';
+
 $lang['rr_formstep']                    = 'step';
 $lang['rr_uii']                     = 'User Interface Information';
 $lang['rr_coc']                     = 'Data protection Code of Conduct';
@@ -81,6 +89,8 @@ $lang['rr_yes']                     = 'yes';
 $lang['rr_no']                      = 'no';
 $lang['rr_add']                     = 'Add';
 $lang['rr_remove']                  = 'Remove';
+$lang['rr_approve']                 = 'Approve';
+$lang['rr_disapprove']              = 'Disapprove';
 $lang['rr_removed']                 = 'Removed';
 $lang['rr_modify']                  = 'Modify';
 $lang['rr_cancel']                  = 'Cancel';
@@ -612,7 +622,8 @@ $lang['rr_admins']                  = 'Admins';
 $lang['rr_managestatus']            = 'Manage status';
 $lang['rr_noregspecified_inherit_from_fed'] = 'No requirement specified. It may inherit requirement from federation';
 $lang['rr_inheritfromparent']       = 'inherit from parent';
-
+$lang['rr_relatedto']               = 'Related to';
+$lang['rr_deliverytype']            = 'Delivery type';
 $lang['nostatsdefsfound']           = 'No statistic definitions found';
 $lang['rhelp_scopemultivalues']                      = 'You can set multiple domains seperated with coma';
 $lang['rhelp_privacydefault1']      = 'This PrivacyStatementURL  is used as default english version, it can be overriden by setting localized PrivacyStatementURLs';
