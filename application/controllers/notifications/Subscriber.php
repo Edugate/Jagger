@@ -33,6 +33,80 @@ class Subscriber extends MY_Controller {
     }
 
 
+    private function _getSubscriptionsToJson($subscribtionOwner)
+    {
+        $n = $subscribtionOwner->getSubscriptions();
+        $result = array();
+        foreach($n as $v)
+        {
+            $prov = $v->getProvider();
+            if(empty($prov))
+            {
+               $provid = null;
+               $provname = null;
+            }
+            else
+            {
+               $provid = $prov->getId();
+               $provname = $prov->getEntityId();
+            }
+            $fed = $v->getFederation();
+            if(empty($fed))
+            {
+               $fedid = null;
+               $fedname = null;
+            }
+            else
+            {
+               $fedid = $fed->getId();
+               $fedname = $fed->getName();
+            }
+            $isApproved = $v->getApproved();
+            $isEnabled = $v->getEnabled();
+            $status = '';
+            if($isEnabled && $isApproved)
+            {
+               $status = lang('subscisactive');
+            }
+            else
+            {
+                
+               if(!$isEnabled)
+               {
+                  $status .= lang('subscdisabled').'; ';
+               }
+               if(!$isApproved)
+               {
+                  $status .= lang('subscnotapproved');
+               }
+
+            }
+            $result[] = array(
+                'id'=>$v->getId(),
+                'delivery'=>$v->getNotificationType(),
+                'type'=>$v->getType(),
+                'langtype'=>lang($v->getType()),
+                'providerid'=>$provid,
+                'providername'=>$provname,
+                'federationid'=>$fedid,
+                'federationname'=>$fedname,
+                'rcptto'=>$v->getRcpt(),
+                'email'=>''.$v->getAltEmail().'',
+                'enabled'=>''.$v->getEnabled().'',
+                'approved'=>''.$v->getApproved().'',
+                'updated'=>''.date('Y-m-d H:i:s', $v->getUpdatedAt()->format('U')+ j_auth::$timeOffset).'',
+                'langstatus'=>$status,
+                'langprovider'=>lang('rr_provider'),
+                'langfederation'=>lang('rr_federation'),
+                'langany' => lang('rr_any')                
+ 
+            );
+
+        }
+        return json_encode($result);
+
+    }
+
     public function mysubscriptions($encodeduser=null)
     {
        if(empty($encodeduser))
@@ -68,9 +142,9 @@ class Subscriber extends MY_Controller {
        $data['subscriber']['username'] = $subscribtionOwner->getUsername();
        $data['subscriber']['fullname'] = $subscribtionOwner->getFullname();
        $data['subscriber']['email'] = $subscribtionOwner->getEmail();
-       $n = $subscribtionOwner->getSubscriptions();
+       $n=json_decode($this->_getSubscriptionsToJson($subscribtionOwner),true);
        $row[] = array('',lang('subscrtype'),lang('rr_relatedto'),lang('rr_deliverytype'),lang('subscrmail'),lang('subscrstatus'),lang('updatedat'),'');
-       if(! $n->count()>0)
+       if(! count($n)>0)
        {
          $data['warnmessage'] = lang('nousersubscrfound');
        }
@@ -82,46 +156,28 @@ class Subscriber extends MY_Controller {
          foreach($n as $v)
          {
              $status = '';
-             $isEnabled = $v->getEnabled();
-             $isApproved = $v->getApproved();
-             $type = $v->getType();
+             $isEnabled = $v['enabled'];
+             $isApproved = $v['approved'];
+             $type = $v['type'];
              if(isset($mappedTypes[''.$type.'']))
              {
                 $type = lang(''.$mappedTypes[''.$type.'']['desclang'].'');
              }
              $relatedto = '';
-             if($v->getProvider())
+             if($v['providerid'])
              {
-                 $relatedto = lang('rr_provider').': '.$v->getProvider()->getEntitId();
+                 $relatedto = $v['langprovider'].': '.$v['providername'];
              }
-             elseif($v->getFederation())
+             elseif($v['federationid'])
              {
-                 $relatedto =  lang('rr_federation').': '.$v->getFederation()->getName();
-             }
-             else
-             {
-                 $relatedto = 'Any';
-             }
-             $date = date('Y-m-d H:i:s', $v->getUpdatedAt()->format('U')+ j_auth::$timeOffset);
-             if($isEnabled && $isApproved)
-             {
-                $status = lang('subscisactive');
+                 $relatedto =  $v['langfederation'].': '.$v['federationname'];
              }
              else
              {
-                
-                if(!$isEnabled)
-                {
-                   $status .= lang('subscdisabled').'; ';
-                }
-                if(!$isApproved)
-                {
-                   $status .= lang('subscnotapproved');
-                }
-
+                 $relatedto = $v['langany'];
              }
-             $button = '<button type="button" value="'.$v->getId().'" class="updatenotifactionstatus editbutton">update</button>';
-             $row[] = array(++$i,$type,$relatedto,$v->getNotificationType(),$v->getRcpt(),$status,$date,$button);
+             $button = '<button type="button" value="'.$v['id'].'" class="updatenotifactionstatus editbutton">update</button>';
+             $row[] = array(++$i,$type,$relatedto,$v['delivery'],$v['rcptto'],$v['langstatus'],$v['updated'],$button);
          }
        }
 
@@ -196,27 +252,28 @@ class Subscriber extends MY_Controller {
            return;
 
         }
+        $success = false;
         if($userMatchOwner && (strcmp($status,'remove') === 0 or strcmp($status,'disable') === 0 or strcmp($status,'enable') === 0))
         {
              if(strcmp($status,'remove') === 0)
              {
                 $this->em->remove($notification);
                 $this->em->flush();
-                echo 'R';
+                $success = true;
              }
              elseif(strcmp($status,'disable') === 0)
              {
                 $notification->setEnabled(false);
                 $this->em->persist($notification);
                 $this->em->flush();
-                echo 'D';
+                $success = true;
              }
              elseif(strcmp($status,'enable') === 0)
              {
                 $notification->setEnabled(true);
                 $this->em->persist($notification);
                 $this->em->flush();
-                echo 'E';
+                $success = true;
              }
 
         }
@@ -226,38 +283,44 @@ class Subscriber extends MY_Controller {
              {
                 $this->em->remove($notification);
                 $this->em->flush();
-                echo 'R';
+                $success = true;
              }
              elseif(strcmp($status,'disable') === 0)
              {
                 $notification->setEnabled(false);
                 $this->em->persist($notification);
                 $this->em->flush();
-                echo 'D';
+                $success = true;
              }
              elseif(strcmp($status,'enable') === 0)
              {
                 $notification->setEnabled(true);
                 $this->em->persist($notification);
                 $this->em->flush();
-                echo 'E';
+                $success = true;
              }
              elseif(strcmp($status,'approve') === 0)
              {
                 $notification->setApproved(true);
                 $this->em->persist($notification);
                 $this->em->flush();
-                echo 'A';
+                $success = true;
              }
              elseif(strcmp($status,'disapprove') === 0)
              {
                 $notification->setApproved(false);
                 $this->em->persist($notification);
                 $this->em->flush();
-                echo 'DA';
+                $success = true;
              }
             
 
+        }
+        if($success)
+        {
+            $refreshed = $this->_getSubscriptionsToJson($user); 
+            $this->output->set_content_type('application/json');
+            echo $refreshed;
         }
 
     }

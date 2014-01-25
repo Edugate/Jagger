@@ -71,7 +71,7 @@ $lang['btnsynch']                   = 'Synchronize';
 $lang['updated']                    = 'Updated';
 $lang['updatedat']                  = 'Updated at';
 $lang['confirmupdpolicy']           = 'Update policy';
-
+$lang['rr_any']                     = 'Any';
 $lang['greqisterreq']               = 'Every IdP/SP/Federation registration request';
 $lang['gfedreqisterreq']            = 'Every Federation registration request';
 $lang['gidpregisterreq']            = 'Every IdP registration request';

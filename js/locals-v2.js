@@ -1334,7 +1334,7 @@ $(document).ready(function() {
 
     $("button.updatenotifactionstatus").click(function(ev){
             var notid = $(this).attr('value');
-            var ctr = $(this).closest("tr");
+            var ctbl = $(this).closest("tbody");
             var posturl = baseurl+'notifications/subscriber/updatestatus/'+notid;
             $("form#notificationupdateform").attr('action',posturl);
             $("form#notificationupdateform #noteid").val(notid);
@@ -1345,14 +1345,33 @@ $(document).ready(function() {
                     url: posturl,
                     data: serializedData,
                     success: function(data) {
-                       if(data =="R")
+                       if(data)
                        {
-                          ctr.remove();
-                       }
-                       else if ((data =="A") || (data=="DA") || (data=="E") || (data =="D"))
-                       {
-                          alert("updated : refresh page to see the changes");
-                       }
+                            ctbl.html("");
+                            var trdata;
+                            var number = 1;
+                            $.each(data, function(i,v){
+                                 if(v.federationid)
+                                 {
+                                    var related = v.langfederation+': '+v.federationname;
+                                 }
+                                 else if(v.providerid)
+                                 {
+                                    var related = v.langprovider+': '+v.federationname;
+
+                                 }
+                                 else
+                                 {
+                                    var related = v.langany;
+                                 }
+                                 trdata = '<tr><td>'+number+'</td><td>'+v.langtype+'</td><td>'+related+'</td><td>'+v.delivery+'</td><td>'+v.rcptto+'</td><td>'+v.langstatus+'</td><td>'+v.updated+'</td><td><button class="updatenotifactionstatus editbutton" type="button" value="'+v.id+'">update</button></td></tr>';
+                                 ctbl.append(trdata);
+                                 number = number + 1;
+                                
+                            });
+
+
+                      }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         alert('Error occured: ' + errorThrown);

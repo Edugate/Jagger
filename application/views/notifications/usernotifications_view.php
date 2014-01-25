@@ -9,13 +9,14 @@ if(!empty($warnmessage))
  
 }
 ?>
+<div style="float: right; witdth: 99%;"><button id="registernotification" class="addbutton addicon"><?php echo lang('rr_add');?></button></div>
+<div style="clear: both;"></div>
 <?php
    $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
    $this->table->set_template($tmpl);
    echo $this->table->generate($rows); 
    $this->table->clear();
 ?>
-<div id="subscrlist"></div>
 <?php
    $rrs = array('id'=>'notificationupdateform','style'=>'display: none');
 

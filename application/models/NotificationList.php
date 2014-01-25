@@ -134,6 +134,15 @@ class NotificationList
        {
            return $this->email;
        }
+       public function getAltEmail()
+       {
+            if(empty($this->email))
+            {
+                 return $this->getSubscriber()->getEmail();
+            }
+            return $this->email;
+
+       }
       
        public function getRcpt()
        {
