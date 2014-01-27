@@ -50,7 +50,7 @@ class NotificationList
         protected $notificationtype ;
 
         /**
-         * @Column(type="string", length=15, nullable=false)
+         * @Column(type="string", length=25, nullable=false)
          */
         protected $type;
 

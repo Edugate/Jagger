@@ -1195,6 +1195,16 @@ form#idpmatrixform, form#notificationupdateform,form#notificationaddform{
     width: 100%;
  }
 }
+form#notificationaddform {
+  label {
+    font-weight: bold;
+  div.help{
+    font-size: smaller;
+    color: lighten($font-color,10%);
+  }
+  }
+
+}
 #resultdialog {
     display: none;
 }

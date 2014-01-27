@@ -25,6 +25,139 @@ class Email_sender {
         $this->em = $this->ci->doctrine->em;
     }
 
+
+   function addToMailQueue(array $notificationTypes,$obj=NULL,$subject,$body,$additionalReciepients,$sync=false)
+   {
+       $subscribers = array();
+       if(count($notificationTypes)>0)
+       {
+           $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
+                          array('type'=>$notificationTypes,'is_enabled'=>true,'is_approved'=>true));
+       }
+       $alreadyMailTo = array();
+       foreach($subscribers as $s)
+       {
+            $type = $s->getType();
+            if($type === 'joinfedreq')
+            {
+               if(empty($obj))
+               {
+                    continue;
+               }
+               if(!$obj instanceOf models\Federation)
+               {
+                  continue;
+               }
+               $objId = $obj->getId();
+               $fed = $s->getFederation();
+               if(empty($fed))
+               {
+                  continue;
+               }
+               $fedId = $fed->getId();
+               if($fedId != $objId)
+               {
+                  continue;
+               }
+               
+            }
+            elseif($type === 'fedmemberschanged')
+            {
+               if(empty($obj))
+               {
+                    continue;
+               }
+               if(is_array($obj))
+               {
+                   foreach($obj as $v)
+                   {
+                       if($v instanceOf models\Federation)
+                       {
+                          $objId = $obj->getId();
+                          $fed = $s->getFederation();
+                          if(empty($fed))
+                          {
+                               continue;
+                          }
+                          $fedId = $fed->getId();
+                          if($fedId != $objId)
+                          {
+                             continue;
+                          }
+
+                       }
+                   }
+               }
+               elseif($v instanceOf models\Federation)
+               {
+                          $objId = $obj->getId();
+                          $fed = $s->getFederation();
+                          if(empty($fed))
+                          {
+                               continue;
+                          }
+                          $fedId = $fed->getId();
+                          if($fedId != $objId)
+                          {
+                             continue;
+                          }
+
+               }
+               else
+               {
+                  continue;
+               }
+
+            }
+            elseif($type === 'requeststoproviders')
+            {
+                if(!(!empty($obj) && ($obj instanceOf models\Provider)))
+                {
+                   continue;
+                }
+                $objId = $obj->getId();
+                $prov = $s->getProvider();
+                if(empty($prov))
+                {
+                   continue;
+                }
+                $provId = $prov->getId();
+                if($provId != $objId)
+                {
+                  continue;
+                }
+            }
+            $mailto = $s->getRcpt();
+            if(!in_array($mailto,$alreadyMailTo))
+            {
+               $m = new models\MailQueue();
+               $m->setSubject($subject);
+               $m->setBody($body);
+               $m->setDeliveryType($s->getNotificationType());
+               $m->setRcptto($mailto);
+               $this->em->persist($m);
+               $alreadyMailTo[] = $mailto;
+            }
+       }
+       if(!empty($additionalReciepients) and is_array($additionalReciepients) && count($additionalReciepients)>0)
+       {
+          foreach($additionalReciepients as $v)
+          {
+              if(!in_array($v,$alreadyMailTo))
+              {
+                  $m = new models\MailQueue();
+                  $m->setSubject($subject);
+                  $m->setBody($body);
+                  $m->setDeliveryType('mail');
+                  $m->setRcptto($v);
+                  $this->em->persist($m);
+                  $alreadyMailTo[] = $v;
+              }
+          }
+       }
+       return true;
+   }
+
    /**
     * $to may be single email or array of mails
     */

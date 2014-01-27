@@ -151,21 +151,12 @@ class Idp_registration extends MY_Controller {
             /**
              * send email
              */
-            $sbj = "IDP registration request";
-            $body = "Dear Administrator\r\n";
-            $body .= "".$qu->getEmail()." completed a new Identity Provider Registration\r\n";
-            $body .="You can approve or reject it on ".base_url()."reports/awaiting/detail/".$qu->getToken()."\r\n";
-            $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
-                          array('type'=>array('greqisterreq','gidpregisterreq'),'is_enabled'=>true,'is_approved'=>true));
-            foreach($subscribers as $s)
-            {
-                $m = new models\MailQueue();
-                $m->setSubject($sbj);
-                $m->setBody($body);
-                $m->setDeliveryType($s->getNotificationType());
-                $m->setRcptto($s->getRcpt());
-                $this->em->persist($m);
-            }
+            $sbj = 'IDP registration request';
+            $body = 'Dear user,'.PHP_EOL;
+            $body = 'You have received this mail because your email address is on the notification list'.PHP_EOL;
+            $body .= ''.$qu->getEmail().' completed a new Identity Provider Registration'.PHP_EOL;
+            $body .='You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$qu->getToken().PHP_EOL;
+            $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq','systemnotifications'),null,$sbj,$body,array(),FALSE);
             $this->em->flush();
             $redirect_to = current_url();
             redirect($redirect_to . "/success");

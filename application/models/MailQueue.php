@@ -89,6 +89,10 @@ class MailQueue {
         $this->createdAt = new \DateTime("now",new \DateTimeZone('UTC'));
     }
 
+    public function getId()
+    {
+       return $this->id;
+    }
     public function getMailToArray()
     {
         $result = array(
@@ -112,6 +116,13 @@ class MailQueue {
     public function setBody($b)
     {
         $this->mbody = $b;
+        return $this;
+    }
+
+    public function setMailSent()
+    {
+        $this->issent = TRUE;
+        $this->sentAt = new \DateTime("now",new \DateTimeZone('UTC'));
         return $this;
     }
 

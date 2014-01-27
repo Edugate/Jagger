@@ -1,6 +1,78 @@
 var GINIT = {
     initialize: function() {
 
+    var baseurl = $("[name='baseurl']").val();
+    if (baseurl === undefined)
+    {
+        baseurl = '';
+    }
+    function notificationupdate(message, callback) {
+        $('#notificationupdateform').modal({
+            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+            position: ["20%", ],
+            overlayId: 'simpledialog-overlay',
+            minHeight: '20px',
+            containerId: 'simpledialog-container',
+            onShow: function(dialog) {
+                var modal = this;
+                $('.message', dialog.data[0]).append(message);
+                $('.yes', dialog.data[0]).click(function() {
+                    if ($.isFunction(callback)) {
+                        callback.apply();
+                    }
+                    modal.close(); // or $.modal.close();
+                });
+            }
+        });
+    }
+
+    $("button.updatenotifactionstatus").click(function(ev) {
+        var notid = $(this).attr('value');
+        var ctbl = $(this).closest("tbody");
+        var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
+        $("form#notificationupdateform").attr('action', posturl);
+        $("form#notificationupdateform #noteid").val(notid);
+        notificationupdate('', function(ev) {
+            var serializedData = $("form#notificationupdateform").serializeArray();
+            $.ajax({
+                type: "POST",
+                url: posturl,
+                data: serializedData,
+                success: function(data) {
+                    if (data)
+                    {
+                        ctbl.html("");
+                        var trdata;
+                        var number = 1;
+                        $.each(data, function(i, v) {
+                            if (v.federationid)
+                            {
+                                var related = v.langfederation + ': ' + v.federationname;
+                            }
+                            else if (v.providerid)
+                            {
+                                var related = v.langprovider + ': ' + v.federationname;
+
+                            }
+                            else
+                            {
+                                var related = v.langany;
+                            }
+                            trdata = '<tr><td>' + number + '</td><td>' + v.langtype + '</td><td>' + related + '</td><td>' + v.delivery + '</td><td>' + v.rcptto + '</td><td>' + v.langstatus + '</td><td>' + v.updated + '</td><td><button class="updatenotifactionstatus editbutton" type="button" value="' + v.id + '">update</button></td></tr>';
+                            ctbl.append(trdata);
+                            number = number + 1;
+
+                        });
+                        GINIT.initialize(); 
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error occured: ' + errorThrown);
+                }
+            });
+        });
+    });
+
         $('form#fvform').submit(function(e) {
             e.preventDefault();
             var str = $(this).serializeArray();
@@ -1346,6 +1418,7 @@ $(document).ready(function() {
                     $(".message").html(data);
                     if (data == 'OK')
                     {
+                        alert('refresh page to see updated table');
 
                         $.modal.close();
                     }
@@ -1359,51 +1432,8 @@ $(document).ready(function() {
         });
 
     });
-    $("button.updatenotifactionstatus").click(function(ev) {
-        var notid = $(this).attr('value');
-        var ctbl = $(this).closest("tbody");
-        var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
-        $("form#notificationupdateform").attr('action', posturl);
-        $("form#notificationupdateform #noteid").val(notid);
-        notificationupdate('', function(ev) {
-            var serializedData = $("form#notificationupdateform").serializeArray();
-            $.ajax({
-                type: "POST",
-                url: posturl,
-                data: serializedData,
-                success: function(data) {
-                    if (data)
-                    {
-                        ctbl.html("");
-                        var trdata;
-                        var number = 1;
-                        $.each(data, function(i, v) {
-                            if (v.federationid)
-                            {
-                                var related = v.langfederation + ': ' + v.federationname;
-                            }
-                            else if (v.providerid)
-                            {
-                                var related = v.langprovider + ': ' + v.federationname;
 
-                            }
-                            else
-                            {
-                                var related = v.langany;
-                            }
-                            trdata = '<tr><td>' + number + '</td><td>' + v.langtype + '</td><td>' + related + '</td><td>' + v.delivery + '</td><td>' + v.rcptto + '</td><td>' + v.langstatus + '</td><td>' + v.updated + '</td><td><button class="updatenotifactionstatus editbutton" type="button" value="' + v.id + '">update</button></td></tr>';
-                            ctbl.append(trdata);
-                            number = number + 1;
-
-                        });
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error occured: ' + errorThrown);
-                }
-            });
-        });
-    });
+    // updatenotifactionstatus old place
     $("#idpmatrix tr td:not(:first-child)").click(function(ev) {
         var col = $(this).parent().children().index($(this));
         var cell = $.trim($(this).text());
@@ -1573,7 +1603,7 @@ $(document).ready(function() {
                     var selprovider = $('#sprovider');
                     selfed.find('option').remove();
                     selprovider.find('option').remove();
-                    if (valueSelected === "joinfedreq")
+                    if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged")
                     {
                         $.ajax({
                             type: "GET",
@@ -1592,6 +1622,26 @@ $(document).ready(function() {
 
                         });
                     }
+                    else if(valueSelected === "requeststoproviders" )
+                    {
+                        $.ajax({
+                            type: "GET",
+                            url: baseurl + 'ajax/getproviders',
+                            cache: false,
+                            success: function(data) {
+                                $.each(data, function(key1, value1) {
+                                    $('<option>').val(value1.id).text(value1.name).appendTo(selprovider);
+                                });
+                                $('select#sprovider').parent().show();
+
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                $(".message").html(errorThrown);
+                            }
+
+                        });
+
+                   }
                 }); // end change  function
                 var modal = this;
                 $('.message', dialog.data[0]).append(message);
@@ -1604,25 +1654,6 @@ $(document).ready(function() {
                 });
             }
 
-        });
-    }
-    function notificationupdate(message, callback) {
-        $('#notificationupdateform').modal({
-            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-            position: ["20%", ],
-            overlayId: 'simpledialog-overlay',
-            minHeight: '20px',
-            containerId: 'simpledialog-container',
-            onShow: function(dialog) {
-                var modal = this;
-                $('.message', dialog.data[0]).append(message);
-                $('.yes', dialog.data[0]).click(function() {
-                    if ($.isFunction(callback)) {
-                        callback.apply();
-                    }
-                    modal.close(); // or $.modal.close();
-                });
-            }
         });
     }
 

@@ -456,11 +456,8 @@ class Metadata2import {
                 }
             }
         }
-        $this->em->flush();
         log_message('debug', __METHOD__ . ' import ' . serialize($report));
-        if($mailReport)
-        {
-            $this->ci->load->library('email_sender');
+        $this->ci->load->library('email_sender');
             $body = 'Report'.PHP_EOL;
 
             foreach($report['body']  as $bb)
@@ -506,11 +503,20 @@ class Metadata2import {
                     $body .= $a.PHP_EOL;
                 }
             }
+            $nbody = '';
             if(!$structureChanged)
             {
-                $body .='No entities have been added/removed after sync/import'.PHP_EOL;
+                $nbody ='No entities have been added/removed after sync/import'.PHP_EOL;
             }
-            $this->ci->email_sender->send($mailAddresses,'Federation sync/import report',$body);
+            else
+            {
+                $this->ci->email_sender->addToMailQueue(array('gfedmemberschanged'),null,'Federation sync/import report',$body,array(),false);
+            }
+        $this->em->flush();
+
+        if($mailReport)
+        {
+            $this->ci->email_sender->send($mailAddresses,'Federation sync/import report',$body.$nbody);
         }
         return true;
     }

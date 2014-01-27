@@ -94,26 +94,16 @@ class Federation_registration extends MY_Controller
             /**
              * send email
              */
-            $sbj = "Federation registration request";
-            $body = "Dear Administrator\r\n";
-            $body .= "".$q->getEmail()." just filled Federation Registration form\r\n";
-            $body .= "Federation name: ".$fedname. "\r\n";
-            $body .="You can approve or reject it on ".base_url()."reports/awaiting/detail/".$q->getToken()."\r\n";
-            $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
-                          array('type'=>array('greqisterreq','gfedreqisterreq'),'is_enabled'=>true,'is_approved'=>true));
-            foreach($subscribers as $s)
-            {
-                $m = new models\MailQueue();
-                $m->setSubject($sbj);
-                $m->setBody($body);
-                $m->setDeliveryType($s->getNotificationType());
-                $m->setRcptto($s->getRcpt());
-                $this->em->persist($m);
-            }
-        $this->em->flush();
-        $data['success'] = lang('rr_fed_req_sent');
-        $data['content_view'] = 'federation/success_view';
-        $this->load->view('page',$data);
+       $sbj = 'Federation registration request';
+       $body = 'Dear useri'.PHP_EOL;
+       $body .= $q->getEmail().' just filled Federation Registration form'.PHP_EOL;
+       $body .= 'Federation name: '.$fedname. PHP_EOL;
+       $body .= 'You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$q->getToken().PHP_EOL;
+       $this->email_sender->addToMailQueue(array('greqisterreq','gfedreqisterreq','systemnotifications'),null,$sbj,$body,array(),FALSE);
+       $this->em->flush();
+       $data['success'] = lang('rr_fed_req_sent');
+       $data['content_view'] = 'federation/success_view';
+       $this->load->view('page',$data);
     }
 
     private function _submit_validate()

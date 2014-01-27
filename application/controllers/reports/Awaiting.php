@@ -388,32 +388,20 @@ class Awaiting extends MY_Controller {
                             {
                                 $requester_recipient = $queueObj->getEmail();
                             }
-                            $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-                            $a_members = $a->getMembers();
-                            foreach ($a_members as $m)
+                            $sbj = 'Identity Provider has been approved';
+                            $body = 'Dear user,'.PHP_EOL;
+                            $body .= 'Registration request: '.$idp->getName() .' ('.$idp->getEntityId().')'.PHP_EOL;
+                            $body .= 'Requested by: '.$requester_recipient.''.PHP_EOL;
+                            $body .= 'Request has been just approved by '.$this->j_auth->current_user().' and added to the system'.PHP_EOL;
+                            $body .= 'It can be reviewed on '.base_url().' '.PHP_EOL;
+                            $additionalReceipents = array();
+                            $toNotifyRequester = $this->config->item('notify_requester_if_queue_accepted');
+                            if(!empty($toNotifyRequester))
                             {
-                                $admin_recipients[] = $m->getEmail();
+                                $additionalReceipents[] = $requester_recipient;
                             }
-                            $admin_recipients = array_unique($admin_recipients);
-                            $mail_sbj = "Identity Provider has been approved";
-                            $mail_body ='Hi,'.PHP_EOL;
-                            $mail_body .= 'Registration request: '.$idp->getName() .' ('.$idp->getEntityId().')'.PHP_EOL;
-                            $mail_body .= 'Requested by: '.$requester_recipient.''.PHP_EOL;
-                            $mail_body .= 'Request has been just approved by '.$this->j_auth->current_user().' and added to the system'.PHP_EOL;
-                            $mail_body .= 'It can be reviewed on '.base_url().' '.PHP_EOL;
-
- 
+                            $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq','systemnotifications'),null,$sbj,$body,$additionalReceipents,FALSE);
                             $this->em->flush();
-                            $this->load->library('email_sender');
-                            if($this->config->item('notify_requester_if_queue_accepted') === TRUE)
-                            {
-                                 $this->email_sender->send($requester_recipient,$mail_sbj,$mail_body);
-                            }
-                            if($this->config->item('notify_admins_if_queue_accepted') === TRUE)
-                            {         
-                                 $this->email_sender->send($admin_recipients,$mail_sbj,$mail_body);
-                            }
-
                             $success_message = "Identity Provider has been added. Please set correct permissions.";
                             $data['content_view'] = 'reports/awaiting_approved_view';
                             $data['success_message'] = $success_message;
@@ -478,30 +466,24 @@ class Awaiting extends MY_Controller {
                             {
                                 $requester_recipient = $queueObj->getEmail();
                             }
-                            $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-                            $a_members = $a->getMembers();
-                            foreach ($a_members as $m)
-                            {
-                                $admin_recipients[] = $m->getEmail();
-                            }
                             $admin_recipients = array_unique($admin_recipients);
-                            $mail_sbj = 'Service Provider has been approved';
-                            $mail_body = 'Hi,'.PHP_EOL;
-                            $mail_body .= 'Registration request: '.$sp->getName(). '('.$sp->getEntityId().')'.PHP_EOL;
-                            $mail_body .='Requested by: '.$requester_recipient.''.PHP_EOL;
-                            $mail_body .='Request has been just approved by '.$this->j_auth->current_user().' and added to the system'.PHP_EOL;
-                            $mail_body .= 'It can be reviewed on '.base_url().' '.PHP_EOL;
+                            $sbj = 'Service Provider has been approved';
+                            $body = 'Hi,'.PHP_EOL;
+                            $body .= 'Registration request: '.$sp->getName(). '('.$sp->getEntityId().')'.PHP_EOL;
+                            $body .='Requested by: '.$requester_recipient.''.PHP_EOL;
+                            $body .='Request has been just approved by '.$this->j_auth->current_user().' and added to the system'.PHP_EOL;
+                            $body .= 'It can be reviewed on '.base_url().' '.PHP_EOL;
                             
-                            $this->em->flush();
-                            $this->load->library('email_sender');
-                            if($this->config->item('notify_requester_if_queue_accepted') === TRUE)
+
+                            $additionalRcpts = array();
+
+                            $toNotifyRequester = $this->config->item('notify_requester_if_queue_accepted');
+                            if(!empty($toNotifyRequester))
                             {
-                                 $this->email_sender->send($requester_recipient,$mail_sbj,$mail_body);
+                                $additionalRcpts[] = $requester_recipient;
                             }
-                            if($this->config->item('notify_admins_if_queue_accepted') === TRUE)
-                            {         
-                                 $this->email_sender->send($admin_recipients,$mail_sbj,$mail_body);
-                            }
+                            $this->email_sender->addToMailQueue(array('greqisterreq','gspregisterreq','systemnotifications'),null,$sbj,$body,$additionalRcpts,FALSE) ;
+                            $this->em->flush();
                             $success_message = "Service Provider has been added";
                             $data['content_view'] = 'reports/awaiting_approved_view';
                             $data['success_message'] = $success_message;
@@ -604,35 +586,21 @@ class Awaiting extends MY_Controller {
                             if (empty($federation))
                             {
                                 show_error('Federation not found', 404);
-                                exit();
+                                return;
                             }
                             $provider->setFederation($federation);
                             $contacts = $provider->getContacts();
                             $mail_recipients = array();
                             $mail_recipients[] = $queueObj->getCreator()->getEmail();
-                            $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-                            $a_members = $a->getMembers();
-                            foreach ($a_members as $m)
-                            {
-                                $mail_recipients[] = $m->getEmail();
-                            }
-                            foreach ($contacts as $cnt)
-                            {
-                                $mail_recipients[] = $cnt->getEmail();
-                            }
-                            $mail_recipients = array_unique($mail_recipients);
                             $sbj = $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
                             $body = $this->j_auth->current_user() . " just approved request.\r\n";
                             $body .= 'Since now Provider: ' . $provider->getName() . 'becomes a member of ' . $federation->getName() . '\r\n';
                             $this->em->persist($provider);
                             $this->em->remove($queueObj);
-                            if ($this->em->flush())
-                            {
-                                $this->load->library('email_sender');
-                                $this->email_sender->send($mail_recipients, $sbj, $body);
-                                $data['content_view'] = 'reports/awaiting_invite_provider_view';
-                                $this->load->view('page', $data);
-                            }
+                            $this->email_sender->addToMailQueue(array('grequeststoproviders','systemnotifications'),null,$sbj,$body,array(),$sync=false);
+                            $this->em->flush();
+                            $data['content_view'] = 'reports/awaiting_invite_provider_view';
+                            $this->load->view('page', $data);
                         }
                     }
                     elseif(!empty($recipienttype) && !empty($recipient) && $recipienttype == 'federation')
@@ -662,37 +630,21 @@ class Awaiting extends MY_Controller {
                             /**
                              * @todo add more recipient like fedowner or fedadmins
                              */
-                            $mail_recipients = array();
+                            $additionalReceipients = array();
                             if($this->config->item('notify_requester_if_queue_accepted') === TRUE)
                             {
-			         $mail_recipients[] = $queueObj->getCreator()->getEmail();
+			         $additionalReceipients[] = $queueObj->getCreator()->getEmail();
                             }
-                            if($this->config->item('notify_admins_if_queue_accepted') === TRUE)
-                            {
-                                 $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-                                 $a_members = $a->getMembers();
-                                 foreach ($a_members as $m)
-                                 {
-                                      $mail_recipients[] = $m->getEmail();
-                                 }
-                            }
-                            $mail_recipients = array_unique($mail_recipients);
                             $sbj = "Approved:".$provider->getName() . ' joins federation: "' . $federation->getName() . '"';
                             $body = $this->j_auth->current_user() . " just approved request.\r\n";
                             $body .= 'Since now Provider: ' . $provider->getName() . 'becomes a member of ' . $federation->getName() . '\r\n';
                             $this->em->persist($provider);
                             $this->em->remove($queueObj);
-                            if($this->em->flush())
-                            {
-                                 $this->load->library('email_sender');
-                                 if(count($mail_recipients) > 0)
-                                 {
-                                    $this->email_sender->send($mail_recipients, $sbj, $body);
-                                 }
-                                 $data['content_view'] = 'reports/awaiting_invite_federation_view';
-                                 $this->load->view('page', $data);
+                            $this->email_sender->addToMailQueue(array('gjoinfedreq','joinfedreq','systemnotifications'),$federation,$sbj,$body,$additionalReceipients,false);
+                            $this->em->flush();
+                            $data['content_view'] = 'reports/awaiting_invite_federation_view';
+                            $this->load->view('page', $data);
 
-                            }
                            
 
                         }
@@ -783,28 +735,29 @@ class Awaiting extends MY_Controller {
                 $qtoken = $queueObj->getToken();
                 if($reject_access === TRUE)
                 {
-                    $this->load->library('email_sender');
+                    $additionalReciepients = array();
                     $m_creator = $queueObj->getCreator();
                     if(!empty($m_creator))
                     {
-                       $mail_reciepient = $m_creator->getEmail();
+                       $additionalReciepients[] = $m_creator->getEmail();
                     }
                     else
                     {
-                       $mail_reciepient = $queueObj->getEmail();
+                       $additionalReciepients[] = $queueObj->getEmail();
                     }
-                    $mail_sbj = 'Your request has been rejected';
-                    $mail_body = "Hi,\r\n";
-                    $mail_body .= "Your request placed on ".base_url()."\r\n";
-                    $mail_body .= "Unfortunately your request with tokenID: ".$queueObj->getToken()." has been rejected\r\n";
-                    $mail_body .= "";
+                    
+                    $subject = 'Your request has been rejected';
+                    $body = "Hi,\r\n";
+                    $body .= "Your request placed on ".base_url()."\r\n";
+                    $body .= "Unfortunately your request with tokenID: ".$queueObj->getToken()." has been rejected\r\n";
+                    $body .= "";
                     log_message('debug','Queue with token:'.$queueObj->getToken().' has been rejected by '.$this->j_auth->current_user());
                     $this->em->remove($queueObj);
-                    $this->em->flush();
                     if($notification === TRUE)
                     {
-                        $this->email_sender->send($mail_reciepient,$mail_sbj,$mail_body);
+                       $this->email_sender->addToMailQueue(array(),null,$subject,$body,$additionalReciepients,FALSE);
                     }
+                    $this->em->flush();
                     $this->error_message = 'ID: ' . $p . 'with tokenID '.$qtoken.' has been removed from queue';
                     $data['error_message'] = $this->error_message;
                     log_message('debug', $this->error_message);

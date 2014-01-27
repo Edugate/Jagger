@@ -250,9 +250,12 @@ class Subscriber extends MY_Controller {
         $codes = notificationCodes();
         if(!array_key_exists($ntype,$codes))
         {
-           echo '<div class="error">incorrect type</div>';
+           echo '<div class="error">'.lang('error_wrongnotifycationtype').'</div>';
            return;
         }
+        $isAdministator = $this->j_auth->isAdministrator();
+        ///////////////////////////////////////////////////////
+        $success = false;
         if(strcmp($ntype,'joinfedreq')==0)
         {
            if(!empty($nfederation)) 
@@ -261,7 +264,7 @@ class Subscriber extends MY_Controller {
            }
            if(empty($federation))
            {
-              echo '<div class="error">federation not found</div>';
+              echo '<div class="error">'.lang('error_fednotfound').'</div>';
               return;
            }
            $has_write_access =  $this->zacl->check_acl('f_' . $federation->getId().'', 'write', 'federation', '');
@@ -278,15 +281,39 @@ class Subscriber extends MY_Controller {
            {
               $notification->setApproved(TRUE);
            }
-           else
-           {
-              $notification->setApproved(FALSE);
-           }
            $this->em->persist($notification);
            $this->em->flush();
+           $success = true;
            echo "OK";
-           return;
         }
+        elseif(array_key_exists($ntype,$codes))
+        {
+            $notification = new models\NotificationList();
+            $notification->setSubscriber($user);
+            $notification->setType($ntype);
+            if(!empty($nemail))
+            {
+               $notification->setEmail($nemail);
+            }
+            $notification->setEnabled(FALSE);
+            
+            if($isAdministator)
+            {
+               $notification->setApproved(TRUE);
+            }
+            $this->em->persist($notification);
+            $this->em->flush();
+            $success = true;
+            echo "OK";
+ 
+        }
+        else
+        {
+           $success = false;
+           echo '<div class="error">'.lang('unknownerror').'</div>';
+        }
+        return;
+      
 
     }
 

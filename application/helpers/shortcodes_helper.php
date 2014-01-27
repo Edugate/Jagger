@@ -6,12 +6,17 @@
 function notificationCodes()
 {
    $result = array(
+     'systemnotifications'=>array('desc'=>'system notifications','desclang'=>'systemnotifications'),
      'greqisterreq'=>array('desc'=>'global idp/sp/federation registration request','desclang'=>'greqisterreq'),
      'gfedreqisterreq'=>array('desc'=>'global fed registration','desclang'=>'gfedreqisterreq'),
      'gidpregisterreq'=>array('desc'=>'global IDP registration','desclang'=>'gidpregisterreq'),
      'gspregisterreq'=>array('desc'=>'global SP registration','desclang'=>'gspregisterreq'),
      'gjoinfedreq'=>array('desc'=>'global join federation request','desclang'=>'gjoinfedreq'),
-     'joinfedreq'=>array('desc'=>'join federation request','desclang'=>'joinfedreq')
+     'joinfedreq'=>array('desc'=>'join federation request','desclang'=>'joinfedreq'),
+     'gfedmemberschanged'=>array('desc'=>'members collection changed for any federation','desclang'=>'gfedmemberschanged'),
+     'fedmemberschanged'=>array('desc'=>'members collection changed for seleceted federation','desclang'=>'fedmemberschanged'),
+     'grequeststoproviders'=>array('desc'=>'All request sent to any provider','desclang'=>'grequeststoproviders'),
+     'requeststoproviders'=>array('desc'=>'Request sent to any defined provider','desclang'=>'requeststoproviders')
    );
 
    return $result;

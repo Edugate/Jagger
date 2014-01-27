@@ -1627,6 +1627,14 @@ form#idpmatrixform div, form#notificationupdateform div, form#notificationaddfor
   width: 100%;
 }
 
+form#notificationaddform label {
+  font-weight: bold;
+}
+form#notificationaddform label div.help {
+  font-size: smaller;
+  color: #4d4d4d;
+}
+
 #resultdialog {
   display: none;
 }

@@ -694,7 +694,7 @@ class Manage extends MY_Controller {
                         $mail_recipients = array();
                         $mail_sbj = "Invitation to join federation: " . $federation->getName();
                         $mail_body = "Hi,\r\nJust few moments ago Administator of federation \"" . $federation->getName() . "\"\r\n";
-                        $mail_body .= "sent request to Administrator of Provider: \"" . $inv_member->getName() . "(" . $inv_member->getEntityId() . ")\"\r\n";
+                        $mail_body .= "invited Provider: \"" . $inv_member->getName() . "(" . $inv_member->getEntityId() . ")\"\r\n";
                         $mail_body .= "to join his federation.\r\n";
                         $mail_body .= "To accept or reject this request please go to Resource Registry\r\n";
                         $mail_body .= base_url() . "reports/awaiting\r\n";
@@ -702,24 +702,8 @@ class Manage extends MY_Controller {
                         $mail_body .= $message . "\r\n";
                         $mail_body .= "=============================================================\r\n";
 
-                        $contacts = $inv_member->getContacts();
-                        if (!empty($contacts))
-                        {
-                            foreach ($contacts as $cnt)
-                            {
-                                $mail_recipients[] = $cnt->getEmail();
-                            }
-                        }
-                        $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-                        $a_members = $a->getMembers();
-                        foreach ($a_members as $m)
-                        {
-                            $mail_recipients[] = $m->getEmail();
-                        }
-                        $mail_recipients = array_unique($mail_recipients);
-                        $this->load->library('email_sender');
 
-                        $this->email_sender->send($mail_recipients, $mail_sbj, $mail_body);
+                        $this->email_sender->addToMailQueue(array('systemnotifications','grequeststoproviders','requeststoproviders'),$inv_member,$mail_sbj,$mail_body,array(),false);
                     }
                 }
             }
@@ -850,24 +834,10 @@ class Manage extends MY_Controller {
                              $mail_body .= $message . "\r\n";
                              $mail_body .= "================================================================\r\n";
                         }
-                        $contacts = $inv_member->getContacts();
-                        if (!empty($contacts))
-                        {
-                            foreach ($contacts as $cnt)
-                            {
-                                $mail_recipients[] = $cnt->getEmail();
-                            }
-                        }
-                        $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-                        $a_members = $a->getMembers();
-                        foreach ($a_members as $m)
-                        {
-                            $mail_recipients[] = $m->getEmail();
-                        }
-                        $mail_recipients = array_unique($mail_recipients);
-                        $this->load->library('email_sender');
                         
-                        $this->email_sender->send($mail_recipients, $mail_sbj, $mail_body);
+                        $this->email_sender->addToMailQueue(array('systemnotifications','gfedmemberschanged','fedmemberschanged'),$federation,$mail_sbj,$mail_body,array(),$sync=false);
+                        $this->em->flush();
+                        
                     }
                 }
                 else

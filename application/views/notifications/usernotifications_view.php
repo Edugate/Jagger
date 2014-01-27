@@ -56,9 +56,9 @@ if(!empty($warnmessage))
    //echo form_input(array('name'=>'noteid','id'=>'noteid','type'=>'hidden','value'=>''));
    ?>
       <div class="header">
-      <span><?php echo 'add'; ?></span>
+      <span><?php echo lang('registerfornotification'); ?></span>
       </div>
-      <div></div>
+      <div class="help"><?php echo lang('rhelp_addnotification'); ?></div>
       <p class="message"></p>
      <div>
       <?php

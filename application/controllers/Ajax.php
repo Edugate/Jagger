@@ -29,6 +29,29 @@ class Ajax extends MY_Controller {
         }
     }
   
+    public function getproviders()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            set_status_header(403);
+            echo 'denied';
+            return;
+        }
+        $this->load->library('j_auth');
+        $loggedin = $this->j_auth->logged_in();
+        if(!$loggedin)
+        {
+           set_status_header(403);
+           echo 'denied';
+           return;
+        }
+        $p = new models\Providers();
+        $providers = $p->getLocalIdsEntities();
+        
+        $this->output->set_content_type('application/json');
+        echo json_encode($providers);
+
+    }
     public function getidps()
     {
         if (!$this->input->is_ajax_request())
