@@ -40,11 +40,14 @@ class AttributeRequirements
 
 	public function  getRequirementsBySPs(array $sps)
 	{
-		$req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('type'=>'SP','sp_id'=>$sps));
                 $result = array();
-                foreach($req as $r)
+                if(count($sps)>0)
                 {
-                    $result[$r->getSP()->getId()][]=$r;
+		   $req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('type'=>'SP','sp_id'=>$sps));
+                   foreach($req as $r)
+                   {
+                      $result[$r->getSP()->getId()][]=$r;
+                   }
                 }
 		return $result;
 	}

@@ -55,6 +55,10 @@ a:hover {
     color: $linkHoverColor;
     text-decoration: underline;
 }
+a.profilelink, a.profilelink:link, a.profilelink:visited {
+    color: $profilelink;
+    text-decoration: underline;
+}
 
 li {
     list-style: none;
@@ -1179,11 +1183,11 @@ span.alert
 #simplemodal-container #basicModalContent {
     padding:8px;
 }
-#sconfirm, #idpmatrixform {
+#sconfirm, #idpmatrixform, #notificationaddform,#notificationupdateform {
     display:none;
     box-shadow: 0 0 0 ;
 }
-form#idpmatrixform, form#notificationupdateform{
+form#idpmatrixform, form#notificationupdateform,form#notificationaddform{
   background-color: white;  
   padding: 0px;
   width: auto;

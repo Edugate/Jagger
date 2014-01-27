@@ -100,6 +100,7 @@ class NotificationList
        {
           $this->is_enabled = false;
           $this->is_approved = false;
+          $this->notificationtype = 'mail';
           $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
        }
 

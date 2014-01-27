@@ -83,7 +83,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 <?php
                 if ($loggedin)
                 {
-                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b>' . htmlentities($_SESSION['username']) . '</b>&nbsp;&nbsp;' . anchor($base_url . "auth/logout", '<img src="' . $base_url . 'images/icons/external.png" title="Sign out"/>') ;
+                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b> <a href="'.$base_url.'manage/users/show/'.base64url_encode($this->j_auth->current_user()).'" class="profilelink">'. htmlentities($this->j_auth->current_user()). '</a></b>&nbsp;&nbsp;' . anchor($base_url . "auth/logout", '<img src="' . $base_url . 'images/icons/external.png" title="Sign out"/>') ;
                    if(empty(j_auth::$timeOffset))
                    {
                      echo ' <small>UTC+0</small>';
@@ -222,6 +222,10 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                                         ?>
                                         <li><a href="<?php echo $base_url; ?>manage/coc/show"><?php echo lang('coc_menulink'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>attributes/attributes/show"><?php echo lang('rr_attr_defs'); ?></a></li>
+                                       <?php
+                                        if($isAdministrator)
+                                        {
+                                        ?>
                                         <li><a href="<?php echo $base_url; ?>manage/importer"><?php echo lang('rr_meta_importer'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users'); ?> &nbsp;&gt;</a>
                                             <ul>
@@ -230,6 +234,9 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                                                 <li><a href="<?php echo $base_url; ?>manage/users/remove"><?php echo lang('rr_rmuser'); ?></a></li>
                                             </ul>
                                         </li>
+                                       <?php
+                                       }
+                                      ?>
                                     </ul>
                                 </li>
                                 <li><a href="<?php echo $base_url; ?>"><?php echo lang('help'); ?></a></li>

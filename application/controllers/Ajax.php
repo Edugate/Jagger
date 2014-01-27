@@ -28,6 +28,53 @@ class Ajax extends MY_Controller {
             return true;
         }
     }
+  
+    public function getidps()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            set_status_header(403);
+            echo 'denied';
+            return;
+        }
+        $this->load->library('j_auth');
+        $loggedin = $this->j_auth->logged_in();
+        if(!$loggedin)
+        {
+           set_status_header(403);
+           echo 'denied';
+           return;
+        }
+        $p = new models\Providers();
+        $idps = $p->getLocalIdpsIdsEntities();
+        $this->output->set_content_type('application/json');
+        echo json_encode($idps);
+
+    }
+
+    public function getfeds()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            set_status_header(403);
+            echo 'denied';
+            return;
+        }
+        $this->load->library('j_auth');
+        $loggedin = $this->j_auth->logged_in();
+        if(!$loggedin)
+        {
+           set_status_header(403);
+           echo 'denied';
+           return;
+        }
+        $p = new models\Federations();
+        $feds = $p->getAllIdNames();
+        $this->output->set_content_type('application/json');
+        echo json_encode($feds);
+
+    }
+   
 
     public function changelanguage($language)
     {

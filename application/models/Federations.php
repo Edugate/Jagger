@@ -39,6 +39,18 @@ class Federations
         return $this->federations;
     }
 
+    public function getAllIdNames()
+    {
+
+          $query = $this->em->createQuery("
+              SELECT p.id, p.name from models\Federation as p ORDER BY p.name ASC
+          ");
+          $result = $query->getResult();
+          return $result;
+    }
+
+
+
     public function getOneByName($name)
     {
         $this->federations = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $name));

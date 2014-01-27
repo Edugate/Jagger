@@ -198,9 +198,11 @@ class Users extends MY_Controller {
             show_error('User not found', 404);
         }
 
+        $loggedUsername = $this->j_auth->current_user();
+        $match = (strcasecmp($loggedUsername,$user->getUsername())==0);
         $access = $this->zacl->check_acl('u_' . $user->getId(), 'read', 'user', '');
         $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
-        if (!$access) {
+        if (!($access || $match)) {
             $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
@@ -498,7 +500,7 @@ class Users extends MY_Controller {
             $form = form_open($action,$form_attributes);
             $form .= form_fieldset('Password change for user '.$user->getUsername());
             $form .="<ol>";
-            if($write_access && !$manage_access)
+            if($write_access  && !$manage_access)
             {
                 $form .= "<li>";
                 $form .= form_label('Current password', 'oldpassword');

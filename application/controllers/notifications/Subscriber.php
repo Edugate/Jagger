@@ -196,6 +196,100 @@ class Subscriber extends MY_Controller {
 
     }
 
+    public function add()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+           set_status_header(403);
+           echo 'denied';
+           return;
+
+        }
+         
+        $loggedin = $this->j_auth->logged_in();
+        if(!$loggedin)
+        {
+           set_status_header(403);
+           echo 'not loggedin';
+           return;
+        } 
+        $username = $this->j_auth->current_user();
+        if(!empty($username))
+        {
+           $user = $this->em->getRepository("models\User")->findOneBy(array('username'=>''.$username.''));
+        }
+        if(empty($user))
+        {
+           set_status_header(403);
+           echo 'error occured';
+           return;
+        }
+
+        $this->load->library('zacl');
+        
+        $ntype = trim(htmlentities($this->input->post('type')));
+        $nprovider = trim($this->input->post('sprovider'));
+        if(!empty($nprovider) && !is_numeric($nprovider))
+        {
+           echo '<div class="error">incorrect provider</div>';
+        }
+        $nfederation = trim($this->input->post('sfederation'));
+        if(!empty($nfederation) && !is_numeric($nfederation))
+        {
+           echo '<div class="error">incorrect federation</div>';
+        }
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('semail', '' . lang('rr_contactemail') . '', 'trim|min_length[3]|max_length[255]|valid_email');
+        if($this->form_validation->run() === FALSE)
+        {
+           echo validation_errors('<div class="error">', '</div>');
+           return;
+        }
+        $nemail = trim($this->input->post('semail'));
+        $this->load->helper('shortcodes');
+        $codes = notificationCodes();
+        if(!array_key_exists($ntype,$codes))
+        {
+           echo '<div class="error">incorrect type</div>';
+           return;
+        }
+        if(strcmp($ntype,'joinfedreq')==0)
+        {
+           if(!empty($nfederation)) 
+           {
+              $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id'=>$nfederation));
+           }
+           if(empty($federation))
+           {
+              echo '<div class="error">federation not found</div>';
+              return;
+           }
+           $has_write_access =  $this->zacl->check_acl('f_' . $federation->getId().'', 'write', 'federation', '');
+           $notification = new models\NotificationList();
+           $notification->setSubscriber($user);
+           $notification->setType($ntype);
+           $notification->setFederation($federation);
+           if(!empty($nemail))
+           {
+              $notification->setEmail($nemail);
+           }
+           $notification->setEnabled(FALSE);
+           if($has_write_access)
+           {
+              $notification->setApproved(TRUE);
+           }
+           else
+           {
+              $notification->setApproved(FALSE);
+           }
+           $this->em->persist($notification);
+           $this->em->flush();
+           echo "OK";
+           return;
+        }
+
+    }
+
     public function updatestatus($id=null)
     {
         if (!$this->input->is_ajax_request() or empty($id) or !is_numeric($id) or $_SERVER['REQUEST_METHOD'] !== 'POST')
