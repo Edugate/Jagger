@@ -1549,7 +1549,8 @@ $(document).ready(function() {
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%", ],
             overlayId: 'simpledialog-overlay',
-            minHeight: '300px',
+            minHeight: '400px',
+            minWidth: '500px',
             containerId: 'simpledialog-container',
             onOpen: function(dialog) {
                 dialog.overlay.fadeIn('fast', function() {
