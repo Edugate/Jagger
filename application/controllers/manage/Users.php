@@ -240,6 +240,7 @@ class Users extends MY_Controller {
         }
         $det[$i++] = array('key' => 'Access types', 'val' => implode(", ", $access_type_str));
         $det[$i++] = array('key' => 'Assigned roles', 'val' => implode(", ", $user->getRoleNames()));
+        $det[$i++] = array('key'=> lang('rrnotifications'),'val'=>anchor(base_url().'notifications/subscriber/mysubscriptions/'.$encoded_username.'',lang('rrmynotifications')));
         $det[$i++] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
         $bookmarks = '';
         $userpref = $user->getUserpref();

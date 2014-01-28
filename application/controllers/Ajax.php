@@ -51,7 +51,6 @@ class Ajax extends MY_Controller {
         $this->output->set_content_type('application/json');
         foreach($providers as $k)
         {
-           $result[] = array('id'=>$k['id'],'name'=> trim(substr($k['name'],0, 50)));
           $result[] = array('key'=>$k['id'],'value'=> $k['entityid'],'label'=>$k['name']);
         }
          $y= json_encode($result);
