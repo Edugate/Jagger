@@ -95,7 +95,7 @@ class Federation_registration extends MY_Controller
              * send email
              */
        $sbj = 'Federation registration request';
-       $body = 'Dear useri'.PHP_EOL;
+       $body = 'Dear user'.PHP_EOL;
        $body .= $q->getEmail().' just filled Federation Registration form'.PHP_EOL;
        $body .= 'Federation name: '.$fedname. PHP_EOL;
        $body .= 'You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$q->getToken().PHP_EOL;
