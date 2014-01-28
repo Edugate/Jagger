@@ -51,7 +51,7 @@ var GINIT = {
                             }
                             else if (v.providerid)
                             {
-                                var related = v.langprovider + ': ' + v.federationname;
+                                var related = v.langprovider + ': ' + v.providername;
 
                             }
                             else
