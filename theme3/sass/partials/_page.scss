@@ -55,6 +55,10 @@ a:hover {
     color: $linkHoverColor;
     text-decoration: underline;
 }
+a.profilelink, a.profilelink:link, a.profilelink:visited {
+    color: $profilelink;
+    text-decoration: underline;
+}
 
 li {
     list-style: none;
@@ -1179,12 +1183,39 @@ span.alert
 #simplemodal-container #basicModalContent {
     padding:8px;
 }
-#sconfirm, #idpmatrixform {
+#sconfirm, #idpmatrixform, #notificationaddform,#notificationupdateform {
     display:none;
     box-shadow: 0 0 0 ;
 }
-form#idpmatrixform{
+form#idpmatrixform, form#notificationupdateform,form#notificationaddform{
   background-color: white;  
+  padding: 0px;
+  width: auto;
+ div {
+    width: 100%;
+ }
+}
+form#notificationaddform {
+  label {
+    font-weight: bold;
+    display: block;
+    clear:both;
+    float: none;
+  }
+  input {
+    display: block;
+    clear:both;
+  }
+  div.help{
+    font-size: smaller;
+    color: lighten($font-color,10%);
+  }
+   select{
+    font-size: small;
+     -webkit-appearance: button;
+       -moz-appearance: button;
+            appearance: button;
+  }
 
 }
 #resultdialog {
@@ -1212,10 +1243,10 @@ form#idpmatrixform{
 #simpledialog-container .header {
     height:30px; 
     line-height:30px;
-    width:100%; 
-    
-    background-color: blue; 
-    color:#fff; 
+    text-align: center;
+    width:auto; 
+    background-color: $titleBgSimpleModal; 
+    color:$titleColorSimpleModal; 
     font-weight:bold;
 }
 #simpledialog-container .header span {

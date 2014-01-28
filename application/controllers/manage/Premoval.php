@@ -98,24 +98,35 @@ class Premoval extends MY_Controller {
                     {
 
                         $this->load->library('ProviderRemover');
+                        $federations = $provider->getFederation();
                         $status = $this->providerremover->removeProvider($provider);
                         if ($status)
                         {
                             $this->load->library('tracker');
                             $this->tracker->remove_ProviderTrack($data['entityid']);
-                            $this->em->flush();
-                            $recipients = array();
-                            $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>'Administrator'));
-                            $a_members = $a->getMembers();
-                            foreach($a_members as $m)
+                        
+                            foreach($federations as $f)
                             {
-                                 $recipients[] = $m->getEmail();
+                               $subject = 'Federation members changed';
+                               $body = 'Dear user'.PHP_EOL;
+                               $body .= 'Provider '.$provider->getEntityId(). ' has been removed from federation '.$f->getName().PHP_EOL; 
+                               $this->email_sender->addToMailQueue(array('fedmemberschanged'),$f,$subject,$body,array(),false);
                             }
+                            $subject = 'Federations members changed';
+                            $body = 'Dear user'.PHP_EOL;
+                            $body .= 'Provider '.$provider->getEntityId(). ' has been removed from federations:'.PHP_EOL;
+                            foreach($federations as $f)
+                            {
+                                $body .=$f->getName().PHP_EOL;
+                            }
+                            $this->email_sender->addToMailQueue(array('gfedmemberschanged'),null,$subject,$body,array(),false) ;
                             $sbj = 'Provider has been removed from system';
-                            $body = "Dear Administrator\r\n";
-                            $body .= $this->j_auth->current_user(). "(IP:".$_SERVER['REMOTE_ADDR'].") removed provider:". $data['entityid']. "from the system\r\n";
-                            $this->load->library('email_sender');
-                            $this->email_sender->send($recipients,$sbj,$body); 
+                            $body = 'Dear Administrator'.PHP_EOL;
+                            $body .= $this->j_auth->current_user(). "(IP:".$_SERVER['REMOTE_ADDR'].") removed provider:". $data['entityid']. "from the system".PHP_EOL;
+                            
+                            $this->email_sender->addToMailQueue(array(),null,$sbj,$body,array(),false);              
+                            $this->em->flush();
+
                             $data['success_message'] = lang('rr_provider') . ' ' . $data['entityid'] . ' ' . lang('rr_hasbeenremoved');
                             $data['showform'] = false;
                             $this->load->view('page', $data);

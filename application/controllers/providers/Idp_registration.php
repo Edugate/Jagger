@@ -147,27 +147,17 @@ class Idp_registration extends MY_Controller {
             $qu->setEmail($this->input->post('contactmail'));
             $qu->setToken();
             $this->em->persist($qu);
-            $this->em->flush();
           
             /**
              * send email
              */
-            $recipients = array();
-            $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>'Administrator'));
-            $a_members = $a->getMembers();
-            foreach($a_members as $m)
-            {
-                $recipients[] = $m->getEmail();
-            }
-            $sbj = "IDP registration request";
-            $body = "Dear Administrator\r\n";
-            $body .= "".$qu->getEmail()." completed a new Identity Provider Registration\r\n";
-            $body .="You can approve or reject it on ".base_url()."reports/awaiting/detail/".$qu->getToken()."\r\n";
-            $this->load->library('email_sender');
-            $this->email_sender->send($recipients,$sbj,$body);
-
-
-            //print_r($idp->convertToArray());
+            $sbj = 'IDP registration request';
+            $body = 'Dear user,'.PHP_EOL;
+            $body = 'You have received this mail because your email address is on the notification list'.PHP_EOL;
+            $body .= ''.$qu->getEmail().' completed a new Identity Provider Registration'.PHP_EOL;
+            $body .='You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$qu->getToken().PHP_EOL;
+            $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq'),null,$sbj,$body,array(),FALSE);
+            $this->em->flush();
             $redirect_to = current_url();
             redirect($redirect_to . "/success");
         }

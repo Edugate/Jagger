@@ -120,6 +120,11 @@ class User {
      */
     protected $roles;
 
+    /** 
+     * @OneToMany(targetEntity="NotificationList",  mappedBy="subscriber", cascade={"persist", "remove"})
+     */
+    protected $subscriptions;
+
     /**
      * @Column(type="datetime", nullable=true)
      */
@@ -509,6 +514,22 @@ class User {
             $rolename[] = $r->getName();
         }
         return $rolename;
+    }
+
+    public function getSubscriptions()
+    {
+       return $this->subscriptions;
+    }
+    
+    public function addSubscription(NotificationList $arg)
+    {
+       $isin = $this->getSubscriptions()->contains($arg);
+       if(empty($isin))
+       {
+           $this->getSubscriptions()->add($arg);
+           $arg->setSubscriber($this);
+       }
+       return $this;
     }
     
 

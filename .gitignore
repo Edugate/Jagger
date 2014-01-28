@@ -18,5 +18,6 @@ application/config/config_rr.php
 application/config/database.php
 application/config/email.php
 logos/*
+vendor/*
 !index.html
 index.php

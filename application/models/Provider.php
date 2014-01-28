@@ -254,6 +254,11 @@ class Provider {
     protected $federations;
 
     /**
+     * @OneToMany(targetEntity="NotificationList", mappedBy="provider", cascade={"persist", "remove"})
+     */
+    protected $notifications;
+
+    /**
      * it can be member of many federations
      * @OneToMany(targetEntity="Contact", mappedBy="provider", cascade={"persist", "remove"})
      */
@@ -1601,6 +1606,21 @@ class Provider {
             }
         }
         return $default;
+    }
+
+    public function getNotifications()
+    {
+        return $this->notifications;
+    }
+    public function addNotification(NotificationList $notification)
+    {
+        $isin = $this->getNotifications()->contains($notification);
+        if(empty($isin))
+        {
+          $this->getNotifications()->add($notification);
+        }
+        return $this;
+
     }
 
     public function getActive()

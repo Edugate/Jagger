@@ -370,6 +370,24 @@ class Providers {
 
         return $this->providers;
     }
+    public function getLocalIdpsIdsEntities()
+    {
+          $query = $this->em->createQuery("
+
+             SELECT p.id, p.entityid from models\Provider as p  WHERE p.is_local = '1' and p.type IN ('IDP','BOTH') ORDER by p.entityid ASC
+         ");
+         $result = $query->getResult();
+         return $result;
+    }
+    public function getLocalIdsEntities()
+    {
+          $query = $this->em->createQuery("
+
+             SELECT p.id, p.entityid, p.name from models\Provider as p  WHERE p.is_local = '1'  ORDER by p.entityid ASC
+         ");
+         $result = $query->getResult();
+         return $result;
+    }
 
     public function getSpsByEntities($entityids_in_array)
     {

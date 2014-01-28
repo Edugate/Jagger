@@ -136,21 +136,15 @@ class Sp_registration extends MY_Controller
             $queue->setToken();
 
             $this->em->persist($queue);
-            $this->em->flush();
-            $recipients = array();
-            $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-            $a_members = $a->getMembers();
-            foreach ($a_members as $m) {
-                $recipients[] = $m->getEmail();
-            }
             $sbj = 'SP registration request';
             $body = 'Dear Administrator'.PHP_EOL;
+            $body = 'You have received this mail because your email address is on the notification list'.PHP_EOL;
             $body .= $queue->getEmail() . ' just completed a Service Provider registration'.PHP_EOL;
             $body .= 'Resource name: '.$resource.PHP_EOL;
             $body .= 'entityID: ' . $entityid .PHP_EOL;
             $body .= 'You can approve or reject it on ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
-            $this->load->library('email_sender');
-            $this->email_sender->send($recipients, $sbj, $body);
+            $this->email_sender->addToMailQueue(array('greqisterreq','gspregisterreq'),null,$sbj,$body,array(),FALSE);
+            $this->em->flush();
             redirect(base_url().'providers/sp_registration/success','refresh');
         }
         else

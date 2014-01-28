@@ -1,6 +1,78 @@
 var GINIT = {
     initialize: function() {
 
+    var baseurl = $("[name='baseurl']").val();
+    if (baseurl === undefined)
+    {
+        baseurl = '';
+    }
+    function notificationupdate(message, callback) {
+        $('#notificationupdateform').modal({
+            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+            position: ["20%", ],
+            overlayId: 'simpledialog-overlay',
+            minHeight: '20px',
+            containerId: 'simpledialog-container',
+            onShow: function(dialog) {
+                var modal = this;
+                $('.message', dialog.data[0]).append(message);
+                $('.yes', dialog.data[0]).click(function() {
+                    if ($.isFunction(callback)) {
+                        callback.apply();
+                    }
+                    modal.close(); // or $.modal.close();
+                });
+            }
+        });
+    }
+
+    $("button.updatenotifactionstatus").click(function(ev) {
+        var notid = $(this).attr('value');
+        var ctbl = $(this).closest("tbody");
+        var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
+        $("form#notificationupdateform").attr('action', posturl);
+        $("form#notificationupdateform #noteid").val(notid);
+        notificationupdate('', function(ev) {
+            var serializedData = $("form#notificationupdateform").serializeArray();
+            $.ajax({
+                type: "POST",
+                url: posturl,
+                data: serializedData,
+                success: function(data) {
+                    if (data)
+                    {
+                        ctbl.html("");
+                        var trdata;
+                        var number = 1;
+                        $.each(data, function(i, v) {
+                            if (v.federationid)
+                            {
+                                var related = v.langfederation + ': ' + v.federationname;
+                            }
+                            else if (v.providerid)
+                            {
+                                var related = v.langprovider + ': ' + v.providername;
+
+                            }
+                            else
+                            {
+                                var related = v.langany;
+                            }
+                            trdata = '<tr><td>' + number + '</td><td>' + v.langtype + '</td><td>' + related + '</td><td>' + v.delivery + '</td><td>' + v.rcptto + '</td><td>' + v.langstatus + '</td><td>' + v.updated + '</td><td><button class="updatenotifactionstatus editbutton" type="button" value="' + v.id + '">update</button></td></tr>';
+                            ctbl.append(trdata);
+                            number = number + 1;
+
+                        });
+                        GINIT.initialize(); 
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error occured: ' + errorThrown);
+                }
+            });
+        });
+    });
+
         $('form#fvform').submit(function(e) {
             e.preventDefault();
             var str = $(this).serializeArray();
@@ -1331,12 +1403,43 @@ $(document).ready(function() {
         return false;
 
     }); // end submit event
+
+
+    $("button#registernotification").click(function(ev) {
+        ev.preventDefault();
+        notificationadd('', function(ev) {
+            var serializedData = $("form#notificationaddform").serializeArray();
+            $.ajax({
+                type: "POST",
+                url: baseurl + 'notifications/subscriber/add',
+                //data: serializedData,
+                data: $("form#notificationaddform").serializeArray(),
+                success: function(data) {
+                    $(".message").html(data);
+                    if (data == 'OK')
+                    {
+                        alert('refresh page to see updated table');
+
+                        $.modal.close();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error occured: ' + errorThrown);
+                    //  $(".message").html(errorThrown);
+                }
+
+            });
+        });
+
+    });
+
+    // updatenotifactionstatus old place
     $("#idpmatrix tr td:not(:first-child)").click(function(ev) {
         var col = $(this).parent().children().index($(this));
         var cell = $.trim($(this).text());
         var oko = $('div', this);
         var lpath = window.location.pathname;
-        var lastsegment = lpath.substring(lpath.lastIndexOf('/')+1);
+        var lastsegment = lpath.substring(lpath.lastIndexOf('/') + 1);
         if (col > 0 && cell.length > 0)
         {
             var row = $(this).parent().parent().children().index($(this).parent());
@@ -1348,30 +1451,32 @@ $(document).ready(function() {
             $("form#idpmatrixform span.mattribute").html(attrname);
             var url = $("form#idpmatrixform").attr('action');
             $.ajax({
-               type: "POST",
-               url: baseurl+"manage/attribute_policyajax/retrieveattrpath/"+lastsegment,
-               data: $("form#idpmatrixform").serializeArray(),
-               success: function(json) {
-                  if(!json)
-                  {}
-                  else
-                  {
-                      var tbody_data= $('<tbody></tbody>');
-                      var thdata = '<thead><th colspan="2">Current attribute flow</th></thead>';
-                      $.each(json.details, function(i,v){
-                            var trdata = '<tr><td>'+v.name+'</td><td>'+v.value+'</td/></tr>'; 
+                type: "POST",
+                url: baseurl + "manage/attribute_policyajax/retrieveattrpath/" + lastsegment,
+                data: $("form#idpmatrixform").serializeArray(),
+                success: function(json) {
+                    if (!json)
+                    {
+                    }
+                    else
+                    {
+                        var tbody_data = $('<tbody></tbody>');
+                        var thdata = '<thead><th colspan="2">Current attribute flow</th></thead>';
+                        $.each(json.details, function(i, v) {
+                            var trdata = '<tr><td>' + v.name + '</td><td>' + v.value + '</td/></tr>';
                             tbody_data.append(trdata);
-                      });
-                      var tbl = $('<table/>').css({'font-size':'smaller'}).css({ 'border':'1px solid'}).css({'width':'99%'}).css({'margin':'10px'}).addClass('detailsnosort');;
-                      var pl = $('<div/>');
-                      tbl.append(thdata);
-                      tbl.append(tbody_data);
-                      pl.append(tbl);
-                      $("div.attrflow").replaceWith('<div class="attrflow">'+pl.html()+'</div>');
+                        });
+                        var tbl = $('<table/>').css({'font-size': 'smaller'}).css({'border': '1px solid'}).css({'width': '100%'}).addClass('detailsnosort');
+                        ;
+                        var pl = $('<div/>');
+                        tbl.append(thdata);
+                        tbl.append(tbody_data);
+                        pl.append(tbl);
+                        $("div.attrflow").replaceWith('<div class="attrflow">' + pl.html() + '</div>');
 
-                  }  //end else
-               }
- 
+                    }  //end else
+                }
+
             });
             idpmatrixform('', function(ev) {
                 var serializedData = $("form#idpmatrixform").serializeArray();
@@ -1468,6 +1573,92 @@ $(document).ready(function() {
         });
         ev.preventDefault();
     });
+
+    function notificationadd(message, callback) {
+        $('#notificationaddform').modal({
+            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+            position: ["20%", ],
+            overlayId: 'simpledialog-overlay',
+            minHeight: '400px',
+            minWidth: '500px',
+            containerId: 'simpledialog-container',
+            onOpen: function(dialog) {
+                dialog.overlay.fadeIn('fast', function() {
+                    dialog.container.slideDown('fast', function() {
+                        dialog.data.fadeIn('fast');
+                    });
+                });
+            },
+            onShow: function(dialog) {
+                $('select#sfederation').parent().hide();
+                $('select#sprovider').parent().hide();
+                $('select#type').change(function() {
+                    $('select#sfederation').parent().hide();
+                    $('select#sprovider').parent().hide();
+
+                    var optionSelected = $(this).find("option:selected");
+                    var valueSelected = optionSelected.val();
+                    var textSelected = optionSelected.text();
+                    var selfed = $('#sfederation');
+                    var selprovider = $('#sprovider');
+                    selfed.find('option').remove();
+                    selprovider.find('option').remove();
+                    if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged")
+                    {
+                        $.ajax({
+                            type: "GET",
+                            url: baseurl + 'ajax/getfeds',
+                            cache: true,
+                            success: function(json) {
+                                $.each(json, function(key, value) {
+                                    $('<option>').val(value.id).text(value.name).appendTo(selfed);
+                                });
+                                $('select#sfederation').parent().show();
+
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                $(".message").html(errorThrown);
+                            }
+
+                        });
+                    }
+                    else if(valueSelected === "requeststoproviders" )
+                    {
+                        $.ajax({
+                            type: "GET",
+                            url: baseurl + 'ajax/getproviders',
+                            cache: false,
+                            //datatype: "json",
+                            success: function(json) {
+                                var data = $.parseJSON(json);
+                                $.each(data, function(key, value) {
+                                    $('<option>').val(value.key).text(value.value).appendTo(selprovider);
+                                });
+                                $('select#sprovider').parent().show();
+
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                $(".message").html(errorThrown);
+                            }
+
+                        });
+
+                   }
+                }); // end change  function
+                var modal = this;
+                $('.message', dialog.data[0]).append(message);
+                $('.yes', dialog.data[0]).click(function() {
+                    if ($.isFunction(callback)) {
+                        callback.apply();
+                    }
+
+                    //     modal.close(); // or $.modal.close();
+                });
+            }
+
+        });
+    }
+
     function idpmatrixform(message, callback) {
         $('#idpmatrixform').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
@@ -1477,16 +1668,11 @@ $(document).ready(function() {
             containerId: 'simpledialog-container',
             onShow: function(dialog) {
                 var modal = this;
-
                 $('.message', dialog.data[0]).append(message);
-
-                // if the user clicks "yes"
                 $('.yes', dialog.data[0]).click(function() {
-                    // call the callback
                     if ($.isFunction(callback)) {
                         callback.apply();
                     }
-                    // close the dialog
                     modal.close(); // or $.modal.close();
                 });
             }

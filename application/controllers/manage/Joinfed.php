@@ -163,26 +163,31 @@ class Joinfed extends MY_Controller {
                                {
                                     $mail_body .= sprintf($b, $providername, $providerentityid, $fedname, $awaitingurl,$message);    
                                }
+                               $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
+                                        array('type'=>'gjoinfedreq','is_enabled'=>true,'is_approved'=>true));
+                               foreach($subscribers as $s)
+                               {
+                                  $m = new models\MailQueue();
+                                  $m->setSubject($mail_sbj);
+                                  $m->setBody($mail_body);
+                                  $m->setDeliveryType($s->getNotificationType());
+                                  $m->setRcptto($s->getRcpt());
+                                  $this->em->persist($m);
+                               }
+                               $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
+                                        array('type'=>'joinfedreq','federation'=>$federation->getId(),'is_enabled'=>true,'is_approved'=>true));
 
-                               $fedownerusername = $federation->getOwner();
-                               if(!empty($fedownerusername))
+                               foreach($subscribers as $s)
                                {
-                                    $fedowner = $this->em->getRepository("models\User")->findOneBy(array('username'=>$fedownerusername));
+                                  $m = new models\MailQueue();
+                                  $m->setSubject($mail_sbj);
+                                  $m->setBody($mail_body);
+                                  $m->setDeliveryType($s->getNotificationType());
+                                  $m->setRcptto($s->getRcpt());
+                                  $this->em->persist($m);
                                }
-                               if(!empty($fedowner))
-                               {
-                                     $mail_recipients[] = $fedowner->getEmail();
-                               }
-                               $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-                               $a_members = $a->getMembers();
-                               foreach ($a_members as $m)
-                               {
-                                   $mail_recipients[] = $m->getEmail();
-                               }
-                               $mail_recipients = array_unique($mail_recipients);
-                               $this->load->library('email_sender');
 
-                               $this->email_sender->send($mail_recipients, $mail_sbj, $mail_body);
+                               $this->em->flush();
                                
                                $data['content_view'] = 'manage/joinfederation_view';
                                $data['success_message'] = lang('confirmreqsuccess');
