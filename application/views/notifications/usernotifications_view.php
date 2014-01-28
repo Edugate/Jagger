@@ -67,12 +67,13 @@ if(!empty($warnmessage))
        $typedropdown[''] = lang('rr_pleaseselect');
        foreach($codes as $k=>$v)
        {
-         $typedropdown[''.$k.''] = lang(''.$v['desclang'].'');
+         //$typedropdown[''.$k.''] = lang(''.$v['desclang'].'');
+         $typedropdown[''.$v['group'].''][$k] = lang(''.$v['desclang'].'');
        }
        echo form_fieldset();
        echo '<ul>';
        echo '<li>'. form_label(lang('whennotifyme'),'type');
-       echo form_dropdown('type', $typedropdown,'','id="type"'). '</li>';
+       echo form_dropdown('type', $typedropdown,'','id="type" class="smallselect"'). '</li>';
 
        echo '<li>'. form_label(lang('rr_provider'),'sprovider');
        echo form_dropdown('sprovider', array(),'','id="sprovider"').'</li>';

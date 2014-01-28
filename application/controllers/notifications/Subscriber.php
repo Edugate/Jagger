@@ -256,7 +256,7 @@ class Subscriber extends MY_Controller {
         $isAdministator = $this->j_auth->isAdministrator();
         ///////////////////////////////////////////////////////
         $success = false;
-        if(strcmp($ntype,'joinfedreq')==0)
+        if(strcmp($ntype,'joinfedreq')==0 || strcmp($ntype,'fedmemberschanged')==0)
         {
            if(!empty($nfederation)) 
            {
@@ -285,6 +285,37 @@ class Subscriber extends MY_Controller {
            $this->em->flush();
            $success = true;
            echo "OK";
+        }
+        elseif(strcmp($ntype,'requeststoproviders')==0)
+        {
+           if(!empty($nprovider)) 
+           {
+              $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$nprovider));
+           }
+           if(empty($provider))
+           {
+              echo '<div class="error">'.lang('rerror_providernotexist').'</div>';
+              return;
+           }
+           $has_write_access =  $this->zacl->check_acl($provider->getId(), 'write', 'entity');
+           $notification = new models\NotificationList();
+           $notification->setSubscriber($user);
+           $notification->setType($ntype);
+           $notification->setProvider($provider);
+           if(!empty($nemail))
+           {
+              $notification->setEmail($nemail);
+           }
+           $notification->setEnabled(FALSE);
+           if($has_write_access)
+           {
+              $notification->setApproved(TRUE);
+           }
+           $this->em->persist($notification);
+           $this->em->flush();
+           $success = true;
+           echo "OK";
+
         }
         elseif(array_key_exists($ntype,$codes))
         {

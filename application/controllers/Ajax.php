@@ -45,33 +45,18 @@ class Ajax extends MY_Controller {
            echo 'denied';
            return;
         }
+
         $p = new models\Providers();
         $providers = $p->getLocalIdsEntities();
+        $this->output->set_content_type('application/json');
+        foreach($providers as $k)
+        {
+           $result[] = array('id'=>$k['id'],'name'=> trim(substr($k['name'],0, 50)));
+          $result[] = array('key'=>$k['id'],'value'=> $k['entityid'],'label'=>$k['name']);
+        }
+         $y= json_encode($result);
         
-        $this->output->set_content_type('application/json');
-        echo json_encode($providers);
-
-    }
-    public function getidps()
-    {
-        if (!$this->input->is_ajax_request())
-        {
-            set_status_header(403);
-            echo 'denied';
-            return;
-        }
-        $this->load->library('j_auth');
-        $loggedin = $this->j_auth->logged_in();
-        if(!$loggedin)
-        {
-           set_status_header(403);
-           echo 'denied';
-           return;
-        }
-        $p = new models\Providers();
-        $idps = $p->getLocalIdpsIdsEntities();
-        $this->output->set_content_type('application/json');
-        echo json_encode($idps);
+        echo $y;
 
     }
 

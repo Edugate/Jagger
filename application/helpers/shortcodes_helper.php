@@ -6,17 +6,17 @@
 function notificationCodes()
 {
    $result = array(
-     'systemnotifications'=>array('desc'=>'system notifications','desclang'=>'systemnotifications'),
-     'greqisterreq'=>array('desc'=>'global idp/sp/federation registration request','desclang'=>'greqisterreq'),
-     'gfedreqisterreq'=>array('desc'=>'global fed registration','desclang'=>'gfedreqisterreq'),
-     'gidpregisterreq'=>array('desc'=>'global IDP registration','desclang'=>'gidpregisterreq'),
-     'gspregisterreq'=>array('desc'=>'global SP registration','desclang'=>'gspregisterreq'),
-     'gjoinfedreq'=>array('desc'=>'global join federation request','desclang'=>'gjoinfedreq'),
-     'joinfedreq'=>array('desc'=>'join federation request','desclang'=>'joinfedreq'),
-     'gfedmemberschanged'=>array('desc'=>'members collection changed for any federation','desclang'=>'gfedmemberschanged'),
-     'fedmemberschanged'=>array('desc'=>'members collection changed for seleceted federation','desclang'=>'fedmemberschanged'),
-     'grequeststoproviders'=>array('desc'=>'All request sent to any provider','desclang'=>'grequeststoproviders'),
-     'requeststoproviders'=>array('desc'=>'Request sent to any defined provider','desclang'=>'requeststoproviders')
+     'systemnotifications'=>array('desc'=>'system notifications','desclang'=>'systemnotifications','group'=>'system'),
+     'greqisterreq'=>array('desc'=>'global idp/sp/federation registration request','desclang'=>'greqisterreq','group'=>'global'),
+     'gfedreqisterreq'=>array('desc'=>'global fed registration','desclang'=>'gfedreqisterreq','group'=>'global'),
+     'gidpregisterreq'=>array('desc'=>'global IDP registration','desclang'=>'gidpregisterreq','group'=>'global'),
+     'gspregisterreq'=>array('desc'=>'global SP registration','desclang'=>'gspregisterreq','group'=>'global'),
+     'gjoinfedreq'=>array('desc'=>'global join federation request','desclang'=>'gjoinfedreq','group'=>'global'),
+     'joinfedreq'=>array('desc'=>'join federation request','desclang'=>'joinfedreq','group'=>'special'),
+     'gfedmemberschanged'=>array('desc'=>'members collection changed for any federation','desclang'=>'gfedmemberschanged','group'=>'global'),
+     'fedmemberschanged'=>array('desc'=>'members collection changed for seleceted federation','desclang'=>'fedmemberschanged','group'=>'special'),
+     'grequeststoproviders'=>array('desc'=>'All request sent to any provider','desclang'=>'grequeststoproviders','group'=>'global'),
+     'requeststoproviders'=>array('desc'=>'Request sent to any defined provider','desclang'=>'requeststoproviders','group'=>'special')
    );
 
    return $result;

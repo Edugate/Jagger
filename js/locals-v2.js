@@ -1628,9 +1628,11 @@ $(document).ready(function() {
                             type: "GET",
                             url: baseurl + 'ajax/getproviders',
                             cache: false,
-                            success: function(data) {
-                                $.each(data, function(key1, value1) {
-                                    $('<option>').val(value1.id).text(value1.name).appendTo(selprovider);
+                            //datatype: "json",
+                            success: function(json) {
+                                var data = $.parseJSON(json);
+                                $.each(data, function(key, value) {
+                                    $('<option>').val(value.key).text(value.value).appendTo(selprovider);
                                 });
                                 $('select#sprovider').parent().show();
 

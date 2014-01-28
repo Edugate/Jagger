@@ -1198,10 +1198,23 @@ form#idpmatrixform, form#notificationupdateform,form#notificationaddform{
 form#notificationaddform {
   label {
     font-weight: bold;
+    display: block;
+    clear:both;
+    float: none;
+  }
+  input {
+    display: block;
+    clear:both;
+  }
   div.help{
     font-size: smaller;
     color: lighten($font-color,10%);
   }
+   select{
+    font-size: small;
+     -webkit-appearance: button;
+       -moz-appearance: button;
+            appearance: button;
   }
 
 }
