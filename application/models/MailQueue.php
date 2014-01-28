@@ -40,7 +40,7 @@ class MailQueue {
     protected $id;
 
     /**
-     * @Column(type="string", length=10,nullable=false,options={"default":"mail"})
+     * @Column(type="string", length=10,nullable=false)
      */
     protected $deliverytype;
 
@@ -84,6 +84,7 @@ class MailQueue {
 
     function __construct()
     {
+        $this->deliverytype = 'mail';
         $this->issent = false;
         $this->frequence = '1';
         $this->createdAt = new \DateTime("now",new \DateTimeZone('UTC'));

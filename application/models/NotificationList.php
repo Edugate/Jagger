@@ -45,7 +45,7 @@ class NotificationList
         protected $subscriber;
 
         /**
-         * @Column(type="string", length=10, nullable=false,options={"default":"mail"})
+         * @Column(type="string", length=10, nullable=false)
          */
         protected $notificationtype ;
 
@@ -249,6 +249,10 @@ class NotificationList
        */
        public function created()
        {
+           if(empty($this->notificationtype))
+           {
+              $this->notificationtype = 'mail';
+           }
            $this->createdAt = new \DateTime("now",new \DateTimeZone('UTC'));
        }
 
@@ -258,6 +262,10 @@ class NotificationList
        */
        public function updated()
        {
+          if(empty($this->notificationtype))
+          {
+              $this->notificationtype = 'mail';
+          }
           $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
        }
       
