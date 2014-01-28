@@ -400,7 +400,7 @@ class Awaiting extends MY_Controller {
                             {
                                 $additionalReceipents[] = $requester_recipient;
                             }
-                            $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq','systemnotifications'),null,$sbj,$body,$additionalReceipents,FALSE);
+                            $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq'),null,$sbj,$body,$additionalReceipents,FALSE);
                             $this->em->flush();
                             $success_message = "Identity Provider has been added. Please set correct permissions.";
                             $data['content_view'] = 'reports/awaiting_approved_view';
@@ -482,7 +482,7 @@ class Awaiting extends MY_Controller {
                             {
                                 $additionalRcpts[] = $requester_recipient;
                             }
-                            $this->email_sender->addToMailQueue(array('greqisterreq','gspregisterreq','systemnotifications'),null,$sbj,$body,$additionalRcpts,FALSE) ;
+                            $this->email_sender->addToMailQueue(array('greqisterreq','gspregisterreq'),null,$sbj,$body,$additionalRcpts,FALSE) ;
                             $this->em->flush();
                             $success_message = "Service Provider has been added";
                             $data['content_view'] = 'reports/awaiting_approved_view';
@@ -597,7 +597,7 @@ class Awaiting extends MY_Controller {
                             $body .= 'Since now Provider: ' . $provider->getName() . 'becomes a member of ' . $federation->getName() . '\r\n';
                             $this->em->persist($provider);
                             $this->em->remove($queueObj);
-                            $this->email_sender->addToMailQueue(array('grequeststoproviders','systemnotifications'),null,$sbj,$body,array(),$sync=false);
+                            $this->email_sender->addToMailQueue(array('grequeststoproviders'),null,$sbj,$body,array(),$sync=false);
                             $this->em->flush();
                             $data['content_view'] = 'reports/awaiting_invite_provider_view';
                             $this->load->view('page', $data);
@@ -640,7 +640,7 @@ class Awaiting extends MY_Controller {
                             $body .= 'Since now Provider: ' . $provider->getName() . 'becomes a member of ' . $federation->getName() . '\r\n';
                             $this->em->persist($provider);
                             $this->em->remove($queueObj);
-                            $this->email_sender->addToMailQueue(array('gjoinfedreq','joinfedreq','systemnotifications'),$federation,$sbj,$body,$additionalReceipients,false);
+                            $this->email_sender->addToMailQueue(array('gjoinfedreq','joinfedreq'),$federation,$sbj,$body,$additionalReceipients,false);
                             $this->em->flush();
                             $data['content_view'] = 'reports/awaiting_invite_federation_view';
                             $this->load->view('page', $data);

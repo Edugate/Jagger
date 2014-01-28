@@ -37,6 +37,7 @@ class Subscriber extends MY_Controller {
     {
         $n = $subscribtionOwner->getSubscriptions();
         $result = array();
+        
         foreach($n as $v)
         {
             $prov = $v->getProvider();

@@ -124,7 +124,7 @@ class Premoval extends MY_Controller {
                             $body = 'Dear Administrator'.PHP_EOL;
                             $body .= $this->j_auth->current_user(). "(IP:".$_SERVER['REMOTE_ADDR'].") removed provider:". $data['entityid']. "from the system".PHP_EOL;
                             
-                            $this->email_sender->addToMailQueue(array('systemnotifications'),null,$sbj,$body,array(),false);              
+                            $this->email_sender->addToMailQueue(array(),null,$sbj,$body,array(),false);              
                             $this->em->flush();
 
                             $data['success_message'] = lang('rr_provider') . ' ' . $data['entityid'] . ' ' . lang('rr_hasbeenremoved');

@@ -156,7 +156,7 @@ class Idp_registration extends MY_Controller {
             $body = 'You have received this mail because your email address is on the notification list'.PHP_EOL;
             $body .= ''.$qu->getEmail().' completed a new Identity Provider Registration'.PHP_EOL;
             $body .='You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$qu->getToken().PHP_EOL;
-            $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq','systemnotifications'),null,$sbj,$body,array(),FALSE);
+            $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq'),null,$sbj,$body,array(),FALSE);
             $this->em->flush();
             $redirect_to = current_url();
             redirect($redirect_to . "/success");

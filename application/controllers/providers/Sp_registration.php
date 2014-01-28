@@ -143,7 +143,7 @@ class Sp_registration extends MY_Controller
             $body .= 'Resource name: '.$resource.PHP_EOL;
             $body .= 'entityID: ' . $entityid .PHP_EOL;
             $body .= 'You can approve or reject it on ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
-            $this->email_sender->addToMailQueue(array('greqisterreq','gspregisterreq','systemnotifications'),null,$sbj,$body,array(),FALSE);
+            $this->email_sender->addToMailQueue(array('greqisterreq','gspregisterreq'),null,$sbj,$body,array(),FALSE);
             $this->em->flush();
             redirect(base_url().'providers/sp_registration/success','refresh');
         }

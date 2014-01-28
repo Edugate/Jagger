@@ -99,7 +99,7 @@ class Federation_registration extends MY_Controller
        $body .= $q->getEmail().' just filled Federation Registration form'.PHP_EOL;
        $body .= 'Federation name: '.$fedname. PHP_EOL;
        $body .= 'You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$q->getToken().PHP_EOL;
-       $this->email_sender->addToMailQueue(array('greqisterreq','gfedreqisterreq','systemnotifications'),null,$sbj,$body,array(),FALSE);
+       $this->email_sender->addToMailQueue(array('greqisterreq','gfedreqisterreq'),null,$sbj,$body,array(),FALSE);
        $this->em->flush();
        $data['success'] = lang('rr_fed_req_sent');
        $data['content_view'] = 'federation/success_view';
