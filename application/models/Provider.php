@@ -2662,19 +2662,19 @@ class Provider {
         $protocol = $this->getProtocolSupport('aa');
         $protocols = implode(' ', $protocol);
         $e->setAttribute('protocolSupportEnumeration', $protocols);
-        $Extensions_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
 
         $scs = $this->getScope('aa');
-        if(is_array($scs))
+        if(is_array($scs) && count($scs)>0)
         {
+          $Extensions_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
           foreach ($scs as $sc)
           {
             $Scope_Node = $Extensions_Node->ownerDocument->createElementNS('urn:mace:shibboleth:metadata:1.0', 'shibmd:Scope', trim($sc));
             $Scope_Node->setAttribute('regexp', 'false');
             $Extensions_Node->appendChild($Scope_Node);
           }
+          $e->appendChild($Extensions_Node);
         }
-        $e->appendChild($Extensions_Node);
         $certs = $this->getCertificates();
         log_message('debug',__METHOD__.' '. gettype($certs));
         if (!empty($certs))
