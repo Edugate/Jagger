@@ -1769,9 +1769,13 @@ form#notificationaddform select {
   text-align: center;
 }
 
-#loginlink {
+#loginlink, #logout {
   float: right;
   margin-right: 15px;
+}
+
+#logout {
+  display: block;
 }
 
 button.loginbtn {
@@ -1918,7 +1922,12 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
   text-decoration: none;
 }
 
-.fedlogin, .addbutton, .resetbutton, .savebutton, .editbutton, .loginbutton {
+a.logoutbutton, a.logoutbutton:link, a.logoutbutton:hover, a.logoutbutton:active, a.logoutbutton:visited {
+  color: white;
+  text-decoration: none;
+}
+
+.fedlogin, .addbutton, .resetbutton, .savebutton, .editbutton, .loginbutton, .logoutbutton {
   min-width: 100px;
   height: 30px;
   line-height: 30px;
@@ -2120,6 +2129,75 @@ a.loginbutton, a.loginbutton:link, a.loginbutton:hover, a.loginbutton:active, a.
 }
 
 .resetbutton:before {
+  background: #ccc;
+  background: rgba(0, 0, 0, 0.1);
+  float: left;
+  width: 1em;
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0 1em 0 -1em;
+  padding: 0 .2em;
+  -moz-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -webkit-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+  -moz-border-radius: .15em 0 0 .15em;
+  -webkit-border-radius: .15em 0 0 .15em;
+  border-radius: .15em 0 0 .15em;
+  pointer-events: none;
+}
+
+.logoutbutton {
+  display: inline-block;
+  white-space: nowrap;
+  background-color: #0961c4;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3d94f6), color-stop(1, #1e62d0));
+  background-image: -webkit-linear-gradient(top, #3d94f6, #1e62d0);
+  background-image: -moz-linear-gradient(center top, #3d94f6 5%, #1e62d0 100%);
+  background-image: -ms-linear-gradient(top, #3d94f6, #1e62d0);
+  background-image: -o-linear-gradient(top, #3d94f6, #1e62d0);
+  background-image: linear-gradient(top, #3d94f6, #1e62d0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$logoutBtnBgColor1', endColorstr='$logoutBtnBgColor2');
+  -moz-box-shadow: inset 0px 1px 0px 0px #97c4fe;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #97c4fe;
+  box-shadow: inset 0px 1px 0px 0px #97c4fe;
+  -webkit-border-top-left-radius: 0px;
+  -moz-border-radius-topleft: 0px;
+  border-top-left-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  -moz-border-radius-topright: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  -moz-border-radius-bottomright: 0px;
+  border-bottom-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-left-radius: 0px;
+  border: 1px solid #337fed;
+  padding: 0 1.5em;
+  text-indent: 0;
+  color: white;
+  font-family: Arial;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: normal;
+  text-decoration: none;
+  text-align: center;
+  text-shadow: 1px 1px 0px #1570cd;
+}
+
+.logoutbutton:hover {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #113877), color-stop(1, #3d94f6));
+  background: -moz-linear-gradient(center top, #1e62d0 5%, #3d94f6 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$logoutBtnBgColor2', endColorstr='$logoutBtnBgColor1');
+  background-color: #ce0100;
+}
+
+.logoutbutton:active {
+  position: relative;
+  top: 1px;
+}
+
+.logoutbutton:before {
   background: #ccc;
   background: rgba(0, 0, 0, 0.1);
   float: left;

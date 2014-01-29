@@ -65,6 +65,7 @@ $lang['tabuii']                     = 'UII';
 $lang['tabstaticmeta']              = 'Static Metadata';
 $lang['tabotherforms']              = 'Other forms';
 $lang['btnupdate']                  = 'Update';
+$lang['btnlogout']                 = 'Sign out';
 $lang['nameid']                    = 'NameIDFormat';
 $lang['clearcache']                 = 'Clear cache';
 $lang['btnsynch']                   = 'Synchronize';

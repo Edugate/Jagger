@@ -79,11 +79,15 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                             echo "\n";
                             ?>
                         </span> 
-            <div style="display: inline-block">
+
+
+
+
                 <?php
                 if ($loggedin)
                 {
-                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b> <a href="'.$base_url.'manage/users/show/'.base64url_encode($this->j_auth->current_user()).'" class="profilelink">'. htmlentities($this->j_auth->current_user()). '</a></b>&nbsp;&nbsp;' . anchor($base_url . "auth/logout", '<img src="' . $base_url . 'images/icons/external.png" title="Sign out"/>') ;
+            echo '<div style="display: inline-block">';
+                    echo '<span class="mobilehidden">' . lang('urloggedas') . '</span> <b> <a href="'.$base_url.'manage/users/show/'.base64url_encode($this->j_auth->current_user()).'" class="profilelink">'. htmlentities($this->j_auth->current_user()). '</a></b>&nbsp;&nbsp;'  ;
                    if(empty(j_auth::$timeOffset))
                    {
                      echo ' <small>UTC+0</small>';
@@ -96,13 +100,14 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                    {
                      echo ' <small>UTC'.j_auth::$timeOffset/60/60 .'</small>';
                    }
+               echo '</div>';
+
                 }
                 else
                 {
-                    echo '&nbsp;';
+                    echo '<div style="display: inline-block">&nbsp;</div>';
                 }
                 ?>
-            </div>
        
             <div id="langicons">
                 <?php
@@ -138,7 +143,6 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                    </label>
                 </div>
             </div>
-            
         </div>
         <?php
          if(!$loggedin && empty($showloginform))
@@ -148,6 +152,14 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
               <button id="loginlink"  type="button" class="loginbutton"><?php echo lang('toploginbtn'); ?></button>
         </form>
                 <?php
+         }
+         elseif($loggedin)
+         {
+         ?>
+         <div style="width:100%; display:block; float: none; clear: both " class="clearfix">
+           <a href="<?php echo $base_url;?>auth/logout" class="logoutbutton" id="logout"><?php echo lang('btnlogout');?></a> 
+         </div>
+         <?php
          }
                 ?>
         <div id="container">
