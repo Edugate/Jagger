@@ -2,6 +2,7 @@
 $base = base_url();
 $this->load->helper('form');
 $shib = $this->config->item('Shibboleth');
+$ssphp = $this->config->item('simplesamlphp');
 $fedenabled = FALSE;
 $shib_url = null;
 
@@ -17,6 +18,13 @@ if (isset($shib['enabled']) && $shib['enabled'] === TRUE)
         log_message('error', 'Federation login enabled but fedurl not found');
     }
 }
+elseif(isset($ssphp['enabled']) && $ssphp['enabled'] === TRUE)
+{
+   $shib_url = base_url().'auth/ssphpauth';
+   $fedenabled = TRUE;
+
+}
+
 $fedloginbtn = $this->config->item('fedloginbtn');
 if (empty($fedloginbtn))
 {
@@ -95,8 +103,6 @@ if ($fedenabled === TRUE)
             </fieldset>
             <div class="buttons">
         <?php
- //   echo anchor($shib_url, '<button type="button" name="faderated" value="faderated" class="loginbtn" onclick="window.open(\'' . $shib_url . '\',\'_self\')">' . $fedloginbtn . '</button>');
-
          echo '<a href="'.$shib_url.'" class="fedloginbutton" id="fedlogin">'.lang('loginsubmit').'</a>'
     ?>
             </div>
