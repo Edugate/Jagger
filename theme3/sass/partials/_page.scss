@@ -665,6 +665,25 @@ code,pre {
 .xml .re2 {color: #000000; font-weight: bold;}
 .xml .ln-xtra, .xml li.ln-xtra, .xml div.ln-xtra {background-color: #ffc;}
 .xml span.xtra { display:block; }
+
+
+.fedlbl 
+{
+  display: inline;
+  float: right;
+
+ span {
+  
+   white-space:nowrap;
+   @include border-radius(2px 2px, 2px 2px);
+   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3);
+   padding: 1px 2px 2px;
+   color: rgba(255, 255, 255, 0.9);
+   background-color: #3A87AD;
+   font-size: smaller;
+   margin: 1px;
+ }
+}
 .lbl {
     text-transform:lowercase;
     white-space:nowrap;
@@ -2193,4 +2212,15 @@ ul.fivesteps li {
     @include filter-gradient($container-background-gradient-1, $container-background-gradient-2, vertical);
     @include background-image(linear-gradient($container-background-gradient-1, $container-background-gradient-2));
 
+
+}
+ul.zebralist {
+  list-style-type:decimal;
+  li {
+  //width: 100%;
+  }
+
+   li:nth-child(odd) {
+      background-color: $list-odd-bgcolor;
+      };
 }

@@ -102,7 +102,9 @@ class Detail extends MY_Controller {
         {
             if (!$this->j_auth->logged_in())
             {
-               show_error('no session', 403);
+               set_status_header(403);
+               echo 'no session';
+               return;
             }
             $d = array();
             $group = 'entity';
@@ -1345,13 +1347,19 @@ class Detail extends MY_Controller {
 
     function showmembers($providerid)
     {
-        if (!$this->j_auth->logged_in())
-        {
-            show_error('no session', 403);
-        }
         if (!$this->input->is_ajax_request())
         {
-            show_error('Request not allowed', 403);
+           set_status_header(403);
+           echo 'unsupported request';
+           return;
+        }
+        if (!$this->j_auth->logged_in())
+        {
+            
+           set_status_header(403);
+           echo 'no session';
+           return;
+
         }
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if (empty($ent))
@@ -1363,7 +1371,9 @@ class Detail extends MY_Controller {
             $has_read_access = $this->zacl->check_acl($providerid, 'read', 'entity', '');
             if (!$has_read_access)
             {
-                show_error(lang('error403'), 403);
+                set_status_header(403);
+                echo 'no access';
+                return;
             }
 
             $tmp_providers = new models\Providers;
@@ -1387,12 +1397,18 @@ class Detail extends MY_Controller {
             $preurl = base_url() . 'providers/detail/show/';
             foreach ($members as $m)
             {
+                $feds = array();
                 $name = $m->getName();
                 if (empty($name))
                 {
                     $name = $m->getEntityId();
                 }
-                $l[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId());
+                $y = $m->getFederations();
+                foreach($y as $yv)
+                {
+                   $feds[] = $yv->getName();
+                }
+                $l[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId(),'feds'=>$feds);
             }
             echo json_encode($l);
         }

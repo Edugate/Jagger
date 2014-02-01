@@ -256,9 +256,19 @@ var GINIT = {
                     else
                     {
                         var nlist = $('<ul/>');
+                        nlist.addClass('zebralist');
+                        nlist.css("list-style-type","decimal");
+                        var div_data;
+                        var n = 1;
                         $.each(data, function(i, v) {
-                            var div_data = '<li><a href="' + v.url + '">' + v.name + '</a><small><i> (' + v.entityid + ') <i></small></li>';
+                            var span_feds = $('<span/>');
+                            $.each(v.feds, function(x,z){
+                                var spanb = '<span>'+z+'</span>';
+                                span_feds.append(spanb);
+                            });
+                            div_data = '<li>'+n+'. <a href="' + v.url + '">' + v.name + '</a> <small><i> (' + v.entityid + ') </i></small> <div class="fedlbl">'+span_feds.html()+'</div></li>';
                             nlist.append(div_data);
+                            n = n+1;
                         });
                         value.append(nlist);
 
