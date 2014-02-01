@@ -274,7 +274,7 @@ class Detail extends MY_Controller {
         }
         else
         {
-            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon" title="edit" >' . lang('rr_edit') . '</a>';
+            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
             $data['showclearcache'] = TRUE;
         }
         $data['edit_link'] = $edit_link;
@@ -982,7 +982,7 @@ class Detail extends MY_Controller {
         /**
          * end certs
          */
-        $result[] = array('section' => 'certs', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+        $result[] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $d[++$i]['header'] = lang("rr_contacts");
@@ -1043,7 +1043,7 @@ class Detail extends MY_Controller {
             if ($has_write_access)
             {
                 $edit_attributes = '<span style="float: right;"><a href="' . base_url() . 'manage/supported_attributes/idp/' . $id . ' " class="editbutton editicon">'.  lang('rr_edit') . '</a></span>';
-                $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
+                $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " id="editattributesbutton" class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
             }
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;

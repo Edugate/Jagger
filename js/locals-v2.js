@@ -72,6 +72,21 @@ var GINIT = {
             });
         });
     });
+    $('a#editprovider').click(function(e){
+       var curTabID = $('#providertabs .ui-tabs-panel[aria-hidden="false"]').prop('id');
+       var url = $(this).attr('href');
+       if(curTabID == "attributes" || curTabID == "attrs")
+       {
+           var nurl = $('a#editattributesbutton').attr('href');
+           $(this).attr("href",nurl); 
+
+       }
+       else
+       {
+           $(this).attr("href", url+"#"+curTabID);
+       }    
+
+     });
 
         $('form#fvform').submit(function(e) {
             e.preventDefault();
