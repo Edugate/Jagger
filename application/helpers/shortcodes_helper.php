@@ -25,7 +25,7 @@ function notificationCodes()
 
 function languagesCodes()
 {
-return array(
+$result = array(
 'aa' => 'Afar',
 'ab' => 'Abkhaz',
 'ae' => 'Avestan',
@@ -334,5 +334,7 @@ return array(
 'ji'=>'Yiddish',
 'zu'=>'Zulu',
 );
+asort($result);
+return $result;
 }
 ?>

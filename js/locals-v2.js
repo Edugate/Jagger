@@ -73,6 +73,24 @@ var GINIT = {
         });
     });
 
+
+    $('a#editprovider').click(function(e){
+       //alert(window.location);
+       var curTabID = $('#providertabs .ui-tabs-panel[aria-hidden="false"]').prop('id');
+       var url = $(this).attr('href');
+       if(curTabID == "attributes" || curTabID == "attrs")
+       {
+           var nurl = $('a#editattributesbutton').attr('href');
+           $(this).attr("href",nurl); 
+
+       }
+       else
+       {
+           $(this).attr("href", url+"#"+curTabID);
+       }    
+
+     });
+
         $('form#fvform').submit(function(e) {
             e.preventDefault();
             var str = $(this).serializeArray();
@@ -241,9 +259,19 @@ var GINIT = {
                     else
                     {
                         var nlist = $('<ul/>');
+                        nlist.addClass('zebralist');
+                        nlist.css("list-style-type","decimal");
+                        var div_data;
+                        var n = 1;
                         $.each(data, function(i, v) {
-                            var div_data = '<li><a href="' + v.url + '">' + v.name + '</a><small><i> (' + v.entityid + ') <i></small></li>';
+                            var span_feds = $('<span/>');
+                            $.each(v.feds, function(x,z){
+                                var spanb = '<span>'+z+'</span>';
+                                span_feds.append(spanb);
+                            });
+                            div_data = '<li>'+n+'. <a href="' + v.url + '">' + v.name + '</a> <small><i> (' + v.entityid + ') </i></small> <div class="fedlbl">'+span_feds.html()+'</div></li>';
                             nlist.append(div_data);
+                            n = n+1;
                         });
                         value.append(nlist);
 
@@ -1067,11 +1095,15 @@ $(function() {
     $("#details").tablesorter({sortList: [[0, 0], [1, 0]], widgets: ['zebra']});
     $(".userlist#details").tablesorter({sortList: [[3, 1], [0, 0]], widgets: ['zebra']});
     $("#options").tablesorter({sortList: [[0, 0]], headers: {3: {sorter: false}, 4: {sorter: false}}});
+
     $("#formtabs").tabs();
+
+
     $("#providertabs").tabs({
         cache: true,
         load: function(event, ui) {
             $('.accordionButton').unbind();
+            $('#editprovider').unbind();
             GINIT.initialize();
         }
 
@@ -1965,4 +1997,19 @@ $('#joinfed select#fedid').on('change', function() {
         }).done(function() {
         })
     }
+});
+
+// experimental: forcing scroll to top page # urls
+
+$(document).ready(function(){
+var scrolled = false;
+
+$(window).scroll(function(){
+  scrolled = true;
+});
+
+if ( window.location.hash  ) {
+  $(window).scrollTop( 0 );
+}
+
 });

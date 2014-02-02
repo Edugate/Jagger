@@ -31,8 +31,7 @@ class Auth extends MY_Controller {
         if (!$this->j_auth->logged_in())
         {
             return $this->login();
-        }
-        else
+        } else
         {
             redirect($this->config->item('base_url'), 'location');
         }
@@ -47,6 +46,151 @@ class Auth extends MY_Controller {
         $this->load->view('auth/logout');
     }
 
+    function ssphpauth()
+    {
+        if ($this->j_auth->logged_in())
+        {
+            redirect($this->config->item('base_url'), 'location');
+        }
+        $spsp = $this->config->item('simplesamlphp');
+        if (empty($spsp['enabled']))
+        {
+            show_error('Federated access is not enabled', 403);
+        }
+        if (empty($spsp['location']) || !file_exists($spsp['location']))
+        {
+            log_message('error', 'location of simeplsamlphp is not set or not exist. check config file and check $[simplesamlphp][location]');
+            show_error('Server error', 500);
+        }
+
+        if(!isset($spsp['attributes']))
+        {
+            log_message('error', 'missing defined $[simplesamlphp][attributes]');
+            show_error('Server error', 500);
+        }
+        $mapped = $spsp['attributes'];
+        if (empty($mapped['username']) or empty($mapped['mail']))
+        {
+            log_message('error', 'missing defined $[simplesamlphp][attributes][username] or/and $[simplesamlphp][attributes][mail] in config ');
+            show_error('Server error', 500);
+        }
+        require_once($spsp['location']);
+        $auth = new \SimpleSAML_Auth_Simple('' . $spsp['authsourceid'] . '');
+        $auth->requireAuth();
+
+        $attributes = $auth->getAttributes();
+      
+      
+        
+        if (!empty($attributes['' . $mapped['username'] . '']))
+        {
+             
+            if (is_array($attributes['' . $mapped['username'] . '']) && count($attributes['' . $mapped['username'] . '']) == 1)
+            {
+               
+                $username = reset($attributes['' . $mapped['username'] . '']);
+          
+             
+                if (empty($username))
+                {
+                      
+                    show_error('Missing atribute from IdP', 403);
+                }
+            } else
+            {
+                log_message('warning', 'Missing or multiple values found for attr: ' . $mapped['username'] . ' ');
+                show_error('Missing or multiple values found for attr', 403);
+            }
+        } else
+        {
+            log_message('warning', 'Couldn find ' . $mapped['username'] . ' provider by simplesaml');
+            show_error('Missing atribute from IdP to map as username', 403);
+        }
+      
+        $mail = null;
+        if (!empty($attributes['' . $mapped['mail'] . '']))
+        {
+ 
+            if (is_array($attributes['' . $mapped['mail'] . '']) && count($attributes['' . $mapped['mail'] . '']) > 0)
+            {
+
+                $mail = reset($attributes['' . $mapped['mail'] . '']);
+    
+                if (empty($mail))
+                {
+                    log_message('warning', 'IdP didnt provide mail');
+                    show_error('Missing mail attribute', 403);
+                }
+            } else
+            {
+                log_message('warning', 'IdP didnt provide mail');
+                show_error('Missing mail attribute', 403);
+            }
+        } else
+        {
+            log_message('warning', 'IdP didnt provide mail');
+            show_error('Missing mail attribute', 403);
+        }
+     
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+ 
+        if (!empty($user))
+        {
+    
+            $can_access = (bool) ($user->isEnabled() && $user->getFederated());
+            if (!$can_access)
+            {
+                show_error(lang('rerror_youraccountdisorfeddis'), 403);
+            }
+            $session_data = $user->getBasic();
+            $userprefs = $user->getUserpref();
+
+            $this->session->set_userdata($session_data);
+            if (!empty($userprefs) && array_key_exists('board', $userprefs))
+            {
+                $this->session->set_userdata(array('board' => $userprefs['board']));
+            }
+            $_SESSION['username'] = $session_data['username'];
+            $_SESSION['user_id'] = $session_data['user_id'];
+            $_SESSION['logged'] = 1;
+            if (!empty($timeoffset) && is_numeric($timeoffset))
+            {
+                $_SESSION['timeoffset'] = (int) $timeoffset;
+            }
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $user->setIP($ip);
+            $user->updated();
+            $this->em->persist($user);
+            $this->load->library('tracker');
+            $track_details = 'Authn from ' . $ip . '  with federated access';
+            $this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
+            $this->em->flush();
+        } else
+        {
+      
+            $can_autoregister = $this->config->item('autoregister_federated');
+       
+            if (!$can_autoregister)
+            {
+        
+                log_message('error', 'User authorization failed: ' . $username . ' doesnt exist in RR');
+                show_error(' ' . htmlentities($username) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $mail . '">' . lang('rrhere') . '</a>', 403);
+            } else
+            {   
+                $attrs = array('username' => $username, 'mail' => $mail);
+               
+                $reg = $this->registerUser($attrs);
+              
+                if ($reg !== TRUE)
+                {
+                    show_error('User couldnt be registered.', 403);
+                }
+            }
+            redirect(current_url(), 'location');
+        }
+        redirect(base_url(), 'location');
+    }
+
     function login()
     {
         $this->title = lang('title_login');
@@ -55,8 +199,7 @@ class Auth extends MY_Controller {
         if ($shib['enabled'] === TRUE)
         {
             $this->data['shib_url'] = base_url() . $shib['loginapp_uri'];
-        }
-        else
+        } else
         {
             $this->data['shib_url'] = null;
         }
@@ -69,11 +212,11 @@ class Auth extends MY_Controller {
 
         if ($this->j_auth->logged_in())
         {
-            //already logged in so no need to access this page
+//already logged in so no need to access this page
             redirect($this->config->item('base_url'), 'location');
         }
 
-        //validate form input
+//validate form input
         $this->form_validation->set_rules('username', lang('rr_username'), 'required|xss_clean');
         $this->form_validation->set_rules('password', lang('rr_password'), 'required');
         $validated = $this->form_validation->run();
@@ -86,22 +229,19 @@ class Auth extends MY_Controller {
                 if (!empty($cu))
                 {
                     redirect($cu, 'location');
-                }
-                else
+                } else
                 {
                     redirect($this->config->item('base_url'), 'location');
                 }
-            }
-            else
+            } else
             {
                 $this->session->set_flashdata('message', $this->j_auth->errors());
 
                 redirect('auth/login', 'location'); //use redirects instead of loading views for compatibility with MY_Controller libraries
             }
-        }
-        else
+        } else
         {  //the user is not logging in so display the login page
-            //set the flash data error message if there is one
+//set the flash data error message if there is one
             $this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 
             $this->data['username'] = array(
@@ -130,28 +270,25 @@ class Auth extends MY_Controller {
         if (isset($_SERVER[$username_var]))
         {
             return $_SERVER[$username_var];
-        }
-        elseif (isset($_SERVER['REDIRECT_' . $username_var]))
+        } elseif (isset($_SERVER['REDIRECT_' . $username_var]))
         {
             return $_SERVER['REDIRECT_' . $username_var];
-        }
-        else
+        } else
         {
-            return '';
+            return FALSE;
         }
     }
+
     private function get_shib_mail()
     {
         $email_var = $this->config->item('Shib_mail');
         if (isset($_SERVER[$email_var]))
         {
             return $_SERVER[$email_var];
-        }
-        elseif (isset($_SERVER['REDIRECT_' . $email_var]))
+        } elseif (isset($_SERVER['REDIRECT_' . $email_var]))
         {
             return $_SERVER['REDIRECT_' . $email_var];
-        }
-        else
+        } else
         {
             return '';
         }
@@ -162,26 +299,76 @@ class Auth extends MY_Controller {
         if (isset($_SERVER['Shib-Identity-Provider']))
         {
             return $_SERVER['Shib-Identity-Provider'];
-        }
-        elseif (isset($_SERVER['REDIRECT_Shib-Identity-Provider']))
+        } elseif (isset($_SERVER['REDIRECT_Shib-Identity-Provider']))
         {
             return $_SERVER['REDIRECT_Shib-Identity-Provider'];
-        }
-        elseif (isset($_SERVER['Shib_Identity_Provider']))
+        } elseif (isset($_SERVER['Shib_Identity_Provider']))
         {
             return $_SERVER['Shib_Identity_Provider'];
-        }
-        elseif (isset($_SERVER['REDIRECT_Shib_Identity_Provider']))
+        } elseif (isset($_SERVER['REDIRECT_Shib_Identity_Provider']))
         {
             return $_SERVER['REDIRECT_Shib_Identity_Provider'];
-        }
-        else
+        } else
         {
             return '';
         }
     }
 
-    public function fedauth($timeoffset=null)
+    private function registerUser($attrs)
+    {
+        $username = $attrs['username'];
+        $mail = $attrs['mail'];
+     
+        $checkIfExist = $this->em->getRepository("models\User")->findOneBy(array('email' => $mail));
+        if (!empty($checkIfExist))
+        {
+            log_message('warning', 'Cannot register new user, provided mail already exists in db');
+            return false;
+        }
+
+        $user = new models\User;
+        $this->load->helper('random_generator');
+        $randompass = str_generator();
+        $user->setUsername($username);
+        $user->setEmail($mail);
+        $user->setSalt();
+        $user->setPassword($randompass);
+        $user->setLocalDisabled();
+        $user->setFederatedEnabled();
+        $user->setAccepted();
+        $user->setEnabled();
+        $user->setValid();
+        $user->setUserpref(array());
+        $defaultRole = $this->config->item('register_defaultrole');
+        $allowedroles = array('Guest', 'Member');
+        if (empty($defaultRole) || !in_array($defaultRole, $allowedroles))
+        {
+            $defaultRole = 'Guest';
+        }
+        $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $defaultRole));
+        if (!empty($member))
+        {
+            $user->setRole($member);
+        }
+        $p_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $username));
+        if (empty($p_role))
+        {
+            $p_role = new models\AclRole;
+            $p_role->setName($username);
+            $p_role->setType('user');
+            $p_role->setDescription('personal role for user ' . $username);
+            $user->setRole($p_role);
+            $this->em->persist($p_role);
+        }
+        $this->em->persist($user);
+        $this->tracker->save_track('user', 'create', $username, 'user autocreated in the system', false);
+        $this->em->flush();
+        
+        
+        return true;
+    }
+
+    public function fedauth($timeoffset = null)
     {
         $shibb_valid = (bool) $this->get_shib_idp();
         if (!$shibb_valid)
@@ -191,21 +378,22 @@ class Auth extends MY_Controller {
         }
         if ($this->j_auth->logged_in())
         {
-        }
-        $username_set = (bool) $this->get_shib_username();
-        if (!$username_set)
-        {
-            log_message('error', 'IdP didnt provide username');
-            show_error( 'Internal server error: missing attribute from IdP', 500);
+            
         }
         $user_var = $this->get_shib_username();
+        if (empty($user_var))
+        {
+            log_message('error', 'IdP didnt provide username');
+            show_error('Internal server error: missing attribute from IdP', 500);
+        }
+
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user_var));
         if (!empty($user))
         {
             $can_access = (bool) ($user->isEnabled() && $user->getFederated());
             if (!$can_access)
             {
-                show_error( lang('rerror_youraccountdisorfeddis'), 403);
+                show_error(lang('rerror_youraccountdisorfeddis'), 403);
             }
             $session_data = $user->getBasic();
             $userprefs = $user->getUserpref();
@@ -218,83 +406,46 @@ class Auth extends MY_Controller {
             $_SESSION['username'] = $session_data['username'];
             $_SESSION['user_id'] = $session_data['user_id'];
             $_SESSION['logged'] = 1;
-            if(!empty($timeoffset) && is_numeric($timeoffset))
+            if (!empty($timeoffset) && is_numeric($timeoffset))
             {
-               $_SESSION['timeoffset'] = (int) $timeoffset;
+                $_SESSION['timeoffset'] = (int) $timeoffset;
             }
-        }
-        else
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $user->setIP($ip);
+            $user->updated();
+            $this->em->persist($user);
+            $this->load->library('tracker');
+            $track_details = 'Authn from ' . $ip . '  with federated access';
+            $this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
+            $this->em->flush();
+        } else
         {
             $can_autoregister = $this->config->item('autoregister_federated');
             if (!$can_autoregister)
             {
-                log_message('error','User authorization failed: '.$user_var.' doesnt exist in RR');
-                show_error(' ' . htmlentities($user_var) . ' - '.lang('error_usernotexist').' '.lang('applyforaccount').' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">'.lang('rrhere').'</a>', 403);
-            }
-            else
+                log_message('error', 'User authorization failed: ' . $user_var . ' doesnt exist in RR');
+                show_error(' ' . htmlentities($user_var) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">' . lang('rrhere') . '</a>', 403);
+            } else
             {
-               $email_var = $this->get_shib_mail();
-               if(empty($email_var))
-               {
-                   log_message('error','User cannot be autocreated: email address is missing');
-                   show_error(lang('error_noemail'),403);
-                   return;
-               }
-               $checkuserwithemail = $this->em->getRepository("models\User")->findOneBy(array('email'=>$email_var));
-               if(!empty($checkuserwithemail))
-               {
-                  log_message('error','User cannot be autocreated: email address:'.$email_var.' already exists in db ');
-                  show_error(lang('error_emailexists'),403);
-                  return;
-               }
-               $user = new models\User;
-               $this->load->helper('random_generator');
-               $randompass = str_generator();
-               $user->setUsername($user_var);
-               $user->setEmail($email_var);
-               $user->setSalt();
-               $user->setPassword($randompass);
-               $user->setLocalDisabled();
-               $user->setFederatedEnabled();
-               $user->setAccepted();
-               $user->setEnabled();
-               $user->setValid();
-               $user->setUserpref(array());
-               $defaultRole = $this->config->item('register_defaultrole');
-               $allowedroles = array('Guest','Member');
-               if(empty($defaultRole) || !in_array($defaultRole,$allowedroles))
-               {
-                   $defaultRole = 'Guest';
-               }
-               $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $defaultRole));
-               if (!empty($member)) {
-                    $user->setRole($member);
-               }
-               $p_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $user_var));
-               if(empty($p_role))
-               {
-                  $p_role = new models\AclRole;
-                  $p_role->setName($user_var);
-                  $p_role->setType('user');
-                  $p_role->setDescription('personal role for user ' . $user_var);
-                  $user->setRole($p_role);
-                  $this->em->persist($p_role);
-               }
-               $this->tracker->save_track('user', 'create', $user_var, 'user autocreated in the system', false);
+                $email_var = $this->get_shib_mail();
 
-               
+                if (empty($email_var))
+                {
+                    log_message('error', 'User cannot be autocreated: email address is missing');
+                    show_error(lang('error_noemail'), 403);
+                    return;
+                }
+                $attrs = array('username' => $user_var, 'mail' => $email_var);
+                $reg = $this->registerUser($attrs);
+
+                if ($reg !== TRUE)
+                {
+                    show_error('User couldnt be registered.', 403);
+                }
+                redirect(current_url(), 'location');
             }
         }
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $user->setIP($ip);
-        $user->updated();
-        $this->em->persist($user);
-        $this->load->library('tracker');
-        $track_details = 'Authn from ' . $ip . '  with federated access';
-        $this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
-        $this->em->flush();
         redirect(base_url(), 'location');
     }
 
 }
-

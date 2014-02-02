@@ -82,6 +82,19 @@ $config['Shibboleth']['loginapp_uri'] = 'auth/fedauth';
 $config['Shibboleth']['logout_uri'] = '/Shibboleth.sso/Logout';
 $config['Shibboleth']['enabled'] = TRUE;
 
+/**
+ * to enable simplesamlphp support 
+ * notice: remember both jagger and simplesamlphp must have the same name for cookie session 
+ */
+/**
+
+$config['simplesamlphp'] = array(
+      'enabled'=>true,
+      'location'=>'/opt/www-sites/simplesamlphp-1.11.0/www/_include.php',
+      'authsourceid'=>'default-sp',
+      'attributes'=> array('username'=>'eduPersonPrincipalName','mail'=>'mail'),
+);
+*/
 $config['nameids'] = array(
 	'urn:mace:shibboleth:1.0:nameIdentifier' => 'urn:mace:shibboleth:1.0:nameIdentifier',
         'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',

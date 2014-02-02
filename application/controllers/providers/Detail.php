@@ -102,7 +102,9 @@ class Detail extends MY_Controller {
         {
             if (!$this->j_auth->logged_in())
             {
-               show_error('no session', 403);
+               set_status_header(403);
+               echo 'no session';
+               return;
             }
             $d = array();
             $group = 'entity';
@@ -274,7 +276,7 @@ class Detail extends MY_Controller {
         }
         else
         {
-            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon" title="edit" >' . lang('rr_edit') . '</a>';
+            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
             $data['showclearcache'] = TRUE;
         }
         $data['edit_link'] = $edit_link;
@@ -635,7 +637,7 @@ class Detail extends MY_Controller {
 
                 $d[++$i]['2cols'] = '<code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
-            $result[] = array('section' => 'staticmeta', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
+            $result[] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
 
             $d = array();
             $i = 0;
@@ -982,7 +984,7 @@ class Detail extends MY_Controller {
         /**
          * end certs
          */
-        $result[] = array('section' => 'certs', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+        $result[] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $d[++$i]['header'] = lang("rr_contacts");
@@ -1043,7 +1045,7 @@ class Detail extends MY_Controller {
             if ($has_write_access)
             {
                 $edit_attributes = '<span style="float: right;"><a href="' . base_url() . 'manage/supported_attributes/idp/' . $id . ' " class="editbutton editicon">'.  lang('rr_edit') . '</a></span>';
-                $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
+                $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " id="editattributesbutton" class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
             }
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;
@@ -1345,13 +1347,19 @@ class Detail extends MY_Controller {
 
     function showmembers($providerid)
     {
-        if (!$this->j_auth->logged_in())
-        {
-            show_error('no session', 403);
-        }
         if (!$this->input->is_ajax_request())
         {
-            show_error('Request not allowed', 403);
+           set_status_header(403);
+           echo 'unsupported request';
+           return;
+        }
+        if (!$this->j_auth->logged_in())
+        {
+            
+           set_status_header(403);
+           echo 'no session';
+           return;
+
         }
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if (empty($ent))
@@ -1363,7 +1371,9 @@ class Detail extends MY_Controller {
             $has_read_access = $this->zacl->check_acl($providerid, 'read', 'entity', '');
             if (!$has_read_access)
             {
-                show_error(lang('error403'), 403);
+                set_status_header(403);
+                echo 'no access';
+                return;
             }
 
             $tmp_providers = new models\Providers;
@@ -1387,12 +1397,18 @@ class Detail extends MY_Controller {
             $preurl = base_url() . 'providers/detail/show/';
             foreach ($members as $m)
             {
+                $feds = array();
                 $name = $m->getName();
                 if (empty($name))
                 {
                     $name = $m->getEntityId();
                 }
-                $l[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId());
+                $y = $m->getFederations();
+                foreach($y as $yv)
+                {
+                   $feds[] = $yv->getName();
+                }
+                $l[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId(),'feds'=>$feds);
             }
             echo json_encode($l);
         }

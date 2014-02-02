@@ -958,6 +958,13 @@ class Provider {
         $allowed = array('aa', 'idpsso', 'spsso');
         if (in_array($n, $allowed) && is_array($data))
         {
+            foreach($data as $k=>$v)
+            {
+                if(empty(trim($v)))
+                {
+                   unset($data[''.$k.'']);
+                }
+            }
             $r = $this->getProtocolSupport();
             $r['' . $n . ''] = $data;
             $this->protocolsupport = serialize($r);

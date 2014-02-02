@@ -79,6 +79,8 @@ $table-background-color: #3f92d2;
 $table-row-background-color: #e6eeee;
 $table-row-odd-background-color: #cbd9e0;
 
+$list-odd-bgcolor: lighten($table-row-odd-background-color, 10%);
+
 // forms
 $formbackgroundcolor: lighten(#6b90d4, 10%);
 $formElementBackground: lighten($formbackgroundcolor,20%);

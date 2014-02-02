@@ -79,10 +79,6 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                             echo "\n";
                             ?>
                         </span> 
-
-
-
-
                 <?php
                 if ($loggedin)
                 {
@@ -100,7 +96,12 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                    {
                      echo ' <small>UTC'.j_auth::$timeOffset/60/60 .'</small>';
                    }
+
                echo '</div>';
+?>
+           <a href="<?php echo $base_url;?>auth/logout" class="logoutbutton" id="logout" style="float: right; margin-left: 10px; "><?php echo lang('btnlogout');?></a> 
+
+<?php
 
                 }
                 else
@@ -153,14 +154,6 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         </form>
                 <?php
          }
-         elseif($loggedin)
-         {
-         ?>
-         <div style="width:100%; display:block; float: none; clear: both " class="clearfix">
-           <a href="<?php echo $base_url;?>auth/logout" class="logoutbutton" id="logout"><?php echo lang('btnlogout');?></a> 
-         </div>
-         <?php
-         }
                 ?>
         <div id="container">
             <div class="header-container">
@@ -170,11 +163,8 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                         if (!empty($provider_logo_url))
                         {
                             echo '<img src="' . $provider_logo_url . '" class="providerlogo" />';
-                            echo "\n";
                         }
                         ?>
-
-
                     </div>
 
                     <?php
@@ -269,7 +259,6 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                     $height100 = ' style="height: 100%" ';
                 }
                 ?>
-
                 <div   <?php echo $height100 ?>>
 
                     <div id="wrapper"   <?php echo $height100 ?> >
@@ -357,8 +346,6 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery-bubble-popup-v3.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.simplemodal.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v2.js"></script>';
-
-
 
         if (!empty($load_matrix_js))
         {

@@ -4,6 +4,22 @@
 // Modify as content requires.
 // ========================================================================== */
 
+@media only screen and (max-height: 1100px) {
+    /* Style adjustments for viewports 480px and over go here */
+    body {
+        #  background-color: red;
+    }
+    .providerlogo {
+       display:none;
+    }
+    .logoutbutton {
+      min-width: 50px;
+    }
+    .editbutton {
+    }
+    
+}
+
 
 @media only screen and (min-width: 480px) {
     /* Style adjustments for viewports 480px and over go here */
