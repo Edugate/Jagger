@@ -118,7 +118,7 @@ echo '<ol>';
 echo '<li>';
 echo form_label(lang('rr_assertionconsumerservicebind') . showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding');
 $dropdownid = 'id="acs_bind"';
-echo form_dropdown('acs_bind', $acs_dropdown, 'xyz', $dropdownid);
+echo form_dropdown('acs_bind', $acs_dropdown, set_value('acs_bind'), $dropdownid);
 echo form_label(lang('rr_acsurl') . showBubbleHelp(lang('rhelp_acsurl')), 'acs_url');
 $inp = array(
     'id' => 'acs_url',
