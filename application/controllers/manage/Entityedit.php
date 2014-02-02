@@ -186,7 +186,7 @@ class Entityedit extends MY_Controller {
                 {
                     foreach ($value as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[contact][' . $key . '][' . $k . ']', 'trim');
+                        $this->form_validation->set_rules('f[prot][' . $key . '][' . $k . ']', 'trim');
                     }
                 }
             }

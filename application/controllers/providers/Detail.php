@@ -637,7 +637,7 @@ class Detail extends MY_Controller {
 
                 $d[++$i]['2cols'] = '<code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
-            $result[] = array('section' => 'staticmeta', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
+            $result[] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
 
             $d = array();
             $i = 0;

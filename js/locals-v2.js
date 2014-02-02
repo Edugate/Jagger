@@ -72,7 +72,10 @@ var GINIT = {
             });
         });
     });
+
+
     $('a#editprovider').click(function(e){
+       //alert(window.location);
        var curTabID = $('#providertabs .ui-tabs-panel[aria-hidden="false"]').prop('id');
        var url = $(this).attr('href');
        if(curTabID == "attributes" || curTabID == "attrs")
@@ -1092,11 +1095,15 @@ $(function() {
     $("#details").tablesorter({sortList: [[0, 0], [1, 0]], widgets: ['zebra']});
     $(".userlist#details").tablesorter({sortList: [[3, 1], [0, 0]], widgets: ['zebra']});
     $("#options").tablesorter({sortList: [[0, 0]], headers: {3: {sorter: false}, 4: {sorter: false}}});
+
     $("#formtabs").tabs();
+
+
     $("#providertabs").tabs({
         cache: true,
         load: function(event, ui) {
             $('.accordionButton').unbind();
+            $('#editprovider').unbind();
             GINIT.initialize();
         }
 
@@ -1990,4 +1997,19 @@ $('#joinfed select#fedid').on('change', function() {
         }).done(function() {
         })
     }
+});
+
+// experimental: forcing scroll to top page # urls
+
+$(document).ready(function(){
+var scrolled = false;
+
+$(window).scroll(function(){
+  scrolled = true;
+});
+
+if ( window.location.hash  ) {
+  $(window).scrollTop( 0 );
+}
+
 });

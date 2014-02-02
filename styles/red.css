@@ -2852,7 +2852,7 @@ input.notice {
   color: orange;
 }
 
-li.notice > input, li.notice > select {
+li.notice > input, li.notice > select, li.notice > span, div.notice > span {
   color: orange;
 }
 
