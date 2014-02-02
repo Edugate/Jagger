@@ -960,7 +960,8 @@ class Provider {
         {
             foreach($data as $k=>$v)
             {
-                if(empty(trim($v)))
+                $i = trim($v);
+                if(empty($i))
                 {
                    unset($data[''.$k.'']);
                 }
