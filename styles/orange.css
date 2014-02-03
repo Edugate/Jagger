@@ -2848,6 +2848,10 @@ div.permset form {
   background-color: transparent;
 }
 
+li.notice {
+  color: orange;
+}
+
 input.notice {
   color: orange;
 }
@@ -2937,6 +2941,15 @@ li.notice > input, li.notice > select, li.notice > span, div.notice > span {
   cursor: move;
 }
 #formtabs form div.nsortable span input {
+  min-width: 10px;
+}
+#formtabs form ul.checkboxlist li {
+  line-height: 0.5em;
+  white-space: nowrap;
+  margin-left: 0px;
+}
+#formtabs form ul.checkboxlist li input {
+  font-size: smaller;
   min-width: 10px;
 }
 

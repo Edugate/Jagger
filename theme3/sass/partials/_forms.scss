@@ -260,6 +260,12 @@ div.permset form {
     background-color: transparent;
     
 }
+li.notice  {
+    color: $fontColorInputNotice;
+
+
+}
+
 input.notice 
 {
     color: $fontColorInputNotice;
@@ -367,6 +373,19 @@ div.nsortable {
         cursor:move;
     }
 }
+ul.checkboxlist {
+   li {
+   line-height: 0.5em;
+        white-space: nowrap;
+         margin-left: 0px;
+         input {
+          font-size: smaller;
+          min-width: 10px;
+       }
+    }
+
+}
+
 }
 div#sortable, div.nsortable {
     overflow: auto;

@@ -2269,9 +2269,8 @@ class Form_element {
                 }
             }
             $r = '<fieldset><legend>'.lang('rr_supportedprotocols').' <i>'.lang('idpssodescriptor').'</i></legend><ol>';
-          //  $r .= '<li class="' . $idpssonotice . '">' . form_multiselect('f[prot][idpsso][]', $allowedoptions, $selected_options) . '</li>';
             $r .= '<li class="' . $idpssonotice . '">';
-            //$r .= form_checkbox(array('name'=>'f[prot][idpsso][]','id'=>'f[prot][idpsso][]','type'=>'hidden','value'=>''));
+            $r .= '<ul class="checkboxlist">';
             foreach($allowedoptions as $a )
             {
                   $is = FALSE;
@@ -2279,8 +2278,9 @@ class Form_element {
                   {
                       $is = TRUE;
                   }
-                  $r .= '<span>'.form_checkbox(array('name'=>'f[prot][idpsso][]','id'=>'f[prot][idpsso][]','value'=>$a,'checked'=>$is)).$a.'</span><br />';
+                  $r .= '<li>'.form_checkbox(array('name'=>'f[prot][idpsso][]','id'=>'f[prot][idpsso][]','value'=>$a,'checked'=>$is)).$a.'</li>';
             }
+            $r .= '</ul>';
             $r .='</li>';
             $r .= '</ol></fieldset>';
             $result[] = $r;
@@ -2308,8 +2308,8 @@ class Form_element {
                     $selected_options[$p] = $p;
                 }
             }
-        //    $r .= '<li class="' . $aanotice . '">' . form_multiselect('f[prot][aa][]', $allowedoptions, $selected_options) . '</li>';
             $r .= '<li class="' . $aanotice . '">';
+            $r .=  '<ul class="checkboxlist">';
             foreach($allowedoptions as $a )
             {
                   $is = FALSE;
@@ -2317,8 +2317,9 @@ class Form_element {
                   {
                       $is = TRUE;
                   }
-                  $r .= '<span>'.form_checkbox(array('name'=>'f[prot][aa][]','id'=>'f[prot][aa][]','value'=>$a,'checked'=>$is)).$a.'</span><br />';
+                  $r .= '<li>'.form_checkbox(array('name'=>'f[prot][aa][]','id'=>'f[prot][aa][]','value'=>$a,'checked'=>$is)).$a.'</li>';
             }
+            $r .= '</ul>';
             $r .= '</li>';
            
             $r .= '</ol></fieldset>';
