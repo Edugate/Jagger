@@ -1377,19 +1377,7 @@ class Detail extends MY_Controller {
             }
 
             $tmp_providers = new models\Providers;
-            $type = $ent->getType();
-            if ($type === 'SP')
-            {
-                $members = $tmp_providers->getCircleMembersIDP($ent);
-            }
-            elseif ($type === 'IDP')
-            {
-                $members = $tmp_providers->getCircleMembersSP($ent);
-            }
-            else
-            {
-                $members = $tmp_providers->getCircleMembers($ent);
-            }
+            $members = $tmp_providers->getTrustedServicesWithFeds($ent);
             if (empty($members))
             {
                 $l[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');

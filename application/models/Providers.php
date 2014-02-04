@@ -143,6 +143,47 @@ class Providers {
 
      }
 
+    /**
+     * get all trusted entites excluding the same type as param including their feds
+     */
+    public function getTrustedServicesWithFeds(Provider $provider)
+    {
+         $type = $provider->getType();
+         if($type === 'IDP')
+         {
+            $typeconds = "'SP','BOTH'";
+         }
+         elseif($type === 'SP')
+         {
+            $typeconds = "'IDP','BOTH'";
+         }
+         else
+         {
+            $typeconds = "'IDP','SP','BOTH'";
+         }
+
+         $f = $provider->getFederations();
+         $conds = array();
+         $params = array();
+         foreach($f as $v)
+         {
+            $conds[] = ':federatonId'.$v->getId().' MEMBER OF p.federations';
+            $params[':federatonId'.$v->getId().''] = $v->getId();
+         }
+         if(count($conds) ==0)
+         {
+            return array();
+         }
+         $query = $this->em->createQuery("SELECT p, f,m FROM models\Provider p JOIN p.metadata m JOIN p.federations f  WHERE p.type IN (".$typeconds.") AND (".implode(' OR ',$conds).")");
+         foreach($params as $k => $v)
+         {
+            $query->setParameter(''.$k.'', $v);
+         }
+         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+         $providers = $query->getResult();
+         return $providers;	
+
+    }
     public function getCircleMembersSP(Provider $provider, $federations = null)
     {
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
