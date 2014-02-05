@@ -622,10 +622,14 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
 
-        $d[++$i]['header'] = '<span id="technical"></span>' . lang('rr_technicalinformation');
+      //  $d[++$i]['header'] = '<span id="technical"></span>' . lang('rr_technicalinformation');
         if ($idppart)
         {
-            $d[++$i]['name'] = lang('rr_domainscope') . '<br /><i>IDPSSODescriptor</i>';
+            $d[++$i]['header'] = '<span id="idpssoproto"></span>IDPSSODescriptor'; 
+            $d[++$i]['name'] = lang('rr_supportedprotocols')  ;
+            $v = implode('<br />', $ent->getProtocolSupport('idpsso'));
+            $d[$i]['value'] = $v;
+            $d[++$i]['name'] = lang('rr_domainscope');
             $scopes = $ent->getScope('idpsso');
             $scopeString = '<ul>';
             foreach ($scopes as $key => $value)
@@ -634,7 +638,21 @@ class Detail extends MY_Controller {
             }
             $scopeString .= '</ul>';
             $d[$i]['value'] = $scopeString;
-            $d[++$i]['name'] = lang('rr_domainscope') . '<br /><i>AttributeAuthorityDescriptor</i>';
+            $d[++$i]['name'] = lang('rr_supportednameids') ;
+            $nameids = '';
+            foreach ($ent->getNameIds('idpsso') as $r)
+            {
+                $nameids .= '<li>' . $r . '</li>';
+            }
+            $nameids .='</ul>';
+            $d[$i]['value'] = trim($nameids);
+        
+            // AttributeAuthorityDescriptor
+            $d[++$i]['header'] = '<span id="idpaaproto"></span>AttributeAuthorityDescriptor';
+            $d[++$i]['name'] = lang('rr_supportedprotocols') . '';
+            $v = implode('<br />', $ent->getProtocolSupport('aa'));
+            $d[$i]['value'] = $v;
+            $d[++$i]['name'] = lang('rr_domainscope') . '';
             $scopes = $ent->getScope('aa');
             $scopeString = '<ul>';
             foreach ($scopes as $key => $value)
@@ -643,43 +661,11 @@ class Detail extends MY_Controller {
             }
             $scopeString .= '</ul>';
             $d[$i]['value'] = $scopeString;
-        }
-
-
-
-        $d[++$i]['header'] = lang('rr_supportedprotocols');
-        if ($type != 'sp')
-        {
-            $d[++$i]['name'] = lang('rr_supportedprotocols') . ' <i>IDPSSODescriptor</i>';
-            $v = implode('<br />', $ent->getProtocolSupport('idpsso'));
-            $d[$i]['value'] = $v;
-            $d[++$i]['name'] = lang('rr_supportedprotocols') . ' <i>AttributeAuthorityDescriptor</i>';
-            $v = implode('<br />', $ent->getProtocolSupport('aa'));
-            $d[$i]['value'] = $v;
-        }
-        if ($type != 'idp')
-        {
-            $d[++$i]['name'] = lang('rr_supportedprotocols') . ' <i>SPSSODescriptor</i>';
-            $v = implode('<br />', $ent->getProtocolSupport('spsso'));
-            $d[$i]['value'] = $v;
-        }
-
-        if ($type != 'sp')
-        {
-            $d[++$i]['name'] = lang('rr_supportednameids') . ' <i>IDPSSODescriptor</i>';
-            $nameids = '';
-            foreach ($ent->getNameIds('idpsso') as $r)
-            {
-                $nameids .= '<li>' . $r . '</li>';
-            }
-            $nameids .='</ul>';
-            $d[$i]['value'] = trim($nameids);
-
             $aanameids = $ent->getNameIds('aa');
             $aanameid = '';
             if (count($aanameids) > 0)
             {
-                $d[++$i]['name'] = lang('rr_supportednameids') . ' <i>AttributeAuthorityDescriptor</i>';
+                $d[++$i]['name'] = lang('rr_supportednameids') ;
                 foreach ($aanameids as $r)
                 {
                     $aanameid .= '<li>' . $r . '</li>';
@@ -687,11 +673,18 @@ class Detail extends MY_Controller {
                 $aanameid .= '</ul>';
                 $d[$i]['value'] = trim($aanameid);
             }
+
         }
-        if ($type != 'idp')
+
+
+        if($sppart)
         {
+            $d[++$i]['header'] = 'SPSSODescriptor';
+            $d[++$i]['name'] = lang('rr_supportedprotocols') ;
+            $v = implode('<br />', $ent->getProtocolSupport('spsso'));
+            $d[$i]['value'] = $v;
             $nameids = '';
-            $d[++$i]['name'] = lang('rr_supportednameids') . ' <i>SPSSODescriptor</i>';
+            $d[++$i]['name'] = lang('rr_supportednameids');
             foreach ($ent->getNameIds('spsso') as $r)
             {
                 $nameids .= '<li>' . $r . '</li>';
@@ -699,6 +692,7 @@ class Detail extends MY_Controller {
             $nameids .='</ul>';
             $d[$i]['value'] = trim($nameids);
         }
+
         $result[] = array('section' => 'protocols', 'title' => '' . lang('tabprotonameid') . '', 'data' => $d);
 
 
@@ -708,7 +702,6 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
 
-        $d[++$i]['header'] = lang('rr_servicelocations');
         $srvs = $ent->getServiceLocations();
         if ($srvs->count() > 0)
         {
@@ -719,16 +712,17 @@ class Detail extends MY_Controller {
         }
         if ($idppart)
         {
+            $d[++$i]['header'] = 'IDPSSODescriptor';
             if (array_key_exists('SingleSignOnService', $services))
             {
                 $ssovalues = '';
-                $d[++$i]['name'] = 'SingleSignOnService <br /><small>IDPSSODescriptor</small>';
+                $d[++$i]['name'] = 'SingleSignOnService';
                 foreach ($services['SingleSignOnService'] as $s)
                 {
-                    $def = "";
+                    $def = '';
                     if ($s->getDefault())
                     {
-                        $def = "<i>(default)</i>";
+                        $def = '<i>('.lang('rr_default').')</i>';
                     }
                     $ssovalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                 }
@@ -736,7 +730,7 @@ class Detail extends MY_Controller {
             }
             if (array_key_exists('IDPSingleLogoutService', $services))
             {
-                $d[++$i]['name'] = 'SingleLogoutService <br /><small>IDPSSODescriptor</small>';
+                $d[++$i]['name'] = 'SingleLogoutService';
                 $slvalues = '';
                 foreach ($services['IDPSingleLogoutService'] as $s)
                 {
@@ -746,7 +740,7 @@ class Detail extends MY_Controller {
             }
             if (array_key_exists('IDPArtifactResolutionService', $services))
             {
-                $d[++$i]['name'] = 'ArtifactResolutionService <br /><small>IDPSSODescriptor</small>';
+                $d[++$i]['name'] = 'ArtifactResolutionService';
                 $slvalues = '';
                 foreach ($services['IDPArtifactResolutionService'] as $s)
                 {
@@ -756,7 +750,8 @@ class Detail extends MY_Controller {
             }
             if (array_key_exists('IDPAttributeService', $services))
             {
-                $d[++$i]['name'] = 'AttributeService <br /><small>AttributeAuthorityDescriptor</small>';
+                $d[++$i]['header'] = 'AttributeAuthorityDescriptor';
+                $d[++$i]['name'] = 'AttributeService';
                 $slvalues = '';
                 foreach ($services['IDPAttributeService'] as $s)
                 {
@@ -767,10 +762,11 @@ class Detail extends MY_Controller {
         }
         if ($sppart)
         {
+            $d[++$i]['header'] = 'SPSSODescriptor';
             if (array_key_exists('AssertionConsumerService', $services))
             {
                 $acsvalues = '';
-                $d[++$i]['name'] = 'AssertionConsumerService <br /><small>SPSSODescriptor</small>';
+                $d[++$i]['name'] = 'AssertionConsumerService';
                 foreach ($services['AssertionConsumerService'] as $s)
                 {
                     $def = '';
@@ -785,7 +781,7 @@ class Detail extends MY_Controller {
             if (array_key_exists('SPArtifactResolutionService', $services))
             {
                 $acsvalues = '';
-                $d[++$i]['name'] = 'ArtifactResolutionService <br /><small>SPSSODescriptor</small>';
+                $d[++$i]['name'] = 'ArtifactResolutionService';
                 foreach ($services['SPArtifactResolutionService'] as $s)
                 {
                     $def = '';
@@ -799,7 +795,7 @@ class Detail extends MY_Controller {
             }
             if (array_key_exists('SPSingleLogoutService', $services))
             {
-                $d[++$i]['name'] = 'SingleLogoutService <br /><small>SPSSODescriptor</small>';
+                $d[++$i]['name'] = 'SingleLogoutService';
                 $slvalues = '';
                 foreach ($services['SPSingleLogoutService'] as $s)
                 {
@@ -807,25 +803,30 @@ class Detail extends MY_Controller {
                 }
                 $d[$i]['value'] = '<ul>' . $slvalues . '</ul>';
             }
-            if (array_key_exists('RequestInitiator', $services))
+            if(array_key_exists('RequestInitiator', $services) || array_key_exists('DiscoveryResponse', $services))
             {
-                $d[++$i]['name'] = 'RequestInitiator <br /><small>SPSSODescriptor/Extensions</small>';
-                $rivalues = '';
-                foreach ($services['RequestInitiator'] as $s)
+                $d[++$i]['header'] = 'SPSSODescriptor/Extensions';
+                if (array_key_exists('RequestInitiator', $services))
                 {
-                    $rivalues .= '<li><b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
+                    $d[++$i]['name'] = 'RequestInitiator <br /><small>SPSSODescriptor/Extensions</small>';
+                    $rivalues = '';
+                    foreach ($services['RequestInitiator'] as $s)
+                    {
+                       $rivalues .= '<li><b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
+                    }
+                    $d[$i]['value'] = '<ul>' . $rivalues . '</ul>';
                 }
-                $d[$i]['value'] = '<ul>' . $rivalues . '</ul>';
-            }
-            if (array_key_exists('DiscoveryResponse', $services))
-            {
-                $d[++$i]['name'] = 'DiscoveryResponse <br /><small>SPSSODescriptor/Extensions</small>';
-                $drvalues = '';
-                foreach ($services['DiscoveryResponse'] as $s)
+                if (array_key_exists('DiscoveryResponse', $services))
                 {
-                    $drvalues .= '<li><b>' . $s->getUrl() . '</b>&nbsp;&nbsp;<small><i>index:' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . '</small></li>';
+                    $d[++$i]['name'] = 'DiscoveryResponse <br /><small>SPSSODescriptor/Extensions</small>';
+                    $drvalues = '';
+                    foreach ($services['DiscoveryResponse'] as $s)
+                    {
+                        $drvalues .= '<li><b>' . $s->getUrl() . '</b>&nbsp;&nbsp;<small><i>index:' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . '</small></li>';
+                    }
+                    $d[$i]['value'] = '<ul>' . $drvalues . '</ul>';
                 }
-                $d[$i]['value'] = '<ul>' . $drvalues . '</ul>';
+
             }
         }
         $result[] = array('section' => 'services', 'title' => '' . lang('tabsrvs') . '', 'data' => $d);
