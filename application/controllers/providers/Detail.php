@@ -838,27 +838,28 @@ class Detail extends MY_Controller {
         {
             $certs[$c->getType()][] = $c;
         }
-        $d[++$i]['header'] = lang('rr_certificates');
         if ($idppart)
         {
-            $d[++$i]['name'] = lang('certsinidpsso');
+            $d[++$i]['header'] = 'IDPSSODescriptor';
             $cString = '';
             if (array_key_exists('idpsso', $certs))
             {
                 foreach ($certs['idpsso'] as $v)
                 {
+                    $cString = '';
                     $certusage = $v->getCertuse();
+                    $langcertusage = '';
                     if (empty($certusage))
                     {
-                        $cString .= '<i>' . lang('certsign') . '/' . lang('certenc') . '</i><br />';
+                        $langcertusage = lang('certsign') . '/' . lang('certenc');
                     }
                     elseif ($certusage === 'signing')
                     {
-                        $cString .= '<i>' . lang('certsign') . '</i><br />';
+                        $langcertusage = lang('certsign');
                     }
                     elseif ($certusage === 'encryption')
                     {
-                        $cString .= '<i>' . lang('certenc') . '</i><br />';
+                        $langcertusage =  lang('certenc');
                     }
                     $kname = $v->getKeyname();
                     $c_certData = $v->getCertData();
@@ -885,28 +886,30 @@ class Detail extends MY_Controller {
                         $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                     }
                     $cString .= '<br />';
+                    $d[++$i]['name'] = $langcertusage;
+                    $d[$i]['value'] = $cString;
                 }
-                $d[$i]['value'] = $cString;
             }
             // AA
             if (array_key_exists('aa', $certs))
             {
-                $d[++$i]['name'] = lang('certsinaa');
-                $cString = '';
+                $d[++$i]['header'] = 'AttributeAuthorityDescriptor';
                 foreach ($certs['aa'] as $v)
                 {
+                    $cString = '';
+                    $langcertusage = '';
                     $certusage = $v->getCertuse();
                     if (empty($certusage))
                     {
-                        $cString .= '<i>' . lang('certsign') . '/' . lang('certenc') . '</i><br />';
+                        $langcertusage = lang('certsign') . '/' . lang('certenc');
                     }
                     elseif ($certusage === 'signing')
                     {
-                        $cString .= '<i>' . lang('certsign') . '</i><br />';
+                        $langcertusage = lang('certsign');
                     }
                     elseif ($certusage === 'encryption')
                     {
-                        $cString .= '<i>' . lang('certenc') . '</i><br />';
+                        $langcertusage = lang('certenc');
                     }
                     $kname = $v->getKeyname();
                     $c_certData = $v->getCertData();
@@ -933,30 +936,32 @@ class Detail extends MY_Controller {
                         $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                     }
                     $cString .= '<br />';
+                   $d[++$i]['name'] = $langcertusage ;
+                   $d[$i]['value'] = $cString;
                 }
-                $d[$i]['value'] = $cString;
             }
         }
         if ($sppart)
         {
-            $d[++$i]['name'] = lang('certsinspsso');
-            $cString = '';
+            $d[++$i]['header'] = 'SPSSODescriptor';
             if (array_key_exists('spsso', $certs))
             {
                 foreach ($certs['spsso'] as $v)
                 {
+                    $cString = '';
+                    $langcertusage ='';
                     $certusage = $v->getCertuse();
                     if (empty($certusage))
                     {
-                        $cString .= '<i>' . lang('certsign') . '/' . lang('certenc') . '</i><br />';
+                        $langcertusage = lang('certsign') . '/' . lang('certenc');
                     }
                     elseif ($certusage === 'signing')
                     {
-                        $cString .= '<i>' . lang('certsign') . '</i><br />';
+                        $langcertusage =  lang('certsign');
                     }
                     elseif ($certusage === 'encryption')
                     {
-                        $cString .= '<i>' . lang('certenc') . '</i><br />';
+                        $langcertusage =  lang('certenc');
                     }
                     $kname = $v->getKeyname();
                     $c_certData = $v->getCertData();
@@ -985,8 +990,9 @@ class Detail extends MY_Controller {
                         $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                     }
                     $cString .= '<br />';
+                    $d[++$i]['name'] = $langcertusage;
+                    $d[$i]['value'] = $cString;
                 }
-                $d[$i]['value'] = $cString;
             }
         }
         /**
