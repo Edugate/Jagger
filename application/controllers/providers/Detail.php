@@ -471,11 +471,75 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = '<span class="lbl lbl-alert">' . $validfrom . ' <b>--</b> ' . $validto . '</span>';
         }
         $result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
+
+
+
+
         /**
-         * Federation
+         * Metadata urls
          */
         $d = array();
         $i = 0;
+
+        $d[++$i]['header'] = lang('rr_metadata');
+        $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
+
+        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
+        $gearman_enabled = $this->config->item('gearman');
+
+        if (!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
+        {
+            $d[++$i]['name'] = lang('rr_circleoftrust');
+            $d[$i]['value'] = lang('disableexternalcirclemeta');
+            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+            $d[$i]['value'] = lang('disableexternalcirclemeta');
+        }
+        else
+        {
+            $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+            $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+            $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+
+            $d[++$i]['name'] = lang('rr_circleoftrust');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        }
+        if ($is_local && $has_write_access && !empty($gearman_enabled))
+        {
+            $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
+            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon">' . lang('btn_signmetadata') . '</button></a>';
+        }
+        if ($sppart)
+        {
+            $d[++$i]['header'] = 'WAYF';
+            $d[++$i]['name'] = lang('rr_ds_disco_url');
+            $d[$i]['value'] = anchor(base_url() . 'disco/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.json?callback=dj_md_1', lang('rr_link'));
+
+            $tmpwayflist = $ent->getWayfList();
+            if (!empty($tmpwayflist) && is_array($tmpwayflist))
+            {
+                if (isset($tmpwayflist['white']))
+                {
+                    if (is_array($tmpwayflist['white']))
+                    {
+                        $discolist = implode('<br />', array_values($tmpwayflist['white']));
+                        $d[++$i]['name'] = lang('rr_ds_white');
+                        $d[$i]['value'] = $discolist;
+                    }
+                }
+                elseif (isset($tmpwayflist['black']) && is_array($tmpwayflist['black']) && count($tmpwayflist['black']) > 0)
+                {
+                    $discolist = implode('<br />', array_values($tmpwayflist['black']));
+                    $d[++$i]['name'] = lang('rr_ds_black');
+                    $d[$i]['value'] = $discolist;
+                }
+            }
+        }
+        /**
+         * Federation
+         */
         $d[++$i]['header'] = '<span id="federation"></span>' . lang('rr_federation');
         $d[++$i]['name'] = lang('rr_memberof');
         $federationsString = "";
@@ -526,91 +590,6 @@ class Detail extends MY_Controller {
         }
         $result[] = array('section' => 'federation', 'title' => '' . lang('tabMembership') . '', 'data' => $d);
 
-        $d = array();
-        $i = 0;
-        if ($sppart)
-        {
-            $d[++$i]['header'] = 'WAYF';
-            $d[++$i]['name'] = lang('rr_ds_disco_url');
-            $d[$i]['value'] = anchor(base_url() . 'disco/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.json?callback=dj_md_1', lang('rr_link'));
-
-            $tmpwayflist = $ent->getWayfList();
-            if (!empty($tmpwayflist) && is_array($tmpwayflist))
-            {
-                if (isset($tmpwayflist['white']))
-                {
-                    if (is_array($tmpwayflist['white']))
-                    {
-                        $discolist = implode('<br />', array_values($tmpwayflist['white']));
-                        $d[++$i]['name'] = lang('rr_ds_white');
-                        $d[$i]['value'] = $discolist;
-                    }
-                }
-                elseif (isset($tmpwayflist['black']) && is_array($tmpwayflist['black']) && count($tmpwayflist['black']) > 0)
-                {
-                    $discolist = implode('<br />', array_values($tmpwayflist['black']));
-                    $d[++$i]['name'] = lang('rr_ds_black');
-                    $d[$i]['value'] = $discolist;
-                }
-            }
-        }
-
-        $d[++$i]['header'] = '<span id="technical"></span>' . lang('rr_technicalinformation');
-        $d[++$i]['name'] = lang('rr_entityid');
-        $d[$i]['value'] = $ent->getEntityId();
-        if ($idppart)
-        {
-            $d[++$i]['name'] = lang('rr_domainscope') . '<br /><i>IDPSSODescriptor</i>';
-            $scopes = $ent->getScope('idpsso');
-            $scopeString = '<ul>';
-            foreach ($scopes as $key => $value)
-            {
-                $scopeString .= '<li>' . $value . '</li>';
-            }
-            $scopeString .= '</ul>';
-            $d[$i]['value'] = $scopeString;
-            $d[++$i]['name'] = lang('rr_domainscope') . '<br /><i>AttributeAuthorityDescriptor</i>';
-            $scopes = $ent->getScope('aa');
-            $scopeString = '<ul>';
-            foreach ($scopes as $key => $value)
-            {
-                $scopeString .= '<li>' . $value . '</li>';
-            }
-            $scopeString .= '</ul>';
-            $d[$i]['value'] = $scopeString;
-        }
-        $d[++$i]['header'] = lang('rr_metadata');
-        $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
-
-        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
-        $gearman_enabled = $this->config->item('gearman');
-
-        if (!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
-        {
-            $d[++$i]['name'] = lang('rr_circleoftrust');
-            $d[$i]['value'] = lang('disableexternalcirclemeta');
-            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-            $d[$i]['value'] = lang('disableexternalcirclemeta');
-        }
-        else
-        {
-            $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-            $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-            $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-
-            $d[++$i]['name'] = lang('rr_circleoftrust');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-        }
-        if ($is_local && $has_write_access && !empty($gearman_enabled))
-        {
-            $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
-            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon">' . lang('btn_signmetadata') . '</button></a>';
-        }
-
-        $result[] = array('section' => 'technical', 'title' => '' . lang('tabTechnical') . '', 'data' => $d);
 
         $d = array();
         $i = 0;
@@ -639,31 +618,27 @@ class Detail extends MY_Controller {
             }
             $result[] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
 
-            $d = array();
-            $i = 0;
         }
+        $d = array();
+        $i = 0;
 
-
-        $d[++$i]['header'] = lang('rr_supportedprotocols');
-        if ($type != 'sp')
+      //  $d[++$i]['header'] = '<span id="technical"></span>' . lang('rr_technicalinformation');
+        if ($idppart)
         {
-            $d[++$i]['name'] = lang('rr_supportedprotocols') . ' <i>IDPSSODescriptor</i>';
+            $d[++$i]['header'] = '<span id="idpssoproto"></span>IDPSSODescriptor'; 
+            $d[++$i]['name'] = lang('rr_supportedprotocols')  ;
             $v = implode('<br />', $ent->getProtocolSupport('idpsso'));
             $d[$i]['value'] = $v;
-            $d[++$i]['name'] = lang('rr_supportedprotocols') . ' <i>AttributeAuthorityDescriptor</i>';
-            $v = implode('<br />', $ent->getProtocolSupport('aa'));
-            $d[$i]['value'] = $v;
-        }
-        if ($type != 'idp')
-        {
-            $d[++$i]['name'] = lang('rr_supportedprotocols') . ' <i>SPSSODescriptor</i>';
-            $v = implode('<br />', $ent->getProtocolSupport('spsso'));
-            $d[$i]['value'] = $v;
-        }
-
-        if ($type != 'sp')
-        {
-            $d[++$i]['name'] = lang('rr_supportednameids') . ' <i>IDPSSODescriptor</i>';
+            $d[++$i]['name'] = lang('rr_domainscope');
+            $scopes = $ent->getScope('idpsso');
+            $scopeString = '<ul>';
+            foreach ($scopes as $key => $value)
+            {
+                $scopeString .= '<li>' . $value . '</li>';
+            }
+            $scopeString .= '</ul>';
+            $d[$i]['value'] = $scopeString;
+            $d[++$i]['name'] = lang('rr_supportednameids') ;
             $nameids = '';
             foreach ($ent->getNameIds('idpsso') as $r)
             {
@@ -671,12 +646,26 @@ class Detail extends MY_Controller {
             }
             $nameids .='</ul>';
             $d[$i]['value'] = trim($nameids);
-
+        
+            // AttributeAuthorityDescriptor
+            $d[++$i]['header'] = '<span id="idpaaproto"></span>AttributeAuthorityDescriptor';
+            $d[++$i]['name'] = lang('rr_supportedprotocols') . '';
+            $v = implode('<br />', $ent->getProtocolSupport('aa'));
+            $d[$i]['value'] = $v;
+            $d[++$i]['name'] = lang('rr_domainscope') . '';
+            $scopes = $ent->getScope('aa');
+            $scopeString = '<ul>';
+            foreach ($scopes as $key => $value)
+            {
+                $scopeString .= '<li>' . $value . '</li>';
+            }
+            $scopeString .= '</ul>';
+            $d[$i]['value'] = $scopeString;
             $aanameids = $ent->getNameIds('aa');
             $aanameid = '';
             if (count($aanameids) > 0)
             {
-                $d[++$i]['name'] = lang('rr_supportednameids') . ' <i>AttributeAuthorityDescriptor</i>';
+                $d[++$i]['name'] = lang('rr_supportednameids') ;
                 foreach ($aanameids as $r)
                 {
                     $aanameid .= '<li>' . $r . '</li>';
@@ -684,11 +673,18 @@ class Detail extends MY_Controller {
                 $aanameid .= '</ul>';
                 $d[$i]['value'] = trim($aanameid);
             }
+
         }
-        if ($type != 'idp')
+
+
+        if($sppart)
         {
+            $d[++$i]['header'] = 'SPSSODescriptor';
+            $d[++$i]['name'] = lang('rr_supportedprotocols') ;
+            $v = implode('<br />', $ent->getProtocolSupport('spsso'));
+            $d[$i]['value'] = $v;
             $nameids = '';
-            $d[++$i]['name'] = lang('rr_supportednameids') . ' <i>SPSSODescriptor</i>';
+            $d[++$i]['name'] = lang('rr_supportednameids');
             foreach ($ent->getNameIds('spsso') as $r)
             {
                 $nameids .= '<li>' . $r . '</li>';
@@ -697,11 +693,15 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = trim($nameids);
         }
 
+        $result[] = array('section' => 'protocols', 'title' => '' . lang('tabprotonameid') . '', 'data' => $d);
+
 
         /**
          * ServiceLocations
          */
-        $d[++$i]['header'] = lang('rr_servicelocations');
+        $d = array();
+        $i = 0;
+
         $srvs = $ent->getServiceLocations();
         if ($srvs->count() > 0)
         {
@@ -712,16 +712,17 @@ class Detail extends MY_Controller {
         }
         if ($idppart)
         {
+            $d[++$i]['header'] = 'IDPSSODescriptor';
             if (array_key_exists('SingleSignOnService', $services))
             {
                 $ssovalues = '';
-                $d[++$i]['name'] = 'SingleSignOnService <br /><small>IDPSSODescriptor</small>';
+                $d[++$i]['name'] = 'SingleSignOnService';
                 foreach ($services['SingleSignOnService'] as $s)
                 {
-                    $def = "";
+                    $def = '';
                     if ($s->getDefault())
                     {
-                        $def = "<i>(default)</i>";
+                        $def = '<i>('.lang('rr_default').')</i>';
                     }
                     $ssovalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                 }
@@ -729,7 +730,7 @@ class Detail extends MY_Controller {
             }
             if (array_key_exists('IDPSingleLogoutService', $services))
             {
-                $d[++$i]['name'] = 'SingleLogoutService <br /><small>IDPSSODescriptor</small>';
+                $d[++$i]['name'] = 'SingleLogoutService';
                 $slvalues = '';
                 foreach ($services['IDPSingleLogoutService'] as $s)
                 {
@@ -739,7 +740,7 @@ class Detail extends MY_Controller {
             }
             if (array_key_exists('IDPArtifactResolutionService', $services))
             {
-                $d[++$i]['name'] = 'ArtifactResolutionService <br /><small>IDPSSODescriptor</small>';
+                $d[++$i]['name'] = 'ArtifactResolutionService';
                 $slvalues = '';
                 foreach ($services['IDPArtifactResolutionService'] as $s)
                 {
@@ -749,7 +750,8 @@ class Detail extends MY_Controller {
             }
             if (array_key_exists('IDPAttributeService', $services))
             {
-                $d[++$i]['name'] = 'AttributeService <br /><small>AttributeAuthorityDescriptor</small>';
+                $d[++$i]['header'] = 'AttributeAuthorityDescriptor';
+                $d[++$i]['name'] = 'AttributeService';
                 $slvalues = '';
                 foreach ($services['IDPAttributeService'] as $s)
                 {
@@ -760,10 +762,11 @@ class Detail extends MY_Controller {
         }
         if ($sppart)
         {
+            $d[++$i]['header'] = 'SPSSODescriptor';
             if (array_key_exists('AssertionConsumerService', $services))
             {
                 $acsvalues = '';
-                $d[++$i]['name'] = 'AssertionConsumerService <br /><small>SPSSODescriptor</small>';
+                $d[++$i]['name'] = 'AssertionConsumerService';
                 foreach ($services['AssertionConsumerService'] as $s)
                 {
                     $def = '';
@@ -778,7 +781,7 @@ class Detail extends MY_Controller {
             if (array_key_exists('SPArtifactResolutionService', $services))
             {
                 $acsvalues = '';
-                $d[++$i]['name'] = 'ArtifactResolutionService <br /><small>SPSSODescriptor</small>';
+                $d[++$i]['name'] = 'ArtifactResolutionService';
                 foreach ($services['SPArtifactResolutionService'] as $s)
                 {
                     $def = '';
@@ -792,7 +795,7 @@ class Detail extends MY_Controller {
             }
             if (array_key_exists('SPSingleLogoutService', $services))
             {
-                $d[++$i]['name'] = 'SingleLogoutService <br /><small>SPSSODescriptor</small>';
+                $d[++$i]['name'] = 'SingleLogoutService';
                 $slvalues = '';
                 foreach ($services['SPSingleLogoutService'] as $s)
                 {
@@ -800,28 +803,33 @@ class Detail extends MY_Controller {
                 }
                 $d[$i]['value'] = '<ul>' . $slvalues . '</ul>';
             }
-            if (array_key_exists('RequestInitiator', $services))
+            if(array_key_exists('RequestInitiator', $services) || array_key_exists('DiscoveryResponse', $services))
             {
-                $d[++$i]['name'] = 'RequestInitiator <br /><small>SPSSODescriptor/Extensions</small>';
-                $rivalues = '';
-                foreach ($services['RequestInitiator'] as $s)
+                $d[++$i]['header'] = 'SPSSODescriptor/Extensions';
+                if (array_key_exists('RequestInitiator', $services))
                 {
-                    $rivalues .= '<li><b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
+                    $d[++$i]['name'] = 'RequestInitiator <br /><small>SPSSODescriptor/Extensions</small>';
+                    $rivalues = '';
+                    foreach ($services['RequestInitiator'] as $s)
+                    {
+                       $rivalues .= '<li><b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
+                    }
+                    $d[$i]['value'] = '<ul>' . $rivalues . '</ul>';
                 }
-                $d[$i]['value'] = '<ul>' . $rivalues . '</ul>';
-            }
-            if (array_key_exists('DiscoveryResponse', $services))
-            {
-                $d[++$i]['name'] = 'DiscoveryResponse <br /><small>SPSSODescriptor/Extensions</small>';
-                $drvalues = '';
-                foreach ($services['DiscoveryResponse'] as $s)
+                if (array_key_exists('DiscoveryResponse', $services))
                 {
-                    $drvalues .= '<li><b>' . $s->getUrl() . '</b>&nbsp;&nbsp;<small><i>index:' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . '</small></li>';
+                    $d[++$i]['name'] = 'DiscoveryResponse <br /><small>SPSSODescriptor/Extensions</small>';
+                    $drvalues = '';
+                    foreach ($services['DiscoveryResponse'] as $s)
+                    {
+                        $drvalues .= '<li><b>' . $s->getUrl() . '</b>&nbsp;&nbsp;<small><i>index:' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . '</small></li>';
+                    }
+                    $d[$i]['value'] = '<ul>' . $drvalues . '</ul>';
                 }
-                $d[$i]['value'] = '<ul>' . $drvalues . '</ul>';
+
             }
         }
-        $result[] = array('section' => 'otherthec', 'title' => '' . lang('tabOtherTechnical') . '', 'data' => $d);
+        $result[] = array('section' => 'services', 'title' => '' . lang('tabsrvs') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $tcerts = $ent->getCertificates();
@@ -830,27 +838,28 @@ class Detail extends MY_Controller {
         {
             $certs[$c->getType()][] = $c;
         }
-        $d[++$i]['header'] = lang('rr_certificates');
         if ($idppart)
         {
-            $d[++$i]['name'] = lang('certsinidpsso');
+            $d[++$i]['header'] = 'IDPSSODescriptor';
             $cString = '';
             if (array_key_exists('idpsso', $certs))
             {
                 foreach ($certs['idpsso'] as $v)
                 {
+                    $cString = '';
                     $certusage = $v->getCertuse();
+                    $langcertusage = '';
                     if (empty($certusage))
                     {
-                        $cString .= '<i>' . lang('certsign') . '/' . lang('certenc') . '</i><br />';
+                        $langcertusage = lang('certsign') . '/' . lang('certenc');
                     }
                     elseif ($certusage === 'signing')
                     {
-                        $cString .= '<i>' . lang('certsign') . '</i><br />';
+                        $langcertusage = lang('certsign');
                     }
                     elseif ($certusage === 'encryption')
                     {
-                        $cString .= '<i>' . lang('certenc') . '</i><br />';
+                        $langcertusage =  lang('certenc');
                     }
                     $kname = $v->getKeyname();
                     $c_certData = $v->getCertData();
@@ -877,28 +886,30 @@ class Detail extends MY_Controller {
                         $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                     }
                     $cString .= '<br />';
+                    $d[++$i]['name'] = $langcertusage;
+                    $d[$i]['value'] = $cString;
                 }
-                $d[$i]['value'] = $cString;
             }
             // AA
             if (array_key_exists('aa', $certs))
             {
-                $d[++$i]['name'] = lang('certsinaa');
-                $cString = '';
+                $d[++$i]['header'] = 'AttributeAuthorityDescriptor';
                 foreach ($certs['aa'] as $v)
                 {
+                    $cString = '';
+                    $langcertusage = '';
                     $certusage = $v->getCertuse();
                     if (empty($certusage))
                     {
-                        $cString .= '<i>' . lang('certsign') . '/' . lang('certenc') . '</i><br />';
+                        $langcertusage = lang('certsign') . '/' . lang('certenc');
                     }
                     elseif ($certusage === 'signing')
                     {
-                        $cString .= '<i>' . lang('certsign') . '</i><br />';
+                        $langcertusage = lang('certsign');
                     }
                     elseif ($certusage === 'encryption')
                     {
-                        $cString .= '<i>' . lang('certenc') . '</i><br />';
+                        $langcertusage = lang('certenc');
                     }
                     $kname = $v->getKeyname();
                     $c_certData = $v->getCertData();
@@ -925,30 +936,32 @@ class Detail extends MY_Controller {
                         $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                     }
                     $cString .= '<br />';
+                   $d[++$i]['name'] = $langcertusage ;
+                   $d[$i]['value'] = $cString;
                 }
-                $d[$i]['value'] = $cString;
             }
         }
         if ($sppart)
         {
-            $d[++$i]['name'] = lang('certsinspsso');
-            $cString = '';
+            $d[++$i]['header'] = 'SPSSODescriptor';
             if (array_key_exists('spsso', $certs))
             {
                 foreach ($certs['spsso'] as $v)
                 {
+                    $cString = '';
+                    $langcertusage ='';
                     $certusage = $v->getCertuse();
                     if (empty($certusage))
                     {
-                        $cString .= '<i>' . lang('certsign') . '/' . lang('certenc') . '</i><br />';
+                        $langcertusage = lang('certsign') . '/' . lang('certenc');
                     }
                     elseif ($certusage === 'signing')
                     {
-                        $cString .= '<i>' . lang('certsign') . '</i><br />';
+                        $langcertusage =  lang('certsign');
                     }
                     elseif ($certusage === 'encryption')
                     {
-                        $cString .= '<i>' . lang('certenc') . '</i><br />';
+                        $langcertusage =  lang('certenc');
                     }
                     $kname = $v->getKeyname();
                     $c_certData = $v->getCertData();
@@ -977,8 +990,9 @@ class Detail extends MY_Controller {
                         $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                     }
                     $cString .= '<br />';
+                    $d[++$i]['name'] = $langcertusage;
+                    $d[$i]['value'] = $cString;
                 }
-                $d[$i]['value'] = $cString;
             }
         }
         /**

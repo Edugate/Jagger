@@ -16,11 +16,11 @@ $pageTitle .= $this->title;
 $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 ?>
 <!DOCTYPE html>
-<!--[if lt IE 7]> <html lang="<?php echo MY_Controller::$current_language; ?>" class="no-js ie6 oldie"> <![endif]-->
-<!--[if IE 7]>    <html lang="<?php echo MY_Controller::$current_language; ?>" class="no-js ie7 oldie"> <![endif]-->
-<!--[if IE 8]>    <html lang="<?php echo MY_Controller::$current_language; ?>" class="no-js ie8 oldie"> <![endif]-->
+<!--[if lt IE 7]> <html lang="<?php echo MY_Controller::getLang(); ?>" class="no-js ie6 oldie"> <![endif]-->
+<!--[if IE 7]>    <html lang="<?php echo MY_Controller::getLang(); ?>" class="no-js ie7 oldie"> <![endif]-->
+<!--[if IE 8]>    <html lang="<?php echo MY_Controller::getLang(); ?>" class="no-js ie8 oldie"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class='no-js' lang='<?php echo MY_Controller::$current_language; ?>'>
+<html class='no-js' lang='<?php echo MY_Controller::getLang(); ?>'>
     <!--<![endif]-->
     <head>     
         <meta charset="utf-8">
@@ -129,7 +129,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                        $selset = false;
                        foreach($langs as $key=>$value)
                        {
-                          if($key === MY_Controller::$current_language)
+                          if($key === MY_Controller::getLang())
                           {
                               echo '<option value="'.$value['path'].'" selected="selected">'.strtoupper($key).'</option>';
                           }
@@ -321,6 +321,8 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 
                 </footer>
             </div>
+
+        <div style="height: 50px;"></div>
         <div id="spinner" class="spinner" style="display:none;">
             <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="<?php echo lang('loading');?>"/>
         </div>

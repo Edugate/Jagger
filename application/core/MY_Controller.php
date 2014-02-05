@@ -29,7 +29,7 @@ class MY_Controller extends CI_Controller {
      */
     protected $em;
     protected $authenticated;
-    public static $current_language = 'en';
+    protected static $current_language = 'en';
     public $title;
     protected $inqueue;
     public $globalerrors = array();
@@ -77,6 +77,10 @@ class MY_Controller extends CI_Controller {
         {
             $this->input->set_cookie($defaultlang_cookie);
         }
+    }
+    public static function getLang()
+    {
+        return self::$current_language;
     }
 
 }
