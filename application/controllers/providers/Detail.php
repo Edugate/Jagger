@@ -471,11 +471,75 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = '<span class="lbl lbl-alert">' . $validfrom . ' <b>--</b> ' . $validto . '</span>';
         }
         $result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
+
+
+
+
         /**
-         * Federation
+         * Metadata urls
          */
         $d = array();
         $i = 0;
+
+        $d[++$i]['header'] = lang('rr_metadata');
+        $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
+
+        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
+        $gearman_enabled = $this->config->item('gearman');
+
+        if (!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
+        {
+            $d[++$i]['name'] = lang('rr_circleoftrust');
+            $d[$i]['value'] = lang('disableexternalcirclemeta');
+            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+            $d[$i]['value'] = lang('disableexternalcirclemeta');
+        }
+        else
+        {
+            $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+            $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+            $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+
+            $d[++$i]['name'] = lang('rr_circleoftrust');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        }
+        if ($is_local && $has_write_access && !empty($gearman_enabled))
+        {
+            $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
+            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon">' . lang('btn_signmetadata') . '</button></a>';
+        }
+        if ($sppart)
+        {
+            $d[++$i]['header'] = 'WAYF';
+            $d[++$i]['name'] = lang('rr_ds_disco_url');
+            $d[$i]['value'] = anchor(base_url() . 'disco/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.json?callback=dj_md_1', lang('rr_link'));
+
+            $tmpwayflist = $ent->getWayfList();
+            if (!empty($tmpwayflist) && is_array($tmpwayflist))
+            {
+                if (isset($tmpwayflist['white']))
+                {
+                    if (is_array($tmpwayflist['white']))
+                    {
+                        $discolist = implode('<br />', array_values($tmpwayflist['white']));
+                        $d[++$i]['name'] = lang('rr_ds_white');
+                        $d[$i]['value'] = $discolist;
+                    }
+                }
+                elseif (isset($tmpwayflist['black']) && is_array($tmpwayflist['black']) && count($tmpwayflist['black']) > 0)
+                {
+                    $discolist = implode('<br />', array_values($tmpwayflist['black']));
+                    $d[++$i]['name'] = lang('rr_ds_black');
+                    $d[$i]['value'] = $discolist;
+                }
+            }
+        }
+        /**
+         * Federation
+         */
         $d[++$i]['header'] = '<span id="federation"></span>' . lang('rr_federation');
         $d[++$i]['name'] = lang('rr_memberof');
         $federationsString = "";
@@ -526,91 +590,6 @@ class Detail extends MY_Controller {
         }
         $result[] = array('section' => 'federation', 'title' => '' . lang('tabMembership') . '', 'data' => $d);
 
-        $d = array();
-        $i = 0;
-        if ($sppart)
-        {
-            $d[++$i]['header'] = 'WAYF';
-            $d[++$i]['name'] = lang('rr_ds_disco_url');
-            $d[$i]['value'] = anchor(base_url() . 'disco/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.json?callback=dj_md_1', lang('rr_link'));
-
-            $tmpwayflist = $ent->getWayfList();
-            if (!empty($tmpwayflist) && is_array($tmpwayflist))
-            {
-                if (isset($tmpwayflist['white']))
-                {
-                    if (is_array($tmpwayflist['white']))
-                    {
-                        $discolist = implode('<br />', array_values($tmpwayflist['white']));
-                        $d[++$i]['name'] = lang('rr_ds_white');
-                        $d[$i]['value'] = $discolist;
-                    }
-                }
-                elseif (isset($tmpwayflist['black']) && is_array($tmpwayflist['black']) && count($tmpwayflist['black']) > 0)
-                {
-                    $discolist = implode('<br />', array_values($tmpwayflist['black']));
-                    $d[++$i]['name'] = lang('rr_ds_black');
-                    $d[$i]['value'] = $discolist;
-                }
-            }
-        }
-
-        $d[++$i]['header'] = '<span id="technical"></span>' . lang('rr_technicalinformation');
-        $d[++$i]['name'] = lang('rr_entityid');
-        $d[$i]['value'] = $ent->getEntityId();
-        if ($idppart)
-        {
-            $d[++$i]['name'] = lang('rr_domainscope') . '<br /><i>IDPSSODescriptor</i>';
-            $scopes = $ent->getScope('idpsso');
-            $scopeString = '<ul>';
-            foreach ($scopes as $key => $value)
-            {
-                $scopeString .= '<li>' . $value . '</li>';
-            }
-            $scopeString .= '</ul>';
-            $d[$i]['value'] = $scopeString;
-            $d[++$i]['name'] = lang('rr_domainscope') . '<br /><i>AttributeAuthorityDescriptor</i>';
-            $scopes = $ent->getScope('aa');
-            $scopeString = '<ul>';
-            foreach ($scopes as $key => $value)
-            {
-                $scopeString .= '<li>' . $value . '</li>';
-            }
-            $scopeString .= '</ul>';
-            $d[$i]['value'] = $scopeString;
-        }
-        $d[++$i]['header'] = lang('rr_metadata');
-        $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
-
-        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
-        $gearman_enabled = $this->config->item('gearman');
-
-        if (!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
-        {
-            $d[++$i]['name'] = lang('rr_circleoftrust');
-            $d[$i]['value'] = lang('disableexternalcirclemeta');
-            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-            $d[$i]['value'] = lang('disableexternalcirclemeta');
-        }
-        else
-        {
-            $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-            $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-            $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-
-            $d[++$i]['name'] = lang('rr_circleoftrust');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-        }
-        if ($is_local && $has_write_access && !empty($gearman_enabled))
-        {
-            $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
-            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon">' . lang('btn_signmetadata') . '</button></a>';
-        }
-
-        $result[] = array('section' => 'technical', 'title' => '' . lang('tabTechnical') . '', 'data' => $d);
 
         $d = array();
         $i = 0;
@@ -639,9 +618,33 @@ class Detail extends MY_Controller {
             }
             $result[] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
 
-            $d = array();
-            $i = 0;
         }
+        $d = array();
+        $i = 0;
+
+        $d[++$i]['header'] = '<span id="technical"></span>' . lang('rr_technicalinformation');
+        if ($idppart)
+        {
+            $d[++$i]['name'] = lang('rr_domainscope') . '<br /><i>IDPSSODescriptor</i>';
+            $scopes = $ent->getScope('idpsso');
+            $scopeString = '<ul>';
+            foreach ($scopes as $key => $value)
+            {
+                $scopeString .= '<li>' . $value . '</li>';
+            }
+            $scopeString .= '</ul>';
+            $d[$i]['value'] = $scopeString;
+            $d[++$i]['name'] = lang('rr_domainscope') . '<br /><i>AttributeAuthorityDescriptor</i>';
+            $scopes = $ent->getScope('aa');
+            $scopeString = '<ul>';
+            foreach ($scopes as $key => $value)
+            {
+                $scopeString .= '<li>' . $value . '</li>';
+            }
+            $scopeString .= '</ul>';
+            $d[$i]['value'] = $scopeString;
+        }
+
 
 
         $d[++$i]['header'] = lang('rr_supportedprotocols');
@@ -696,11 +699,15 @@ class Detail extends MY_Controller {
             $nameids .='</ul>';
             $d[$i]['value'] = trim($nameids);
         }
+        $result[] = array('section' => 'protocols', 'title' => '' . lang('tabprotonameid') . '', 'data' => $d);
 
 
         /**
          * ServiceLocations
          */
+        $d = array();
+        $i = 0;
+
         $d[++$i]['header'] = lang('rr_servicelocations');
         $srvs = $ent->getServiceLocations();
         if ($srvs->count() > 0)
@@ -821,7 +828,7 @@ class Detail extends MY_Controller {
                 $d[$i]['value'] = '<ul>' . $drvalues . '</ul>';
             }
         }
-        $result[] = array('section' => 'otherthec', 'title' => '' . lang('tabOtherTechnical') . '', 'data' => $d);
+        $result[] = array('section' => 'services', 'title' => '' . lang('tabsrvs') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $tcerts = $ent->getCertificates();
