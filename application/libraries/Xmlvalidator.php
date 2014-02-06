@@ -50,12 +50,24 @@ class Xmlvalidator {
         {
             $result = $this->xmlDOM->schemaValidate('schemas/saml-schema-metadata-2.0.xsd');
             $errors = libxml_get_errors();
+            
             if($result === TRUE)
             {
                 log_message('debug',__METHOD__.' metadata is with schema');
             }
             else
             {
+                if(!empty($errors) && is_array($errors))
+                {
+                     foreach($errors as $k=>$v)
+                     {
+                         if($v instanceof LibXMLError && !empty($v->message))
+                         {
+                            $this->ci->globalerrors[] = htmlentities($v->message);
+                         }
+                     }
+                }
+      
                 $this->ci->globalerrors[] = 'Metada validation : not valid with schema';
                 log_message('warning', __METHOD__.' validated metadata is not with schema');
             }
