@@ -436,7 +436,7 @@ class Metadata2import {
                             $existingProviderFederations = $existingProvider->getFederations();
                             if (!$existingProviderFederations->contains($f))
                             {
-                                $report['provider']['joinfed'] = $existingProvider->getEntityId();
+                                $report['provider']['joinfed'][] = $existingProvider->getEntityId();
                                 $existingProvider->setFederation($f);
                             }
                         }
