@@ -1,3 +1,28 @@
+jQuery.fn.autoWidth = function(options) 
+{ 
+  var settings = { 
+        limitWidth   : false 
+  } 
+
+  if(options) { 
+        jQuery.extend(settings, options); 
+    }; 
+
+    var maxWidth = 0; 
+
+  this.each(function(){ 
+        if ($(this).width() > maxWidth){ 
+          if(settings.limitWidth && maxWidth >= settings.limitWidth) { 
+            maxWidth = settings.limitWidth; 
+          } else { 
+            maxWidth = $(this).width(); 
+          } 
+        } 
+  });   
+
+  this.width(maxWidth); 
+}
+
 var GINIT = {
     initialize: function() {
 
@@ -26,6 +51,10 @@ var GINIT = {
         });
     }
 
+    $("fieldset#certificates label").autoWidth();
+    $("fieldset#services label").autoWidth();
+    $("fieldset#dataprotection label").autoWidth();
+    $("fieldset#protocols label").autoWidth();
     $("button.updatenotifactionstatus").click(function(ev) {
         var notid = $(this).attr('value');
         var ctbl = $(this).closest("tbody");

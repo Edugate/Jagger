@@ -4,7 +4,7 @@
 // Modify as content requires.
 // ========================================================================== */
 
-@media only screen and (max-height: 1100px) {
+@media only screen and (max-height: 1000px) {
     /* Style adjustments for viewports 480px and over go here */
     body {
         #  background-color: red;
@@ -33,6 +33,9 @@
     /* Style adjustments for viewports 768px and over go here */
     body {
         # background-color: yellow;
+    }
+    label {
+       top: 10px;
     }
     
 }
