@@ -2636,6 +2636,7 @@ form label {
   float: left;
   padding-right: 10px;
   min-width: 40%;
+  position: relative;
 }
 form textarea {
   width: auto;
@@ -2706,7 +2707,6 @@ form select {
 form textarea {
   border: 1px solid;
   line-height: 1em;
-  margin-left: 6px;
   padding: 0px 3px;
   width: 50%;
   min-width: 194px;
@@ -3040,7 +3040,7 @@ form#filter-form {
   *zoom: 1;
 }
 
-@media only screen and (max-height: 1100px) {
+@media only screen and (max-height: 1000px) {
   /* Style adjustments for viewports 480px and over go here */
   body {
     #  background-color: red;
@@ -3064,6 +3064,10 @@ form#filter-form {
   /* Style adjustments for viewports 768px and over go here */
   body {
     # background-color: yellow;
+  }
+
+  label {
+    top: 10px;
   }
 }
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-resolution: 144dpi) {
