@@ -718,7 +718,7 @@ class Providerupdater {
             $origServicesInArray=array();
             foreach ($orgsrvs as $v)
             {
-                $origServicesInArray[''.$v->getId().''] = ''.$v->getType().' ::: '.$v->getBindingName().' ::: '.$v->getUrl().' ::: '.$v->getOrder().' ::: '.$v->getDefault().''; 
+                $origServicesInArray[''.$v->getId().''] = ''.$v->getType().' ::: '.$v->getBindingName().' ::: '.$v->getUrl().' ::: '.$v->getOrder().' ::: '.(int) $v->getDefault().''; 
                 $srvtype = $v->getType();
                 if (array_key_exists($srvtype, $srvs))
                 {
@@ -1350,7 +1350,7 @@ class Providerupdater {
              {
                 $d=$v->getId();
              }
-             $newServicesInArray[$d] = ''.$v->getType().' ::: '.$v->getBindingName().' ::: '.$v->getUrl().' ::: '.$v->getOrder().' ::: '.$v->getDefault().''; 
+             $newServicesInArray[$d] = ''.$v->getType().' ::: '.$v->getBindingName().' ::: '.$v->getUrl().' ::: '.$v->getOrder().' ::: '.(int) $v->getDefault().''; 
              $ii++;
         }
         $diff1 = array_diff_assoc($newServicesInArray,$origServicesInArray);
