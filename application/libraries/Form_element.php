@@ -2291,7 +2291,6 @@ class Form_element {
             $aanotice = '';
             if ($sessform && isset($entsession['prot']['aa']) && is_array($entsession['prot']['aa']))
             {
-                #$selected_options = $entsession['prot']['idpsso'];
                 if (count(array_diff($entsession['prot']['aa'], $aaprotocols)) > 0 || count(array_diff($aaprotocols, $entsession['prot']['aa'])) > 0)
                 {
                     $aanotice = 'notice';
@@ -2349,7 +2348,20 @@ class Form_element {
                     $selected_options[$p] = $p;
                 }
             }
-            $r .= '<li class="' . $spssonotice . '">' . form_multiselect('f[prot][spsso][]', $allowedoptions, $selected_options) . '</li>';
+            //$r .= '<li class="' . $spssonotice . '">' . form_multiselect('f[prot][spsso][]', $allowedoptions, $selected_options) . '</li>';
+            $r .= '<li class="' . $spssonotice . '">';
+            $r .=  '<ul class="checkboxlist">';
+            foreach($allowedoptions as $a )
+            {
+                  $is = FALSE;
+                  if(in_array($a,$selected_options))
+                  {
+                      $is = TRUE;
+                  }
+                  $r .= '<li>'.form_checkbox(array('name'=>'f[prot][spsso][]','id'=>'f[prot][spsso][]','value'=>$a,'checked'=>$is)).$a.'</li>';
+            }
+            $r .= '</ul>';
+            $r .= '</li>';
             $r .= '</ol></fieldset>';
             $result[] = $r;
         }
