@@ -2695,6 +2695,12 @@ form input[type='text'], form input[type='email'], form input[type='password'], 
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
 }
+form input[type='checkbox'], form input[type='radio'] {
+  height: 1.5em;
+  margin-top: 5px;
+  padding: 0px 3px;
+  line-height: 1em;
+}
 form select {
   max-width: 100%;
   overflow: hidden;
