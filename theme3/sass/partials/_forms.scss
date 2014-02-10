@@ -88,6 +88,13 @@ form {
         -webkit-border-radius: 2px;
         
     }
+    input[type='checkbox'],input[type='radio'] {
+        height: 1.5em;
+        margin-top: 5px;
+        padding: 0px 3px;
+        line-height: 1em;
+
+   }
     
     select {
         max-width: 100%;

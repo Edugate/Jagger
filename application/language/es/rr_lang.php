@@ -377,7 +377,7 @@ $lang['rr_fed_notpublic'] = 'no público';
 $lang['rr_fed_public'] = 'público';
 
 $lang['rr_fed_name'] = 'Nombre de la federación';
-$lang['rr_fed_urn'] = 'URN de la federación';
+$lang['rr_fed_urn'] = 'URI de la federación';
 
 $lang['rr_fed_cntidps_list'] = 'Lista de contacto de los IdP';
 $lang['rr_fed_cntisps_list'] = 'Lista de contacto de los SP';
