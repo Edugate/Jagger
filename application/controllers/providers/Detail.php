@@ -552,7 +552,16 @@ class Detail extends MY_Controller {
             {
                 $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getName()));
                 $metalink = base_url('metadata/federation/' . base64url_encode($f->getName()) . '/metadata.xml');
-                $federationsString .= '<li>' . anchor($fedlink, $f->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
+                $fedActive = $f->getActive();
+                if($fedActive)
+                {
+                    $federationsString .= '<li>' . anchor($fedlink, $f->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
+                }
+                else
+                {
+                    $federationsString .= '<li>' .makeLabel('disabled',lang('rr_inactive'),lang('rr_inactive')). anchor($fedlink, $f->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
+
+                 }
             }
             $federationsString .='</ul>';
             $manage_membership = '';

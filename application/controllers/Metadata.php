@@ -383,7 +383,7 @@ class Metadata extends MY_Controller
 
 
         $p = new models\Providers;
-        $p1 = $p->getCircleMembersByType($me);
+        $p1 = $p->getCircleMembersByType($me,$excludeDisabledFeds=TRUE);
         if (is_null($p1) || !is_array($p1)) {
             show_error('empty', 404);
             return;
