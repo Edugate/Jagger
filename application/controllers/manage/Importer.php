@@ -93,7 +93,7 @@ class Importer extends MY_Controller {
 
         $arg['metadataurl'] = $this->input->post('metadataurl');
         $arg['certurl'] = trim($this->input->post('certurl'));
-        $arg['cert'] = trim($this->input->post('cert'));
+        $arg['cert'] = getPEM($this->input->post('cert'));
         $arg['validate'] = $this->input->post('validate');
         $arg['sslcheck'] = trim($this->input->post('sslcheck'));
 
