@@ -261,7 +261,11 @@ class Arp_generator {
         $feds_collection = array();
         foreach ($tmp_myfeds as $t)
         {
-            $feds_collection[$t->getId()] = $t->getMembers();
+            $fedEnabled = $t->getActive();
+            if($fedEnabled)
+            {
+              $feds_collection[$t->getId()] = $t->getMembers();
+            }
         }
         $tmp_requirements = new models\AttributeRequirements;
 

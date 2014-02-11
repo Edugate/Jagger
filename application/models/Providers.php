@@ -78,16 +78,35 @@ class Providers {
       * if provider is IDP then result give only trusted SPs
       * if provider is SP then result give only trusted IDPs
       */
-     public function getCircleMembersByType(Provider $provider)
+     public function getCircleMembersByType(Provider $provider, $excludeDisabledFeds = FALSE)
      {
         $entype = $provider->getType();
         $federations = $provider->getFederations();
         $feds = array();
         if(!empty($federations))
         {
-           foreach($federations as $f)
+           if($excludeDisabledFeds)
            {
-             $feds[] = $f->getId();
+              foreach($federations as $f)
+              {
+                $isEnabled = $f->getActive();
+                if($isEnabled)
+                {
+                   $feds[] = $f->getId();
+                }
+                else
+                {
+                  \log_message('warning', 'Federation '.$f->getName() .'is disabled. Members will be excluded from circle metadata ');
+                }
+              }
+           }
+           else
+           {
+              foreach($federations as $f)
+              {
+                   $feds[] = $f->getId();
+              }
+
            }
         }
         if(count($feds) == 0 )
