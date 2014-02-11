@@ -70,10 +70,9 @@ li {
     color: $font-color-toppanel;
     margin: 5px;
     margin-top: 1px;
-    padding: 3px;
-    padding-bottom: 5px;
     min-height: 30px;
     border: solid 1px darken($toPanelBackground, 30%);
+    padding: 3px 3px 3px;
 }
 #langicons {
     display: inline; 
@@ -179,7 +178,7 @@ nav {
 }
 #logo img {
     max-width: 200px;
-    max-height: 20px;
+    max-height: 30px;
     
 }
 #subtitle,#pagetitle,#excarpslist,#noticeblock,.sectiontitle{
@@ -1352,7 +1351,8 @@ form#notificationaddform {
 
 #loginlink, #logout {
     float: right;
-    margin-right: 15px;
+    margin-right: 5px;
+
 }
 
 #logout {
@@ -2063,10 +2063,10 @@ select {
      border: 0 !important;.  /*Removes border*/
      text-indent: 0.01px;
      text-overflow: "";
-     min-height: 25px;
      vertical-align: top;
      min-width: 100px;
      max-width: 120px;
+     min-height: 20px;
 
 }
 input , textarea{
