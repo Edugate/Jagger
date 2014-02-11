@@ -97,6 +97,10 @@ class Federation_registration extends MY_Controller
        $sbj = 'Federation registration request';
        $body = 'Dear user'.PHP_EOL;
        $body .= $q->getEmail().' just filled Federation Registration form'.PHP_EOL;
+       if(isset($_SERVER['REMOTE_ADDR']))
+       {
+         $body .= "Requester's IP :". $_SERVER['REMOTE_ADDR']. PHP_EOL;
+       }
        $body .= 'Federation name: '.$fedname. PHP_EOL;
        $body .= 'You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$q->getToken().PHP_EOL;
        $this->email_sender->addToMailQueue(array('greqisterreq','gfedreqisterreq'),null,$sbj,$body,array(),FALSE);
@@ -108,11 +112,8 @@ class Federation_registration extends MY_Controller
 
     private function _submit_validate()
     {
-        /**
-         * @todo add more checks link unique 
-         */
-        $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'required|min_length[5]|max_length[128]|xss_clean');
-        $this->form_validation->set_rules('fedurn', lang('rr_fed_urn'), 'required|min_length[5]|max_length[128]|xss_clean');
+        $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'required|min_length[5]|max_length[128]|xss_clean|federation_unique[name]');
+        $this->form_validation->set_rules('fedurn', lang('rr_fed_urn'), 'required|min_length[5]|max_length[128]|xss_clean|federation_unique[uri]');
         $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'min_length[5]|max_length[500]|xss_clean');
         $this->form_validation->set_rules('termsofuse', lang('rr_fed_tou'), 'min_length[5]|max_length[1000]|xss_clean');
         return $this->form_validation->run();
