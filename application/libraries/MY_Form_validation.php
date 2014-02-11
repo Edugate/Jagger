@@ -188,6 +188,34 @@ class MY_form_validation extends CI_form_validation {
         }
     }
 
+    function federation_unique($arg, $argtype)
+    {
+        if($argtype === 'name')
+        {
+           $attr = 'name';
+        }
+        elseif($argtype === 'uri')
+        {
+           $attr = 'urn';
+        }
+        else
+        {
+            \log_message('error',__METHOD__.' missing argtype');
+            $this->set_message('federation_unique','error ocured during validation');
+            return false;
+        }
+        $fed = $this->em->getRepository("models\Federation")->findOneBy(array(''.$attr.'' => $arg));
+        if(empty($fed))
+        {
+           return true;
+        }
+        else
+        {
+           $this->set_message('federation_unique','The %s: '.htmlentities($arg).' already exists');
+           return false;
+        }
+
+    }
     function fedcategory_unique($name,$id=null)
     {
        $ent = $this->em->getRepository("models\FederationCategory")->findOneBy(array('shortname' => $name));
