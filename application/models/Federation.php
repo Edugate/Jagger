@@ -425,16 +425,6 @@ class Federation
        $r['tou'] = $this->getTou();
        return $r;
     }
-    /**
-     * @preUpdate
-     */
-    public function notifyByMail(\Doctrine\Common\Persistence\Event\PreUpdateEventArgs $eventArgs)
-    {
-       if ($eventArgs->hasChangedField('description')) {
-           \log_message('debug','GKS desc changes');
-       }
-        
-    }
   
 
 
