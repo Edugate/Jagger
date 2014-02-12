@@ -1,6 +1,6 @@
 <?php
 echo '<div id="pagetitle">'. lang('title_usersubscriptions').'</div>';
-echo '<div id="subtitle"><h3>'.lang('rr_user').': '.htmlentities($subscriber['username']).'</h3><h4>'.htmlentities($subscriber['fullname']).' '.mailto($subscriber['email']).'</h4></div>';
+echo '<div id="subtitle"><h3>'.lang('rr_user').': '.$subscriber['username'].'</h3><h4>'.$subscriber['fullname'].' '.mailto($subscriber['email']).'</h4></div>';
 
 
 if(!empty($warnmessage))
