@@ -34,13 +34,16 @@ if(!empty($show_upload) && !empty($upload_enabled))
 ?>
 <div id="upload">
 		<?php
-                $hidden = array('origurl'=>current_url());
+                $hidden = array('origurl'=>current_url(),'upload'=>'upload');
+                $attrs = array('id'=>'uploadlogo','name'=>'uploadlogo');
                 if(!empty($infomessage))
                 {
                    echo '<div>'.$infomessage.'</div>';
                 }
-		echo form_open_multipart(base_url().'manage/logos/uploadlogos','',$hidden);
-		echo form_upload('userfile');
+		echo form_open_multipart(base_url().'manage/logos/uploadlogos',$attrs,$hidden);
+                echo '<div class="uploadresult"></div>';
+		//echo form_upload('userfile');
+                echo '<input type="file" name="userfile" id="userfile" size="20" />';
                 echo '<div class="buttons"><button type="submit" name="upload" value="upload" class="savebutton saveicon">'.lang('rr_upload').'</button></div>';
 		echo form_close();
 		?>		

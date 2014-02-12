@@ -25,16 +25,8 @@ class Logos extends MY_Controller {
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
-        $this->current_site = current_url();
-        if (!$loggedin)
-        {
-            $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'location');
-        }
         $this->tmp_providers = new models\Providers;
         $this->load->library('form_validation');
-        $this->load->library('zacl');
     }
 
     private function _submit_validate()
@@ -52,6 +44,12 @@ class Logos extends MY_Controller {
 
     public function newlogo($type, $id)
     {
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin)
+        {
+            redirect('auth/login', 'location');
+        }
+          
         if (!is_numeric($id))
         {
             show_error('wrong id of entity', 404);
@@ -72,6 +70,7 @@ class Logos extends MY_Controller {
         {
             show_error('Provider not found', 404);
         }
+        $this->load->library('zacl');
 
         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', $type, '');
         if (!$has_write_access)
@@ -191,16 +190,50 @@ class Logos extends MY_Controller {
    
     public function uploadlogos()
     {
+        $isAjax = $this->input->is_ajax_request();
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin)
+        {
+            if($isAjax)
+            {
+                set_status_header(403);
+                echo 'User session expired';
+                return;
+            
+            }
+            else
+            {
+               redirect('auth/login', 'location');
+            }
+        }
         $upload_enabled = $this->config->item('rr_logoupload');
         $upload_logos_path = trim($this->config->item('rr_logoupload_relpath'));
         if(empty($upload_enabled) || empty($upload_logos_path))
         {
-            show_error('Upload images feature is disabled', 403);
+            if($isAjax)
+            {
+                set_status_header(403);
+                echo 'Upload images feature is disabled';
+                return;
+            }
+            else
+            {
+               show_error('Upload images feature is disabled', 403);
+            }
         }
         if(substr($upload_logos_path, 0, 1) == '/')
         {
            log_message('error','upload_logos_path in you config must not begin with forward slash');
-           show_error('Incorrect config', 500);
+           if($isAjax)
+           {
+                set_status_header(500);
+                echo 'System error ocurred';
+                return;
+           }
+           else
+           {
+              show_error('System error ocurred', 500);
+           }
 
         }
         $path = realpath(APPPATH . '../'.$upload_logos_path);
@@ -214,7 +247,7 @@ class Logos extends MY_Controller {
         $this->load->library('upload', $config);
         if ($this->input->post('upload')) {
            
-             $data['backurl'] = $this->input->post('origurl');
+           $data['backurl'] = $this->input->post('origurl');
            if( $this->upload->do_upload())
            {
               $data['message'] = lang('rr_imguploaded');
@@ -223,7 +256,29 @@ class Logos extends MY_Controller {
            else
            {
                $data['error'] = array('error' => $this->upload->display_errors());
+               if($isAjax)
+               {
+                   set_status_header(403);
+                   echo $data['error']['error'];
+                   return;
+               }
            }
+           if($isAjax)
+           {
+             echo "OK";
+             return;
+           }
+        }
+        else
+        {
+           if($isAjax)
+           {
+              set_status_header(403);
+              echo "missing upload";
+              return;
+           }
+
+
         }
          
         $data['content_view'] = 'manage/uploadlogo_view';
@@ -232,6 +287,11 @@ class Logos extends MY_Controller {
 
     public function provider($type = null, $id = null)
     {
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin)
+        {
+            redirect('auth/login', 'location');
+        }
         if (empty($type) or !($type == 'idp' or $type == 'sp'))
         {
             show_error('wrong type of entity', 404);
@@ -252,6 +312,7 @@ class Logos extends MY_Controller {
         {
             show_error(lang('rerror_provnotfound'), 404);
         }
+        $this->load->library('zacl');
 
         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', $type, '');
         if (!$has_write_access)

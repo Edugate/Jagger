@@ -2028,6 +2028,31 @@ $('#joinfed select#fedid').on('change', function() {
     }
 });
 
+
+    $('#uploadlogo').on('submit',(function(e) {
+        e.preventDefault();
+        var formData = new FormData(document.forms.namedItem("uploadlogo"));
+        var result = $("div.uploadresult");
+        $.ajax({
+            type:'POST',
+            url: $(this).attr('action'),
+            data: formData,
+            cache:false,
+            processData: false,
+            contentType: false,
+            success:function(data){
+                console.log("success");
+                console.log(data);
+            },
+            error: function(msg){
+                console.log("error");
+                console.log(msg);
+            }
+        });
+    }));
+
+
+
 // experimental: forcing scroll to top page # urls
 
 $(document).ready(function(){
