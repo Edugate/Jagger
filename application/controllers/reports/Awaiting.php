@@ -594,7 +594,7 @@ class Awaiting extends MY_Controller {
                             $mail_recipients[] = $queueObj->getCreator()->getEmail();
                             $sbj = $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
                             $body = $this->j_auth->current_user() . " just approved request.\r\n";
-                            $body .= 'Since now Provider: ' . $provider->getName() . 'becomes a member of ' . $federation->getName() . '\r\n';
+                            $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
                             $this->em->persist($provider);
                             $this->em->remove($queueObj);
                             $this->email_sender->addToMailQueue(array('grequeststoproviders'),null,$sbj,$body,array(),$sync=false);
@@ -637,7 +637,7 @@ class Awaiting extends MY_Controller {
                             }
                             $sbj = "Approved:".$provider->getName() . ' joins federation: "' . $federation->getName() . '"';
                             $body = $this->j_auth->current_user() . " just approved request.\r\n";
-                            $body .= 'Since now Provider: ' . $provider->getName() . 'becomes a member of ' . $federation->getName() . '\r\n';
+                            $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
                             $this->em->persist($provider);
                             $this->em->remove($queueObj);
                             $this->email_sender->addToMailQueue(array('gjoinfedreq','joinfedreq'),$federation,$sbj,$body,$additionalReceipients,false);
