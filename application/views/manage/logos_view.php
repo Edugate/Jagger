@@ -25,6 +25,17 @@ if (!empty($backlink))
 }
 ?>
 </div>
+<div style="float: right; witdth: 99%; ">
+<?php
+if(!empty($addnewlogobtn))
+{
+   echo '<a href="' . $targeturl . '"><button name="add" type="button" value="Add new image" class="addbutton addicon" onclick="window.open(\'' . $targeturl . '\',\'_self\')">'.lang('rr_assignnewlogo').'</button></a>';
+
+}
+?>
+</div>
+<div style="clear: both;"></div>
+
     <?php
     if (!empty($form1)) {
         echo $form1;

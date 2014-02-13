@@ -136,7 +136,7 @@ class Logos extends MY_Controller {
         }
 
         $this->load->library('logo');
-        $attributes = array('class' => 'span-20', 'id' => 'formver2');
+        $attributes = array('class' => 'span-20', 'id' => 'availablelogos');
         $availableImages = $this->logo->displayAvailableInGridForm('filename', 3);
 
         $form1 = form_open(base_url() . 'manage/logos/newlogo/' . $type . '/' . $id, $attributes);
@@ -152,8 +152,8 @@ class Logos extends MY_Controller {
         #$form1 .= '</li>';
         if(!empty($availableImages))
         {
-           $form1 .= '<ol><li><div class="buttons"><button name="submit" type="submit" value="submit" class="savebutton saveicon">
-                      '.lang('rr_selectlogoandsubmit').'</button></div></li></ol>';
+           $form1 .= '<div class="buttons" style="display: none"><button name="submit" type="submit" value="submit" class="savebutton saveicon">
+                      '.lang('rr_selectlogoandsubmit').'</button></div>';
            $form1 .= $availableImages;
         }
         else
@@ -359,26 +359,28 @@ class Logos extends MY_Controller {
         // echo $count_existing_logos;
 
         $this->load->library('logo');
-        $attributes = array('class' => 'span-16', 'id' => 'formver2');
+        $attributes = array('class' => 'span-16', 'id' => 'assignedlogos');
 
         //$available_images = $this->logo->getImageFiles();
         //$count_available_images = count($available_images);
-        $form1 = '<span>';
-        $form1 .= form_open(base_url() . 'manage/logos/provider/' . $type . '/' . $id, $attributes);
-        $form1 .= $this->logo->displayCurrentInGridForm($provider, $type);
-        $form1 .= '<div class="buttons">';
-
-        if ($count_existing_logos > 0)
-        {
-            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon">'.lang('rr_unsignselectedlogo').'</button> ';
-        }
         $target_url = base_url() . 'manage/logos/newlogo/' . $type . '/' . $id;
-        $form1 .= '<a href="' . $target_url . '"><button name="add" type="button" value="Add new image" class="addbutton addicon" onclick="window.open(\'' . $target_url . '\',\'_self\')">'.lang('rr_assignnewlogo').'</button></a>';
-        $form1 .= '</div>';
-        $form1 .= form_close();
-        $form1 .= '</span>';
-
-        $data['form1'] = $form1;
+        $data['targeturl'] = $target_url;
+        if($count_existing_logos > 0)
+        {
+            $form1 = '<span>';
+            $form1 .= form_open(base_url() . 'manage/logos/provider/' . $type . '/' . $id, $attributes);
+            $form1 .= $this->logo->displayCurrentInGridForm($provider, $type);
+            $form1 .= '<div class="buttons">';
+            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon" style="display: none">'.lang('rr_unsignselectedlogo').'</button> ';
+            $form1 .= '</div>';
+            $form1 .= form_close();
+            $form1 .= '</span>';
+            $data['form1'] = $form1;
+        }
+        if(!$locked)
+        {
+           $data['addnewlogobtn'] = true;
+        }
         $data['content_view'] = 'manage/logos_view';
         $data['sub'] = lang('assignedlogoslistfor').' ';
         $data['provider_detail']['name'] = $provider->getName();

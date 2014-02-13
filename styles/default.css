@@ -307,6 +307,11 @@ hr {
   height: 1px;
 }
 
+figcaption {
+  font-size: smaller;
+  font-weight: normal;
+}
+
 a {
   text-decoration: none;
 }

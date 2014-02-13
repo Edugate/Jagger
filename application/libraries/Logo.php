@@ -78,16 +78,14 @@ class Logo {
                if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches)))
                {
                     $ElementValue = $this->logo_baseurl . $ex->getEvalue();
+                    $imgtitle = lang('rr_logolocal');
                }
                else
                {
                     $ElementValue = $ex->getEvalue();
+                    $imgtitle = lang('rr_logoexternal');
                }
 
-        
-               $cell = '<img src="'.$ElementValue.'" /><br />';
-               $radio_data = array('id'=>'logoid','name'=>'logoid','value'=>$ex->getId(), 'checked'=>FALSE);
-               $cell .= form_radio($radio_data).'<br />';
                $size = $ex->getAttributes();
                $size_str = '';
                if(is_array($size))
@@ -101,7 +99,12 @@ class Logo {
                {
                   $size_str = "Size set in metadata<br />" . $size_str;
                }
-               $cell .= "<span class=\"imginfo\">".$size_str."</span>";
+
+        
+               $cell = '<figure title="'.$ElementValue.'"><img src="'.$ElementValue.'" /><figcaption>'.$imgtitle.'<br /><span class="imginfo">'.$size_str.'</span></figcaption></figure>';
+               $radio_data = array('id'=>'logoid','name'=>'logoid','value'=>$ex->getId(), 'checked'=>FALSE);
+               $cell .= form_radio($radio_data).'<br />';
+              // $cell .= "<span class=\"imginfo\">".$size_str."</span>";
                $table_curr_images[] = $cell;
             }
             $tables_style=array('table_open'  => '<table  id="details" class="zebra">');

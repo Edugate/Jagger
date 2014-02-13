@@ -55,6 +55,15 @@ var GINIT = {
     $("fieldset#services label").autoWidth();
     $("fieldset#dataprotection label").autoWidth();
     $("fieldset#protocols label").autoWidth();
+
+    $("form#assignedlogos input[name='logoid']").click(function(){
+          $("form#assignedlogos button").show();
+ 
+    });
+    $("form#availablelogos input[name='filename']").click(function(){
+          $("form#availablelogos div.buttons").show();
+ 
+    });
     $("button.updatenotifactionstatus").click(function(ev) {
         var notid = $(this).attr('value');
         var ctbl = $(this).closest("tbody");
