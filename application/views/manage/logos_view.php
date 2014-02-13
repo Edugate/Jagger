@@ -37,27 +37,31 @@ if(!empty($addnewlogobtn))
 <div style="clear: both;"></div>
 
     <?php
-    if (!empty($form1)) {
-        echo $form1;
-    }
 if(!empty($show_upload) && !empty($upload_enabled))
 {
 ?>
-<div id="upload">
+<div id="upload" style="display: block; float: right; ">
 		<?php
                 $hidden = array('origurl'=>current_url(),'upload'=>'upload');
                 $attrs = array('id'=>'uploadlogo','name'=>'uploadlogo');
+                echo '<div style="position: relative;">';
+		echo form_open_multipart(base_url().'manage/logos/uploadlogos',$attrs,$hidden);
                 if(!empty($infomessage))
                 {
                    echo '<div>'.$infomessage.'</div>';
                 }
-		echo form_open_multipart(base_url().'manage/logos/uploadlogos',$attrs,$hidden);
                 echo '<div class="uploadresult"></div>';
-		//echo form_upload('userfile');
-                echo '<input type="file" name="userfile" id="userfile" size="20" />';
+                echo '<input type="file" name="userfile" id="userfile" size="20" style="background: transparent" /><br />';
                 echo '<div class="buttons"><button type="submit" name="upload" value="upload" class="savebutton saveicon">'.lang('rr_upload').'</button></div>';
+                echo '<div class="availablelogosgrid" style="display:none">'.base_url().'manage/logos/getAvailableLogosInGrid</div>';
 		echo form_close();
+                echo '</div>';
 		?>		
 </div>
+<div style="clear: both;"><br /></div>
+
 <?php
 }
+    if (!empty($form1)) {
+        echo $form1;
+    }

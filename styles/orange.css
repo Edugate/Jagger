@@ -2998,6 +2998,15 @@ form#filter-form {
   box-shadow: none;
 }
 
+form#assignedlogos, form#availablelogos, form#uploadlogo {
+  background-color: transparent;
+  border: 0px;
+}
+form#assignedlogos caption, form#availablelogos caption, form#uploadlogo caption {
+  font-size: 16px;
+  font-weight: bold;
+}
+
 .ir {
   background-color: transparent;
   border: 0;

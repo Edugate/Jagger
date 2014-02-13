@@ -2042,20 +2042,34 @@ $('#joinfed select#fedid').on('change', function() {
         e.preventDefault();
         var formData = new FormData(document.forms.namedItem("uploadlogo"));
         var result = $("div.uploadresult");
+        var gridUrl = $("div.availablelogosgrid").text();
         $.ajax({
             type:'POST',
             url: $(this).attr('action'),
             data: formData,
+            dataType: 'html',
             cache:false,
             processData: false,
             contentType: false,
-            success:function(data){
-                console.log("success");
-                console.log(data);
+            beforeSend: function() {
+               result.html('');
+               result.css('color','black');
             },
-            error: function(msg){
-                console.log("error");
-                console.log(msg);
+            success:function(data){
+                $.ajax({
+                  type:'GET',
+                  url: gridUrl,
+                  cache:false,
+                  success: function(data){
+                    $("table#details").replaceWith(data); 
+                  }
+
+                });
+                result.html('success');
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                result.html( jqXHR.responseText);
+                result.css('color', 'red');
             }
         });
     }));

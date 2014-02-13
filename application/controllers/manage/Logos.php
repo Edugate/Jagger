@@ -42,6 +42,20 @@ class Logos extends MY_Controller {
         return true;
     }
 
+    public function getAvailableLogosInGrid()
+    {
+        if($this->input->is_ajax_request() && $this->j_auth->logged_in())
+        {
+            $this->load->library('logo');
+            echo $this->logo->displayAvailableInGridForm('filename', 3);
+        }
+        else
+        {
+            set_status_header(403);
+            echo 'access denied';
+        }
+
+    }
     public function newlogo($type, $id)
     {
         $loggedin = $this->j_auth->logged_in();
@@ -119,7 +133,7 @@ class Logos extends MY_Controller {
                 $scheme = 'mdui';
                 $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $type));
                 if (empty($parent))
-                {
+               {
                     $parent = new models\ExtendMetadata;
                     $parent->setElement('UIInfo');
                     $parent->setProvider($provider);
@@ -141,19 +155,10 @@ class Logos extends MY_Controller {
 
         $form1 = form_open(base_url() . 'manage/logos/newlogo/' . $type . '/' . $id, $attributes);
         $form1 .= form_fieldset(''.lang('rr_selectimagetoassign').'');
-
-        #$form1 .= '<li>';
-        #$form1 .= form_label('Width in px (optional)', 'width');
-        #$form1 .= form_input('width');
-        #$form1 .= '</li>';
-        #$form1 .= '<li>';
-        #$form1 .= form_label('Height in px (optional)', 'height');
-        #$form1 .= form_input('height');
-        #$form1 .= '</li>';
         if(!empty($availableImages))
         {
            $form1 .= '<div class="buttons" style="display: none"><button name="submit" type="submit" value="submit" class="savebutton saveicon">
-                      '.lang('rr_selectlogoandsubmit').'</button></div>';
+                      '.lang('rr_btn_assignselecetedlogo').'</button></div>';
            $form1 .= $availableImages;
         }
         else

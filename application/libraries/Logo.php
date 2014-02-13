@@ -109,7 +109,7 @@ class Logo {
             }
             $tables_style=array('table_open'  => '<table  id="details" class="zebra">');
             $ctable = $this->ci->table->set_template($tables_style);
-            $ctable = $this->ci->table->set_caption('existing logos');
+            $ctable = $this->ci->table->set_caption(lang('listassignedlogos'));
             if($count_existing_logos % 3)
             {
                $columns = 2;
@@ -150,16 +150,14 @@ class Logo {
          }
          foreach($images as $img)
          {
-           $cell =  '<img src="'.$this->logo_baseurl . $img['name'].'" style="max-width: 150px"/><br />';
-           $cell .= 'filename: '.$img['name'].'<br />';
-           $cell .= 'size: '.$img['width'].'x'.$img['height'].'<br />';
+           $cell =  '<figure><img src="'.$this->logo_baseurl . $img['name'].'" style="max-width: 150px"/><figcaption>'.$img['name'].'<br />size: '.$img['width'].'x'.$img['height'].'</figcaption></figure>';
            $cell .= '<input type="radio" name="'.$attrname.'" id="'.$attrname.'" value="'.$img['name'].'_size_'.$img['width'].'x'.$img['height'].'">' ;
            $table_images[] = $cell;
          }
 
          $tables_style=array('table_open'  => '<table  id="details" class="zebra" style="width: 100%">');
          $ntable = $this->ci->table->set_template($tables_style);
-         $ntable = $this->ci->table->set_caption('Available logos');
+         $ntable = $this->ci->table->set_caption(lang('rr_logosonthestorage'));
          $ntable = $this->ci->table->make_columns($table_images,$columns);
          $result = $this->ci->table->generate($ntable);
          $this->ci->table->clear();
