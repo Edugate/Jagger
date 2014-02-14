@@ -1612,12 +1612,16 @@ $(document).ready(function() {
                       $('button[value="disablefed"]').hide();   
                       $('button[value="enablefed"]').show();   
                       $('button[value="delfed"]').show();   
+                      $('td.fedstatusinactive').show();
+                      $('show.fedstatusinactive').show();
                   }
                   else if(data =='activated')
                   {
                       $('button[value="disablefed"]').show();   
                       $('button[value="enablefed"]').hide();   
                       $('button[value="delfed"]').hide();   
+                      $('td.fedstatusinactive').hide();
+                      $('span.fedstatusinactive').hide();
                   }
                   else if(data =='todelete')
                   {

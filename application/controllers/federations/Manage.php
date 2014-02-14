@@ -302,7 +302,16 @@ class Manage extends MY_Controller
 
         $data['result']['general'][] = array('data' => array('data' => lang('rr_basicinformation') . ' ' . $edit_link, 'class' => 'highlight', 'colspan' => 2));
         if (empty($data['federation_is_active'])) {
-            $data['result']['general'][] = array('<span class="alert">' . lang('rr_warning') . '<span>', '<b>' . lang('rr_fed_inactive_full') . '</b>');
+            $data['result']['general'][] = array(
+                        'data'=>array( 'data'=>'<span class="alert">'.lang('rr_fed_inactive_full').'</span>', 'class'=>'fedstatusinactive','colspan'=>2)
+                );
+        }
+        else
+        {
+            $data['result']['general'][] = array(
+                        'data'=>array( 'data'=>'<span class="alert">'.lang('rr_fed_inactive_full').'</span>', 'class'=>'fedstatusinactive', 'style'=>'display: none','colspan'=>2)
+                );
+
         }
         $data['result']['general'][] = array(lang('rr_fed_name'), $federation->getName());
         $data['result']['general'][] = array(lang('rr_fed_urn'), $federation->getUrn());
@@ -353,8 +362,10 @@ class Manage extends MY_Controller
             if($federation->getActive())
             {
                 $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon" title="'. lang('btn_deactivatefed').': ' .$federation->getName().'">'.lang('btn_deactivatefed').'</button>';
-                $b .= '<br /><button type="button" name="fedstatus" value="enablefed" class="savebutton staricon" style="display:none">'.lang('btn_activatefed').'</button>';
-                $b .= '<br /><button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon" style="display: none" title="'. lang('btn_applytodelfed').': ' .$federation->getName().'">'.lang('btn_applytodelfed').'</button>';
+                $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
+                $b = '<br /><button type="button" name="fedstatus" value="enablefed" class="savebutton staricon" style="display:none">'.lang('btn_activatefed').'</button>';
+                $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
+                $b = '<br /><button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon" style="display: none" title="'. lang('btn_applytodelfed').': ' .$federation->getName().'">'.lang('btn_applytodelfed').'</button>';
                 $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
             }
             else
@@ -379,8 +390,8 @@ class Manage extends MY_Controller
         }
 
         if (empty($data['federation_is_active'])) {
-            $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled">' . lang('rr_fed_inactive') . '</span>' . anchor($data['meta_link']));
-            $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled">' . lang('rr_fed_inactive') . '</span>' . anchor($data['meta_link_signed']));
+            $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span>' . anchor($data['meta_link']));
+            $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span>' . anchor($data['meta_link_signed']));
         }
         else {
             $table_of_members = $this->show_element->IdPMembersToTable($federation_members);
