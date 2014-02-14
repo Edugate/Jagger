@@ -1908,7 +1908,7 @@ $("button#parsemetadatasp").click(function() {
             {
                 if (!certsign)
                 {
-                    var cert = $(this).find("ds\\:X509Certificate");
+                    var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
                     $("#sign_cert_body").val(cert.text());
                     certsign = true;
                 }
@@ -1917,14 +1917,14 @@ $("button#parsemetadatasp").click(function() {
             {
                 if (!certenc)
                 {
-                    var cert = $(this).find("ds\\:X509Certificate");
+                    var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
                     $("#encrypt_cert_body").val(cert.text());
                     certenc = true;
                 }
             }
             else
             {
-                var cert = $(this).find("ds\\:X509Certificate");
+                var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
                 if (!certenc)
                 {
                     $("#encrypt_cert_body").val(cert.text());
