@@ -61,7 +61,7 @@ var GINIT = {
  
     });
     $("form#availablelogos input[name='filename']").click(function(){
-          $("form#availablelogos div.buttons").show();
+          $(this).after($("form#availablelogos div.buttons").show());
  
     });
     $("button.updatenotifactionstatus").click(function(ev) {
