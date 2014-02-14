@@ -415,6 +415,10 @@ class Federation
     public function convertToArray()
     {
        $r = array();
+       if(!empty($this->id))
+       {
+          $r['id'] = $this->id;
+       }
        $r['name'] = $this->getName();
        $r['urn'] = $this->getUrn();
        $r['description'] = $this->getDescription();
