@@ -473,7 +473,6 @@ class Awaiting extends MY_Controller {
                             {
                                 $requester_recipient = $queueObj->getEmail();
                             }
-                            $admin_recipients = array_unique($admin_recipients);
                             $sbj = 'Service Provider has been approved';
                             $body = 'Hi,'.PHP_EOL;
                             $body .= 'Registration request: '.$sp->getName(). '('.$sp->getEntityId().')'.PHP_EOL;
