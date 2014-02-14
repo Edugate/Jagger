@@ -57,7 +57,7 @@ var GINIT = {
     $("fieldset#protocols label").autoWidth();
 
     $("form#assignedlogos input[name='logoid']").click(function(){
-          $("form#assignedlogos button").show();
+         $(this).after($("form#assignedlogos button").show());
  
     });
     $("form#availablelogos input[name='filename']").click(function(){
