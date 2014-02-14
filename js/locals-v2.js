@@ -1640,8 +1640,8 @@ $(document).ready(function() {
          });
     });
     $("#rmstatdef button").click(function(ev) {
-        var url = $(this).attr('action');
-        var serializedData = $(this).serialize();
+        var url = $("form#rmstatdef").attr('action');
+        var serializedData = $("form#rmstatdef").serialize();
         sconfirm('', function(ev) {
             $.ajax({
                 type: "POST",

@@ -757,48 +757,62 @@ class Statdefs extends MY_Controller {
 
     public function remove($defid=null)
     {
-       if(empty($defid) && !is_numeric($defid))
-       {
-          show_error('not found', 404);
-       }
        if(!$this->input->is_ajax_request())
        {
           show_error('method not allowed', 401);
        }
+       if(empty($defid) && !is_numeric($defid))
+       {
+          set_status_header(404);
+          echo 'not found';
+          return;
+       }
        $loggedin = $this->j_auth->logged_in();
        if (!$loggedin)
        {
-           show_error('denied', 403);
+          set_status_header(403);
+          echo 'Access denied';
+          return;
        }
        $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
        if(empty($def))
        {
-          show_error('not found', 404);
+          set_status_header(404);
+          echo 'not found';
+          return;
        }
        $provider = $def->getProvider();
        if(empty($provider))
        {
-           log_message('error','Found orphaned statdefinition with id: '.$def->getId());
-           show_error('not found',  404);
+          log_message('error','Found orphaned statdefinition with id: '.$def->getId());
+          set_status_header(404);
+          echo 'not found';
+          return;
        }
        $providerId = $provider->getId();
        $this->load->library('zacl');
        $hasAccess = $this->zacl->check_acl('' . $providerId . '', 'write', 'entity', '');
        if (!$hasAccess)
        {
-            show_error('denied 4', 403);
+          set_status_header(403);
+          echo 'Access denied';
+          return;
        }
        $inputProviderId = $this->input->post('prvid');
        $inputDefId = $this->input->post('defid');
        if(empty($inputProviderId) || empty($inputDefId) || !is_numeric($inputProviderId) || !is_numeric($inputDefId))
        {
             log_message('debug', 'no prvid and defid or not numeric in post form');
-            show_error('denied 2', 403);
+            set_status_header(403);
+            echo 'Access denied';
+            return;
        }
        if((strcmp($inputProviderId,$providerId) != 0) || (strcmp($inputDefId,$defid)!= 0))
        {
            log_message('error', 'remove statdefid received inccorect params');
-           show_error('denied 1', 403);
+            set_status_header(403);
+            echo 'Access denied';
+            return;
        }
        $this->em->remove($def);
        $this->em->flush();
