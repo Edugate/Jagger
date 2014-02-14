@@ -98,7 +98,7 @@ class Premoval extends MY_Controller {
                     {
 
                         $this->load->library('ProviderRemover');
-                        $federations = $provider->getFederation();
+                        $federations = $provider->getFederations();
                         $status = $this->providerremover->removeProvider($provider);
                         if ($status)
                         {
