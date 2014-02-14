@@ -89,6 +89,34 @@ class J_queue
 
         return $fedrows;
     }
+    function displayDeleteFederation(models\Queue $q)
+    {
+        $objData = new models\Federation;
+
+        $objData->importFromArray($q->getData());
+
+
+
+        $fedrows = array();
+        $fedrows[] = array('header' => lang('request'));
+        $fedrows[] = array('name' => lang('type'), 'value' => lang('reqdelfed'));
+
+        $creator = $q->getCreator();
+        if ($creator) {
+            $fedrows[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
+            $objData->setOwner($creator->getUsername());
+        }
+        else {
+            $fedrows[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
+        }
+
+        $fedrows[] = array('name' => lang('rr_requestdate'), 'value' => $q->getCreatedAt());
+        $fedrows[] = array('header' => lang('rr_basicinformation'));
+        $fedrows[] = array('name' => lang('rr_fed_name'), 'value' => $objData->getName());
+        $fedrows[] = array('name' => lang('rr_fed_urn'), 'value' => $objData->getUrn());
+
+        return $fedrows;
+    }
 
     function displayRegisterProvider(models\Queue $q)
     {
@@ -231,7 +259,26 @@ class J_queue
         $this->ci->table->add_row($cell);
         $cell = array(lang('requestor'), $queue->getCreator()->getUsername() . ' (' . $queue->getCreator()->getFullname() . ') : email: ' . $queue->getCreator()->getEmail());
         $this->ci->table->add_row($cell);
-        $cell = array(lang('rr_federation'), $federation->getName());
+        $validators = $federation->getValidators();
+        $fedValidator = null;
+        foreach($validators as $v)
+        {
+            $g = $v->getEnabled();
+            if($g)
+            {
+                $fedValidator = $v;
+                break;
+            }
+        }
+        if($fedValidator)
+        {
+            $nname = $fedValidator->getName();
+        }
+        else
+        {
+            $nname = '';
+        }
+        $cell = array(lang('rr_federation'), $federation->getName() . ' '.$nname);
         $this->ci->table->add_row($cell);
         $data = $queue->getData();
         $cell = array(lang('rr_provider'), $data['name']);

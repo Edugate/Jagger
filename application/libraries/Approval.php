@@ -108,6 +108,19 @@ class Approval {
           $this->em->flush();
           return $queue;
     }
+    public function removeFederation(models\Federation $federation)
+    {
+         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
+         $queue = new models\Queue();
+         $queue->setCreator($user);
+         $queue->setName($federation->getName());
+         $queue->setEmail($user->getEmail());
+         $queue->setAction('Delete');
+         $fed = array('id'=>$federation->getId(),'name'=>$federation->getName());
+         $queue->addFederation($federation->convertToArray());
+         $queue->setToken();
+         return $queue;
+    }
 
 }
 

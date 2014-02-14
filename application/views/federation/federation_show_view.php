@@ -39,3 +39,10 @@ foreach ($result as $k => $v)
 }
 
 echo '</div>';
+
+echo confirmDialog(''.lang('title_confirm').'', ''.lang('douwanttoproceed').':', ''.lang('rr_yes').'', ''.lang('rr_no').'');
+
+if(!empty($hiddenspan))
+{
+echo $hiddenspan;
+}

@@ -291,6 +291,13 @@ class Awaiting extends MY_Controller {
                         return;
                     }
                 }
+                elseif($queueList->getAction() == 'Delete')
+                {
+                    $fedrows = $this->j_queue->displayDeleteFederation($queueList);
+                    $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($queueList->getId());
+                    $data['fedrows'] = $fedrows;
+                     
+                }
                 else
                 {
                     $data['error'] = 'Unknown action';
@@ -496,6 +503,46 @@ class Awaiting extends MY_Controller {
                         $data['content_view'] = 'error_message';
                         $this->load->view('page',$data);
                     }
+                }
+                elseif  (($queueObj->getAction() === 'Delete') && ($queueObj->getType() === 'Federation'))
+                {
+                    $isAdministrator = $this->j_auth->isAdministrator();
+                    if(!$isAdministrator)
+                    {
+                        $data['error_message'] = lang('rerror_noperm_approve');
+                        $data['content_view'] = 'error_message';
+                        $this->load->view('page',$data);
+                        return;
+                    }
+                    $fed = new models\Federation;
+                    $fed->importFromArray($queueObj->getData());
+                    $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name'=>$fed->getName()));
+                    if(empty($federation))
+                    {
+                        $data['error_message'] = 'Federation not found';
+                        $data['content_view'] = 'error_message';
+                        $this->load->view('page',$data);
+                        return;
+                    }
+                    $isActive = $federation->getActive();
+                    if($isActive)
+                    {
+                        $data['error_message'] = 'Federation is active , cannot delete';
+                        $data['content_view'] = 'error_message';
+                        $this->load->view('page',$data);
+                        return;
+                    }
+                    $fed = null;
+                    $this->load->library('FederationRemover');
+                    $sbj = 'Federation has been removed';
+                    $body = 'Dear user,'.PHP_EOL;
+                    $body .= 'Federation : '.$federation->getName() . ' has been removed from the system';
+                    $this->email_sender->addToMailQueue(array(),null,$sbj,$body,array(),$sync=false);
+                    $this->federationremover->removeFederation($federation);
+                    $this->em->remove($queueObj);
+                    $this->em->flush();
+
+                    
                 }
                 elseif (($queueObj->getAction() === 'Create') && ($queueObj->getType() === 'Federation'))
                 {
@@ -728,6 +775,19 @@ class Awaiting extends MY_Controller {
                                $reject_access = $this->zacl->check_acl('f_'.$recipient, 'write', 'federation', '');
                            }
                        }
+                    }
+                    elseif(($queueObj->getAction() === 'Delete'))
+                    {
+                        $type = $queueObj->getType();
+                        if($type === 'Federation')
+                        {
+                           $isAdmin = $this->j_auth->isAdministrator();
+                           if($isAdmin)
+                           {
+                                $reject_access = TRUE;
+                           }
+                        }
+
                     }
          
                 }

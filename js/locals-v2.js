@@ -1587,7 +1587,54 @@ $(document).ready(function() {
         ev.preventDefault();
     });
 
+    $('button[name="fedstatus"]').click(function(ev){
+         var btnVal = $(this).attr('value');
+         var additionalMsg = $(this).attr('title');
+         if( additionalMsg === undefined)
+         {
+            additionalMsg ='';
+         }
+         var csrfname = $("[name='csrfname']").val();
+         var csrfhash = $("[name='csrfhash']").val();
+         var baseurl = $("[name='baseurl']").val();
+         var fedname = $("span#fednameencoded").text();
+         var url = baseurl+'federations/manage/changestatus';
+         var data = [{name: 'status', value: btnVal},{name: csrfname, value: csrfhash},{name: 'fedname', value: fedname }];
+         sconfirm(''+additionalMsg+'', function(ev) {
+         $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function(data){
+                if(data){
+                  if(data =='deactivated')
+                  {
+                      $('button[value="disablefed"]').hide();   
+                      $('button[value="enablefed"]').show();   
+                      $('button[value="delfed"]').show();   
+                  }
+                  else if(data =='activated')
+                  {
+                      $('button[value="disablefed"]').show();   
+                      $('button[value="enablefed"]').hide();   
+                      $('button[value="delfed"]').hide();   
+                  }
+                  else if(data =='todelete')
+                  {
+                      $('button[value="disablefed"]').hide();   
+                      $('button[value="enablefed"]').hide();   
+                      $('button[value="delfed"]').hide();   
+                  }
+                   
+                }
+             },
+             error: function(data) {
+                alert('Error  ocurred');
+             }
 
+         });
+         });
+    });
     $("#rmstatdef button").click(function(ev) {
         var url = $(this).attr('action');
         var serializedData = $(this).serialize();
@@ -1761,7 +1808,7 @@ $(document).ready(function() {
             onShow: function(dialog) {
                 var modal = this;
 
-                $('.message', dialog.data[0]).append(message);
+                $('.message', dialog.data[0]).append('<br />'+message);
 
                 // if the user clicks "yes"
                 $('.yes', dialog.data[0]).click(function() {
