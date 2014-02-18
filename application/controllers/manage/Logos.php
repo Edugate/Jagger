@@ -44,18 +44,17 @@ class Logos extends MY_Controller {
 
     public function getAvailableLogosInGrid()
     {
-        if($this->input->is_ajax_request() && $this->j_auth->logged_in())
+        if ($this->input->is_ajax_request() && $this->j_auth->logged_in())
         {
             $this->load->library('logo');
             echo $this->logo->displayAvailableInGridForm('filename', 3);
-        }
-        else
+        } else
         {
             set_status_header(403);
             echo 'access denied';
         }
-
     }
+
     public function newlogo($type, $id)
     {
         $loggedin = $this->j_auth->logged_in();
@@ -63,7 +62,7 @@ class Logos extends MY_Controller {
         {
             redirect('auth/login', 'location');
         }
-          
+
         if (!is_numeric($id))
         {
             show_error('wrong id of entity', 404);
@@ -71,12 +70,10 @@ class Logos extends MY_Controller {
         if ($type === 'idp')
         {
             $provider = $this->tmp_providers->getOneIdpById($id);
-        }
-        elseif($type === 'sp')
+        } elseif ($type === 'sp')
         {
             $provider = $this->tmp_providers->getOneSpById($id);
-        }
-        else
+        } else
         {
             show_error('wrong type of entity', 404);
         }
@@ -90,7 +87,7 @@ class Logos extends MY_Controller {
         if (!$has_write_access)
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rr_noperm_edit'). ': ' . $idp->getEntityid();
+            $data['error'] = lang('rr_noperm_edit') . ': ' . $idp->getEntityid();
             $this->load->view('page', $data);
             return;
         }
@@ -105,7 +102,7 @@ class Logos extends MY_Controller {
             $logoname_inputs = explode('_size_', $this->input->post('filename'));
             if (count($logoname_inputs) != 2)
             {
-                log_message('error',  'incorrect  value given:' . $this->input->post('filename') . ' , must be in format: filename_size_widthxheight');
+                log_message('error', 'incorrect  value given:' . $this->input->post('filename') . ' , must be in format: filename_size_widthxheight');
                 show_error('incorrect image name', 500);
             }
             $new_logoname = $logoname_inputs['0'];
@@ -133,7 +130,7 @@ class Logos extends MY_Controller {
                 $scheme = 'mdui';
                 $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $type));
                 if (empty($parent))
-               {
+                {
                     $parent = new models\ExtendMetadata;
                     $parent->setElement('UIInfo');
                     $parent->setProvider($provider);
@@ -154,16 +151,15 @@ class Logos extends MY_Controller {
         $availableImages = $this->logo->displayAvailableInGridForm('filename', 3);
 
         $form1 = form_open(base_url() . 'manage/logos/newlogo/' . $type . '/' . $id, $attributes);
-        $form1 .= form_fieldset(''.lang('rr_selectimagetoassign').'');
-        if(!empty($availableImages))
+        $form1 .= form_fieldset('' . lang('rr_selectimagetoassign') . '');
+        if (!empty($availableImages))
         {
-           $form1 .= '<div class="buttons" style="display: none"><button name="submit" type="submit" value="submit" class="savebutton saveicon">
-                      '.lang('rr_btn_assignselecetedlogo').'</button></div>';
-           $form1 .= $availableImages;
-        }
-        else
+            $form1 .= '<div class="buttons" style="display: none"><button name="submit" type="submit" value="submit" class="savebutton saveicon">
+                      ' . lang('rr_btn_assignselecetedlogo') . '</button></div>';
+            $form1 .= $availableImages;
+        } else
         {
-           $form1 .= '<div class="alert">'.lang('rr_nolocalimages').'</div>';
+            $form1 .= '<div class="alert">' . lang('rr_nolocalimages') . '</div>';
         }
         $form1 .= form_fieldset_close();
         $form1 .= form_close();
@@ -173,8 +169,8 @@ class Logos extends MY_Controller {
         $data['content_view'] = 'manage/logos_view';
         $data['sub'] = lang('rr_addnewlogofor');
         $data['backlink'] = true;
-        $data['upload_enabled'] =  $this->config->item('rr_logoupload');
-        $data['infomessage'] = lang('maxallowedimgdimsize').': '.$this->config->item('rr_logo_maxwidth').'x'.$this->config->item('rr_logo_maxheight').'<br />'.lang('rr_uploadinformat').': png'; 
+        $data['upload_enabled'] = $this->config->item('rr_logoupload');
+        $data['infomessage'] = lang('maxallowedimgdimsize') . ': ' . $this->config->item('rr_logo_maxwidth') . 'x' . $this->config->item('rr_logo_maxheight') . '<br />' . lang('rr_uploadinformat') . ': png';
         $data['show_upload'] = true;
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
@@ -182,112 +178,236 @@ class Logos extends MY_Controller {
         $data['provider_detail']['type'] = $type;
         if ($locked)
         {
-            $data['provider_detail']['locked'] = '<img src="' . base_url() . 'images/icons/lock.png" title="'.lang('rr_lockedentity').'"/>';
-        }
-        else
+            $data['provider_detail']['locked'] = '<img src="' . base_url() . 'images/icons/lock.png" title="' . lang('rr_lockedentity') . '"/>';
+        } else
         {
-            $data['provider_detail']['locked'] ='';
+            $data['provider_detail']['locked'] = '';
         }
 
 
         $this->load->view('page', $data);
     }
-   
+
     public function uploadlogos()
     {
         $isAjax = $this->input->is_ajax_request();
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
         {
-            if($isAjax)
+            if ($isAjax)
             {
                 set_status_header(403);
                 echo 'User session expired';
                 return;
-            
-            }
-            else
+            } else
             {
-               redirect('auth/login', 'location');
+                redirect('auth/login', 'location');
             }
         }
         $upload_enabled = $this->config->item('rr_logoupload');
         $upload_logos_path = trim($this->config->item('rr_logoupload_relpath'));
-        if(empty($upload_enabled) || empty($upload_logos_path))
+        $extlogourl = $this->input->post('extlogourl');
+        $logofile = $this->input->post('upload');
+        $providerid = $this->input->post('prvid');
+        $provtype = $this->input->post('prvtype');
+        $provider = null;
+        if(!(!empty($providerid) && is_integer($providerid) && !empty($provtype) && (strcmp($provtype,'idp') == 0 || strcmp($provtype,'sp') == 0)))
         {
-            if($isAjax)
+           $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$providerid, 'type'=>array(''.strtoupper($provtype).'','BOTH')));
+        }
+
+        if(empty($provider))
+        {
+                if ($isAjax)
+                {
+                    set_status_header(404);
+                    echo 'Provider not found';
+                    return;
+                } else
+                {
+                    show_error('Provider not found', 404);
+                }
+        }
+
+        $this->load->library('zacl');
+        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
+        if(!$has_write_access)
+        {
+                if ($isAjax)
+                {
+                    set_status_header(403);
+                    echo 'Access denied';
+                    return;
+                } else
+                {
+                    show_error('Access denied', 403);
+                }
+        
+        }
+        
+      
+         
+
+        if (!empty($extlogourl))
+        {
+            if (!$this->_submit_validate_extlogo())
             {
-                set_status_header(403);
-                echo 'Upload images feature is disabled';
-                return;
+                if ($isAjax)
+                {
+                    set_status_header(403);
+                    echo 'Incorrect external URL';
+                    return;
+                } else
+                {
+                    show_error('Incorrect external url', 403);
+                }
+            }
+            $this->load->library('curl');
+            $datafile = $this->curl->simple_get($extlogourl);
+            if (!empty($datafile))
+            {             
+                $img_mimes = array(
+                    'image/jpeg' => 'jpg',
+                    'image/pjpeg' => 'jpg',
+                    'image/png' => 'png',
+                    'image/x-png' => 'png',
+                    'image/gif' => 'gif',                    
+                );
+
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $finforaw = new finfo(FILEINFO_RAW);
+                $mimeType = $finfo->buffer($datafile);
+                if(!array_key_exists($mimeType, $img_mimes))
+                {
+                   set_status_header(403);
+                   echo 'Url doenst contain image in valid format';
+                   return; 
+                }
+
+                $imagesize  = getimagesizefromstring($datafile);
+                if(!empty($imagesize) && is_array($imagesize) && isset($imagesize['0']) && isset($imagesize['1']))
+                {
+                    $imagewidth = $imagesize['0'];
+                    $imageheight = $imagesize['1'];
+                    $imagelocation = $extlogourl;
+                    $element_name = 'Logo';
+                    $scheme = 'mdui';
+                    $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $provtype));
+                    if (empty($parent))
+                    {
+                       $parent = new models\ExtendMetadata;
+                       $parent->setElement('UIInfo');
+                       $parent->setProvider($provider);
+                       $parent->setParent(null);
+                       $parent->setNamespace('mdui');
+                       $parent->setType($provtype);
+                       $this->em->persist($parent);
+                    }
+                    $logo = new models\ExtendMetadata;
+                    $logo_attr = array('width'=>$imagewidth,'height'=>$imageheight);
+                    $logo->setLogo($imagelocation, $provider, $parent, $logo_attr, $provtype);
+                    $this->em->persist($logo);
+                    $this->em->flush();
+                    echo 'OK';
+                    return;
+
+                }
+
+                set_status_header(500);
+                echo 'Unknown error occured';
+                return; 
+                
+
             }
             else
             {
-               show_error('Upload images feature is disabled', 403);
+                set_status_header(403);
+                echo $this->curl->error_string;
+                return;
             }
         }
-        if(substr($upload_logos_path, 0, 1) == '/')
+        elseif (!empty($logofile))
         {
-           log_message('error','upload_logos_path in you config must not begin with forward slash');
-           if($isAjax)
-           {
-                set_status_header(500);
-                echo 'System error ocurred';
-                return;
-           }
-           else
-           {
-              show_error('System error ocurred', 500);
-           }
+            if (empty($upload_enabled) || empty($upload_logos_path))
+            {
+                if ($isAjax)
+                {
+                    set_status_header(403);
+                    echo 'Upload images feature is disabled';
+                    return;
+                } else
+                {
+                    show_error('Upload images feature is disabled', 403);
+                }
+            }
+            if (substr($upload_logos_path, 0, 1) == '/')
+            {
+                log_message('error', 'upload_logos_path in you config must not begin with forward slash');
+                if ($isAjax)
+                {
+                    set_status_header(500);
+                    echo 'System error ocurred';
+                    return;
+                } else
+                {
+                    show_error('System error ocurred', 500);
+                }
+            }
+            $path = realpath(APPPATH . '../' . $upload_logos_path);
+            $config = array(
+                'allowed_types' => '' . $this->config->item('rr_logo_types') . '',
+                'upload_path' => $path,
+                'max_size' => $this->config->item('rr_logo_maxsize'),
+                'max_width' => $this->config->item('rr_logo_maxwidth'),
+                'max_height' => $this->config->item('rr_logo_maxheight'),
+            );
+            $this->load->library('upload', $config);
+            if ($this->input->post('upload'))
+            {
+                $data['backurl'] = $this->input->post('origurl');
+                if ($this->upload->do_upload())
+                {
+                    $data['message'] = lang('rr_imguploaded');
+                } else
+                {
+                    $data['error'] = array('error' => $this->upload->display_errors());
+                    if ($isAjax)
+                    {
+                        set_status_header(403);
+                        echo $data['error']['error'];
+                        return;
+                    }
+                }
+                if ($isAjax)
+                {
+                    echo "OK";
+                    return;
+                }
+            } else
+            {
+                if ($isAjax)
+                {
+                    set_status_header(403);
+                    echo "missing upload";
+                    return;
+                }
+            }
+        }
 
-        }
-        $path = realpath(APPPATH . '../'.$upload_logos_path);
-        $config = array(
-			'allowed_types' => ''.$this->config->item('rr_logo_types').'',
-			'upload_path' => $path,
-			'max_size' => $this->config->item('rr_logo_maxsize'),
-                        'max_width' => $this->config->item('rr_logo_maxwidth'),
-                        'max_height'=> $this->config->item('rr_logo_maxheight'),
-		);
-        $this->load->library('upload', $config);
-        if ($this->input->post('upload')) {
-           
-           $data['backurl'] = $this->input->post('origurl');
-           if( $this->upload->do_upload())
-           {
-              $data['message'] = lang('rr_imguploaded');
-              
-           }
-           else
-           {
-               $data['error'] = array('error' => $this->upload->display_errors());
-               if($isAjax)
-               {
-                   set_status_header(403);
-                   echo $data['error']['error'];
-                   return;
-               }
-           }
-           if($isAjax)
-           {
-             echo "OK";
-             return;
-           }
-        }
-        else
+        if(!$isAjax)
         {
-           if($isAjax)
-           {
-              set_status_header(403);
-              echo "missing upload";
-              return;
-           }
-
-
+           $data['content_view'] = 'manage/uploadlogo_view';
+           $this->load->view('page', $data);
         }
-         
-        $data['content_view'] = 'manage/uploadlogo_view';
-        $this->load->view('page',$data);
+        
+    }
+
+    private function _submit_validate_extlogo()
+    {
+        $this->form_validation->set_rules('extlogourl', 'External source', 'valid_url');
+        $result = $this->form_validation->run();
+
+        return $result;
     }
 
     public function provider($type = null, $id = null)
@@ -308,8 +428,7 @@ class Logos extends MY_Controller {
         if ($type == 'idp')
         {
             $provider = $this->tmp_providers->getOneIdpById($id);
-        }
-        else
+        } else
         {
             $provider = $this->tmp_providers->getOneSpById($id);
         }
@@ -319,11 +438,11 @@ class Logos extends MY_Controller {
         }
         $this->load->library('zacl');
 
-        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', $type, '');
+        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         if (!$has_write_access)
         {
             $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rr_noperm_edit').': ' . $provider->getEntityid();
+            $data['error'] = lang('rr_noperm_edit') . ': ' . $provider->getEntityid();
             $this->load->view('page', $data);
             return;
         }
@@ -339,8 +458,7 @@ class Logos extends MY_Controller {
             if (!empty($action) && $action === 'Add new image')
             {
                 redirect(base_url() . 'manage/logos/newlogo/' . $type . '/' . $id, 'location');
-            }
-            elseif (!empty($raction) && $raction === 'Remove selected')
+            } elseif (!empty($raction) && $raction === 'Remove selected')
             {
                 $logoid = $this->input->post('logoid');
                 if (!empty($logoid) && is_numeric($logoid))
@@ -370,35 +488,34 @@ class Logos extends MY_Controller {
         //$count_available_images = count($available_images);
         $target_url = base_url() . 'manage/logos/newlogo/' . $type . '/' . $id;
         $data['targeturl'] = $target_url;
-        if($count_existing_logos > 0)
+        if ($count_existing_logos > 0)
         {
             $form1 = '<span>';
             $form1 .= form_open(base_url() . 'manage/logos/provider/' . $type . '/' . $id, $attributes);
             $form1 .= $this->logo->displayCurrentInGridForm($provider, $type);
             $form1 .= '<div class="buttons">';
-            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon" style="display: none">'.lang('rr_unsignselectedlogo').'</button> ';
+            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon" style="display: none">' . lang('rr_unsignselectedlogo') . '</button> ';
             $form1 .= '</div>';
             $form1 .= form_close();
             $form1 .= '</span>';
             $data['form1'] = $form1;
         }
-        if(!$locked)
+        if (!$locked)
         {
-           $data['addnewlogobtn'] = true;
+            $data['addnewlogobtn'] = true;
         }
         $data['content_view'] = 'manage/logos_view';
-        $data['sub'] = lang('assignedlogoslistfor').' ';
+        $data['sub'] = lang('assignedlogoslistfor') . ' ';
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
         $data['provider_detail']['entityid'] = $provider->getEntityId();
         $data['provider_detail']['type'] = $type;
         if ($locked)
         {
-            $data['provider_detail']['locked'] = '<img src="' . base_url() . 'images/icons/lock.png" title="'.lang('rr_lockedentity').'"/>';
-        }
-        else
+            $data['provider_detail']['locked'] = '<img src="' . base_url() . 'images/icons/lock.png" title="' . lang('rr_lockedentity') . '"/>';
+        } else
         {
-            $data['provider_detail']['locked'] ='';
+            $data['provider_detail']['locked'] = '';
         }
         $this->load->view('page', $data);
     }

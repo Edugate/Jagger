@@ -36,32 +36,48 @@ if(!empty($addnewlogobtn))
 </div>
 <div style="clear: both;"></div>
 
-    <?php
+
+
+<div>
+<?php
+
+
+
+
 if(!empty($show_upload) && !empty($upload_enabled))
 {
-?>
-<div id="upload" style="display: block; float: right; ">
-		<?php
-                $hidden = array('origurl'=>current_url(),'upload'=>'upload');
-                $attrs = array('id'=>'uploadlogo','name'=>'uploadlogo');
-                echo '<div style="position: relative;">';
-		echo form_open_multipart(base_url().'manage/logos/uploadlogos',$attrs,$hidden);
-                if(!empty($infomessage))
-                {
-                   echo '<div>'.$infomessage.'</div>';
-                }
-                echo '<div class="uploadresult"></div>';
-                echo '<input type="file" name="userfile" id="userfile" size="20" style="background: transparent" /><br />';
-                echo '<div class="buttons"><button type="submit" name="upload" value="upload" class="savebutton saveicon">'.lang('rr_upload').'</button></div>';
-                echo '<div class="availablelogosgrid" style="display:none">'.base_url().'manage/logos/getAvailableLogosInGrid</div>';
-		echo form_close();
-                echo '</div>';
-		?>		
+     echo '<div id="upload" style="display: block-inline; float: right; ">';
+     $hidden = array('origurl'=>current_url(),'upload'=>'upload','prvid'=>''.$provider_detail['id'].'','prvtype'=>''.$provider_detail['type'].'');
+     $attrs = array('id'=>'uploadlogo','name'=>'uploadlogo');
+     echo '<div style="position: relative;">';
+     echo form_open_multipart(base_url().'manage/logos/uploadlogos',$attrs,$hidden);
+     if(!empty($infomessage))
+     {
+         echo '<div class="help">'.$infomessage.'</div>';
+     }
+     echo '<div class="uploadresult"></div>';
+     echo '<div>';
+     echo form_label(lang('rr_extlogourl'),'extlogourl');
+     echo '<input type="url" name="extlogourl" id="extlogourl" site="40" style="width: 90%" />';
+     echo '</div>';
+     echo '<div>';
+     echo form_label(lang('rr_uploadlogo'),'userfile');
+     echo '<input type="file" name="userfile" id="userfile" size="20" style="background: transparent" />';
+     echo '</div>';
+     echo '<div class="buttons"><button type="submit" name="upload" value="upload" class="savebutton saveicon">'.lang('rr_upload').'</button></div>';
+     echo '<div class="availablelogosgrid" style="display:none">'.base_url().'manage/logos/getAvailableLogosInGrid</div>';
+     echo form_close();
+     echo '</div>';
+}
+?>		
 </div>
+
+
+
 <div style="clear: both;"><br /></div>
 
 <?php
-}
-    if (!empty($form1)) {
+    if (!empty($form1))
+    {
         echo $form1;
     }

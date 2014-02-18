@@ -2105,8 +2105,10 @@ $('#joinfed select#fedid').on('change', function() {
             beforeSend: function() {
                result.html('');
                result.css('color','black');
+               $('#spinner').show();
             },
             success:function(data){
+                $('#spinner').hide();
                 $.ajax({
                   type:'GET',
                   url: gridUrl,
@@ -2119,6 +2121,7 @@ $('#joinfed select#fedid').on('change', function() {
                 result.html('success');
             },
             error: function(jqXHR, textStatus, errorThrown){
+                $('#spinner').hide();
                 result.html( jqXHR.responseText);
                 result.css('color', 'red');
             }
