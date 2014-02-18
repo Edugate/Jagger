@@ -927,6 +927,19 @@ table#details td span.accordionContent, table.details td span.accordionContent, 
   font-size: smaller;
 }
 
+table.gridimages {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+}
+table.gridimages caption {
+  font-weight: bold;
+  font-size: 14px;
+}
+table.gridimages img {
+  max-width: 200px;
+}
+
 form table#details tr:nth-of-type(odd), form table#detailsnosort tr:nth-of-type(odd) {
   background: #eeeeee;
 }
@@ -2608,6 +2621,30 @@ ul.zebralist li:nth-child(odd) {
   background-color: #ebf0f3;
 }
 
+div.uploadresult {
+  padding: 5px;
+  font-weight: bold;
+}
+
+#unsignlogosbtn {
+  display: none;
+}
+
+div.help {
+  max-width: 600px;
+  padding: 15px;
+  background-color: #dddddd;
+  border: 1px solid #c4c4c4;
+}
+div.help ol, div.help li {
+  padding: 0px;
+  list-style-type: decimal;
+  list-style-position: inside;
+  background-color: transparent;
+  border: 0px;
+  margin: 0px;
+}
+
 form {
   counter-reset: fieldsets;
   background: #ffe90d;
@@ -3160,6 +3197,52 @@ form#assignedlogos caption, form#availablelogos caption, form#uploadlogo caption
     clear: both;
   }
 
+  form#assignedlogos {
+    padding: 0 0 0 0;
+  }
+
+  table.gridimages {
+    width: 100%;
+    display: block;
+    font-weight: bold;
+    min-height: 30px;
+    display: block;
+    text-align: center;
+  }
+  table.gridimages td, table.gridimages caption {
+    display: table-row;
+    width: 100%;
+    text-align: center;
+    margin: 10px;
+  }
+  table.gridimages thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  table.gridimages tr {
+    border: 0px solid #ccc;
+    padding: 5px;
+  }
+  table.gridimages tr > :first-child {
+    background: white;
+    color: grey;
+  }
+  table.gridimages td {
+    text-align: center;
+    width: 100%;
+  }
+  table.gridimages figure {
+    margin: 5px;
+    poosition: relative;
+    border: 1px solid grey;
+    text-align: center;
+    display: block;
+  }
+  table.gridimages figure img {
+    width: auto;
+  }
+
   table#details, table#detailsnosort {
     display: block;
   }
@@ -3175,6 +3258,8 @@ form#assignedlogos caption, form#availablelogos caption, form#uploadlogo caption
   }
   table#details thead, table#details tbody, table#details th, table#details td, table#details tr, table#detailsnosort thead, table#detailsnosort tbody, table#detailsnosort th, table#detailsnosort td, table#detailsnosort tr {
     display: block;
+    border-color: black;
+    border-width: 0px;
   }
 
   table#details thead tr {
@@ -3194,13 +3279,17 @@ form#assignedlogos caption, form#availablelogos caption, form#uploadlogo caption
   }
 
   tr > :first-child {
-    background: #cc3000;
-    color: grey;
+    background: black;
+    color: #f2f2f2;
   }
   tr > :first-child a {
-    color: white;
+    color: #f7f7f7;
     display: block;
     text-decoration: underline;
+  }
+
+  .attrflow tr > :first-child {
+    background: #ff3c00;
   }
 
   td {
@@ -3379,10 +3468,10 @@ form#assignedlogos caption, form#availablelogos caption, form#uploadlogo caption
   }
   #simplemodal-container .column.one, #loginform2 .column.one {
     display: block;
-    width: 350px;
+    width: 340px;
     min-width: 250px;
     clear: both;
-    max-width: 350px;
+    max-width: 340px;
     float: none;
     border: 0px;
     border-bottom: 1px grey dotted;
@@ -3405,6 +3494,19 @@ form#assignedlogos caption, form#availablelogos caption, form#uploadlogo caption
     float: none;
     border: 0px;
     padding: 0px;
+  }
+}
+@media only screen and (max-width: 480px) {
+  #simplemodal-container, #loginform2 {
+    height: auto;
+    max-height: 90%;
+    min-width: 300px;
+    width: 300px;
+    max-width: 300px;
+  }
+  #simplemodal-container .column.one, #simplemodal-container .column.two, #loginform2 .column.one, #loginform2 .column.two {
+    width: 290px;
+    max-width: 290px;
   }
 }
 @media print {

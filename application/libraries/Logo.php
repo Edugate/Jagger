@@ -107,7 +107,7 @@ class Logo {
               // $cell .= "<span class=\"imginfo\">".$size_str."</span>";
                $table_curr_images[] = $cell;
             }
-            $tables_style=array('table_open'  => '<table  id="details" class="zebra">');
+            $tables_style=array('table_open'  => '<table class="gridimages">');
             $ctable = $this->ci->table->set_template($tables_style);
             $ctable = $this->ci->table->set_caption(lang('listassignedlogos'));
             if($count_existing_logos % 3)

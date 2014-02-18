@@ -50,6 +50,55 @@ var GINIT = {
             }
         });
     }
+    $("form#availablelogos input[name='filename']").click(function(){
+          $(this).after($("form#availablelogos div.buttons").show());
+ 
+    });
+    $('#uploadlogo').on('submit',(function(e) {
+        e.preventDefault();
+        var formData = new FormData(document.forms.namedItem("uploadlogo"));
+        var result = $("div.uploadresult");
+        var gridUrl = $("div.availablelogosgrid").text();
+        $.ajax({
+            type:'POST',
+            url: $(this).attr('action'),
+            data: formData,
+            dataType: 'html',
+            cache:false,
+            processData: false,
+            contentType: false,
+            beforeSend: function() {
+               result.html('');
+               result.css('color','black');
+               $('#spinner').show();
+            },
+            success:function(data){
+                $('#spinner').hide();
+                $.ajax({
+                  type:'GET',
+                  url: gridUrl,
+                  cache:false,
+                  success: function(data){
+                   $("table#details").empty();
+                   $("table#details").append(data);	
+                  //  $("table#details").replaceWith(data); 
+                  }
+
+                });
+                result.html('success');
+                $("form#availablelogos div.buttons").show();
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                $('#spinner').hide();
+                result.html( jqXHR.responseText);
+                result.css('color', 'red');
+            }
+        }).done(function(){
+
+             GINIT.initialize();
+
+        });
+    }));
 
     $("fieldset#certificates label").autoWidth();
     $("fieldset#services label").autoWidth();
@@ -57,11 +106,7 @@ var GINIT = {
     $("fieldset#protocols label").autoWidth();
 
     $("form#assignedlogos input[name='logoid']").click(function(){
-         $(this).after($("form#assignedlogos button").show());
- 
-    });
-    $("form#availablelogos input[name='filename']").click(function(){
-          $(this).after($("form#availablelogos div.buttons").show());
+         $(this).after($("div#unsignlogosbtn").show());
  
     });
     $("button.updatenotifactionstatus").click(function(ev) {
@@ -2089,44 +2134,6 @@ $('#joinfed select#fedid').on('change', function() {
 });
 
 
-    $('#uploadlogo').on('submit',(function(e) {
-        e.preventDefault();
-        var formData = new FormData(document.forms.namedItem("uploadlogo"));
-        var result = $("div.uploadresult");
-        var gridUrl = $("div.availablelogosgrid").text();
-        $.ajax({
-            type:'POST',
-            url: $(this).attr('action'),
-            data: formData,
-            dataType: 'html',
-            cache:false,
-            processData: false,
-            contentType: false,
-            beforeSend: function() {
-               result.html('');
-               result.css('color','black');
-               $('#spinner').show();
-            },
-            success:function(data){
-                $('#spinner').hide();
-                $.ajax({
-                  type:'GET',
-                  url: gridUrl,
-                  cache:false,
-                  success: function(data){
-                    $("table#details").replaceWith(data); 
-                  }
-
-                });
-                result.html('success');
-            },
-            error: function(jqXHR, textStatus, errorThrown){
-                $('#spinner').hide();
-                result.html( jqXHR.responseText);
-                result.css('color', 'red');
-            }
-        });
-    }));
 
 
 

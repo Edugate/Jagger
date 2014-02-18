@@ -55,14 +55,14 @@ if(!empty($show_upload) && !empty($upload_enabled))
      {
          echo '<div class="help">'.$infomessage.'</div>';
      }
-     echo '<div class="uploadresult"></div>';
+     echo '<div class="uploadresult notice"></div>';
      echo '<div>';
      echo form_label(lang('rr_extlogourl'),'extlogourl');
      echo '<input type="url" name="extlogourl" id="extlogourl" site="40" style="width: 90%" />';
      echo '</div>';
      echo '<div>';
      echo form_label(lang('rr_uploadlogo'),'userfile');
-     echo '<input type="file" name="userfile" id="userfile" size="20" style="background: transparent" />';
+     echo '<input type="file" name="userfile" id="userfile" size="20" class="clearable" style="background: transparent" />';
      echo '</div>';
      echo '<div class="buttons"><button type="submit" name="upload" value="upload" class="savebutton saveicon">'.lang('rr_upload').'</button></div>';
      echo '<div class="availablelogosgrid" style="display:none">'.base_url().'manage/logos/getAvailableLogosInGrid</div>';

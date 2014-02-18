@@ -164,13 +164,16 @@ class Logos extends MY_Controller {
         $form1 .= form_fieldset_close();
         $form1 .= form_close();
 
-
+ 
         $data['form1'] = $form1;
         $data['content_view'] = 'manage/logos_view';
         $data['sub'] = lang('rr_addnewlogofor');
         $data['backlink'] = true;
         $data['upload_enabled'] = $this->config->item('rr_logoupload');
-        $data['infomessage'] = lang('maxallowedimgdimsize') . ': ' . $this->config->item('rr_logo_maxwidth') . 'x' . $this->config->item('rr_logo_maxheight') . '<br />' . lang('rr_uploadinformat') . ': png';
+        $data['infomessage'] = '<b>'.lang('hfilloptions').':</b><br />'; 
+        $data['infomessage'] .= '<ol><li>'.lang('hfillurlimage').'. '.lang('hfillurlimage2').'. '. lang('hfillurlimage3').'</li>';
+        $data['infomessage'] .= '<li>Upload image to local storage and then select it to assign to your provider<br /> ';     
+        $data['infomessage'] .= lang('maxupimgdim') . ': ' . $this->config->item('rr_logo_maxwidth') . 'x' . $this->config->item('rr_logo_maxheight') . '<br />' . lang('rr_uploadinformat') . ': png</li></ol>';
         $data['show_upload'] = true;
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
@@ -493,8 +496,8 @@ class Logos extends MY_Controller {
             $form1 = '<span>';
             $form1 .= form_open(base_url() . 'manage/logos/provider/' . $type . '/' . $id, $attributes);
             $form1 .= $this->logo->displayCurrentInGridForm($provider, $type);
-            $form1 .= '<div class="buttons">';
-            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon" style="display: none">' . lang('rr_unsignselectedlogo') . '</button> ';
+            $form1 .= '<div class="buttons" id="unsignlogosbtn">';
+            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon">' . lang('rr_unsignselectedlogo') . '</button> ';
             $form1 .= '</div>';
             $form1 .= form_close();
             $form1 .= '</span>';
