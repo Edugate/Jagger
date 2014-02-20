@@ -58,18 +58,18 @@ class Form_element {
         {
             $l[] = anchor($base . 'geolocation/show/' . $id . '/sp', ''.lang('rr_geolocation').' ('.lang('serviceprovider').')');
             $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', ''.lang('rr_geolocation').' ('.lang('identityprovider').')');
-            $l[] = anchor($base . 'manage/logos/provider/idp/' . $id . '', ''.lang('rr_logos').' ('.lang('identityprovider').')');
-            $l[] = anchor($base . 'manage/logos/provider/sp/' . $id . '', ''.lang('rr_logos').' ('.lang('serviceprovider').')');
+            $l[] = anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', ''.lang('rr_logos').' ('.lang('identityprovider').')');
+            $l[] = anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', ''.lang('rr_logos').' ('.lang('serviceprovider').')');
         }
         elseif ($t === 'IDP')
         {
             $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', ''.lang('rr_geolocation').'');
-            $l[] = anchor($base . 'manage/logos/provider/idp/' . $id . '', ''.lang('rr_logos').'');
+            $l[] = anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', ''.lang('rr_logos').'');
         }
         else
         {
             $l[] = anchor($base . 'geolocation/show/' . $id . '/sp', ''.lang('rr_geolocation').'');
-            $l[] = anchor($base . 'manage/logos/provider/sp/' . $id . '', ''.lang('rr_logos').'');
+            $l[] = anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', ''.lang('rr_logos').'');
         }
         if ($t != 'IDP')
         {

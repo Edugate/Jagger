@@ -63,7 +63,7 @@ class Logo {
         finfo_close($finfo); 
         return $imagestable;
     }
-    function displayCurrentInGridForm(models\Provider $provider, $etype)
+    function displayCurrentInGridForm(models\Provider $provider, $etype, $checkboxes = FALSE)
     {
         $result = null;
         
@@ -102,9 +102,11 @@ class Logo {
 
         
                $cell = '<figure title="'.$ElementValue.'"><img src="'.$ElementValue.'" /><figcaption>'.$imgtitle.'<br /><span class="imginfo">'.$size_str.'</span></figcaption></figure>';
-               $radio_data = array('id'=>'logoid','name'=>'logoid','value'=>$ex->getId(), 'checked'=>FALSE);
-               $cell .= form_radio($radio_data).'<br />';
-              // $cell .= "<span class=\"imginfo\">".$size_str."</span>";
+               if($checkboxes)
+               {
+                  $radio_data = array('id'=>'logoid','name'=>'logoid','value'=>$ex->getId(), 'checked'=>FALSE);
+                  $cell .= form_radio($radio_data).'<br />';
+               }
                $table_curr_images[] = $cell;
             }
             $tables_style=array('table_open'  => '<table class="gridimages">');

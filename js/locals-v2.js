@@ -54,11 +54,58 @@ var GINIT = {
           $(this).after($("form#availablelogos div.buttons").show());
  
     });
+    $('form#availablelogos').on('load',function(e){
+                  $("uploadlogo").unbind();
+      //            GINIT.initialize();
+
+    });
+    $('form#availablelogos').on('submit',function(e) {
+        e.preventDefault();
+        var result = $("div.uploadresult");
+        var assignedGrid = $("div.assignedlogosgrid").text();
+        $.ajax({
+           type: 'POST',
+           url: $(this).attr('action'),
+           data: $("form#availablelogos").serializeArray(),
+           dataType: 'html',
+           cache:false,
+           beforeSend: function(){
+               $('form#availablelogos div.buttons').hide().appendTo('form#availablelogos');
+           },
+           success: function(data){
+                  
+             $('form#availablelogos #filename').prop('checked', false);
+             $.ajax({
+                type:'GET',
+                url: assignedGrid,
+                cache: false,
+                success: function(data){
+                    $("div#t1").empty();
+                     $("div#t1").append(data); 
+                     $("#assignedlogos").unbind();
+                  GINIT.initialize();
+                },
+             }); 
+             $('#spinner').hide();
+             
+             result.html(data).modal();
+ 
+           },
+           error: function(qXHR, textStatus, errorThrown){
+              $('#spinner').hide();
+              result.css('color', 'red');
+              result.html( jqXHR.responseText).modal();
+           } 
+
+        });
+
+    });
     $('#uploadlogo').on('submit',(function(e) {
         e.preventDefault();
         var formData = new FormData(document.forms.namedItem("uploadlogo"));
         var result = $("div.uploadresult");
         var gridUrl = $("div.availablelogosgrid").text();
+        var gridUrl2 = $("div.assignedlogosgrid").text();
         $.ajax({
             type:'POST',
             url: $(this).attr('action'),
@@ -70,23 +117,62 @@ var GINIT = {
             beforeSend: function() {
                result.html('');
                result.css('color','black');
+               $("form#availablelogos div.buttons").hide().appendTo("form#availablelogos");
+               
                $('#spinner').show();
             },
-            success:function(data){
+            success:function(data1){
                 $('#spinner').hide();
+                result.html('success');
                 $.ajax({
                   type:'GET',
                   url: gridUrl,
                   cache:false,
-                  success: function(data){
-                   $("table#details").empty();
-                   $("table#details").append(data);	
-                  //  $("table#details").replaceWith(data); 
-                  }
+                  success: function(data2){
+                  $("form#availablelogos").replaceWith(data2);
+                  $('form#availablelogos').unbind();
+                  $('form#assignedlogos').unbind();
+                  $('#uploadlogo').unbind();
+                  $("table#details").unbind();
+                  $("form#availablelogos input[name='filename']").unbind("click");
+                  GINIT.initialize();
+                  },
+                  error: function(){
+                  $('#availablelogos').unbind();
+                  $('#uploadlogo').unbind();
+                  $("table#details").unbind();
+                  $("form#availablelogos input[name='filename']").unbind("click");
+                  GINIT.initialize();
+                 }
 
                 });
-                result.html('success');
-                $("form#availablelogos div.buttons").show();
+                $.ajax({
+                  type:'GET',
+                  url: gridUrl2,
+                  cache:false,
+                  success: function(data3){
+                   $("table#details").empty();
+                   $("table#details").append(data3);	
+                    $("form#assignedlogos").replaceWith(data3);
+                    
+                    $('#availablelogos').unbind();
+                    $('form#assignedlogos').unbind();
+                    $('#uploadlogo').unbind();
+                    $("table#details").unbind();
+                    $("form#availablelogos input[name='filename']").unbind("click");
+                    GINIT.initialize();
+                  },
+                  error: function(){
+                  $('#availablelogos').unbind();
+                  $('#uploadlogo').unbind();
+                  $("table#details").unbind();
+                  $("form#availablelogos input[name='filename']").unbind("click");
+                  GINIT.initialize();
+
+                 }
+
+                });
+
             },
             error: function(jqXHR, textStatus, errorThrown){
                 $('#spinner').hide();
@@ -94,7 +180,9 @@ var GINIT = {
                 result.css('color', 'red');
             }
         }).done(function(){
-
+             $('#availablelogos').unbind();
+             $("table#details").unbind();
+                  $('#uploadlogo').unbind();
              GINIT.initialize();
 
         });
@@ -109,6 +197,42 @@ var GINIT = {
          $(this).after($("div#unsignlogosbtn").show());
  
     });
+    $("form#assignedlogos").on('submit',(function(e) {
+        e.preventDefault();
+        var result = $("div.uploadresult");
+        var postdata = $("form#assignedlogos").serializeArray();
+        var checkedObj = $('input[name=logoid]:radio:checked');
+        $.ajax({
+           type: 'POST',
+           url: $(this).attr('action'),
+           data: postdata,
+           dataType: 'html',
+           cache:false,
+          // processData: false,
+          // contentType: false,
+           beforeSend: function() {
+             $("#unsignlogosbtn").hide().appendTo("form#assignedlogos");
+             result.html('');
+             $('#spinner').show();
+           },
+           success:function(data){
+             $('#spinner').hide();
+             result.html( data).modal();
+             checkedObj.parent().remove();
+             
+           },
+           error: function(jqXHR, textStatus, errorThrown){
+             $('#spinner').hide();
+             result.css('color', 'red');
+             result.html( jqXHR.responseText).modal();
+           }
+        }).done(function(){
+            $("form#assignedlogos").unbind(); 
+            $("#uploadlogo").unbind();
+            GINIT.initialize();
+        });
+
+    }));
     $("button.updatenotifactionstatus").click(function(ev) {
         var notid = $(this).attr('value');
         var ctbl = $(this).closest("tbody");
@@ -1208,6 +1332,13 @@ $(function() {
         }
 
     });
+    $("#logotabs").tabs({
+          load: function(event, ui) {
+             //$('#availablelogos').unbind();
+             //$("table#details").unbind();
+        //     GINIT.initialize();
+          }
+    });
 
 });
 if ($('#usepredefined').attr('checked')) {
@@ -2132,7 +2263,6 @@ $('#joinfed select#fedid').on('change', function() {
         })
     }
 });
-
 
 
 
