@@ -45,10 +45,7 @@ if($canEdit === TRUE)
 <div id="logotabs">
 <ul>
 <?php
-if(!empty($assignedlogos))
-{
-   echo '<li><a href="#t1">Assigned Logos</a></li>';
-}
+echo '<li><a href="#t1">Assigned Logos</a></li>';
 if(!empty($showavailable))
 {
   echo '<li class="availablelogostabs"><a href="'.base_url().'/manage/logomngmt/getAvailableLogosInGrid/'.$provider_detail['type'].'/'.$provider_detail['id'].'">Available Logos</a></li>';
@@ -57,12 +54,12 @@ if(!empty($showavailable))
 </ul>
 
 <?php
+      echo '<div id="t1">';
    if(!empty($assignedlogos))
    {
-      echo '<div id="t1">';
       echo $assignedlogos;
-      echo '</div>';
    }
+      echo '</div>';
 ?>
 </div>
 <?php

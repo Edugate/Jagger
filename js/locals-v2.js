@@ -54,15 +54,11 @@ var GINIT = {
           $(this).after($("form#availablelogos div.buttons").show());
  
     });
-    $('form#availablelogos').on('load',function(e){
-                  $("uploadlogo").unbind();
-      //            GINIT.initialize();
-
-    });
     $('form#availablelogos').on('submit',function(e) {
         e.preventDefault();
         var result = $("div.uploadresult");
         var assignedGrid = $("div.assignedlogosgrid").text();
+        $('#uploadlogo').unbind();
         $.ajax({
            type: 'POST',
            url: $(this).attr('action'),
@@ -80,21 +76,42 @@ var GINIT = {
                 url: assignedGrid,
                 cache: false,
                 success: function(data){
-                    $("div#t1").empty();
+                     $('#uploadlogo').unbind();
+                     $("div#t1").empty();
                      $("div#t1").append(data); 
                      $("#assignedlogos").unbind();
-                  GINIT.initialize();
+                     $("#availablelogos").unbind();
+                     GINIT.initialize();
                 },
              }); 
              $('#spinner').hide();
-             
-             result.html(data).modal();
+             result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+
+             });
  
            },
            error: function(qXHR, textStatus, errorThrown){
               $('#spinner').hide();
               result.css('color', 'red');
-              result.html( jqXHR.responseText).modal();
+                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+                });
+
            } 
 
         });
@@ -123,38 +140,25 @@ var GINIT = {
             },
             success:function(data1){
                 $('#spinner').hide();
-                result.html('success');
-                $.ajax({
-                  type:'GET',
-                  url: gridUrl,
-                  cache:false,
-                  success: function(data2){
-                  $("form#availablelogos").replaceWith(data2);
-                  $('form#availablelogos').unbind();
-                  $('form#assignedlogos').unbind();
-                  $('#uploadlogo').unbind();
-                  $("table#details").unbind();
-                  $("form#availablelogos input[name='filename']").unbind("click");
-                  GINIT.initialize();
-                  },
-                  error: function(){
-                  $('#availablelogos').unbind();
-                  $('#uploadlogo').unbind();
-                  $("table#details").unbind();
-                  $("form#availablelogos input[name='filename']").unbind("click");
-                  GINIT.initialize();
-                 }
+                result.html(data1);
+                $("div.uploadresult").append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
 
-                });
+
+           });
                 $.ajax({
                   type:'GET',
                   url: gridUrl2,
                   cache:false,
                   success: function(data3){
-                   $("table#details").empty();
-                   $("table#details").append(data3);	
                     $("form#assignedlogos").replaceWith(data3);
-                    
                     $('#availablelogos').unbind();
                     $('form#assignedlogos').unbind();
                     $('#uploadlogo').unbind();
@@ -162,28 +166,70 @@ var GINIT = {
                     $("form#availablelogos input[name='filename']").unbind("click");
                     GINIT.initialize();
                   },
-                  error: function(){
-                  $('#availablelogos').unbind();
-                  $('#uploadlogo').unbind();
-                  $("table#details").unbind();
-                  $("form#availablelogos input[name='filename']").unbind("click");
-                  GINIT.initialize();
-
+                  error: function(jqXHR, textStatus, errorThrown){
+                    $('#spinner').hide();
+                    $('#availablelogos').unbind();
+                    $('#assignedlogos').unbind();
+                    $('#uploadlogo').unbind();
+                    $("table#details").unbind();
+                    $("form#availablelogos input[name='filename']").unbind("click");
+                    GINIT.initialize();
                  }
 
+                });
+                $.ajax({
+                  type:'GET',
+                  url: gridUrl,
+                  cache:false,
+                  success: function(data2){
+                    $("form#availablelogos").replaceWith(data2);
+                    $('form#availablelogos').unbind();
+                    $('form#assignedlogos').unbind();
+                    $('#uploadlogo').unbind();
+                    $("table#details").unbind();
+                    $("form#availablelogos input[name='filename']").unbind("click");
+                    GINIT.initialize();
+                  },
+                  error: function(jqXHR, textStatus, errorThrown){
+                    $('#spinner').hide();
+                    $('#availablelogos').unbind();
+                    $('#uploadlogo').unbind();
+                    $("table#details").unbind();
+                    $("form#availablelogos input[name='filename']").unbind("click");
+                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+                });
+                    GINIT.initialize();
+                 }
                 });
 
             },
             error: function(jqXHR, textStatus, errorThrown){
                 $('#spinner').hide();
-                result.html( jqXHR.responseText);
+                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+                });
                 result.css('color', 'red');
             }
         }).done(function(){
-             $('#availablelogos').unbind();
-             $("table#details").unbind();
-                  $('#uploadlogo').unbind();
-             GINIT.initialize();
+           //  $('#availablelogos').unbind();
+           //  $("table#details").unbind();
+           //       $('#uploadlogo').unbind();
+           //  GINIT.initialize();
 
         });
     }));
@@ -195,6 +241,7 @@ var GINIT = {
 
     $("form#assignedlogos input[name='logoid']").click(function(){
          $(this).after($("div#unsignlogosbtn").show());
+         
  
     });
     $("form#assignedlogos").on('submit',(function(e) {
@@ -211,23 +258,42 @@ var GINIT = {
           // processData: false,
           // contentType: false,
            beforeSend: function() {
-             $("#unsignlogosbtn").hide().appendTo("form#assignedlogos");
+             $("div#unsignlogosbtn").hide().appendTo("form#assignedlogos");
              result.html('');
              $('#spinner').show();
            },
            success:function(data){
              $('#spinner').hide();
-             result.html( data).modal();
+             result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+             });
              checkedObj.parent().remove();
              
            },
            error: function(jqXHR, textStatus, errorThrown){
              $('#spinner').hide();
              result.css('color', 'red');
-             result.html( jqXHR.responseText).modal();
+                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+                });
            }
         }).done(function(){
             $("form#assignedlogos").unbind(); 
+            $("form#availablelogos").unbind(); 
             $("#uploadlogo").unbind();
             GINIT.initialize();
         });
@@ -1334,9 +1400,11 @@ $(function() {
     });
     $("#logotabs").tabs({
           load: function(event, ui) {
-             //$('#availablelogos').unbind();
-             //$("table#details").unbind();
-        //     GINIT.initialize();
+             $('#availablelogos').unbind();
+             $('#assignedlogos').unbind();
+             $('#uploadlogo').unbind();
+             $("table#details").unbind();
+             GINIT.initialize();
           }
     });
 

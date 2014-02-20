@@ -32,13 +32,13 @@ class Logomngmt extends MY_Controller
     {
         if (!$this->input->is_ajax_request() || empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
             set_status_header(403);
-            echo 'Permission denied';
+            echo lang('error403');
             return;
         }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
             set_status_header(403);
-            echo 'Session not valid';
+            echo lang('errsess');
             return;
         }
 
@@ -99,7 +99,8 @@ class Logomngmt extends MY_Controller
         }
         else {
             set_status_header(403);
-            echo 'access denied';
+            echo lang('error403');
+            return;
         }
     }
 
@@ -107,24 +108,24 @@ class Logomngmt extends MY_Controller
     {
         if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST')) {
             set_status_header(403);
-            echo '1. permission denied';
+            echo lang('error403');
             return;
         }
         if (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
             set_status_header(404);
-            echo '2. not found';
+            echo lang('error404');
             return;
         }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
             set_status_header(403);
-            echo '3. Session expired please relogin';
+            echo lang('errsess');
             return;
         }
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id, 'type' => array('BOTH', '' . strtoupper($type) . '')));
         if (empty($provider)) {
             set_status_header(404);
-            echo '4. not found';
+            echo lang('rerror_provnotfound');
             return;
         }
         $this->load->library('zacl');
@@ -134,20 +135,20 @@ class Logomngmt extends MY_Controller
         $canEdit = (boolean) ($has_write_access && $unlocked && $local);
         if (!$canEdit) {
             set_status_header(403);
-            echo '5. permission denied';
+            echo lang('error403');
             return;
         }
         $logopost = $this->input->post('filename');
         if (empty($logopost)) {
             set_status_header(403);
-            echo '6. Missing params in post';
+            echo lang('error403') .' ';
             return;
         }
         $explodedLogopost = explode('_size_', $logopost);
         if (count($explodedLogopost) != 2) {
             log_message('error', 'incorrect  value given:' . $this->input->post('filename') . ' , must be in format: filename_size_widthxheight');
             set_status_header(403);
-            echo '7. Incorrect params in post';
+            echo lang('error403') . ': '.lang('error_incorrectinput');
             return;
         }
         $new_logoname = $explodedLogopost['0'];
@@ -182,11 +183,11 @@ class Logomngmt extends MY_Controller
             $logo->setLogo($new_logoname, $provider, $parent, $logo_attr, $type);
             $this->em->persist($logo);
             $this->em->flush();
-            echo 'Logo has been assigned';
+            echo lang('rr_logoisassigned');
         }
         else {
             set_status_header(403);
-            echo 'x. permission denied';
+            echo lang('error403');
             return;
         }
     }
@@ -195,24 +196,24 @@ class Logomngmt extends MY_Controller
     {
         if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST')) {
             set_status_header(403);
-            echo '1. permission denied';
+            echo lang('error403');
             return;
         }
         if (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
             set_status_header(404);
-            echo '2. not found';
+            echo lang('error403');
             return;
         }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
             set_status_header(403);
-            echo '3. Session expired please relogin';
+            echo lang('errsess');
             return;
         }
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id, 'type' => array('BOTH', '' . strtoupper($type) . '')));
         if (empty($provider)) {
             set_status_header(404);
-            echo '4. not found';
+            echo lang('error404');
             return;
         }
         $this->load->library('zacl');
@@ -222,34 +223,34 @@ class Logomngmt extends MY_Controller
         $canEdit = (boolean) ($has_write_access && $unlocked && $local);
         if (!$canEdit) {
             set_status_header(403);
-            echo '5. permission denied';
+            echo lang('error403');
             return;
         }
 
         $logoidPost = $this->input->post('logoid');
         if (empty($logoidPost) || !ctype_digit($logoidPost)) {
             set_status_header(403);
-            echo '6. Missed logo id';
+            echo lang('error403');
             return;
         }
         $existingLogo = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('id' => $logoidPost, 'etype' => $type, 'namespace' => 'mdui', 'element' => 'Logo', 'provider' => $id));
         if (empty($existingLogo)) {
             set_status_header(404);
-            echo '7. logo not  found';
+            echo lang('logo404');
             return;
         }
         try
         {
             $this->em->remove($existingLogo);
             $this->em->flush();
-            echo '8. Logo unsigned';
+            echo lang('rr_logoisunsigned');
             return;
         }
         catch (Exception $e)
         {
             log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
-            echo '9. Error occured';
+            echo 'Server Error occured';
             return;
         }
     }
@@ -272,7 +273,7 @@ class Logomngmt extends MY_Controller
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
             set_status_header(403);
-            echo 'User session expired';
+            echo lang('errsess');
             return;
         }
         $upload_enabled = $this->config->item('rr_logoupload');
@@ -288,7 +289,7 @@ class Logomngmt extends MY_Controller
         }
         if (empty($provider)) {
             set_status_header(404);
-            echo 'Provider not found';
+            echo lang('rerror_provnotfound');
             return;
         }
         $this->load->library('zacl');
@@ -298,13 +299,13 @@ class Logomngmt extends MY_Controller
         $canEdit = (boolean) ($has_write_access && !$locked && $local);
         if (!$canEdit) {
             set_status_header(403);
-            echo 'Access denied';
+            echo lang('error403');
             return;
         }
         if (!empty($extlogourl)) {
             if (!$this->_submit_validate_extlogo()) {
                 set_status_header(403);
-                echo 'Incorrect external URL';
+                echo lang('rr_errextlogourl');
                 return;
             }
             $this->load->library('curl');
@@ -323,7 +324,7 @@ class Logomngmt extends MY_Controller
                 $mimeType = $finfo->buffer($datafile);
                 if (!array_key_exists($mimeType, $img_mimes)) {
                     set_status_header(403);
-                    echo 'Url doenst contain image in valid format';
+                    echo lang('rr_errextlogourlformat');
                     return;
                 }
 
@@ -351,7 +352,7 @@ class Logomngmt extends MY_Controller
                 $logo->setLogo($imagelocation, $provider, $parent, $logo_attr, $provtype);
                 $this->em->persist($logo);
                 $this->em->flush();
-                echo 'External logo has been assigned';
+                echo lang('rr_logoisassigned');
                 return;
             }
             else {
