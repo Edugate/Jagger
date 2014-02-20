@@ -45,10 +45,10 @@ if($canEdit === TRUE)
 <div id="logotabs">
 <ul>
 <?php
-echo '<li><a href="#t1">Assigned Logos</a></li>';
+echo '<li><a href="#t1">'.lang('rr_assignedlogostab').'</a></li>';
 if(!empty($showavailable))
 {
-  echo '<li class="availablelogostabs"><a href="'.base_url().'/manage/logomngmt/getAvailableLogosInGrid/'.$provider_detail['type'].'/'.$provider_detail['id'].'">Available Logos</a></li>';
+  echo '<li class="availablelogostabs"><a href="'.base_url().'/manage/logomngmt/getAvailableLogosInGrid/'.$provider_detail['type'].'/'.$provider_detail['id'].'">'.lang('rr_availablelogostab').'</a></li>';
 }
 ?>
 </ul>
