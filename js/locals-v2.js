@@ -50,6 +50,189 @@ var GINIT = {
             }
         });
     }
+    $("form#availablelogos input[name='filename']").click(function(){
+          $(this).after($("form#availablelogos div.buttons").show());
+ 
+    });
+    $('form#availablelogos').on('submit',function(e) {
+        e.preventDefault();
+        var result = $("div.uploadresult");
+        var assignedGrid = $("div.assignedlogosgrid").text();
+        $('#uploadlogo').unbind();
+        $.ajax({
+           type: 'POST',
+           url: $(this).attr('action'),
+           data: $("form#availablelogos").serializeArray(),
+           dataType: 'html',
+           cache:false,
+           beforeSend: function(){
+               $('form#availablelogos div.buttons').hide().appendTo('form#availablelogos');
+           },
+           success: function(data){
+                  
+             $('form#availablelogos #filename').prop('checked', false);
+             $.ajax({
+                type:'GET',
+                url: assignedGrid,
+                cache: false,
+                success: function(data){
+                     $('#uploadlogo').unbind();
+                     $("div#t1").empty();
+                     $("div#t1").append(data); 
+                     $("#assignedlogos").unbind();
+                     $("#availablelogos").unbind();
+                     GINIT.initialize();
+                },
+             }); 
+             $('#spinner').hide();
+             result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+
+             });
+ 
+           },
+           error: function(qXHR, textStatus, errorThrown){
+              $('#spinner').hide();
+              result.css('color', 'red');
+                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+                });
+
+           } 
+
+        });
+
+    });
+    $('#uploadlogo').on('submit',(function(e) {
+        e.preventDefault();
+        var formData = new FormData(document.forms.namedItem("uploadlogo"));
+        var result = $("div.uploadresult");
+        var gridUrl = $("div.availablelogosgrid").text();
+        var gridUrl2 = $("div.assignedlogosgrid").text();
+        $.ajax({
+            type:'POST',
+            url: $(this).attr('action'),
+            data: formData,
+            dataType: 'html',
+            cache:false,
+            processData: false,
+            contentType: false,
+            beforeSend: function() {
+               result.html('');
+               result.css('color','black');
+               $("form#availablelogos div.buttons").hide().appendTo("form#availablelogos");
+               
+               $('#spinner').show();
+            },
+            success:function(data1){
+                $('#spinner').hide();
+                result.html(data1);
+                $("div.uploadresult").append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+
+
+           });
+                $.ajax({
+                  type:'GET',
+                  url: gridUrl2,
+                  cache:false,
+                  success: function(data3){
+                    $("form#assignedlogos").replaceWith(data3);
+                    $('#availablelogos').unbind();
+                    $('form#assignedlogos').unbind();
+                    $('#uploadlogo').unbind();
+                    $("table#details").unbind();
+                    $("form#availablelogos input[name='filename']").unbind("click");
+                    GINIT.initialize();
+                  },
+                  error: function(jqXHR, textStatus, errorThrown){
+                    $('#spinner').hide();
+                    $('#availablelogos').unbind();
+                    $('#assignedlogos').unbind();
+                    $('#uploadlogo').unbind();
+                    $("table#details").unbind();
+                    $("form#availablelogos input[name='filename']").unbind("click");
+                    GINIT.initialize();
+                 }
+
+                });
+                $.ajax({
+                  type:'GET',
+                  url: gridUrl,
+                  cache:false,
+                  success: function(data2){
+                    $("form#availablelogos").replaceWith(data2);
+                    $('form#availablelogos').unbind();
+                    $('form#assignedlogos').unbind();
+                    $('#uploadlogo').unbind();
+                    $("table#details").unbind();
+                    $("form#availablelogos input[name='filename']").unbind("click");
+                    GINIT.initialize();
+                  },
+                  error: function(jqXHR, textStatus, errorThrown){
+                    $('#spinner').hide();
+                    $('#availablelogos').unbind();
+                    $('#uploadlogo').unbind();
+                    $("table#details").unbind();
+                    $("form#availablelogos input[name='filename']").unbind("click");
+                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+                });
+                    GINIT.initialize();
+                 }
+                });
+
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                $('#spinner').hide();
+                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+                });
+                result.css('color', 'red');
+            }
+        }).done(function(){
+           //  $('#availablelogos').unbind();
+           //  $("table#details").unbind();
+           //       $('#uploadlogo').unbind();
+           //  GINIT.initialize();
+
+        });
+    }));
 
     $("fieldset#certificates label").autoWidth();
     $("fieldset#services label").autoWidth();
@@ -57,13 +240,65 @@ var GINIT = {
     $("fieldset#protocols label").autoWidth();
 
     $("form#assignedlogos input[name='logoid']").click(function(){
-         $(this).after($("form#assignedlogos button").show());
+         $(this).after($("div#unsignlogosbtn").show());
+         
  
     });
-    $("form#availablelogos input[name='filename']").click(function(){
-          $(this).after($("form#availablelogos div.buttons").show());
- 
-    });
+    $("form#assignedlogos").on('submit',(function(e) {
+        e.preventDefault();
+        var result = $("div.uploadresult");
+        var postdata = $("form#assignedlogos").serializeArray();
+        var checkedObj = $('input[name=logoid]:radio:checked');
+        $.ajax({
+           type: 'POST',
+           url: $(this).attr('action'),
+           data: postdata,
+           dataType: 'html',
+           cache:false,
+          // processData: false,
+          // contentType: false,
+           beforeSend: function() {
+             $("div#unsignlogosbtn").hide().appendTo("form#assignedlogos");
+             result.html('');
+             $('#spinner').show();
+           },
+           success:function(data){
+             $('#spinner').hide();
+             result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+             });
+             checkedObj.parent().remove();
+             
+           },
+           error: function(jqXHR, textStatus, errorThrown){
+             $('#spinner').hide();
+             result.css('color', 'red');
+                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["20%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '20px',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+                });
+           }
+        }).done(function(){
+            $("form#assignedlogos").unbind(); 
+            $("form#availablelogos").unbind(); 
+            $("#uploadlogo").unbind();
+            GINIT.initialize();
+        });
+
+    }));
     $("button.updatenotifactionstatus").click(function(ev) {
         var notid = $(this).attr('value');
         var ctbl = $(this).closest("tbody");
@@ -1163,6 +1398,15 @@ $(function() {
         }
 
     });
+    $("#logotabs").tabs({
+          load: function(event, ui) {
+             $('#availablelogos').unbind();
+             $('#assignedlogos').unbind();
+             $('#uploadlogo').unbind();
+             $("table#details").unbind();
+             GINIT.initialize();
+          }
+    });
 
 });
 if ($('#usepredefined').attr('checked')) {
@@ -2088,42 +2332,6 @@ $('#joinfed select#fedid').on('change', function() {
     }
 });
 
-
-    $('#uploadlogo').on('submit',(function(e) {
-        e.preventDefault();
-        var formData = new FormData(document.forms.namedItem("uploadlogo"));
-        var result = $("div.uploadresult");
-        var gridUrl = $("div.availablelogosgrid").text();
-        $.ajax({
-            type:'POST',
-            url: $(this).attr('action'),
-            data: formData,
-            dataType: 'html',
-            cache:false,
-            processData: false,
-            contentType: false,
-            beforeSend: function() {
-               result.html('');
-               result.css('color','black');
-            },
-            success:function(data){
-                $.ajax({
-                  type:'GET',
-                  url: gridUrl,
-                  cache:false,
-                  success: function(data){
-                    $("table#details").replaceWith(data); 
-                  }
-
-                });
-                result.html('success');
-            },
-            error: function(jqXHR, textStatus, errorThrown){
-                result.html( jqXHR.responseText);
-                result.css('color', 'red');
-            }
-        });
-    }));
 
 
 

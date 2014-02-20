@@ -10,10 +10,10 @@
         #  background-color: red;
     }
     .providerlogo {
-       display:none;
+        display:none;
     }
     .logoutbutton {
-      min-width: 50px;
+        min-width: 50px;
     }
     .editbutton {
     }
@@ -35,7 +35,7 @@
         # background-color: yellow;
     }
     form label {
-       topi: 10px;
+        topi: 10px;
     }
     
 }
@@ -47,13 +47,13 @@ only screen and (min-resolution: 144dpi) {
     
 }
 @media only screen and (max-width: 1280px) {
-   #container {
-      max-width: 900px;
-   }
-   #map {
-      width: 400px;
-   }
-
+    #container {
+        max-width: 900px;
+    }
+    #map {
+        width: 400px;
+    }
+    
 }
 
 /* Smaller than standard 960 (devices and browsers) */
@@ -61,9 +61,9 @@ only screen and (min-resolution: 144dpi) {
     body {
         
     }
-   #container {
-      max-width: 850px;
-   }
+    #container {
+        max-width: 850px;
+    }
     
 }
 
@@ -72,7 +72,7 @@ only screen and (min-resolution: 144dpi) {
 @media only screen and (min-width: 768px) and (max-width: 959px) {
     
     body {
-   
+        
     }
     
 }
@@ -120,210 +120,262 @@ only screen and (min-resolution: 144dpi) {
         width: 100%;
         clear: both; 
     }
-    
+    form#assignedlogos{
+        padding:0 0 0 0;
+    }
+    table.gridimages {
+        width: 100%;
+        display: block;
+        font-weight: bold;
+        min-height: 30px;
+        
+        display: block;
+        text-align: center;
+        td,  caption { 
+            display: table-row;
+            width: 100%;
+            text-align: center;
+            margin: 10px;
+        }
+        thead tr { 
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+        tr { border: 0px solid #ccc; padding:5px; }
+        tr>:first-child {
+            background: white;
+            color: grey;  
+            
+        }
+        td {
+            text-align: center;
+            width: 100%;
+        }
+        figure {
+            margin: 5px;
+            poosition: relative;
+            border: 1px solid grey;
+            text-align: center;
+            display: block;
+            img {
+                width: auto;
+            }
+            
+            
+        }
+        
+    }
     table#details , table#detailsnosort{
+        
         display: block; 
         caption {
-           width: auto;
-           font-weight: bold;
-           background-color: lighten($formbackgroundcolor, 0%);
-           min-height: 30px;
-           padding: 5 5 5 5;
-           margin: auto auto auto auto;
-           margin-bottom: 1px;
-           display: block;
-
+            width: auto;
+            font-weight: bold;
+            background-color: lighten($formbackgroundcolor, 0%);
+            min-height: 30px;
+            padding: 5 5 5 5;
+            margin: auto auto auto auto;
+            margin-bottom: 1px;
+            display: block;
+            
         }
         thead, tbody, th, td, tr { 
             display: block; 
+            border-color: darken($toPanelBackground, 80%);
+            border-width: 0px;
         }
     }
+    
+    table#details  thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    table#detailsnosort  thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    tr { border: 1px solid #ccc; }
+    tr>:first-child {
+        background: darken($toPanelBackground, 80%);
         
-     table#details  thead tr { 
-            position: absolute;
-            top: -9999px;
-            left: -9999px;
-        }
-     table#detailsnosort  thead tr { 
-            position: absolute;
-            top: -9999px;
-            left: -9999px;
-        }
-        tr { border: 1px solid #ccc; }
-        tr>:first-child {
-            background: darken($toPanelBackground, 10%);
-            color: grey;  
-            a {
-               color: white;
-               display: block;
-               text-decoration: underline;
-            }
-        }
-        td { 
-            /* Behave  like a "row" */
-            border: 0px;
-            position: relative;
-            padding-left: 50%; 
-        }
-        td:before { 
-            /* Now like a table header */
-            position: absolute;
-            /* Top/left values mimic padding */
-            top: 6px;
-            left: 6px;
-            width: 45%; 
-            padding-right: 10px; 
-            white-space: nowrap;
-        }
-        form {
-           label {
-             display: block;
-             width: 100%;
-             
-             
-           }
-            input {
-             width: 100%;
-             margin: auto;
-             display: block;
-           }
-           select {
-               width: 250px;
-               max-width: 250px;
-               overflow: hidden;
-               text-overflow: ellipsis;
-           }
- 
-        }
-        
-        form#formver2 fieldset legend{
-            font-size: larger;
-            font-weight: bolder;
-            text-align: center;
+        color: lighten(#000, 95%);  
+        a {
+            color: lighten(#000, 97%);
             display: block;
-            margin-bottom: 5px;
-            padding-bottom: 5px;
-            width: auto;
-            background-color: darken($formbackgroundcolor,40%);
+            text-decoration: underline;
+        }
+    }
+   .attrflow tr>:first-child {
+       background: lighten($toPanelBackground, 0%);
+           }
+    td { 
+        /* Behave  like a "row" */
+        border: 0px;
+        position: relative;
+        padding-left: 50%; 
+    }
+    td:before { 
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%; 
+        padding-right: 10px; 
+        white-space: nowrap;
+    }
+    form {
+        label {
+            display: block;
             width: 100%;
-            border-radius: 3px 3px 3px 3px;
-            padding: 1px 4px 2px;
-            box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+            
+            
+        }
+        input {
+            width: 100%;
+            margin: auto;
+            display: block;
+        }
+        select {
+            width: 250px;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+    }
+    
+    form#formver2 fieldset legend{
+        font-size: larger;
+        font-weight: bolder;
+        text-align: center;
+        display: block;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+        width: auto;
+        background-color: darken($formbackgroundcolor,40%);
+        width: 100%;
+        border-radius: 3px 3px 3px 3px;
+        padding: 1px 4px 2px;
+        box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+        color: rgba(255, 255, 255, 0.9);
+        text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
+        a {
             color: rgba(255, 255, 255, 0.9);
             text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
-            a {
-                    color: rgba(255, 255, 255, 0.9);
-                    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
-
-             }
-
-        }
-         form#formver2 {
-             ol, ul, li,fieldset,label, .accordionContent {
-               margin-left: 0px;
-               padding-left: 0px;
-               width: auto; 
-               max-width: 700px;
-               overflow: auto;
-             }
-              textarea {
-                  font-size: x-small;
-                  overflow: hidden;
-                  width: 400px;
-                  max-width: 400px;
-              }
-             .accordionContent {
-               label {
-                   display: block;
-                }
-               width: auto;
-               max-width: 400px;
-               margin-right:5px;
-             }
-         }
-       
-        div.buttons {
-             text-align: center;
-             width: 100%;
-             //padding: 5px;
-        } 
-        button.btn, button.button {
-               display: block;
-               width: 100%;
-               margin-top: 10px;
-               padding-top: 3px;
-               padding-bottom: 3px;
-                *padding-top: 3px;
-                *padding-bottom: 3px;
- 
-               
-        }
-        form#login {
             
-            input {
-                        width: auto;
-                        }
-            
-            legend {
-                        width: 100%;
-                text-align: center;
-                        }
-            ol {
-                padding: 0px;
-                        margin: 0px; 
-                        }
-            ul,li {
-                padding: 0px;
-                   margin: 0px;      
-                        }
+        }
+        
+    }
+    form#formver2 {
+        ol, ul, li,fieldset,label, .accordionContent {
+            margin-left: 0px;
+            padding-left: 0px;
+            width: auto; 
+            max-width: 700px;
+            overflow: auto;
+        }
+        textarea {
+            font-size: x-small;
+            overflow: hidden;
+            width: 400px;
+            max-width: 400px;
+        }
+        .accordionContent {
             label {
-                padding: 5px;
-                margin: 0px;
-                }
-        div.buttons {
-                    display: block;
-                    margin: auto;
-                    margin-left: 0px;
-                    padding: 0px;
-                    width: 100%;
-                    }
-             button.btn, button.button {
-               font-size: larger;
-               padding: 0px;
-               padding-top: 5px;
-               padding-bottom: 5px;
-               *padding-top: 5px;
-               *padding-bottom: 5px;
-               
-               margin-top: 10px;
-               margin-bottom: 10px;
-               margin-left: 0px;
-               margin-right: auto;
-               min-height: 50px;
-               vertical-align: bottom;
-               
-             }
+                display: block;
+            }
+            width: auto;
+            max-width: 400px;
+            margin-right:5px;
         }
-       .lbl {
-              
-              margin-bottom: 5px;
-              padding-bottom: 5px;
-              width: auto;
-       }
-       .ui-autocomplete-input {
-         width: 200px;
-         display: inline;
-      }
-
-      div.map {
-          width: 100%;
-          display: block;
-       }   
-       div.mapform {
-          text-align: left;
-          width: 100%;
-          display: block;
-      }
+    }
+    
+    div.buttons {
+        text-align: center;
+        width: 100%;
+        //padding: 5px;
+    } 
+    button.btn, button.button {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        *padding-top: 3px;
+        *padding-bottom: 3px;
+        
+        
+    }
+    form#login {
+        
+        input {
+            width: auto;
+        }
+        
+        legend {
+            width: 100%;
+            text-align: center;
+        }
+        ol {
+            padding: 0px;
+            margin: 0px; 
+        }
+        ul,li {
+            padding: 0px;
+            margin: 0px;      
+        }
+        label {
+            padding: 5px;
+            margin: 0px;
+        }
+        div.buttons {
+            display: block;
+            margin: auto;
+            margin-left: 0px;
+            padding: 0px;
+            width: 100%;
+        }
+        button.btn, button.button {
+            font-size: larger;
+            padding: 0px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            *padding-top: 5px;
+            *padding-bottom: 5px;
+            
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-left: 0px;
+            margin-right: auto;
+            min-height: 50px;
+            vertical-align: bottom;
+            
+        }
+    }
+    .lbl {
+        
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+        width: auto;
+    }
+    .ui-autocomplete-input {
+        width: 200px;
+        display: inline;
+    }
+    
+    div.map {
+        width: 100%;
+        display: block;
+    }   
+    div.mapform {
+        text-align: left;
+        width: 100%;
+        display: block;
+    }
     
 }
 
@@ -338,58 +390,73 @@ only screen and (min-resolution: 144dpi) {
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (max-width: 480px) {
     body {
-//          background-color: red;
+        //          background-color: red;
     }
-  #simplemodal-container {
-      height: auto;
-      max-height: 90%;
-      min-width: 350px;
-      width: 350px;
-      max-width: 350px;
- }
-
-  #simplemodal-container, #loginform2 {
-       padding: 2px;;
-       .column.one {
-          display: block;
-          width: 350px;
-          min-width: 250px;
-          clear: both;
-          max-width: 350px;
-          float: none;
-          border: 0px;
-          border-bottom: 1px grey dotted;
-          padding: 0px;
-          form {
-
-            padding: 1px;
-
-            margin: 0px;
-            input {
-               width: 90%;
-               max-width: 340px;
+    #simplemodal-container {
+        height: auto;
+        max-height: 90%;
+        min-width: 350px;
+        width: 350px;
+        max-width: 350px;
+    }
+    
+    #simplemodal-container, #loginform2 {
+        padding: 2px;;
+        .column.one {
+            display: block;
+            width: 340px;
+            min-width: 250px;
+            clear: both;
+            max-width: 340px;
+            float: none;
+            border: 0px;
+            border-bottom: 1px grey dotted;
+            padding: 0px;
+            form {
+                
+                padding: 1px;
+                
+                margin: 0px;
+                input {
+                    width: 90%;
+                    max-width: 340px;
+                }
             }
-          }
-
+            
         }
-       .column.two {
-          display: block;
-          width: 350px;
-          min-width: 250px;
-          clear: both;
-          max-width: 350px;
-          float: none;
-          border: 0px;
-          padding: 0px;
-
-       }
-       
-
-  }
+        .column.two {
+            display: block;
+            width: 350px;
+            min-width: 250px;
+            clear: both;
+            max-width: 350px;
+            float: none;
+            border: 0px;
+            padding: 0px;
+            
+        }
+        
+        
+    }
     
 }
 
-
+@media only screen and (max-width: 480px) {
+    
+    #simplemodal-container, #loginform2 {
+        
+        height: auto;
+        max-height: 90%;
+        min-width: 300px;
+        width: 300px;
+        max-width: 300px;
+        
+        .column.one , .column.two{
+            width: 290px;
+            max-width: 290px;
+        }
+    }
+}
 
 
 // ==|== print styles =======================================================
