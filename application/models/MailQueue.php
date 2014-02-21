@@ -51,7 +51,7 @@ class MailQueue {
     protected $rcptto;
   
     /**
-     * @Column(type="string", length=40, nullable=false)
+     * @Column(type="string", length=128, nullable=false)
     */
     protected $msubject;
  
