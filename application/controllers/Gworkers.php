@@ -44,6 +44,13 @@ class Gworkers extends MY_Controller {
     
     function mailqueuesender()
     {
+       if(!$this->input->is_cli_request())
+       {
+
+           show_error('denied',403);
+           return;
+
+       }
        
        log_message('info','MAILQUEUE STARTED : daemon needs to be restarted after any changes in configs');
        $this->load->library('doctrine');
