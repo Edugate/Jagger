@@ -2271,3 +2271,20 @@ div.help {
 
 }
 
+div.zebramembers > div {
+   padding: 1px;
+   padding-bottom: 2px;
+   margin-left: 5px;
+
+}
+
+div.zebramembers > div:hover {
+
+   background-color: $divhovermemberslist;
+   color: $divhovermemberslistfont;
+   a, a:link, a:visited {
+      color: $divhovermemberslistfont;
+
+   } 
+
+}

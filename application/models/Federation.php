@@ -34,6 +34,8 @@ use \Doctrine\Common\Collections\ArrayCollection,
 class Federation
 {
 
+    protected $fedmembers;
+
     /**
      * @Id
      * @Column(type="integer", nullable=false)
@@ -103,12 +105,17 @@ class Federation
     protected $attributeRequirement;
 
     /**
-     * @ManyToMany(targetEntity="Provider", mappedBy="federations", indexBy="entityid")
-     * @JoinTable(name="federation_members" )
-     * @OrderBy({"name"="ASC"})
-     * @var eProvider[]
+     * ManyToMany(targetEntity="Provider", mappedBy="federations", indexBy="entityid")
+     * JoinTable(name="federation_members" )
+     * OrderBy({"name"="ASC"})
+     * var eProvider[]
      */
-    protected $members;
+    //protected $members;
+
+    /**
+     * @OneToMany(targetEntity="FederationMembers", mappedBy="federation" ,  cascade={"persist", "remove"})
+     */
+    protected $membership;
 
     /**
      * @ManyToMany(targetEntity="FederationCategory", mappedBy="federations")
@@ -141,7 +148,8 @@ class Federation
 
     public function __construct()
     {
-        $this->members = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->membership = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fedmembers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->fvalidator = new \Doctrine\Common\Collections\ArrayCollection();
         $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
@@ -278,10 +286,19 @@ class Federation
     }
     public function addMember(Provider $provider)
     {
-        $already_there = $this->getMembers()->contains($provider);
-        if (empty($already_there))
+        $doFilter['provider_id'] = array(''.$provider->getId().'');
+        $membership = $this->getMembership()->filter(
+          function($entry) use($doFilter){
+             return (in_array($doFilter['provider_id']));
+          }
+       );
+        
+        
+        if ($membership->count() == 0)
         {
-            $this->getMembers()->add($provider);
+            $newMembership = new FederationMembers();
+            $provider->addMembership($newMembership);
+            $this->addMembership($newMembership);
         }
         return $this->getMembers()->toArray();
     }
@@ -361,10 +378,77 @@ class Federation
     {
         return $this->fvalidator;
     }
+   
+    public function getMembership()
+    {
+        return $this->membership;
+    }
+    public function addMembership(FederationMembers $membership)
+    {
+        if (!$this->membership->contains($membership)) {
+            $this->membership->add($membership);
+            $membership->setFederation($this);
+        }
+ 
+        return $this;
+    }
+
+    public function getMembershipProviders()
+    {
+        $mem = $this->membership;
+        $result = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach($mem as $m)
+        {
+                $result->set($m->getId(),$m->getProvider());
+        }
+         return $result;
+
+    }
 
     public function getMembers()
     {
-        return $this->members;
+        $mem = $this->membership;
+        $result = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach($mem as $m)
+        {
+          if($m->getJoinState() != 2)
+          {
+             $result->set($m->getProvider()->getEntityId(),$m->getProvider());; 
+          }
+        }
+        return $result;
+         
+    }
+
+    public function getActiveMembers()
+    {
+         $members = new \Doctrine\Common\Collections\ArrayCollection();
+         $mem = $this->membership;
+         foreach($mem as $m)
+         { 
+             $isOK = $m->getIsFinalMembership();
+             if($isOK)
+             {
+                $members->set($m->getProvider()->getEntityId(),$m->getProvider());
+             }
+         }
+         return $members;
+    }
+    public function getMembersForExport()
+    {
+         $members = new \Doctrine\Common\Collections\ArrayCollection();
+         $mem = $this->membership;
+         foreach($mem as $m)
+         { 
+             $isOK = !(($m->getJoinState() == 3) || ($m->getJoinState() == 2)) && !($m->getIsDisabled() || $m->getIsBanned());
+             if($isOK)
+             {
+                $members->set($m->getProvider()->getEntityId(),$m->getProvider());
+             }
+         }
+         return $members;
+
+
     }
 
     public function getCategories()
@@ -428,6 +512,14 @@ class Federation
        $r['is_local'] = $this->getLocal();
        $r['tou'] = $this->getTou();
        return $r;
+    }
+
+   /**
+    * @PostLoad
+    */
+    function createMembersCollection()
+    {
+       $this->fedmembers = new \Doctrine\Common\Collections\ArrayCollection();
     }
   
 

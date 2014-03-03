@@ -544,28 +544,46 @@ class Detail extends MY_Controller {
         $d[++$i]['name'] = lang('rr_memberof');
         $federationsString = "";
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
-        $feds = $ent->getFederations();
-        if (!empty($feds))
+        $membership = $ent->getMembership();
+//        $feds = $ent->getFederations();
+        $membershipNotLeft = array();
+        if (!empty($membership))
         {
             $federationsString = '<ul>';
-            foreach ($feds->getValues() as $f)
+            foreach ($membership as $f)
             {
-                $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getName()));
-                $metalink = base_url('metadata/federation/' . base64url_encode($f->getName()) . '/metadata.xml');
-                $fedActive = $f->getActive();
+                $joinstate = $f->getJoinState();
+                if($joinstate === 2)
+                {
+                   continue;
+                }
+                $membershipNotLeft[] = 1;
+                $membershipDisabled = '';
+                if($f->getIsDisabled())
+                {
+                    $membershipDisabled = makeLabel('disabled',lang('membership_inactive'),lang('membership_inactive'));
+                }
+                $membershipBanned = '';
+                if($f->getIsBanned())
+                {
+                    $membershipBanned = makeLabel('disabled',lang('membership_banned'),lang('membership_banned'));
+                }
+                $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getFederation()->getName()));
+                $metalink = base_url('metadata/federation/' . base64url_encode($f->getFederation()->getName()) . '/metadata.xml');
+                $fedActive = $f->getFederation()->getActive();
                 if($fedActive)
                 {
-                    $federationsString .= '<li>' . anchor($fedlink, $f->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
+                    $federationsString .= '<li>'. $membershipDisabled .'  '.$membershipBanned . ' ' .anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
                 }
                 else
                 {
-                    $federationsString .= '<li>' .makeLabel('disabled',lang('rr_inactive'),lang('rr_inactive')). anchor($fedlink, $f->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
+                    $federationsString .= '<li>'.$membershipDisabled .' '.$membershipBanned.' ' .makeLabel('disabled',lang('rr_fed_inactive_full'),lang('rr_fed_inactive_full')). ' '.anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
 
                  }
             }
             $federationsString .='</ul>';
             $manage_membership = '';
-            $no_feds = $feds->count();
+            $no_feds = $membership->count();
             if ($no_feds > 0 && $has_write_access)
             {
                 if (!$locked)
@@ -577,7 +595,7 @@ class Detail extends MY_Controller {
                     $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . $lockicon . ' <br />';
                 }
             }
-            if ($has_write_access && ($feds->count() < count($all_federations)))
+            if ($has_write_access && (count($membershipNotLeft) < count($all_federations)))
             {
                 if (!$locked)
                 {
@@ -1387,42 +1405,41 @@ class Detail extends MY_Controller {
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if (empty($ent))
         {
-            show_error(lang('error404'), 404);
+           set_status_header(404);
+           echo lang('error404');
+           return;
         }
-        else
+        $has_read_access = $this->zacl->check_acl($providerid, 'read', 'entity', '');
+        if (!$has_read_access)
         {
-            $has_read_access = $this->zacl->check_acl($providerid, 'read', 'entity', '');
-            if (!$has_read_access)
-            {
-                set_status_header(403);
-                echo 'no access';
-                return;
-            }
-
-            $tmp_providers = new models\Providers;
-            $members = $tmp_providers->getTrustedServicesWithFeds($ent);
-            if (empty($members))
-            {
-                $l[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');
-            }
-            $preurl = base_url() . 'providers/detail/show/';
-            foreach ($members as $m)
-            {
-                $feds = array();
-                $name = $m->getName();
-                if (empty($name))
-                {
-                    $name = $m->getEntityId();
-                }
-                $y = $m->getFederations();
-                foreach($y as $yv)
-                {
-                   $feds[] = $yv->getName();
-                }
-                $l[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId(),'feds'=>$feds);
-            }
-            echo json_encode($l);
+           set_status_header(403);
+           echo 'no access';
+           return;
         }
+
+        $tmp_providers = new models\Providers;
+        $members = $tmp_providers->getTrustedServicesWithFeds($ent);
+        if (empty($members))
+        {
+           $l[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');
+        }
+        $preurl = base_url() . 'providers/detail/show/';
+        foreach ($members as $m)
+        {
+           $feds = array();
+           $name = $m->getName();
+           if (empty($name))
+           {
+               $name = $m->getEntityId();
+           }
+           $y = $m->getFederations();
+           foreach($y as $yv)
+           {
+              $feds[] = $yv->getName();
+           }
+           $l[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId(),'feds'=>$feds);
+        }
+        echo json_encode($l);
     }
 
 }

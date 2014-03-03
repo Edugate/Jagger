@@ -479,14 +479,45 @@ class Show_element {
         return $result;
     }
 
+    public function MembersToHtml($members)
+    {
+        $urlprefix = base_url().'providers/detail/show/';
+        $meminactive = makeLabel('disabled',lang('membership_inactive'),lang('membership_inactive'));
+        $membanned = makeLabel('disabled',lang('membership_banned'),lang('membership_banned'));
+        $providerdisabled = makeLabel('disabled',lang('rr_inactive'),lang('rr_inactive'));
+        $result = '<div class="zebramembers">';
+        foreach($members as $m)
+        {
+           $t1 = '';
+           $t2 = '';
+           $t3 = '';
+           if(!empty($m['mdisabled']))
+           {
+              $t1 = $meminactive;
+           }
+           if(!empty($m['mbanned']))
+           {
+              $t2 = $membanned;
+           }
+           if(empty($m['penabled']))
+           {
+              $t3 = $providerdisabled;
+           }
+           $result .= '<div><a href="'.$urlprefix.$m['pid'].'">'.$m['pname'].'</a> <small>'.$m['entityid'].'</small><div style="float: right">'.$t1.' '.$t2.' '.$t3.'</div></div>';
+        }
+        $result .='</div>';
+
+        return $result;
+    }
+
     /**
      * $members must be array of models\Provider objects 
      */
     public function IdPMembersToTable(array $members)
     {
-        $cell_with_idp_members = '<div id="table2"><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
-        $cell_with_sp_members = '<div id="table2"><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
-        $cell_with_both_members = '<div id="table2"><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
+        $cell_with_idp_members = '<div><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
+        $cell_with_sp_members = '<div><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
+        $cell_with_both_members = '<div><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
         foreach ($members as $m)
         {
             $m_type = $m->getType();

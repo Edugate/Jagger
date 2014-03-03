@@ -80,7 +80,9 @@ class Disco extends MY_Controller {
            } 
 
            $p = new models\Providers;
-           $p1 = $p->getCircleMembers($me);
+           //$p1 = $p->getCircleMembers($me);
+           $p1 = $p->getCircleMembersByType($me, TRUE);
+
            if (empty($p1))
            {
               show_error('empty', 404);

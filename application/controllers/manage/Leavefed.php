@@ -95,28 +95,21 @@ class Leavefed extends MY_Controller {
                  show_error('Federation you want  to leave doesnt exist',404);
                  return;
              }
-             if($federations->contains($federation))
+             $membership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider'=>$provider->getId(),'federation'=>$federation->getId()));
+             if(!empty($membership))
              {
                 $p_tmp = new models\AttributeReleasePolicies;
                 $arp_fed = $p_tmp->getFedPolicyAttributesByFed($provider,$federation);
-                //print_r($arp_fed);
+                $rm_arp_msg = '';
                 if(!empty($arp_fed) && is_array($arp_fed) && count($arp_fed)>0)
                 {
-                    foreach($arp_fed as $r)
-                    {
+                   foreach($arp_fed as $r)
+                   {
                         $this->em->remove($r);
-                    }
-                    $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>";
-                    $rm_arp_msg .="It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
+                   }
+                   $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>";
+                   $rm_arp_msg .="It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
                 }
-                else
-                {
-                    $rm_arp_msg = '';
-                }
-                $provider->removeFederation($federation);
-                $this->em->persist($provider);
-                $this->em->flush();
-
                 $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($provider);
                 if(!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) and count($spec_arps_to_remove) > 0)
                 {
@@ -124,14 +117,37 @@ class Leavefed extends MY_Controller {
                    {
                        $this->em->remove($rp);
                    }
-                   $this->em->flush();
+                }
+              
+                if($provider->getLocal())
+                {
+                   $membership->setJoinState('2');
+                   $this->em->persist($membership);
+                 }
+                else
+                {
+                   $this->em->remove($membership);
+
+                }
+                try
+                {
+                    $this->em->flush();
+                
+                    $data['success_message'] = lang('rr_youleftfed').': '.$federation->getName().'<br />';
+                    $data['success_message'] .= $rm_arp_msg;
+                    $data['content_view'] = 'manage/leavefederation_view';
+                    $this->load->view('page',$data);
+                }
+                catch(Exception $e)
+                {
+                    log_message('error',__METHOD__.' ' . $e);
+                    $data['error_message'] = 'Unknown error occured';
+                    $data['content_view'] = 'manage/leavefederation_view';
+                    $this->load->view('page',$data);
+                    return;
+
                 }
                 
-                $data['success_message'] = lang('rr_youleftfed').': '.$federation->getName().'<br />';
-                $data['success_message'] .= $rm_arp_msg;
-                $data['content_view'] = 'manage/leavefederation_view';
-                $this->load->view('page',$data);
-                return;
              }
              else
              {
@@ -139,6 +155,7 @@ class Leavefed extends MY_Controller {
                 $data['content_view'] = 'manage/leavefederation_view';
                 $this->load->view('page',$data);
                 return;
+
              }
         }
         else

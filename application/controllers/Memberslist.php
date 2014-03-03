@@ -51,7 +51,8 @@ class Memberslist extends MY_Controller {
            $fed = $tmp_feds->getOneByName(''.$defaultfedname.'');    
            if(!empty($fed))
            {
-             $fedmembers = $fed->getMembers();
+             $fedmembers = $fed->getActiveMembers();
+             
            }
         }
         else
@@ -99,13 +100,14 @@ class Memberslist extends MY_Controller {
         $display .= '<h2>Service Providers</h2>';
         $i = 1;
         $y = 0;
+        $baseurl = base_url();
         if(!empty($defaultfedname) && array_key_exists($defaultfedname,$providers['sp']))
         {
             $display .= '<h3>'.$defaultfedname.'</h3>';
             foreach ($providers['sp'][''.$defaultfedname.''] as $p)
             {
-                $display .= '<img src="/images/resource.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
-                $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
+                $display .= '<img src="'.$baseurl.'/images/resource.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="'.$baseurl.'/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
+                $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="'.$baseurl.'/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
                 $display .="\n";
                 $y++;
                 $i++;
@@ -114,8 +116,8 @@ class Memberslist extends MY_Controller {
         $display .= '<h3>Others</h3>';
         foreach ($providers['sp']['others'] as $p)
         {
-            $display .= '<img src="/images/resource.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
-            $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
+            $display .= '<img src="'.$baseurl.'/images/resource.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="'.$baseurl.'/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
+            $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="'.$baseurl.'/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
             $display .="\n";
             $y++;
             $i++;
@@ -128,8 +130,8 @@ class Memberslist extends MY_Controller {
             $display .= '<h3>'.$defaultfedname.'</h3>';
             foreach ($providers['idp'][''.$defaultfedname.''] as $p)
             {
-                $display .= '<img src="/images/homeorg.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
-                $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
+                $display .= '<img src="'.$baseurl.'/images/homeorg.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="'.$baseurl.'/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
+                $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="'.$baseurl.'/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
                 $display .="\n";
                 $y++;
                 $i++;
@@ -139,8 +141,8 @@ class Memberslist extends MY_Controller {
         $display .= '<h3>Others</h3>';
         foreach ($providers['idp']['others'] as $p)
         {
-            $display .= '<img src="/images/homeorg.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
-            $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
+            $display .= '<img src="'.$baseurl.'/images/homeorg.png"/>' . $i . '. ' . $p['name'] . '<a href="javascript:;" onmousedown="toggleDiv(\'mydiv' . $y . '\');"> <img src="'.$baseurl.'/images/list.png"/></a><div id="mydiv' . $y . '" style="display:none"><em>' . $p['desc'] . '<a href="' . $p['url'] . '"> Go...</a></em>';
+            $display .= '<a href="' . $p['url'] . '" title="Contact helpdesk"><img src="'.$baseurl.'/images/help.png" alt="Contact Helpdesk"/></a></div><br />';
             $display .="\n";
             $y++;
             $i++;

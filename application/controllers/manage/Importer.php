@@ -208,6 +208,7 @@ class Importer extends MY_Controller {
             'active' => $active,
             'static' => $static,
             'local' => $local,
+            'localimport'=>TRUE,
             'federations' => array($fed->getName())
         );
         foreach ($defaults as $key => $value)
@@ -219,7 +220,6 @@ class Importer extends MY_Controller {
         }
         $other = null;
         $type_of_entities = strtoupper($arg['type']);
-        //$result = $this->metadata2import->import($metadata_body, $type_of_entities, $full, $defaults, $other);
         $result = $this->metadata2import->import($this->xmlDOM, $type_of_entities, $full, $defaults, $other);
         if ($result)
         {
