@@ -225,6 +225,10 @@ class Importer extends MY_Controller {
         {
             $data['title'] = lang('titleimportmeta');
             $data['success_message'] = lang('okmetaimported');
+            if(isset($this->globalnotices['metadataimportmessage']) && is_array($this->globalnotices['metadataimportmessage']))
+            {
+               $data['success_message'] .= '<div>'.implode('<br />',$this->globalnotices['metadataimportmessage']).'</div>';
+            }
             $data['content_view'] = "manage/import_metadata_success_view";
             $this->load->view('page', $data);
         } else

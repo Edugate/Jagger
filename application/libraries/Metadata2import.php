@@ -187,7 +187,6 @@ class Metadata2import {
             {
                 $membershipByEnt['' . $m->getProvider()->getEntityId() . ''] = array('mshipKey' => $k, 'mship' => &$m);
             }
-            \log_message('debug', 'GKS ' . serialize(array_keys($membershipByEnt)));
 
             if (empty($this->defaults['localimport']))
             {
@@ -475,6 +474,7 @@ class Metadata2import {
                         $existingProvider = $tmpProviders->getOneByEntityId($importedProvider->getEntityId());
                         if (empty($existingProvider))
                         {
+                            $importResult[] = lang('provcreated').': '.$importedProvider->getEntityId(); 
                             $importedProvider->setStatic($static);
                             $importedProvider->setLocal($local);
                             $importedProvider->setActive($active);
@@ -544,11 +544,13 @@ class Metadata2import {
                             $this->em->persist($importedProvider);
                         } else
                         { // for existing entity
+                            $importEntity = '';
                             $elocal = $existingProvider->getLocal();
                             $isLocked = $existingProvider->getLocked();
                             $updateAllowed = (($elocal && $overwritelocal && !$isLocked) OR !$elocal);
                             if ($updateAllowed)
                             {
+                                $importEntity .=  lang('provupdated');
                                 $existingProvider->overwriteByProvider($importedProvider);
                                 $existingProvider->setLocal($this->defaults['local']);
                                 if (array_key_exists('coc', $ent) && empty($ent['coc']))
@@ -655,12 +657,27 @@ class Metadata2import {
                                     $newMembership->setFederation($f);
                                     $newMembership->setJoinState('1');
                                     $this->em->persist($newMembership);
+                                    $importEntity .= ', '.lang('rr_addedtofed'); 
                                 } else
                                 {
+                                    $cjoinstate = $settingMebership->getJoinState();
+                                    if($cjoinstate == 2)
+                                    {
+                                       $importEntity .= '; '.lang('rr_addedtofed');
+                                    }
+                                    elseif($cjoinstate == 3)
+                                    {
+                                        $importEntity .= '; '.lang('rr_convertjoinstate31');
+                                    }
+                                    else
+                                    {
+                                        $importEntity .= '; '.lang('rr_joinstatealreadyinfed');
+                                    }
                                     $settingMebership->setJoinState('1');
                                     $this->em->persist($settingMebership);
                                 }
                             }
+                            $importResult[] = $importEntity .': '.$existingProvider->getEntityId();
                         } // end for existing provider
                     }
                 }
@@ -669,6 +686,10 @@ class Metadata2import {
         try
         {
             $this->em->flush();
+            if(!empty($importResult))
+            {
+                $this->ci->globalnotices['metadataimportmessage']= $importResult;
+            }
             return true;
         } catch (Exception $e)
         {
