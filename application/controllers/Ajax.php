@@ -90,7 +90,7 @@ class Ajax extends MY_Controller {
         {
             log_message('debug', 'ajax');
             $language = substr($language, 0, 2);
-            if (in_array($language, array('pl', 'pt', 'it', 'lt', 'es')))
+            if (in_array($language, array('pl', 'pt', 'it', 'lt', 'es','cs')))
             {
                 $cookie_value = $language;
             }

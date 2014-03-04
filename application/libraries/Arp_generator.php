@@ -257,14 +257,14 @@ class Arp_generator {
         }
         $policies = $idp->getAttributeReleasePolicies();
 
-        $tmp_myfeds = $idp->getFederations();
+        $tmp_myfeds = $idp->getActiveFederations();
         $feds_collection = array();
         foreach ($tmp_myfeds as $t)
         {
             $fedEnabled = $t->getActive();
             if($fedEnabled)
             {
-              $feds_collection[$t->getId()] = $t->getMembers();
+              $feds_collection[$t->getId()] = $t->getActiveMembers();
             }
         }
         $tmp_requirements = new models\AttributeRequirements;
@@ -272,25 +272,25 @@ class Arp_generator {
         $members = null;
         $members_byid = array();
 
-        $members = $tmp_idp->getCircleMembersSP($idp);
+        $members = $tmp_idp->getCircleMembersByType($idp);
         $excluded = $idp->getExcarps();
         $excludedById = array();
         if (is_array($excluded) && count($excluded) > 0)
         {
-            foreach ($excluded as $excv)
-            {
-                $members->remove($excv);
-                log_message('debug', 'ARP for ' . $idp->getEntityId() . ' : excluding ' . $excv);
-            }
             $tmpexl = $this->em->getRepository("models\Provider")->findBy(array('entityid' => $excluded));
             foreach ($tmpexl as $tmpv)
             {
                 $excludedById[] = $tmpv->getId();
+                if($members->contains($tmpv))
+                {
+                   $members->removeElement($tmpv);
+                }
             }
+
         }
         log_message('debug', 'excluded SP from arp by id:' . serialize($excludedById));
 
-        if (!empty($members))
+        if ($members->count() > 0)
         {
             foreach ($members as $m_value)
             {
@@ -305,7 +305,7 @@ class Arp_generator {
 
         $members_requirements = $tmp_requirements->getRequirementsBySPs(array_keys($members_byid));
 
-        log_message('debug', 'Arp: found ' . count($members) . ' for idp (id:' . $idp->getId() . '): ' . $idp->getEntityId() . '');
+        log_message('debug', 'Arp: found ' . $members->count() . ' for idp (id:' . $idp->getId() . '): ' . $idp->getEntityId() . '');
 
         $attrs = array();
         /**
@@ -397,7 +397,7 @@ class Arp_generator {
                 $m_policy[$k] = 0;
             }
         }
-        foreach ($members->getValues() as $m)
+        foreach ($members as $m)
         {
             /* set with merged array : supported with overwiten by global policy */
             $attrs[$m->getEntityId()] = $m_policy;
@@ -494,7 +494,7 @@ class Arp_generator {
                 }
             } else
             {
-                $feds_1 = $m->getFederations();
+                $feds_1 = $m->getActiveFederations();
                 if (!empty($feds_1))
                 {
                     $tmp_fed_req = array();
@@ -585,18 +585,18 @@ class Arp_generator {
          */
         $policies = $idp->getAttributeReleasePolicies()->getValues();
 
-        $tmp_myfeds = $idp->getFederations();
+        $tmp_myfeds = $idp->getActiveFederations();
         $feds_collection = array();
         foreach ($tmp_myfeds as $t)
         {
-            $feds_collection[$t->getId()] = $t->getMembers();
+            $feds_collection[$t->getId()] = $t->getActiveMembers();
         }
         $tmp_requirements = new models\AttributeRequirements;
 
         $members = null;
         $members_byid = array();
 
-        $members = $tmp_idp->getCircleMembersSP($idp);
+        $members = $tmp_idp->getCircleMembersByType($idp);
         if ($members->count() == 0)
         {
             return null;
@@ -609,14 +609,13 @@ class Arp_generator {
          */
         if (is_array($excluded) && count($excluded) > 0)
         {
-            foreach ($excluded as $excv)
-            {
-                $members->remove($excv);
-                log_message('debug', 'ARP for ' . $idp->getEntityId() . ' : excluding ' . $excv);
-            }
             $tmpexl = $this->em->getRepository("models\Provider")->findBy(array('entityid' => $excluded));
             foreach ($tmpexl as $tmpv)
             {
+                if($members->contains($tmpv))
+                {
+                   $members->removeElement($tmpv);
+                }
                 $excludedById[] = $tmpv->getId();
             }
         }
@@ -818,7 +817,7 @@ class Arp_generator {
                 }
             } else
             {
-                $feds_1 = $m->getFederations();
+                $feds_1 = $m->getActiveFederations();
                 if (!empty($feds_1))
                 {
                     $tmp_fed_req = array();

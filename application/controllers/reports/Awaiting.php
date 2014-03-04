@@ -374,8 +374,13 @@ class Awaiting extends MY_Controller {
                             $creator = $queueObj->getCreator();
                             if(!empty($fed2) and $fed instanceOf models\Federation )
                             {
-                                 $idp->setFederation($fed2);
+                                 $membership = new models\FederationMembers;
+                                 $membership->setJoinState('1');
+                                 $membership->setProvider($idp);
+                                 $membership->setFederation($fed2);
+                                 $this->em->persist($membership);
                             }
+                            
                             $this->em->persist($idp);
                             $this->em->remove($queueObj);
                             $requester_recipient = null;
@@ -446,7 +451,11 @@ class Awaiting extends MY_Controller {
                                $fed = $sp->getFederations()->get(0);
                                $fed2 = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $fed->getName()));
                                $sp->removeFederation($fed);
-                               $sp->setFederation($fed2);
+                               $membership = new models\FederationMembers;
+                               $membership->setJoinState('1');
+                               $membership->setProvider($sp);
+                               $membership->setFederation($fed2);
+                               $this->em->persist($membership);
                             }
                             foreach ($sp->getCertificates()->getValues() as $o)
                             {
@@ -634,14 +643,27 @@ class Awaiting extends MY_Controller {
                                 show_error('Federation not found', 404);
                                 return;
                             }
-                            $provider->setFederation($federation);
+                            $membership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider'=>$provider->getId(),'federation'=>$federation->getId));
+                            if(!empty($membership))
+                            {
+                              $membership->setJoinState('1');
+                            }
+                            else
+                            {
+                              $membership = new models\FederationMembers;
+                              $membership->setJoinState('1');
+                              $membership->setProvider($provider);
+                              $membership->setFederation($federation);
+                            }
+                            $this->em->persist($membership);
+                            $this->em->persist($provider);
+                            $this->em->persist($federation);
                             $contacts = $provider->getContacts();
                             $mail_recipients = array();
                             $mail_recipients[] = $queueObj->getCreator()->getEmail();
                             $sbj = $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
                             $body = $this->j_auth->current_user() . " just approved request.\r\n";
                             $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
-                            $this->em->persist($provider);
                             $this->em->remove($queueObj);
                             $this->email_sender->addToMailQueue(array('grequeststoproviders'),null,$sbj,$body,array(),$sync=false);
                             $this->em->flush();
@@ -672,7 +694,22 @@ class Awaiting extends MY_Controller {
                             {
                                 show_error('Provider not found', 404);
                             }
-                            $provider->setFederation($federation);
+                            $membership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider'=>$provider->getId(),'federation'=>$federation->getId()));
+                            if(!empty($membership))
+                            {
+                              $membership->setJoinState('1');
+                            }
+                            else
+                            {
+                              $membership = new models\FederationMembers;
+                              $membership->setJoinState('1');
+                              $membership->setProvider($provider);
+                              $membership->setFederation($federation);
+                            }
+                            $this->em->persist($membership);
+
+
+
                             /**
                              * @todo add more recipient like fedowner or fedadmins
                              */

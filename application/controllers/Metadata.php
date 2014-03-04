@@ -74,7 +74,7 @@ class Metadata extends MY_Controller
                 }
             }
 
-            $members = $federation->getMembers();
+            $members = $federation->getActiveMembers();
             $members_count = $members->count();
             $members_keys = $members->getKeys();
             log_message('debug', 'no federation members: ' . $members_count);
@@ -188,7 +188,7 @@ class Metadata extends MY_Controller
                 }
             }
 
-            $members = $federation->getMembers();
+            $members = $federation->getMembersForExport();
             $members_count = $members->count();
             $members_keys = $members->getKeys();
             log_message('debug', 'no federation members: ' . $members_count);
@@ -285,73 +285,6 @@ class Metadata extends MY_Controller
         }
     }
 
-   /**
-    * original function circle kept ig bugs found in new one
-    */
-    private function circleOrig($entityId, $m = NULL)
-    {
-        if (!empty($m) && $m != 'metadata.xml') {
-            show_error('Request not allowed', 403);
-        }
-        $data = array();
-        $name = base64url_decode($entityId);
-        $tmp = new models\Providers;
-        $me = $tmp->getOneByEntityId($name);
-        if (empty($me)) {
-            log_message('debug', 'Failed generating circle metadata for ' . $name);
-            show_error('unknown provider', 404);
-            return;
-        }
-        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
-        if (!empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE) {
-            $is_local = $me->getLocal();
-            if (!$is_local) {
-                log_message('info', ' WARNING: cannot generate circle metadata for external provider:' . $me->getEntityId());
-                log_message('debug', 'To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE');
-                show_error($me->getEntityId() . ': This is external provider. Cannot generate circle metadata', 403);
-                return;
-            }
-        }
-        $p = new models\Providers;
-        $p1 = $p->getCircleMembersByType($me);
-        if (is_null($p1) || !is_array($p1)) {
-            show_error('empty', 404);
-            return;
-        }
-        $docXML = new \DOMDocument();
-        $docXML->encoding = 'UTF-8';
-        $docXML->formatOutput = true;
-
-        $xpath = new \DomXPath($docXML);
-        $namespaces = h_metadataNamespaces();
-        foreach ($namespaces as $key => $value) {
-            $xpath->registerNamespace($key, $value);
-        }
-        $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
-        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
-        $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
-        $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
-        $Entities_Node->setAttribute('validUntil', $validuntil);
-        $Entities_Node->setAttribute('Name', 'circle:' . $me->getEntityId());
-        $idprefix = '';
-        $prefid = $this->config->item('circlemetadataidprefix');
-        if (!empty($prefid)) {
-            $idprefix = $prefid;
-        }
-        $idsuffix = $validfor->format('YmdHis');
-        $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
-
-        foreach ($p1 as $v) {
-            if ($v->getAvailable()) {
-                $v->getProviderToXML($Entities_Node);
-            }
-        }
-        $docXML->appendChild($Entities_Node);
-        log_message('debug', __METHOD__ . ' memory: ' . memory_get_usage());
-        $this->output->set_content_type('text/xml');
-        $data['out'] = $docXML->saveXML();
-        $this->load->view('metadata_view', $data);
-    }
 
     public function circle($entityId, $m = NULL)
     {
@@ -384,10 +317,6 @@ class Metadata extends MY_Controller
 
         $p = new models\Providers;
         $p1 = $p->getCircleMembersByType($me,$excludeDisabledFeds=TRUE);
-        if (is_null($p1) || !is_array($p1)) {
-            show_error('empty', 404);
-            return;
-        }
         $docXML = new \DOMDocument();
         $docXML->encoding = 'UTF-8';
         $docXML->formatOutput = true;

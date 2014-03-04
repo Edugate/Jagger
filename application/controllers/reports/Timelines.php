@@ -41,7 +41,7 @@ class Timelines extends MY_Controller {
             {
                 show_error('Federation not found', 404);
             }
-            $providers = $fed->getMembers();
+            $providers = $fed->getActiveMembers();
             $data['fedname'] = $fed->getName();
         } else
         {

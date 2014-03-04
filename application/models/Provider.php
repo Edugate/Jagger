@@ -36,6 +36,7 @@ class Provider {
     protected $em;
     protected $logo_url;
     protected $ci;
+    protected $federations;
 
 
     /**
@@ -248,10 +249,15 @@ class Provider {
 
     /**
      * it can be member of many federations
-     * @ManyToMany(targetEntity="Federation", inversedBy="members")
-     * @JoinTable(name="federation_members" )
+     * ManyToMany(targetEntity="Federation", inversedBy="members")
+     * JoinTable(name="federation_members" )
      */
-    protected $federations;
+    //protected $federations;
+
+    /**
+     * @OneToMany(targetEntity="FederationMembers", mappedBy="provider", cascade={"persist", "remove"})
+     */
+    protected $membership;
 
     /**
      * @OneToMany(targetEntity="NotificationList", mappedBy="provider", cascade={"persist", "remove"})
@@ -259,7 +265,6 @@ class Provider {
     protected $notifications;
 
     /**
-     * it can be member of many federations
      * @OneToMany(targetEntity="Contact", mappedBy="provider", cascade={"persist", "remove"})
      */
     protected $contacts;
@@ -316,12 +321,12 @@ class Provider {
     public function __construct()
     {
 
-        $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->contacts = new \Doctrine\Common\Collections\ArrayCollection();
         $this->certificates = new \Doctrine\Common\Collections\ArrayCollection();
         $this->serviceLocations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nameidformat = new \Doctrine\Common\Collections\ArrayCollection();
         $this->protocol = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->membership = new \Doctrine\Common\Collections\ArrayCollection();
         $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->extend = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
@@ -748,7 +753,14 @@ class Provider {
        $this->em = $this->ci->doctrine->em;
        
     }
-  
+
+    /**
+     * @PostLoad
+     */
+    public function createEmptyFedColl()
+    {
+        $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
+    }  
 
     public function setName($name)
     {
@@ -927,6 +939,20 @@ class Provider {
          return $this;
     }
 
+    public function getMembership()
+    {
+         return $this->membership;
+    }
+
+    public function addMembership($membership)
+    {
+        if (!$this->membership->contains($membership)) {
+            $this->membership->add($membership);
+            $membership->setProvider($this);
+        }
+ 
+        return $this;
+    }
     public function setHidePublic()
     {
          $this->hidepublic = true;
@@ -1309,19 +1335,51 @@ class Provider {
 
     public function setFederation(Federation $federation)
     {
-        $already_there = $this->getFederations()->contains($federation);
-        if (empty($already_there))
+        $doFilter['federation_id'] = array(''.$federation->getId().'');
+        $membership = $this->getMembership()->filter(
+          function($entry) use($doFilter){
+             return (in_array($entry->getFederation()->getId(),$doFilter['federation_id']));
+          }
+       );
+
+
+        if ($membership->count() == 0)
         {
-            $this->getFederations()->add($federation);
+            $newMembership = new FederationMembers();
+            $federation->addMembership($newMembership);
+            $this->addMembership($newMembership);
         }
-        return $this->federations;
+        return $this->getFederations();
     }
 
     public function removeFederation(Federation $federation)
     {
-        $this->getFederations()->removeElement($federation);
-        $federation->getMembers()->removeElement($this);
-        return $this->federations;
+
+        $doFilter['federation_id'] = array(''.$federation->getId().'');
+        $membership = $this->getMembership()->filter(
+          function($entry) use($doFilter){
+             return (in_array($entry->getFederation()->getId(),$doFilter['federation_id']));
+          }
+       );
+
+
+        foreach($membership as $m)
+        {
+            $this->removeMembership($m);
+        }
+        return $this->getFederations();
+
+
+
+    }
+
+    public function removeMembership(FederationMembers $membership)
+    {
+        if ($this->membership->contains($membership)) {
+            $this->membership->removeElement($membership);
+        }
+ 
+        return $this;
     }
 
     public function setServiceLocation(ServiceLocation $service)
@@ -1751,15 +1809,40 @@ class Provider {
 
     public function getFederations()
     {
-        return $this->federations;
+        $mem = $this->membership;
+        $federations = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach($mem as $m)
+        {
+          $joinstate = $m->getJoinState();
+          if($joinstate != 2)
+          {
+             $federations->add($m->getFederation());;
+          }
+        }
+        return $federations;
+
+    }
+    public function getActiveFederations()
+    {
+        $mem = $this->membership;
+        $federations = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach($mem as $m)
+        {
+          if($m->getIsFinalMembership())
+          {
+             $federations->add($m->getFederation());;
+          }
+        }
+        return $federations;
+
     }
 
     public function getFederationNames()
     {
         $feders = array();
-        foreach ($this->federations as $entry)
+        foreach ($this->membership as $entry)
         {
-            $feder[] = $entry;
+            $feder[] = $entry->getFederation();
         }
         return $feder;
     }
@@ -2227,8 +2310,9 @@ class Provider {
                     $lang = $dm->getAttributes();
                     if (isset($lang['xml:lang']))
                     {
-                        $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:PrivacyStatementURL', $dm->getElementValue());
+                        $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:PrivacyStatementURL');
                         $dnode->setAttribute('xml:lang', '' . $lang['xml:lang'] . '');
+                        $dnode->appendChild($e->ownerDocument->createTextNode($dm->getElementValue()));
                         if ($lang['xml:lang'] === 'en')
                         {
                             $en_privacyurl = TRUE;
@@ -2478,12 +2562,16 @@ class Provider {
         }
 
         $r['federations'] = array();
-        $feds = $this->getFederations();
-        if (!empty($feds))
+        $membership = $this->getMembership();
+        if (!empty($membership) && $membership->count()>0)
         {
-            foreach ($feds->getValues() as $f)
+            foreach ($membership as $f)
             {
-                $r['federations'][] = $f->convertToArray();
+                $state = $f->getJoinState();
+                if($state != 2)
+                {
+                  $r['federations'][] = $f->getFederation()->convertToArray();
+                }
             }
         }
 
@@ -2594,8 +2682,11 @@ class Provider {
             {
                 $c = new Federation;
                 $c->importFromArray($f);
-                $this->setFederation($c);
-                $c->addMember($this);
+                $m = new FederationMembers;
+                $m->setFederation($c);
+                $m->setProvider($this);
+                $this->addMembership($m);
+              //  $this->setFederation($c);
             }
         }
     }

@@ -66,9 +66,19 @@ class Idp_registration extends MY_Controller {
             {
                  $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $federpost));
             }
-	    if(!empty($federation))
-            {
-                $idp->setFederation($federation);
+            if (!empty($federation)) {
+                $ispublic = $federation->getPublic();
+                if ($ispublic) {
+                    $membership = new models\FederationMembers;
+                    $membership->setJoinState('1');
+                    $membership->setProvider($idp);
+                    $membership->setFederation($federation);
+                    $idp->getMembership()->add($membership);
+                    
+                }
+                else {
+                    log_message('warning', 'Federation is not public, cannot register sp with join fed with name ' . $federation->getName());
+                }
             }
             $idp->setName($this->input->post('homeorg'));
             $idp->setEntityId($this->input->post('entity'));

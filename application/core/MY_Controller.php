@@ -33,6 +33,7 @@ class MY_Controller extends CI_Controller {
     public $title;
     protected $inqueue;
     public $globalerrors = array();
+    public $globalnotices = array();
 
     public function __construct()
     {
@@ -41,7 +42,7 @@ class MY_Controller extends CI_Controller {
         $this->em = $this->doctrine->em;
         $this->title = "";
         $this->lang->load('rr_lang', 'english');
-        $langs = array('pl','pt','it','lt','es','english');
+        $langs = array('pl','pt','it','lt','es','cs','english');
         $cookie_lang = $this->input->cookie('rrlang', TRUE);
         $cookdefaultlang = $this->config->item('rr_lang');
         if(empty($cookdefaultlang))

@@ -2645,6 +2645,20 @@ div.help ol, div.help li {
   margin: 0px;
 }
 
+div.zebramembers > div {
+  padding: 1px;
+  padding-bottom: 2px;
+  margin-left: 5px;
+}
+
+div.zebramembers > div:hover {
+  background-color: #6666ff;
+  color: black;
+}
+div.zebramembers > div:hover a, div.zebramembers > div:hover a:link, div.zebramembers > div:hover a:visited {
+  color: black;
+}
+
 form {
   counter-reset: fieldsets;
   background: #93aedf;

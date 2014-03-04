@@ -142,18 +142,24 @@ class Manage extends MY_Controller
             show_error('Request not allowed', 403);
         }
         if (!$this->j_auth->logged_in()) {
-            show_error('Session invalid', 403);
+            set_status_header(403);
+            echo 'access denied. invalid session';
+            return;
         }
 
         $this->load->library('zacl');
 
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
         if (empty($federation)) {
-            show_error('federation not found', 404);
+            set_status_header(404);
+            echo 'Federarion not found';
+            return;
         }
-        $fmembers = $federation->getMembers();
+        $fmembers = $federation->getActiveMembers();
         if (empty($fmembers)) {
-            show_error(lang('error_nomembersforfed'), 404);
+            set_status_header(404);
+            echo lang('error_nomembersforfed');
+            return;
         }
         $preurl = base_url() . 'providers/detail/show/';
         $members = array();
@@ -172,7 +178,9 @@ class Manage extends MY_Controller
     function showcontactlist($fed_name, $type = NULL)
     {
         if (!$this->j_auth->logged_in()) {
-            show_error('no per', 403);
+            set_status_header(403);
+            echo 'Access denied';
+            return;
         }
         $this->load->library('zacl');
 
@@ -181,7 +189,7 @@ class Manage extends MY_Controller
             show_error('Federation not found', 404);
             return;
         }
-        $fed_members = $federation->getMembers();
+        $fed_members = $federation->getActiveMembers();
         $members_ids = array();
         if (!empty($type)) {
             if ($type === 'idp') {
@@ -280,7 +288,8 @@ class Manage extends MY_Controller
         $data['federation_desc'] = $federation->getDescription();
 
         $data['federation_is_active'] = $federation->getActive();
-        $federation_members = $federation->getMembers()->getValues();
+        $federation_members = $federation->getMembers();
+        $membership = $federation->getMembership();
         $required_attributes = $federation->getAttributesRequirement()->getValues();
 
 
@@ -394,7 +403,33 @@ class Manage extends MY_Controller
             $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span>' . anchor($data['meta_link_signed']));
         }
         else {
-            $table_of_members = $this->show_element->IdPMembersToTable($federation_members);
+
+            $membersInArray = array('IDP'=>array(),'SP'=>array(),'BOTH'=>array());
+            foreach($membership as $m)
+            {
+                $joinstate = $m->getJoinState();
+                if($joinstate == 2)
+                {
+                   continue;
+                }
+                $p = $m->getProvider();
+                $name = $p->getName();
+                if(empty($name))
+                {
+                   $name = $p->getEntityId();
+                }
+                $membersInArray[''.$p->getType().''][] = array(
+                   'pid'=>$p->getId(),
+                   'mdisabled'=>(int) $m->getIsDisabled(),
+                   'mbanned' => (int) $m->getIsBanned(),
+                   'entityid'=>$p->getEntityId(),
+                   'pname'=>$name,
+                   'penabled'=>$p->getAvailable(),
+                );
+            }
+            $IDPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['IDP']);
+            $SPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['SP']);
+            $BOTHmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['BOTH']);
             $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor_popup($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
             $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
 
@@ -410,11 +445,11 @@ class Manage extends MY_Controller
             }
 
             $data['result']['membership'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
-            $data['result']['membership'][] = array('data' => array('data' => $table_of_members['IDP'], 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => $IDPmembersInArrayToHtml, 'colspan' => 2));
             $data['result']['membership'][] = array('data' => array('data' => lang('serviceprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
-            $data['result']['membership'][] = array('data' => array('data' => $table_of_members['SP'], 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => $SPmembersInArrayToHtml, 'colspan' => 2));
             $data['result']['membership'][] = array('data' => array('data' => lang('bothprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
-            $data['result']['membership'][] = array('data' => array('data' => $table_of_members['BOTH'], 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => $BOTHmembersInArrayToHtml, 'colspan' => 2));
         }
 
         $fvalidators = $federation->getValidators();
@@ -496,7 +531,7 @@ class Manage extends MY_Controller
         }
         $data['federation_name'] = $federation->getName();
         $data['metadata_link'] = base_url() . "metadata/federation/" . base64url_encode($data['federation_name']);
-        $members = $federation->getMembers()->getValues();
+        $members = $federation->getMembers();
         $i = 0;
         foreach ($members as $m) {
             $id = $m->getId();
@@ -594,7 +629,10 @@ class Manage extends MY_Controller
         $memberstype = $this->input->post('memberstype');
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (!empty($federation)) {
-            $existingMembers = $federation->getMembers();
+            $existingMembers = $federation->getMembershipProviders();
+            $membership = $federation->getMembership();
+            
+
             $m = $this->input->post('member');
             if (!empty($m) && is_array($m) && count($m) > 0) {
                 $m_keys = array_keys($m);
@@ -612,9 +650,41 @@ class Manage extends MY_Controller
                 foreach ($new_members as $nmember) {
                     if (!$existingMembers->contains($nmember)) {
                         $newMembersArray[] = $nmember->getEntityId();
+                        $newMembership  = new models\FederationMembers();
+                        $newMembership->setProvider($nmember);
+                        $newMembership->setFederation($federation);
+                        if($nmember->getLocal())
+                        {
+                           $newMembership->setJoinState('1');
+                        }
+                        $this->em->persist($newMembership);
                     }
-                    $nmember->setFederation($federation);
-                    $this->em->persist($nmember);
+                    else
+                    {
+                         $doFilter = array(''.$federation->getId().'');
+                         $m1 = $nmember->getMembership()->filter(
+                              function($entry) use($doFilter){
+                           return (in_array($entry->getFederation()->getId(), $doFilter));
+                           }
+                        );
+                          if(!empty($m1))
+                          {
+                             foreach($m1 as $v1)
+                             {
+                                if($nmember->getLocal())
+                                {
+                                   $v1->setJoinState('1');
+                                }
+                                else
+                                {
+                                   $v1->setJoinState('0');
+                                }
+                                $this->em->persist($v1);
+                                $newMembersArray[] = $nmember->getEntityId();
+                             }
+                          }
+
+                    }
                 }
                 if (count($newMembersArray) > 0) {
                     $subject = 'Members of Federations changed';
@@ -701,15 +771,15 @@ class Manage extends MY_Controller
                     $add_to_queue = $this->approval->invitationProviderToQueue($federation, $inv_member, 'Join');
                     if ($add_to_queue) {
                         $mail_recipients = array();
-                        $mail_sbj = "Invitation to join federation: " . $federation->getName();
-                        $mail_body = "Hi,\r\nJust few moments ago Administator of federation \"" . $federation->getName() . "\"\r\n";
-                        $mail_body .= "invited Provider: \"" . $inv_member->getName() . "(" . $inv_member->getEntityId() . ")\"\r\n";
-                        $mail_body .= "to join his federation.\r\n";
-                        $mail_body .= "To accept or reject this request please go to Resource Registry\r\n";
-                        $mail_body .= base_url() . "reports/awaiting\r\n";
-                        $mail_body .= "\r\n\r\n======= additional message attached by requestor ===========\r\n";
-                        $mail_body .= $message . "\r\n";
-                        $mail_body .= "=============================================================\r\n";
+                        $mail_sbj = "Invitation: join federation: " . $federation->getName();
+                        $mail_body = "Hi,".PHP_EOL."Just few moments ago Administator of federation \"" . $federation->getName() . "\"".PHP_EOL;
+                        $mail_body .= "invited Provider: \"" . $inv_member->getName() . "(" . $inv_member->getEntityId() . ")\"".PHP_EOL;
+                        $mail_body .= "to join his federation.".PHP_EOL;
+                        $mail_body .= "To accept or reject this request please go to Resource Registry".PHP_EOL;
+                        $mail_body .= base_url() . "reports/awaiting".PHP_EOL.PHP_EOL.PHP_EOL;
+                        $mail_body .= "======= additional message attached by requestor ===========".PHP_EOL;
+                        $mail_body .= $message .PHP_EOL;
+                        $mail_body .= "=============================================================".PHP_EOL;
 
 
                         $this->email_sender->addToMailQueue(array('grequeststoproviders', 'requeststoproviders'), $inv_member, $mail_sbj, $mail_body, array(), false);
@@ -745,8 +815,6 @@ class Manage extends MY_Controller
 
     public function removeprovider($fed_name)
     {
-
-
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
@@ -794,7 +862,26 @@ class Manage extends MY_Controller
                     else {
                         $rm_arp_msg = '';
                     }
-                    $inv_member->removeFederation($federation);
+                    $doFilter = array(''.$federation->getId().'');
+                    $m2 = $inv_member->getMembership()->filter(
+                      function($entry) use($doFilter){
+                        return (in_array($entry->getFederation()->getId(), $doFilter));
+                       }
+                    );
+                    foreach($m2 as $v2)
+                    {
+                       log_message('debug','GKS OOOO');
+                       if($inv_member->getLocal())
+                       {
+                          $v2->setJoinState('2');
+                          $this->em->persist($v2);
+                       }
+                       else
+                       {
+                         $inv_member->getMembership()->removeElement($v2);
+                         $this->em->remove($v2);
+                       }
+                    }
                     $provider_name = $inv_member->getName();
                     if (empty($provider_name)) {
                         $provider_name = $inv_member->getEntityId();
@@ -835,7 +922,7 @@ class Manage extends MY_Controller
         $data['subtitle'] = 'Federation: ' . $federation->getName() . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), '<img src="' . base_url() . 'images/icons/arrow-in.png"/>');
 
         $current_members = $federation->getMembers();
-        if (!empty($current_members) && $current_members->count() > 0) {
+        if ($current_members->count() > 0) {
             $list = array('IDP' => array(), 'SP' => array(), 'BOTH' => array());
             foreach ($current_members as $l) {
                 $name = $l->getName();

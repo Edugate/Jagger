@@ -68,7 +68,12 @@ class Sp_registration extends MY_Controller
             if (!empty($federation)) {
                 $ispublic = $federation->getPublic();
                 if ($ispublic) {
-                    $newSP->setFederation($federation);
+                    $membership = new models\FederationMembers;
+                    $membership->setJoinState('1');
+                    $membership->setProvider($newSP);
+                    $membership->setFederation($federation);
+                    $newSP->getMembership()->add($membership);
+                    
                 }
                 else {
                     log_message('warning', 'Federation is not public, cannot register sp with join fed with name ' . $federation->getName());
@@ -131,6 +136,13 @@ class Sp_registration extends MY_Controller
 
             $queue->setAction('Create');
             $queue->setName($newSP->getName());
+            $mmm = $newSP->getMembership();
+            foreach($mmm as $mm)
+            {
+                log_message('debug','GKS '.get_class($mm));
+                log_message('debug','GKS '.$mm->getFederation()->getName());
+
+            }
             $queue->addSP($newSP->convertToArray());
             $queue->setEmail($this->input->post('contact_mail'));
             $queue->setToken();

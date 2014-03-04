@@ -39,24 +39,6 @@ class Providers {
     }
 
 
-    public function  getCircleMembersCached(Provider $provider)
-    {
-        $providerid = $provider->getId();
-        $federations = $provider->getFederations();
-        $fedids = array();
-        foreach($federations as $v)
-        {
-            $fedids[] = $v->getId();
-        }
-        $in = implode(',',array_values($fedids));
-        $query=$this->em->createQuery('SELECT u,m,g,c FROM models\Provider u JOIN u.metadata m JOIN u.contacts g JOIN  u.certificates c  JOIN u.federations  a  WHERE a.id IN ('.$in.') '); 
-        $query->setResultCacheDriver(new \Doctrine\Common\Cache\ApcCache());
-        $query->useResultCache(true)
-              ->setResultCacheLifeTime($seconds = 600);
-        $query->setResultCacheId('providermembers_'.$providerid);
-        $providers = $query->getResult();
-        return $providers;
-    }
 
      public function getCircleMembers(Provider $provider)
      {
@@ -70,7 +52,6 @@ class Providers {
                 $this->providers->set($key, $y->get($key));
             }
          }
-
         return $this->providers;
      }
      /**
@@ -80,85 +61,52 @@ class Providers {
       */
      public function getCircleMembersByType(Provider $provider, $excludeDisabledFeds = FALSE)
      {
+        $trustedEntities = new \Doctrine\Common\Collections\ArrayCollection();
         $entype = $provider->getType();
-        $federations = $provider->getFederations();
+        $membership = $provider->getMembership();
         $feds = array();
-        if(!empty($federations))
+        foreach($membership as $m)
         {
+           $fullTrustEnabled = $m->getIsFinalMembership();
            if($excludeDisabledFeds)
            {
-              foreach($federations as $f)
-              {
-                $isEnabled = $f->getActive();
-                if($isEnabled)
-                {
-                   $feds[] = $f->getId();
-                }
-                else
-                {
-                  \log_message('warning', 'Federation '.$f->getName() .'is disabled. Members will be excluded from circle metadata ');
-                }
-              }
+              $isFedEnabled = TRUE;
            }
            else
            {
-              foreach($federations as $f)
-              {
-                   $feds[] = $f->getId();
-              }
-
+              $isFedEnabled = $m->getFederation()->getActive();
+           }
+           if($fullTrustEnabled && $isFedEnabled)
+           {
+              $feds[] = $m->getFederation()->getId();
            }
         }
         if(count($feds) == 0 )
         {
             return array();
         }
-        $in = implode(',',array_values($feds));
-        $sqlsuffix = ' ';
-        if($entype === 'IDP')
+
+        $fedmembers = $this->em->getRepository("models\FederationMembers")->findBy(array('federation'=>$feds,'isDisabled'=>FALSE,'isBanned'=>FALSE,'joinstate'=>array('0','1','3')));
+        if($entype === 'IDP' or $entype === 'SP')
         {
-           $sql = "SELECT u  FROM models\Provider u WHERE u.type IN ('SP','BOTH') AND (";
-           $sqlsuffix = ' ) ';
-        }
-        elseif($entype === 'SP')
-        {
-           $sql = "SELECT u  FROM models\Provider u WHERE u.type IN ('IDP','BOTH') AND (";
-           $sqlsuffix = ' ) ';
+            foreach($fedmembers as $m)
+            {
+                $pr = $m->getProvider();
+                if(strcmp($pr->getType(),$entype)!=0)
+                {
+                    $trustedEntities->add($pr);
+                }
+           }
         }
         else
         {
-           $sql = 'SELECT u  FROM models\Provider u WHERE ';
+            foreach($fedmembers as $m)
+            {
+               $trustedEntities->add($m->getProvider());
+            }
         }
-        foreach($feds as $key=>$value)
-        {
-            $temp[]= '?'.$key.' MEMBER OF u.federations ';
-        }
-        $sql .= implode(' OR ', $temp) . $sqlsuffix;
-        
-        $query = $this->em->createQuery($sql);
-        foreach($feds as $key=>$value)
-        {
-            $query->setParameter($key, $value);
-        }
-        return $query->getResult(); 
-     }
-
-     public function getMultiFederationMembers($arrayb)
-     {
-        $dql = 'SELECT p,a,c,s,e   FROM models\Provider p LEFT JOIN p.metadata a LEFT JOIN p.contacts c LEFT JOIN p.certificates s  LEFT JOIN p.extend e WHERE ';
-        foreach ($arrayb as $key=>$value)
-        {
-           $temp[]= '?'.$key.' MEMBER OF p.federations ';
-        }
-        $dql .= implode(" OR ", $temp);
-
-        $query = $this->em->createQuery($dql);
-        foreach($arrayb as $key=>$value)
-        {
-            $query->setParameter($key, $value);
-
-        }
-        return $query->getResult();
+        \log_message('debug','GKS2: trusted_fedmebers='.$trustedEntities->count());
+        return $trustedEntities;
 
      }
 
@@ -168,39 +116,45 @@ class Providers {
     public function getTrustedServicesWithFeds(Provider $provider)
     {
          $type = $provider->getType();
+         $rtype = array();
          if($type === 'IDP')
          {
             $typeconds = "'SP','BOTH'";
+            $rtype = array('SP','BOTH');
          }
          elseif($type === 'SP')
          {
             $typeconds = "'IDP','BOTH'";
+            $rtype = array('IDP','BOTH');
          }
          else
          {
             $typeconds = "'IDP','SP','BOTH'";
+            $rtype = array('IDP','SP','BOTH');
          }
-
-         $f = $provider->getFederations();
-         $conds = array();
-         $params = array();
-         foreach($f as $v)
+         $feds = array();
+         $membership = $provider->getMembership();
+         foreach($membership as $m)
          {
-            $conds[] = ':federatonId'.$v->getId().' MEMBER OF p.federations';
-            $params[':federatonId'.$v->getId().''] = $v->getId();
+            \log_message('debug','GKS2: disabled: '.(int) $m->getIsDisabled().' : '.$m->getFederation()->getName());
+            $fullyEnabled = $m->getIsFinalMembership();
+            \log_message('debug','GKS2: fullyEnabled: '.$fullyEnabled.' : '.$m->getFederation()->getName());
+            $federationEnabled = $m->getFederation()->getActive();
+            if($fullyEnabled && $federationEnabled)
+            {
+                $feds[] = ''.$m->getFederation()->getId().'';
+            }
          }
-         if(count($conds) ==0)
+         if(count($feds) == 0)
          {
             return array();
          }
-         $query = $this->em->createQuery("SELECT p, f,m FROM models\Provider p JOIN p.metadata m JOIN p.federations f  WHERE p.type IN (".$typeconds.") AND (".implode(' OR ',$conds).")");
-         foreach($params as $k => $v)
-         {
-            $query->setParameter(''.$k.'', $v);
-         }
-         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
-         $providers = $query->getResult();
-         return $providers;	
+         $fedin = implode(',',$feds);
+          
+        
+         $query = $this->em->createQuery("SELECT p,m, f FROM models\Provider p JOIN p.membership m JOIN m.federation f  WHERE m.federation IN (".$fedin.") AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != ".$provider->getId()." AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN (".$typeconds.")");
+         $result = $query->getResult();
+         return $result;
 
     }
     public function getCircleMembersSP(Provider $provider, $federations = null)
