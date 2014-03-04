@@ -1,7 +1,7 @@
 Jagger
 ===
 
-Jagger (ResourceRegistry3) is developed by HEAnet to manage the Edugate multiparty SAML federation. Other organisations use Jagger to manage their federations but it can be used to manage the web-of-trust for a single entity. It can also be used a a GUI for the Shibboleth SAML Identity Provider (www.shibboleth.net)
+Jagger (http://jagger.heanet.ie) is developed by HEAnet to manage the Edugate multiparty SAML federation. Other organisations use Jagger to manage their federations but it can be used to manage the web-of-trust for a single entity. It can also be used a a GUI for the Shibboleth SAML Identity Provider (www.shibboleth.net)
 
 Features ;
 1. Synchronise SAML metadata from another federation.
@@ -19,12 +19,7 @@ Installation: check INSTALL.txt
 Upgrades: UPGRADE.txt
 
 
-Documentation (Admin guide) - https://github.com/Edugate/Documentation  (not final yet)
+Documentation (Admin guide) - http://jagger.heanet.ie/jaggerdocadmin/ (not final yet)
 
 ----
-Please join discussion list:
-
-https://groups.google.com/d/forum/resourceregistry3
-
-resourceregistry3(at)googlegroups.com
 

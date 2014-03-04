@@ -2351,7 +2351,8 @@ class Provider {
                     {
                         $ElementValue = $dm->getElementValue();
                     }
-                    $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:Logo', $ElementValue);
+                    $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:Logo');
+                    $dnode->appendChild($e->ownerDocument->createTextNode($ElementValue));
                     $attrs = $dm->getAttributes();
                     if (!empty($attrs))
                     {
@@ -2881,9 +2882,13 @@ class Provider {
         {
            foreach ($scs as $sc)
            {
-               $Scope_Node = $Extensions_Node->ownerDocument->createElementNS('urn:mace:shibboleth:metadata:1.0', 'shibmd:Scope', trim($sc));
-               $Scope_Node->setAttribute('regexp', 'false');
-               $Extensions_Node->appendChild($Scope_Node);
+               $sc = trim($sc);
+               if(!empty($sc))
+               {
+                  $Scope_Node = $Extensions_Node->ownerDocument->createElementNS('urn:mace:shibboleth:metadata:1.0', 'shibmd:Scope', $sc);
+                  $Scope_Node->setAttribute('regexp', 'false');
+                  $Extensions_Node->appendChild($Scope_Node);
+               }
            }
         }
 
