@@ -89,9 +89,10 @@ class Ajax extends MY_Controller {
         if ($this->input->is_ajax_request())
         {
             log_message('debug', 'ajax');
-            $language = substr($language, 0, 2);
-            if (in_array($language, array('pl', 'pt', 'it', 'lt', 'es','cs')))
+            $language = substr($language, 0, 5);
+            if (in_array($language, array('pl', 'pt', 'it', 'lt', 'es','cs','fr-ca')))
             {
+                log_message('debug','GKS lang selected: '.$language);
                 $cookie_value = $language;
             }
             else

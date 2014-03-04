@@ -115,11 +115,12 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                   $langs = array(
                     'en' => array('path'=>'english','val'=>'english'),
                     'cs' => array('path'=>'cs','val'=>'čeština'),
+                    'es' => array('path'=>'es','val'=>'español'),
+                    'fr-ca' => array('path'=>'fr-ca','val'=>'français'),
                     'it' => array('path'=>'it','val'=>'italiano'),
                     'lt' => array('path'=>'lt','val'=>'lietuvos'),
                     'pl' => array('path'=>'pl','val'=>'polski'),
                     'pt' => array('path'=>'pt','val'=>'português'),
-                    'es' => array('path'=>'es','val'=>'español'),
                    );
                 ?>
                 <div id="langchange">

@@ -124,9 +124,9 @@ li {
         -moz-appearance:none;
         appearance:none;
         cursor:pointer;
-        max-width: 50px;
-        min-width: 20px;
         width: auto;
+        max-width: 72px;
+        min-width: 20px;
     }
     select:focus{
         width:200px;
