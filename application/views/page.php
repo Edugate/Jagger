@@ -114,6 +114,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                 <?php
                   $langs = array(
                     'en' => array('path'=>'english','val'=>'english'),
+                    'cs' => array('path'=>'cs','val'=>'čeština'),
                     'it' => array('path'=>'it','val'=>'italiano'),
                     'lt' => array('path'=>'lt','val'=>'lietuvos'),
                     'pl' => array('path'=>'pl','val'=>'polski'),
