@@ -1,0 +1,2 @@
+<?php
+$lang['ok'] = 'ddd';
