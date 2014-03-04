@@ -2310,8 +2310,9 @@ class Provider {
                     $lang = $dm->getAttributes();
                     if (isset($lang['xml:lang']))
                     {
-                        $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:PrivacyStatementURL', $dm->getElementValue());
+                        $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:PrivacyStatementURL');
                         $dnode->setAttribute('xml:lang', '' . $lang['xml:lang'] . '');
+                        $dnode->appendChild($e->ownerDocument->createTextNode($dm->getElementValue()));
                         if ($lang['xml:lang'] === 'en')
                         {
                             $en_privacyurl = TRUE;
