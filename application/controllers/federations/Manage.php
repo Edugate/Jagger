@@ -870,6 +870,7 @@ class Manage extends MY_Controller
                     );
                     foreach($m2 as $v2)
                     {
+                       log_message('debug','GKS OOOO');
                        if($inv_member->getLocal())
                        {
                           $v2->setJoinState('2');
@@ -877,6 +878,7 @@ class Manage extends MY_Controller
                        }
                        else
                        {
+                         $inv_member->getMembership()->removeElement($v2);
                          $this->em->remove($v2);
                        }
                     }

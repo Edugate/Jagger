@@ -50,6 +50,69 @@ class Metadata2import {
         $this->other = null;
     }
 
+    private function _report($report)
+    {
+            if(!(!empty($report) && is_array($report)))
+            {
+               return false;
+            }
+            $this->ci->load->library('email_sender');
+            $body = 'Report'.PHP_EOL;
+
+            foreach($report['body']  as $bb)
+            {
+                $body .= $bb.PHP_EOL;
+            }
+
+
+            $structureChanged = FALSE;
+            if(count($report['provider']['new'])> 0)
+            {
+                $structureChanged = TRUE;
+                $body .='List new providers registered during sync:'.PHP_EOL;
+                foreach($report['provider']['new'] as $a)
+                {
+                    $body .= $a.PHP_EOL;
+                }
+            }
+            if(count($report['provider']['joinfed'])> 0)
+            {
+                $structureChanged = TRUE;
+                $body .='List existing providers added to federation during sync:'.PHP_EOL;
+                foreach($report['provider']['joinfed'] as $a)
+                {
+                    $body .= $a.PHP_EOL;
+                }
+            }
+            if(count($report['provider']['del'])> 0)
+            {
+                $structureChanged = TRUE;
+                $body .='List providers removed from the system during sync:'.PHP_EOL;
+                foreach($report['provider']['del'] as $a)
+                {
+                    $body .= $a.PHP_EOL;
+                }
+            }
+            if(count($report['provider']['leavefed'])> 0)
+            {
+                $structureChanged = TRUE;
+                $body .='List providers removed from federation during sync:'.PHP_EOL;
+                foreach($report['provider']['leavefed'] as $a)
+                {
+                    $body .= $a.PHP_EOL;
+                }
+            }
+            $nbody = '';
+            if(!$structureChanged)
+            {
+                $nbody ='No entities have been added/removed after sync/import'.PHP_EOL;
+            }
+            else
+            {
+                $this->ci->email_sender->addToMailQueue(array('gfedmemberschanged'),null,'Federation sync/import report',$body,array(),false);
+            }
+
+    }
     public function import($metadata, $type, $full, array $defaults, $other = null)
     {
         $tmpProviders = new models\Providers;
@@ -211,6 +274,7 @@ class Metadata2import {
                         $existingProvider = $tmpProviders->getOneByEntityId($importedProvider->getEntityId());
                         if (empty($existingProvider))
                         {
+                            
                             $membersFromSync[] = $importedProvider->getEntityId();
                             $importedProvider->setStatic($static);
                             $importedProvider->setLocal($local);
@@ -269,6 +333,7 @@ class Metadata2import {
                             $newmembership->setProvider($importedProvider);
                             $newmembership->setFederation($f);
                             $newmembership->setJoinState('3');
+                            $report['provider']['new'][] = $importedProvider->getEntityId();
                             $this->em->persist($newmembership);
                             $this->em->persist($importedProvider);
                         } // END for new provider
@@ -378,11 +443,13 @@ class Metadata2import {
                             {
                                 if (($isLocal && !$isLocked) || !($isLocal))
                                 {
+                                    
                                     $newMembership = new models\FederationMembers;
                                     $newMembership->setProvider($existingProvider);
                                     $newMembership->setFederation($f);
                                     $newMembership->setJoinState('3');
                                     $this->em->persist($newMembership);
+                                    $report['provider']['joinfed'][] = $existingProvider->getEntityId();
                                 }
                             }
                             $this->em->persist($existingProvider);
@@ -414,10 +481,12 @@ class Metadata2import {
                               $countFeds = $ff->count();
                               if($countFeds < 2 && $ff->contains($f) )
                               {
+                                $report['provider']['del'][] = $tmpprov->getEntityId();
                                 $this->em->remove($tmpprov);
                               }
                               else
                               {
+                                 $report['provider']['leavefed'][] = $tmpprov->getEntityId();
                                  $this->em->remove($mm2);
                               }
 
@@ -448,6 +517,7 @@ class Metadata2import {
                 }
                try
                {
+                 $this->_report($report);
                  $this->em->flush();
                }
                catch(Exception $e)
