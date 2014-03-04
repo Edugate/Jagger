@@ -2886,7 +2886,6 @@ class Provider {
                if(!empty($sc))
                {
                   $Scope_Node = $Extensions_Node->ownerDocument->createElementNS('urn:mace:shibboleth:metadata:1.0', 'shibmd:Scope', $sc);
-                  $dnode->appendChild($e->ownerDocument->createTextNode($sc));
                   $Scope_Node->setAttribute('regexp', 'false');
                   $Extensions_Node->appendChild($Scope_Node);
                }
