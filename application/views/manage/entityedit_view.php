@@ -36,11 +36,25 @@ echo '</pre></div>';
          */
         if (!empty($m['form']) and is_array($m['form']))
         {
+            $counter = 0;
             foreach ($m['form'] as $g)
             {
-                echo '<li>';
-                echo $g;
-                echo '</li>';
+                if(empty($g))
+                {
+                   if($counter % 2 == 0)
+                   {
+                        echo '<ol class="group">';
+                   }
+                   else
+                   {
+                        echo '</ol>';
+                   }
+                   $counter++;
+                }
+                else
+                {
+                   echo '<li>'.$g.'</li>';
+                }
             }
         }
 

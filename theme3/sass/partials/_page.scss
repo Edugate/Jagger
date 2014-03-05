@@ -2288,3 +2288,13 @@ div.zebramembers > div:hover {
    } 
 
 }
+ol.group {
+     background-color: $formElementBackground;
+     padding: 2px;
+     li {
+        margin-top: 5px;
+        margin-bottom: 5px;
+     }
+
+
+}

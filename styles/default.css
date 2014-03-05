@@ -2659,6 +2659,15 @@ div.zebramembers > div:hover a, div.zebramembers > div:hover a:link, div.zebrame
   color: black;
 }
 
+ol.group {
+  background-color: #e2e9f6;
+  padding: 2px;
+}
+ol.group li {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 form {
   counter-reset: fieldsets;
   background: #93aedf;
