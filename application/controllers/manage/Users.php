@@ -67,11 +67,11 @@ class Users extends MY_Controller {
                 $form .="<ol>";
                 $form .= "<li>";
                 $form .= form_label(''.lang('rr_username').'', 'username');
-                $form .= form_input('username');
+                $form .= form_input('username',set_value('username'));
                 $form .="</li>";
                 $form .= "<li>";
                 $form .= form_label(''.lang('rr_uemail').'', 'email');
-                $form .= form_input('email');
+                $form .= form_input('email',set_value('email'));
                 $form .="</li>";
                 $form .= "<li>";
                 $form .= form_label(''.lang('rr_password').'', 'password');
@@ -84,11 +84,11 @@ class Users extends MY_Controller {
 
                 $form .= "<li>";
                 $form .= form_label(''.lang('rr_fname').'', 'fname');
-                $form .= form_input('fname');
+                $form .= form_input('fname',set_value('fname'));
                 $form .="</li>";
                 $form .= "<li>";
                 $form .= form_label(''.lang('rr_lname').'', 'sname');
-                $form .= form_input('sname');
+                $form .= form_input('sname',set_value('sname'));
                 $form .= "</li>";
                 $form .="<li>";
                 $form .= form_label(''.lang('rr_typeaccess').'', 'access');
