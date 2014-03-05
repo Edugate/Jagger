@@ -31,11 +31,8 @@ class Attribute_requirement extends MY_Controller {
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
-
-        $this->current_sp = $this->session->userdata('current_sp');
         $this->log_prefix =  "attribute_requirement: ";
         log_message('debug', $this->log_prefix . "started");
         $this->load->library('zacl');
@@ -337,16 +334,32 @@ class Attribute_requirement extends MY_Controller {
         $action = $this->input->post('submit');
         $fedid = $this->input->post('fedid');
         $has_write_access = false;
-        if (!empty($fedid) && is_numeric($fedid)) {
-            $resource = $fedid;
-            $group = 'federation';
-            $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-            if (!$has_write_access) {
-                $data['content_view'] = 'nopermission';
-                $data['error'] = ''.lang('rr_noperm_mngtattrforfed').': ' . $fed->getName();
-                $this->load->view('page', $data);
-                return;
-            }
+        if(empty($fedid) || !is_numeric($fedid) || empty($action) || empty($status) || empty($attr))
+        {
+             show_error('Missing information in post',403);
+        }
+        $f = $this->em->getRepository("models\Federation")->findOneBy(array('id'=>''.$fedid.''));
+        if(empty($f))
+        {
+           show_error(lang('error_fednotfound',404));
+        }
+        $resource = 'f_'.$f->getId().'';
+        $group = 'federation';
+        try{
+           $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
+        }
+        catch (Exception $e)
+        {
+           log_message('error',__METHOD__.' '.$e);
+           show_error('Internal Server Error',500);
+        }
+
+        if (!$has_write_access)
+        {
+           //show_error('Internal Server Error',500);
+           $data['content_view'] = 'nopermission';
+           $data['error'] = lang('rr_noperm_mngtattrforfed').': '.$f->getName() ;
+           $this->load->view('page', $data);
         }
         if ($attr && $status && $action == 'Add') {
             $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attr));
