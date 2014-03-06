@@ -2668,6 +2668,11 @@ ol.group li {
   margin-bottom: 5px;
 }
 
+.squiz {
+  overflow-x: hidden;
+  max-width: 300px;
+}
+
 form {
   counter-reset: fieldsets;
   background: #6b90d4;
@@ -3160,6 +3165,10 @@ form#assignedlogos caption, form#availablelogos caption, form#uploadlogo caption
   #map {
     width: 400px;
   }
+
+  .squiz {
+    max-width: 150px;
+  }
 }
 /* Smaller than standard 960 (devices and browsers) */
 @media only screen and (max-width: 959px) {
@@ -3168,6 +3177,11 @@ form#assignedlogos caption, form#availablelogos caption, form#uploadlogo caption
   }
 }
 /* Tablet Portrait size to standard 960 (devices and browsers) */
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+  .squiz {
+    max-width: 130px;
+  }
+}
 /* All Mobile Sizes (devices and browser) */
 @media only screen and (max-width: 767px) {
   body {

@@ -141,7 +141,7 @@ class Idp_list extends MY_Controller {
             {
                 $col3 = '';
             }
-            $idprows[] = array('data' => array('data' =>  $col1 ),$iconsblock, $col2,'<span class="additions">'.$col3.'</span>');
+            $idprows[] = array('data' => array('data' =>  $col1 ),$iconsblock, $col2,'<div class="squiz">'.$col3.'</div>');
         }
         $data['idprows'] = $idprows;
         $data['content_view'] = 'providers/idp_list_view';
