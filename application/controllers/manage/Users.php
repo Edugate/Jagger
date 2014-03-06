@@ -93,7 +93,7 @@ class Users extends MY_Controller {
                 $form .="<li>";
                 $form .= form_label(''.lang('rr_typeaccess').'', 'access');
                 $access_type = array('' => ''.lang('rr_select').'', 'local' => ''.lang('rr_onlylocalauthn').'', 'fed' => ''.lang('rr_onlyfedauth').'', 'both' => ''.lang('rr_bothauth').'');
-                $form .= form_dropdown('access', $access_type);
+                $form .= form_dropdown('access', $access_type,set_value('access'));
                 $form .= "</li>";
                 $form .= "</ol>";
                 $form .= form_fieldset_close();

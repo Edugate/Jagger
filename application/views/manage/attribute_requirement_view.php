@@ -35,10 +35,10 @@ $target = current_url();
                         echo '<ol><li>';
                         echo form_label(lang('rr_selectattr'), 'attribute');
 
-                        echo form_dropdown('attribute', $add_attr_final);
+                        echo form_dropdown('attribute', $add_attr_final,set_value('attribute'));
                         echo '</li><li>';
                         echo form_label(lang('rr_selectreq'), 'requirement');
-                        echo form_dropdown('requirement', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''));
+                        echo form_dropdown('requirement', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''),set_value('requirement'));
                         echo '</li><li>';
                         echo form_label(lang('rr_reqattrreason'), 'reason');
                         echo form_textarea(array('name' => 'reason', 'cols' => 30, 'rows' => 5));

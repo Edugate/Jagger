@@ -21,7 +21,7 @@ if(!empty($message))
 	echo "<fieldset><legend>Select service provider</legend>";
 	echo "<ol><li>";
 	echo "<label for=\"service_provider\">Service Provider</label>";
-	echo form_dropdown('service_provider',$splist_dropdown);
+	echo form_dropdown('service_provider',$splist_dropdown,set_value('service_provider'));
 	echo "</li>";
 
 ?>

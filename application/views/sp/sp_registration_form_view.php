@@ -50,7 +50,7 @@ echo '</li>';
  */
 echo '<li>';
 echo form_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'federation');
-echo form_dropdown('federation', $federations);
+echo form_dropdown('federation', $federations,set_value('federation'));
 echo '</li>';
 echo '<li>' . form_label(lang('rr_entityid'), 'entityid');
 echo form_input(array(

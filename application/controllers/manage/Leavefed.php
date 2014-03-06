@@ -167,7 +167,7 @@ class Leavefed extends MY_Controller {
                   $form .= form_fieldset('Leaving federation form');
                   $form .= '<ol><li>';
                   $form .= form_label(''.lang('rr_selectfedtoleave').'','fedid');
-                  $form .= form_dropdown('fedid', $feds_dropdown);
+                  $form .= form_dropdown('fedid', $feds_dropdown, set_value('fedid'));
                   $type = $provider->getType();
                   if(strcmp($type,'IDP')!=0)
                   {

@@ -17,7 +17,7 @@ if(!empty($message))
 	echo "<fieldset><legend>Select federation</legend>";
 	echo "<ol><li>";
 	echo "<label for=\"federation\">Federation</label>";
-	echo form_dropdown('federation',$fedlist_dropdown);
+	echo form_dropdown('federation',$fedlist_dropdown,set_value('federation'));
 	echo "</li>";
 
 ?>
