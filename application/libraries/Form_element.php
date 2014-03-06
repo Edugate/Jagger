@@ -440,7 +440,7 @@ class Form_element {
         }
         foreach ($slhelpdesk as $key => $value)
         {
-            if(empty(trim($value)))
+            if(empty($value))
             {
                continue;
             }
