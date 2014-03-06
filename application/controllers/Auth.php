@@ -297,7 +297,7 @@ class Auth extends MY_Controller {
     }
     private function get_shib_sname()
     {
-        $fname_var = $this->config->item('Shib_sname');
+        $sname_var = $this->config->item('Shib_sname');
         if(empty($sname_var))
         {
            return false;
