@@ -57,7 +57,7 @@ elseif($typeidps === 'all')
 ?>
 </div>
 <?php
-$tmpl = array('table_open' => '<table  id="details" class="zebra drop-shadow lifted idplist">');
+$tmpl = array('table_open' => '<table  id="details" class="zebra drop-shadow lifted idplist filterlist">');
 
 $this->table->set_template($tmpl);
 $this->table->set_heading(lang('tbl_title_nameandentityid'),'#', lang('tbl_title_regdate'), lang('tbl_title_helpurl'));

@@ -862,7 +862,7 @@ $(function() {
     $('div.floating-menu').addClass('mobilehidden');
     $('table.idplist tr td:first-child').addClass('homeorg');
     $('table.idplist tr td:first-child span.alert').removeClass('alert').parent().addClass('alert');
-    var theTable1 = $('table.idplist')
+    var theTable1 = $('table.filterlist')
     theTable1.find("tbody > tr").find("td:eq(1)").mousedown(function() {
     });
     $("#filter").keyup(function() {
