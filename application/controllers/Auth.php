@@ -289,6 +289,10 @@ class Auth extends MY_Controller {
         {
             return $_SERVER[$fname_var];
         }
+        elseif(isset($_SERVER['REDIRECT_'.$fname_var]))
+        {
+            return $_SERVER['REDIRECT_'.$fname_var];
+        }
         return false;
     }
     private function get_shib_sname()
@@ -301,6 +305,10 @@ class Auth extends MY_Controller {
         if (isset($_SERVER[$sname_var]))
         {
             return $_SERVER[$sname_var];
+        }
+        elseif(isset($_SERVER['REDIRECT_'.$sname_var]))
+        {
+            return $_SERVER['REDIRECT_'.$sname_var];
         }
         return false;
     }
