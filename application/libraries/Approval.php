@@ -84,7 +84,7 @@ class Approval {
            $this->em->flush();
            return $queue;
     }
-    public function invitationFederationToQueue(models\Provider $provider ,models\Federation $obj,$action)
+    public function invitationFederationToQueue(models\Provider $provider ,models\Federation $obj,$action,$message = null)
     {
           $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
           $queue = new models\Queue();
@@ -98,7 +98,7 @@ class Approval {
           }
           $queue->setName($providername);
           $queue->setEmail($user->getEmail());
-          $prov = array('id'=>$provider->getId(), 'name'=>$providername, 'entityid'=>$provider->getEntityId());
+          $prov = array('id'=>$provider->getId(), 'name'=>$providername, 'entityid'=>$provider->getEntityId(),'message'=>''.$message.'');
           if($action == 'Join')
           {
              $queue->inviteFederation($prov);

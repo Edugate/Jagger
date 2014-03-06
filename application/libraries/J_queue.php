@@ -285,6 +285,12 @@ class J_queue
         $this->ci->table->add_row($cell);
         $cell = array(lang('request'), lang('acceptprovtofed'));
         $this->ci->table->add_row($cell);
+
+        if(isset($data['message']))
+        {
+            $cell = array(lang('rr_message'), $data['message']);
+            $this->ci->table->add_row($cell);
+        }
         $cell = array('data' => $this->displayFormsButtons($queue->getId()), 'colspan' => 2);
         $this->ci->table->add_row($cell);
         $result = '';
