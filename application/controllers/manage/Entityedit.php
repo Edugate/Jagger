@@ -537,9 +537,8 @@ class Entityedit extends MY_Controller {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
             $this->_save_draft($id, $y);
-            if ($submittype == 'modify')
+            if ($submittype === 'modify')
             {
-
                 $this->load->library('providerupdater');
                 $c = $this->_get_draft($id);
                 if (!empty($c) && is_array($c))
@@ -563,7 +562,7 @@ class Entityedit extends MY_Controller {
         $entsession = $this->_get_draft($id);
 
         $data['y'] = $entsession;
-
+  
         $titlename = $ent->getName();
         if (empty($titlename))
         {

@@ -351,7 +351,7 @@ class Form_element {
         $ldisplaynamelangs = languagesCodes();
         if ($sessform && array_key_exists('ldisplayname', $ses) && is_array($ses['ldisplayname']))
         {
-            $slname = $ses['ldisplayname'];
+            $sldisplayname = $ses['ldisplayname'];
         }
         if (is_array($ldisplaynames))
         {
@@ -359,6 +359,10 @@ class Form_element {
         }
         foreach ($sldisplayname as $key => $value)
         {
+            if(empty($value))
+            {
+               continue;
+            }
             $ldisplaynamenotice = '';
             $lvalue = set_value('f[lname][' . $key . ']', $value);
             if (array_key_exists($key, $origldisplayname))
@@ -379,7 +383,7 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $ldisplaynamenotice
                             )
-            );
+            ).'<button type="button" class="btn langinputrm" name="ldisplayname" value="'.$key.'">'.lang('rr_remove').'</button>';
             unset($origldisplayname['' . $key . '']);
             unset($ldisplaynamelangs['' . $key . '']);
         }
@@ -424,7 +428,7 @@ class Form_element {
         $lhelpdesklangs = languagesCodes();
         if ($sessform && array_key_exists('lhelpdesk', $ses) && is_array($ses['lhelpdesk']))
         {
-            $slname = $ses['lhelpdesk'];
+            $slhelpdesk = $ses['lhelpdesk'];
         }
         if (is_array($lhelpdesk))
         {
@@ -432,6 +436,10 @@ class Form_element {
         }
         foreach ($slhelpdesk as $key => $value)
         {
+            if(empty(trim($value)))
+            {
+               continue;
+            }
             $lhelpdesknotice = '';
             $lvalue = set_value('f[lhelpdesk][' . $key . ']', $value);
             if (array_key_exists($key, $origlhelpdesk))
@@ -452,7 +460,7 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $lhelpdesknotice
                             )
-            ).'sdfsdf';
+            ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">'.lang('rr_remove').'</button>';
             unset($origlhelpdesk['' . $key . '']);
             unset($lhelpdesklangs['' . $key . '']);
         }
