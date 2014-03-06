@@ -599,54 +599,12 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'staticmetadata', 'value' => ''.lang('tabstaticmeta').'', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
         $menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
 
-
-
-
-
-
-
-
         $data['menutabs'] = $menutabs;
         $data['content_view'] = 'manage/entityedit_view.php';
-        // echo '<pre>';
-        //print_r($this->session->all_userdata());
-        //echo '</pre>';
         $this->load->view('page', $data);
     }
 
-    public function reviewchanges($id)
-    {
-        $ent = $this->tmp_providers->getOneById($id);
-        if (empty($ent))
-        {
-            show_error('Provider not found', 404);
-        }
-        $this->_check_perms($id);
-        $titlename = $ent->getName();
-        if (empty($titlename))
-        {
-            $titlename = $ent->getEntityId();
-        }
-        $n = 'entform' . $id;
-        $this->title = $titlename . ' :: ' . lang('title_provideredit');
-        $entsession = $this->_get_draft($id);
-        $orig = array();
-        $orig['entityid'] = $ent->getEntityId();
-        //echo '<pre>';
-        //print_r($entsession);
-        //echo "=======\n";
-        //print_r($orig);
-        // echo '</pre>';
-    }
 
-    public function discardchanges($id)
-    {
-        
-    }
 
-    public function submitchanges($i)
-    {
-        
-    }
 
 }
