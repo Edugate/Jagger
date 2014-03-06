@@ -465,6 +465,9 @@ class Auth extends MY_Controller {
                if(!empty($fname))
                {
                    $user->setGivenname(''.$fname.'');
+               }
+               if(!empty($sname))
+               {
                    $user->setSurname(''.$sname.'');
                }
             }
