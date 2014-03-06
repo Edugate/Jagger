@@ -278,6 +278,32 @@ class Auth extends MY_Controller {
             return FALSE;
         }
     }
+    private function get_shib_fname()
+    {
+        $fname_var = $this->config->item('Shib_fname');
+        if(empty($fname_var))
+        {
+           return false;
+        }
+        if (isset($_SERVER[$fname_var]))
+        {
+            return $_SERVER[$fname_var];
+        }
+        return false;
+    }
+    private function get_shib_sname()
+    {
+        $fname_var = $this->config->item('Shib_sname');
+        if(empty($sname_var))
+        {
+           return false;
+        }
+        if (isset($_SERVER[$sname_var]))
+        {
+            return $_SERVER[$sname_var];
+        }
+        return false;
+    }
 
     private function get_shib_mail()
     {
@@ -409,6 +435,17 @@ class Auth extends MY_Controller {
             if (!empty($timeoffset) && is_numeric($timeoffset))
             {
                 $_SESSION['timeoffset'] = (int) $timeoffset;
+            }
+            $updatefullname = $this->config->item('shibb_updatefullname');
+            if(!empty($updatefullname)&& $updatefullname === TRUE)
+            {
+               $fname = trim($this->get_shib_fname());
+               $sname = trim($this->get_shib_sname());
+               if(!empty($fname))
+               {
+                   $user->setGivenname(''.$fname.'');
+                   $user->setSurname(''.$sname.'');
+               }
             }
             $ip = $_SERVER['REMOTE_ADDR'];
             $user->setIP($ip);
