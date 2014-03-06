@@ -55,11 +55,15 @@ class Detail extends MY_Controller {
        {
            if (!$this->j_auth->logged_in())
            {
-              show_error('no session', 403);
+              set_status_header(403);
+              echo 'no user session';
+              return;
            }
            if(!is_numeric($id))
            {
-              show_error('denied 1', 403);
+              set_status_header(403);
+              echo 'received incorrect params';
+              return;
            }
            $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
            log_message('debug','TEST access '.$has_write_access);
@@ -90,10 +94,15 @@ class Detail extends MY_Controller {
            }
            else
            {
-              show_error('denied', 403);
+              set_status_header(403);
+              echo 'access denied';
+              return;
            } 
        }
-       show_error('denied', 403);
+       else
+       {
+           show_error('Access denied', 403);
+       }
     }
 
     function showlogs($id)
@@ -427,6 +436,18 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = $ent->getHomeUrl() . ' <br /><small>' . lang('rr_notincludedmetadata') . '</small>';
         $d[++$i]['name'] = lang('rr_helpdeskurl');
         $d[$i]['value'] = $ent->getHelpdeskUrl() . ' <br /><small>' . lang('rr_includedmetadata') . '  &lt;md:OrganizationURL ..../&gt;</small>';
+        $localizedHelpdesk = $ent->getLocalHelpdeskUrl();
+        if(is_array($localizedHelpdesk) && count($localizedHelpdesk)>0)
+        {
+           $d[++$i]['name'] = lang('rr_helpdeskurl').' <small>'.lang('localized') . '</small>';
+           $lvalues = '';
+           foreach($localizedHelpdesk as $k=>$v)
+           {
+                $lvalues .= '<b>' . $k . ':</b> <div>' . $v . '</div>';
+              
+           }
+           $d[$i]['value'] = $lvalues;
+        }
         $d[++$i]['name'] = lang('rr_defaultprivacyurl');
         $d[$i]['value'] = $ent->getPrivacyUrl();
         $d[++$i]['name'] = lang('rr_coc');
@@ -545,7 +566,6 @@ class Detail extends MY_Controller {
         $federationsString = "";
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
         $membership = $ent->getMembership();
-//        $feds = $ent->getFederations();
         $membershipNotLeft = array();
         if (!empty($membership))
         {

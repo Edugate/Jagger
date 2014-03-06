@@ -54,6 +54,14 @@ var GINIT = {
           $(this).after($("form#availablelogos div.buttons").show());
  
     });
+    $("button.langinputrm").click(function(){
+         var bval = $(this).attr('value');
+         var bname = $(this).attr('name');
+         $(this).parent().find("input").val('');
+         $(this).parent().hide();
+       
+    });
+
     $('form#availablelogos').on('submit',function(e) {
         e.preventDefault();
         var result = $("div.uploadresult");
@@ -238,6 +246,7 @@ var GINIT = {
     $("fieldset#services label").autoWidth();
     $("fieldset#dataprotection label").autoWidth();
     $("fieldset#protocols label").autoWidth();
+    $("fieldset#general label").autoWidth();
 
     $("form#assignedlogos input[name='logoid']").click(function(){
          $(this).after($("div#unsignlogosbtn").show());
@@ -930,14 +939,18 @@ $(function() {
     $("button#addlname").click(function() {
         var nf = $("span.lnameadd option:selected").val();
         var nfv = $("span.lnameadd option:selected").text();
+        var inputname = $(this).attr('value');
         $("span.lnameadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">Name in " + nfv + " </label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lname\" value=\""+nf+"\">Remove</button></li></li>");
+        GINIT.initialize();
     });
     $("button#addldisplayname").click(function() {
         var nf = $("span.ldisplaynameadd option:selected").val();
         var nfv = $("span.ldisplaynameadd option:selected").text();
+        var inputname = $(this).attr('value');
         $("span.ldisplaynameadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">DisplayName in " + nfv + " </label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">Remove</button></li>");
+       GINIT.initialize();
     });
     $("button#addregpolicy").click(function() {
         var nf = $("span.regpolicyadd option:selected").val();
@@ -984,8 +997,10 @@ $(function() {
     $("button#addlhelpdesk").click(function() {
         var nf = $("span.lhelpdeskadd option:selected").val();
         var nfv = $("span.lhelpdeskadd option:selected").text();
+        var inputname = $(this).attr('value');
         $("li.addlhelpdesk option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">HelpdeskURL in " + nfv + " </label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\"/></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lhelpdesk\" value=\""+nf+"\">Remove</button></li>");
+       GINIT.initialize();
     });
     $("button#addlprivacyurl").click(function() {
         var nf = $("li.addlprivacyurl option:selected").val();

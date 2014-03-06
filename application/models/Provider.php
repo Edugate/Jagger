@@ -772,6 +772,13 @@ class Provider {
     {
         if (!empty($name))
         {
+            foreach($name as $k => $v)
+            {
+              if(empty($v))
+              {
+                 unset($name[''.$k.'']);
+              }
+            }
             $this->lname = serialize($name);
         }
         else
@@ -803,6 +810,13 @@ class Provider {
     {
         if (!empty($name) && is_array($name))
         {
+            foreach($name as $k => $v)
+            {
+               if(empty($v))
+               {
+                   unset($name[''.$k.'']);
+               }
+            }
             $this->ldisplayname = serialize($name);
         }
         else
@@ -1047,10 +1061,17 @@ class Provider {
         return $this;
     }
 
-    public function setLocalHelpdeskUrl(array $urls = NULL)
+    public function setLocalHelpdeskUrl($urls = NULL)
     {
-        if (!empty($urls))
+        if (!empty($urls) && is_array($urls))
         {
+            foreach($urls as $k=>$v)
+            {
+               if(empty($v))
+               {
+                  unset($urls[''.$k.'']);
+               }
+            }
             $this->lhelpdeskurl = serialize($urls);
         }
         else
@@ -1897,7 +1918,11 @@ class Provider {
 
     public function getLocalDisplayName()
     {
-        return unserialize($this->ldisplayname);
+        if(!empty($this->ldisplayname))
+        {
+          return unserialize($this->ldisplayname);
+        }
+        return array();
     }
 
     public function getLocalDisplayNamesToArray($type)
