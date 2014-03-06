@@ -34,7 +34,7 @@
 
 
                     <?php
-                    echo form_dropdown('federation', $federations);
+                    echo form_dropdown('federation', $federations, set_value('federation'));
                     ?>
                 </li>
 
@@ -71,7 +71,7 @@
                                'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
                                'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
                                      );
-                    echo form_dropdown('bindingname', $binding_values);
+                    echo form_dropdown('bindingname', $binding_values,set_value('bindingname'));
                     ?>
                 </li>
                 <li>

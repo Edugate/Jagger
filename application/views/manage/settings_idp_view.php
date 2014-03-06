@@ -21,7 +21,7 @@ if(!empty($message))
 	echo "<fieldset><legend>Select identity provider</legend>";
 	echo "<ol><li>";
 	echo "<label for=\"identity_provider\">Identity Provider</label>";
-	echo form_dropdown('identity_provider',$idplist_dropdown);
+	echo form_dropdown('identity_provider',$idplist_dropdown,set_value('identity_provider'));
 	echo "</li>";
 
 ?>

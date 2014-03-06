@@ -36,7 +36,7 @@ if(!empty($warnmessage))
       <p class="message"></p>
      <div>
       <?php
-       echo form_dropdown('status', $statusdropdown);
+       echo form_dropdown('status', $statusdropdown,set_value('status'));
      ?>
     </div>
       <div class="buttons">

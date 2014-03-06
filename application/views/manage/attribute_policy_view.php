@@ -70,12 +70,12 @@ if (count($attrs_array_newform) > 0)
     echo '<ol>';
     echo '<li>';
     echo form_label(lang('rr_selectsupportedattr'), 'attribute') . "\n";
-    echo form_dropdown('attribute', $attrs_array_newform);
+    echo form_dropdown('attribute', $attrs_array_newform,set_value('attribute'));
     echo '</li>';
 
     echo '<li>';
     echo form_label(lang('rr_selectpolicytorelease'), 'policy') . "\n";
-    echo form_dropdown('policy', array('0' => ''.lang('dropnever').'', '1' => ''.lang('dropokreq').'', '2' => ''.lang('dropokreqdes').''));
+    echo form_dropdown('policy', array('0' => ''.lang('dropnever').'', '1' => ''.lang('dropokreq').'', '2' => ''.lang('dropokreqdes').''),set_value('policy'));
     echo '</li></ol>';
     echo '<div class="buttons">';
     echo '<button type="submit" name="submit" value="Cancel" class="resetbutton reseticon">'.lang('rr_cancel').'</button>';

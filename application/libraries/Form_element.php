@@ -1872,9 +1872,9 @@ class Form_element {
 
                     $row = '<li>';
                     $row .= form_label(lang('rr_pleaseremove'), 'f[crt][idpsso][' . $crtid . '][remove]');
-                    $row .= form_dropdown('f[crt][idpsso][' . $crtid . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit'))) . '</li>';
+                    $row .= form_dropdown('f[crt][idpsso][' . $crtid . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit')),set_value('f[crt][idpsso][' . $crtid . '][remove]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][idpsso][' . $crtid . '][type]');
-                    $row .= form_dropdown('f[crt][idpsso][' . $crtid . '][type]', array('x509' => 'x509')) . '</li>';
+                    $row .= form_dropdown('f[crt][idpsso][' . $crtid . '][type]', array('x509' => 'x509'),set_value('f[crt][idpsso][' . $crtid . '][type]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][idpsso][' . $crtid . '][usage]');
                     $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][idpsso][' . $crtid . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), $fusage) . '</span></li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][idpsso][' . $crtid . '][keyname]');
@@ -1905,9 +1905,9 @@ class Form_element {
                 {
                     $row = '<li>';
                     $row .= form_label(lang('rr_pleaseremove'), 'f[crt][idpsso][' . $k4 . '][remove]');
-                    $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit'))) . '</li>';
+                    $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit')),set_value('f[crt][idpsso][' . $k4 . '][remove]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][idpsso][' . $k4 . '][type]');
-                    $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][type]', array('x509' => 'x509')) . '</li>';
+                    $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][type]', array('x509' => 'x509'),set_value('f[crt][idpsso][' . $k4 . '][type]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][idpsso][' . $k4 . '][usage]');
                     $row .= form_dropdown('f[crt][idpsso][' . $k4 . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), set_value('f[crt][idpsso][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][idpsso][' . $k4 . '][keyname]');
@@ -1993,9 +1993,9 @@ class Form_element {
 
                     $row = '<li>';
                     $row .= form_label(lang('rr_pleaseremove'), 'f[crt][aa][' . $crtid . '][remove]');
-                    $row .= form_dropdown('f[crt][aa][' . $crtid . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit'))) . '</li>';
+                    $row .= form_dropdown('f[crt][aa][' . $crtid . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit')),set_value('f[crt][aa][' . $crtid . '][remove]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][aa][' . $crtid . '][type]');
-                    $row .= form_dropdown('f[crt][aa][' . $crtid . '][type]', array('x509' => 'x509')) . '</li>';
+                    $row .= form_dropdown('f[crt][aa][' . $crtid . '][type]', array('x509' => 'x509'),set_value('f[crt][aa][' . $crtid . '][type]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][aa][' . $crtid . '][usage]');
                     $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][aa][' . $crtid . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), $fusage) . '</span></li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][aa][' . $crtid . '][keyname]');
@@ -2026,9 +2026,9 @@ class Form_element {
                 {
                     $row = '<li>';
                     $row .= form_label(lang('rr_pleaseremove'), 'f[crt][aa][' . $k4 . '][remove]');
-                    $row .= form_dropdown('f[crt][aa][' . $k4 . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit'))) . '</li>';
+                    $row .= form_dropdown('f[crt][aa][' . $k4 . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit')),set_value('f[crt][aa][' . $k4 . '][remove]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][aa][' . $k4 . '][type]');
-                    $row .= form_dropdown('f[crt][aa][' . $k4 . '][type]', array('x509' => 'x509')) . '</li>';
+                    $row .= form_dropdown('f[crt][aa][' . $k4 . '][type]', array('x509' => 'x509'),set_value('f[crt][aa][' . $k4 . '][type]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][aa][' . $k4 . '][usage]');
                     $row .= form_dropdown('f[crt][aa][' . $k4 . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), set_value('f[crt][aa][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][aa][' . $k4 . '][keyname]');
@@ -2111,9 +2111,9 @@ class Form_element {
 
                     $row = '<li>';
                     $row .= form_label(lang('rr_pleaseremove'), 'f[crt][spsso][' . $crtid . '][remove]');
-                    $row .= form_dropdown('f[crt][spsso][' . $crtid . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit'))) . '</li>';
+                    $row .= form_dropdown('f[crt][spsso][' . $crtid . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit')),set_value('f[crt][spsso][' . $crtid . '][remove]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][spsso][' . $crtid . '][type]');
-                    $row .= form_dropdown('f[crt][spsso][' . $crtid . '][type]', array('x509' => 'x509')) . '</li>';
+                    $row .= form_dropdown('f[crt][spsso][' . $crtid . '][type]', array('x509' => 'x509'),set_value('f[crt][spsso][' . $crtid . '][type]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][spsso][' . $crtid . '][usage]');
                     $row .= '<span class="' . $usagenotice . '">' . form_dropdown('f[crt][spsso][' . $crtid . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), $fusage) . '</span></li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][spsso][' . $crtid . '][keyname]');
@@ -2146,9 +2146,9 @@ class Form_element {
                 {
                     $row = '<li>';
                     $row .= form_label(lang('rr_pleaseremove'), 'f[crt][spsso][' . $k4 . '][remove]');
-                    $row .= form_dropdown('f[crt][spsso][' . $k4 . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit'))) . '</li>';
+                    $row .= form_dropdown('f[crt][spsso][' . $k4 . '][remove]', array('none' => lang('rr_keepit'), 'yes' => lang('rr_yesremoveit')),set_value('f[crt][spsso][' . $k4 . '][remove]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificatetype'), 'f[crt][spsso][' . $k4 . '][type]');
-                    $row .= form_dropdown('f[crt][spsso][' . $k4 . '][type]', array('x509' => 'x509')) . '</li>';
+                    $row .= form_dropdown('f[crt][spsso][' . $k4 . '][type]', array('x509' => 'x509'),set_value('f[crt][spsso][' . $k4 . '][type]')) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_certificateuse'), 'f[crt][spsso][' . $k4 . '][usage]');
                     $row .= form_dropdown('f[crt][spsso][' . $k4 . '][usage]', array('signing' => ''.lang('rr_certsigning').'', 'encryption' => ''.lang('rr_certencryption').'', 'both' => ''.lang('rr_certsignandencr').''), set_value('f[crt][spsso][' . $k4 . '][usage]', $v4['usage'])) . '</li>';
                     $row .= '<li>' . form_label(lang('rr_keyname') . showBubbleHelp(lang('rhelp_multikeynames')), 'f[crt][spsso][' . $k4 . '][keyname]');
@@ -3182,7 +3182,7 @@ class Form_element {
         {
             $list[$f->getId()] = $f->getName();
         }
-        $result .= form_dropdown('fedid', $list);
+        $result .= form_dropdown('fedid', $list,set_value('fedid'));
         return $result;
     }
 

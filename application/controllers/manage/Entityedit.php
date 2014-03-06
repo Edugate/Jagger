@@ -501,10 +501,21 @@ class Entityedit extends MY_Controller {
         }
     }
 
+    public function jupdate($id)
+    {
+        
+
+    }
 
     public function show($id)
     {
-
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin)
+        {
+            $this->session->set_flashdata('target', $this->current_site);
+            redirect('auth/login', 'location');
+        }
+ 
         $ent = $this->tmp_providers->getOneById($id);
         if (empty($ent))
         {
