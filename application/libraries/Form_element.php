@@ -112,6 +112,10 @@ class Form_element {
         }
         $t_homeurl = $ent->getHomeUrl();
         $t_helpdeskurl = $ent->getHelpdeskUrl();
+        if(empty($t_homeurl))
+        {
+            $t_homeurl = $t_helpdeskurl;
+        }
 
         $t_validfrom = '';
         $origvalidfrom = '';
@@ -511,16 +515,84 @@ class Form_element {
                     'value' => $f_validto,
                     'class' => 'validto ' . $validto_notice,
         ));
+
+
+        $result[] = '';
         $result[] = form_label(lang('rr_description'), 'f[description]') . form_textarea(array(
                     'name' => 'f[description]',
                     'id' => 'f[description]',
                     'class' => $description_notice,
                     'value' => $f_description,
         ));
-        $result[] = '<div style="width: 100%; text-align: center;"><h5>'.lang('localizedgeneralinfo').'</h5>'.lang('incinmetainside').' &lt;md:Organization/&gt;</div>';
+        /**
+         * start ldesc
+         */
+        $ldescriptions = $ent->getLocalDescription();
+        $sldesc = array();
+        $origldesc = array();
+        $ldesclangs = languagesCodes();
+        if ($sessform && array_key_exists('ldesc', $ses) && is_array($ses['ldesc']))
+        {
+            $sldesc = $ses['ldesc'];
+        }
+        if (is_array($ldescriptions))
+        {
+            $origldesc = $ldescriptions;
+        }
+        foreach ($sldesc as $key => $value)
+        {
+            $ldescnotice = '';
+            $lvalue = set_value('f[ldesc][' . $key . ']', $value);
+            if (array_key_exists($key, $origldesc))
+            {
+                if ($origldesc['' . $key . ''] !== $value)
+                {
+                    $ldescnotice = 'notice';
+                }
+            }
+            else
+            {
+                $ldescnotice = 'notice';
+            }
+            $result[] = form_label(lang('rr_description') . ' <small>' . $ldesclangs['' . $key . ''] . '</small>', 'f[ldesc][' . $key . ']') . form_textarea(
+                            array(
+                                'name' => 'f[ldesc][' . $key . ']',
+                                'id' => 'f[ldesc][' . $key . ']',
+                                'value' => $lvalue,
+                                'class' => $ldescnotice
+                            )
+            );
+            unset($origldesc['' . $key . '']);
+            unset($ldesclangs['' . $key . '']);
+        }
+        foreach ($origldesc as $key => $value)
+        {
+            $ldescnotice = '';
+            $lvalue = set_value('f[ldesc][' . $key . ']', $value);
+            if ($lvalue != form_prep($value))
+            {
+                $ldescnotice = 'notice';
+            }
+            $result[] = form_label(lang('rr_description') . ' <small>' . $ldesclangs['' . $key . ''] . '</small>', 'f[ldesc][' . $key . ']') . form_textarea(
+                            array(
+                                'name' => 'f[ldesc][' . $key . ']',
+                                'id' => 'f[ldesc][' . $key . ']',
+                                'value' => $lvalue,
+                                'class' => $ldescnotice
+                            )
+            );
+            unset($ldesclangs['' . $key . '']);
+        }
+        $result[] = '<span class="ldescadd">' . form_dropdown('ldesclangcode', $ldesclangs, 'en') . '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
+        $result[] = '';
+
+        /**
+         * end ldesc
+         */
         /**
          * start regpolicy 
          */
+        $result[] = '';
         $result[] = '<h5>'.lang('localizedregpolicyfield').'</h5>';
         $regpolicies = $ent->getRegistrationPolicy();
         $sregpolicies = array();
@@ -580,71 +652,6 @@ class Form_element {
         $result[] = '';
         /**
          * end regpolicy
-         */
-        /**
-         * start ldesc
-         */
-        $result[] = '<h5>'.lang('localizeddesc').'</h5>';
-        $ldescriptions = $ent->getLocalDescription();
-        $sldesc = array();
-        $origldesc = array();
-        $ldesclangs = languagesCodes();
-        if ($sessform && array_key_exists('ldesc', $ses) && is_array($ses['ldesc']))
-        {
-            $sldesc = $ses['ldesc'];
-        }
-        if (is_array($ldescriptions))
-        {
-            $origldesc = $ldescriptions;
-        }
-        foreach ($sldesc as $key => $value)
-        {
-            $ldescnotice = '';
-            $lvalue = set_value('f[ldesc][' . $key . ']', $value);
-            if (array_key_exists($key, $origldesc))
-            {
-                if ($origldesc['' . $key . ''] !== $value)
-                {
-                    $ldescnotice = 'notice';
-                }
-            }
-            else
-            {
-                $ldescnotice = 'notice';
-            }
-            $result[] = form_label(lang('rr_description') . ' <small>' . $ldesclangs['' . $key . ''] . '</small>', 'f[ldesc][' . $key . ']') . form_textarea(
-                            array(
-                                'name' => 'f[ldesc][' . $key . ']',
-                                'id' => 'f[ldesc][' . $key . ']',
-                                'value' => $lvalue,
-                                'class' => $ldescnotice
-                            )
-            );
-            unset($origldesc['' . $key . '']);
-            unset($ldesclangs['' . $key . '']);
-        }
-        foreach ($origldesc as $key => $value)
-        {
-            $ldescnotice = '';
-            $lvalue = set_value('f[ldesc][' . $key . ']', $value);
-            if ($lvalue != form_prep($value))
-            {
-                $ldescnotice = 'notice';
-            }
-            $result[] = form_label(lang('rr_description') . ' <small>' . $ldesclangs['' . $key . ''] . '</small>', 'f[ldesc][' . $key . ']') . form_textarea(
-                            array(
-                                'name' => 'f[ldesc][' . $key . ']',
-                                'id' => 'f[ldesc][' . $key . ']',
-                                'value' => $lvalue,
-                                'class' => $ldescnotice
-                            )
-            );
-            unset($ldesclangs['' . $key . '']);
-        }
-        $result[] = '<span class="ldescadd">' . form_dropdown('ldesclangcode', $ldesclangs, 'en') . '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="editbutton addicon smallerbtn">'.lang('addlocalizeddesc').'</button></span>';
-
-        /**
-         * end ldesc
          */
         return $result;
     }
