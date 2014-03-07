@@ -944,18 +944,24 @@ $(function() {
     $("button#addlname").click(function() {
         var nf = $("span.lnameadd option:selected").val();
         var nfv = $("span.lnameadd option:selected").text();
-        var inputname = $(this).attr('value');
-        $("span.lnameadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lname\" value=\""+nf+"\">Remove</button></li></li>");
-        GINIT.initialize();
+        if(typeof nf != 'undefined')
+        {
+          var inputname = $(this).attr('value');
+          $("span.lnameadd option[value=" + nf + "]").remove();
+          $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lname\" value=\""+nf+"\">Remove</button></li></li>");
+          GINIT.initialize();
+        }
     });
     $("button#addldisplayname").click(function() {
         var nf = $("span.ldisplaynameadd option:selected").val();
         var nfv = $("span.ldisplaynameadd option:selected").text();
-        var inputname = $(this).attr('value');
-        $("span.ldisplaynameadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">Remove</button></li>");
-       GINIT.initialize();
+        if(typeof nf != 'undefined')
+        {
+          var inputname = $(this).attr('value');
+          $("span.ldisplaynameadd option[value=" + nf + "]").remove();
+          $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">Remove</button></li>");
+         GINIT.initialize();
+        }
     });
     $("button#addregpolicy").click(function() {
         var nf = $("span.regpolicyadd option:selected").val();
@@ -1002,10 +1008,13 @@ $(function() {
     $("button#addlhelpdesk").click(function() {
         var nf = $("span.lhelpdeskadd option:selected").val();
         var nfv = $("span.lhelpdeskadd option:selected").text();
-        var inputname = $(this).attr('value');
-        $("span.lhelpdeskadd option[value=" + nf + "]").css({"visibility":"hidden"});
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lhelpdesk\" value=\""+nf+"\">Remove</button></li>");
-       GINIT.initialize();
+        if(typeof nf != 'undefined')
+        {
+          var inputname = $(this).attr('value');
+          $("span.lhelpdeskadd option[value=" + nf + "]").css({"visibility":"hidden"});
+          $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lhelpdesk\" value=\""+nf+"\">Remove</button></li>");
+          GINIT.initialize();
+       }
     });
     $("button#addlprivacyurl").click(function() {
         var nf = $("li.addlprivacyurl option:selected").val();
@@ -1028,10 +1037,13 @@ $(function() {
     $("button#addldescription").click(function() {
         var nf = $("span.ldescadd option:selected").val();
         var nfv = $("span.ldescadd option:selected").text();
-        var inputname = $(this).attr('value');
-        $("span.ldescadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldesc][" + nf + "]\">"+inputname+"  " + nfv + " </label><textarea id=\"f[ldesc][" + nf + "]\" name=\"f[ldesc][" + nf + "]\" rows=\"4\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">Remove</button></li>");
-       GINIT.initialize();
+        if(typeof nf != 'undefined')
+        {
+           var inputname = $(this).attr('value');
+           $("span.ldescadd option[value=" + nf + "]").remove();
+           $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldesc][" + nf + "]\">"+inputname+"  " + nfv + " </label><textarea id=\"f[ldesc][" + nf + "]\" name=\"f[ldesc][" + nf + "]\" rows=\"4\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">Remove</button></li>");
+          GINIT.initialize();
+        }
     });
     $("button#idpadduiidesc").click(function() {
         var nf = $("span.idpuiidescadd option:selected").val();
