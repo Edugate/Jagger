@@ -22,6 +22,16 @@ jQuery.fn.autoWidth = function(options)
 
   this.width(maxWidth); 
 }
+jQuery.fn.toggleOption = function( show ) {
+    jQuery( this ).toggle( show );
+    if( show ) {
+        while( jQuery( this ).parent( 'span.toggleOption' ).length )
+            jQuery( this ).unwrap( );
+    } else {
+        jQuery( this ).wrap( '<span class="toggleOption" style="display: none;" />' );
+    }
+};
+
 
 var GINIT = {
     initialize: function() {
@@ -63,6 +73,7 @@ var GINIT = {
         $(this).parent().find("textarea").each(function(){
            $(this).val("");
         });
+        $(this).parent().parent().find("option[value="+bval+"]").toggleOption(true);
          $(this).parent().hide();
        
     });
@@ -947,7 +958,7 @@ $(function() {
         if(typeof nf != 'undefined')
         {
           var inputname = $(this).attr('value');
-          $("span.lnameadd option[value=" + nf + "]").remove();
+          $("span.lnameadd option[value=" + nf + "]").toggleOption(false);
           $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lname\" value=\""+nf+"\">Remove</button></li></li>");
           GINIT.initialize();
         }
@@ -958,7 +969,8 @@ $(function() {
         if(typeof nf != 'undefined')
         {
           var inputname = $(this).attr('value');
-          $("span.ldisplaynameadd option[value=" + nf + "]").remove();
+          //$("span.ldisplaynameadd option[value=" + nf + "]").remove();
+          $("span.ldisplaynameadd option[value=" + nf + "]").toggleOption(false);
           $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">Remove</button></li>");
          GINIT.initialize();
         }
@@ -1011,7 +1023,7 @@ $(function() {
         if(typeof nf != 'undefined')
         {
           var inputname = $(this).attr('value');
-          $("span.lhelpdeskadd option[value=" + nf + "]").css({"visibility":"hidden"});
+          $("span.lhelpdeskadd option[value=" + nf + "]").toggleOption(false);
           $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lhelpdesk\" value=\""+nf+"\">Remove</button></li>");
           GINIT.initialize();
        }
@@ -1019,7 +1031,7 @@ $(function() {
     $("button#addlprivacyurl").click(function() {
         var nf = $("li.addlprivacyurl option:selected").val();
         var nfv = $("li.addlprivacyurl option:selected").text();
-        $("li.addlprivacyurl option[value=" + nf + "]").remove();
+        $("li.addlprivacyurl option[value=" + nf + "]").toggleOption(false);
         $(this).parent().append("<li class=\"localized\"><label for=\"lprivacyurl[" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"lprivacyurl[" + nf + "]\" name=\"lprivacyurl[" + nf + "]\" type=\"text\"/></li>");
     });
     $("button#addlprivacyurlspsso").click(function() {
@@ -1040,7 +1052,7 @@ $(function() {
         if(typeof nf != 'undefined')
         {
            var inputname = $(this).attr('value');
-           $("span.ldescadd option[value=" + nf + "]").remove();
+           $("span.ldescadd option[value=" + nf + "]").toggleOption(false);
            $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldesc][" + nf + "]\">"+inputname+"  " + nfv + " </label><textarea id=\"f[ldesc][" + nf + "]\" name=\"f[ldesc][" + nf + "]\" rows=\"4\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">Remove</button></li>");
           GINIT.initialize();
         }

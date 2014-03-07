@@ -348,7 +348,7 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = $ent->getEntityId();
         $lname = $ent->getLocalName();
         $lvalues = '';
-        if (is_array($lname))
+        if (count($lname)>0)
         {
             $d[++$i]['name'] = lang('rr_providername') . ' <small>' . lang('localized') . '</small>';
             foreach ($lname as $k => $v)
@@ -361,7 +361,7 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = '<div id="selectme">' . $ent->getDisplayName() . '</div>';
         $ldisplayname = $ent->getLocalDisplayName();
         $lvalues = '';
-        if (is_array($ldisplayname))
+        if (count($ldisplayname)>0)
         {
             $d[++$i]['name'] = lang('rr_descriptivename') . ' <small>' . lang('localized') . '</small>';
             foreach ($ldisplayname as $k => $v)
@@ -422,7 +422,7 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = $ent->getDescription();
         $ldescription = $ent->getLocalDescription();
         $lvalues = '';
-        if (is_array($ldescription))
+        if (count($ldescription)>0)
         {
             $d[++$i]['name'] = lang('rr_description') . ' <small>' . lang('localized') . '</small>';
             foreach ($ldescription as $k => $v)
