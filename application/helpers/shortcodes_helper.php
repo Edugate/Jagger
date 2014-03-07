@@ -23,9 +23,9 @@ function notificationCodes()
 }
 
 
-function languagesCodes()
+function languagesCodes(array $filter = null)
 {
-$result = array(
+$languages = array(
 'aa' => 'Afar',
 'ab' => 'Abkhaz',
 'ae' => 'Avestan',
@@ -333,7 +333,17 @@ $result = array(
 'ji'=>'Yiddish',
 'zu'=>'Zulu',
 );
-asort($result);
-return $result;
+if($filter)
+{
+    foreach($filter as $f)
+    {
+         $result[''.$f.''] = $languages[''.$f.''];
+    }   
+    asort($result);
+    return $result;
+}
+
+asort($languages);
+return $languages;
 }
 ?>

@@ -34,6 +34,7 @@ class MY_Controller extends CI_Controller {
     protected $inqueue;
     public $globalerrors = array();
     public $globalnotices = array();
+    public static $langselect = array();
 
     public function __construct()
     {
@@ -78,6 +79,8 @@ class MY_Controller extends CI_Controller {
         {
             $this->input->set_cookie($defaultlang_cookie);
         }
+
+        self::$langselect = languagesCodes($this->config->item('langselectlimit')); 
     }
     public static function getLang()
     {

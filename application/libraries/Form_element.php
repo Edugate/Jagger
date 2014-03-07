@@ -24,6 +24,7 @@ class Form_element {
     protected $ci;
     protected $em;
     protected $disallowedparts = array();
+    protected $defaultlangselect = 'en';
 
     function __construct()
     {
@@ -31,6 +32,11 @@ class Form_element {
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->helper('form');
         $this->ci->load->helper('shortcodes');
+        $a = $this->ci->config->item('langselectdefault');
+        if(!empty($a))
+        {
+            $this->defaultlangselect = $a;
+        }
         log_message('debug', 'lib/Form_element initialized');
         $isAdmin = $this->ci->j_auth->isAdministrator();
         if($isAdmin)
@@ -334,7 +340,7 @@ class Form_element {
             ).'<button type="button" class="btn langinputrm" name="lname" value="'.$key.'">'.lang('rr_remove').'</button>';
             unset($lnamelangs['' . $key . '']);
         }
-        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', $lnamelangs, 'en') . '<button type="button" id="addlname" name="addlname" value="'.lang('rr_providername').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
+        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addlname" name="addlname" value="'.lang('rr_providername').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
 
         $result[] = '';
         //$result[] = '</div>';
@@ -409,7 +415,7 @@ class Form_element {
             ).'<button type="button" class="btn langinputrm" name="ldisplayname" value="'.$key.'">'.lang('rr_remove').'</button>';
             unset($ldisplaynamelangs['' . $key . '']);
         }
-        $result[] = '<span class="ldisplaynameadd">' . form_dropdown('ldisplaynamelangcode', $ldisplaynamelangs, 'en') . '<button type="button" id="addldisplayname" name="addldisplayname" value="'.lang('rr_displayname').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
+        $result[] = '<span class="ldisplaynameadd">' . form_dropdown('ldisplaynamelangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addldisplayname" name="addldisplayname" value="'.lang('rr_displayname').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
 
         /**
          * end ldisplayname
@@ -486,7 +492,7 @@ class Form_element {
             ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">'.lang('rr_remove').'</button>';
             unset($lhelpdesklangs['' . $key . '']);
         }
-        $result[] = '<span class="lhelpdeskadd">' . form_dropdown('lhelpdesklangcode', $lhelpdesklangs, 'en') . '<button type="button" id="addlhelpdesk" name="addlhelpdesk" value="'.lang('rr_helpdeskurl').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
+        $result[] = '<span class="lhelpdeskadd">' . form_dropdown('lhelpdesklangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addlhelpdesk" name="addlhelpdesk" value="'.lang('rr_helpdeskurl').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
 
 
         $result[] = '';
@@ -583,7 +589,7 @@ class Form_element {
             );
             unset($ldesclangs['' . $key . '']);
         }
-        $result[] = '<span class="ldescadd">' . form_dropdown('ldesclangcode', $ldesclangs, 'en') . '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
+        $result[] = '<span class="ldescadd">' . form_dropdown('ldesclangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addldescription" name="addldescription" value="addlldescription" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
         $result[] = '';
 
         /**
@@ -647,7 +653,7 @@ class Form_element {
             );
             unset($regpolicylangs['' . $key . '']);
         }
-        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', $regpolicylangs, 'en') . '<button type="button" id="addregpolicy" name="addregpolicy" value="addregpolicy" class="editbutton addicon smallerbtn">'.lang('addlocalizedregpolicy').'</button></span>';
+        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addregpolicy" name="addregpolicy" value="addregpolicy" class="editbutton addicon smallerbtn">'.lang('addlocalizedregpolicy').'</button></span>';
 
         $result[] = '';
         /**
@@ -775,7 +781,7 @@ class Form_element {
             $idpssolangcodes = array_diff_key($langscodes, $sorig);
             $r .= '<li class="addlprivacyurlidpsso localized">';
 
-            $r .= form_dropdown('langcode', $idpssolangcodes, 'en');
+            $r .= form_dropdown('langcode', MY_Controller::$langselect, $this->defaultlangselect);
             $r .= '<button type="button" id="addlprivacyurlidpsso" name="addlprivacyurlidpsso" value="addlprivacyurlidpsso" class="editbutton addicon smallerbtn">'.lang('addlocalized').' ' . lang('rr_privacystatement') . '</button>';
 
             $r .= '</ol></fieldset>';
@@ -829,7 +835,7 @@ class Form_element {
             }
             $spssolangcodes = array_diff_key($langscodes, $sorig);
             $r .= '<li class="addlprivacyurlspsso localized">';
-            $r .= form_dropdown('langcode', $spssolangcodes, 'en');
+            $r .= form_dropdown('langcode', MY_Controller::$langselect, $this->defaultlangselect);
             $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="editbutton addicon smallerbtn">'.lang('addlocalized') .' ' . lang('rr_privacystatement') . '</button>';
             $r .= '</li></ol></fieldset>';
             $result[] = $r;
@@ -2711,7 +2717,7 @@ class Form_element {
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiidisplayadd">' . form_dropdown('idpuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidisplay" name="idpadduiidisplay" value="idpadduiidisplay" class="editbutton addicon smallerbtn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
+            $r .= '<li><span class="idpuiidisplayadd">' . form_dropdown('idpuiidisplaylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiidisplay" name="idpadduiidisplay" value="idpadduiidisplay" class="editbutton addicon smallerbtn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 
@@ -2791,7 +2797,7 @@ class Form_element {
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiihelpdeskadd">' . form_dropdown('idpuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiihelpdesk" name="idpadduiihelpdesk" value="idpadduiihelpdesk" class="editbutton addicon smallerbtn">'.lang('addlocalizedhelpdesk').'</button></span></li>';
+            $r .= '<li><span class="idpuiihelpdeskadd">' . form_dropdown('idpuiihelpdesklangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiihelpdesk" name="idpadduiihelpdesk" value="idpadduiihelpdesk" class="editbutton addicon smallerbtn">'.lang('addlocalizedhelpdesk').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 
@@ -2871,7 +2877,7 @@ class Form_element {
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiidescadd">' . form_dropdown('idpuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="idpadduiidesc" name="idpadduiidesc" value="idpadduiidesc" class="editbutton addicon smallerbtn">'.lang('addlocalizeddesc').'</button></span></li>';
+            $r .= '<li><span class="idpuiidescadd">' . form_dropdown('idpuiidesclangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiidesc" name="idpadduiidesc" value="idpadduiidesc" class="editbutton addicon smallerbtn">'.lang('addlocalizeddesc').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 
@@ -2957,7 +2963,7 @@ class Form_element {
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiidisplayadd">' . form_dropdown('spuiidisplaylangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidisplay" name="spadduiidisplay" value="spadduiidisplay" class="editbutton addicon smallerbtn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
+                $r .= '<li><span class="spuiidisplayadd">' . form_dropdown('spuiidisplaylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="spadduiidisplay" name="spadduiidisplay" value="spadduiidisplay" class="editbutton addicon smallerbtn">'.lang('addlocalizeduiidisplayname').'</button></span></li>';
                 $r .= form_fieldset_close();
                 $result[] = $r;
 
@@ -3037,7 +3043,7 @@ class Form_element {
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiihelpdeskadd">' . form_dropdown('spuiihelpdesklangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiihelpdesk" name="spadduiihelpdesk" value="spadduiihelpdesk" class="editbutton addicon smallerbtn">'.lang('addlocalizeinformationurl').'</button></span></li>';
+                $r .= '<li><span class="spuiihelpdeskadd">' . form_dropdown('spuiihelpdesklangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="spadduiihelpdesk" name="spadduiihelpdesk" value="spadduiihelpdesk" class="editbutton addicon smallerbtn">'.lang('addlocalizeinformationurl').'</button></span></li>';
                 $r .= form_fieldset_close();
                 $result[] = $r;
 
@@ -3117,7 +3123,7 @@ class Form_element {
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiidescadd">' . form_dropdown('spuiidesclangcode', $langsdisplaynames, 'en') . '<button type="button" id="spadduiidesc" name="spadduiidesc" value="spadduiidesc" class="editbutton addicon smallerbtn">'.lang('addlocalizeddesc').'</button></span></li>';
+                $r .= '<li><span class="spuiidescadd">' . form_dropdown('spuiidesclangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="spadduiidesc" name="spadduiidesc" value="spadduiidesc" class="editbutton addicon smallerbtn">'.lang('addlocalizeddesc').'</button></span></li>';
                 $r .= form_fieldset_close();
                 $result[] = $r;
 
