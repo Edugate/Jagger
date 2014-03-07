@@ -474,6 +474,38 @@ class Entityedit extends MY_Controller {
 
     private function _save_draft($id, $data)
     {
+        if(isset($data['lname']))
+        {
+           $data['lname']=array_filter($data['lname']);
+        }
+        else
+        {
+            $data['lname']= array();
+        }
+        if(isset($data['ldisplayname']))
+        {
+           $data['ldisplayname']=array_filter($data['ldisplayname']);
+        }
+        else
+        {
+            $data['ldisplayname'] = array();
+        }
+        if(isset($data['lhelpdesk']))
+        {
+           $data['lhelpdesk'] = array_filter($data['lhelpdesk']);
+        }
+        else
+        {
+           $data['lhelpdesk'] = array();
+        }
+        if(isset($data['ldesc']))
+        {
+           $data['ldesc'] = array_filter($data['ldesc']);
+        }
+        else
+        {
+           $data['ldesc'] = array();
+        }
         $n = 'entform' . $id;
         $this->session->set_userdata($n, $data);
     }

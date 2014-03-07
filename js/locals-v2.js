@@ -57,7 +57,12 @@ var GINIT = {
     $("button.langinputrm").click(function(){
          var bval = $(this).attr('value');
          var bname = $(this).attr('name');
-         $(this).parent().find("input").val('');
+         $(this).parent().find("input").each(function(){
+           $(this).attr('value','');
+        });
+        $(this).parent().find("textarea").each(function(){
+           $(this).val("");
+        });
          $(this).parent().hide();
        
     });
@@ -998,7 +1003,7 @@ $(function() {
         var nf = $("span.lhelpdeskadd option:selected").val();
         var nfv = $("span.lhelpdeskadd option:selected").text();
         var inputname = $(this).attr('value');
-        $("li.addlhelpdesk option[value=" + nf + "]").remove();
+        $("span.lhelpdeskadd option[value=" + nf + "]").css({"visibility":"hidden"});
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lhelpdesk\" value=\""+nf+"\">Remove</button></li>");
        GINIT.initialize();
     });
@@ -1023,8 +1028,10 @@ $(function() {
     $("button#addldescription").click(function() {
         var nf = $("span.ldescadd option:selected").val();
         var nfv = $("span.ldescadd option:selected").text();
+        var inputname = $(this).attr('value');
         $("span.ldescadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldesc][" + nf + "]\">Description in " + nfv + " </label><textarea id=\"f[ldesc][" + nf + "]\" name=\"f[ldesc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldesc][" + nf + "]\">"+inputname+"  " + nfv + " </label><textarea id=\"f[ldesc][" + nf + "]\" name=\"f[ldesc][" + nf + "]\" rows=\"4\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">Remove</button></li>");
+       GINIT.initialize();
     });
     $("button#idpadduiidesc").click(function() {
         var nf = $("span.idpuiidescadd option:selected").val();

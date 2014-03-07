@@ -2067,7 +2067,14 @@ class Provider {
 
     public function getLocalHelpdeskUrl()
     {
-        return unserialize($this->lhelpdeskurl);
+        if(!empty($this->lhelpdeskurl))
+        {
+           return unserialize($this->lhelpdeskurl);
+        }
+        else
+        {
+           return array();
+        }
     }
 
     public function getHelpdeskUrlLocalized()
@@ -2173,7 +2180,11 @@ class Provider {
      */
     public function getLocalDescription()
     {
-        return unserialize($this->ldescription);
+        if(!empty($this->ldescription))
+        {
+           return unserialize($this->ldescription);
+        }
+        return array();
     }
 
     public function getLocalDescriptionsToArray($type)
