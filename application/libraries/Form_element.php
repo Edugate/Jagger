@@ -323,7 +323,7 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $lnamenotice
                             )
-            ).'<button type="button" class="btn langinputrm" name="lname" value="'.$key.'">'.lang('rr_remove').'</button>';
+            ).'<button type="button" class="btn langinputrm" name="lname" value="'.$key.'">X</button>';
             unset($origlname['' . $key . '']);
             unset($lnamelangs['' . $key . '']);
         }
@@ -348,7 +348,7 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $lnamenotice
                             )
-            ).'<button type="button" class="btn langinputrm" name="lname" value="'.$key.'">'.lang('rr_remove').'</button>';
+            ).'<button type="button" class="btn langinputrm" name="lname" value="'.$key.'">X</button>';
             unset($lnamelangs['' . $key . '']);
         }
         }
@@ -404,7 +404,7 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $ldisplaynamenotice
                             )
-            ).'<button type="button" class="btn langinputrm" name="ldisplayname" value="'.$key.'">'.lang('rr_remove').'</button>';
+            ).'<button type="button" class="btn langinputrm" name="ldisplayname" value="'.$key.'">X</button>';
             unset($origldisplayname['' . $key . '']);
             unset($ldisplaynamelangs['' . $key . '']);
         }
@@ -425,7 +425,7 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $ldisplaynamenotice
                             )
-            ).'<button type="button" class="btn langinputrm" name="ldisplayname" value="'.$key.'">'.lang('rr_remove').'</button>';
+            ).'<button type="button" class="btn langinputrm" name="ldisplayname" value="'.$key.'">X</button>';
             unset($ldisplaynamelangs['' . $key . '']);
         }
         }
@@ -477,14 +477,14 @@ class Form_element {
             {
                 $lhelpdesknotice = 'notice';
             }
-            $result[] = form_label(lang('rr_helpdeskurl') . '<small>' . $lhelpdesklangs['' . $key . ''] . '</small>', 'f[lhelpdesk][' . $key . ']') . form_input(
+            $result[] = form_label(lang('rr_helpdeskurl') . ' <small>' . $lhelpdesklangs['' . $key . ''] . '</small>', 'f[lhelpdesk][' . $key . ']') . form_input(
                             array(
                                 'name' => 'f[lhelpdesk][' . $key . ']',
                                 'id' => 'f[lhelpdesk][' . $key . ']',
                                 'value' => $lvalue,
                                 'class' => $lhelpdesknotice
                             )
-            ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">'.lang('rr_remove').'</button>';
+            ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">X</button>';
             unset($origlhelpdesk['' . $key . '']);
             unset($lhelpdesklangs['' . $key . '']);
         }
@@ -498,14 +498,14 @@ class Form_element {
             {
                 $lhelpdesknotice = 'notice';
             }
-            $result[] = form_label(lang('rr_helpdeskurl') . '<small>' . $lhelpdesklangs['' . $key . ''] . '</small>', 'f[lhelpdesk][' . $key . ']') . form_input(
+            $result[] = form_label(lang('rr_helpdeskurl') . ' <small>' . $lhelpdesklangs['' . $key . ''] . '</small>', 'f[lhelpdesk][' . $key . ']') . form_input(
                             array(
                                 'name' => 'f[lhelpdesk][' . $key . ']',
                                 'id' => 'f[lhelpdesk][' . $key . ']',
                                 'value' => $lvalue,
                                 'class' => $lhelpdesknotice
                             )
-            ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">'.lang('rr_remove').'</button>';
+            ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">X</button>';
             unset($lhelpdesklangs['' . $key . '']);
         }
         }
@@ -588,7 +588,7 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $ldescnotice
                             )
-            ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">'.lang('rr_remove').'</button>';
+            ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">X</button>';
             unset($origldesc['' . $key . '']);
             unset($ldesclangs['' . $key . '']);
         }
@@ -609,7 +609,7 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $ldescnotice
                             )
-            ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">'.lang('rr_remove').'</button>';
+            ).'<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">X</button>';
             unset($ldesclangs['' . $key . '']);
         }
         }
