@@ -474,6 +474,62 @@ class Entityedit extends MY_Controller {
 
     private function _save_draft($id, $data)
     {
+        if(isset($data['lname']))
+        {
+           $data['lname']=array_filter($data['lname']);
+        }
+        else
+        {
+            $data['lname']= array();
+        }
+        if(isset($data['ldisplayname']))
+        {
+           $data['ldisplayname']=array_filter($data['ldisplayname']);
+        }
+        else
+        {
+            $data['ldisplayname'] = array();
+        }
+        if(isset($data['lhelpdesk']))
+        {
+           $data['lhelpdesk'] = array_filter($data['lhelpdesk']);
+        }
+        else
+        {
+           $data['lhelpdesk'] = array();
+        }
+        if(isset($data['ldesc']))
+        {
+           $data['ldesc'] = array_filter($data['ldesc']);
+        }
+        else
+        {
+           $data['ldesc'] = array();
+        }
+        if(isset($data['uii']['idpsso']['desc']))
+        {
+            $data['uii']['idpsso']['desc'] = array_filter($data['uii']['idpsso']['desc']);
+        }
+        else
+        {
+           $data['uii']['idpsso']['desc'] = array();
+        }
+        if(isset($data['uii']['idpsso']['helpdesk']))
+        {
+            $data['uii']['idpsso']['helpdesk'] = array_filter($data['uii']['idpsso']['helpdesk']);
+        }
+        else
+        {
+           $data['uii']['idpsso']['helpdesk'] = array();
+        }
+        if(isset($data['uii']['idpsso']['displayname']))
+        {
+            $data['uii']['idpsso']['displayname'] = array_filter($data['uii']['idpsso']['displayname']);
+        }
+        else
+        {
+           $data['uii']['idpsso']['displayname'] = array();
+        }
         $n = 'entform' . $id;
         $this->session->set_userdata($n, $data);
     }
@@ -501,10 +557,21 @@ class Entityedit extends MY_Controller {
         }
     }
 
+    public function jupdate($id)
+    {
+        
+
+    }
 
     public function show($id)
     {
-
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin)
+        {
+            $this->session->set_flashdata('target', $this->current_site);
+            redirect('auth/login', 'location');
+        }
+ 
         $ent = $this->tmp_providers->getOneById($id);
         if (empty($ent))
         {
@@ -537,9 +604,8 @@ class Entityedit extends MY_Controller {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
             $this->_save_draft($id, $y);
-            if ($submittype == 'modify')
+            if ($submittype === 'modify')
             {
-
                 $this->load->library('providerupdater');
                 $c = $this->_get_draft($id);
                 if (!empty($c) && is_array($c))
@@ -561,9 +627,13 @@ class Entityedit extends MY_Controller {
             }
         }
         $entsession = $this->_get_draft($id);
+        if(!empty($entsession))
+        {
+          $data['sessform'] = true;
+        }
 
         $data['y'] = $entsession;
-
+  
         $titlename = $ent->getName();
         if (empty($titlename))
         {
@@ -600,54 +670,12 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'staticmetadata', 'value' => ''.lang('tabstaticmeta').'', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
         $menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
 
-
-
-
-
-
-
-
         $data['menutabs'] = $menutabs;
         $data['content_view'] = 'manage/entityedit_view.php';
-        // echo '<pre>';
-        //print_r($this->session->all_userdata());
-        //echo '</pre>';
         $this->load->view('page', $data);
     }
 
-    public function reviewchanges($id)
-    {
-        $ent = $this->tmp_providers->getOneById($id);
-        if (empty($ent))
-        {
-            show_error('Provider not found', 404);
-        }
-        $this->_check_perms($id);
-        $titlename = $ent->getName();
-        if (empty($titlename))
-        {
-            $titlename = $ent->getEntityId();
-        }
-        $n = 'entform' . $id;
-        $this->title = $titlename . ' :: ' . lang('title_provideredit');
-        $entsession = $this->_get_draft($id);
-        $orig = array();
-        $orig['entityid'] = $ent->getEntityId();
-        //echo '<pre>';
-        //print_r($entsession);
-        //echo "=======\n";
-        //print_r($orig);
-        // echo '</pre>';
-    }
 
-    public function discardchanges($id)
-    {
-        
-    }
 
-    public function submitchanges($i)
-    {
-        
-    }
 
 }

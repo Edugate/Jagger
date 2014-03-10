@@ -55,11 +55,15 @@ class Detail extends MY_Controller {
        {
            if (!$this->j_auth->logged_in())
            {
-              show_error('no session', 403);
+              set_status_header(403);
+              echo 'no user session';
+              return;
            }
            if(!is_numeric($id))
            {
-              show_error('denied 1', 403);
+              set_status_header(403);
+              echo 'received incorrect params';
+              return;
            }
            $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
            log_message('debug','TEST access '.$has_write_access);
@@ -90,10 +94,15 @@ class Detail extends MY_Controller {
            }
            else
            {
-              show_error('denied', 403);
+              set_status_header(403);
+              echo 'access denied';
+              return;
            } 
        }
-       show_error('denied', 403);
+       else
+       {
+           show_error('Access denied', 403);
+       }
     }
 
     function showlogs($id)
@@ -333,13 +342,13 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s',$ent->getLastModified()->format('U')+j_auth::$timeOffset) . '</b>';
-        $d[++$i]['name'] = lang('rr_providername');
-        $d[$i]['value'] = $ent->getName();
         $d[++$i]['name'] = lang('rr_entityid');
         $d[$i]['value'] = $ent->getEntityId();
+        $d[++$i]['name'] = lang('rr_providername');
+        $d[$i]['value'] = $ent->getName();
         $lname = $ent->getLocalName();
         $lvalues = '';
-        if (is_array($lname))
+        if (count($lname)>0)
         {
             $d[++$i]['name'] = lang('rr_providername') . ' <small>' . lang('localized') . '</small>';
             foreach ($lname as $k => $v)
@@ -352,7 +361,7 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = '<div id="selectme">' . $ent->getDisplayName() . '</div>';
         $ldisplayname = $ent->getLocalDisplayName();
         $lvalues = '';
-        if (is_array($ldisplayname))
+        if (count($ldisplayname)>0)
         {
             $d[++$i]['name'] = lang('rr_descriptivename') . ' <small>' . lang('localized') . '</small>';
             foreach ($ldisplayname as $k => $v)
@@ -413,7 +422,7 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = $ent->getDescription();
         $ldescription = $ent->getLocalDescription();
         $lvalues = '';
-        if (is_array($ldescription))
+        if (count($ldescription)>0)
         {
             $d[++$i]['name'] = lang('rr_description') . ' <small>' . lang('localized') . '</small>';
             foreach ($ldescription as $k => $v)
@@ -427,6 +436,18 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = $ent->getHomeUrl() . ' <br /><small>' . lang('rr_notincludedmetadata') . '</small>';
         $d[++$i]['name'] = lang('rr_helpdeskurl');
         $d[$i]['value'] = $ent->getHelpdeskUrl() . ' <br /><small>' . lang('rr_includedmetadata') . '  &lt;md:OrganizationURL ..../&gt;</small>';
+        $localizedHelpdesk = $ent->getLocalHelpdeskUrl();
+        if(is_array($localizedHelpdesk) && count($localizedHelpdesk)>0)
+        {
+           $d[++$i]['name'] = lang('rr_helpdeskurl').' <small>'.lang('localized') . '</small>';
+           $lvalues = '';
+           foreach($localizedHelpdesk as $k=>$v)
+           {
+                $lvalues .= '<b>' . $k . ':</b> <div>' . $v . '</div>';
+              
+           }
+           $d[$i]['value'] = $lvalues;
+        }
         $d[++$i]['name'] = lang('rr_defaultprivacyurl');
         $d[$i]['value'] = $ent->getPrivacyUrl();
         $d[++$i]['name'] = lang('rr_coc');
@@ -545,7 +566,6 @@ class Detail extends MY_Controller {
         $federationsString = "";
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
         $membership = $ent->getMembership();
-//        $feds = $ent->getFederations();
         $membershipNotLeft = array();
         if (!empty($membership))
         {

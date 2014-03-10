@@ -77,6 +77,15 @@ $config['register_defaultrole'] = 'Guest';
 $config['Shib_required'] = array('Shib_mail','Shib_username');
 $config['Shib_username'] = 'eppn';
 $config['Shib_mail'] = 'mail';
+/**
+ * optional firstname and surname
+ */
+$config['Shib_fname'] = 'givenName';
+$config['Shib_sname'] = 'sn';
+/**
+ * shibb_updatefullname - if TRUE then every time when user is logging in and shib receives fname and sname then user records is updated
+ */
+$config['shibb_updatefullname'] = TRUE;
 
 $config['Shibboleth']['loginapp_uri'] = 'auth/fedauth';
 $config['Shibboleth']['logout_uri'] = '/Shibboleth.sso/Logout';
@@ -143,6 +152,16 @@ $config['geocenterpoint']  = array('-6.247856140071235','53.34961629053703');
  */
 
 
+$config['curl_timeout'] = 90;
+/**
+ * optional -example if you want to limit list of langs in dropdown list in edit forms
+ */
+//$config['langselectlimit'] = array('en','pl');
+
+/**
+ * optional what lang should be selected by default 
+ */
+//$config['langselectdefault'] = 'pl';
 
 
 

@@ -172,36 +172,30 @@ class Providerupdater {
             $langs = array_keys(languagesCodes());
             foreach ($ch['lname'] as $key => $value)
             {
-                if (in_array($key, $langs))
+                if (!in_array($key, $langs))
                 {
-                    if (empty($value) && array_key_exists($key, $origs))
-                    {
-                        unset($origs['' . $key . '']);
-                    }
-                    else
-                    {
-                        $origs['' . $key . ''] = $value;
-                    }
+                    unset($ch['lname'][''.$key.'']);
+                    log_message('warning',__METHOD__.' lang code '.$key.' (localized name) not found in allowed langs');
                 }
             }
             $lnamediffs = FALSE;
-            $diff1 = array_diff_assoc($trackorigs,$origs);
+            $diff1 = array_diff_assoc($trackorigs,$ch['lname']);
             if(count($diff1)>0)
             {
                $lnamediffs = TRUE;
             } 
             else
             {
-               $diff1 = array_diff_assoc($origs,$trackorigs);
+               $diff1 = array_diff_assoc($ch['lname'],$trackorigs);
                if(count($diff1)>0)
                {
                     $lnamediffs = TRUE;
                }
             }
-            $ent->setLocalName($origs);
+            $ent->setLocalName($ch['lname']);
             if($lnamediffs === TRUE)
             {
-                $m['Localized name'] = array('before'=>arrayWithKeysToHtml($trackorigs),'after'=>arrayWithKeysToHtml($origs));
+                $m['Localized name'] = array('before'=>arrayWithKeysToHtml($trackorigs),'after'=>arrayWithKeysToHtml($ch['lname']));
             }
         }
         /**
@@ -242,32 +236,40 @@ class Providerupdater {
             }
             $ent->setDisplayName($ch['displayname']);
         }
+
         if (array_key_exists('ldisplayname', $ch) && is_array($ch['ldisplayname']))
         {
             $origs = $ent->getLocalDisplayname();
-            $origcopy = $origs;
             $langs = array_keys(languagesCodes());
             foreach ($ch['ldisplayname'] as $key => $value)
             {
-                if (in_array($key, $langs))
+                if (!in_array($key, $langs))
                 {
-                    if (empty($value) && array_key_exists($key, $origs))
-                    {
-                        unset($origs['' . $key . '']);
-                    }
-                    else
-                    {
-                        $origs['' . $key . ''] = $value;
-                    }
+                    unset($ch['ldisplayname'][''.$key.'']);
+                    log_message('warning',__METHOD__.' lang code '.$key.' (localized displayname) not found in allowed langs');
                 }
             }
-            if($origs != $origcopy)
+            $isDifferent = FALSE;
+            $diff1 = array_diff_assoc($origs,$ch['ldisplayname']);
+            if(count($diff1)>0)
             {
-               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origcopy));
-               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
+               $isDifferent = TRUE;
+            } 
+            else
+            {
+               $diff1 = array_diff_assoc($ch['ldisplayname'],$origs);
+               if(count($diff1)>0)
+               {
+                    $isDifferent = TRUE;
+               }
+            }
+            if($isDifferent)
+            {
+               $ent->setLocalDisplayName($ch['ldisplayname']);
+               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
+               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['ldisplayname']));
                $m['Localized DisplayName'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
-            $ent->setLocalDisplayName($origs);
         }
         if (array_key_exists('regauthority', $ch))
         {
@@ -368,29 +370,36 @@ class Providerupdater {
         if (array_key_exists('lhelpdesk', $ch) && is_array($ch['lhelpdesk']))
         {
             $origs = $ent->getLocalHelpdeskUrl();
-            $origcopy = $origs;
             $langs = array_keys(languagesCodes());
             foreach ($ch['lhelpdesk'] as $key => $value)
             {
-                if (in_array($key, $langs))
+                if (!in_array($key, $langs))
                 {
-                    if (empty($value) && array_key_exists($key, $origs))
-                    {
-                        unset($origs['' . $key . '']);
-                    }
-                    elseif(!empty($value))
-                    {
-                        $origs['' . $key . ''] = $value;
-                    }
+                    unset($ch['lhelpdesk'][''.$key.'']);
+                    log_message('warning',__METHOD__.' lang code '.$key.' (localized helpdeskurl) not found in allowed langs');
                 }
             }
-            if($origs != $origcopy)
+            $isDifferent = FALSE;
+            $diff1 = array_diff_assoc($origs,$ch['lhelpdesk']);
+            if(count($diff1)>0)
             {
-               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origcopy));
-               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
+               $isDifferent = TRUE;
+            } 
+            else
+            {
+               $diff1 = array_diff_assoc($ch['lhelpdesk'],$origs);
+               if(count($diff1)>0)
+               {
+                    $isDifferent = TRUE;
+               }
+            }
+            if($isDifferent)
+            {
+               $ent->setLocalHelpdeskUrl($ch['lhelpdesk']);
+               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
+               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['lhelpdesk']));
                $m['Localized HelpdeskURL'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
-            $ent->setLocalHelpdeskUrl($origs);
         }
 
         if (array_key_exists('description', $ch))
@@ -404,29 +413,36 @@ class Providerupdater {
         if (array_key_exists('ldesc', $ch) && is_array($ch['ldesc']))
         {
             $origs = $ent->getLocalDescription();
-            $origcopy = $origs;
             $langs = array_keys(languagesCodes());
             foreach ($ch['ldesc'] as $key => $value)
             {
-                if (in_array($key, $langs))
+                if (!in_array($key, $langs))
                 {
-                    if (empty($value) && array_key_exists($key, $origs))
-                    {
-                        unset($origs['' . $key . '']);
-                    }
-                    elseif(!empty($value))
-                    {
-                        $origs['' . $key . ''] = $value;
-                    }
+                    unset($ch['ldesc'][''.$key.'']);
+                    log_message('warning',__METHOD__.' lang code '.$key.' (localized description) not found in allowed langs');
                 }
             }
-            if($origs != $origcopy)
+            $isDifferent = FALSE;
+            $diff1 = array_diff_assoc($origs,$ch['ldesc']);
+            if(count($diff1)>0)
             {
-               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origcopy));
+               $isDifferent = TRUE;
+            } 
+            else
+            {
+               $diff1 = array_diff_assoc($ch['ldesc'],$origs);
+               if(count($diff1)>0)
+               {
+                    $isDifferent = TRUE;
+               }
+            }
+            if($isDifferent)
+            {
+               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['ldesc']));
                $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
                $m['Localized Description'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
+               $ent->setLocalDescription($ch['ldesc']);
             }
-            $ent->setLocalDescription($origs);
         }
         /**
          * @todo track coc changes
@@ -1560,6 +1576,22 @@ class Providerupdater {
             {
                 if (isset($ch['uii']['idpsso']['' . $elkey . '']) && is_array($ch['uii']['idpsso']['' . $elkey . '']))
                 {
+                    $doFilter = array(''.$elvalue.'');
+                    $collection = $ent->getExtendMetadata()->filter(
+                               function($entry) use ($doFilter) {
+                        return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
+                    });
+                    foreach($collection as $c)
+                    {
+                         $attrs = $c->getAttributes();
+                         $lang = $attrs['xml:lang'];
+                         if(!isset($ch['uii']['idpsso']['' . $elkey . ''][''.$lang.'']))
+                         {
+                             $ent->getExtendMetadata()->removeElement($c);
+                             $this->em->remove($c);
+                             
+                         }
+                    }
                     foreach ($ch['uii']['idpsso']['' . $elkey . ''] as $key3 => $value3)
                     {
 

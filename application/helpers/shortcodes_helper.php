@@ -23,9 +23,9 @@ function notificationCodes()
 }
 
 
-function languagesCodes()
+function languagesCodes(array $filter = null)
 {
-$result = array(
+$languages = array(
 'aa' => 'Afar',
 'ab' => 'Abkhaz',
 'ae' => 'Avestan',
@@ -54,7 +54,6 @@ $result = array(
 'co' => 'Corsican',
 'cr' => 'Cree',
 'cs' => 'Czech',
-'cu' => 'Old Church Slavonic, Church Slavic, Church Slavonic, Old Bulgarian, Old Slavonic',
 'cv' => 'Chuvash',
 'cy' => 'Welsh',
 'da' => 'Danish',
@@ -242,8 +241,8 @@ $result = array(
 'nl'=>'Dutch (Standard)',
 'nl-be'=>'Dutch (Belgium)',
 'en'=>'English',
-'en-us'=>'English (United States)',
-'en-gb'=>'English (United Kingdom)',
+'en-us'=>'English (US)',
+'en-gb'=>'English (UK)',
 'en-au'=>'English (Australia)',
 'en-ca'=>'English (Canada)',
 'en-nz'=>'English (New Zealand)',
@@ -334,7 +333,17 @@ $result = array(
 'ji'=>'Yiddish',
 'zu'=>'Zulu',
 );
-asort($result);
-return $result;
+if($filter)
+{
+    foreach($filter as $f)
+    {
+         $result[''.$f.''] = $languages[''.$f.''];
+    }   
+    asort($result);
+    return $result;
+}
+
+asort($languages);
+return $languages;
 }
 ?>

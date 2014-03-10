@@ -278,6 +278,40 @@ class Auth extends MY_Controller {
             return FALSE;
         }
     }
+    private function get_shib_fname()
+    {
+        $fname_var = $this->config->item('Shib_fname');
+        if(empty($fname_var))
+        {
+           return false;
+        }
+        if (isset($_SERVER[$fname_var]))
+        {
+            return $_SERVER[$fname_var];
+        }
+        elseif(isset($_SERVER['REDIRECT_'.$fname_var]))
+        {
+            return $_SERVER['REDIRECT_'.$fname_var];
+        }
+        return false;
+    }
+    private function get_shib_sname()
+    {
+        $sname_var = $this->config->item('Shib_sname');
+        if(empty($sname_var))
+        {
+           return false;
+        }
+        if (isset($_SERVER[$sname_var]))
+        {
+            return $_SERVER[$sname_var];
+        }
+        elseif(isset($_SERVER['REDIRECT_'.$sname_var]))
+        {
+            return $_SERVER['REDIRECT_'.$sname_var];
+        }
+        return false;
+    }
 
     private function get_shib_mail()
     {
@@ -318,6 +352,11 @@ class Auth extends MY_Controller {
     {
         $username = $attrs['username'];
         $mail = $attrs['mail'];
+
+        $fname = trim($attrs['fname']);
+        $sname = trim($attrs['sname']);
+
+        
      
         $checkIfExist = $this->em->getRepository("models\User")->findOneBy(array('email' => $mail));
         if (!empty($checkIfExist))
@@ -338,6 +377,14 @@ class Auth extends MY_Controller {
         $user->setAccepted();
         $user->setEnabled();
         $user->setValid();
+        if(!empty($fname))
+        {
+            $user->setGivenname($fname);
+        }
+        if(!empty($sname))
+        {
+            $user->setSurname($sname);
+        }
         $user->setUserpref(array());
         $defaultRole = $this->config->item('register_defaultrole');
         $allowedroles = array('Guest', 'Member');
@@ -410,6 +457,20 @@ class Auth extends MY_Controller {
             {
                 $_SESSION['timeoffset'] = (int) $timeoffset;
             }
+            $updatefullname = $this->config->item('shibb_updatefullname');
+            if(!empty($updatefullname)&& $updatefullname === TRUE)
+            {
+               $fname = trim($this->get_shib_fname());
+               $sname = trim($this->get_shib_sname());
+               if(!empty($fname))
+               {
+                   $user->setGivenname(''.$fname.'');
+               }
+               if(!empty($sname))
+               {
+                   $user->setSurname(''.$sname.'');
+               }
+            }
             $ip = $_SERVER['REMOTE_ADDR'];
             $user->setIP($ip);
             $user->updated();
@@ -427,6 +488,8 @@ class Auth extends MY_Controller {
                 show_error(' ' . htmlentities($user_var) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">' . lang('rrhere') . '</a>', 403);
             } else
             {
+                $fname_var = $this->get_shib_fname();
+                $sname_var = $this->get_shib_sname();
                 $email_var = $this->get_shib_mail();
 
                 if (empty($email_var))
@@ -435,7 +498,7 @@ class Auth extends MY_Controller {
                     show_error(lang('error_noemail'), 403);
                     return;
                 }
-                $attrs = array('username' => $user_var, 'mail' => $email_var);
+                $attrs = array('username' => $user_var, 'mail' => $email_var,'fname'=>$fname_var,'sname'=>$sname_var);
                 $reg = $this->registerUser($attrs);
 
                 if ($reg !== TRUE)

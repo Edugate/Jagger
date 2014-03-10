@@ -205,6 +205,10 @@ class Fedcategory extends MY_Controller {
         }
         $result = array();
         $isAdmin = $this->j_auth->isAdministrator();
+        if($isAdmin)
+        {
+           $data['showaddbtn'] = TRUE;
+        }
         $editLinkLang = lang('rr_edit');
         $baseurl = base_url();
         foreach ($cats as $c)

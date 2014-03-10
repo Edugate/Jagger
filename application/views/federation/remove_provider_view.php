@@ -28,7 +28,7 @@ if(!empty($providers))
 
     echo '<li>';
     echo form_label(lang('rrprovs'),'provider');
-    echo form_dropdown('provider',$providers);
+    echo form_dropdown('provider',$providers,set_value('provider'));
     echo '</li>';
     echo '<li>';
     echo form_label(lang('rr_message'),'message');

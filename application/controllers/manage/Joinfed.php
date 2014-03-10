@@ -41,6 +41,7 @@ class Joinfed extends MY_Controller {
     {
           $this->load->library('form_validation');
           $this->form_validation->set_rules('fedid','Federation','trim|required|numeric|xss_clean');
+          $this->form_validation->set_rules('formmessage','Message','trim|required|xss_clean');
           return $this->form_validation->run();
 
     }
@@ -102,6 +103,7 @@ class Joinfed extends MY_Controller {
        
         if($this->submit_validate() === TRUE)
         {
+             $message = $this->input->post('formmessage');
              $fedid = $this->input->post('fedid');
              $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id'=>$fedid));
              if(empty($federation))
@@ -116,7 +118,7 @@ class Joinfed extends MY_Controller {
                   */
                  
                   $this->load->library('approval');
-                  $add_to_queue = $this->approval->invitationFederationToQueue($provider ,$federation,'Join');
+                  $add_to_queue = $this->approval->invitationFederationToQueue($provider ,$federation,'Join',$message);
                   if($add_to_queue)
                   {
                                $mail_recipients = array();
@@ -164,17 +166,6 @@ class Joinfed extends MY_Controller {
                                     $mail_body .= sprintf($b, $providername, $providerentityid, $fedname, $awaitingurl,$message);    
                                }
                                $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
-                                        array('type'=>'gjoinfedreq','is_enabled'=>true,'is_approved'=>true));
-                               foreach($subscribers as $s)
-                               {
-                                  $m = new models\MailQueue();
-                                  $m->setSubject($mail_sbj);
-                                  $m->setBody($mail_body);
-                                  $m->setDeliveryType($s->getNotificationType());
-                                  $m->setRcptto($s->getRcpt());
-                                  $this->em->persist($m);
-                               }
-                               $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
                                         array('type'=>'joinfedreq','federation'=>$federation->getId(),'is_enabled'=>true,'is_approved'=>true));
 
                                foreach($subscribers as $s)
@@ -186,8 +177,16 @@ class Joinfed extends MY_Controller {
                                   $m->setRcptto($s->getRcpt());
                                   $this->em->persist($m);
                                }
+                               $this->email_sender->addToMailQueue(array('joinfedreq','gjoinfedreq'),$federation,$mail_sbj,$mail_body,array(),FALSE);
+                               try
+                               {
+                                  $this->em->flush();
+                               }
+                               catch(Exception $e) {
+                                  log_message('error',$e);
+                                  show_error('Internal server error',500);
 
-                               $this->em->flush();
+                               }
                                
                                $data['content_view'] = 'manage/joinfederation_view';
                                $data['success_message'] = lang('confirmreqsuccess');
@@ -214,6 +213,9 @@ class Joinfed extends MY_Controller {
                   $form .= form_label(''.lang('rr_selectfedtojoin').'','fedid');
                   $addid = 'id="fedid"'; 
                   $form .= form_dropdown('fedid', $feds_dropdown,'0',$addid);
+                  $form .= '</li><li>';
+                  $form .= form_label('Message','formmessage');
+                  $form .= form_textarea('formmessage',set_value('formmessage'));
                   $form .= '</li></ol>';
                   $form .= $buttons;
                   $form .= form_fieldset_close();

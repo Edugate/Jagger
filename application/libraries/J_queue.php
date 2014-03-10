@@ -244,6 +244,7 @@ class J_queue
             $federation = $this->tmp_federations->getOneFederationById($queue->getRecipient());
         }
         if (empty($federation)) {
+            \log_message('error',__METHOD__.' Federation ('.$queue->getRecipient().') does not exist anymore');
             return false;
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');
@@ -285,6 +286,12 @@ class J_queue
         $this->ci->table->add_row($cell);
         $cell = array(lang('request'), lang('acceptprovtofed'));
         $this->ci->table->add_row($cell);
+
+        if(isset($data['message']))
+        {
+            $cell = array(lang('rr_message'), $data['message']);
+            $this->ci->table->add_row($cell);
+        }
         $cell = array('data' => $this->displayFormsButtons($queue->getId()), 'colspan' => 2);
         $this->ci->table->add_row($cell);
         $result = '';

@@ -67,7 +67,7 @@ if(!empty($result))
       <?php
        $dropdown = $this->config->item('policy_dropdown');
        $dropdown = array_merge( array(''=>lang('rr_select')), $dropdown);
-       echo form_dropdown('policy', $dropdown);
+       echo form_dropdown('policy', $dropdown,set_value('policy'));
      ?>
     </div>
       <div class="buttons">

@@ -488,15 +488,8 @@ class Provider {
          *  compare localized names
          */
         $ldisplayname_before = $provider->getLocalDisplayName();
-        if ($ldisplayname_before == NULL)
-        {
-            $ldisplayname_before = array();
-        }
         $ldisplayname_after = $this->getLocalDisplayName();
-        if ($ldisplayname_after == NULL)
-        {
-            $ldisplayname_after = array();
-        }
+
         $ldisplayname_diff1 = array_diff_assoc($ldisplayname_before, $ldisplayname_after);
         $ldisplayname_diff2 = array_diff_assoc($ldisplayname_after, $ldisplayname_before);
         if (count($ldisplayname_diff1) > 0 or count($ldisplayname_diff2) > 0)
@@ -772,6 +765,13 @@ class Provider {
     {
         if (!empty($name))
         {
+            foreach($name as $k => $v)
+            {
+              if(empty($v))
+              {
+                 unset($name[''.$k.'']);
+              }
+            }
             $this->lname = serialize($name);
         }
         else
@@ -803,11 +803,18 @@ class Provider {
     {
         if (!empty($name) && is_array($name))
         {
+            foreach($name as $k => $v)
+            {
+               if(empty($v))
+               {
+                   unset($name[''.$k.'']);
+               }
+            }
             $this->ldisplayname = serialize($name);
         }
         else
         {
-            $this->ldisplayname = NULL;
+            $this->ldisplayname = serialize(array()); 
         }
     }
     public function setRegistrationPolicyFromArray($regarray, $reset = FALSE)
@@ -1047,10 +1054,17 @@ class Provider {
         return $this;
     }
 
-    public function setLocalHelpdeskUrl(array $urls = NULL)
+    public function setLocalHelpdeskUrl($urls = NULL)
     {
-        if (!empty($urls))
+        if (!empty($urls) && is_array($urls))
         {
+            foreach($urls as $k=>$v)
+            {
+               if(empty($v))
+               {
+                  unset($urls[''.$k.'']);
+               }
+            }
             $this->lhelpdeskurl = serialize($urls);
         }
         else
@@ -1897,7 +1911,11 @@ class Provider {
 
     public function getLocalDisplayName()
     {
-        return unserialize($this->ldisplayname);
+        if(!empty($this->ldisplayname))
+        {
+          return unserialize($this->ldisplayname);
+        }
+        return array();
     }
 
     public function getLocalDisplayNamesToArray($type)
@@ -1917,20 +1935,20 @@ class Provider {
 
     public function getDisplayNameLocalized()
     {
-        $t['en'] = $this->displayname;
-        $p = unserialize($this->ldisplayname);
-        if (is_array($p))
+        if(!empty($this->ldisplayname))
         {
-            if (!array_key_exists('en', $p))
-            {
-                $p['en'] = $t['en'];
-            }
+           $p = unserialize($this->ldisplayname);
+           if (!array_key_exists('en', $p))
+           {
+               $p['en'] = $this->displayname;
+           }
+           return $p;
         }
         else
         {
-            $p = $t;
+           return array('en'=>$this->displayname); 
+
         }
-        return $p;
     }
 
     public function findOneSPbyName($name)
@@ -2042,7 +2060,14 @@ class Provider {
 
     public function getLocalHelpdeskUrl()
     {
-        return unserialize($this->lhelpdeskurl);
+        if(!empty($this->lhelpdeskurl))
+        {
+           return unserialize($this->lhelpdeskurl);
+        }
+        else
+        {
+           return array();
+        }
     }
 
     public function getHelpdeskUrlLocalized()
@@ -2148,8 +2173,13 @@ class Provider {
      */
     public function getLocalDescription()
     {
-        return unserialize($this->ldescription);
+        if(!empty($this->ldescription))
+        {
+           return unserialize($this->ldescription);
+        }
+        return array();
     }
+
 
     public function getLocalDescriptionsToArray($type)
     {
@@ -2157,7 +2187,10 @@ class Provider {
         $ex = $this->getExtendMetadata();
         foreach ($ex as $v)
         {
-            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'Description')
+            $t = $v->getType();
+            $u = $v->getNameSpace();
+            $e = $v->getElement();
+            if ($t === $type && $u  === 'mdui' && $e === 'Description')
             {
                 $l = $v->getAttributes();
                 $result[$l['xml:lang']] = $v->getElementValue();
