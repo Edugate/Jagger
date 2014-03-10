@@ -23,13 +23,7 @@ class Msigner extends MY_Controller {
    {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
-        {
-            show_error('access denied',403);
-            return;
-        }
         $this->tmp_providers = new models\Providers;
-        $this->load->library('zacl');
    }
   
    function signer()
@@ -39,16 +33,35 @@ class Msigner extends MY_Controller {
           show_error('access denied',403);
           return;
        }
+
+
        $type =  $this->uri->segment(3);
        $id = $this->uri->segment(4);
        if(empty($type) || empty($id))
        {
-           show_error('empty tyle or id: '.lang('error404').'',404);
+           set_status_header(404);
+           echo 'empty type or id: '.lang('error404');
+           return;
        }
+
+       $loggedin = $this->j_auth->logged_in();
+       if (!$loggedin)
+       {
+           set_status_header(403);
+           echo 'User session not valid';
+           return;
+
+       }
+       $this->load->library('zacl');
+
+
+
        $gearmanenabled = $this->config->item('gearman');
        if(empty($gearmanenabled))
        {
-           show_error('gearman is not enabled '.lang('error404').'',404);
+           set_status_header(404);
+           echo 'gearman is not enabled '.lang('error404');
+           return;
        }       
        $client = new GearmanClient();
        $jobservers = array();
@@ -63,6 +76,7 @@ class Msigner extends MY_Controller {
        catch (Exception $e)
        {
               log_message('error', 'GeamanClient couldnt add job-server');
+              set_status_header(403);
               echo "Cant connect/add to job-server(s)";
               return false;
        }
@@ -74,12 +88,14 @@ class Msigner extends MY_Controller {
            $fed = $this->em->getRepository("models\Federation")->findOneBy(array('id'=>''.$id.''));
            if(empty($fed))
            {
+                set_status_header(404);
                 echo lang('error_fednotfound');
                 return;
            }
            $has_write_access = $this->zacl->check_acl('f_' . $fed->getId(), 'write','federation', '');
            if(!$has_write_access)
            {
+               set_status_header(403);
                echo lang('error403');
                return;
            }
@@ -97,6 +113,7 @@ class Msigner extends MY_Controller {
               $result = $client->doBackground('metadatasigner',''.json_encode($opt).'' );
            }
            echo lang('taskssent'); 
+           return;
 
        }
        elseif($type === 'provider' && is_numeric($id))
@@ -104,18 +121,21 @@ class Msigner extends MY_Controller {
           $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>''.$id.''));
           if(empty($provider))
           {     
+               set_status_header(404);
                echo lang('rerror_provnotfound');
                return;
           }
           $is_local = $provider->getLocal();
           if($is_local !== TRUE)
           {
+               set_status_header(403);
                echo lang('error403');
                return;
           }
           $has_write_access = $this->zacl->check_acl($provider->getId(), 'write','entity');
           if(!$has_write_access)
           {
+              set_status_header(403);
               echo lang('error403');
               return;
           }
@@ -125,9 +145,19 @@ class Msigner extends MY_Controller {
           $options[] = array('src'=>''.$sourceurl.'','type'=>'provider','encname'=>''.$encodedentity.'');
           foreach($options as $opt)
           {
-              $result = $client->doBackground('metadatasigner',''.json_encode($opt).'' );
+              try{
+                $result = $client->doBackground('metadatasigner',''.json_encode($opt).'' );
+              }
+              catch(GearmanException $e)
+              {
+                 log_message('errror',__METHOD__.' '.$e);
+                 set_status_header(500);
+                 echo 'Error occured during senfing task to Job serve';
+                 return;
+              }
           }
           echo lang('taskssent'); 
+          return;
        }
         
    }

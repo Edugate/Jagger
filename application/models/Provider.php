@@ -488,15 +488,8 @@ class Provider {
          *  compare localized names
          */
         $ldisplayname_before = $provider->getLocalDisplayName();
-        if ($ldisplayname_before == NULL)
-        {
-            $ldisplayname_before = array();
-        }
         $ldisplayname_after = $this->getLocalDisplayName();
-        if ($ldisplayname_after == NULL)
-        {
-            $ldisplayname_after = array();
-        }
+
         $ldisplayname_diff1 = array_diff_assoc($ldisplayname_before, $ldisplayname_after);
         $ldisplayname_diff2 = array_diff_assoc($ldisplayname_after, $ldisplayname_before);
         if (count($ldisplayname_diff1) > 0 or count($ldisplayname_diff2) > 0)
@@ -821,7 +814,7 @@ class Provider {
         }
         else
         {
-            $this->ldisplayname = NULL;
+            $this->ldisplayname = serialize(array()); 
         }
     }
     public function setRegistrationPolicyFromArray($regarray, $reset = FALSE)
@@ -1942,20 +1935,20 @@ class Provider {
 
     public function getDisplayNameLocalized()
     {
-        $t['en'] = $this->displayname;
-        $p = unserialize($this->ldisplayname);
-        if (is_array($p))
+        if(!empty($this->ldisplayname))
         {
-            if (!array_key_exists('en', $p))
-            {
-                $p['en'] = $t['en'];
-            }
+           $p = unserialize($this->ldisplayname);
+           if (!array_key_exists('en', $p))
+           {
+               $p['en'] = $this->displayname;
+           }
+           return $p;
         }
         else
         {
-            $p = $t;
+           return array('en'=>$this->displayname); 
+
         }
-        return $p;
     }
 
     public function findOneSPbyName($name)
@@ -2187,13 +2180,17 @@ class Provider {
         return array();
     }
 
+
     public function getLocalDescriptionsToArray($type)
     {
         $result = array();
         $ex = $this->getExtendMetadata();
         foreach ($ex as $v)
         {
-            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'Description')
+            $t = $v->getType();
+            $u = $v->getNameSpace();
+            $e = $v->getElement();
+            if ($t === $type && $u  === 'mdui' && $e === 'Description')
             {
                 $l = $v->getAttributes();
                 $result[$l['xml:lang']] = $v->getElementValue();

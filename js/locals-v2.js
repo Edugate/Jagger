@@ -1021,12 +1021,6 @@ $(function() {
         $("li.addlprivacyurlidpsso option[value=" + nf + "]").remove();
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][idpsso][" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/></li>");
     });
-    $("button#idpadduiidesc").click(function() {
-        var nf = $("span.idpuiidescadd option:selected").val();
-        var nfv = $("span.idpuiidescadd option:selected").text();
-        $("span.idpuiidescadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">Description in " + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></li>");
-    });
     $("button#spadduiidesc").click(function() {
         var nf = $("span.spuiidescadd option:selected").val();
         var nfv = $("span.spuiidescadd option:selected").text();
@@ -2409,12 +2403,24 @@ $("button#addlhelpdesk").click(function() {
         {
             return false;
         }
-    
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
         //   $("span.ldescadd option[value=" + nf + "]").toggleOption(false);
        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldesc][" + nf + "]\">"+inputname+"  " + nfv + " </label><textarea id=\"f[ldesc][" + nf + "]\" name=\"f[ldesc][" + nf + "]\" rows=\"4\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">X</button></li>");
+          GINIT.initialize();
+    });
+    $("button#idpadduiidesc").click(function() {
+        var selected =  $("span.idpuiidescadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+            return false;
+        }
+        var nfv = selected.text();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">"+inputname+" " + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">X</button></li>");
           GINIT.initialize();
     });
 

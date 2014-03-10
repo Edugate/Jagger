@@ -1576,6 +1576,22 @@ class Providerupdater {
             {
                 if (isset($ch['uii']['idpsso']['' . $elkey . '']) && is_array($ch['uii']['idpsso']['' . $elkey . '']))
                 {
+                    $doFilter = array(''.$elvalue.'');
+                    $collection = $ent->getExtendMetadata()->filter(
+                               function($entry) use ($doFilter) {
+                        return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
+                    });
+                    foreach($collection as $c)
+                    {
+                         $attrs = $c->getAttributes();
+                         $lang = $attrs['xml:lang'];
+                         if(!isset($ch['uii']['idpsso']['' . $elkey . ''][''.$lang.'']))
+                         {
+                             $ent->getExtendMetadata()->removeElement($c);
+                             $this->em->remove($c);
+                             
+                         }
+                    }
                     foreach ($ch['uii']['idpsso']['' . $elkey . ''] as $key3 => $value3)
                     {
 

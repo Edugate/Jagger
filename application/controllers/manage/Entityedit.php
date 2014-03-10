@@ -506,6 +506,30 @@ class Entityedit extends MY_Controller {
         {
            $data['ldesc'] = array();
         }
+        if(isset($data['uii']['idpsso']['desc']))
+        {
+            $data['uii']['idpsso']['desc'] = array_filter($data['uii']['idpsso']['desc']);
+        }
+        else
+        {
+           $data['uii']['idpsso']['desc'] = array();
+        }
+        if(isset($data['uii']['idpsso']['helpdesk']))
+        {
+            $data['uii']['idpsso']['helpdesk'] = array_filter($data['uii']['idpsso']['helpdesk']);
+        }
+        else
+        {
+           $data['uii']['idpsso']['helpdesk'] = array();
+        }
+        if(isset($data['uii']['idpsso']['displayname']))
+        {
+            $data['uii']['idpsso']['displayname'] = array_filter($data['uii']['idpsso']['displayname']);
+        }
+        else
+        {
+           $data['uii']['idpsso']['displayname'] = array();
+        }
         $n = 'entform' . $id;
         $this->session->set_userdata($n, $data);
     }

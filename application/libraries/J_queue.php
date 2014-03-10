@@ -244,6 +244,7 @@ class J_queue
             $federation = $this->tmp_federations->getOneFederationById($queue->getRecipient());
         }
         if (empty($federation)) {
+            \log_message('error',__METHOD__.' Federation ('.$queue->getRecipient().') does not exist anymore');
             return false;
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');

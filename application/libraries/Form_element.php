@@ -517,7 +517,7 @@ class Form_element {
          * end organizatiourl/helpdesk
          */
         
-
+        $result[] = '';
         $result[] = form_label(lang('rr_regauthority'), 'f[regauthority]') . form_input(array('id' => 'f[regauthority]', 'class' => $regauthority_notice, 'name' => 'f[regauthority]', 'value' => $f_regauthority));
         $result[] = form_label(lang('rr_regdate'), 'f[registrationdate]') . form_input(array(
                     'name' => 'f[registrationdate]',
@@ -525,6 +525,71 @@ class Form_element {
                     'value' => $f_regdate,
                     'class' => 'registrationdate ' . $regdate_notice,
         ));
+        /**
+         * start regpolicy 
+         */
+        //$result[] = '';
+        $result[] = '<h5>'.lang('localizedregpolicyfield').'</h5>';
+        $regpolicies = $ent->getRegistrationPolicy();
+        $sregpolicies = array();
+        $origrepolicies = array();
+        $regpolicylangs = languagesCodes();
+        if ($sessform && array_key_exists('regpolicy', $ses) && is_array($ses['regpolicy']))
+        {
+            $sregpolicies = $ses['regpolicy'];
+        }
+        $origregpolicies = $regpolicies;
+        foreach ($sregpolicies as $key => $value)
+        {
+            $regpolicynotice = '';
+            $lvalue = set_value('f[regpolicy][' . $key . ']', $value);
+            if (array_key_exists($key, $origregpolicies))
+            {
+                if ($origregpolicies['' . $key . ''] != $value)
+                {
+                    $regpolicynotice = 'notice';
+                }
+            }
+            else
+            {
+                $regpolicynotice = 'notice';
+            }
+            $result[] = form_label(lang('rr_regpolicy') . ' <small>' . $regpolicylangs['' . $key . ''] . '</small>', 'f[regpolicy][' . $key . ']') . form_input(
+                            array(
+                                'name' => 'f[regpolicy][' . $key . ']',
+                                'id' => 'f[regpolicy][' . $key . ']',
+                                'value' => $lvalue,
+                                'class' => $regpolicynotice
+                            )
+            );
+            unset($origregpolicies['' . $key . '']);
+            unset($regpolicylangs['' . $key . '']);
+        }
+        foreach ($origregpolicies as $key => $value)
+        {
+            $regpolicynotice = '';
+            $lvalue = set_value('f[regpolicy][' . $key . ']', $value);
+            if ($lvalue != $value)
+            {
+                $regpolicynotice = 'notice';
+            }
+            $result[] = form_label(lang('rr_regpolicy') . ' <small>' . $regpolicylangs['' . $key . ''] . '</small>', 'f[regpolicy][' . $key . ']') . form_input(
+                            array(
+                                'name' => 'f[regpolicy][' . $key . ']',
+                                'id' => 'f[regpolicy][' . $key . ']',
+                                'value' => $lvalue,
+                                'class' => $regpolicynotice
+                            )
+            );
+            unset($regpolicylangs['' . $key . '']);
+        }
+        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addregpolicy" name="addregpolicy" value="addregpolicy" class="editbutton addicon smallerbtn">'.lang('addlocalizedregpolicy').'</button></span>';
+
+        //$result[] = '';
+        /**
+         * end regpolicy
+         */
+        $result[] = '';
         $result[] = form_label(lang('rr_homeurl'), 'f[homeurl]') . form_input(array('id' => 'f[homeurl]', 'class' => $homeurl_notice, 'name' => 'f[homeurl]', 'value' => $f_homeurl));
         $result[] = form_label(lang('rr_validfrom'), 'f[validfrom]') . form_input(array(
                     'name' => 'f[validfrom]',
@@ -618,70 +683,6 @@ class Form_element {
 
         /**
          * end ldesc
-         */
-        /**
-         * start regpolicy 
-         */
-        $result[] = '';
-        $result[] = '<h5>'.lang('localizedregpolicyfield').'</h5>';
-        $regpolicies = $ent->getRegistrationPolicy();
-        $sregpolicies = array();
-        $origrepolicies = array();
-        $regpolicylangs = languagesCodes();
-        if ($sessform && array_key_exists('regpolicy', $ses) && is_array($ses['regpolicy']))
-        {
-            $sregpolicies = $ses['regpolicy'];
-        }
-        $origregpolicies = $regpolicies;
-        foreach ($sregpolicies as $key => $value)
-        {
-            $regpolicynotice = '';
-            $lvalue = set_value('f[regpolicy][' . $key . ']', $value);
-            if (array_key_exists($key, $origregpolicies))
-            {
-                if ($origregpolicies['' . $key . ''] != $value)
-                {
-                    $regpolicynotice = 'notice';
-                }
-            }
-            else
-            {
-                $regpolicynotice = 'notice';
-            }
-            $result[] = form_label(lang('rr_regpolicy') . ' <small>' . $regpolicylangs['' . $key . ''] . '</small>', 'f[regpolicy][' . $key . ']') . form_input(
-                            array(
-                                'name' => 'f[regpolicy][' . $key . ']',
-                                'id' => 'f[regpolicy][' . $key . ']',
-                                'value' => $lvalue,
-                                'class' => $regpolicynotice
-                            )
-            );
-            unset($origregpolicies['' . $key . '']);
-            unset($regpolicylangs['' . $key . '']);
-        }
-        foreach ($origregpolicies as $key => $value)
-        {
-            $regpolicynotice = '';
-            $lvalue = set_value('f[regpolicy][' . $key . ']', $value);
-            if ($lvalue != $value)
-            {
-                $regpolicynotice = 'notice';
-            }
-            $result[] = form_label(lang('rr_regpolicy') . ' <small>' . $regpolicylangs['' . $key . ''] . '</small>', 'f[regpolicy][' . $key . ']') . form_input(
-                            array(
-                                'name' => 'f[regpolicy][' . $key . ']',
-                                'id' => 'f[regpolicy][' . $key . ']',
-                                'value' => $lvalue,
-                                'class' => $regpolicynotice
-                            )
-            );
-            unset($regpolicylangs['' . $key . '']);
-        }
-        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addregpolicy" name="addregpolicy" value="addregpolicy" class="editbutton addicon smallerbtn">'.lang('addlocalizedregpolicy').'</button></span>';
-
-        $result[] = '';
-        /**
-         * end regpolicy
          */
         return $result;
     }
@@ -2880,7 +2881,7 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '</li>';
+                    $r .= '<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$lang.'">X</button></li></li>';
                 }
             }
             if ($sessform && isset($ses['uii']['idpsso']['desc']) && is_array($ses['uii']['idpsso']['desc']))
@@ -2897,11 +2898,11 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '</li>';
+                    $r .= '<button type="button" class="btn langinputrm" name="lhelpdesk" value="'.$key.'">X</button></li>';
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiidescadd">' . form_dropdown('idpuiidesclangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiidesc" name="idpadduiidesc" value="idpadduiidesc" class="editbutton addicon smallerbtn">'.lang('addlocalizeddesc').'</button></span></li>';
+            $r .= '<li><span class="idpuiidescadd">' . form_dropdown('idpuiidesclangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiidesc" name="idpadduiidesc" value="'.lang('rr_description').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span></li>';
             $r .= form_fieldset_close();
             $result[] = $r;
 

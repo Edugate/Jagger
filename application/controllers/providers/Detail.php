@@ -342,10 +342,10 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s',$ent->getLastModified()->format('U')+j_auth::$timeOffset) . '</b>';
-        $d[++$i]['name'] = lang('rr_providername');
-        $d[$i]['value'] = $ent->getName();
         $d[++$i]['name'] = lang('rr_entityid');
         $d[$i]['value'] = $ent->getEntityId();
+        $d[++$i]['name'] = lang('rr_providername');
+        $d[$i]['value'] = $ent->getName();
         $lname = $ent->getLocalName();
         $lvalues = '';
         if (count($lname)>0)
