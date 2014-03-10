@@ -11,6 +11,10 @@ if (!empty($error_messages2))
     echo $error_messages2;
 }
 echo '</pre></div>';
+if(!empty($sessform))
+{
+  echo '<div class="alert">'.lang('formfromsess').'</div>';
+}
 ?>
 <div id="formtabs">
     <ul>

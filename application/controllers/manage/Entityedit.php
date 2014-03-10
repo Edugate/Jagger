@@ -627,6 +627,10 @@ class Entityedit extends MY_Controller {
             }
         }
         $entsession = $this->_get_draft($id);
+        if(!empty($entsession))
+        {
+          $data['sessform'] = true;
+        }
 
         $data['y'] = $entsession;
   

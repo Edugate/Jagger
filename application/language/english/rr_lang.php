@@ -927,6 +927,7 @@ $lang['staticmeta_info']            = 'Metadata is generated based on static met
 $lang['wrongpolicyval']             = 'Wrong policy value';
 $lang['alertentchange']             = 'Be aware that changing entityID follows change of URLs of Individual Metadata and Attribute Release Policy. You will need to modify configuration in you IdP/SP';
 $lang['alertimportintofed']         = 'Be aware! Importing external metadata into federation may cause removing entities from federation if such entities will not be found in source metadata.';
+$lang['formfromsess']               = 'The form is loaded from saved draft. Please discard changes if you want to start over';
 $lang['douwanttoremove']            = 'Are you sure you want to remove %s';
 $lang['douwanttoproceed']           = 'Are you sure do you want to proceed';
 $lang['wrongarggiven']              = 'Incorrect argument provided';

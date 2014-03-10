@@ -2829,12 +2829,13 @@ class Form_element {
             /**
              * end helpdesk
              */
+
             /**
              * start description
              */
             $r = form_fieldset(''.lang('rr_provdesc').'');
             $langsdisplaynames = $langs;
-            if (isset($ext['idp']['mdui']['Description']))
+            if (!$sessform && isset($ext['idp']['mdui']['Description']))
             {
                 foreach ($ext['idp']['mdui']['Description'] as $v1)
                 {
