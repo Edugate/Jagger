@@ -947,3 +947,8 @@ $lang['error403']                   = 'Access denied';
 
 $lang['rr_jobinqueue']              = 'The job is still on the queue';
 $lang['rr_jobdonein']                 = 'The job done in';
+
+$lang['entname_default_expl']              = 'This is default value for OrganizationName.<br /> If localized name is not set for English language then this value is used instead in generated SAML metadata: /EntityDescriptor/Organization/OrganizationName';
+$lang['entdisplname_default_expl']              = 'This is default value for OrganizationDisplayName.<br /> If localized name is not set for English language then this value is used instead in generated SAML metadata: /EntityDescriptor/Organization/OrganizationDisplayName.<br /> Also is used as default English lang in metadata: /EntityDescriptor/[IDPSSODescriptor|SPSSODescriptor]/Extensions/UIInfo/DisplayName';
+
+$lang['entregpolicy_expl']        = 'RegistrationPolicy is added to Metadata only if registrationAuthority is set.<br /> XPath in generated metadata: EntityDescriptor/Extensions/RegistrationInfo/RegistrationPolicy';

@@ -285,7 +285,8 @@ class Form_element {
          * @todo add explanation for default provider name
          */
         //$result[] = '<div class="notice">'.lang('rr_providername').' <small>&#91;'.lang('rr_default').'&#93;</small> </div>';
-        $result[] = form_label(lang('rr_providername').' <small>&#91;'.lang('rr_default').'&#93;</small>', 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'required' => 'required', 'value' => $t2));
+       // $result[] = '';
+        $result[] = form_label(lang('rr_providername').' '.showBubbleHelp(''.lang('entname_default_expl').''), 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'required' => 'required', 'value' => $t2));
         /**
          * start lname
          */
@@ -362,7 +363,7 @@ class Form_element {
 
 
         $result[] = '';
-        $result[] = form_label(lang('rr_displayname').' <small>&#91;'.lang('rr_default').'&#93;</small>', 'f[displayname]') . form_input(array('id' => 'f[displayname]', 'class' => $class_displ, 'name' => 'f[displayname]', 'required' => 'required', 'value' => $f_displayname));
+        $result[] = form_label(lang('rr_displayname').' '.showBubbleHelp(''.lang('entdisplname_default_expl').''), 'f[displayname]') . form_input(array('id' => 'f[displayname]', 'class' => $class_displ, 'name' => 'f[displayname]', 'required' => 'required', 'value' => $f_displayname));
         /**
          * start ldisplayname
          */
@@ -519,6 +520,7 @@ class Form_element {
         
         $result[] = '';
         $result[] = form_label(lang('rr_regauthority'), 'f[regauthority]') . form_input(array('id' => 'f[regauthority]', 'class' => $regauthority_notice, 'name' => 'f[regauthority]', 'value' => $f_regauthority));
+
         $result[] = form_label(lang('rr_regdate'), 'f[registrationdate]') . form_input(array(
                     'name' => 'f[registrationdate]',
                     'id' => 'f[registrationdate]',
@@ -529,7 +531,7 @@ class Form_element {
          * start regpolicy 
          */
         //$result[] = '';
-        $result[] = '<h5>'.lang('localizedregpolicyfield').'</h5>';
+        $result[] = '<b>'.lang('localizedregpolicyfield').' '.showBubbleHelp(''.lang('entregpolicy_expl').'').'</b>';
         $regpolicies = $ent->getRegistrationPolicy();
         $sregpolicies = array();
         $origrepolicies = array();
@@ -561,10 +563,12 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $regpolicynotice
                             )
-            );
+            ).'<button type="button" class="btn langinputrm" name="lname" value="'.$key.'">X</button>';
             unset($origregpolicies['' . $key . '']);
             unset($regpolicylangs['' . $key . '']);
         }
+        if(!$sessform)
+        {
         foreach ($origregpolicies as $key => $value)
         {
             $regpolicynotice = '';
@@ -580,10 +584,11 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $regpolicynotice
                             )
-            );
+            ).'<button type="button" class="btn langinputrm" name="lname" value="'.$key.'">X</button>';
             unset($regpolicylangs['' . $key . '']);
         }
-        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addregpolicy" name="addregpolicy" value="addregpolicy" class="editbutton addicon smallerbtn">'.lang('addlocalizedregpolicy').'</button></span>';
+        }
+        $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addregpolicy" name="addregpolicy" value="'.lang('rr_regpolicy').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
 
         //$result[] = '';
         /**

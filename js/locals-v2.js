@@ -960,12 +960,6 @@ $(function() {
         });
         return false;
     });
-    $("button#addregpolicy").click(function() {
-        var nf = $("span.regpolicyadd option:selected").val();
-        var nfv = $("span.regpolicyadd option:selected").text();
-        $("span.regpolicyadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">RegistrationPolicy in " + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/></li>");
-    });
     $("button#idpadduiidisplay").click(function() {
         var nf = $("span.idpuiidisplayadd option:selected").val();
         var nfv = $("span.idpuiidisplayadd option:selected").text();
@@ -2421,6 +2415,19 @@ $("button#addlhelpdesk").click(function() {
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">"+inputname+" " + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">X</button></li>");
+          GINIT.initialize();
+    });
+    $("button#addregpolicy").click(function() {
+        var selected =  $("span.regpolicyadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+            return false;
+        }
+        var nfv = selected.text();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">X</button></li>");
           GINIT.initialize();
     });
 

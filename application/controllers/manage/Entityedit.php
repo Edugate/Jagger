@@ -530,6 +530,14 @@ class Entityedit extends MY_Controller {
         {
            $data['uii']['idpsso']['displayname'] = array();
         }
+        if(isset($data['regpolicy']))
+        {
+           $data['regpolicy'] = array_filter($data['regpolicy']);
+        }
+        else
+        {
+           $data['regpolicy'] = array();
+        }
         $n = 'entform' . $id;
         $this->session->set_userdata($n, $data);
     }
