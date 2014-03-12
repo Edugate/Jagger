@@ -367,17 +367,12 @@ class Form_element {
         /**
          * start ldisplayname
          */
-        $ldisplaynames = $ent->getLocalDisplayName();
+        $origldisplayname = $ent->getLocalDisplayName();
         $sldisplayname = array();
-        $origldisplayname = array();
         $ldisplaynamelangs = languagesCodes();
         if ($sessform && array_key_exists('ldisplayname', $ses) && is_array($ses['ldisplayname']))
         {
             $sldisplayname = $ses['ldisplayname'];
-        }
-        if (is_array($ldisplaynames))
-        {
-            $origldisplayname = $ldisplaynames;
         }
         foreach ($sldisplayname as $key => $value)
         {
@@ -386,7 +381,8 @@ class Form_element {
                continue;
             }
             $ldisplaynamenotice = '';
-            $lvalue = set_value('f[lname][' . $key . ']', $value);
+       
+            $lvalue = set_value('f[ldisplayname][' . $key . ']', $value);
             if (array_key_exists($key, $origldisplayname))
             {
                 if ($origldisplayname['' . $key . ''] != $value)
@@ -398,16 +394,19 @@ class Form_element {
             {
                 $ldisplaynamenotice = 'notice';
             }
-            $result[] = form_label(lang('rr_displayname') . ' <small>' . $ldisplaynamelangs['' . $key . ''] . '</small>', 'f[ldisplayname][' . $key . ']') . form_input(
+            if(isset($ldisplaynamelangs['' . $key . '']))
+            {
+               $result[] = form_label(lang('rr_displayname') . ' <small>' . $ldisplaynamelangs['' . $key . ''] . '</small>', 'f[ldisplayname][' . $key . ']') . form_input(
                             array(
                                 'name' => 'f[ldisplayname][' . $key . ']',
                                 'id' => 'f[ldisplayname][' . $key . ']',
                                 'value' => $lvalue,
                                 'class' => $ldisplaynamenotice
                             )
-            ).'<button type="button" class="btn langinputrm" name="ldisplayname" value="'.$key.'">X</button>';
-            unset($origldisplayname['' . $key . '']);
-            unset($ldisplaynamelangs['' . $key . '']);
+               ).'<button type="button" class="btn langinputrm" name="ldisplayname" value="'.$key.'">X</button>';
+               unset($origldisplayname['' . $key . '']);
+               unset($ldisplaynamelangs['' . $key . '']);
+            }
         }
         if(!$sessform)
         {
