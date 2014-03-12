@@ -26,6 +26,7 @@ class Metadata2array {
     private $metaArray;
     private $coclist;
     private $nameidsattrs = array();
+    private $newNameSpaces = array();
 
     function __construct()
     {
@@ -91,6 +92,17 @@ class Metadata2array {
     {
         if ($doc instanceof DOMElement)
         {
+            foreach( $this->xpath->query('namespace::*', $doc) as $pnode ) 
+            {
+               $prefix = $pnode->prefix;
+               $val = $pnode->nodeValue;
+               if(!empty($prefix) && (strcmp($prefix,'xml') != 0))
+               {
+                   $this->newNameSpaces[''.$prefix.''] = $val;
+               } 
+            }
+            $namespaces = h_metadataNamespaces();
+            $this->newNameSpaces = array_diff_assoc($this->newNameSpaces,$namespaces);
             if ($doc->nodeName === "md:EntityDescriptor" OR $doc->nodeName === "EntityDescriptor")
             {
                 $this->entityConvert($doc, $full);
@@ -126,6 +138,7 @@ class Metadata2array {
         $entity['details']['contacts'] = array();
         $entity['details']['regpolicy'] = array();
         $entity['details']['reqattrs'] = array();
+        $entity['xmlns'] = $this->newNameSpaces;
         foreach ($node->childNodes as $gnode)
         {
             if ($gnode->nodeName === 'md:IDPSSODescriptor' OR $gnode->nodeName === 'IDPSSODescriptor')

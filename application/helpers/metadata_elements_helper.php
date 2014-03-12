@@ -21,7 +21,6 @@ if (!defined('BASEPATH'))
 
 function h_metadataNamespaces()
 {
-    $t = array();
     $t = array(
          'md'=>'urn:oasis:names:tc:SAML:2.0:metadata',
          'ds'=>'http://www.w3.org/2000/09/xmldsig#',
@@ -35,6 +34,7 @@ function h_metadataNamespaces()
          'elab'=>'http://eduserv.org.uk/labels',
          'ukfedlabel'=>'http://ukfederation.org.uk/2006/11/label',
          'init'=>'urn:oasis:names:tc:SAML:profiles:SSO:request-init',
+         'xsi'=>'http://www.w3.org/2001/XMLSchema-instance',
           );
      return $t;
 

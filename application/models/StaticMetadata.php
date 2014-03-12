@@ -77,15 +77,16 @@ class StaticMetadata
 			$top = '<EntitiesDescriptor 
 				xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" 
 			 xmlns:ds="http://www.w3.org/2000/09/xmldsig#" 
-			 xmlns:elab="http://eduserv.org.uk/labels" 
-			 xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" 
-			 xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init" 
+                         xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+			 xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" 
 			 xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" 
                          xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute" 
 			 xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi" 
-			 xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" 
-			 xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label" 
+			 xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" 
 			 xmlns:wayf="http://sdss.ac.uk/2006/06/WAYF" 
+			 xmlns:elab="http://eduserv.org.uk/labels" 
+			 xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label" 
+			 xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init" 
 			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 			 ID="static" 
 			 Name="static"> ';
@@ -115,14 +116,18 @@ class StaticMetadata
                 $staticMetadata = new \DOMDocument;
         	$xpath = new \DomXPath($staticMetadata);
        		$xpath->registerNamespace('md', 'urn:oasis:names:tc:SAML:2.0:metadata');    
-       		$xpath->registerNamespace('idpdisc', 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol');    
-       		$xpath->registerNamespace('init', 'urn:oasis:names:tc:SAML:profiles:SSO:request-init');    
-       		$xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');    
-       		$xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');    
-       		$xpath->registerNamespace('mdattr', 'urn:oasis:names:tc:SAML:metadata:attribute');    
         	$xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
         	$xpath->registerNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
         	$xpath->registerNamespace('shibmd', 'urn:mace:shibboleth:metadata:1.0');
+       		$xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');    
+       		$xpath->registerNamespace('mdattr', 'urn:oasis:names:tc:SAML:metadata:attribute');    
+       		$xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');    
+       		$xpath->registerNamespace('idpdisc', 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol');    
+                $xpath->registerNamespace('wayf', 'http://sdss.ac.uk/2006/06/WAYF');
+                $xpath->registerNamespace('elab', 'http://eduserv.org.uk/labels');
+                $xpath->registerNamespace('ukfedlabel', 'http://ukfederation.org.uk/2006/11/label');
+       		$xpath->registerNamespace('init', 'urn:oasis:names:tc:SAML:profiles:SSO:request-init');    
+        	$xpath->registerNamespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance');
 		$add = true;
 		if( $staticMetadata->loadXML($this->getMetadata($add)))
 		{
