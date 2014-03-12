@@ -77,7 +77,7 @@ class ExtendMetadata {
     protected $element;
 
     /**
-     * @Column(name="evalue",type="string",nullable=true,length=255)
+     * @Column(name="evalue",type="text",nullable=true)
      */
     protected $evalue;
 
