@@ -81,6 +81,7 @@ class StaticMetadata
 			 xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" 
 			 xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init" 
 			 xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" 
+                         xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute" 
 			 xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi" 
 			 xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" 
 			 xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label" 
@@ -118,6 +119,7 @@ class StaticMetadata
        		$xpath->registerNamespace('init', 'urn:oasis:names:tc:SAML:profiles:SSO:request-init');    
        		$xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');    
        		$xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');    
+       		$xpath->registerNamespace('mdattr', 'urn:oasis:names:tc:SAML:metadata:attribute');    
         	$xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
         	$xpath->registerNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
         	$xpath->registerNamespace('shibmd', 'urn:mace:shibboleth:metadata:1.0');
