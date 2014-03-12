@@ -28,6 +28,7 @@ function h_metadataNamespaces()
          'saml'=>'urn:oasis:names:tc:SAML:2.0:assertion',
          'shibmd'=>'urn:mace:shibboleth:metadata:1.0',
          'mdui'=>'urn:oasis:names:tc:SAML:metadata:ui',
+         'mdattr'=>'urn:oasis:names:tc:SAML:metadata:attribute',
          'mdrpi'=>'urn:oasis:names:tc:SAML:metadata:rpi',
          'idpdisc'=>'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol',
          'wayf'=>'http://sdss.ac.uk/2006/06/WAYF',
