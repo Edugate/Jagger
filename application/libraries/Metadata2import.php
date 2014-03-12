@@ -369,7 +369,7 @@ class Metadata2import {
                                     $oid = $a->getAttribute()->getOid();
                                     if (in_array('' . $oid . '', $duplicateControl))
                                     {
-                                        $requiredAttrs->remove($a);
+                                        $requiredAttrs->removeElement($a);
                                         $this->em->remove($a);
                                     } else
                                     {
@@ -404,7 +404,7 @@ class Metadata2import {
                                         }
                                         if (!$found)
                                         {
-                                            $requiredAttrs->remove($r);
+                                            $requiredAttrs->removeElement($r);
                                             $this->em->remove($r);
                                         }
                                     }
@@ -650,7 +650,7 @@ class Metadata2import {
                                     $oid = $a->getAttribute()->getOid();
                                     if (in_array('' . $oid . '', $duplicateControl))
                                     {
-                                        $requiredAttrs->remove($a);
+                                        $requiredAttrs->removeElement($a);
                                         $this->em->remove($a);
                                     } else
                                     {
@@ -685,7 +685,7 @@ class Metadata2import {
                                         }
                                         if (!$found)
                                         {
-                                            $requiredAttrs->remove($r);
+                                            $requiredAttrs->removeElement($r);
                                             $this->em->remove($r);
                                         }
                                     }
