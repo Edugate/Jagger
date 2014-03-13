@@ -35,6 +35,7 @@ function h_metadataNamespaces()
          'ukfedlabel'=>'http://ukfederation.org.uk/2006/11/label',
          'init'=>'urn:oasis:names:tc:SAML:profiles:SSO:request-init',
          'xsi'=>'http://www.w3.org/2001/XMLSchema-instance',
+         'xi'=>'http://www.w3.org/2001/XInclude',
           );
      return $t;
 
