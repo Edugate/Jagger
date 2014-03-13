@@ -26,7 +26,7 @@ if(!empty($warnmessage))
    $rrs = array('id'=>'notificationupdateform','style'=>'display: none');
 
    $this->load->helper('form');
-   echo form_open(base_url().'notification/subcriber/updatestatus/',$rrs);
+   echo form_open(base_url().'notification/subscriber/updatestatus/',$rrs);
    echo form_input(array('name'=>'noteid','id'=>'noteid','type'=>'hidden','value'=>''));
    ?>
       <div class="header">
@@ -52,7 +52,7 @@ if(!empty($warnmessage))
    $rrs = array('id'=>'notificationaddform');
 
    $this->load->helper('form');
-   echo form_open(base_url().'notification/subcriber/add/',$rrs);
+   echo form_open(base_url().'notifications/subscriber/add/'.$encodeduser.'',$rrs);
    //echo form_input(array('name'=>'noteid','id'=>'noteid','type'=>'hidden','value'=>''));
    ?>
       <div class="header">
