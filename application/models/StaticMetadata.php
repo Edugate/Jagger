@@ -88,6 +88,7 @@ class StaticMetadata
 			 xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label" 
 			 xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init" 
 			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                         xmlns:xi="http://www.w3.org/2001/XInclude"
 			 ID="static" 
 			 Name="static"> ';
 		 	$down = '</EntitiesDescriptor>';
@@ -128,6 +129,7 @@ class StaticMetadata
                 $xpath->registerNamespace('ukfedlabel', 'http://ukfederation.org.uk/2006/11/label');
        		$xpath->registerNamespace('init', 'urn:oasis:names:tc:SAML:profiles:SSO:request-init');    
         	$xpath->registerNamespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+                $xpath->registerNamespace('xi','http://www.w3.org/2001/XInclude');
 		$add = true;
 		if( $staticMetadata->loadXML($this->getMetadata($add)))
 		{

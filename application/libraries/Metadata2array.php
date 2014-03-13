@@ -58,6 +58,18 @@ class Metadata2array {
            $this->doc = $xml;
            $this->xpath = new \DomXPath($this->doc);
         }
+       /*
+        $lxpath = new \DomXPath($this->doc);
+        foreach($lxpath->query('namespace::*', $doc) as $pnode ) 
+        {
+           $prefix = $pnode->prefix;
+           $val = $pnode->nodeValue;
+           if(!empty($prefix) && (strcmp($prefix,'xml') != 0))
+           {
+               $this->newNameSpaces[''.$prefix.''] = $val;
+           } 
+        }
+        */
         $namespaces = h_metadataNamespaces();
         foreach ($namespaces as $key => $value)
         {
@@ -88,27 +100,39 @@ class Metadata2array {
         return $this->metaArray;
     }
 
+
     function entitiesConvert($doc, $full = false)
     {
         if ($doc instanceof DOMElement)
         {
-            foreach( $this->xpath->query('namespace::*', $doc) as $pnode ) 
-            {
-               $prefix = $pnode->prefix;
-               $val = $pnode->nodeValue;
-               if(!empty($prefix) && (strcmp($prefix,'xml') != 0))
-               {
-                   $this->newNameSpaces[''.$prefix.''] = $val;
-               } 
-            }
-            $namespaces = h_metadataNamespaces();
-            $this->newNameSpaces = array_diff_assoc($this->newNameSpaces,$namespaces);
             if ($doc->nodeName === "md:EntityDescriptor" OR $doc->nodeName === "EntityDescriptor")
             {
                 $this->entityConvert($doc, $full);
             }
             elseif ($doc->nodeName == "EntitiesDescriptor" OR $doc->nodeName == "md:EntitiesDescriptor")
             {
+                $lxpath = new \DomXPath($this->doc);
+                foreach($lxpath->query('namespace::*', $doc) as $pnode ) 
+                {
+                   $prefix = $pnode->prefix;
+                   $val = $pnode->nodeValue;
+                   if(!empty($prefix) && (strcmp($prefix,'xml') != 0))
+                   {
+                      $this->newNameSpaces[''.$prefix.''] = $val;
+                   } 
+                }
+                $namespaces = h_metadataNamespaces();
+                $this->newNameSpaces = array_diff_assoc($this->newNameSpaces,$namespaces);
+          
+                if(count($this->newNameSpaces))
+                {  
+                   log_message('warning',__METHOD__.' Found additional xmlns not known by system '.serialize($this->newNameSpaces));
+                   foreach($this->newNameSpaces as $k=>$v)
+                   {
+                       $this->xpath->registerNamespace($k, $v);
+
+                   }
+                }
                 foreach ($doc->childNodes as $child)
                 {
                     $this->entitiesConvert($child, $full);
@@ -138,7 +162,6 @@ class Metadata2array {
         $entity['details']['contacts'] = array();
         $entity['details']['regpolicy'] = array();
         $entity['details']['reqattrs'] = array();
-        $entity['xmlns'] = $this->newNameSpaces;
         foreach ($node->childNodes as $gnode)
         {
             if ($gnode->nodeName === 'md:IDPSSODescriptor' OR $gnode->nodeName === 'IDPSSODescriptor')
@@ -270,16 +293,7 @@ class Metadata2array {
 
         }
 
-        /**
-         * @todo decide when add also static metadata 
-         */
-        //      if (empty($full))
-        //     {
         $entity['metadata'] = $this->doc->saveXML($node);
-        //    } 
-        //echo "<pre>";
-        //print_r($entity);
-        //echo "</pre>";
 
         $this->metaArray[$entity['entityid']] = $entity;
     }
@@ -315,7 +329,6 @@ class Metadata2array {
     {
         $result = array();
         $result['protocols'] = array_filter(explode(' ',$node->getAttribute('protocolSupportEnumeration')),'strlen');
-        //log_message('debug','GGGG profiles '.serialize($result['protocols']));
         foreach ($node->childNodes as $child)
         {
             if ($child->nodeName === 'md:Extensions' OR $child->nodeName === 'Extensions' )
@@ -567,7 +580,6 @@ class Metadata2array {
         {
            foreach ($node->childNodes as $child)
            {
-               log_message('debug', 'GGGG chiold: ' .$child->nodeName);
                 if(! $child instanceOf DOMText)
                 {
                       $org[''.str_replace('md:', '', $child->nodeName).''][''.$child->getAttribute('xml:lang').''] = trim($child->nodeValue);
