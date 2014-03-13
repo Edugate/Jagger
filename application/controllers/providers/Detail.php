@@ -1373,13 +1373,31 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
         $d[++$i]['header'] = lang('rr_management');
-        $d[++$i]['name'] = lang('rr_managestatus');
         if ($has_manage_access)
         {
+            $d[++$i]['name'] = lang('rr_managestatus');
             $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' ' . anchor(base_url() . 'manage/entitystate/modify/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            if(!$is_active)
+            {
+              $d[$i]['value'] .= '<div>'.lang('rr_rmprovider').' '. anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>').'</div>';
+            }
+            else
+            {
+              $d[$i]['value'] .= '<div>'.lang('rr_rmprovider').'<img src="' . base_url() . 'images/icons/prohibition.png"/> <div class="alert">'.lang('rmproviderdisablefirst').'</div></div>';
+
+
+            }
+        }
+        elseif($has_write_access)
+        {
+            $d[++$i]['name'] = lang('rr_managestatus');
+            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <img src="' . base_url() . 'images/icons/prohibition.png"/><div class="alert">'.lang('rerror_managepermneeded').'</div>';
+            $d[$i]['value'] .= '<div>'.lang('rr_rmprovider').'<img src="' . base_url() . 'images/icons/prohibition.png"/> <div class="alert">'.lang('rerror_managepermneeded').'</div> </div>';
+            
         }
         else
         {
+            $d[++$i]['name'] = lang('rr_managestatus');
             $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
         $d[++$i]['name'] = '';

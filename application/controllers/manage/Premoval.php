@@ -49,7 +49,7 @@ class Premoval extends MY_Controller {
 
     public function providertoremove($id=null)
     {
-        if(empty($id))
+        if(empty($id) || !ctype_digit($id))
         {
             show_error('Not found',404);
             return;
@@ -88,7 +88,7 @@ class Premoval extends MY_Controller {
                 else
                 {
                     $entitytoremove = $this->input->post('entity');
-                    if (!($entitytoremove === $provider->getEntityId()))
+                    if (strcmp($entitytoremove,$provider->getEntityId())!=0)
                     {
                         $data['error_message'] = 'entityID you filled didn\'t match provider\'s entiyID';
                         $data['showform'] = true;
