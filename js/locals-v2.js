@@ -1719,12 +1719,12 @@ $(document).ready(function() {
 
     $("button#registernotification").click(function(ev) {
         ev.preventDefault();
+        var notiform = $("form#notificationaddform");
         notificationadd('', function(ev) {
-            var serializedData = $("form#notificationaddform").serializeArray();
+            var serializedData = notiform.serializeArray();
             $.ajax({
                 type: "POST",
-                url: baseurl + 'notifications/subscriber/add',
-                //data: serializedData,
+                url: notiform.attr('action'),
                 data: $("form#notificationaddform").serializeArray(),
                 success: function(data) {
                     $(".message").html(data);
@@ -1737,7 +1737,6 @@ $(document).ready(function() {
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error occured: ' + errorThrown);
-                    //  $(".message").html(errorThrown);
                 }
 
             });

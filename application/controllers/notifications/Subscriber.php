@@ -140,6 +140,7 @@ class Subscriber extends MY_Controller {
        {
            show_error('not found',404);
        }
+       $data['encodeduser'] = $encodeduser;
        $data['subscriber']['username'] = $subscribtionOwner->getUsername();
        $data['subscriber']['fullname'] = $subscribtionOwner->getFullname();
        $data['subscriber']['email'] = $subscribtionOwner->getEmail();
@@ -197,9 +198,9 @@ class Subscriber extends MY_Controller {
 
     }
 
-    public function add()
+    public function add($encodeduser = null)
     {
-        if (!$this->input->is_ajax_request())
+        if (!$this->input->is_ajax_request() || empty($encodeduser))
         {
            set_status_header(403);
            echo 'denied';
@@ -224,6 +225,34 @@ class Subscriber extends MY_Controller {
            set_status_header(403);
            echo 'error occured';
            return;
+        }
+        $isAdministator = $this->j_auth->isAdministrator();
+
+        $decodeduser = base64url_decode($encodeduser); 
+        $requetmatchuser = (boolean) (strcmp($username,$decodeduser) == 0);
+        if(!($isAdministator || $requetmatchuser))
+        {
+           set_status_header(403);
+           echo 'mismatch error occured';
+           return;
+
+        }
+        if($requetmatchuser)
+        {
+             $subscriber = &$user;
+        }
+        else
+        {
+             $subscriber = $this->em->getRepository("models\User")->findOneBy(array('username'=>''.$decodeduser.''));
+             if(empty($subscriber))
+             {
+                set_status_header(403);
+                echo 'error occured';
+                return;
+
+
+             }
+
         }
 
         $this->load->library('zacl');
@@ -254,7 +283,6 @@ class Subscriber extends MY_Controller {
            echo '<div class="error">'.lang('error_wrongnotifycationtype').'</div>';
            return;
         }
-        $isAdministator = $this->j_auth->isAdministrator();
         ///////////////////////////////////////////////////////
         $success = false;
         if(strcmp($ntype,'joinfedreq')==0 || strcmp($ntype,'fedmemberschanged')==0)
@@ -270,7 +298,7 @@ class Subscriber extends MY_Controller {
            }
            $has_write_access =  $this->zacl->check_acl('f_' . $federation->getId().'', 'write', 'federation', '');
            $notification = new models\NotificationList();
-           $notification->setSubscriber($user);
+           $notification->setSubscriber($subscriber);
            $notification->setType($ntype);
            $notification->setFederation($federation);
            if(!empty($nemail))
@@ -300,7 +328,7 @@ class Subscriber extends MY_Controller {
            }
            $has_write_access =  $this->zacl->check_acl($provider->getId(), 'write', 'entity');
            $notification = new models\NotificationList();
-           $notification->setSubscriber($user);
+           $notification->setSubscriber($subscriber);
            $notification->setType($ntype);
            $notification->setProvider($provider);
            if(!empty($nemail))
@@ -321,7 +349,7 @@ class Subscriber extends MY_Controller {
         elseif(array_key_exists($ntype,$codes))
         {
             $notification = new models\NotificationList();
-            $notification->setSubscriber($user);
+            $notification->setSubscriber($subscriber);
             $notification->setType($ntype);
             if(!empty($nemail))
             {
@@ -471,7 +499,7 @@ class Subscriber extends MY_Controller {
         }
         if($success)
         {
-            $refreshed = $this->_getSubscriptionsToJson($user); 
+            $refreshed = $this->_getSubscriptionsToJson($notificationOwner); 
             $this->output->set_content_type('application/json');
             echo $refreshed;
         }
