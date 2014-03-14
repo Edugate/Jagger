@@ -522,10 +522,10 @@ class Detail extends MY_Controller {
             $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
             $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
             $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"');
 
             $d[++$i]['name'] = lang('rr_circleoftrust');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"');
             $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
             $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         }
@@ -595,11 +595,11 @@ class Detail extends MY_Controller {
                 $fedActive = $f->getFederation()->getActive();
                 if($fedActive)
                 {
-                    $federationsString .= '<li>'. $membershipDisabled .'  '.$membershipBanned . ' ' .anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
+                    $federationsString .= '<li>'. $membershipDisabled .'  '.$membershipBanned . ' ' .anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"') . '</li>';
                 }
                 else
                 {
-                    $federationsString .= '<li>'.$membershipDisabled .' '.$membershipBanned.' ' .makeLabel('disabled',lang('rr_fed_inactive_full'),lang('rr_fed_inactive_full')). ' '.anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor_popup($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</li>';
+                    $federationsString .= '<li>'.$membershipDisabled .' '.$membershipBanned.' ' .makeLabel('disabled',lang('rr_fed_inactive_full'),lang('rr_fed_inactive_full')). ' '.anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"') . '</li>';
 
                  }
             }
