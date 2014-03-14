@@ -707,7 +707,9 @@ class Awaiting extends MY_Controller {
                               $membership->setFederation($federation);
                             }
                             $this->em->persist($membership);
-
+                            $this->load->library('tracker');
+                            $this->tracker->save_track(strtolower($provider->getType()), 'request', $provider->getEntityId(), 'request to join federation: '.$federation->getName().' :: accepted ', false);
+                    
 
 
                             /**

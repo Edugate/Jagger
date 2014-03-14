@@ -139,6 +139,8 @@ class Detail extends MY_Controller {
                         $d[$i]['value'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<img src="'.base_url().'images/stats_bars.png">');
                     }
                     $d[++$i]['header'] = lang('rr_logs');
+                    $d[++$i]['name'] = lang('rr_variousreq');
+                    $d[$i]['value'] =$this->show_element->generateRequestsList($ent, 10);
                     $d[++$i]['name'] = lang('rr_modifications');
                     $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 10);
                     if ((strcasecmp($ent->getType(), 'IDP') == 0) OR (strcasecmp($ent->getType(), 'BOTH') == 0))
