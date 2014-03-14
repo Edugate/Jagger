@@ -28,8 +28,12 @@ class Metadata extends MY_Controller
         $this->output->set_content_type('text/xml');
     }
 
-    public function federation($federationName, $t = NULL)
+    public function federation($federationName = NULL, $t = NULL)
     {
+        if(empty($federationName))
+        {
+            show_error('Not found',404);
+        }
         $data = array();
         $name = base64url_decode($federationName);
         if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
@@ -39,6 +43,12 @@ class Metadata extends MY_Controller
             $type = 'all';
         }
 
+        $permitPull = $this->_checkAccess();
+        if($permitPull !== TRUE)
+        {
+           log_message('error', __METHOD__.' access denied from ip: '.$this->input->ip_address());
+           show_error('Access denied', 403);
+        }
 
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $name));
 
@@ -140,8 +150,12 @@ class Metadata extends MY_Controller
         }
     }
 
-    public function federationexport($federationName, $t = NULL)
+    public function federationexport($federationName = NULL, $t = NULL)
     {
+        if(empty($federationName))
+        {
+           show_error('Not found', 404);
+        }
         $data = array();
         $name = base64url_decode($federationName);
         if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
@@ -149,6 +163,12 @@ class Metadata extends MY_Controller
         }
         else {
             $type = 'all';
+        }
+        $permitPull = $this->_checkAccess();
+        if($permitPull !== TRUE)
+        {
+           log_message('error', __METHOD__.' access denied from ip: '.$this->input->ip_address());
+           show_error('Access denied', 403);
         }
 
 
@@ -200,7 +220,7 @@ class Metadata extends MY_Controller
             $xpath = new \DomXPath($docXML);
             $termsofuse = $federation->getTou();
 
-            $topcomment = "\n===============================================================\n= Federation metadata containing only localy managed entities.=\n===============================================================\n";
+            $topcomment = PHP_EOL.'==============================================================='.PHP_EOL.'= Federation metadata containing only localy managed entities.='.PHP_EOL.'==============================================================='.PHP_EOL;
             $tcomment = $docXML->createComment($topcomment);
             $docXML->appendChild($tcomment);
             if (!empty($termsofuse)) {
@@ -256,11 +276,25 @@ class Metadata extends MY_Controller
         }
     }
 
-    public function service($entityId, $m = null)
+    public function service($entityId=null, $m = null)
     {
-        if (!empty($m) && $m != 'metadata.xml') {
-            show_error('Request not allowed', 403);
+        if(empty($entityId) || empty($m) || strcmp($m,'metadata.xml')!=0)
+        {
+            show_error('Page not found', 404);
         }
+      
+/**
+ * @todo consider if service metadata should have ability to limit access, sideefect - defined fedValidators might not work
+ */
+/*
+        $permitPull = $this->_checkAccess();
+        if($permitPull !== TRUE)
+        {
+           log_message('error', __METHOD__.' access denied from ip: '.$this->input->ip_address());
+           show_error('Access denied', 403);
+        }
+*/
+
         $data = array();
 
         $name = base64url_decode($entityId);
@@ -286,10 +320,17 @@ class Metadata extends MY_Controller
     }
 
 
-    public function circle($entityId, $m = NULL)
+    public function circle($entityId = NULL, $m = NULL)
     {
-        if (!empty($m) && $m != 'metadata.xml') {
+        if(empty($entityId) || empty($m) || strcmp($m,'metadata.xml')!=0)
+        {
             show_error('Request not allowed', 403);
+        }
+        $permitPull = $this->_checkAccess();
+        if($permitPull !== TRUE)
+        {
+           log_message('error', __METHOD__.' access denied from ip: '.$this->input->ip_address());
+           show_error('Access denied', 403);
         }
         $data = array();
         $name = base64url_decode($entityId);
@@ -386,5 +427,39 @@ class Metadata extends MY_Controller
         $data['out'] = $docXML->saveXML();
         $this->load->view('metadata_view', $data);
     }
+
+
+    private function _checkAccess()
+    {
+        $permitPull = FALSE;
+
+        $isAjax = $this->input->is_ajax_request();
+        if(!$isAjax)
+        {
+           $limits = $this->config->item('unsignedmeta_iplimits'); 
+           if(!empty($limits) and is_array($limits) and count($limits)>0)
+           {
+              $remoteip = $this->input->ip_address();
+              if(in_array($remoteip,$limits))
+              {
+                 $permitPull = TRUE;
+              }
+           }
+           else
+           {
+                 $permitPull = TRUE;
+           }
+        }
+        else
+        {
+          $permitPull = TRUE;
+        }
+
+
+        return $permitPull;
+
+    }
+
+
 
 }

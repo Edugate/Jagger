@@ -46,3 +46,5 @@ if(!empty($hiddenspan))
 {
 echo $hiddenspan;
 }
+?>
+<div class="metadataresult" style="display: none"></div>

@@ -430,12 +430,12 @@ class Manage extends MY_Controller
             $IDPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['IDP']);
             $SPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['SP']);
             $BOTHmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['BOTH']);
-            $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor_popup($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"'));
             $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
 
             $lexportenabled = $federation->getLocalExport();
             if ($lexportenabled === TRUE) {
-                $data['result']['metadata'][] = array(lang('rr_fedmetaexportunsingedlink'), $data['metaexport_link'] . " " . anchor_popup($data['metaexport_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+                $data['result']['metadata'][] = array(lang('rr_fedmetaexportunsingedlink'), $data['metaexport_link'] . " " . anchor_popup($data['metaexport_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"'));
                 $data['result']['metadata'][] = array(lang('rr_fedmetaexportsingedlink'), $data['metaexport_link_signed'] . " " . anchor_popup($data['metaexport_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
             }
 

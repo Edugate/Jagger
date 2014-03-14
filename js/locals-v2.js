@@ -380,6 +380,49 @@ var GINIT = {
     });
 
 
+    $('a.showmetadata').click(function(){
+       var result = $("div.metadataresult");
+       var url = $(this).attr('href');
+     //  var height = window.height();
+     //  var width = window.width();
+       $.ajax({
+          type: 'GET',
+          url: url,
+          dataType: 'xml',
+          cache: true,
+          timeout: 10000,
+          success: function(data) {
+                $('#spinner').hide();
+            var xmlstr = data.xml ? data.xml : (new XMLSerializer()).serializeToString(data);
+            result.text(xmlstr).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                  containerCss: {
+                      padding: 5,
+                     width: 800,
+                    }, 
+                   maxHeight: 800,
+                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                   position: ["10%", ],
+                   overlayId: 'simpledialog-overlay',
+                   minHeight: '500',
+                   minWidth: '500',
+                   containerId: 'simpledialog-container',
+                   onShow: function(dialog) {
+                        var modal = this;
+                   }
+
+            }); 
+          },
+         beforeSend: function(){
+           result.text('');
+           $('#spinner').show();
+         },  
+         error: function(jqXHR, textStatus, errorThrown){
+           $('#spinner').hide();
+           alert(jqXHR.responseText);
+        },
+       });
+       return false;
+    });
     $('a#editprovider').click(function(e){
        //alert(window.location);
        var curTabID = $('#providertabs .ui-tabs-panel[aria-hidden="false"]').prop('id');
