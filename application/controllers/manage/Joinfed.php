@@ -121,6 +121,7 @@ class Joinfed extends MY_Controller {
                   $add_to_queue = $this->approval->invitationFederationToQueue($provider ,$federation,'Join',$message);
                   if($add_to_queue)
                   {
+                               $this->load->library('tracker');
                                $mail_recipients = array();
                                $mail_sbj = "Request  to join federation: ".$federation->getName();
                                 
@@ -138,6 +139,7 @@ class Joinfed extends MY_Controller {
                                   $message = '';
                                }                               
                                $mail_body = '';
+                               $this->tracker->save_track(strtolower($provider->getType()), 'request', $provider->getEntityId(), 'requested to join federation: '.$federation->getName().'. Message attached: '.htmlspecialchars($message).'', false);
                              
                                $overrideconfig = $this->config->item('defaultmail');
                                if(!empty($overrideconfig) && is_array($overrideconfig) && array_key_exists('joinfed',$overrideconfig) && !empty($overrideconfig['joinfed']))

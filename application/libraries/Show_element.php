@@ -559,6 +559,39 @@ class Show_element {
         $result['BOTH'] = $cell_with_both_members;
         return $result;
     }
+    public function generateRequestsList(models\Provider $idp, $count = null)
+    {
+        if (empty($count) or !is_numeric($count) or $count < 1)
+        {
+            $count = 5;
+        }
+
+        $tmp_tracks = new models\Trackers;
+        $tracks = $tmp_tracks->getProviderRequests($idp, $count);
+        if (empty($tracks))
+        {
+            return null;
+        }
+        $no_results = count($tracks);
+
+        $result = '<ul>';
+        foreach ($tracks as $t)
+        {
+            $det = $t->getDetail();
+            $this->ci->table->set_heading('Request');
+            $this->ci->table->add_row($det);
+            $y = $this->ci->table->generate();
+            $user = $t->getUser();
+            if (empty($user))
+            {
+                $user = lang('unknown');
+            }
+            $result .= '<li><span class="accordionButton"><b>' . date('Y-m-d H:i:s',$t->getCreated()->format('U')+j_auth::$timeOffset) . '</b> '.lang('made_by').' <b>' . $user . '</b> '.lang('from').' <b>' . $t->getIp() . '</b><br/>'.lang('rr_details').'</span><span class="accordionContent"><br />' . $y . '</span></li>';
+            $this->ci->table->clear();
+        }
+        $result .= '</ul>';
+        return $result;
+    }
 
     public function generateModificationsList(models\Provider $idp, $count = null)
     {
