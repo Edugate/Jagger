@@ -386,8 +386,7 @@ class Certificate
      */
      public function fixCert()
      {
-         log_message('debug','PERSIST CERT');
-         if($this->certtype == 'X509Certificate')
+         if($this->certtype === 'X509Certificate')
          {
               if(!empty($this->certdata))
               {
@@ -408,7 +407,6 @@ class Certificate
      */
     public function updated()
     {
-         log_message('debug','UPDATE CERT');
          if($this->certtype == 'X509Certificate')
          {
               if(!empty($this->certdata))

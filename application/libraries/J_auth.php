@@ -61,12 +61,9 @@ class J_auth {
             if ($pass === $encrypted_password)
             {
                 /**
-                 * @todo test last login ip, last login time
-                 */
-                /**
                  * @todo set groups
                  */
-                $ip = $_SERVER['REMOTE_ADDR'];
+                $ip = $this->ci->input->ip_address();
                 $userprefs = $u->getUserpref();
                 if(!empty($userprefs) && array_key_exists('board',$userprefs))
                 {
@@ -76,14 +73,17 @@ class J_auth {
                 $u->setIP($ip);
                 $u->updated();
                 $this->em->persist($u);
-                $track_details = 'authenticated from ' . $ip . ' using local authentication';
+                $track_details = 'Authn from ' . $ip . ' ::  Local Authn';
                 $this->ci->tracker->save_track('user', 'authn', $u->getUsername(), $track_details, false);
                 $this->em->flush();
 
                 $session_data = $u->getBasic();
-                $_SESSION['logged'] = 1;
-                $_SESSION['username'] = $session_data['username'];
-                $_SESSION['user_id'] =  $session_data['user_id'];
+                $this->ci->session->set_userdata(array(
+                   'logged'=>1,
+                   'username'=>''.$session_data['username'].'',
+                   'user_id'=> ''.$session_data['user_id'].''
+                ));
+                $this->ci->session->sess_regenerate();
                 $this->set_message('login_successful');
                 return TRUE;
             }
@@ -103,11 +103,8 @@ class J_auth {
     public function logout() {
         $identity = $this->ci->config->item('identity', 'j_auth');
         $this->ci->session->sess_destroy();
-        //session_unset('username');
-        //session_unset('user_id');
-        //session_unset('logged');
-        //session_destroy();
-        session_start();
+        //session_start();
+        $this->ci->session->sess_regenerate(TRUE);
         $this->set_message('logout_successful');
         return TRUE;
     }
