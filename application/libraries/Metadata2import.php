@@ -503,7 +503,7 @@ class Metadata2import {
                                 $countFeds = $mm2->getProvider()->getFederations()->count();
                                 if($countFeds < 2)
                                 {
-                                    $this->remove($mm2->getProvider());
+                                    $this->em->remove($mm2->getProvider());
                                 }
                             }
                             else
