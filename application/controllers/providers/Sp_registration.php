@@ -138,14 +138,14 @@ class Sp_registration extends MY_Controller
                   }
                   else
                   {
-                     $n = max($acsorder + 1);
+                     $n = max($acsorder) + 1;
                      $acsObj->setOrder($n);
                      $acsorder[] = $n;
                   }
                }
                else
                {
-                  $n = max($acsorder + 1);
+                  $n = max($acsorder) + 1;
                   $acsObj->setOrder($n);
                   $acsorder[] = $n;                  
                }
@@ -285,7 +285,7 @@ class Sp_registration extends MY_Controller
     {
         log_message('debug', 'validating form initialized');
         $post = $this->input->post();
-
+        $allowedAcsBinds = serialize(getBindACS());
         $this->form_validation->set_rules('resource', '' . lang('rr_resource') . '', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('descresource', '' . lang('rr_descriptivename') . '', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('entityid', '' . lang('rr_entityid') . '', 'required|trim|no_white_spaces|min_length[3]|max_length[255]|entity_unique[entityid]');
@@ -312,7 +312,7 @@ class Sp_registration extends MY_Controller
         {
            foreach($post['acs_bind'] as $k=>$v)
            {
-              $this->form_validation->set_rules('acs_bind['.$k.']', 'AssertionConsumerService Binding', 'trim|required');
+              $this->form_validation->set_rules('acs_bind['.$k.']', 'AssertionConsumerService Binding', 'trim|required|matches_inarray[' . $allowedAcsBinds . ']');
            }
           
         }
