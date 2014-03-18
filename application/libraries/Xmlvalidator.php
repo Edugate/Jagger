@@ -43,8 +43,12 @@ class Xmlvalidator {
         if($childNodes === 0)
         {
             $this->ci->globalerrors[] = 'Metadata validation: empty document received';
-            log_message('error',__METHOD__.' empty DOMDOcument');
+            log_message('error',__METHOD__.' empty DOMDocument');
             return FALSE;
+        }
+        else
+        {
+            log_message('debug',__METHOD__.' not empty DOMDocument');
         }
         if($signed === FALSE)
         {
@@ -72,7 +76,7 @@ class Xmlvalidator {
                 log_message('warning', __METHOD__.' validated metadata is not with schema');
             }
             return $result;
-        }
+       }
        $this->ci->load->library('xmlseclibs');
        $objXMLSecDSig = new XMLSecurityDSig();
        $objXMLSecDSig->idKeys[] = 'ID';
@@ -83,12 +87,22 @@ class Xmlvalidator {
            log_message('warning',__METHOD__.' couldnt locate signatureElement in Metadata DOMDocument');
            return FALSE;
        }
+       else
+       {
+           log_message('debug',__METHOD__.'  signatureElement is located in Metadata DOMDocument');
+
+       }
        $objXMLSecDSig->canonicalizeSignedInfo();
+       log_message('debug',__METHOD__.'  finished canonicalizeSignedInfo method');
        if (!$objXMLSecDSig->validateReference()) 
        {
            $this->ci->globalerrors[] = 'Metada validation : digest validation failed';
            log_message('warning',__METHOD__.' XMLsec: digest validation failed');
            return FALSE;
+       }
+       else
+       {
+           log_message('debug',__METHOD__.' XMLsec: digest validation success');
        }
        $objKey = $objXMLSecDSig->locateKey();
        if (empty($objKey)) {
