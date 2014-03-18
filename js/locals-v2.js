@@ -2149,9 +2149,9 @@ $("button#parsemetadatasp").click(function() {
         return false;
     }
     $("#entityid").val($entity.attr("entityID"));
-    $orgname = $entity.find("md\\:OrganizationName,OrganizationName");
-    $orgdisname = $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName");
-    $helpdeskurl = $entity.find("md\\:OrganizationURL,OrganizationURL");
+    $orgname = $entity.find("md\\:OrganizationName,OrganizationName").first();
+    $orgdisname = $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName").first();
+    $helpdeskurl = $entity.find("md\\:OrganizationURL,OrganizationURL").first();
     $("#resource").val($orgname.text());
     $("#descresource").val($orgdisname.text());
     $("#helpdeskurl").val($helpdeskurl.text());

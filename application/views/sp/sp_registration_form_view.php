@@ -125,15 +125,17 @@ $inp = array(
     'name' => 'acs_url',
     'value' => set_value('acs_url'),
     'class' => 'required',
+    'style'=> 'width: 400px; max-width: 400px;',
 );
-echo form_input($inp);
+echo '<br />'.form_input($inp);
 echo "&nbsp;&nbsp;index";
 $inp = array(
     'id' => 'acs_order',
     'name' => 'acs_order',
-    'lengh' => 3,
+    'length' => 3,
     'value' => set_value('acs_order', 1),
     'class' => 'acsindex required',
+    'style' => 'max-width: 15px; min-width: 10px',
 );
 echo form_input($inp);
 echo '</li>';
