@@ -155,7 +155,7 @@ class J_queue
         $provider[$i++]['header'] = lang('rr_servicelocations');
         foreach ($objData->getServiceLocations() as $service) {
             $provider[$i]['name'] = $service->getType();
-            $provider[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . "</small><br />";
+            $provider[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . " ; index: ".$service->getOrder()."</small><br />";
             $i++;
         }
         $provider[$i++]['header'] = lang('rr_supportednameids');
@@ -174,14 +174,7 @@ class J_queue
         $provider[$i++]['header'] = lang('rr_certificates');
         foreach ($objData->getCertificates() as $cert) {
             $provider[$i]['name'] = "Certificate (" . $cert->getCertUse() . ")";
-            $certdatacell = $cert->getCertdata();
-            $g = explode("\n", $cert->getCertdata());
-            $c = count($g);
-            if ($c < 2) {
-                $pem = chunk_split($cert->getCertdata(), 64, "<br />");
-                $certdatacell = $pem;
-            }
-
+            $certdatacell = reformatPEM($cert->getCertdata());
 
 
             $provider[$i]['value'] = "<span class=\"span-10\"><code>" . $certdatacell . "</code></span>";

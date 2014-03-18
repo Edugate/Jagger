@@ -1,3 +1,12 @@
+jQuery.fn.renameAttr =  function( name, newName ) {
+    var val;
+    return this.each(function() {
+      val = jQuery.attr( this, name );
+      jQuery.attr( this, newName );
+      jQuery.removeAttr( this, name );
+    });
+  };
+
 jQuery.fn.autoWidth = function(options) 
 { 
   var settings = { 
@@ -2148,6 +2157,7 @@ $("button#parsemetadatasp").click(function() {
         alert("SP not found");
         return false;
     }
+    $("li.optspregacs").remove();
     $("#entityid").val($entity.attr("entityID"));
     $orgname = $entity.find("md\\:OrganizationName,OrganizationName").first();
     $orgdisname = $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName").first();
@@ -2156,22 +2166,33 @@ $("button#parsemetadatasp").click(function() {
     $("#descresource").val($orgdisname.text());
     $("#helpdeskurl").val($helpdeskurl.text());
     $("#homeurl").val($helpdeskurl.text());
-    $entity.find("md\\:AssertionConsumerService,AssertionConsumerService").each(function() {
-        if ($(this).attr("isDefault"))
+    var rname = "";
+    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    var defaultacs = false;
+    
+        $entity.find("md\\:AssertionConsumerService,AssertionConsumerService").each(function() {
+        rname = "";
+        for (var i = 0; i < 5; i++)
         {
-            $("#acs_url").val($(this).attr("Location"));
-            $("#acs_order").val($(this).attr("index"));
-            $('#acs_bind').val($(this).attr('Binding'));
-            return false;
+            rname += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        if (defaultacs != true)
+        {
+            $("#acs_url\\[0\\]").val($(this).attr("Location"));
+            $("#acs_order\\[0\\]").val($(this).attr("index"));
+            $('#acs_bind\\[0\\]').val($(this).attr('Binding'));
+            defaultacs = true;
         }
         else
         {
-            if ($(this).attr('Binding') === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
-            {
-                $("#acs_url").val($(this).attr("Location"));
-                $("#acs_order").val($(this).attr("index"));
-                $('#acs_bind').val($(this).attr('Binding'));
-            }
+            var nelement = $("li.spregacs").first().clone().removeAttr("class");
+            
+            //nelement.renameAttr("acs_url\\[0\\]","acs_url\\["+rname+"\\]");
+            $("#acs_url\\[0\\]",nelement).removeAttr("name").attr("name","acs_url\["+rname+"\]").attr("id","acs_url\["+rname+"\]").val($(this).attr("Location"));
+            $("#acs_order\\[0\\]",nelement).removeAttr("name").attr("name","acs_order\["+rname+"\]").attr("id","acs_order\["+rname+"\]").val($(this).attr("index"));
+            var acsbind = $("#acs_bind\\[0\\]",nelement).removeAttr("name").attr("name","acs_bind\["+rname+"\]").attr("id","acs_bind\["+rname+"\]");
+            $('option', acsbind).removeAttr('selected').filter('[value="'+$(this).attr('Binding')+'"]').attr('selected',true);
+            $("li.spregacs").after(nelement);
         }
     });
 
@@ -2225,6 +2246,8 @@ $("button#parsemetadatasp").click(function() {
             return false;
         }
     });
+        GINIT.initialize();
+   
 });
 
 //  spregister

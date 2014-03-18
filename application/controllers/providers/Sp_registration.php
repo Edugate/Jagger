@@ -47,14 +47,27 @@ class Sp_registration extends MY_Controller
             $entityid = $this->input->post('entityid');
             $resource = $this->input->post('resource');
             $descresource = $this->input->post('descresource');
+
+            $acs = array();
             $acs_url = $this->input->post('acs_url');
             $acs_bind = $this->input->post('acs_bind');
             $acs_order = $this->input->post('acs_order');
             $nameids = $this->input->post('nameids');
-            $encrypt_cert_body = $this->input->post('encrypt_cert_body');
-            $sign_cert_body = $this->input->post('sign_cert_body');
+            $encrypt_cert_body = reformatPEM($this->input->post('encrypt_cert_body'));
+            $sign_cert_body = reformatPEM($this->input->post('sign_cert_body'));
 
-
+            foreach($acs_url as $k => $v)
+            {
+               $acs[''.$k.'']['url'] = $v;
+            }
+            foreach($acs_bind as $k => $v)
+            {
+               $acs[''.$k.'']['bind'] = $v;
+            }
+            foreach($acs_order as $k => $v)
+            {
+               $acs[''.$k.'']['order'] = $v;
+            }
 
             $newSP = new models\Provider;
             $newSP->setName($resource);
@@ -92,7 +105,6 @@ class Sp_registration extends MY_Controller
                 $crt_enc->setCertType('x509');
                 $crt_enc->setCertData($encrypt_cert_body);
                 $crt_enc->setAsDefault();
-                $crt_enc->generateFingerprint();
                 $newSP->setCertificate($crt_enc);
             }
 
@@ -103,7 +115,6 @@ class Sp_registration extends MY_Controller
                 $crt_sign->setCertType('x509');
                 $crt_sign->setCertData($sign_cert_body);
                 $crt_sign->setAsDefault();
-                $crt_sign->generateFingerprint();
                 $newSP->setCertificate($crt_sign);
             }
 
@@ -113,13 +124,35 @@ class Sp_registration extends MY_Controller
                 $nameidsInArray = explode(' ', $nameids);
                 $newSP->setNameIds('spsso', $nameidsInArray);
             }
-            $acs = new models\ServiceLocation;
-            $acs->setUrl($acs_url);
-            $acs->setDefault(TRUE);
-            $acs->setOrder($acs_order);
-            $acs->setAsACS();
-            $acs->setBindingName($acs_bind);
-            $newSP->setServiceLocation($acs);
+            $acsorder = array('0');
+            foreach($acs as $v)
+            {
+               $acsObj = new models\ServiceLocation;
+               $acsObj->setUrl($v['url']);
+               if(ctype_digit($v['order']))
+               {
+                  if(!in_array($v['order'],$acsorder))
+                  {
+                     $acsObj->setOrder($v['order']);
+                     $acsorder[] = $v['order'];
+                  }
+                  else
+                  {
+                     $n = max($acsorder + 1);
+                     $acsObj->setOrder($n);
+                     $acsorder[] = $n;
+                  }
+               }
+               else
+               {
+                  $n = max($acsorder + 1);
+                  $acsObj->setOrder($n);
+                  $acsorder[] = $n;                  
+               }
+               $acsObj->setAsACS();
+               $acsObj->setBindingName($v['bind']);
+               $newSP->setServiceLocation($acsObj);
+            }
 
             $queue = new models\Queue;
             $loggedin_user = null;
@@ -162,20 +195,60 @@ class Sp_registration extends MY_Controller
         else
         {
 
+           $post = $this->input->post();
+           $acs = array();
+           if(isset($post['acs_url']))
+           {
+               foreach($post['acs_url'] as $k=>$v)
+               {
+                   if($k === 0)
+                   {
+                      continue;
+                   }
+
+                   $acs[''.$k.'']['url'] = $v;
+               }
+           }
+           if(isset($post['acs_order']))
+           {
+               foreach($post['acs_order'] as $k=>$v)
+               {
+                   if($k === 0)
+                   {
+                      continue;
+                   }
+
+                   $acs[''.$k.'']['order'] = $v;
+               }
+           }
+           if(isset($post['acs_bind']))
+           {
+               foreach($post['acs_bind'] as $k=>$v)
+               {
+                   if($k === 0)
+                   {
+                      continue;
+                   }
+
+                   $acs[''.$k.'']['bind'] = $v;
+               }
+           }
+
+           $data['acs'] = $acs;
+        
+
+           $data['federations'] = $this->_getPublicFeds();
+
+           $data['acs_dropdown'][''] = lang('selectone');
+           $tmpacsprotocols = getBindACS();
+           foreach ($tmpacsprotocols as $v) {
+               $acsbindprotocols['' . $v . ''] = $v;
+           }
+           $data['acs_dropdown'] = array_merge($data['acs_dropdown'], $acsbindprotocols);
 
 
-        $data['federations'] = $this->_getPublicFeds();
-
-        $data['acs_dropdown'][''] = lang('selectone');
-        $tmpacsprotocols = getBindACS();
-        foreach ($tmpacsprotocols as $v) {
-            $acsbindprotocols['' . $v . ''] = $v;
-        }
-        $data['acs_dropdown'] = array_merge($data['acs_dropdown'], $acsbindprotocols);
-
-
-        $data['content_view'] = 'sp/sp_registration_form_view';
-        $this->load->view('page', $data);
+           $data['content_view'] = 'sp/sp_registration_form_view';
+           $this->load->view('page', $data);
         }
     }
  
@@ -211,6 +284,7 @@ class Sp_registration extends MY_Controller
     private function _submit_validate()
     {
         log_message('debug', 'validating form initialized');
+        $post = $this->input->post();
 
         $this->form_validation->set_rules('resource', '' . lang('rr_resource') . '', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('descresource', '' . lang('rr_descriptivename') . '', 'required|min_length[3]|max_length[255]');
@@ -220,9 +294,39 @@ class Sp_registration extends MY_Controller
         $this->form_validation->set_rules('contact_name', '' . lang('rr_contactname') . '', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('contact_mail', '' . lang('rr_contactemail') . '', 'required|min_length[3]|max_length[255]|valid_email');
         $this->form_validation->set_rules('contact_phone', '' . lang('rr_contactphone') . '', 'numeric');
-        $this->form_validation->set_rules('acs_url', 'AssertionConsumerService URL', 'required|valid_url[acs_url]');
-        $this->form_validation->set_rules('acs_bind', 'AssertionConsumerService Binding', 'required');
-        $this->form_validation->set_rules('acs_order', 'AssertionConsumerService index', 'required|numeric');
+        if(isset($post['acs_url']))
+        {
+           foreach($post['acs_url'] as $k=>$v)
+           {
+             if($k === 0)
+             {
+                $this->form_validation->set_rules('acs_url['.$k.']', 'AssertionConsumerService URL', 'required|valid_url[acs_url]');
+             }
+             else
+             {
+                $this->form_validation->set_rules('acs_url['.$k.']', 'AssertionConsumerService URL', 'valid_url[acs_url]');
+             }
+           }
+        }
+        if(isset($post['acs_bind']))
+        {
+           foreach($post['acs_bind'] as $k=>$v)
+           {
+              $this->form_validation->set_rules('acs_bind['.$k.']', 'AssertionConsumerService Binding', 'trim|required');
+           }
+          
+        }
+        if(isset($post['acs_order']))
+        {
+           if($k === 0)
+           {
+              $this->form_validation->set_rules('acs_order['.$k.']', 'AssertionConsumerService index', 'required|numeric');
+           }
+           else
+           {
+              $this->form_validation->set_rules('acs_order['.$k.']', 'AssertionConsumerService index', 'numeric');
+           }
+        }
         $this->form_validation->set_rules('nameids', 'NameIdFormat', 'trim|xss_clean');
         $this->form_validation->set_rules('encrypt_cert_body', '' . lang('rr_certificateencrypting') . '', 'trim|verify_cert[encrypt_cert_body]');
         $this->form_validation->set_rules('sign_cert_body', '' . lang('rr_certificatesigning') . '', 'trim|verify_cert[sign_cert_body]');

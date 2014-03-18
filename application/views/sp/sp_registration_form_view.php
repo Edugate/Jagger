@@ -115,30 +115,58 @@ echo '<ol>';
 
 
 
-echo '<li>';
+echo '<li class="spregacs">';
 echo form_label(lang('rr_assertionconsumerservicebind') . showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding');
-$dropdownid = 'id="acs_bind"';
-echo form_dropdown('acs_bind', $acs_dropdown, set_value('acs_bind'), $dropdownid);
-echo form_label(lang('rr_acsurl') . showBubbleHelp(lang('rhelp_acsurl')), 'acs_url');
+$dropdownid = 'id="acs_bind[0]"';
+echo form_dropdown('acs_bind[0]', $acs_dropdown, set_value('acs_bind[0]'), $dropdownid);
+echo form_label(lang('rr_acsurl') . showBubbleHelp(lang('rhelp_acsurl')), 'acs_url[0]');
 $inp = array(
-    'id' => 'acs_url',
-    'name' => 'acs_url',
-    'value' => set_value('acs_url'),
+    'id' => 'acs_url[0]',
+    'name' => 'acs_url[0]',
+    'value' => set_value('acs_url[0]'),
     'class' => 'required',
     'style'=> 'width: 400px; max-width: 400px;',
 );
 echo '<br />'.form_input($inp);
 echo "&nbsp;&nbsp;index";
 $inp = array(
-    'id' => 'acs_order',
-    'name' => 'acs_order',
+    'id' => 'acs_order[0]',
+    'name' => 'acs_order[0]',
     'length' => 3,
-    'value' => set_value('acs_order', 1),
+    'value' => set_value('acs_order[0]', 1),
     'class' => 'acsindex required',
     'style' => 'max-width: 15px; min-width: 10px',
 );
 echo form_input($inp);
 echo '</li>';
+
+foreach($acs as $k => $v)
+{
+echo '<li class="optspregacs">';
+echo form_label(lang('rr_assertionconsumerservicebind') . showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding');
+$dropdownid = 'id="acs_bind['.$k.']"';
+echo form_dropdown('acs_bind['.$k.']', $acs_dropdown, set_value('acs_bind['.$k.']'), $v['bind']);
+echo form_label(lang('rr_acsurl') . showBubbleHelp(lang('rhelp_acsurl')), 'acs_url['.$k.']');
+$inp = array(
+    'id' => 'acs_url['.$k.']',
+    'name' => 'acs_url['.$k.']',
+    'value' => $v['url'],
+    'style'=> 'width: 400px; max-width: 400px;',
+);
+echo '<br />'.form_input($inp);
+echo "&nbsp;&nbsp;index";
+$inp = array(
+    'id' => 'acs_order['.$k.']',
+    'name' => 'acs_order['.$k.']',
+    'length' => 3,
+    'value' => set_value('acs_order['.$k.']',$v['order']),
+    'class' => 'acsindex required',
+    'style' => 'max-width: 15px; min-width: 10px',
+);
+echo form_input($inp);
+echo '</li>';
+
+}
 
 echo '<li>';
 echo form_label('NameId(s) <small>(' . lang('rr_optional') . ')</small>', 'nameids');
@@ -160,7 +188,7 @@ echo form_label(lang('rr_certificatesigning') . ' <small>(' . lang('rr_optional'
 echo form_textarea(array(
     'id' => 'sign_cert_body',
     'name' => 'sign_cert_body',
-    'value' => getPEM(set_value('sign_cert_body')),
+    'value' => reformatPEM(set_value('sign_cert_body')),
     'cols' => 50,
     'rows' => 20,
     'style' => 'font-family: monospace; font-size: smaller;'
@@ -171,7 +199,7 @@ echo form_label(lang('rr_certificateencrypting') . ' <small>(' . lang('rr_option
 echo form_textarea(array(
     'id' => 'encrypt_cert_body',
     'name' => 'encrypt_cert_body',
-    'value' => getPEM(set_value('encrypt_cert_body')),
+    'value' => reformatPEM(set_value('encrypt_cert_body')),
     'cols' => 50,
     'rows' => 20,
     'style' => 'font-family: monospace; font-size: smaller'

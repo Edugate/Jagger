@@ -366,8 +366,9 @@ class Awaiting extends MY_Controller {
                                $fed2 = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $fed->getName()));
                                $idp->removeFederation($fed);
                             }
-                            foreach ($idp->getCertificates()->getValues() as $o)
+                            foreach ($idp->getCertificates() as $o)
                             {
+                                $o->setCertdata(reformatPEM($o->getCertdata()));
                                 $o->setCertType('x509');
                                 $o->generateFingerprint();
                             }
@@ -457,8 +458,9 @@ class Awaiting extends MY_Controller {
                                $membership->setFederation($fed2);
                                $this->em->persist($membership);
                             }
-                            foreach ($sp->getCertificates()->getValues() as $o)
+                            foreach ($sp->getCertificates() as $o)
                             {
+                                $o->setCertdata(reformatPEM($o->getCertdata()));
                                 $o->setCertType('x509');
                                 $o->generateFingerprint();
                             }

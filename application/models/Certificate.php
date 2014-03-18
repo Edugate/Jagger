@@ -177,7 +177,7 @@ class Certificate
 */
     public function setCertType($type=null)
     {
-        if (empty($type) or $type == 'x509')
+        if (empty($type) or $type === 'x509')
         {
             $type = 'X509Certificate';
         }
@@ -229,10 +229,11 @@ class Certificate
 
     public function generateFingerprint()
     {
-        $cert = $this->getPEM($this->certdata);
+        $cert = $this->certdata;
         if (!empty($cert))
         {
-            if ($this->getCertType() === 'X509Certificate')
+            $cert = self::reformatPEM($cert);
+            if ($this->certtype === 'X509Certificate')
             {
                 $resource = openssl_x509_read($cert);
                 $fingerprint = null;
@@ -411,7 +412,7 @@ class Certificate
          {
               if(!empty($this->certdata))
               {
-                 $this->certdata = reformatPEM($this->certdata);
+                 $this->certdata = self::reformatPEM($this->certdata);
               }
          }
         $this->generateFingerprint();
@@ -509,6 +510,27 @@ class Certificate
 
         return $cleaned_value;
     }
+    static function  reformatPEM($value)
+    {
+       if(!empty($value))
+       {
+         $cleaned_value = $value;
+         $cleaned_value = str_replace('-----BEGIN CERTIFICATE-----', '', $cleaned_value);
+         $cleaned_value = str_replace('-----END CERTIFICATE-----', '', $cleaned_value);
+         $cleaned_value = preg_replace("/\r\n/","", $cleaned_value);
+         $cleaned_value = preg_replace("/\n+/","", $cleaned_value);
+         $cleaned_value = preg_replace('/\s\s+/', "", $cleaned_value);
+         $cleaned_value = preg_replace('/\s*/', "", $cleaned_value);
+         $cleaned_value= trim($cleaned_value);
+         $pem = chunk_split($cleaned_value, 64, PHP_EOL);
+         $pem = '-----BEGIN CERTIFICATE-----'.PHP_EOL.$pem.'-----END CERTIFICATE-----';
+         return $pem;
+      }
+      else
+      {
+       return $value;
+      }
+}
 
 }
 

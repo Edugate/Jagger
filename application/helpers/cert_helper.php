@@ -50,16 +50,23 @@ function validateX509($cert, $args = NULL)
 
 function reformatPEM($value)
 {
-    $cleaned_value = $value;
-    $cleaned_value = str_replace('-----BEGIN CERTIFICATE-----', '', $cleaned_value);
-    $cleaned_value = str_replace('-----END CERTIFICATE-----', '', $cleaned_value);
-    $cleaned_value = preg_replace("/\r\n/","", $cleaned_value);
-    $cleaned_value = preg_replace("/\n+/","", $cleaned_value);
-    $cleaned_value = preg_replace('/\s\s+/', "", $cleaned_value);
-    $cleaned_value = preg_replace('/\s*/', "", $cleaned_value);
-    $cleaned_value= trim($cleaned_value);
-    $pem = chunk_split($cleaned_value, 64, "\n");
-    return $pem;
+    if(!empty($value))
+    {
+       $cleaned_value = $value;
+       $cleaned_value = str_replace('-----BEGIN CERTIFICATE-----', '', $cleaned_value);
+       $cleaned_value = str_replace('-----END CERTIFICATE-----', '', $cleaned_value);
+       $cleaned_value = preg_replace("/\r\n/","", $cleaned_value);
+       $cleaned_value = preg_replace("/\n+/","", $cleaned_value);
+       $cleaned_value = preg_replace('/\s\s+/', "", $cleaned_value);
+       $cleaned_value = preg_replace('/\s*/', "", $cleaned_value);
+       $cleaned_value= trim($cleaned_value);
+       $pem = chunk_split($cleaned_value, 64, PHP_EOL);
+       return $pem;
+    }
+    else
+    {
+       return $value;
+    }
 }
 
 // Get PEM formated certificate from quickform input
