@@ -381,6 +381,7 @@ $lang['rr_bindingtypesinglesign']   = 'BindingType of Single Sign-on Handler';
 $lang['rr_singlesignonurl']         = 'URL of Single Sign-on Handler';
 $lang['rr_idpsigningcert']          = 'IDP Signing Certificate';
 $lang['rr_hasbeenremoved']          = 'has been completely removed from the system';
+$lang['btn_removecontact']           = 'Remove contact';
 $lang['rr_logo']                    = 'Logo';
 $lang['rr_imagedimensions']         = 'Your image dimensions are not correct, please use the editor.';
 $lang['rr_primarycontact']          = 'Primary Contact';

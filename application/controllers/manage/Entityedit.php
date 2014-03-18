@@ -538,6 +538,20 @@ class Entityedit extends MY_Controller {
         {
            $data['regpolicy'] = array();
         }
+        if(isset($data['contact']))
+        {
+            foreach($data['contact'] as $k=>$v)
+            {
+                   if(empty($v['email']))
+                   {
+                       unset($data['contact'][''.$k.'']) ;
+                   }
+            }
+        }
+        else
+        {
+            $data['contact'] = array();
+        }
         $n = 'entform' . $id;
         $this->session->set_userdata($n, $data);
     }

@@ -85,6 +85,15 @@ var GINIT = {
 
        
     });
+    $("button.contactrm").click(function(){
+         var bval = $(this).attr('value');
+         var bname = $(this).attr('name');
+         var fieldset = $(this).closest('fieldset');
+        fieldset.parent().remove();
+        GINIT.initialize();
+
+       
+    });
 
     $('form#availablelogos').on('submit',function(e) {
         e.preventDefault();
@@ -1511,16 +1520,6 @@ $("#ndrbtn").click(function() {
     $(this).parent().before(newelement);
 
 });
-$("#ncontactbtn").click(function() {
-    var rname = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i = 0; i < 5; i++)
-        rname += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    var newelement = '<li><fieldset><ol><li><label for="f[contact][n_' + rname + '][type]">Contact type</label><span class=""><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></span></li><li><label for="f[contact][n_' + rname + '][fname]">Contact first name</label><span class=""><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]"  /></span></li><li><label for="f[contact][n_' + rname + '][sname]">Contact last name</label><span class=""><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]"  /></span></li><li><label for="f[contact][n_' + rname + '][email]">Contact Email</label><span class=""><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]"  /></span></li></ol></fieldset></li><li><fieldset></li>';
-    $(this).parent().before(newelement);
-
-});
 $("#nribtn").click(function() {
     var rname = "";
     var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -2459,6 +2458,17 @@ $("button#addlhelpdesk").click(function() {
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">"+inputname+" " + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">X</button></li>");
           GINIT.initialize();
     });
+$("#ncontactbtn").click(function() {
+    var rname = "";
+    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i = 0; i < 5; i++)
+        rname += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    var newelement = '<li><fieldset><ol><li><label for="f[contact][n_' + rname + '][type]">Contact type</label><span class=""><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></span></li><li><label for="f[contact][n_' + rname + '][fname]">Contact first name</label><span class=""><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]"  /></span></li><li><label for="f[contact][n_' + rname + '][sname]">Contact last name</label><span class=""><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]"  /></span></li><li><label for="f[contact][n_' + rname + '][email]">Contact Email</label><span class=""><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]"  /></span><button type="button" class="btn contactrm" name="contact" value="'+rname+'">X</button></li></ol></fieldset></li>';
+    $(this).parent().before(newelement);
+          GINIT.initialize();
+
+});
     $("button#addregpolicy").click(function() {
         var selected =  $("span.regpolicyadd option:selected").first();
         var nf = selected.val();

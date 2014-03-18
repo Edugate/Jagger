@@ -875,7 +875,8 @@ class Form_element {
 
     public function NgenerateContactsForm(models\Provider $ent, $ses = null)
     {
-        $cnts = $ent->getContacts();
+        $origcnts = $ent->getContacts();
+        $sesscnts = array();
         $r = FALSE;
         $formtypes = array(
             'administrative' => lang('rr_cnt_type_admin'),
@@ -889,9 +890,8 @@ class Form_element {
             $r = TRUE;
         }
         $result = array();
-        foreach ($cnts as $cnt)
+        foreach ($origcnts as $cnt)
         {
-            $sur = htmlspecialchars_decode($cnt->getSurname());
             $row = form_fieldset() . '<ol>';
             $class_cnt1 = '';
             $class_cnt2 = '';
@@ -899,10 +899,17 @@ class Form_element {
             $class_cnt4 = '';
             if ($r)
             {
-                $t1 = set_value($ses['contact'][$cnt->getId()]['type'], $cnt->getType());
-                $t2 = $ses['contact'][$cnt->getId()]['fname'];
-                $t3 = $ses['contact'][$cnt->getId()]['sname'];
-                $t4 = $ses['contact'][$cnt->getId()]['email'];
+                if(isset($ses['contact'][''.$cnt->getId().'']))
+                {
+                   $t1 = set_value($ses['contact'][$cnt->getId()]['type'], $cnt->getType());
+                   $t2 = $ses['contact'][$cnt->getId()]['fname'];
+                   $t3 = $ses['contact'][$cnt->getId()]['sname'];
+                   $t4 = $ses['contact'][$cnt->getId()]['email'];
+                }
+                else
+                {
+                   continue;
+                }
             }
             else
             {
@@ -953,7 +960,7 @@ class Form_element {
             $row .= '<li>' . form_label(lang('rr_contactlastname'), 'f[contact][' . $cnt->getId() . '][sname]');
             $row .= '<span class="' . $class_cnt3 . '">' . form_input(array('name' => 'f[contact][' . $cnt->getId() . '][sname]', 'id' => 'f[contact][' . $cnt->getId() . '][sname]', 'value' => $t3)) . '</span></li>';
             $row .= '<li>' . form_label(lang('rr_contactemail'), 'f[contact][' . $cnt->getId() . '][email]');
-            $row .= '<span class="' . $class_cnt4 . '">' . form_input(array('name' => 'f[contact][' . $cnt->getId() . '][email]', 'id' => 'f[contact][' . $cnt->getId() . '][email]', 'value' => $t4)) . '</span></li>';
+            $row .= '<span class="' . $class_cnt4 . '">' . form_input(array('name' => 'f[contact][' . $cnt->getId() . '][email]', 'id' => 'f[contact][' . $cnt->getId() . '][email]', 'value' => $t4)) . '</span> <button type="button" class="btn contactrm" name="contact" value="'.$cnt->getId().'">'.lang('btn_removecontact').'</button></li>';
             $row .= '</ol>' . form_fieldset_close();
             $result[] = $row;
             if ($r)
@@ -973,7 +980,7 @@ class Form_element {
                 $n .= '<li>' . form_label(lang('rr_contactlastname'), 'f[contact][' . $k . '][sname]');
                 $n .= '<span>' . form_input(array('name' => 'f[contact][' . $k . '][sname]', 'id' => 'f[contact][' . $k . '][sname]', 'value' => set_value('f[contact][' . $k . '][sname]', $v['sname']))) . '</span></li>';
                 $n .= '<li>' . form_label(lang('rr_contactemail'), 'f[contact][' . $k . '][email]');
-                $n .= '<span>' . form_input(array('name' => 'f[contact][' . $k . '][email]', 'id' => 'f[contact][' . $k . '][email]', 'value' => set_value('f[contact][' . $k . '][email]', $v['email']))) . '</span></li>';
+                $n .= '<span>' . form_input(array('name' => 'f[contact][' . $k . '][email]', 'id' => 'f[contact][' . $k . '][email]', 'value' => set_value('f[contact][' . $k . '][email]', $v['email']))) . '</span><button type="button" class="btn contactrm" name="contact" value="'.$k.'">'.lang('btn_removecontact').'</button></li>';
                 $n .= '</ol>' . form_fieldset_close();
                 $result[] = $n;
             }
