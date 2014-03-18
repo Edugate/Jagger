@@ -1491,18 +1491,19 @@ class Providerupdater {
         /**
          * END update certs
          */
-        if (array_key_exists('contact', $ch) && !empty($ch['contact']) && is_array($ch['contact']))
+        if (array_key_exists('contact', $ch) && is_array($ch['contact']))
         {
             $ncnt = $ch['contact'];
             $orgcnt = $ent->getContacts();
             $origcntArray=array();
+            $newcntArray= array();
             foreach ($orgcnt as $v)
             {
                 $i = $v->getId();
-                $origcntArray[$i]=''.$v->getType(). ' ::: '.$v->getEmail();
+                $origcntArray[$i]=''.$v->getType(). ' : ('.$v->getGivenname().' '.$v->getSurname().') '.$v->getEmail();
                 if (array_key_exists($i, $ncnt))
                 {
-                    if (empty($ncnt['' . $i . '']['email']))
+                    if (!isset($ncnt['' . $i . '']) || empty($ncnt['' . $i . '']['email']))
                     {
                         $ent->removeContact($v);
                         $this->em->remove($v);
@@ -1514,8 +1515,14 @@ class Providerupdater {
                         $v->setSurname($ncnt['' . $i . '']['sname']);
                         $v->setEmail($ncnt['' . $i . '']['email']);
                         $this->em->persist($v);
+                        $newcntArray[''.$i.''] = ''.$v->getType(). ' : ('.$v->getGivenname().' '.$v->getSurname().') '.$v->getEmail();
                         unset($ncnt['' . $i . '']);
                     }
+                }
+                else
+                {
+                        $ent->removeContact($v);
+                        $this->em->remove($v);
                 }
             }
             foreach ($ncnt as $cc)
@@ -1534,7 +1541,6 @@ class Providerupdater {
                 }
             }
             $newcnts = $ent->getContacts();
-            $newcntArray = array();
             $ii=0;
             foreach($newcnts as $v)
             {
@@ -1544,13 +1550,13 @@ class Providerupdater {
                {
                  $idc = 'n'.$ii;
                }
-               $newcntArray[$idc] = ''.$v->getType(). ' ::: '.$v->getEmail(); 
+               $newcntArray[$idc] = ''.$v->getType(). ' : ('.$v->getGivenname().' '.$v->getSurname().') '.$v->getEmail(); 
             }
             $diff1 = array_diff_assoc($newcntArray,$origcntArray);
             $diff2 = array_diff_assoc($origcntArray,$newcntArray);
             if(count($diff1) > 0 || count($diff2) > 0) 
             {
-               $m['Contacts'] = array('before'=>arrayWithKeysToHtml($diff2),'after'=>arrayWithKeysToHtml($diff1));
+               $m['Contacts'] = array('before'=>arrayWithKeysToHtml($origcntArray),'after'=>arrayWithKeysToHtml($newcntArray));
             }
         }
 

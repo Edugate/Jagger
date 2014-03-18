@@ -174,7 +174,6 @@ class J_queue
         $provider[$i++]['header'] = lang('rr_certificates');
         foreach ($objData->getCertificates() as $cert) {
             $provider[$i]['name'] = "Certificate (" . $cert->getCertUse() . ")";
-            //$provider[$i]['value'] = "<code>" . PEMtoHTML($cert->getCertData()) . "</code>";
             $certdatacell = $cert->getCertdata();
             $g = explode("\n", $cert->getCertdata());
             $c = count($g);
