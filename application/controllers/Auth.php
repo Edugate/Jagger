@@ -46,6 +46,90 @@ class Auth extends MY_Controller {
         $this->load->view('auth/logout');
     }
 
+
+    function fedregister()
+    {
+        if(!$this->input->is_ajax_request())
+        {
+           show_error('Permission denied',403);
+        }
+        if($_SERVER['REQUEST_METHOD'] !== 'POST')
+        {
+           set_status_header(403);
+           echo 'permission denied';
+           return;
+        }
+        if ($this->j_auth->logged_in())
+        {
+           set_status_header(403);
+           echo 'already euthenticated';
+           return;
+
+        }
+        $username = $this->input->post('username');
+        $username = trim($username);
+        $email = $this->input->post('email');
+        $email = trim($email);
+        if(empty($username) || empty($email))
+        {
+           set_status_header(403);
+           echo 'missing some attrs like username or/and email';
+           return;
+
+        }
+        $fname = $this->input->post('fname');
+        $sname = $this->input->post('sname');
+        $accesstype = 'federated';
+        $ip = $this->input->ip_address();      
+        $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        if(!empty($checkuser))
+        {
+           set_status_header(403);
+           echo 'such username already exists';
+           return;
+        }
+        $checkuser = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
+        if(!empty($checkuser))
+        {
+           set_status_header(403);
+           echo 'such email already exists';
+           return;
+        }
+         
+        $user = array(
+         'username'=>trim($username),
+         'email'=>trim($email),
+         'fname'=>trim($fname),
+         'sname'=>trim($sname),
+         'type'=>'federated',
+         'ip'=>$this->input->ip_address(),
+       
+        );
+
+        $queue = new models\Queue;
+        $queue->setAction('Create');
+        $queue->setName($username);
+        $queue->setEmail($email);
+        $queue->setToken();
+        $queue->addUser($user);
+        $this->em->persist($queue);
+        try{
+              $this->em->flush();
+              set_status_header(200);
+              echo 'Your request has been received';
+              return;
+        }
+        catch(Exception $e)
+        {
+           log_message('error',__METHOD__.' '.$e);
+           set_status_header(500);
+           echo 'Unknown error occured';
+           return;
+         
+        }
+     
+    }
+
     function ssphpauth()
     {
         if ($this->j_auth->logged_in())

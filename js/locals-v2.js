@@ -987,11 +987,11 @@ $(function() {
     $("#responsecontainer").load("awaiting/ajaxrefresh");
     var refreshId = setInterval(function() {
         $("#responsecontainer").load('awaiting/ajaxrefresh');
-    }, 72000);
+    }, 172000);
     $("#dashresponsecontainer").load("reports/awaiting/dashajaxrefresh");
     var refreshId = setInterval(function() {
         $("#dashresponsecontainer").load('reports/awaiting/dashajaxrefresh');
-    }, 72000);
+    }, 172000);
 
     $.ajaxSetup({
         cache: false

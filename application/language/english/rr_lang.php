@@ -492,7 +492,7 @@ $lang['rr_spdisabled']              = 'Service Provider is disabled';
 $lang['rr_idpactive']               = 'active';
 $lang['rr_noidpaccess']             = 'No access to view idp details';
 $lang['rr_nospaccess']              = 'No access to view sp details';
-$lang['rr_nopermission']            = 'no permission to edit';
+$lang['rr_nopermission']            = 'no permission';
 $lang['rr_nopermnewuser']           = 'You have no access to add new user to the system';
 $lang['rr_externalentity']          = 'External entity - cannot be edited';
 $lang['rr_hiddeninpubliclist']      = 'Hidden on public lists';
@@ -933,6 +933,8 @@ $lang['staticmeta_info']            = 'Metadata is generated based on static met
 $lang['wrongpolicyval']             = 'Wrong policy value';
 $lang['alertentchange']             = 'Be aware that changing entityID follows change of URLs of Individual Metadata and Attribute Release Policy. You will need to modify configuration in you IdP/SP';
 $lang['alertimportintofed']         = 'Be aware! Importing external metadata into federation may cause removing entities from federation if such entities will not be found in source metadata.';
+
+$lang['useralredyregistered']       = 'The user is already registered';
 $lang['formfromsess']               = 'The form is loaded from saved draft. Please discard changes if you want to start over';
 $lang['douwanttoremove']            = 'Are you sure you want to remove %s';
 $lang['douwanttoproceed']           = 'Are you sure do you want to proceed';
@@ -949,7 +951,7 @@ $lang['emptyvalnotallowed']         = 'Empty value is not allowed';
 $lang['logo404']                    = 'Logo not found';
 $lang['error404']                   = 'Page not found';
 $lang['error403']                   = 'Access denied';
-
+$lang['queremoved']                 = 'Then entry has been removed from the queue';
 
 $lang['rr_jobinqueue']              = 'The job is still on the queue';
 $lang['rr_jobdonein']                 = 'The job done in';

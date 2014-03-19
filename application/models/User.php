@@ -140,6 +140,25 @@ class User {
         log_message('debug', 'User model initiated');
         $this->in_queue = new \Doctrine\Common\Collections\ArrayCollection();
         $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->local = false;
+        $this->federated = false;
+    }
+
+    public function setRandomPassword()
+    {
+        $length = 10;
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $string = '';
+        for ($p = 0; $p < $length; $p++)
+        {
+            $string .= $characters[mt_rand(0, (strlen($characters)) - 1)];
+        }
+
+        $encrypted_password = self::encryptPassword($string);
+
+        $this->password = $encrypted_password;
+        return $this;
+
     }
 
     /**
@@ -247,6 +266,18 @@ class User {
                 ->getResult();
 
         return $user ? $user[0] : FALSE;
+    }
+
+    public function findUserMail($username, $email)
+    {
+        $CI = & get_instance();
+
+        $user = $this->CI->em->createQuery("SELECT u FROM models\User u WHERE u.username = '{$username}' OR u.email = '{$email}'")
+                ->getResult();
+
+        return $user ? $user[0] : FALSE;
+
+
     }
 
     public static function fakeStatic()
