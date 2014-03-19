@@ -1,12 +1,3 @@
-jQuery.fn.renameAttr =  function( name, newName ) {
-    var val;
-    return this.each(function() {
-      val = jQuery.attr( this, name );
-      jQuery.attr( this, newName );
-      jQuery.removeAttr( this, name );
-    });
-  };
-
 jQuery.fn.autoWidth = function(options) 
 { 
   var settings = { 
@@ -2187,7 +2178,6 @@ $("button#parsemetadatasp").click(function() {
         {
             var nelement = $("li.spregacs").first().clone().removeAttr("class");
             
-            //nelement.renameAttr("acs_url\\[0\\]","acs_url\\["+rname+"\\]");
             $("#acs_url\\[0\\]",nelement).removeAttr("name").attr("name","acs_url\["+rname+"\]").attr("id","acs_url\["+rname+"\]").val($(this).attr("Location"));
             $("#acs_order\\[0\\]",nelement).removeAttr("name").attr("name","acs_order\["+rname+"\]").attr("id","acs_order\["+rname+"\]").val($(this).attr("index"));
             var acsbind = $("#acs_bind\\[0\\]",nelement).removeAttr("name").attr("name","acs_bind\["+rname+"\]").attr("id","acs_bind\["+rname+"\]");
