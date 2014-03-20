@@ -67,6 +67,7 @@ class Auth extends MY_Controller {
         }
        
         $fedidentity = $this->session->userdata('fedidentity');
+        log_message('debug','GKS received'.serialize($this->session->all_userdata()));
         if(!empty($fedidentity) && is_array($fedidentity))
         {
            if(isset($fedidentity['fedusername']))
@@ -79,8 +80,6 @@ class Auth extends MY_Controller {
            }
            if(empty($username) || empty($email))
            {
-              $this->session->sess_destroy();
-              $this->session->sess_regenerate(TRUE);
               set_status_header(403);
               echo 'missing some attrs like username or/and email';
               return;
@@ -109,9 +108,6 @@ class Auth extends MY_Controller {
         $checkuser = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
         if(!empty($checkuser))
         { 
-           $this->session->sess_destroy();
-           $this->session->sess_regenerate(TRUE);
-
            set_status_header(403);
            echo 'such email already exists';
            return;
@@ -603,11 +599,13 @@ class Auth extends MY_Controller {
                 //show_error(' ' . htmlentities($user_var) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">' . lang('rrhere') . '</a>', 403);
               
                 $fedidentity = array('fedusername'=>$user_var,'fedfname'=>$this->get_shib_fname(),'fedsname'=>$this->get_shib_sname(),'fedemail'=>$this->get_shib_mail());
-                $this->session->sess_destroy();
-                $this->session->sess_regenerate(TRUE);
+              //  $this->session->sess_destroy();
+              //  $this->session->sess_regenerate(TRUE);
                 $this->session->set_userdata(array('fedidentity'=>$fedidentity));
                 $data['content_view'] = 'feduserregister_view';
+                log_message('debug','GKS SESS:'.serialize($this->session->all_userdata()));
                 $this->load->view('page',$data);
+                return;
                 
             } else
             {
