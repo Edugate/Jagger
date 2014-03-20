@@ -2678,6 +2678,10 @@ ol.group li {
   font-size: small;
 }
 
+.s2 {
+  font-size: smaller;
+}
+
 form {
   counter-reset: fieldsets;
   background: #ffe90d;

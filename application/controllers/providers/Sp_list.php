@@ -119,17 +119,17 @@ class Sp_list extends MY_Controller {
             }
             $i_link = base_url() . "providers/detail/show/" . $i->getId();
             $is_available = $i->getAvailable();
-            $displayname = $i->getDisplayName(50);
+            $displayname = $i->getName(50);
             if(empty($displayname))
             {
                 $displayname = $i->getEntityId();
             }
             if ($is_available)
             {
-                $sprows[] = array(anchor($i_link, $displayname . '', 'title="' . $displayname . '"') . '<span class="additions">' . $i->getEntityId() . '</span>',$iconsblock,$regcol, '<div class="squiz"><a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' .$i->getHelpdeskUrl().'</a></div>');
+                $sprows[] = array(anchor($i_link, $displayname . '', 'title="' . $displayname . '"') . '<span class="additions s2">' . $i->getEntityId() . '</span>',$iconsblock,$regcol, '<div class="squiz s2"><a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' .$i->getHelpdeskUrl().'</a></div>');
             } else
             {
-                $sprows[] = array('<span class="alert" title="'.$linktitle_disexp.'">' . anchor($i_link, $displayname , 'title="' . $displayname . '"') . '</span><span class="additions">' . $i->getEntityId() . '</span>',$iconsblock,$regcol, '<div class="squiz"><a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">'.$i->getHelpdeskUrl().'</a></div>');
+                $sprows[] = array('<span class="alert" title="'.$linktitle_disexp.'">' . anchor($i_link, $displayname , 'title="' . $displayname . '"') . '</span><span class="additions s2">' . $i->getEntityId() . '</span>',$iconsblock,$regcol, '<div class="squiz s2"><a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">'.$i->getHelpdeskUrl().'</a></div>');
             }
         }
         $data['sprows'] = $sprows;

@@ -109,7 +109,7 @@ class Idp_list extends MY_Controller {
             {
                $iconsblock .= $hiddenicon .' ';
             }
-            $displayname = $i->getDisplayName();
+            $displayname = $i->getName();
             if(empty($displayname))
             {
                 $displayname = $i->getEntityId();
@@ -117,11 +117,11 @@ class Idp_list extends MY_Controller {
             
             if ($i->getAvailable())
             {
-                $col1 = anchor($i_link, $displayname) . "<br />(" . $i->getEntityId() . ")";
+                $col1 = anchor($i_link, $displayname) . '<div class="s2">' . $i->getEntityId() . '</div>';
             }
             else
             {
-                $col1 = '<span class="additions"><span class="alert" title="'.$linktitlediexp.'">'.anchor($i_link, $displayname).'</span><br />'. $i->getEntityId().'</span>';
+                $col1 = '<span class="additions"><span class="alert" title="'.$linktitlediexp.'">'.anchor($i_link, $displayname).'</span><div class="s2">'. $i->getEntityId().'</div></span>';
             }
             $regdate = $i->getRegistrationDate();
             if(isset($regdate))
@@ -141,7 +141,7 @@ class Idp_list extends MY_Controller {
             {
                 $col3 = '';
             }
-            $idprows[] = array('data' => array('data' =>  $col1 ),$iconsblock, $col2,'<div class="squiz">'.$col3.'</div>');
+            $idprows[] = array('data' => array('data' =>  $col1 ),$iconsblock, $col2,'<div class="squiz s2">'.$col3.'</div>');
         }
         $data['idprows'] = $idprows;
         $data['content_view'] = 'providers/idp_list_view';
