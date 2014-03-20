@@ -553,7 +553,7 @@ class Auth extends MY_Controller {
         }
         if ($this->j_auth->logged_in())
         {
-            
+           redirect(''.base_url().'','location'); 
         }
         $user_var = $this->get_shib_username();
         if (empty($user_var))

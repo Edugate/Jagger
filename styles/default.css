@@ -3077,6 +3077,12 @@ form#assignedlogos caption, form#availablelogos caption, form#uploadlogo caption
   font-weight: bold;
 }
 
+form#applyforaccount {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
 .ir {
   background-color: transparent;
   border: 0;
