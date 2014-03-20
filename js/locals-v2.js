@@ -303,11 +303,13 @@ var GINIT = {
            success:function(data){
                $('#spinner').hide();
                result.html(data);
+               $("form#applyforaccount").remove();
            },
            error: function(jqXHR, textStatus, errorThrown){
               $('#spinner').hide();
                result.html(jqXHR.responseText);
                result.css('color', 'red');
+               $("form#applyforaccount").remove();
            }
 
         });
