@@ -64,33 +64,54 @@ class Auth extends MY_Controller {
            set_status_header(403);
            echo 'already euthenticated';
            return;
-
         }
-        $username = $this->input->post('username');
-        $username = trim($username);
-        $email = $this->input->post('email');
-        $email = trim($email);
-        if(empty($username) || empty($email))
+       
+        $fedidentity = $this->session->userdata('fedidentity');
+        if(!empty($fedidentity) && is_array($fedidentity))
         {
-           set_status_header(403);
-           echo 'missing some attrs like username or/and email';
-           return;
-
-        }
-        $fname = $this->input->post('fname');
-        $sname = $this->input->post('sname');
+           if(isset($fedidentity['fedusername']))
+           {
+                $username = $fedidentity['fedusername'];
+           }
+           if(isset($fedidentity['fedemail']))
+           {
+                $email = $fedidentity['fedemail'];
+           }
+           if(empty($username) || empty($email))
+           {
+              $this->session->sess_destroy();
+              $this->session->sess_regenerate(TRUE);
+              set_status_header(403);
+              echo 'missing some attrs like username or/and email';
+              return;
+           }
+           if(isset($fedidentity['fedfname']))
+           {
+                $fname = $fedidentity['fedfname'];
+           }
+           if(isset($fedidentity['fedsname']))
+           {
+                $sname = $fedidentity['fedsname'];
+           }
+           
+        }  
         $accesstype = 'federated';
         $ip = $this->input->ip_address();      
         $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if(!empty($checkuser))
         {
+           $this->session->sess_destroy();
+           $this->session->sess_regenerate(TRUE);
            set_status_header(403);
            echo 'such username already exists';
            return;
         }
         $checkuser = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
         if(!empty($checkuser))
-        {
+        { 
+           $this->session->sess_destroy();
+           $this->session->sess_regenerate(TRUE);
+
            set_status_header(403);
            echo 'such email already exists';
            return;
@@ -565,23 +586,32 @@ class Auth extends MY_Controller {
             $this->em->flush();
         } else
         {
+            $fname_var = $this->get_shib_fname();
+            $sname_var = $this->get_shib_sname();
+            $email_var = $this->get_shib_mail();
             $can_autoregister = $this->config->item('autoregister_federated');
+            if (empty($email_var))
+            {
+                log_message('warning', __METHOD__.' User hasnt provided email attr during federated access');
+                show_error(lang('error_noemail'), 403);
+                return;
+            }
+            
             if (!$can_autoregister)
             {
                 log_message('error', 'User authorization failed: ' . $user_var . ' doesnt exist in RR');
-                show_error(' ' . htmlentities($user_var) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">' . lang('rrhere') . '</a>', 403);
+                //show_error(' ' . htmlentities($user_var) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">' . lang('rrhere') . '</a>', 403);
+              
+                $fedidentity = array('fedusername'=>$user_var,'fedfname'=>$this->get_shib_fname(),'fedsname'=>$this->get_shib_sname(),'fedemail'=>$this->get_shib_mail());
+                $this->session->sess_destroy();
+                $this->session->sess_regenerate(TRUE);
+                $this->session->set_userdata(array('fedidentity'=>$fedidentity));
+                $data['content_view'] = 'feduserregister_view';
+                $this->load->view('page',$data);
+                
             } else
             {
-                $fname_var = $this->get_shib_fname();
-                $sname_var = $this->get_shib_sname();
-                $email_var = $this->get_shib_mail();
 
-                if (empty($email_var))
-                {
-                    log_message('error', 'User cannot be autocreated: email address is missing');
-                    show_error(lang('error_noemail'), 403);
-                    return;
-                }
                 $attrs = array('username' => $user_var, 'mail' => $email_var,'fname'=>$fname_var,'sname'=>$sname_var);
                 $reg = $this->registerUser($attrs);
 

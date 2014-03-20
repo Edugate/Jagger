@@ -286,6 +286,33 @@ var GINIT = {
          
  
     });
+    $("form#applyforaccount").on('submit',function(e){
+        e.preventDefault();
+        var result = $("div.result");
+        var postdata = $("form#applyforaccount").serializeArray();
+        $.ajax({
+           type:'POST',
+           url: $(this).attr('action');
+           data: postdata,
+           dataType: 'html',
+           cache:false,
+           beforeSend: function() {
+               result.html(''); 
+               $('#spinner').show();
+           },
+           success:function(data){
+               $('#spinner').hide();
+               result.html(data);
+           },
+           error: function(jqXHR, textStatus, errorThrown){
+              $('#spinner').hide();
+               result.html(jqXHR.responseText);
+               result.css('color', 'red');
+           }
+
+        });
+
+      });
     $("form#assignedlogos").on('submit',(function(e) {
         e.preventDefault();
         var result = $("div.uploadresult");
@@ -297,8 +324,6 @@ var GINIT = {
            data: postdata,
            dataType: 'html',
            cache:false,
-          // processData: false,
-          // contentType: false,
            beforeSend: function() {
              $("div#unsignlogosbtn").hide().appendTo("form#assignedlogos");
              result.html('');
