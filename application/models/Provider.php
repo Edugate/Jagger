@@ -1897,6 +1897,21 @@ class Provider {
         return $p;
     }
 
+    public function getNameInLang($lang)
+    {
+       $r = $this->getNameLocalized();
+       if(isset($r[''.$lang.'']))
+       {
+          return $r[''.$lang.''];
+       }
+       else
+       {
+          return $r['en'] ;
+       }
+
+    }
+
+
     public function getDisplayName($length = null)
     {
         if (empty($length) or !is_integer($length) or strlen($this->displayname) <= $length)

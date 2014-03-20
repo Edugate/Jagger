@@ -303,6 +303,15 @@ $lang['adminoffed']                 = 'Admin of federation';
 $lang['adminofprov']                = 'Admin of provider';
 $lang['askedyourfed']               = 'asked your federation';
 $lang['invyourprov']                = 'invited your Provider';
+
+$lang['e_orgname']                  = 'OrganizationName';
+$lang['e_orgdisplayname']           = 'OrganizationDisplayName';
+$lang['e_orgurl']                   = 'OrganizationURL';
+
+$lang['e_servicename']              = 'ServiceName';
+$lang['e_servicedesc']              = 'ServiceDescription';
+
+
 $lang['rr_resource']                = 'Resource Name';
 $lang['rr_statdefshortname']        = 'Stat definition short name';
 $lang['rr_statdefsourceurl']        = 'Source URL to collect from';
@@ -375,6 +384,7 @@ $lang['rr_acsurl']                  = 'ACS URL';
 $lang['rr_certificatesigning']      = 'Certificate for signing';
 $lang['rr_certificateencrypting']   = 'Certificate for encryption';
 $lang['rr_metadatalocation']        = 'Metadata location (optional)';
+$lang['optinforpurposeonly']        = 'optional for information purpose only';
 $lang['rr_privacystatement']        = 'Privacy Statement URL (optional)';
 $lang['rr_defaultprivacyurl']       = 'Default Privacy Statement URL';
 $lang['rr_scope']                   = 'Scope';

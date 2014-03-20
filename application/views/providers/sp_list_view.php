@@ -69,7 +69,7 @@ elseif($typesps === 'all')
 $tmpl = array('table_open' => '<table  id="details" class="zebra splist filterlist">');
 
 $this->table->set_template($tmpl);
-$this->table->set_heading(lang('tbl_title_nameandentityid'),'#',lang('tbl_title_regdate'), lang('tbl_title_helpurl'));
+$this->table->set_heading(lang('e_orgname') .'/entityID','#',lang('tbl_title_regdate'), lang('tbl_title_helpurl'));
 echo $this->table->generate($sprows);
 $this->table->clear();
 ?>

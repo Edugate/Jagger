@@ -80,6 +80,7 @@ class Idp_list extends MY_Controller {
         }
         $data['idps_count'] = count($idps);
         $linktitlediexp = lang('rr_disexp_link_title');
+        $lang = MY_Controller::getLang();
         foreach ($idps as $i)
         {
             $i_link = base_url() . "providers/detail/show/" . $i->getId();
@@ -109,7 +110,7 @@ class Idp_list extends MY_Controller {
             {
                $iconsblock .= $hiddenicon .' ';
             }
-            $displayname = $i->getName();
+            $displayname = $i->getNameInLang($lang);
             if(empty($displayname))
             {
                 $displayname = $i->getEntityId();

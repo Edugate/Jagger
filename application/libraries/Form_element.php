@@ -286,7 +286,7 @@ class Form_element {
          */
         //$result[] = '<div class="notice">'.lang('rr_providername').' <small>&#91;'.lang('rr_default').'&#93;</small> </div>';
        // $result[] = '';
-        $result[] = form_label(lang('rr_providername').' '.showBubbleHelp(''.lang('entname_default_expl').''), 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'required' => 'required', 'value' => $t2));
+        $result[] = form_label(lang('e_orgname').' '.showBubbleHelp(''.lang('entname_default_expl').''), 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'required' => 'required', 'value' => $t2));
         /**
          * start lname
          */
@@ -317,7 +317,7 @@ class Form_element {
             {
                 $lnamenotice = 'notice';
             }
-            $result[] = form_label(lang('rr_providername') . ' <small>' . $lnamelangs['' . $key . ''] . '</small>', 'f[lname][' . $key . ']') . form_input(
+            $result[] = form_label(lang('e_orgname') . ' <small>' . $lnamelangs['' . $key . ''] . '</small>', 'f[lname][' . $key . ']') . form_input(
                             array(
                                 'name' => 'f[lname][' . $key . ']',
                                 'id' => 'f[lname][' . $key . ']',
@@ -342,7 +342,7 @@ class Form_element {
             {
                 $lnamenotice = 'notice';
             }
-            $result[] = form_label(lang('rr_providername') . ' <small>' . $lnamelangs['' . $key . ''] . '</small>', 'f[lname][' . $key . ']') . form_input(
+            $result[] = form_label(lang('e_orgname') . ' <small>' . $lnamelangs['' . $key . ''] . '</small>', 'f[lname][' . $key . ']') . form_input(
                             array(
                                 'name' => 'f[lname][' . $key . ']',
                                 'id' => 'f[lname][' . $key . ']',
@@ -353,7 +353,7 @@ class Form_element {
             unset($lnamelangs['' . $key . '']);
         }
         }
-        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addlname" name="addlname" value="'.lang('rr_providername').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
+        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addlname" name="addlname" value="'.lang('e_orgname').'" class="editbutton addicon smallerbtn">'.lang('btnaddinlang').'</button></span>';
 
         $result[] = '';
         /**
@@ -363,7 +363,7 @@ class Form_element {
 
 
         $result[] = '';
-        $result[] = form_label(lang('rr_displayname').' '.showBubbleHelp(''.lang('entdisplname_default_expl').''), 'f[displayname]') . form_input(array('id' => 'f[displayname]', 'class' => $class_displ, 'name' => 'f[displayname]', 'required' => 'required', 'value' => $f_displayname));
+        $result[] = form_label(lang('e_orgdisplayname').' '.showBubbleHelp(''.lang('entdisplname_default_expl').''), 'f[displayname]') . form_input(array('id' => 'f[displayname]', 'class' => $class_displ, 'name' => 'f[displayname]', 'required' => 'required', 'value' => $f_displayname));
         /**
          * start ldisplayname
          */
@@ -396,7 +396,7 @@ class Form_element {
             }
             if(isset($ldisplaynamelangs['' . $key . '']))
             {
-               $result[] = form_label(lang('rr_displayname') . ' <small>' . $ldisplaynamelangs['' . $key . ''] . '</small>', 'f[ldisplayname][' . $key . ']') . form_input(
+               $result[] = form_label(lang('e_orgdisplayname') . ' <small>' . $ldisplaynamelangs['' . $key . ''] . '</small>', 'f[ldisplayname][' . $key . ']') . form_input(
                             array(
                                 'name' => 'f[ldisplayname][' . $key . ']',
                                 'id' => 'f[ldisplayname][' . $key . ']',
@@ -418,7 +418,7 @@ class Form_element {
             {
                 $ldisplaynamenotice = 'notice';
             }
-            $result[] = form_label(lang('rr_displayname') . ' <small>' . $ldisplaynamelangs['' . $key . ''] . '</small>', 'f[ldisplayname][' . $key . ']') . form_input(
+            $result[] = form_label(lang('e_orgdisplayname') . ' <small>' . $ldisplaynamelangs['' . $key . ''] . '</small>', 'f[ldisplayname][' . $key . ']') . form_input(
                             array(
                                 'name' => 'f[ldisplayname][' . $key . ']',
                                 'id' => 'f[ldisplayname][' . $key . ']',

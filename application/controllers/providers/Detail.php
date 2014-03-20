@@ -346,26 +346,26 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s',$ent->getLastModified()->format('U')+j_auth::$timeOffset) . '</b>';
         $d[++$i]['name'] = lang('rr_entityid');
         $d[$i]['value'] = $ent->getEntityId();
-        $d[++$i]['name'] = lang('rr_providername');
+        $d[++$i]['name'] = lang('e_orgname');
         $d[$i]['value'] = $ent->getName();
         $lname = $ent->getLocalName();
         $lvalues = '';
         if (count($lname)>0)
         {
-            $d[++$i]['name'] = lang('rr_providername') . ' <small>' . lang('localized') . '</small>';
+            $d[++$i]['name'] = '';//lang('e_orgname') . ' <small>' . lang('localized') . '</small>';
             foreach ($lname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
             }
             $d[$i]['value'] = $lvalues;
         }
-        $d[++$i]['name'] = lang('rr_descriptivename');
+        $d[++$i]['name'] = lang('e_orgdisplayname');
         $d[$i]['value'] = '<div id="selectme">' . $ent->getDisplayName() . '</div>';
         $ldisplayname = $ent->getLocalDisplayName();
         $lvalues = '';
         if (count($ldisplayname)>0)
         {
-            $d[++$i]['name'] = lang('rr_descriptivename') . ' <small>' . lang('localized') . '</small>';
+            $d[++$i]['name'] = '';//lang('e_orgdisplayname') . ' <small>' . lang('localized') . '</small>';
             foreach ($ldisplayname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
@@ -426,7 +426,7 @@ class Detail extends MY_Controller {
         $lvalues = '';
         if (count($ldescription)>0)
         {
-            $d[++$i]['name'] = lang('rr_description') . ' <small>' . lang('localized') . '</small>';
+            $d[++$i]['name'] = '';//lang('rr_description') . ' <small>' . lang('localized') . '</small>';
             foreach ($ldescription as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> <div>' . $v . '</div>';
@@ -434,14 +434,12 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = $lvalues;
         }
 
-        $d[++$i]['name'] = lang('rr_homeurl');
-        $d[$i]['value'] = $ent->getHomeUrl() . ' <br /><small>' . lang('rr_notincludedmetadata') . '</small>';
-        $d[++$i]['name'] = lang('rr_helpdeskurl');
-        $d[$i]['value'] = $ent->getHelpdeskUrl() . ' <br /><small>' . lang('rr_includedmetadata') . '  &lt;md:OrganizationURL ..../&gt;</small>';
+        $d[++$i]['name'] = lang('e_orgurl');
+        $d[$i]['value'] = $ent->getHelpdeskUrl();
         $localizedHelpdesk = $ent->getLocalHelpdeskUrl();
         if(is_array($localizedHelpdesk) && count($localizedHelpdesk)>0)
         {
-           $d[++$i]['name'] = lang('rr_helpdeskurl').' <small>'.lang('localized') . '</small>';
+           $d[++$i]['name'] = '';//lang('rr_helpdeskurl').' <small>'.lang('localized') . '</small>';
            $lvalues = '';
            foreach($localizedHelpdesk as $k=>$v)
            {
@@ -493,6 +491,9 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = '<span class="lbl lbl-alert">' . $validfrom . ' <b>--</b> ' . $validto . '</span>';
         }
+        $d[++$i]['name'] = lang('rr_homeurl').' <div class="s2" style="font-weight: normal">'.lang('optinforpurposeonly').'</div>';
+
+        $d[$i]['value'] = $ent->getHomeUrl() . ' <br /><small>' . lang('rr_notincludedmetadata') . '</small>';
         $result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
 
 

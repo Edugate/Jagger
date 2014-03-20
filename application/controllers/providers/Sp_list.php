@@ -81,6 +81,7 @@ class Sp_list extends MY_Controller {
       
         $data['sps_count'] = count($sps);
         $linktitle_disexp = lang('rr_disexp_link_title');
+        $lang = MY_Controller::getLang();
         foreach ($sps as $i)
         {
             $iconsblock = '';
@@ -119,7 +120,7 @@ class Sp_list extends MY_Controller {
             }
             $i_link = base_url() . "providers/detail/show/" . $i->getId();
             $is_available = $i->getAvailable();
-            $displayname = $i->getName(50);
+            $displayname = $i->getNameInLang($lang);
             if(empty($displayname))
             {
                 $displayname = $i->getEntityId();
