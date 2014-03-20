@@ -292,7 +292,7 @@ var GINIT = {
         var postdata = $("form#applyforaccount").serializeArray();
         $.ajax({
            type:'POST',
-           url: $(this).attr('action');
+           url: $(this).attr('action'),
            data: postdata,
            dataType: 'html',
            cache:false,
