@@ -67,7 +67,7 @@ class Auth extends MY_Controller {
         }
        
         $fedidentity = $this->session->userdata('fedidentity');
-        log_message('debug','GKS received'.serialize($this->session->all_userdata()));
+        log_message('debug',__METHOD__.' fedregistration in post received'.serialize($this->session->all_userdata()));
         if(!empty($fedidentity) && is_array($fedidentity))
         {
            if(isset($fedidentity['fedusername']))
@@ -81,6 +81,8 @@ class Auth extends MY_Controller {
            if(empty($username) || empty($email))
            {
               set_status_header(403);
+              $this->session->sess_destroy();
+              $this->session->sess_regenerate(TRUE);
               echo 'missing some attrs like username or/and email';
               return;
            }
@@ -102,16 +104,25 @@ class Auth extends MY_Controller {
            $this->session->sess_destroy();
            $this->session->sess_regenerate(TRUE);
            set_status_header(403);
-           echo 'such username already exists';
+           echo lang('err_userexist');
            return;
         }
         $checkuser = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
         if(!empty($checkuser))
         { 
            set_status_header(403);
-           echo 'such email already exists';
+           echo lang('err_mailexist');
            return;
         }
+        $inqueue = $this->em->getRepository("models\Queue")->findOneBy(array('name'=>$username,'action'=>'Create'));
+        if(!empty($inqueue))
+        {
+           set_status_header(403);
+           echo lang('err_userinqueue');
+           return;
+
+        }
+         
          
         $user = array(
          'username'=>trim($username),
@@ -119,7 +130,7 @@ class Auth extends MY_Controller {
          'fname'=>trim($fname),
          'sname'=>trim($sname),
          'type'=>'federated',
-         'ip'=>$this->input->ip_address(),
+         'ip'=>$ip,
        
         );
 
@@ -130,10 +141,26 @@ class Auth extends MY_Controller {
         $queue->setToken();
         $queue->addUser($user);
         $this->em->persist($queue);
+        /**
+         * BEGIN send notification
+         */
+        $sbj = 'User registration request';
+        $body = 'Dear user,'.PHP_EOL;
+        $body .= 'You have received this mail because your email address is on the notification list'.PHP_EOL;
+        $body .= 'User from '.$ip.' using federated access has applied for an account.'.PHP_EOL;
+        $body .= 'Please review the request and make appriopriate action (reject/approve)'.PHP_EOL;
+        $body .= 'Details about the request: '.base_url().'report/awaiting/detail/'.$queue->getToken().PHP_EOL;
+        $this->email_sender->addToMailQueue(array(),null,$sbj,$body,array(),FALSE);  
+        /**
+         * END send notification
+         */
+        
         try{
               $this->em->flush();
+              $this->session->sess_destroy();
+              $this->session->sess_regenerate(TRUE);
               set_status_header(200);
-              echo 'Your request has been received';
+              echo lang('userregreceived');
               return;
         }
         catch(Exception $e)
