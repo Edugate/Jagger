@@ -430,7 +430,7 @@ form#filter-form {
     box-shadow: none;
    
 }
-form#assignedlogos, form#availablelogos,form#uploadlogo {
+form#assignedlogos, form#availablelogos,form#uploadlogo, form#applyforaccount {
     caption {
        font-size: 16px;
        font-weight: bold;
@@ -438,4 +438,11 @@ form#assignedlogos, form#availablelogos,form#uploadlogo {
     background-color: transparent;
     border: 0px;
 
+}
+
+form#applyforaccount {
+  
+   -webkit-box-shadow: none;
+   -moz-box-shadow: none;
+    box-shadow: none;
 }

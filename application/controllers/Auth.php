@@ -46,6 +46,134 @@ class Auth extends MY_Controller {
         $this->load->view('auth/logout');
     }
 
+
+    function fedregister()
+    {
+        if(!$this->input->is_ajax_request())
+        {
+           show_error('Permission denied',403);
+        }
+        if($_SERVER['REQUEST_METHOD'] !== 'POST')
+        {
+           set_status_header(403);
+           echo 'permission denied';
+           return;
+        }
+        if ($this->j_auth->logged_in())
+        {
+           set_status_header(403);
+           echo 'already euthenticated';
+           return;
+        }
+       
+        $fedidentity = $this->session->userdata('fedidentity');
+        log_message('debug',__METHOD__.' fedregistration in post received'.serialize($this->session->all_userdata()));
+        if(!empty($fedidentity) && is_array($fedidentity))
+        {
+           if(isset($fedidentity['fedusername']))
+           {
+                $username = $fedidentity['fedusername'];
+           }
+           if(isset($fedidentity['fedemail']))
+           {
+                $email = $fedidentity['fedemail'];
+           }
+           if(empty($username) || empty($email))
+           {
+              set_status_header(403);
+              $this->session->sess_destroy();
+              $this->session->sess_regenerate(TRUE);
+              echo 'missing some attrs like username or/and email';
+              return;
+           }
+           if(isset($fedidentity['fedfname']))
+           {
+                $fname = $fedidentity['fedfname'];
+           }
+           if(isset($fedidentity['fedsname']))
+           {
+                $sname = $fedidentity['fedsname'];
+           }
+           
+        }  
+        $accesstype = 'federated';
+        $ip = $this->input->ip_address();      
+        $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        if(!empty($checkuser))
+        {
+           $this->session->sess_destroy();
+           $this->session->sess_regenerate(TRUE);
+           set_status_header(403);
+           echo lang('err_userexist');
+           return;
+        }
+        $checkuser = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
+        if(!empty($checkuser))
+        { 
+           set_status_header(403);
+           echo lang('err_mailexist');
+           return;
+        }
+        $inqueue = $this->em->getRepository("models\Queue")->findOneBy(array('name'=>$username,'action'=>'Create'));
+        if(!empty($inqueue))
+        {
+           set_status_header(403);
+           echo lang('err_userinqueue');
+           return;
+
+        }
+         
+         
+        $user = array(
+         'username'=>trim($username),
+         'email'=>trim($email),
+         'fname'=>trim($fname),
+         'sname'=>trim($sname),
+         'type'=>'federated',
+         'ip'=>$ip,
+       
+        );
+
+        $queue = new models\Queue;
+        $queue->setAction('Create');
+        $queue->setName($username);
+        $queue->setEmail($email);
+        $queue->setToken();
+        $queue->addUser($user);
+        $this->em->persist($queue);
+        /**
+         * BEGIN send notification
+         */
+        $sbj = 'User registration request';
+        $body = 'Dear user,'.PHP_EOL;
+        $body .= 'You have received this mail because your email address is on the notification list'.PHP_EOL;
+        $body .= 'User from '.$ip.' using federated access has applied for an account.'.PHP_EOL;
+        $body .= 'Please review the request and make appriopriate action (reject/approve)'.PHP_EOL;
+        $body .= 'Details about the request: '.base_url().'report/awaiting/detail/'.$queue->getToken().PHP_EOL;
+        $this->email_sender->addToMailQueue(array(),null,$sbj,$body,array(),FALSE);  
+        /**
+         * END send notification
+         */
+        
+        try{
+              $this->em->flush();
+              $this->session->sess_destroy();
+              $this->session->sess_regenerate(TRUE);
+              set_status_header(200);
+              echo lang('userregreceived');
+              return;
+        }
+        catch(Exception $e)
+        {
+           log_message('error',__METHOD__.' '.$e);
+           set_status_header(500);
+           echo 'Unknown error occured';
+           return;
+         
+        }
+     
+    }
+
     function ssphpauth()
     {
         if ($this->j_auth->logged_in())
@@ -425,7 +553,7 @@ class Auth extends MY_Controller {
         }
         if ($this->j_auth->logged_in())
         {
-            
+           redirect(''.base_url().'','location'); 
         }
         $user_var = $this->get_shib_username();
         if (empty($user_var))
@@ -481,23 +609,34 @@ class Auth extends MY_Controller {
             $this->em->flush();
         } else
         {
+            $fname_var = $this->get_shib_fname();
+            $sname_var = $this->get_shib_sname();
+            $email_var = $this->get_shib_mail();
             $can_autoregister = $this->config->item('autoregister_federated');
+            if (empty($email_var))
+            {
+                log_message('warning', __METHOD__.' User hasnt provided email attr during federated access');
+                show_error(lang('error_noemail'), 403);
+                return;
+            }
+            
             if (!$can_autoregister)
             {
                 log_message('error', 'User authorization failed: ' . $user_var . ' doesnt exist in RR');
-                show_error(' ' . htmlentities($user_var) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">' . lang('rrhere') . '</a>', 403);
+                //show_error(' ' . htmlentities($user_var) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">' . lang('rrhere') . '</a>', 403);
+              
+                $fedidentity = array('fedusername'=>$user_var,'fedfname'=>$this->get_shib_fname(),'fedsname'=>$this->get_shib_sname(),'fedemail'=>$this->get_shib_mail());
+              //  $this->session->sess_destroy();
+              //  $this->session->sess_regenerate(TRUE);
+                $this->session->set_userdata(array('fedidentity'=>$fedidentity));
+                $data['content_view'] = 'feduserregister_view';
+                log_message('debug','GKS SESS:'.serialize($this->session->all_userdata()));
+                $this->load->view('page',$data);
+                return;
+                
             } else
             {
-                $fname_var = $this->get_shib_fname();
-                $sname_var = $this->get_shib_sname();
-                $email_var = $this->get_shib_mail();
 
-                if (empty($email_var))
-                {
-                    log_message('error', 'User cannot be autocreated: email address is missing');
-                    show_error(lang('error_noemail'), 403);
-                    return;
-                }
                 $attrs = array('username' => $user_var, 'mail' => $email_var,'fname'=>$fname_var,'sname'=>$sname_var);
                 $reg = $this->registerUser($attrs);
 

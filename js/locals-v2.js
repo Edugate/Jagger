@@ -286,6 +286,35 @@ var GINIT = {
          
  
     });
+    $("form#applyforaccount").on('submit',function(e){
+        e.preventDefault();
+        var result = $("div.result");
+        var postdata = $("form#applyforaccount").serializeArray();
+        $.ajax({
+           type:'POST',
+           url: $(this).attr('action'),
+           data: postdata,
+           dataType: 'html',
+           cache:false,
+           beforeSend: function() {
+               result.html(''); 
+               $('#spinner').show();
+           },
+           success:function(data){
+               $('#spinner').hide();
+               result.html(data);
+               $("form#applyforaccount").remove();
+           },
+           error: function(jqXHR, textStatus, errorThrown){
+              $('#spinner').hide();
+               result.html(jqXHR.responseText);
+               result.css('color', 'red');
+               $("form#applyforaccount").remove();
+           }
+
+        });
+
+      });
     $("form#assignedlogos").on('submit',(function(e) {
         e.preventDefault();
         var result = $("div.uploadresult");
@@ -297,8 +326,6 @@ var GINIT = {
            data: postdata,
            dataType: 'html',
            cache:false,
-          // processData: false,
-          // contentType: false,
            beforeSend: function() {
              $("div#unsignlogosbtn").hide().appendTo("form#assignedlogos");
              result.html('');
@@ -987,11 +1014,11 @@ $(function() {
     $("#responsecontainer").load("awaiting/ajaxrefresh");
     var refreshId = setInterval(function() {
         $("#responsecontainer").load('awaiting/ajaxrefresh');
-    }, 72000);
+    }, 172000);
     $("#dashresponsecontainer").load("reports/awaiting/dashajaxrefresh");
     var refreshId = setInterval(function() {
         $("#dashresponsecontainer").load('reports/awaiting/dashajaxrefresh');
-    }, 72000);
+    }, 172000);
 
     $.ajaxSetup({
         cache: false

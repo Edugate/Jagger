@@ -59,6 +59,141 @@ class J_queue
         return $result;
     }
 
+
+    function createUserFromQueue(models\Queue $q)
+    {
+         $objdata = $q->getData();
+         if(!is_array($objdata))
+         {
+            log_message('error',__METHOD__.' data not in array');
+            return false;
+         }
+         if(!isset($objdata['username']) || !isset($objdata['email']) || !isset($objdata['type']))
+         {
+            log_message('error',__METHOD__.' data doesnt contain information about username/email');
+            return false;
+         }
+         $checkuser = $this->em->createQuery("SELECT u FROM models\User u WHERE u.username = '{$objdata['username']}' OR u.email = '{$objdata['email']}'")->getResult();
+         
+ 
+         if($checkuser)
+         {
+             $this->ci->globalerrors[] = lang('useralredyregistered');
+             $this->ci->globalerrors[] = lang('queremoved');
+             log_message('error',__METHOD__. ' User '.$objdata['username'].' already exists, remove request from the queue with id: '.$q->getId());
+             $this->em->remove($q);
+             $this->em->flush();
+             return false;
+         }
+         $u = new models\User;
+         $u->setUsername($objdata['username']);
+         $u->setEmail($objdata['email']);
+         $type = $objdata['type'];
+         if($type === 'federated')
+         {
+            $u->setFederatedEnabled();
+         }
+         else
+         {
+            if ($type === 'local')
+            {
+               $u->setLocalEnabled();
+            }
+            elseif($type === 'both')
+            {
+               $u->setFederatedEnabled();
+               $u->setLocalEnabled();
+            }
+         }
+         $u->setAccepted();
+
+         if(!empty($objdata['fname']))
+         {
+            $u->setGivenname($objdata['fname']);
+         }
+         if(!empty($objdata['sname']))
+         {
+            $u->setSurname($objdata['sname']);
+         }
+         $u->setEnabled();         
+         $u->setSalt();
+         if(!empty($objdata['pass']))
+         {
+            $u->setPassword($objdata['pass']);
+         }
+         else
+         {
+            $u->setRandomPassword();
+         }
+       
+         $u->setValid();
+         $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Member'));
+         if (!empty($member)) {
+              $u->setRole($member);
+         }
+         $p_role = new models\AclRole;
+         $p_role->setName($u->getUsername());
+         $p_role->setType('user');
+         $p_role->setDescription('personal role for user ' . $u->getUsername());
+         $u->setRole($p_role);
+         $this->em->persist($p_role);
+         $this->em->persist($u);
+         return true;
+      // $this->em->flush();
+
+         
+
+    }
+
+    function displayRegisterUser(models\Queue $q)
+    {
+       $objdata = $q->getData();
+       $r = array();
+       $r[] = array('header'=>lang('request'));
+       $r[] = array('name'=>lang('type'), 'value'=>'user registration');
+       $creator = $q->getCreator();
+       if ($creator) {
+           $r[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
+       }
+       else {
+           $r[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
+       }
+       $r[] = array('name' => lang('rr_regdate'), 'value' => $q->getCreatedAt());
+       $r[] = array('name' => lang('rr_username'), 'value' => $q->getName());
+       $r[] = array('name' => lang('rr_uemail'), 'value' => $objdata['email']);
+       $r[] = array('name' => lang('rr_fname'), 'value' => $objdata['fname']);
+       $r[] = array('name' => lang('rr_lname'), 'value' => $objdata['sname']);
+       if(isset($objdata['ip']))
+       {
+          $r[] = array('name' => 'IP', 'value' => $objdata['ip']);
+       }
+       if(isset($objdata['type']))
+       {
+          if($objdata['type'] === 'federated')
+          {
+            $r[] = array('name' => 'Type of account', 'value' => ''.lang('rr_onlyfedauth').'');
+          }
+          elseif($objdata['type'] === 'local')
+          {
+            $r[] = array('name' => 'Type of account', 'value' => ''.lang('rr_onlylocalauthn').'');
+
+          }
+          elseif($objdata['type'] === 'both')
+          {
+            $r[] = array('name' => 'Type of account', 'value' => ''.lang('rr_bothauth').'');
+          }
+          else
+          {
+            $r[] = array('name' => 'Type of account', 'value' => '<span class="alert">'.lang('unknown').'</span>');
+
+          }
+       }
+      
+       
+       return $r;
+
+    }
+
     function displayRegisterFederation(models\Queue $q)
     {
         $objData = new models\Federation;
