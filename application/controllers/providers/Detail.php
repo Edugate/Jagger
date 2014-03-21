@@ -352,7 +352,7 @@ class Detail extends MY_Controller {
         $lvalues = '';
         if (count($lname)>0)
         {
-            $d[++$i]['name'] = '';//lang('e_orgname') . ' <small>' . lang('localized') . '</small>';
+            $d[++$i]['name'] = '';
             foreach ($lname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
@@ -365,12 +365,26 @@ class Detail extends MY_Controller {
         $lvalues = '';
         if (count($ldisplayname)>0)
         {
-            $d[++$i]['name'] = '';//lang('e_orgdisplayname') . ' <small>' . lang('localized') . '</small>';
+            $d[++$i]['name'] = '';
             foreach ($ldisplayname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
             }
             $d[$i]['value'] = $lvalues;
+        }
+        $d[++$i]['name'] = lang('e_orgurl');
+        $d[$i]['value'] = $ent->getHelpdeskUrl();
+        $localizedHelpdesk = $ent->getLocalHelpdeskUrl();
+        if(is_array($localizedHelpdesk) && count($localizedHelpdesk)>0)
+        {
+           $d[++$i]['name'] = '';;
+           $lvalues = '';
+           foreach($localizedHelpdesk as $k=>$v)
+           {
+                $lvalues .= '<b>' . $k . ':</b> <div>' . $v . '</div>';
+              
+           }
+           $d[$i]['value'] = $lvalues;
         }
         $d[++$i]['name'] = lang('rr_regauthority');
         $regauthority = $ent->getRegistrationAuthority();
@@ -420,13 +434,20 @@ class Detail extends MY_Controller {
         }
         $d[++$i]['name'] = lang('rr_regpolicy');
         $d[$i]['value'] = $regpolicy_value;
-        $d[++$i]['name'] = lang('rr_description');
+        $d[++$i]['name'] = lang('rr_description'). ' <div class="dhelp">'.lang('defaultdesc').'</div>';
         $d[$i]['value'] = $ent->getDescription();
         $ldescription = $ent->getLocalDescription();
         $lvalues = '';
         if (count($ldescription)>0)
         {
-            $d[++$i]['name'] = '';//lang('rr_description') . ' <small>' . lang('localized') . '</small>';
+            if(array_key_exists('en',$ldescription))
+            {
+               $d[++$i]['name'] = '<div class="dhelp">'.lang('defaultdesc_en').'</div>';
+            }
+            else
+            {
+               $d[++$i]['name'] = '';
+            }
             foreach ($ldescription as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> <div>' . $v . '</div>';
@@ -434,20 +455,6 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = $lvalues;
         }
 
-        $d[++$i]['name'] = lang('e_orgurl');
-        $d[$i]['value'] = $ent->getHelpdeskUrl();
-        $localizedHelpdesk = $ent->getLocalHelpdeskUrl();
-        if(is_array($localizedHelpdesk) && count($localizedHelpdesk)>0)
-        {
-           $d[++$i]['name'] = '';//lang('rr_helpdeskurl').' <small>'.lang('localized') . '</small>';
-           $lvalues = '';
-           foreach($localizedHelpdesk as $k=>$v)
-           {
-                $lvalues .= '<b>' . $k . ':</b> <div>' . $v . '</div>';
-              
-           }
-           $d[$i]['value'] = $lvalues;
-        }
         $d[++$i]['name'] = lang('rr_defaultprivacyurl');
         $d[$i]['value'] = $ent->getPrivacyUrl();
         $d[++$i]['name'] = lang('rr_coc');
@@ -466,7 +473,7 @@ class Detail extends MY_Controller {
         }
         $d[$i]['value'] = $cocvalue;
 
-        $d[++$i]['name'] = lang('rr_validfromto');
+        $d[++$i]['name'] = lang('rr_validfromto'). ' <div class="dhelp">'.lang('d_validfromto').'</div>';
         if ($ent->getValidFrom())
         {
             $validfrom = date('Y M d',$ent->getValidFrom()->format('U')+j_auth::$timeOffset);
@@ -491,7 +498,7 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = '<span class="lbl lbl-alert">' . $validfrom . ' <b>--</b> ' . $validto . '</span>';
         }
-        $d[++$i]['name'] = lang('rr_homeurl').' <div class="s2" style="font-weight: normal">'.lang('optinforpurposeonly').'</div>';
+        $d[++$i]['name'] = lang('rr_homeurl').' <div class="dhelp">'.lang('optinforpurposeonly').'</div>';
 
         $d[$i]['value'] = $ent->getHomeUrl() . ' <br /><small>' . lang('rr_notincludedmetadata') . '</small>';
         $result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);

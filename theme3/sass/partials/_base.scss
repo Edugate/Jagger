@@ -17,7 +17,7 @@ $fomt-family:  "Helvetica Neue", Helvetica, Arial, sans-serif;
 // backround for title,subtitle etc box
 $titleBgColorTop: white;
 $titleBgColorBottom: #f5f5f5;
-$titleBorderColor: #DDDDDD;
+$titleBorderColor: #dddddd;
 $titleBorderWidth: 1px;
 $titleShadowColor: white;
 
@@ -215,3 +215,7 @@ $progressBarActiveColor: #fff;
 
 $divhovermemberslist:lighten(blue,20%);
 $divhovermemberslistfont:lighten(black,0%);
+
+
+$dhelpbgcolor: lighten(yellow,40%);
+$dhelpbordercolor: darken(yellow,10%);

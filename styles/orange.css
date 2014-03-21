@@ -2682,6 +2682,38 @@ ol.group li {
   font-size: smaller;
 }
 
+.dhelp {
+  font-size: 10px;
+  font-weight: normal;
+  cursor: zoom-in;
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+  background-color: #ffffcc;
+  border: 1px solid #cccc00;
+  padding: 2px;
+}
+
+.zoomout {
+  cursor: zoom-out;
+  cursor: -webkit-zoom-out;
+  cursor: -moz-zoom-out;
+}
+
+.zoomin {
+  cursor: zoom-in;
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+}
+
+a#showhelps {
+  position: fixed;
+  top: 90px;
+  right: 5px;
+}
+a#showhelps img {
+  width: 25px;
+}
+
 form {
   counter-reset: fieldsets;
   background: #ffe90d;

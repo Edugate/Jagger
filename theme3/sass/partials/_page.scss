@@ -2311,3 +2311,33 @@ ol.group {
   font-size: smaller;
 
 }
+.dhelp {
+  font-size: 10px;
+  font-weight: normal;
+  cursor: zoom-in;
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+  background-color: $dhelpbgcolor;
+  border: 1px solid $dhelpbordercolor;
+  padding: 2px;
+
+}
+.zoomout {
+  cursor: zoom-out;
+  cursor: -webkit-zoom-out;
+  cursor: -moz-zoom-out;
+}
+.zoomin {
+  cursor: zoom-in;
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+}
+a#showhelps {
+  position:fixed;
+  top:90px;
+  right:5px;
+  img {
+
+  width: 25px;
+  }
+}

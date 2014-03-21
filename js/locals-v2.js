@@ -60,6 +60,19 @@ var GINIT = {
             }
         });
     }
+
+
+    $(".dhelp").click(function(){
+         var curSize= parseInt($(this).css('font-size'));
+         if(curSize<=10)
+         {
+             $(this).css('font-size', curSize+5).removeClass('zoomin').addClass('zoomout');
+         }
+         else
+         {
+             $(this).css('font-size', curSize-5).removeClass('zoomout').addClass('zoomin');
+         }
+    });
     $("form#availablelogos input[name='filename']").click(function(){
           $(this).after($("form#availablelogos div.buttons").show());
  
@@ -729,6 +742,19 @@ $(document).ready(function() {
     });
 
 
+    var helpactivity = $("#showhelps");
+    if(helpactivity.length)
+    {
+        if(helpactivity.hasClass('helpactive'))
+        {
+           $(".dhelp").show()
+        } 
+        else
+        {
+           $(".dhelp").hide();
+        }
+    }
+    
 
     var fedloginurl = $('a#fedlogin').attr('href');
     var browsertime = new Date();
@@ -2525,3 +2551,28 @@ $("#ncontactbtn").click(function() {
 
 
 });
+    $("#showhelps").click(function(e){
+        e.preventDefault();
+        var url =  $(this).attr('href');
+        var param = "n";
+ 
+        if($("#showhelps").hasClass('helpactive'))
+        {
+             param = "n";
+        }
+        else
+        {
+            param = "y";
+        }
+
+        $.ajax({
+           type: 'GET',
+           url: url+'/'+param,
+           success:function(){
+             $("#showhelps").toggleClass('helpinactive').toggleClass('helpactive');
+             $(".dhelp").toggle();
+             $("img.iconhelpshow").toggle();
+             $("img.iconhelpcross").toggle();
+           } 
+        });
+    });

@@ -385,6 +385,13 @@ $lang['rr_certificatesigning']      = 'Certificate for signing';
 $lang['rr_certificateencrypting']   = 'Certificate for encryption';
 $lang['rr_metadatalocation']        = 'Metadata location (optional)';
 $lang['optinforpurposeonly']        = 'optional for information purpose only';
+$lang['defaultdesc']                = 'Default entity description. It should be used only for information purpose only. However it is used for metadata generation for elements <b>mdui:Description, md:Servicename</b> if no appropriate information (lang:en) found.';
+$lang['defaultdesc_en']             = 'en: entity description overrides default description';
+$lang['defaultheldeskpurl']         = 'Default OrganizationURL.';
+
+$lang['d_validfromto']              = 'If current DateTime does not fit in From/To then this entity does not appear in any fed/circle metadata. ValidTo is represented in metadata <b>md:EntityDescriptor</b> attribute <b>validUntil</b>';
+
+
 $lang['rr_privacystatement']        = 'Privacy Statement URL (optional)';
 $lang['rr_defaultprivacyurl']       = 'Default Privacy Statement URL';
 $lang['rr_scope']                   = 'Scope';

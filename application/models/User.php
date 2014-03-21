@@ -402,6 +402,19 @@ class User {
         $this->setUserpref($pref);
     }
 
+    public function setShowHelp($b)
+    {
+       $pref = $this->getUserpref();
+       if (empty($pref) or !is_array($pref))
+       {
+          $pref = array();
+       }
+       $pref['showhelp'] = $b;
+       $this->setUserpref($pref);
+       return $this;
+       
+    }
+
     public function addEntityToBookmark($entid, $entname, $enttype, $entityid)
     {
         log_message('debug', 'addEntityToBookmark');
@@ -492,6 +505,16 @@ class User {
     {
         $data = array('username' => $this->getUsername(),
             'user_id' => $this->getId());
+        $userpref = $this->getUserpref();
+        if(isset($userpref['showhelp']) && $userpref['showhelp'] === TRUE)
+        {
+            $data['showhelp'] = TRUE;
+        }
+        else
+        {
+             $data['showhelp'] = FALSE;
+        }
+        
         return $data;
     }
 
@@ -503,7 +526,14 @@ class User {
 
     public function getUserpref()
     {
-        return unserialize($this->userpref);
+        if(!empty($this->userpref))
+        {
+          return unserialize($this->userpref);
+        }
+        else
+        {
+          return array();
+        }
     }
 
     public function isEnabled()

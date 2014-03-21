@@ -15,7 +15,6 @@ class Ajax extends MY_Controller {
 
     public function consentCookies()
     {
-        log_message('debug', 'GGGG consent');
         if ($this->input->is_ajax_request())
         {
             $lc = array(
@@ -185,6 +184,65 @@ class Ajax extends MY_Controller {
         echo json_encode($result);
     }
 
+    public function showhelpstatus($n=null)
+    {
+       if (!$this->input->is_ajax_request())
+       {
+           show_error('denied',403);
+       }
+       if(empty($n))
+       {
+          set_status_header(403);
+          echo 'empty param';
+          return;
+       }
+        
+       $char = substr($n, 0, 1);
+       if(!($char === 'y' || $char === 'n'))
+       {
+          set_status_header(403);
+          echo 'incorrect param';
+          return;
+
+       }
+      
+       $this->load->library('j_auth');
+       $loggedin = $this->j_auth->logged_in();
+       if($loggedin)
+       {
+           $username = $this->j_auth->current_user();
+           $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+           if($char === 'y')
+           {
+             $u->setShowHelp(true);
+             $this->session->set_userdata('showhelp', TRUE);
+             echo "set showhelp to true";
+           }
+           else
+           {
+             $u->setShowHelp(false);
+             $this->session->set_userdata('showhelp' , FALSE);
+             echo "set showhelp to false";
+           }
+           $this->em->persist($u);
+           try
+           {
+              $this->em->flush();
+           }
+           catch(Exception $e)
+           {
+              log_message('error',__METHOD__.' '.$e);
+              set_status_header(500);
+              echo 'problem with saving in db';
+             return;
+
+           }
+           return "OK";
+       }
+       set_status_header(403);
+       echo "permission denied";
+       return;
+    }
     public function bookentity($id)
     {
         if ($this->input->is_ajax_request())
