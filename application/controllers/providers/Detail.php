@@ -313,7 +313,8 @@ class Detail extends MY_Controller {
 
 
         $data['entid'] = $ent->getId();
-        $data['name'] = $ent->getName();
+        $lang = MY_Controller::getLang();
+        $data['name'] = $ent->getNameToWebInLang($lang,$type);
         if (empty($data['name']))
         {
             $data['name'] = $ent->getEntityId();

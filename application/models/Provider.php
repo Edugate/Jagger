@@ -1879,6 +1879,62 @@ class Provider {
         }
     }
 
+    public function getNameToWebInLang($lang,$type=null)
+    {
+        $result = null;
+        $backupname = null;
+        if(empty($type))
+        {
+            $type = $this->type;
+        }
+        $e  = $this->getExtendMetadata();
+        if(!empty($e))
+        {
+           foreach($e as $p)
+           {
+              $k = $p->getElement();
+              $t = $p->getType();
+              if(strcmp($k,'DisplayName') == 0 && strcasecmp($t,$type) == 0)
+              {
+                  $n = $p->getNameSpace(); 
+                  $a = $p->getAttributes();
+                  if(isset($a['xml:lang']))
+                  {
+                     if(strcasecmp($a['xml:lang'],$lang) == 0)
+                     {
+                        $result = $p->getEvalue();
+                        break;
+                     }
+                     elseif($backupname === null)
+                     {
+                         $backupname = $p->getEvalue();
+                     }
+                  }
+              }
+          }
+        }
+        if($result === null)
+        {
+           if($backupname !== null)
+           {
+              $result = $backupname;
+           }
+           else
+           {
+                $result = $this->getDisplayNameInLang($lang);
+                if(empty($result))
+                {
+                   $result = $this->getNameInLang($lang);
+                }
+           }
+        }
+        
+      
+
+        return $result;
+
+    }
+
     public function getNameLocalized()
     {
         $t['en'] = $this->name;
@@ -1895,6 +1951,20 @@ class Provider {
             $p = $t;
         }
         return $p;
+    }
+
+    public function getDisplayNameInLang($lang)
+    {
+       $r = $this->getDisplayNameLocalized();
+       if(isset($r[''.$lang.'']))
+       {
+          return $r[''.$lang.''];
+       }
+       else
+       {
+          return $r['en'] ;
+       }
+    
     }
 
     public function getNameInLang($lang)
