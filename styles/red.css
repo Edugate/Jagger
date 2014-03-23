@@ -2726,6 +2726,20 @@ a#showhelps img.iconhelpshow {
   opacity: .50;
 }
 
+a.bookentity {
+  padding: 5px;
+  background-color: #333333;
+  width: 15px;
+  height: 15px;
+  border: 0px;
+  position: fixed;
+  top: 120px;
+  right: 2px;
+  -webkit-border-radius: 2px 2px;
+  -moz-border-radius: 2px 2px / 2px 2px;
+  border-radius: 2px 2px / 2px 2px;
+}
+
 form {
   counter-reset: fieldsets;
   background: #6b90d4;
