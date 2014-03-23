@@ -425,40 +425,6 @@ class Providerupdater {
             }
             $ent->setDescription($ch['description']);
         }
-        if (array_key_exists('ldesc', $ch) && is_array($ch['ldesc']))
-        {
-            $origs = $ent->getLocalDescription();
-            $langs = array_keys(languagesCodes());
-            foreach ($ch['ldesc'] as $key => $value)
-            {
-                if (!in_array($key, $langs))
-                {
-                    unset($ch['ldesc'][''.$key.'']);
-                    log_message('warning',__METHOD__.' lang code '.$key.' (localized description) not found in allowed langs');
-                }
-            }
-            $isDifferent = FALSE;
-            $diff1 = array_diff_assoc($origs,$ch['ldesc']);
-            if(count($diff1)>0)
-            {
-               $isDifferent = TRUE;
-            } 
-            else
-            {
-               $diff1 = array_diff_assoc($ch['ldesc'],$origs);
-               if(count($diff1)>0)
-               {
-                    $isDifferent = TRUE;
-               }
-            }
-            if($isDifferent)
-            {
-               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['ldesc']));
-               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
-               $m['Localized Description'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
-               $ent->setLocalDescription($ch['ldesc']);
-            }
-        }
         /**
          * @todo track coc changes
          */

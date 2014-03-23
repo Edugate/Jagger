@@ -2709,12 +2709,21 @@ ol.group li {
 }
 
 a#showhelps {
+  border: 0px;
   position: fixed;
   top: 90px;
-  right: 5px;
+  right: 2px;
 }
 a#showhelps img {
   width: 25px;
+}
+a#showhelps img.iconhelpshow {
+  -khtml-opacity: .50;
+  -moz-opacity: .50;
+  -ms-filter: "alpha(opacity=50)";
+  filter: alpha(opacity=50);
+  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.5);
+  opacity: .50;
 }
 
 form {

@@ -190,12 +190,6 @@ class Provider {
     protected $description;
 
     /**
-     * localized description
-     * @Column(type="text",nullable=true)
-     */
-    protected $ldescription;
-
-    /**
      * @Column(type="string", length=2, nullable=true)
      */
     protected $country;
@@ -601,35 +595,6 @@ class Provider {
             }
             $differ['PrivacyStatementURLLocalized']['after'] = $tmpstr;
         }
-
-        $lname_before = $provider->getLocalDescription();
-        if ($lname_before == NULL)
-        {
-            $lname_before = array();
-        }
-        $lname_after = $this->getLocalDescription();
-        if ($lname_after == NULL)
-        {
-            $lname_after = array();
-        }
-        $lname_diff1 = array_diff_assoc($lname_before, $lname_after);
-        $lname_diff2 = array_diff_assoc($lname_after, $lname_before);
-        if (count($lname_diff1) > 0 or count($lname_diff2) > 0)
-        {
-            $tmpstr = '';
-            foreach ($lname_diff1 as $k => $v)
-            {
-                $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
-            }
-            $differ['DescriptionLocalized']['before'] = $tmpstr;
-            $tmpstr = '';
-            foreach ($lname_diff2 as $k => $v)
-            {
-                $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
-            }
-            $differ['DescriptionLocalized']['after'] = $tmpstr;
-        }
-
 
         return $differ;
     }
@@ -1155,17 +1120,6 @@ class Provider {
         return $this;
     }
 
-    public function setLocalDescription($descriptions = NULL)
-    {
-        if (!empty($descriptions) && is_array($descriptions))
-        {
-            $this->ldescription = serialize($descriptions);
-        }
-        else
-        {
-            $this->ldescription = NULL;
-        }
-    }
 
     /**
      * updateLocalizedMdui1 for elements: Description, DisplayName, PrivacyURL, InformationURL
@@ -1551,7 +1505,6 @@ class Provider {
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
         $this->setDescription($provider->getDescription());
-        $this->setLocalDescription($provider->getLocalDescription());
         $smetadata = $provider->getStaticMetadata();
         if (!empty($smetadata))
         {
@@ -2305,18 +2258,6 @@ class Provider {
         return $this->description;
     }
 
-    /**
-     * @todo to remove in 2.x 
-     */
-    public function getLocalDescription()
-    {
-        if(!empty($this->ldescription))
-        {
-           return unserialize($this->ldescription);
-        }
-        return array();
-    }
-
 
     public function getLocalDescriptionsToArray($type)
     {
@@ -2336,30 +2277,6 @@ class Provider {
         return $result;
     }
 
-    public function getDescriptionLocalized()
-    {
-        if (empty($this->description))
-        {
-            $t['en'] = 'description not provided';
-        }
-        else
-        {
-            $t['en'] = $this->description;
-        }
-        $p = unserialize($this->ldescription);
-        if (is_array($p))
-        {
-            if (!array_key_exists('en', $p))
-            {
-                $p['en'] = $t['en'];
-            }
-        }
-        else
-        {
-            $p = $t;
-        }
-        return $p;
-    }
 
 
     public function getMduiDiscoHintToXML(\DOMElement $parent, $type = NULL)
@@ -3755,7 +3672,6 @@ class Provider {
                     $this->setDescription($p['val']);
                 }
                 $ldesc[$p['lang']] = $p['val'];
-                $this->setLocalDescription($ldesc);
                 $extdesc = new ExtendMetadata;
                 $extdesc->setNamespace('mdui');
                 $extdesc->setType($type);

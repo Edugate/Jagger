@@ -2497,20 +2497,6 @@ $("button#addlhelpdesk").click(function() {
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lname\" value=\""+nf+"\">X</button></li></li>");
           GINIT.initialize();
     });
-    $("button#addldescription").click(function() {
-        var selected =  $("span.ldescadd option:selected").first();
-        var nf = selected.val();
-        if(typeof nf === 'undefined')
-        {
-            return false;
-        }
-        var nfv = selected.text();
-        var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        //   $("span.ldescadd option[value=" + nf + "]").toggleOption(false);
-       $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldesc][" + nf + "]\">"+inputname+"  " + nfv + " </label><textarea id=\"f[ldesc][" + nf + "]\" name=\"f[ldesc][" + nf + "]\" rows=\"4\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">X</button></li>");
-          GINIT.initialize();
-    });
     $("button#idpadduiidesc").click(function() {
         var selected =  $("span.idpuiidescadd option:selected").first();
         var nf = selected.val();

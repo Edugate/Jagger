@@ -175,11 +175,11 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
            $showhelp = $this->session->userdata('showhelp');
            if(!empty($showhelp) && $showhelp === TRUE)
            {
-              echo '<a href="'.base_url().'ajax/showhelpstatus" id="showhelps" class="helpactive"><img src="'.base_url().'images/icons/help.png" class="iconhelpshow" style="display:none"><img src="'.base_url().'images/icons/help-cross.png" class="iconhelpcross"></a>';
+              echo '<a href="'.base_url().'ajax/showhelpstatus" id="showhelps" class="helpactive"><img src="'.base_url().'images/icons/info.png" class="iconhelpshow" style="display:none"><img src="'.base_url().'images/icons/info.png" class="iconhelpcross"></a>';
            }
            else
            {
-              echo '<a href="'.base_url().'ajax/showhelpstatus" id="showhelps" class="helpinactive"><img src="'.base_url().'images/icons/help.png" class="iconhelpshow"><img src="'.base_url().'images/icons/help-cross.png" class="iconhelpcross" style="display:none"></a>';
+              echo '<a href="'.base_url().'ajax/showhelpstatus" id="showhelps" class="helpinactive"><img src="'.base_url().'images/icons/info.png" class="iconhelpshow"><img src="'.base_url().'images/icons/info.png" class="iconhelpcross" style="display:none"></a>';
            }
                         ?>
                         <!-- menu -->

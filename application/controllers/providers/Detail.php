@@ -437,24 +437,6 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = $regpolicy_value;
         $d[++$i]['name'] = lang('rr_description'). ' <div class="dhelp">'.lang('defaultdesc').'</div>';
         $d[$i]['value'] = $ent->getDescription();
-        $ldescription = $ent->getLocalDescription();
-        $lvalues = '';
-        if (count($ldescription)>0)
-        {
-            if(array_key_exists('en',$ldescription))
-            {
-               $d[++$i]['name'] = '<div class="dhelp">'.lang('defaultdesc_en').'</div>';
-            }
-            else
-            {
-               $d[++$i]['name'] = '';
-            }
-            foreach ($ldescription as $k => $v)
-            {
-                $lvalues .= '<b>' . $k . ':</b> <div>' . $v . '</div>';
-            }
-            $d[$i]['value'] = $lvalues;
-        }
 
         $d[++$i]['name'] = lang('rr_defaultprivacyurl');
         $d[$i]['value'] = $ent->getPrivacyUrl();
