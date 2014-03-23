@@ -2311,3 +2311,46 @@ ol.group {
   font-size: smaller;
 
 }
+.dhelp {
+  font-size: 10px;
+  font-weight: normal;
+  cursor: zoom-in;
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+  background-color: $dhelpbgcolor;
+  border: 1px solid $dhelpbordercolor;
+  padding: 2px;
+  background-image: url("../images/icons/node-magnifier.png");
+  background-position: right bottom;
+  background-repeat: no-repeat;
+
+}
+.zoomout {
+  cursor: zoom-out;
+  cursor: -webkit-zoom-out;
+  cursor: -moz-zoom-out;
+}
+.zoomin {
+  cursor: zoom-in;
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+}
+a#showhelps {
+  border: 0px;
+  position:fixed;
+  top:90px;
+  right:2px;
+  img {
+
+  width: 25px;
+  }
+  img.iconhelpshow {
+  -khtml-opacity:.50; 
+ -moz-opacity:.50; 
+ -ms-filter:"alpha(opacity=50)";
+  filter:alpha(opacity=50);
+  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.5);
+  opacity:.50; 
+
+  }
+}

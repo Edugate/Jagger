@@ -142,10 +142,10 @@ class Metadata extends MY_Controller
                 }
             }
             $docXML->appendChild($Entities_Node);
-
             $data['out'] = $docXML->saveXML();
-
-
+            $mem = memory_get_usage();
+            $mem = round($mem/1048576,2) ;
+            log_message('debug','Memory usage: '.$mem.'M');
             $this->load->view('metadata_view', $data);
         }
     }

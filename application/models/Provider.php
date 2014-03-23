@@ -190,12 +190,6 @@ class Provider {
     protected $description;
 
     /**
-     * localized description
-     * @Column(type="text",nullable=true)
-     */
-    protected $ldescription;
-
-    /**
      * @Column(type="string", length=2, nullable=true)
      */
     protected $country;
@@ -601,35 +595,6 @@ class Provider {
             }
             $differ['PrivacyStatementURLLocalized']['after'] = $tmpstr;
         }
-
-        $lname_before = $provider->getLocalDescription();
-        if ($lname_before == NULL)
-        {
-            $lname_before = array();
-        }
-        $lname_after = $this->getLocalDescription();
-        if ($lname_after == NULL)
-        {
-            $lname_after = array();
-        }
-        $lname_diff1 = array_diff_assoc($lname_before, $lname_after);
-        $lname_diff2 = array_diff_assoc($lname_after, $lname_before);
-        if (count($lname_diff1) > 0 or count($lname_diff2) > 0)
-        {
-            $tmpstr = '';
-            foreach ($lname_diff1 as $k => $v)
-            {
-                $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
-            }
-            $differ['DescriptionLocalized']['before'] = $tmpstr;
-            $tmpstr = '';
-            foreach ($lname_diff2 as $k => $v)
-            {
-                $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
-            }
-            $differ['DescriptionLocalized']['after'] = $tmpstr;
-        }
-
 
         return $differ;
     }
@@ -1155,17 +1120,6 @@ class Provider {
         return $this;
     }
 
-    public function setLocalDescription($descriptions = NULL)
-    {
-        if (!empty($descriptions) && is_array($descriptions))
-        {
-            $this->ldescription = serialize($descriptions);
-        }
-        else
-        {
-            $this->ldescription = NULL;
-        }
-    }
 
     /**
      * updateLocalizedMdui1 for elements: Description, DisplayName, PrivacyURL, InformationURL
@@ -1551,7 +1505,6 @@ class Provider {
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
         $this->setDescription($provider->getDescription());
-        $this->setLocalDescription($provider->getLocalDescription());
         $smetadata = $provider->getStaticMetadata();
         if (!empty($smetadata))
         {
@@ -1879,6 +1832,62 @@ class Provider {
         }
     }
 
+    public function getNameToWebInLang($lang,$type=null)
+    {
+        $result = null;
+        $backupname = null;
+        if(empty($type))
+        {
+            $type = $this->type;
+        }
+        $e  = $this->getExtendMetadata();
+        if(!empty($e))
+        {
+           foreach($e as $p)
+           {
+              $k = $p->getElement();
+              $t = $p->getType();
+              if(strcmp($k,'DisplayName') == 0 && strcasecmp($t,$type) == 0)
+              {
+                  $n = $p->getNameSpace(); 
+                  $a = $p->getAttributes();
+                  if(isset($a['xml:lang']))
+                  {
+                     if(strcasecmp($a['xml:lang'],$lang) == 0)
+                     {
+                        $result = $p->getEvalue();
+                        break;
+                     }
+                     elseif($backupname === null)
+                     {
+                         $backupname = $p->getEvalue();
+                     }
+                  }
+              }
+          }
+        }
+        if($result === null)
+        {
+           if($backupname !== null)
+           {
+              $result = $backupname;
+           }
+           else
+           {
+                $result = $this->getDisplayNameInLang($lang);
+                if(empty($result))
+                {
+                   $result = $this->getNameInLang($lang);
+                }
+           }
+        }
+        
+      
+
+        return $result;
+
+    }
+
     public function getNameLocalized()
     {
         $t['en'] = $this->name;
@@ -1895,6 +1904,20 @@ class Provider {
             $p = $t;
         }
         return $p;
+    }
+
+    public function getDisplayNameInLang($lang)
+    {
+       $r = $this->getDisplayNameLocalized();
+       if(isset($r[''.$lang.'']))
+       {
+          return $r[''.$lang.''];
+       }
+       else
+       {
+          return $r['en'] ;
+       }
+    
     }
 
     public function getNameInLang($lang)
@@ -1964,6 +1987,58 @@ class Provider {
            return array('en'=>$this->displayname); 
 
         }
+    }
+
+    public function getServicePartsToArray($name)
+    {
+        $result = array();
+        $ext = $this->getExtendMetadata();
+        foreach($ext as $e)
+        { 
+           $t = $e->getType();
+           if($t !== 'sp')
+           {
+              continue;
+           }
+           $n = $e->getElement();
+           $ns = $e->getNameSpace();
+           if($n === $name && $ns === 'mdui')
+           {
+              $l = $e->getAttributes();
+              $v = $e->getEvalue();
+              if(isset($l['xml:lang']) && !empty($v))
+              {
+                  $result[''.$l['xml:lang'].''] = $v;
+              }
+           }
+        }
+        if(count($result) == 0 && !isset($result['en']))
+        {
+             if($name === 'DisplayName')
+             {
+                $m  = $this->getDisplayName() ;
+                if(empty($m))
+                {
+                   $m = $this->getName();
+                }
+                if(empty($m))
+                {
+                   $m = $this->getEntityId();
+                }
+                $result['en'] = $m;
+             }
+             elseif($name === 'Description')
+             {
+                $desc = $this->getDescription();
+                if(!empty($desc))
+                {
+                   $result['en'] = $desc;
+                }
+             }
+
+        }
+        return $result;
+
     }
 
     public function findOneSPbyName($name)
@@ -2183,18 +2258,6 @@ class Provider {
         return $this->description;
     }
 
-    /**
-     * @todo to remove in 2.x 
-     */
-    public function getLocalDescription()
-    {
-        if(!empty($this->ldescription))
-        {
-           return unserialize($this->ldescription);
-        }
-        return array();
-    }
-
 
     public function getLocalDescriptionsToArray($type)
     {
@@ -2214,30 +2277,6 @@ class Provider {
         return $result;
     }
 
-    public function getDescriptionLocalized()
-    {
-        if (empty($this->description))
-        {
-            $t['en'] = 'description not provided';
-        }
-        else
-        {
-            $t['en'] = $this->description;
-        }
-        $p = unserialize($this->ldescription);
-        if (is_array($p))
-        {
-            if (!array_key_exists('en', $p))
-            {
-                $p['en'] = $t['en'];
-            }
-        }
-        else
-        {
-            $p = $t;
-        }
-        return $p;
-    }
 
 
     public function getMduiDiscoHintToXML(\DOMElement $parent, $type = NULL)
@@ -2903,8 +2942,9 @@ class Provider {
     public function getIDPSSODescriptorToXML(\DOMElement $parent, $options = null)
     {
         $services = $this->getServiceLocations();
-        if (empty($services))
+        if ($services->count() == 0)
         {
+            log_message('error',__METHOD__ .'no serviceLocations found for entityID:'.$this->entityid);
             return null;
         }
         $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
@@ -3075,10 +3115,14 @@ class Provider {
 
     public function getSPSSODescriptorToXML(\DOMElement $parent, $options = null)
     {
-     //   $this->ci = & get_instance();
-    //    $this->em = $this->ci->doctrine->em;
-        $this->ci->load->helper('url');
+   
+     
         $services = $this->getServiceLocations();
+        if($services->count() == 0)
+        {
+            log_message('error', __METHOD__.' no service location found for entityID:'.$this->entityid);
+            return null;
+        }
 
         $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
         $this->logo_baseurl = $this->ci->config->item('rr_logobaseurl');
@@ -3100,7 +3144,7 @@ class Provider {
         $e->appendChild($Extensions_Node);
 
         /* DiscoveryResponse */
-        //$tmplocations = $this->getServiceLocations();
+        
         foreach ($services as $t)
         {
             $loc_type = $t->getType();
@@ -3157,7 +3201,7 @@ class Provider {
         foreach ($services as $srv)
         {
             $stype = $srv->getType();
-            if ($srv->getType() === 'AssertionConsumerService')
+            if ($stype === 'AssertionConsumerService')
             {
                 $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AssertionConsumerService');
                 $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
@@ -3170,14 +3214,14 @@ class Provider {
                 }
                 $tmpserorder['assert'][] = $ServiceLocation_Node;
             }
-            elseif ($srv->getType() === 'SPSingleLogoutService')
+            elseif ($stype === 'SPSingleLogoutService')
             {
                 $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleLogoutService');
                 $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
                 $ServiceLocation_Node->setAttribute("Location", $srv->getUrl());
                 $tmpserorder['logout'][] =  $ServiceLocation_Node;
             }
-            elseif ($srv->getType() === 'SPArtifactResolutionService')
+            elseif ($stype === 'SPArtifactResolutionService')
             {
                 $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ArtifactResolutionService');
                 $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
@@ -3204,6 +3248,7 @@ class Provider {
         {
             $e->appendChild($p);
         }
+        $tmpserorder = null;
         if (!empty($options) and is_array($options) and array_key_exists('attrs', $options) and !empty($options['attrs']))
         {
             $sp_reqattrs = $this->getAttributesRequirement();
@@ -3226,21 +3271,29 @@ class Provider {
                 $Attrconsumingservice_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AttributeConsumingService');
                 $Attrconsumingservice_Node->setAttribute('index', '0');
                 $e->appendChild($Attrconsumingservice_Node);
-                $t_name = $this->getName();
-                if (empty($t_name))
+                /**
+                 * set servicename, servicedesc based on in order mdui, md
+                 */
+
+                $sericenames = $this->getServicePartsToArray('DisplayName');
+                foreach($sericenames as $k=>$v)
                 {
-                    $t_name = $this->getEntityId();
+                    $srvname_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceName');
+                    $srvname_node->setAttribute('xml:lang', ''.$k.'');
+                    $srvname_node->appendChild($Attrconsumingservice_Node->ownerDocument->createTextNode($v));
+                    $Attrconsumingservice_Node->appendChild($srvname_node);
                 }
-                $srvname_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceName', $t_name);
-                $srvname_node->setAttribute('xml:lang', 'en');
-                $Attrconsumingservice_Node->appendChild($srvname_node);
-                $t_displayname = $this->getDisplayName();
-                if (!empty($t_displayname))
+
+                $servicenamesDesc = $this->getServicePartsToArray('Description');
+                foreach($servicenamesDesc as $k=>$v)
                 {
-                    $srvdisplay_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceDescription', $t_displayname);
-                    $srvdisplay_node->setAttribute('xml:lang', 'en');
+                    $srvdisplay_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceDescription');
+                    $srvdisplay_node->setAttribute('xml:lang', ''.$k.'');
+                    $srvdisplay_node->appendChild($Attrconsumingservice_Node->ownerDocument->createTextNode($v));
                     $Attrconsumingservice_Node->appendChild($srvdisplay_node);
+ 
                 }
+
                 foreach ($sp_reqattrs->getValues() as $v)
                 {
                     $attr_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:RequestedAttribute');
@@ -3314,7 +3367,7 @@ class Provider {
      */
     public function getProviderToXML(\DOMElement $parent = NULL, $options = NULL)
     {
-        log_message('debug', __METHOD__. ' start:  ' . $this->getEntityId());
+        log_message('debug', __METHOD__. ' start:  ' . $this->entityid);
         $comment = "\"" . $this->getEntityId() . "\" \n";
         $l = 1;
 
@@ -3347,9 +3400,7 @@ class Provider {
       //      return \NULL;
       //  }
 
-
-        $p_entityID = $this->entityid;
-        $p_static = $this->getStatic();
+  
         $s_metadata = null;
         $valid_until = null;
         $p_validUntil = $this->getValidTo();
@@ -3361,7 +3412,7 @@ class Provider {
 
 
 
-        if ($p_static)
+        if ($this->is_static)
         {
             $static_meta = $this->getStaticMetadata();
             if (!empty($static_meta))
@@ -3621,7 +3672,6 @@ class Provider {
                     $this->setDescription($p['val']);
                 }
                 $ldesc[$p['lang']] = $p['val'];
-                $this->setLocalDescription($ldesc);
                 $extdesc = new ExtendMetadata;
                 $extdesc->setNamespace('mdui');
                 $extdesc->setType($type);

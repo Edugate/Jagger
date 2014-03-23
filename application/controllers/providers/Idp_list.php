@@ -110,7 +110,7 @@ class Idp_list extends MY_Controller {
             {
                $iconsblock .= $hiddenicon .' ';
             }
-            $displayname = $i->getNameInLang($lang);
+            $displayname = $i->getNameToWebInLang($lang,'idp');
             if(empty($displayname))
             {
                 $displayname = $i->getEntityId();

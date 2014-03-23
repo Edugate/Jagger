@@ -75,13 +75,14 @@ class J_auth {
                 $this->em->persist($u);
                 $track_details = 'Authn from ' . $ip . ' ::  Local Authn';
                 $this->ci->tracker->save_track('user', 'authn', $u->getUsername(), $track_details, false);
-                $this->em->flush();
 
                 $session_data = $u->getBasic();
+                $this->em->flush();
                 $this->ci->session->set_userdata(array(
                    'logged'=>1,
                    'username'=>''.$session_data['username'].'',
-                   'user_id'=> ''.$session_data['user_id'].''
+                   'user_id'=> ''.$session_data['user_id'].'',
+                   'showhelp'=>$session_data['showhelp']
                 ));
                 $this->ci->session->sess_regenerate();
                 $this->set_message('login_successful');

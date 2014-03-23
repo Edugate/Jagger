@@ -120,7 +120,7 @@ class Sp_list extends MY_Controller {
             }
             $i_link = base_url() . "providers/detail/show/" . $i->getId();
             $is_available = $i->getAvailable();
-            $displayname = $i->getNameInLang($lang);
+            $displayname = $i->getNameToWebInLang($lang,'sp');
             if(empty($displayname))
             {
                 $displayname = $i->getEntityId();
