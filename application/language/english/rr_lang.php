@@ -385,7 +385,7 @@ $lang['rr_certificatesigning']      = 'Certificate for signing';
 $lang['rr_certificateencrypting']   = 'Certificate for encryption';
 $lang['rr_metadatalocation']        = 'Metadata location (optional)';
 $lang['optinforpurposeonly']        = 'optional for information purpose only';
-$lang['defaultdesc']                = 'Default entity description. It should be used only for information purpose only. However it is used for metadata generation for elements <b>mdui:Description, md:Servicename</b> if no appropriate information (lang:en) found.';
+$lang['defaultdesc']                = 'Default entity description. It should be used only for information purpose only. However it is used for metadata generation for elements <b>mdui:Description, md:ServicenameDescription</b> if no appropriate information (lang:en) found.';
 $lang['defaultdesc_en']             = 'en: entity description overrides default description';
 $lang['defaultheldeskpurl']         = 'Default OrganizationURL.';
 

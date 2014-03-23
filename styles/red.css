@@ -2691,6 +2691,9 @@ ol.group li {
   background-color: #ffffcc;
   border: 1px solid #cccc00;
   padding: 2px;
+  background-image: url("../images/icons/node-magnifier.png");
+  background-position: right bottom;
+  background-repeat: no-repeat;
 }
 
 .zoomout {

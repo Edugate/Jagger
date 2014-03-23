@@ -760,6 +760,7 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
 
+        $services = array();
         $srvs = $ent->getServiceLocations();
         if ($srvs->count() > 0)
         {

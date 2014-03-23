@@ -2036,6 +2036,58 @@ class Provider {
         }
     }
 
+    public function getServicePartsToArray($name)
+    {
+        $result = array();
+        $ext = $this->getExtendMetadata();
+        foreach($ext as $e)
+        { 
+           $t = $e->getType();
+           if($t !== 'sp')
+           {
+              continue;
+           }
+           $n = $e->getElement();
+           $ns = $e->getNameSpace();
+           if($n === $name && $ns === 'mdui')
+           {
+              $l = $e->getAttributes();
+              $v = $e->getEvalue();
+              if(isset($l['xml:lang']) && !empty($v))
+              {
+                  $result[''.$l['xml:lang'].''] = $v;
+              }
+           }
+        }
+        if(count($result) == 0 && !isset($result['en']))
+        {
+             if($name === 'DisplayName')
+             {
+                $m  = $this->getDisplayName() ;
+                if(empty($m))
+                {
+                   $m = $this->getName();
+                }
+                if(empty($m))
+                {
+                   $m = $this->getEntityId();
+                }
+                $result['en'] = $m;
+             }
+             elseif($name === 'Description')
+             {
+                $desc = $this->getDescription();
+                if(!empty($desc))
+                {
+                   $result['en'] = $desc;
+                }
+             }
+
+        }
+        return $result;
+
+    }
+
     public function findOneSPbyName($name)
     {
         return $this->_em->createQuery('SELECT u FROM Models\Provider u WHERE name = "' . $name . '"')->getResult();
@@ -2973,8 +3025,9 @@ class Provider {
     public function getIDPSSODescriptorToXML(\DOMElement $parent, $options = null)
     {
         $services = $this->getServiceLocations();
-        if (empty($services))
+        if ($services->count() == 0)
         {
+            log_message('error',__METHOD__ .'no serviceLocations found for entityID:'.$this->entityid);
             return null;
         }
         $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
@@ -3145,10 +3198,14 @@ class Provider {
 
     public function getSPSSODescriptorToXML(\DOMElement $parent, $options = null)
     {
-     //   $this->ci = & get_instance();
-    //    $this->em = $this->ci->doctrine->em;
-        $this->ci->load->helper('url');
+   
+     
         $services = $this->getServiceLocations();
+        if($services->count() == 0)
+        {
+            log_message('error', __METHOD__.' no service location found for entityID:'.$this->entityid);
+            return null;
+        }
 
         $this->logo_basepath = $this->ci->config->item('rr_logouriprefix');
         $this->logo_baseurl = $this->ci->config->item('rr_logobaseurl');
@@ -3170,7 +3227,7 @@ class Provider {
         $e->appendChild($Extensions_Node);
 
         /* DiscoveryResponse */
-        //$tmplocations = $this->getServiceLocations();
+        
         foreach ($services as $t)
         {
             $loc_type = $t->getType();
@@ -3227,7 +3284,7 @@ class Provider {
         foreach ($services as $srv)
         {
             $stype = $srv->getType();
-            if ($srv->getType() === 'AssertionConsumerService')
+            if ($stype === 'AssertionConsumerService')
             {
                 $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AssertionConsumerService');
                 $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
@@ -3240,14 +3297,14 @@ class Provider {
                 }
                 $tmpserorder['assert'][] = $ServiceLocation_Node;
             }
-            elseif ($srv->getType() === 'SPSingleLogoutService')
+            elseif ($stype === 'SPSingleLogoutService')
             {
                 $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleLogoutService');
                 $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
                 $ServiceLocation_Node->setAttribute("Location", $srv->getUrl());
                 $tmpserorder['logout'][] =  $ServiceLocation_Node;
             }
-            elseif ($srv->getType() === 'SPArtifactResolutionService')
+            elseif ($stype === 'SPArtifactResolutionService')
             {
                 $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ArtifactResolutionService');
                 $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
@@ -3274,6 +3331,7 @@ class Provider {
         {
             $e->appendChild($p);
         }
+        $tmpserorder = null;
         if (!empty($options) and is_array($options) and array_key_exists('attrs', $options) and !empty($options['attrs']))
         {
             $sp_reqattrs = $this->getAttributesRequirement();
@@ -3296,21 +3354,29 @@ class Provider {
                 $Attrconsumingservice_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AttributeConsumingService');
                 $Attrconsumingservice_Node->setAttribute('index', '0');
                 $e->appendChild($Attrconsumingservice_Node);
-                $t_name = $this->getName();
-                if (empty($t_name))
+                /**
+                 * set servicename, servicedesc based on in order mdui, md
+                 */
+
+                $sericenames = $this->getServicePartsToArray('DisplayName');
+                foreach($sericenames as $k=>$v)
                 {
-                    $t_name = $this->getEntityId();
+                    $srvname_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceName');
+                    $srvname_node->setAttribute('xml:lang', ''.$k.'');
+                    $srvname_node->appendChild($Attrconsumingservice_Node->ownerDocument->createTextNode($v));
+                    $Attrconsumingservice_Node->appendChild($srvname_node);
                 }
-                $srvname_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceName', $t_name);
-                $srvname_node->setAttribute('xml:lang', 'en');
-                $Attrconsumingservice_Node->appendChild($srvname_node);
-                $t_displayname = $this->getDisplayName();
-                if (!empty($t_displayname))
+
+                $servicenamesDesc = $this->getServicePartsToArray('Description');
+                foreach($servicenamesDesc as $k=>$v)
                 {
-                    $srvdisplay_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceDescription', $t_displayname);
-                    $srvdisplay_node->setAttribute('xml:lang', 'en');
+                    $srvdisplay_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ServiceDescription');
+                    $srvdisplay_node->setAttribute('xml:lang', ''.$k.'');
+                    $srvdisplay_node->appendChild($Attrconsumingservice_Node->ownerDocument->createTextNode($v));
                     $Attrconsumingservice_Node->appendChild($srvdisplay_node);
+ 
                 }
+
                 foreach ($sp_reqattrs->getValues() as $v)
                 {
                     $attr_node = $Attrconsumingservice_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:RequestedAttribute');
@@ -3384,7 +3450,7 @@ class Provider {
      */
     public function getProviderToXML(\DOMElement $parent = NULL, $options = NULL)
     {
-        log_message('debug', __METHOD__. ' start:  ' . $this->getEntityId());
+        log_message('debug', __METHOD__. ' start:  ' . $this->entityid);
         $comment = "\"" . $this->getEntityId() . "\" \n";
         $l = 1;
 
@@ -3417,9 +3483,7 @@ class Provider {
       //      return \NULL;
       //  }
 
-
-        $p_entityID = $this->entityid;
-        $p_static = $this->getStatic();
+  
         $s_metadata = null;
         $valid_until = null;
         $p_validUntil = $this->getValidTo();
@@ -3431,7 +3495,7 @@ class Provider {
 
 
 
-        if ($p_static)
+        if ($this->is_static)
         {
             $static_meta = $this->getStaticMetadata();
             if (!empty($static_meta))
