@@ -290,7 +290,7 @@ $lang['rr_feduser_register_title']      = 'Federated user registration';
 $lang['rr_generalinformation']      = 'General Information';
 $lang['rr_ds_white']                = 'White list';
 $lang['rr_ds_black']                = 'Excluded from list';
-$lang['rr_ds_disco_url']            = 'DiscoJuice format'; 
+$lang['rr_ds_json_url']            = 'JSON format'; 
 $lang['fvalid_name']                = 'Federation validator name';
 
 $lang['fcode_succes']               = 'Expected value for success';
@@ -977,6 +977,8 @@ $lang['queremoved']                 = 'Then entry has been removed from the queu
 
 $lang['rr_jobinqueue']              = 'The job is still on the queue';
 $lang['rr_jobdonein']                 = 'The job done in';
+
+$lang['entdswayf']                          = 'The link contains list of all trusted Identity Providers in json format. Generaly it can be consumed by DiscoveryService particularly DiscoJuice';
 
 $lang['entname_default_expl']              = 'This is default value for OrganizationName.<br /> If localized name is not set for English language then this value is used instead in generated SAML metadata: /EntityDescriptor/Organization/OrganizationName';
 $lang['entdisplname_default_expl']              = 'This is default value for OrganizationDisplayName.<br /> If localized name is not set for English language then this value is used instead in generated SAML metadata: /EntityDescriptor/Organization/OrganizationDisplayName.<br /> Also is used as default English lang in metadata: /EntityDescriptor/[IDPSSODescriptor|SPSSODescriptor]/Extensions/UIInfo/DisplayName';

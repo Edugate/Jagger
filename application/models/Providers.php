@@ -218,7 +218,7 @@ class Providers
     public function getIdpsLight()
     {
         log_message('debug', 'run: models\Providers::getIdpsLight()');
-        $dql = "SELECT p,a FROM models\Provider p JOIN p.extend a  WHERE p.type IN ('IDP','BOTH') ORDER BY p.name ASC ";
+        $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a  WHERE p.type IN ('IDP','BOTH') ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
@@ -227,7 +227,7 @@ class Providers
     public function getIdpsLightLocal()
     {
         log_message('debug', 'run: models\Providers::getIdpsLightLocal()');
-        $dql = "SELECT p,a FROM models\Provider p  JOIN p.extend a WHERE p.type IN ('IDP','BOTH') AND p.is_local = '1' ORDER BY p.name ASC ";
+        $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a WHERE p.type IN ('IDP','BOTH') AND p.is_local = '1' ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
@@ -236,7 +236,7 @@ class Providers
     public function getIdpsLightExternal()
     {
         log_message('debug', 'run: models\Providers::getIdpsLightExternal()');
-        $dql = "SELECT p,a FROM models\Provider p JOIN p.extend a WHERE p.type IN ('IDP','BOTH') AND p.is_local = '0' ORDER BY p.name ASC ";
+        $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a WHERE p.type IN ('IDP','BOTH') AND p.is_local = '0' ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();

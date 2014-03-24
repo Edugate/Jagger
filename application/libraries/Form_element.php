@@ -284,8 +284,6 @@ class Form_element {
         /**
          * @todo add explanation for default provider name
          */
-        //$result[] = '<div class="notice">'.lang('rr_providername').' <small>&#91;'.lang('rr_default').'&#93;</small> </div>';
-       // $result[] = '';
         $result[] = form_label(lang('e_orgname').' '.showBubbleHelp(''.lang('entname_default_expl').''), 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'required' => 'required', 'value' => $t2));
         /**
          * start lname
