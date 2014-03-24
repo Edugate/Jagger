@@ -327,7 +327,14 @@ class Logomngmt extends MY_Controller
                     echo lang('rr_errextlogourlformat');
                     return;
                 }
-
+                if (!function_exists('getimagesizefromstring')) 
+                {
+                    function getimagesizefromstring($string_data)
+                    {
+                      $uri = 'data://application/octet-stream;base64,'  . base64_encode($string_data);
+                      return getimagesize($uri);
+                    }
+                }
                 $imagesize = getimagesizefromstring($datafile);
                 if (!empty($imagesize) && is_array($imagesize) && isset($imagesize['0']) && isset($imagesize['1'])) {
                     

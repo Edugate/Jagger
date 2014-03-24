@@ -162,13 +162,6 @@ class Entityedit extends MY_Controller {
                 }
             }
 
-            if (array_key_exists('ldesc', $y['f']))
-            {
-                foreach ($y['f']['ldesc'] as $k => $v)
-                {
-                    $this->form_validation->set_rules('f[ldesc][' . $k . ']', lang('localizeddescin').' ' . $k, 'xss_clean|trim');
-                }
-            }
 
             if (array_key_exists('contact', $y['f']))
             {
@@ -497,14 +490,6 @@ class Entityedit extends MY_Controller {
         else
         {
            $data['lhelpdesk'] = array();
-        }
-        if(isset($data['ldesc']))
-        {
-           $data['ldesc'] = array_filter($data['ldesc']);
-        }
-        else
-        {
-           $data['ldesc'] = array();
         }
         if(isset($data['uii']['idpsso']['desc']))
         {
