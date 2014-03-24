@@ -528,7 +528,7 @@ class Detail extends MY_Controller {
         if ($sppart)
         {
             $d[++$i]['header'] = 'WAYF';
-            $d[++$i]['name'] = lang('rr_ds_disco_url'). ' <div class="dhelp"></div>';
+            $d[++$i]['name'] = lang('rr_ds_json_url'). ' <div class="dhelp">'.lang('entdswayf').'</div>';
             
             $d[$i]['value'] = anchor(base_url() . 'disco/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.json?callback=dj_md_1', lang('rr_link'));
 
