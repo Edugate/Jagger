@@ -48,6 +48,22 @@ function validateX509($cert, $args = NULL)
     }
 }
 
+function getKeysize($cert)
+{
+   $r = openssl_pkey_get_public($cert);
+   $result = null;
+   if(!empty($r))
+   {
+       $data = array();
+       $data = openssl_pkey_get_details($r);
+       if(isset($data['bits']))
+       {
+          return $data['bits'];
+       }
+   }
+   return $result;
+}
+
 function reformatPEM($value)
 {
     if(!empty($value))
