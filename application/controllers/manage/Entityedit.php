@@ -197,11 +197,11 @@ class Entityedit extends MY_Controller {
                         $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required');
                     }
                 }
-                if (array_key_exists('idppsso', $y['f']['crt']))
+                if (array_key_exists('idpsso', $y['f']['crt']))
                 {
                     foreach ($y['f']['crt']['idpsso'] as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'cert data', 'trim|verify_cert');
+                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|verify_cert');
                         $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][remove]', ''.lang('rr_remove').'', 'trim');
                         $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required');
                     }

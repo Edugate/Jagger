@@ -668,6 +668,7 @@ $lang['rr_supportedprotocolsnotset'] = 'Supported protocols are not set';
 $lang['rr_servicelocations']        = 'Service Locations';
 $lang['rr_keyname']                 = 'KeyName';
 $lang['rr_fingerprint']             = 'Fingerprint';
+$lang['rr_keysize']                 = 'Keysize';
 $lang['rr_certbody']                = 'Certificate body';
 $lang['rr_daystoexpire']            = 'days to expire';
 $lang['rr_usecommaasdelimeter']     = 'use comma as delimeter';
@@ -965,6 +966,7 @@ $lang['error_notfoundmemberstoberm'] = 'Federation has no members to be removed'
 $lang['error_wrongpolicytype']      = 'Incorrect the type of policy';
 $lang['errormatrixnoattrs']         = 'To generate matrix IDP needs to support at least one attribute';
 $lang['errsess']            = 'Session not valid';
+$lang['unknownkeysize']          = 'unknown';
 $lang['arpnotfound']                = 'Attribute Release Policy not found';
 $lang['notworkingyet' ]             = 'not working yet!';
 $lang['unknownerror']               = 'Unknown error';
@@ -977,6 +979,8 @@ $lang['queremoved']                 = 'Then entry has been removed from the queu
 
 $lang['rr_jobinqueue']              = 'The job is still on the queue';
 $lang['rr_jobdonein']                 = 'The job done in';
+
+
 
 $lang['entdswayf']                          = 'The link contains list of all trusted Identity Providers in json format. Generaly it can be consumed by DiscoveryService particularly DiscoJuice';
 

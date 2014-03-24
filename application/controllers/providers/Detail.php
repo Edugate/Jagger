@@ -920,6 +920,20 @@ class Detail extends MY_Controller {
                             {
                                 $cString .='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
                             }
+                            else
+                            {
+                                $pemdata = $v->getPEM($v->getCertData());
+                                $keysize = getKeysize($pemdata);
+                                if(!empty($keysize))
+                                {
+                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . $keysize . '</span><br />';
+                                }
+                                else
+                                {
+                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . lang('unknownkeysize') . '</span><br />';
+                                }
+                                 
+                            }
                         }
                         if (!empty($c_fingerprint))
                         {
@@ -962,13 +976,27 @@ class Detail extends MY_Controller {
                     if (!empty($c_certData))
                     {
                         $c_certtype = $v->getCertType();
-                        if ($c_certtype == 'X509Certificate')
+                        if ($c_certtype === 'X509Certificate')
                         {
                             $c_fingerprint = $v->getFingerprint();
                             $c_certValid = validateX509($c_certData);
                             if (!$c_certValid)
                             {
                                 $cString .='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
+                            }
+                            else
+                            {
+                                $pemdata = $v->getPEM($v->getCertData());
+                                $keysize = getKeysize($pemdata);
+                                if(!empty($keysize))
+                                {
+                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . $keysize . '</span><br />';
+                                }
+                                else
+                                {
+                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . lang('unknownkeysize') . '</span><br />';
+                                }
+
                             }
                         }
                         if (!empty($c_fingerprint))
@@ -1022,7 +1050,20 @@ class Detail extends MY_Controller {
                             {
                                 $cString .='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
                                 $alerts[] = lang('rr_certificatenotvalid');
-                             
+                            }
+                            else
+                            {
+                                $pemdata = $v->getPEM($v->getCertData());
+                                $keysize = getKeysize($pemdata);
+                                if(!empty($keysize))
+                                {
+                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . $keysize . '</span><br />';
+                                }
+                                else
+                                {
+                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . lang('unknownkeysize') . '</span><br />';
+                                }
+
                             }
                         }
                         if (!empty($c_fingerprint))
