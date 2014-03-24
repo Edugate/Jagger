@@ -2354,3 +2354,16 @@ a#showhelps {
 
   }
 }
+a.bookentity {
+  padding: 5px;
+  background-color: lighten(black,20%);
+  width: 15px;
+  height: 15px;
+  border: 0px;
+  position:fixed;
+  top:120px;
+  right:2px;
+  @include border-radius(2px 2px, 2px 2px);
+
+
+}

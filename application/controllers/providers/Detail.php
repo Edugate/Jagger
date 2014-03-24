@@ -204,21 +204,22 @@ class Detail extends MY_Controller {
         $edit_attributes = '';
         $edit_policy = '';
 
-        if ($type == 'both')
-        {
-            $sppart = TRUE;
-            $idppart = TRUE;
-            $data['presubtitle'] = lang('rr_asboth');
-        }
-        elseif ($type == 'idp')
+
+        if ($type === 'idp')
         {
             $idppart = TRUE;
             $data['presubtitle'] = lang('identityprovider');
         }
-        elseif ($type == 'sp')
+        elseif ($type === 'sp')
         {
             $sppart = TRUE;
             $data['presubtitle'] = lang('serviceprovider');
+        }
+        elseif ($type === 'both')
+        {
+            $sppart = TRUE;
+            $idppart = TRUE;
+            $data['presubtitle'] = lang('rr_asboth');
         }
         $has_read_access = $this->zacl->check_acl($id, 'read', $group, '');
         $has_write_access = $this->zacl->check_acl($id, 'write', $group, '');
@@ -268,7 +269,6 @@ class Detail extends MY_Controller {
         if ($is_static)
         {
             $entstatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
-         //   $edit_link .= makeLabel('static', lang('lbl_static'), lang('lbl_static'));
             $alerts[] = lang('staticmeta_info');
             
         }
@@ -528,7 +528,8 @@ class Detail extends MY_Controller {
         if ($sppart)
         {
             $d[++$i]['header'] = 'WAYF';
-            $d[++$i]['name'] = lang('rr_ds_disco_url');
+            $d[++$i]['name'] = lang('rr_ds_disco_url'). ' <div class="dhelp"></div>';
+            
             $d[$i]['value'] = anchor(base_url() . 'disco/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.json?callback=dj_md_1', lang('rr_link'));
 
             $tmpwayflist = $ent->getWayfList();
