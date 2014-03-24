@@ -450,7 +450,7 @@ class Providers
     public function getSpsLight()
     {
         log_message('debug', 'run: models\Providers::getSpsLight()');
-        $dql = "SELECT p,a FROM models\Provider p JOIN p.extend a WHERE p.type IN ('SP','BOTH') ORDER BY p.name ASC ";
+        $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a WHERE p.type IN ('SP','BOTH') ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
@@ -459,7 +459,7 @@ class Providers
     public function getSpsLightExternal()
     {
         log_message('debug', 'run: models\Providers::getSpsLightExternal()');
-        $dql = "SELECT p,a FROM models\Provider p JOIN p.extend a WHERE p.type IN ('SP','BOTH') AND p.is_local = '0' ORDER BY p.name ASC ";
+        $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a WHERE p.type IN ('SP','BOTH') AND p.is_local = '0' ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
@@ -468,8 +468,7 @@ class Providers
     public function getSpsLightLocal()
     {
         log_message('debug', 'run: models\Providers::getSpsLightLocal()');
-        $dql = "SELECT p FROM models\Provider p WHERE p.type IN ('SP','BOTH') AND p.is_local = '1' ORDER BY p.name ASC ";
-        $dql = "SELECT p,a FROM models\Provider p JOIN  p.extend a  WHERE p.type IN ('SP','BOTH') AND p.is_local = '1' ORDER BY p.name ASC ";
+        $dql = "SELECT p,a FROM models\Provider p LEFT JOIN  p.extend a  WHERE p.type IN ('SP','BOTH') AND p.is_local = '1' ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
