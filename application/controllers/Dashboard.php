@@ -71,7 +71,7 @@ class Dashboard extends MY_Controller {
 
                  $pref = $u->getUserpref();
                  
-                 if(!empty($pref))
+                 if(isset($pref['boeard']))
                  {
                     $board = $pref['board'];
                  }
