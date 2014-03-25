@@ -137,6 +137,45 @@ class Providers
         return $result;
     }
 
+    public function getCircleMembersLight(Provider $provider)
+    {
+        $type = $provider->getType();
+        $types = array();
+        if($type === 'IDP')
+        {
+           $types = array('\'SP\'','\'BOTH\'');
+        }
+        elseif($type === 'SP')
+        {
+           $types = array('\'IDP\'','\'BOTH\'');
+        }
+        else
+        {
+           $types= array('\'IDP\'','\'SP\'','\'BOTH\'');
+        }
+        $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
+        $federations = $provider->getFederations();
+        $feds = array();
+        foreach($federations as $f)
+        {
+            if($f->getActive() === true)
+            {
+               $feds[] = $f->getId();
+            }
+        }
+        if(count($feds) > 0)
+        {
+          $fedin = implode(',', $feds); 
+          $typesin = implode(',', $types); 
+          $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.membership a WHERE p.type IN (".$typesin.") AND a.federation IN (".$fedin.") AND a.joinstate != '2' AND a.isBanned='0' AND a.isDisabled = '0' ORDER BY p.name ASC ";
+          $query = $this->em->createQuery($dql);
+          $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+          return $query->getResult();
+        }
+   
+        return $this->providers;
+    }
+
     public function getCircleMembersSP(Provider $provider, $federations = null)
     {
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
