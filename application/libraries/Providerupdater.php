@@ -1375,28 +1375,26 @@ class Providerupdater {
             {
                 if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']))
                 {
-                    if (array_key_exists('remove', $ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']) && $ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['remove'] === 'yes')
+                    $crtusecase = $ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['usage'];
+                    if (!empty($crtusecase) && in_array($crtusecase, $allowedusecase))
                     {
-                        $ent->removeCertificate($v);
+                        $v->setCertUse($crtusecase);
                     }
-                    else
+                    if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']))
                     {
-                        $crtusecase = $ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['usage'];
-                        if (!empty($crtusecase) && in_array($crtusecase, $allowedusecase))
-                        {
-                            $v->setCertUse($crtusecase);
-                        }
-                        if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']))
-                        {
-                            $v->setKeyname($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']);
-                        }
-                        if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']))
-                        {
-                            $v->setCertData($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']);
-                        }
-                        $this->em->persist($v);
+                        $v->setKeyname($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']);
                     }
+                    if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']))
+                    {
+                        $v->setCertData($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']);
+                    }
+                    $this->em->persist($v);
                     unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
+                }
+                else
+                {
+                    $ent->removeCertificate($v);
+                    $this->em->remove($v);
                 }
             }
             /**
@@ -1417,6 +1415,7 @@ class Providerupdater {
                         $ncert->setProvider($ent);
                         $ncert->setKeyname($v2['keyname']);
                         $ncert->setCertData($v2['certdata']);
+                        $ncert->generateFingerprint();
                         $this->em->persist($ncert);
                     }
                 }
@@ -1433,6 +1432,7 @@ class Providerupdater {
                         $ncert->setProvider($ent);
                         $ncert->setKeyname($v2['keyname']);
                         $ncert->setCertData($v2['certdata']);
+                        $ncert->generateFingerprint();
                         $this->em->persist($ncert);
                     }
                 }
@@ -1449,6 +1449,7 @@ class Providerupdater {
                         $ncert->setProvider($ent);
                         $ncert->setKeyname($v2['keyname']);
                         $ncert->setCertData($v2['certdata']);
+                        $ncert->generateFingerprint();
                         $this->em->persist($ncert);
                     }
                 }

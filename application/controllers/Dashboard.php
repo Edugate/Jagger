@@ -23,11 +23,11 @@ class Dashboard extends MY_Controller {
     function __construct()
     {
         parent::__construct();
-        $this->load->library('j_auth');
     }
 
     function index()
     {
+        $this->load->library('j_auth');
         $loggedin = $this->j_auth->logged_in();
         $baseurl = base_url();
         if (!$loggedin)
@@ -43,7 +43,7 @@ class Dashboard extends MY_Controller {
             return;  
         }
         
-         $this->load->library('zacl');
+        $this->load->library('zacl');
         
         $this->load->library('table');
         $q = $this->em->getRepository("models\Queue")->findAll();

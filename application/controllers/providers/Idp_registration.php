@@ -174,7 +174,7 @@ class Idp_registration extends MY_Controller {
     }
 
     private function _submit_validate() {
-        $this->form_validation->set_rules('homeorg', 'Homeorg Organization', 'trim|required|min_length[5]|max_length[128]|homeorg_unique[homeorg]|xss_clean');
+        $this->form_validation->set_rules('homeorg', 'Homeorg Organization', 'trim|required|min_length[3]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('entity', 'entityID', 'trim|required|no_white_spaces|min_length[10]|max_length[128]|entity_unique[entity]|xss_clean');
         $this->form_validation->set_rules('ssohandler', 'SSO Handler', 'trim|required|min_length[10]|valid_url[sshohandler]|ssohandler_unique[ssohandler]|xss_clean');
         $this->form_validation->set_rules('certbody', 'Certificate', 'trim|required|xss_clean|verify_cert[certbody]');

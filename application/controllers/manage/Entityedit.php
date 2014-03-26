@@ -192,9 +192,8 @@ class Entityedit extends MY_Controller {
                 {
                     foreach ($y['f']['crt']['spsso'] as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|verify_cert');
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][remove]', ''.lang('rr_remove').'', 'trim');
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required');
+                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert');
+                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required|xss_clean');
                     }
                 }
                 if (array_key_exists('idpsso', $y['f']['crt']))
@@ -202,8 +201,7 @@ class Entityedit extends MY_Controller {
                     foreach ($y['f']['crt']['idpsso'] as $k => $v)
                     {
                         $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|verify_cert');
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][remove]', ''.lang('rr_remove').'', 'trim');
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required');
+                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required|xss_clean');
                     }
                 }
             }
@@ -262,7 +260,7 @@ class Entityedit extends MY_Controller {
                 }
                 if (array_key_exists('AssertionConsumerService', $y['f']['srv']))
                 {
-                    log_message('debug','GGGG : AssertionConsumerService array exists');
+                    log_message('debug',__METHOD__.'AssertionConsumerService array exists');
                     $acsindexes = array();
                     $acsurls = array();
                     $acsdefault = array();
@@ -475,6 +473,31 @@ class Entityedit extends MY_Controller {
         {
             $data['lname']= array();
         }
+        if(isset($data['crt']['idpsso']))
+        {
+           $data['crt']['idpsso']=array_filter($data['crt']['idpsso']);
+        }
+        else
+        {
+           $data['crt']['idpsso'] = array();
+        }
+        if(isset($data['crt']['aa']))
+        {
+           $data['crt']['aa']=array_filter($data['crt']['aa']);
+        }
+        else
+        {
+           $data['crt']['aa'] = array();
+        }
+        if(isset($data['crt']['spsso']))
+        {
+           $data['crt']['spsso']=array_filter($data['crt']['spsso']);
+        }
+        else
+        {
+           $data['crt']['spsso'] = array();
+        }
+       
         if(isset($data['ldisplayname']))
         {
            $data['ldisplayname']=array_filter($data['ldisplayname']);

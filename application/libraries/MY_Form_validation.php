@@ -433,7 +433,33 @@ class MY_form_validation extends CI_form_validation {
         $res = openssl_x509_parse($ncert);
         if (is_array($res))
         {
-            return TRUE;
+           $minkeysize = $this->CI->config->item('entkeysizemin');
+           if(!empty($minkeysize))
+           {
+              $minkeysize = (int) $minkeysize;
+           }
+           else
+           {
+              $minkeysize = 4000;
+           }
+           $r = openssl_pkey_get_public($cert);
+           $keysize = null;
+           if(!empty($r))
+           {
+              $data = array();
+              $data = openssl_pkey_get_details($r);
+              if(isset($data['bits']))
+              {
+                  $keysize=  $data['bits'];
+              }
+           }
+           if($minkeysize > $keysize)
+           {
+               $this->set_message('verify_cert', "The %s : Keysize is less than  ".$minkeysize."");
+               return false;
+           }
+           return TRUE;
+            
         }
         else
         {
