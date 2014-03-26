@@ -425,7 +425,7 @@ class MY_form_validation extends CI_form_validation {
         $c = count($i);
         if ($c < 2)
         {
-            $pem = chunk_split($cert, 64, "\n");
+            $pem = chunk_split($cert, 64, PHP_EOL);
             $cert = $pem;
         }
         $this->CI->load->helper('cert');
@@ -433,7 +433,42 @@ class MY_form_validation extends CI_form_validation {
         $res = openssl_x509_parse($ncert);
         if (is_array($res))
         {
-            return TRUE;
+           $minkeysize = $this->CI->config->item('entkeysizemin');
+           if(!empty($minkeysize))
+           {
+              $minkeysize = (int) $minkeysize;
+           }
+           else
+           {
+              $minkeysize = 2048;
+           }
+           $r = openssl_pkey_get_public($ncert);
+           $keysize = 0;
+           if(!empty($r))
+           {
+              $data = array();
+              $data = openssl_pkey_get_details($r);
+              if(isset($data['bits']))
+              {
+                  $keysize=  $data['bits'];
+              }
+              else
+              {
+                  $this->set_message('verify_cert', "The %s : Could not compute keysize");
+                  return false;
+              } 
+           }
+           else
+           {
+              $this->set_message('verify_cert', "The %s : Keysize is less than  ".$minkeysize."");
+           }
+           if($minkeysize > $keysize)
+           {
+               $this->set_message('verify_cert', "The %s : Could not compute keysize");
+               return false;
+           }
+           return TRUE;
+            
         }
         else
         {
