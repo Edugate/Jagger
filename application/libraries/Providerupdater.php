@@ -1375,6 +1375,8 @@ class Providerupdater {
             {
                 if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']))
                 {
+                    $tkeyname = false;
+                    $tdata = false;
                     $crtusecase = $ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['usage'];
                     if (!empty($crtusecase) && in_array($crtusecase, $allowedusecase))
                     {
@@ -1382,13 +1384,29 @@ class Providerupdater {
                     }
                     if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']))
                     {
+                        if(!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']))
+                        {
+                           $tkeyname = true;
+                        }
                         $v->setKeyname($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']);
                     }
                     if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']))
                     {
+                        if(!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']))
+                        {
+                           $tdata = true;      
+                        }
                         $v->setCertData($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']);
                     }
-                    $this->em->persist($v);
+                    if($tdata === false && $tkeyname === false)
+                    {
+                       $ent->removeCertificate($v);
+                       $this->em->remove($v);
+                    }
+                    else
+                    {
+                       $this->em->persist($v);
+                    }
                     unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
                 }
                 else

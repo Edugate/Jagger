@@ -514,9 +514,15 @@ class Certificate
     {
        if(!empty($value))
        {
-         $cleaned_value = $value;
-         $cleaned_value = str_replace('-----BEGIN CERTIFICATE-----', '', $cleaned_value);
-         $cleaned_value = str_replace('-----END CERTIFICATE-----', '', $cleaned_value);
+            $pattern = array(
+               '0'=>'/(.*)-----BEGIN CERTIFICATE-----/s',
+               '1'=>'/-----END CERTIFICATE-----(.*)/s'
+            );
+            $cleaner = array(
+               '0'=>'',
+               '1'=>''
+            );
+         $cleaned_value = preg_replace($pattern, $cleaner, $value);
          $cleaned_value = preg_replace("/\r\n/","", $cleaned_value);
          $cleaned_value = preg_replace("/\n+/","", $cleaned_value);
          $cleaned_value = preg_replace('/\s\s+/', "", $cleaned_value);
@@ -526,10 +532,7 @@ class Certificate
          $pem = '-----BEGIN CERTIFICATE-----'.PHP_EOL.$pem.'-----END CERTIFICATE-----';
          return $pem;
       }
-      else
-      {
-       return $value;
-      }
+      return $value;
 }
 
 }

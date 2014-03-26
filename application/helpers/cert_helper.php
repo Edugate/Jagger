@@ -87,32 +87,37 @@ function reformatPEM($value)
 
 // Get PEM formated certificate from quickform input
 // if raw is true, then ommit the begin/end certificate delimiter
-function getPEM($value, $raw = false)
+function getPEM($value=null, $raw = false)
 {
+    if(empty($value))
+    {
+        return null;
+    }
+    $pattern = array(
+       '0'=>'/(.*)-----BEGIN CERTIFICATE-----/s',
+       '1'=>'/-----END CERTIFICATE-----(.*)/s'
+    );
+    $cleaner = array(
+       '0'=>'',
+       '1'=>''
+    );
+    $replacement = array(
+      '0'=>"-----BEGIN CERTIFICATE-----\n",
+      '1'=>"\n-----END CERTIFICATE-----"
+     );
+    $cleaned_value = preg_replace($pattern, $cleaner, $value);
+    $cleaned_value = trim($cleaned_value);
 
-    $cleaned_value = preg_replace('#(\\\r)#', '', $value);
-    $cleaned_value = preg_replace('#(\\\n)#', "\n", $value);
+    $cleaned_value = preg_replace('#(\\\r)#', '', $cleaned_value);
+    $cleaned_value = preg_replace('#(\\\n)#', "\n", $cleaned_value);
 
     $cleaned_value = trim($cleaned_value);
 
     // Add or remove BEGIN/END lines
-    if ($raw)
+    if ($raw===false)
     {
-        $cleaned_value = preg_replace('-----BEGIN CERTIFICATE-----', '', $cleaned_value);
-        $cleaned_value = preg_replace('-----END CERTIFICATE-----', '', $cleaned_value);
-        $cleaned_value = trim($cleaned_value);
-    } else
-    {
-        if (!empty($cleaned_value) && !preg_match('/-----BEGIN CERTIFICATE-----/', $cleaned_value))
-        {
-            $cleaned_value = "-----BEGIN CERTIFICATE-----\n" . $cleaned_value;
-        }
-        if (!empty($cleaned_value) && !preg_match('/-----END CERTIFICATE-----/', $cleaned_value))
-        {
-            $cleaned_value .= "\n-----END CERTIFICATE-----";
-        }
+        $cleaned_value = $replacement['0'].$cleaned_value.$replacement['1'];
     }
-
     return $cleaned_value;
 }
 

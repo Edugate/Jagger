@@ -1839,6 +1839,15 @@ class Form_element {
             $certuse = 'both';
         }
         $crtid = $idCert;
+        $certdata = set_value( ''.$name . '[' . $crtid . '][certdata]', getPEM($sessionCert['certdata']));
+        if(!empty($certdata))
+        {
+           $keysize= getKeysize($certdata);
+        }
+        if(empty($keysize))
+        {
+            $keysize = lang('unknown');
+        }
         $row = '<div class="certgroup">';
         $row .= '<li>' . form_label(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]');
         $row .= form_dropdown('' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($sessionCert['type'])) . '</li>';
@@ -1855,6 +1864,7 @@ class Form_element {
             $row .= ' <button type="button" class="btn certificaterm" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button>';
         }
         $row .='</li>';
+        $row .= '<li>'.form_label(lang('rr_computedkeysize') , 'keysize').'<input type="text" name="keysize" value="'.$keysize.'" disabled="disabled" style="font-weight: bold;background-color: transparent;min-width: 50px"></li>';
         $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), '' . $name . '[' . $crtid . '][certdata]');
         $row .= form_textarea(array(
                     'name' => '' . $name . '[' . $crtid . '][certdata]',
@@ -1862,8 +1872,8 @@ class Form_element {
                     'cols' => 65,
                     'rows' => 40,
                     'class' => 'certdata ',
-                    'value' => '' . getPEM($sessionCert['certdata']) . '',
-                )) . '</li></div>';
+                    'value' => '' . $certdata . '',
+                )) . '</li><li><br /></li></div>';
         return $row;
 
 
@@ -1875,6 +1885,16 @@ class Form_element {
         {
             $certuse = 'both';
         }
+        $certdata = getPEM($cert->getCertData());
+        if(!empty($certdata))
+        {
+           $keysize= getKeysize($certdata);
+        }
+        if(empty($keysize))
+        {
+            $keysize = lang('unknown');
+        }
+
         $crtid = $cert->getId();
         $row = '<div class="certgroup">';
         $row .= '<li>' . form_label(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]');
@@ -1892,6 +1912,7 @@ class Form_element {
             $row .= ' <button type="button" class="btn certificaterm" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button>';
         }
         $row .='</li>';
+        $row .= '<li>'.form_label(lang('rr_computedkeysize') , 'keysize').'<input type="text" name="keysize" value="'.$keysize.'" disabled="disabled" style="font-weight: bold;background-color: transparent;min-width: 50px"></li>';
         $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), '' . $name . '[' . $crtid . '][certdata]');
         $row .= form_textarea(array(
                     'name' => '' . $name . '[' . $crtid . '][certdata]',
@@ -1899,8 +1920,8 @@ class Form_element {
                     'cols' => 65,
                     'rows' => 40,
                     'class' => 'certdata ',
-                    'value' => '' . $cert->getPEM($cert->getCertData()) . '',
-                )) . '</li></div>';
+                    'value' => '' . $certdata . '',
+                )) . '</li><li><br /></li></div>';
         return $row;
     }
 

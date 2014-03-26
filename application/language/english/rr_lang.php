@@ -670,6 +670,7 @@ $lang['rr_servicelocations']        = 'Service Locations';
 $lang['rr_keyname']                 = 'KeyName';
 $lang['rr_fingerprint']             = 'Fingerprint';
 $lang['rr_keysize']                 = 'Keysize';
+$lang['rr_computedkeysize']         = 'Computed keysize';
 $lang['rr_certbody']                = 'Certificate body';
 $lang['rr_daystoexpire']            = 'days to expire';
 $lang['rr_usecommaasdelimeter']     = 'use comma as delimeter';
