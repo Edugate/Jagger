@@ -3145,6 +3145,10 @@ form#applyforaccount {
   box-shadow: none;
 }
 
+form.register input {
+  min-width: 400px;
+}
+
 .ir {
   background-color: transparent;
   border: 0;
