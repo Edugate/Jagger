@@ -1,137 +1,241 @@
-<div id="subtitle"><h3><?php echo lang('rr_idp_register_title');?></h3></div>
+<?php
+$this->load->helper("cert");
+?>
+<div id="subtitle"><h3><?php echo lang('rr_idp_register_title'); ?></h3></div>
+<?php
+$errors_v = validation_errors('<span>', '</span><br />');
+if (!empty($errors_v)) {
+    echo '<div class="error">' . $errors_v . '</div>';
+}
+if(!empty($additional_error))
+{
+    echo '<div class="error">'. $additional_error .'</div>';
+}
+
+$form_attributes = array('id' => 'multistepform', 'class' => 'register');
+$action = current_url();
+echo form_open($action, $form_attributes);
+?>
+<ul id="progressbar" class="foursteps">
     <?php
-    $this->load->helper("cert");
-    $base = base_url();
-    $attributes = array('class' => 'email', 'id' => 'formver2');
-    echo form_open("" . $base . "providers/idp_registration/submit", $attributes);
-    $errors_v = validation_errors('<span class="span-12">', '</span><br />');
-    if (!empty($errors_v)) {
-        echo '<div class="error">';
-        echo $errors_v;
-        echo "</div>";
-    }
-
-    $required = 'required="required"';
+    echo '<li class="active">' . lang('rr_formstep') . '1</li><li>' . lang('rr_formstep') . '2</li><li>' . lang('rr_formstep') . '3</li><li>' . lang('rr_formstep') . '4</li>';
     ?>
+</ul>
 
-    <div id="step1">
-        <fieldset>
-            <legend><?php echo lang('rr_generalinformation');?></legend>
+<!-- step1 -->
+<?php
+echo form_fieldset('Step1');
+echo '<ol>';
+echo '<li>';
+echo form_label('Metadata <small>(' . lang('rr_optional') . ')</small>'.showBubbleHelp(lang('rhelp_regspparsemeta')), 'metadatabody');
+echo form_textarea(array(
+    'id' => 'metadatabody',
+    'name' => 'metadatabody',
+    'value' => set_value('metadatabody'),
+    'cols' => 65,
+    'rows' => 20,
+    'style' => 'font-family: monospace; font-size: smaller'
+));
+echo '<div class="buttons"><button  type="button" name="parsemetadataidp" id="parsemetadataidp" value="parsemetadataidp" class="savebutton">'.lang('btnparsemeta').'</button>';
+echo '</li>';
+echo '</ol>';
+?>
+<button type="button" name="next" class="next savebutton"><?php echo lang('nextstep'); ?></button>
+<?php
+echo form_fieldset_close();
+?>
+<!-- step2 -->
+<?php
+echo form_fieldset('General');
+echo '<ol>';
+echo '</li>';
+/**
+ * federation select
+ */
+echo '<li>';
+echo form_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'federation');
+echo form_dropdown('federation', $federations,set_value('federation'));
+echo '</li>';
+echo '<li>' . form_label(lang('rr_entityid'), 'entityid');
+echo form_input(array(
+    'id' => 'entityid',
+    'name' => 'entityid',
+    'value' => set_value('entityid'),
+    'max-length' => 255,
+    'class' => 'required'
+));
+echo '</li>';
+echo '<li>' . form_label(lang('rr_homeorganisation'), 'homeorg');
+echo form_input(array(
+    'id' => 'homeorg',
+    'name' => 'homeorg',
+    'value' => set_value('homeorg'),
+    'max-length' => 255,
+    'class' => 'required',
+));
+echo '</li>';
 
-            <ol>
+echo '<li>' . form_label(lang('rr_homeorganisationdisplay'), 'deschomeorg');
+echo form_input(array(
+    'id' => 'deschomeorg',
+    'name' => 'deschomeorg',
+    'value' => set_value('deschomeorg'),
+    'max-length' => 255,
+    'class' => 'required',
+));
+echo '</li>';
+echo '<li>' . form_label(lang('rr_homeorganisationurl').'<br /><small><i>('.lang('rr_helpdeskurl').')</i></small>', 'helpdeskurl');
+echo form_input(array(
+    'id' => 'helpdeskurl',
+    'name' => 'helpdeskurl',
+    'value' => set_value('helpdeskurl'),
+    'max-length' => 255,
+    'class' => 'required',
+));
+echo '</li>';
+echo '<li>' . form_label(lang('rr_homeurl'), 'homeurl');
+echo form_input(array(
+    'id' => 'homeurl',
+    'name' => 'homeurl',
+    'value' => set_value('homeurl'),
+    'max-length' => 255,
+    'class' => 'required',
+));
+echo '</li>';
 
-                <li>
+echo '</ol>';
+?>
+<button type="button" name="previous" class="previous savebutton"><?php echo lang('prevstep'); ?></button>
+<button type="button" name="next" class="next savebutton"><?php echo lang('nextstep'); ?></button>
 
-                    <label for="homeorg"><?php echo lang('rr_homeorganisation');?></label>
+<?php
+echo form_fieldset_close();
+?>
+<!-- step3 -->
 
-                    <input type="text" id="homeorg" name="homeorg" placeholder="Example Home Org Name"
-                           value="<?php echo set_value('homeorg'); ?>" tabindex="1" <?php echo $required; ?>/>
-                </li>
-
-                <li>
-
-                    <label for="federation"><?php echo lang('rr_federation') .' '.showBubbleHelp(lang('rhelp_onlypublicfeds')) ;?></label>
-
-
-                    <?php
-                    echo form_dropdown('federation', $federations, set_value('federation'));
-                    ?>
-                </li>
-
-            </ol>
-
-        </fieldset>
-        <fieldset>
-            <legend><?php echo lang('rr_technicalinformation');?></legend>
-            <ol>
-                <li>
-                    <label for="metadataurl"><?php echo lang('rr_metadatalocation');?></label>
-                    <input type="text" id="metadataurl" name="metadataurl" value="<?php echo set_value('metadataurl'); ?>"/>
-                </li>
-                <li>
-                    <label for="entity"><?php echo lang('rr_entityid').showBubbleHelp(lang('rhelp_entityid'));?></label>
-                    <input type="text" id="entity" name="entity" placeholder="https://idp.example.com/idp/shibboleth"
-                           value="<?php echo set_value('entity'); ?>"  <?php echo $required; ?>/>
-                </li>
-                <li>
-                    <label for="privacyurl"><?php echo lang('rr_privacystatement');?></label>
-                    <input type="text" id="privacyurl" name="privacyurl" value="<?php echo set_value('privacyurl'); ?>"/>
-                </li>
-                <li>
-                    <label for="scope"><?php echo lang('rr_scope');?></label>
-                    <input type="text" id="scope" name="scope" placeholder="your domain"
-                           value="<?php echo set_value('scope'); ?>"  <?php echo $required; ?>/>
-                </li>
-                <li>
-                    <label for="bindingname"><?php echo lang('rr_bindingtypesinglesign').showBubbleHelp(lang('rhelp_bindingtype'));?></label>
-                    <?php
-                    $binding_values = array(
-                               'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'=>'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-                               'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-                               'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
-                               'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP'
-                                     );
-                    echo form_dropdown('bindingname', $binding_values,set_value('bindingname'));
-                    ?>
-                </li>
-                <li>
-                    <label for="ssohandler"><?php echo lang('rr_singlesignonurl').showBubbleHelp(lang('rhelp_urlsinglesign'));?></label>
-                    <input type="text" id="ssohandler" name="ssohandler" placeholder="https://idp.example.com/idp/profile/SAML2/Redirect/SSO"
-                           value="<?php echo set_value('ssohandler'); ?>"  <?php echo $required; ?>/>
-                </li>
-
-                <li>
-                    <label for="certbody"><?php echo lang('rr_idpsigningcert');?></label>
-                    <textarea id="certbody" name="certbody" cols="65" rows="30"  <?php echo $required; ?>><?php echo getPEM(set_value('certbody')); ?></textarea>
-                </li>
-            </ol>
-        </fieldset>
-
-        <?php
-        echo form_fieldset(lang('rr_primarycontact'));
-        ?>		
-        <ol>
-            <li>
-
-                <label for="contactname"><?php echo lang('rr_contactname');?></label>
-                <input type="text" id="contactname" name="contactname" placeholder="First and last name"
-                       value="<?php echo set_value('contactname'); ?>"   <?php echo $required; ?>/><br />
-            </li>
-            <li>
-                <label for="contactmail"><?php echo lang('rr_contactemail');?></label>
-                <input type="email" id="contactmail" name="contactmail" placeholder="example@domain.com"
-                       value="<?php echo set_value('contactmail'); ?>"   <?php echo $required; ?>/><br />
-            </li>
-            <li>
-                <label for="phone"><?php echo lang('rr_contactphone');?></label>
-                <input type="text" id="phone" name="phone" 
-                       value="<?php echo set_value('phone'); ?>" /><br />
-            </li>
-            <li>
-                <label for="helpdeskurl"><?php echo lang('rr_helpdeskurl').showBubbleHelp(lang('rhelp_helpdeskurl'));?></label>
-                <input type="text" id="helpdeskurl" name="helpdeskurl"
-                       value="<?php echo set_value('helpdeskurl'); ?>"   <?php echo $required; ?>/><br />
-            </li>
-            <li>
-                <label for="homeurl"><?php echo lang('rr_homeorganisationurl');?></label>
-                <input type="text" id="homeurl" name="homeurl"
-                       value="<?php echo set_value('homeurl'); ?>" <?php echo $required; ?>/><br />
-            </li>
-
-        </ol>
-        <div class="buttons">
-            <button type="submit" name="submit" value="Submit and wait for approval" class="savebutton saveicon">
-                <?php echo lang('rr_submitwait');?></button>
-                        </div>
-                        <?php
-                        echo form_fieldset_close();
-                        ?>
+<?php
 
 
+echo form_fieldset(lang('rr_technicalinformation'));
+echo '<ol>';
+
+echo '<li>';
+echo form_label(lang('rr_scope').'<br /><small>IDPSSODescriptor</small>','idpssoscope');
+
+echo form_input(
+    array(
+     'id'=>'idpssoscope',
+     'name' => 'idpssoscope',
+     'value'=>set_value('idpssoscope'),
+     'class'=>'required' 
+   )
+);
+
+echo '</li>';
 
 
-                        </div>  
+foreach($idpssobindprotocols as $k=> $s)
+{
+   echo '<li class="ssourls">';
+   echo form_label(lang('rr_singlesignon_fieldset').'<br /><small>'.$s.'</small>','sso['.$k.']');
+   echo form_input(array(
+        'id'=>'sso['.$k.']',
+        'name'=>'sso['.$k.']',
+        'value'=>set_value('sso['.$k.']'),
+      ));
+   echo '</li>';
+}
 
-                        <?php
-                        echo form_close();
-                        ?>
+
+
+
+echo '<li>';
+echo form_label('NameId(s)<br/> <small>IDPSSODescriptor (' . lang('rr_optional') . ')</small>', 'nameids');
+echo form_textarea(array(
+    'id' => 'nameids',
+    'name' => 'nameids',
+    'value' => set_value('nameids'),
+    'cols' => 50,
+    'rows' => 2,
+    'style' => 'font-family: monospace; font-size: smaller;'
+));
+
+
+echo '</li>';
+
+
+echo '<li>';
+echo form_label(lang('rr_certificatesigning') .'<br /><small>IDPSSODescriptor</small>', 'sign_cert_body');
+echo form_textarea(array(
+    'id' => 'sign_cert_body',
+    'name' => 'sign_cert_body',
+    'value' => reformatPEM(set_value('sign_cert_body')),
+    'cols' => 50,
+    'rows' => 20,
+    'style' => 'font-family: monospace; font-size: smaller;',
+    'class' => 'required'
+));
+echo '</li>';
+echo '<li>';
+echo form_label(lang('rr_certificateencrypting') .'<br /><small>IDPSSODescriptor</small>' , 'encrypt_cert_body');
+echo form_textarea(array(
+    'id' => 'encrypt_cert_body',
+    'name' => 'encrypt_cert_body',
+    'value' => reformatPEM(set_value('encrypt_cert_body')),
+    'cols' => 50,
+    'rows' => 20,
+    'style' => 'font-family: monospace; font-size: smaller',
+    'class'=>'required'
+));
+echo '</li>';
+echo '</ol>';
+?>
+<button type="button" name="previous" class="previous savebutton"><?php echo lang('prevstep'); ?></button>
+<button type="button" name="next" class="next savebutton"><?php echo lang('nextstep'); ?></button>
+
+<?php
+echo form_fieldset_close();
+?>
+<!-- step4 -->
+<?php
+echo form_fieldset(lang('rr_primarycontact'));
+echo '<ol><li>';
+echo form_label(lang('rr_contactname'), 'contact_name');
+echo form_input(array(
+    'id' => 'contact_name',
+    'name' => 'contact_name',
+    'value' => set_value('contact_name'),
+    'class' => 'required',
+));
+echo '</li><li>';
+$in3 = array('id' => 'contact_mail',
+    'name' => 'contact_mail',
+    'value' => set_value('contact_mail'),
+    'class' => 'required',
+);
+echo form_label(lang('rr_contactemail'), 'contact_mail');
+echo form_input($in3) . '</li>';
+
+echo '<li>';
+$in4 = array(
+    'id' => 'contact_phone',
+    'name' => 'contact_phone',
+    'value' => set_value('contact_phone'),
+);
+
+echo form_label(lang('rr_contactphone') . ' <small>(' . lang('rr_optional') . ')</small>', 'contact_phone');
+echo form_input($in4) . '</li>';
+echo '</ol>';
+?>
+<button type="button" name="previous" class="previous savebutton"><?php echo lang('prevstep'); ?></button>
+<button type="submit" name="submit" value="Submit and wait for approval" class="savebutton saveicon"><?php echo lang('rr_submitwait'); ?></button>
+
+<?php
+echo form_fieldset_close();
+?>
+
+
+
+
+</form>
+

@@ -2255,7 +2255,6 @@ $("button#parsemetadataidp").click(function(){
           }
        }
     });
-    alert($scopes);
     $("#idpssoscope").val($.trim($scopes));
 
     $idpssodescriptor.find("md\\:SingleSignOnService,SingleSignOnService").each(function(){
@@ -2263,15 +2262,15 @@ $("button#parsemetadataidp").click(function(){
       $ssourl = $(this).attr("Location");
       if($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect")
       {
-            $("#sso\\[urn\\:oasis\\:names\\:tc\\:SAML\\:2\\.0\\:bindings\\:HTTP-Redirect\\]").val($.trim($ssourl));
+            $("#sso\\[saml2httpredirect\\]").val($.trim($ssourl));
       }
       else if($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
       {
-           $("#sso\\[urn\\:oasis\\:names\\:tc\\:SAML\\:2\\.0\\:bindings\\:HTTP-POST\\]").val($.trim($ssourl));
+           $("#sso\\[saml2httppost\\]").val($.trim($ssourl));
       }
       else if($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign")
       {
-            $("#sso\\[urn\\:oasis\\:names\\:tc\\:SAML\\:2\\.0\\:bindings\\:HTTP-POST-SimpleSign\\]").val($.trim($ssourl));
+            $("#sso\\[saml2httppostsimplesign\\]").val($.trim($ssourl));
 
       }
       else
@@ -2354,6 +2353,8 @@ $("button#parsemetadataidp").click(function(){
     }
 
     $("#nameids").val($.trim($nameids));
+
+    alert("Success");
     GINIT.initialize();
 
 });
@@ -2472,6 +2473,7 @@ $("button#parsemetadatasp").click(function() {
             return false;
         }
     });
+        alert("Success");
         GINIT.initialize();
    
 });

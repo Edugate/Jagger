@@ -336,6 +336,7 @@ $lang['rr_convertjoinstate31']     = 'updated federation status';
 $lang['rr_joinstatealreadyinfed']  = 'already member, no need to update membership';
 $lang['rr_membersoffed']            = 'Members of %s federation';
 $lang['rr_homeorganisation']        = 'Home Organization' ;
+$lang['rr_homeorganisationdisplay']        = 'HomeOrg Descriptive Name' ;
 $lang['rr_technicalinformation']    = 'Technical Information';
 $lang['rr_logos']                   = 'Logos';
 $lang['rr_assignedlogostab']        = 'Assigned Logos';
@@ -984,7 +985,7 @@ $lang['rr_jobinqueue']              = 'The job is still on the queue';
 $lang['rr_jobdonein']                 = 'The job done in';
 
 
-
+$lang['err_atleastonesso']         = 'At least one SingleSignOn URL must be defined';
 $lang['entdswayf']                          = 'The link contains list of all trusted Identity Providers in json format. Generaly it can be consumed by DiscoveryService particularly DiscoJuice';
 
 $lang['entname_default_expl']              = 'This is default value for OrganizationName.<br /> If localized name is not set for English language then this value is used instead in generated SAML metadata: /EntityDescriptor/Organization/OrganizationName';
