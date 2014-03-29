@@ -2178,7 +2178,186 @@ function go_to_private_page()
 }
 
 // parsemetadata
+$("button#parsemetadataidp").click(function(){
+    var xmlsource = $('textarea#metadatabody').val();
+    try {
+        var xmlDoc = $.parseXML(xmlsource);
+    }
+    catch (err)
+    {
+        alert(err);
+        return false;
+    }
 
+    var xml = $(xmlDoc);
+    $entity = null;
+    $spssodescriptor = null;
+      
+   
+    xml.find("md\\:IDPSSODescriptor,IDPSSODescriptor").each(function() {
+        if ($(this).attr("protocolSupportEnumeration"))
+        {
+            $entity = $(this).parent();
+            $idpssodescriptor = $(this);
+            return false;
+        }
+        return true;
+    });
+    if ($entity === null)
+    {
+        alert("IDPSSODescriptor element not found");
+        return false;
+    }
+    $("#entityid").val($entity.attr("entityID"));
+    $orgname = null;
+    $entity.find("md\\:OrganizationName,OrganizationName").each(function(){
+          $orgname = $(this);
+          $langname = $orgname.attr("xml:lang"); 
+          if($langname === "en")
+          {
+              return false;
+          }     
+    });
+    $orgdisname = null;
+    $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName").each(function(){
+          $orgdisname = $(this);
+          $langname = $orgdisname.attr("xml:lang"); 
+          if($langname === "en")
+          {
+              return false;
+          }     
+
+    });
+    $helpdeskurl = null;
+    $entity.find("md\\:OrganizationURL,OrganizationURL").each(function(){
+         $helpdeskurl = $(this);
+         $langname = $helpdeskurl.attr("xml:lang");
+         if($langname === "en")
+         {
+            return false;
+         }
+    });
+    $nameids = '';
+    $idpssodescriptor.find("md\\:NameIDFormat,NameIDFormat").each(function(){
+      $nameids = $nameids+' '+$(this).text();
+   });
+    $scopes = '';
+    $idpssodescriptor.find("shibmd\\:Scope,Scope").each(function(){
+       if($(this).attr("regexp") && $(this).attr("regexp") === 'false')
+       {
+          if($scopes != '')
+          {
+             $scopes = $scopes+','+$(this).text();
+          }
+          else
+          {
+              $scopes = $(this).text() ;
+          }
+       }
+    });
+    $("#idpssoscope").val($.trim($scopes));
+
+    $idpssodescriptor.find("md\\:SingleSignOnService,SingleSignOnService").each(function(){
+      $binprot = $(this).attr("Binding");
+      $ssourl = $(this).attr("Location");
+      if($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect")
+      {
+            $("#sso\\[saml2httpredirect\\]").val($.trim($ssourl));
+      }
+      else if($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
+      {
+           $("#sso\\[saml2httppost\\]").val($.trim($ssourl));
+      }
+      else if($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign")
+      {
+            $("#sso\\[saml2httppostsimplesign\\]").val($.trim($ssourl));
+
+      }
+      else
+      {
+         $("#sso\\["+$binprot+"\\]").val($.trim($ssourl));
+      }
+    });
+
+    var certsign = false;
+    var certenc = false;
+    $idpssodescriptor.find("md\\:KeyDescriptor, KeyDescriptor").each(function(){
+        if (!certsign || !certenc)
+        {
+            if ($(this).attr("use") === "signing")
+            {
+                if (!certsign)
+                {
+                    var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
+                    $("#sign_cert_body").val($.trim(cert.text()));
+                    certsign = true;
+                }
+            }
+            else if ($(this).attr("use") === "encryption")
+            {
+                if (!certenc)
+                {
+                    var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
+                    $("#encrypt_cert_body").val($.trim(cert.text()));
+                    certenc = true;
+                }
+            }
+            else
+            {
+                var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
+                if (!certenc)
+                {
+                    $("#encrypt_cert_body").val($.trim(cert.text()));
+                    certenc = true;
+                }
+                if (!certsign)
+                {
+                    $("#sign_cert_body").val($.trim(cert.text()));
+                    certsign = true;
+                }
+            }
+
+        }
+        else
+        {
+            return false;
+        }
+         
+    });
+
+    if($orgname === null)
+    {
+       $("#homeorg").val("");
+    } 
+    else
+    {
+       $("#homeorg").val($orgname.text());
+    }
+    if($orgdisname === null)
+    {
+        $("#deschomeorg").val("");
+    }
+    else
+    {
+       $("#deschomeorg").val($orgdisname.text());
+    }
+    if($helpdeskurl === null)
+    {
+       $("#helpdeskurl").val("");
+       $("#homeurl").val("");
+    }
+    else
+    {
+       $("#helpdeskurl").val($helpdeskurl.text());
+       $("#homeurl").val($helpdeskurl.text());
+    }
+
+    $("#nameids").val($.trim($nameids));
+
+    alert("Success");
+    GINIT.initialize();
+
+});
 $("button#parsemetadatasp").click(function() {
     var xmlsource = $('textarea#metadatabody').val();
     try {
@@ -2203,7 +2382,7 @@ $("button#parsemetadatasp").click(function() {
     });
     if ($entity === null)
     {
-        alert("SP not found");
+        alert("SPSSODescriptor not found");
         return false;
     }
     $("li.optspregacs").remove();
@@ -2294,6 +2473,7 @@ $("button#parsemetadatasp").click(function() {
             return false;
         }
     });
+        alert("Success");
         GINIT.initialize();
    
 });

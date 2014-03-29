@@ -2595,7 +2595,7 @@ class Provider {
         $r['entityid'] = $this->getEntityid();
         
         $r['nameid'] = array();
-        $nameids = $this->getNameids();
+        $nameids = $this->getNameIds();
         if (!empty($nameids))
         {
             $r['nameid'] = $nameids;

@@ -269,11 +269,15 @@ class J_queue
 
         $provider[$i++]['value'] = $objData->getEntityId();
         $type = $objData->getType();
-        $provider[$i]['name'] = lang('type');
         if ($type === 'IDP') {
+            $provider[$i]['name'] = lang('type');
             $provider[$i++]['value'] = lang('identityprovider');
+
+            $provider[$i]['name'] = lang('rr_scope').' <br /><small>IDPSSODescriptor</small>';
+            $provider[$i++]['value'] = implode(';',$objData->getScope('idpsso'));
         }
         elseif ($type === 'SP') {
+            $provider[$i]['name'] = lang('type');
             $provider[$i++]['value'] = lang('serviceprovider');
         }
         $provider[$i]['name'] = lang('rr_homeurl');

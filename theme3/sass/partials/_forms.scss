@@ -446,3 +446,8 @@ form#applyforaccount {
    -moz-box-shadow: none;
     box-shadow: none;
 }
+form.register {
+   input {
+     min-width: 400px;
+   }
+}
