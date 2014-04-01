@@ -2359,6 +2359,7 @@ $("button#parsemetadataidp").click(function(){
 
 });
 $("button#parsemetadatasp").click(function() {
+    $("li.spregacsopt").remove();
     var xmlsource = $('textarea#metadatabody').val();
     try {
         var xmlDoc = $.parseXML(xmlsource);
@@ -2413,7 +2414,7 @@ $("button#parsemetadatasp").click(function() {
         }
         else
         {
-            var nelement = $("li.spregacs").first().clone().removeAttr("class");
+            var nelement = $("li.spregacs").first().clone().removeAttr("class").addClass("spregacsopt");
             
             $("#acs_url\\[0\\]",nelement).removeAttr("name").attr("name","acs_url\["+rname+"\]").attr("id","acs_url\["+rname+"\]").val($(this).attr("Location"));
             $("#acs_order\\[0\\]",nelement).removeAttr("name").attr("name","acs_order\["+rname+"\]").attr("id","acs_order\["+rname+"\]").val($(this).attr("index"));
