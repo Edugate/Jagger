@@ -80,8 +80,7 @@ class Disco extends MY_Controller {
            } 
 
            $p = new models\Providers;
-           //$p1 = $p->getCircleMembers($me);
-           $p1 = $p->getCircleMembersByType($me, TRUE);
+           $p1 = $p->getIdPsForWayf($me);
 
            if (empty($p1))
            {
@@ -93,7 +92,7 @@ class Disco extends MY_Controller {
            foreach ($p1 as $key2)
            {
                $allowed = true;
-               if ($key2->getAvailable() && ($key2->getType() == 'IDP' OR $key2->getType() == 'BOTH'))
+               if ($key2->getAvailable())
                {
                    if($white)
                    {
@@ -111,7 +110,7 @@ class Disco extends MY_Controller {
                       {
                            $entityname = $key2->getEntityId();
                       }
-                      $output[$oi]['title'] = $entityname .'<span style="display:none;">'.$key2->getEntityId().'</span>';
+                      $output[$oi]['title'] = $entityname ;
                       $extend = $key2->getExtendMetadata();
                       $count_extend = count($extend);
                       $e_extend = array();
