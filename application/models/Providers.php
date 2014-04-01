@@ -51,6 +51,29 @@ class Providers
         return $this->providers;
     }
 
+ 
+
+    public function getIdPsForWayf(Provider $provider)
+    {
+        $query1 = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = '".$provider->getId()."' AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
+        $query1->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $result1 = $query1->getResult();
+        $feds = array();
+        foreach($result1 as $r)
+        {
+           $feds[] = $r->getFederation()->getId();
+        }
+        if (count($feds) == 0) {
+           return array();
+       }
+        $fedin = implode(',', $feds);
+        $query = $this->em->createQuery("SELECT p,e,m FROM models\Provider p LEFT JOIN p.extend e LEFT JOIN p.membership m LEFT JOIN m.federation f  WHERE m.federation IN (" . $fedin . ") AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != " . $provider->getId() . " AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN ('IDP','BOTH')");
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $result = $query->getResult();
+        return $result;
+          
+    }
+
     /**
      * getting trusted entities by given provider
      * if provider is IDP then result give only trusted SPs
@@ -133,6 +156,7 @@ class Providers
 
 
         $query = $this->em->createQuery("SELECT p,m, f FROM models\Provider p JOIN p.membership m JOIN m.federation f  WHERE m.federation IN (" . $fedin . ") AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != " . $provider->getId() . " AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN (" . $typeconds . ")");
+       // $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
         return $result;
     }
