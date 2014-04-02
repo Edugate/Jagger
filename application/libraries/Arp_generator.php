@@ -556,58 +556,75 @@ class Arp_generator {
     {
         $idp = null;
         $release = array();
-        if (empty($idp_id))
+      
+        if($provider instanceOf models\Provider)
         {
-            $idp = $this->idp;
-        } elseif ($provider instanceOf models\Provider)
-        {
-            $idp = $provider;
-        } elseif (is_numeric($provider) && !empty($this->idp))
+           $idp = $provider;
+        }
+        elseif(is_numeric($provider) && !empty($this->idp))
         {
             $tmp_id = $this->idp->getId();
             if ($tmp_id == $provider)
             {
                 $idp = $this->idp;
             }
+            else
+            {
+                log_message('debug', "IdP not found");
+                return null;
+
+            }
         }
+        else
+        {
+            log_message('error','PE: arpToArrayByInherit couldnt');
+            return null;
+        }
+
+        log_message('debug','PE: start arpToArrayByInherit for entityid: '.$idp); 
 
         $global_policy = array();
         $tmp_attrs = new models\Attributes();
+        $tmp_providers = new models\Providers();
         $attrDefinitions = $tmp_attrs->getAttributes();
         $tmp_idp = new models\Providers;
-        if (empty($idp))
-        {
-            log_message('debug', "IdP not found with id:." . $idp->getId());
-            return null;
-        }
         /**
          * get all defined policies for idp
          */
-        $policies = $idp->getAttributeReleasePolicies()->getValues();
+        $policies = $idp->getAttributeReleasePolicies();
 
-        $tmp_myfeds = $idp->getActiveFederations();
+        $tmp_myfeds = $tmp_providers->getTrustedActiveFeds($idp);
+        $members = $tmp_providers->getSPsForArp($idp);
         $feds_collection = array();
-        foreach ($tmp_myfeds as $t)
-        {
-            $feds_collection[$t->getId()] = $t->getActiveMembers();
-        }
-        $tmp_requirements = new models\AttributeRequirements;
-
-        $members = null;
-        $members_byid = array();
-
-        $members = $tmp_idp->getCircleMembersByType($idp);
         if ($members->count() == 0)
         {
             return null;
         }
+        foreach ($members as $t)
+        {
+            $feds2 = $t->getMembership();
+            foreach($feds2 as $ff)
+            {
+                $fedid = $ff->getFederation()->getId();
+                if(!isset($feds_collection[''.$fedid.'']))
+                {
+                    $feds_collection[''.$fedid.''] = new \Doctrine\Common\Collections\ArrayCollection();
+                     
+                }
+                $feds_collection[''.$fedid.'']->add($t) ;
+            }
+        }
+        $tmp_requirements = new models\AttributeRequirements;
+
+        $members_byid = array();
+
 
         $excluded = $idp->getExcarps();
         $excludedById = array();
         /**
          * @todo do not check if excluded is array
          */
-        if (is_array($excluded) && count($excluded) > 0)
+        if (count($excluded) > 0)
         {
             $tmpexl = $this->em->getRepository("models\Provider")->findBy(array('entityid' => $excluded));
             foreach ($tmpexl as $tmpv)
@@ -619,8 +636,8 @@ class Arp_generator {
                 $excludedById[] = $tmpv->getId();
             }
         }
+        
         log_message('debug', 'excluded SP from arp by id:' . serialize($excludedById));
-
 
         foreach ($members as $m_value)
         {
@@ -700,6 +717,7 @@ class Arp_generator {
                 $federation_policy[$f->getRequester()][$f->getAttribute()->getName()] = $f->getPolicy();
             }
         }
+        log_message('debug','PE federation policy: '.serialize($federation_policy));
 
         foreach ($g_attrs as $g)
         {
@@ -722,6 +740,9 @@ class Arp_generator {
                 $m_policy[$k] = 0;
             }
         }
+
+        log_message('debug','PE supported/default merge: '. serialize($m_policy));
+        
         
         
         foreach ($members as $m)
@@ -736,8 +757,9 @@ class Arp_generator {
                 {
                     
                     /* check if entityid is a members of specified federtion */
-                    if ($value->containsKey($m->getEntityId()))
+                    if ($value->contains($m))
                     {
+                        log_message('debug','PE : collection '.$key.' :: '.$m->getEntityId());
                         /**
                          * overwrite policy
                          */
@@ -759,7 +781,6 @@ class Arp_generator {
                     }
                 }
             }
-            //$attrs[$m->getEntityId()] = array_replace($attrs[$m->getEntityId()], $overwritePolicy);
             $attrs[$m->getEntityId()] = array_replace($attrs[$m->getEntityId()], array_intersect_key($overwritePolicy,$attrs[$m->getEntityId()]));
         }
         $i = 0;

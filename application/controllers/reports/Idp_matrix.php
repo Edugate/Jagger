@@ -117,7 +117,7 @@ class Idp_matrix extends MY_Controller {
             $data['entityid'] = $idp->getEntityId();
             $data['idpid'] = $idp->getId();
             
-            $data['error_message'] = lang('errormatrixnoattrs');
+            $data['error_message'] = lang('errormatrixnoattrsormembers');
             $this->load->view('page', $data);
             return;
         }
