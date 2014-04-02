@@ -52,6 +52,46 @@ class Providers
     }
 
  
+    public function getTrustedActiveFeds(Provider $provider)
+    {
+        $feds = new \Doctrine\Common\Collections\ArrayCollection();
+        $query = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = '".$provider->getId()."' AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
+        //$query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $result = $query->getResult();
+        foreach($result as $r)
+        {
+           $feds->add($r->getFederation());
+        }
+        return $feds;
+        
+    }
+
+    public function getSPsForArp(Provider $provider)
+    {
+        $query1 = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = '".$provider->getId()."' AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
+        $query1->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $result1 = $query1->getResult();
+        $feds = array();
+        foreach($result1 as $r)
+        {
+           $feds[] = $r->getFederation()->getId();
+        }
+        if (count($feds) == 0) {
+           return array();
+       }
+        $fedin = implode(',', $feds);
+        $query = $this->em->createQuery("SELECT p,m,f FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f  WHERE m.federation IN (" . $fedin . ") AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != " . $provider->getId() . " AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN ('SP','BOTH')");
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $result = $query->getResult();
+        $r2 = new \Doctrine\Common\Collections\ArrayCollection;
+        foreach($result as $r)
+        {
+           $r2->add($r);
+        }
+        return $r2;
+          
+    }
+   
 
     public function getIdPsForWayf(Provider $provider)
     {
