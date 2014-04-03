@@ -2237,6 +2237,31 @@ $("button#parsemetadataidp").click(function(){
             return false;
          }
     });
+    $contact = null;
+    $entity.find("md\\:ContactPerson,ContactPerson").each(function(){
+         $contact = $(this); 
+         $contacttype = $contact.attr("contactType");
+         if($contacttype === "administrative")
+         {
+            return false
+         }
+    });
+    if($contact != null)
+    {
+       $contactname = '';
+       $contact.find("md\\:GivenName,GivenName").each(function(){
+          $contactname = $(this).text();
+       });
+       $contact.find("md\\:SurName,SurName").each(function(){
+          $contactname = $contactname +' '+ $(this).text();
+       });
+       $contactemail = '';
+       $contact.find("md\\:EmailAddress,EmailAddress").each(function(){
+          $contactemail = $(this).text();
+       });
+       $("#contact\_name").val($contactname);
+       $("#contact\_mail").val($contactemail);
+    }
     $nameids = '';
     $idpssodescriptor.find("md\\:NameIDFormat,NameIDFormat").each(function(){
       $nameids = $nameids+' '+$(this).text();
