@@ -105,7 +105,8 @@ class Disco extends MY_Controller {
                    {
                       $output[$oi]['entityID'] = $key2->getEntityId();
                       //        $output[$oi]['country'] = 'IE';
-                      $entityname = $key2->getName();
+                      //$entityname = $key2->getName();
+                      $entityname = $key2->getNameToWebInLang('en');
                       if (empty($entityname))
                       {
                            $entityname = $key2->getEntityId();
