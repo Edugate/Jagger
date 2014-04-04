@@ -733,7 +733,7 @@ class Awaiting extends MY_Controller {
                                 show_error('Federation not found', 404);
                                 return;
                             }
-                            $membership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider' => $provider->getId(), 'federation' => $federation->getId));
+                            $membership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider' => $provider->getId(), 'federation' => $federation->getId()));
                             if (!empty($membership))
                             {
                                 $membership->setJoinState('1');
