@@ -336,7 +336,7 @@ class Arp_generator {
                     $custom_policies[$sp_entityid][$key->getAttribute()->getName()] = $key->getRawdata();
                 } else
                 {
-                    log_message('error', 'Found orphaned custom policy with id:' . $key->getId());
+                    log_message('warning', 'Found orphaned or requester SP is disabled: custom policy with id:' . $key->getId());
                 }
             }
         }
@@ -353,7 +353,7 @@ class Arp_generator {
                     $ent = $members_byid[$svalue->getRequester()];
                 } elseif (!in_array($svalue->getRequester(), $excludedById))
                 {
-                    log_message('error', 'found orphaned arps in db : sprequest:' . $svalue->getRequester() . ' doesn exist in provider table');
+                    log_message('warning', 'found orphaned arps in db : sprequest:' . $svalue->getRequester() . ' doesn exist in provider table - SP might be disabled');
                 } else
                 {
                     log_message('debug', 'sprequest:' . $svalue->getRequester() . ' is excluded from arp not generating');
@@ -682,7 +682,7 @@ class Arp_generator {
                     $custom_policies[$sp_entityid][$key->getAttribute()->getName()] = $key->getRawdata();
                 } else
                 {
-                    log_message('error', 'Found orphaned custom policy with id:' . $key->getId());
+                    log_message('warning', 'Found orphaned (or SP is disabled) custom policy with id:' . $key->getId());
                 }
             }
         }
@@ -698,7 +698,7 @@ class Arp_generator {
                     $ent = $members_byid[$svalue->getRequester()];
                 } elseif (!in_array($svalue->getRequester(), $excludedById))
                 {
-                    log_message('error', 'found orphaned arps in db : sprequest:' . $svalue->getRequester() . ' doesn exist in provider table');
+                    log_message('warning', 'found orphaned arps in db : sprequest:' . $svalue->getRequester() . ' doesn exist in provider table or SP is disabled');
                 } else
                 {
                     log_message('debug', 'sprequest:' . $svalue->getRequester() . ' is excluded from arp not generating');
