@@ -271,7 +271,7 @@ class Form_element {
         /**
          * @todo add explanation for default provider name
          */
-        $result[] = form_label(lang('e_orgname') . ' ' . showBubbleHelp('' . lang('entname_default_expl') . ''), 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'required' => 'required', 'value' => $t2));
+        $result[] = form_label(lang('e_orgname') . ' ' . showBubbleHelp('' . lang('entname_default_expl') . ''), 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'value' => $t2));
         /**
          * start lname
          */
@@ -344,7 +344,7 @@ class Form_element {
          * end lname
          */
         $result[] = '';
-        $result[] = form_label(lang('e_orgdisplayname') . ' ' . showBubbleHelp('' . lang('entdisplname_default_expl') . ''), 'f[displayname]') . form_input(array('id' => 'f[displayname]', 'class' => $class_displ, 'name' => 'f[displayname]', 'required' => 'required', 'value' => $f_displayname));
+        $result[] = form_label(lang('e_orgdisplayname') . ' ' . showBubbleHelp('' . lang('entdisplname_default_expl') . ''), 'f[displayname]') . form_input(array('id' => 'f[displayname]', 'class' => $class_displ, 'name' => 'f[displayname]', 'value' => $f_displayname));
         /**
          * start ldisplayname
          */
