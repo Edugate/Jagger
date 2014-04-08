@@ -663,12 +663,9 @@ class Entityedit extends MY_Controller {
         }
 
         $data['y'] = $entsession;
+        $lang = MY_Controller::getLang();
   
-        $titlename = $ent->getName();
-        if (empty($titlename))
-        {
-            $titlename = $ent->getEntityId();
-        }
+        $titlename = $ent->getNameToWebInLang($lang,$ent->getType());
         $this->title = $titlename . ' :: ' . lang('title_provideredit');
 
         /**
