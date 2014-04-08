@@ -26,16 +26,25 @@ if(count($categories)>0)
 
        }
    }
-}
-if($defaultSet)
-{
-   $allFedsBtn =  '<button type="button" class="btn fedcategory" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+
+   if($defaultSet)
+   {
+     $allFedsBtn =  '<button type="button" class="btn fedcategory" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+   }
+    else
+   {
+     $allFedsBtn =  '<button type="button" class="btn fedcategory activated" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+
+   }
 }
 else
 {
-   $allFedsBtn =  '<button type="button" class="btn fedcategory activated" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+     $allFedsBtn =  '<button type="button" class="btn fedcategory activated hidden" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+
 
 }
+
+
 
 echo $allFedsBtn;
 echo $catButtons;
