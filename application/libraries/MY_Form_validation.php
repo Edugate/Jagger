@@ -464,7 +464,7 @@ class MY_form_validation extends CI_form_validation {
            }
            if($minkeysize > $keysize)
            {
-               $this->set_message('verify_cert', "The %s : Could not compute keysize");
+               $this->set_message('verify_cert', "The %s : Keysize is less than ".$minkeysize);
                return false;
            }
            return TRUE;
