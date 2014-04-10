@@ -1433,7 +1433,6 @@ class Providerupdater {
                         $ncert->setProvider($ent);
                         $ncert->setKeyname($v2['keyname']);
                         $ncert->setCertData($v2['certdata']);
-                        $ncert->generateFingerprint();
                         $this->em->persist($ncert);
                     }
                 }
@@ -1450,7 +1449,6 @@ class Providerupdater {
                         $ncert->setProvider($ent);
                         $ncert->setKeyname($v2['keyname']);
                         $ncert->setCertData($v2['certdata']);
-                        $ncert->generateFingerprint();
                         $this->em->persist($ncert);
                     }
                 }
@@ -1467,7 +1465,6 @@ class Providerupdater {
                         $ncert->setProvider($ent);
                         $ncert->setKeyname($v2['keyname']);
                         $ncert->setCertData($v2['certdata']);
-                        $ncert->generateFingerprint();
                         $this->em->persist($ncert);
                     }
                 }

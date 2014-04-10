@@ -64,6 +64,7 @@ function getKeysize($cert)
    return $result;
 }
 
+
 function reformatPEM($value)
 {
     if(!empty($value))
