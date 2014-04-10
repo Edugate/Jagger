@@ -68,7 +68,10 @@ class Joinfed extends MY_Controller {
         {
            $icon = 'block-share.png';
         }
-        $data['name'] = $provider->getName();
+        $lang = MY_Controller::getLang();
+        $enttype = $provider->getType();
+        
+        $data['name'] = $provider->getNameToWebInLang($lang,$enttype);
         if(empty($data['name']))
         {
            $data['name'] = $provider->getEntityId();
@@ -76,7 +79,7 @@ class Joinfed extends MY_Controller {
         $data['entityid'] = $provider->getEntityId();
         $data['providerid'] = $provider->getId();
 
-        $has_write_access = $this->zacl->check_acl($provider->getId(),'write',strtolower($provider->getType()),'');
+        $has_write_access = $this->zacl->check_acl($provider->getId(),'write',strtolower($enttype),'');
         if(!$has_write_access)
         {
            show_error('No access',403);

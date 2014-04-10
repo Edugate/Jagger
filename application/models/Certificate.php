@@ -221,14 +221,14 @@ class Certificate
         return $this;
     }
 
-    public function setFingerprint($fingerprint)
-    {
-        $this->fingerprint = $fingerprint;
-        return $this;
-    }
 
-    public function generateFingerprint()
+    public function generateFingerprint($alg=null)
     {
+        if($alg === null)
+        {
+           $alg = 'sha1';
+        }
+        $fingerprint = null;
         $cert = $this->certdata;
         if (!empty($cert))
         {
@@ -236,7 +236,6 @@ class Certificate
             if ($this->certtype === 'X509Certificate')
             {
                 $resource = openssl_x509_read($cert);
-                $fingerprint = null;
                 $output = null;
                 $result = openssl_x509_export($resource, $output);
                 if ($result !== false)
@@ -244,11 +243,11 @@ class Certificate
                     $output = str_replace('-----BEGIN CERTIFICATE-----', '', $output);
                     $output = str_replace('-----END CERTIFICATE-----', '', $output);
                     $output = base64_decode($output);
-                    $fingerprint = sha1($output);
+                    $fingerprint = $alg($output);
                 }
-                $this->setFingerprint($fingerprint);
             }
         }
+        return $fingerprint;
     }
 
     public function getId()
@@ -317,9 +316,21 @@ class Certificate
         return $this->certtype;
     }
 
-    public function getFingerprint()
+    public function getFingerprint($alg = null)
     {
-        return $this->fingerprint;
+        if(empty($alg))
+        {
+           $alg = 'md5';
+        }
+        $certdata = $this->getCertDataNoHeaders();
+        if(empty($certdata))
+        {
+           return null;
+        }
+        $certdata = trim($certdata);
+        $certdata = str_replace( array("\n\r","\n","\r"), '',$certdata);
+        $bin = base64_decode($certdata);
+        return $alg($bin);
     }
 
     public function getTimeValidTo()
@@ -415,7 +426,6 @@ class Certificate
                  $this->certdata = self::reformatPEM($this->certdata);
               }
          }
-        $this->generateFingerprint();
     }
 
    

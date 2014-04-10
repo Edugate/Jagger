@@ -914,7 +914,8 @@ class Detail extends MY_Controller {
                         $c_certtype = $v->getCertType();
                         if ($c_certtype == 'X509Certificate')
                         {
-                            $c_fingerprint = $v->getFingerprint();
+                            $c_fingerprint_md5 = $v->generateFingerprint('md5');
+                            $c_fingerprint_sha1 = $v->generateFingerprint('sha1');
                             $c_certValid = validateX509($c_certData);
                             if (!$c_certValid)
                             {
@@ -935,9 +936,13 @@ class Detail extends MY_Controller {
                                  
                             }
                         }
-                        if (!empty($c_fingerprint))
+                        if (!empty($c_fingerprint_md5))
                         {
-                            $cString .='<b>' . lang('rr_fingerprint') . ':</b> <span>' . $c_fingerprint . '</span><br />';
+                            $cString .='<b>' . lang('rr_fingerprint') . ' (md5):</b> <span>' . $c_fingerprint_md5 . '</span><br />';
+                        }
+                        if (!empty($c_fingerprint_sha1))
+                        {
+                            $cString .='<b>' . lang('rr_fingerprint') . ' (sha1):</b> <span>' . $c_fingerprint_sha1 . '</span><br />';
                         }
                         $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                     }
@@ -978,7 +983,8 @@ class Detail extends MY_Controller {
                         $c_certtype = $v->getCertType();
                         if ($c_certtype === 'X509Certificate')
                         {
-                            $c_fingerprint = $v->getFingerprint();
+                            $c_fingerprint_sha1 = $v->generateFingerprint('sha1');
+                            $c_fingerprint_md5 = $v->generateFingerprint('md5');
                             $c_certValid = validateX509($c_certData);
                             if (!$c_certValid)
                             {
@@ -999,9 +1005,13 @@ class Detail extends MY_Controller {
 
                             }
                         }
-                        if (!empty($c_fingerprint))
+                        if (!empty($c_fingerprint_sha1))
                         {
-                            $cString .='<b>' . lang('rr_fingerprint') . ':</b> <span>' . $c_fingerprint . '</span><br />';
+                            $cString .='<b>' . lang('rr_fingerprint') . ' (sha1):</b> <span>' . $c_fingerprint_sha1 . '</span><br />';
+                        }
+                        if (!empty($c_fingerprint_md5))
+                        {
+                            $cString .='<b>' . lang('rr_fingerprint') . ' (md5):</b> <span>' . $c_fingerprint_md5 . '</span><br />';
                         }
                         $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                     }
@@ -1044,7 +1054,8 @@ class Detail extends MY_Controller {
                         $c_certtype = $v->getCertType();
                         if ($c_certtype == 'X509Certificate')
                         {
-                            $c_fingerprint = $v->getFingerprint();
+                            $c_fingerprint_sha1 = $v->generateFingerprint('sha1');
+                            $c_fingerprint_md5 = $v->generateFingerprint('md5');
                             $c_certValid = validateX509($c_certData);
                             if (!$c_certValid)
                             {
@@ -1066,9 +1077,13 @@ class Detail extends MY_Controller {
 
                             }
                         }
-                        if (!empty($c_fingerprint))
+                        if (!empty($c_fingerprint_sha1))
                         {
-                            $cString .='<b>' . lang('rr_fingerprint') . ':</b> <span>' . $c_fingerprint . '</span><br />';
+                            $cString .='<b>' . lang('rr_fingerprint') . ' (sha1):</b> <span>' . $c_fingerprint_sha1 . '</span><br />';
+                        }
+                        if (!empty($c_fingerprint_md5))
+                        {
+                            $cString .='<b>' . lang('rr_fingerprint') . ' (md5):</b> <span>' . $c_fingerprint_md5 . '</span><br />';
                         }
                         $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
                     }

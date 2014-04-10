@@ -48,6 +48,10 @@ class Idp_matrix extends MY_Controller {
 
     public function show($idpid)
     {
+        if (empty($idpid) OR !is_numeric($idpid))
+        {
+            show_error('Wrong or empty id', 404);
+        }
         $loggedin = $this->j_auth->logged_in();
         if ($loggedin)
         {
@@ -59,18 +63,14 @@ class Idp_matrix extends MY_Controller {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
-        if (empty($idpid) OR !is_numeric($idpid))
-        {
-            show_error('Wrong or empty id', 404);
-        }
         $idp = $this->tmp_providers->getOneIdpById($idpid);
         if (empty($idp))
         {
             show_error('Identity Provider not found', 404);
         }
       
-        $has_read_access = $this->zacl->check_acl($idpid, 'read', 'idp', '');
-        $has_write_access = $this->zacl->check_acl($idpid, 'write', 'idp', '');
+        $has_read_access = $this->zacl->check_acl($idpid, 'read', 'entity', '');
+        $has_write_access = $this->zacl->check_acl($idpid, 'write', 'entity', '');
         if(!$has_read_access)
         {
             $data['content_view'] = 'nopermission';
@@ -81,12 +81,12 @@ class Idp_matrix extends MY_Controller {
         $data['has_write_access'] = $has_write_access;
        
         $data['excluded'] = $idp->getExcarps();
+        $lang  = MY_Controller::getLang();
         
-        $data['idpname'] = $idp->getName();
-        if(empty($data['idpname']))
-        {
-           $data['idpname'] = $idp->getEntityId();
-        }
+        $data['idpname'] =  $idp->getNameToWebInLang($lang,'IDP');;
+        $data['idpid'] = $idp->getId();
+        $data['entityid'] = $idp->getEntityId();
+
         $members = $this->_get_members($idp);
         $arpinherit = $this->config->item('arpbyinherit');
         if(empty($arpinherit))
@@ -108,15 +108,13 @@ class Idp_matrix extends MY_Controller {
                 if ($el === 'Logo')
                 {
                     $data['provider_logo_url'] = $ex->getLogoValue();
+                    break;
                 }
             }
         }
         if (empty($arparray))
         {
             $data['content_view'] = 'reports/idp_matrix_show_view';
-            $data['entityid'] = $idp->getEntityId();
-            $data['idpid'] = $idp->getId();
-            
             $data['error_message'] = lang('errormatrixnoattrsormembers');
             $this->load->view('page', $data);
             return;
@@ -232,20 +230,11 @@ class Idp_matrix extends MY_Controller {
                ';
         }
         $corner = '<img src="' . base_url() . 'images/legend.png" />';
-        $corner .= 'Service Provider';
+        $corner .= lang('serviceprovider');
         array_unshift($thead, $corner);
         array_unshift($mrows, $thead);
         $data['entityid'] = $idp->getEntityId();
         $data['idpid'] = $idp->getId();
-        $t_name = $idp->getName();
-        if(!empty($t_name))
-        {
-            $data['idpname'] = $t_name;
-        }
-        else
-        {
-            $data['idpname'] = $data['entityid'];
-        }
         $data['result'] = $mrows;
 
         $data['content_view'] = 'reports/idp_matrix_show_view';

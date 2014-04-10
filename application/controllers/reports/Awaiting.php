@@ -474,7 +474,6 @@ class Awaiting extends MY_Controller {
                             {
                                 $o->setCertdata(reformatPEM($o->getCertdata()));
                                 $o->setCertType('x509');
-                                $o->generateFingerprint();
                             }
                             $creator = $queueObj->getCreator();
                             if (!empty($fed2) and $fed instanceOf models\Federation)
@@ -563,7 +562,6 @@ class Awaiting extends MY_Controller {
                             {
                                 $o->setCertdata(reformatPEM($o->getCertdata()));
                                 $o->setCertType('x509');
-                                $o->generateFingerprint();
                             }
                             $creator = $queueObj->getCreator();
                             $this->em->persist($sp);
