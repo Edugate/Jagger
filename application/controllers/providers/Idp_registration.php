@@ -240,15 +240,17 @@ class Idp_registration extends MY_Controller {
              *  get list of public federations
              */
              $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active'=>TRUE));
-             $data['federations'] = array();
-            /**
-             *  generate dropdown list of public federations
-             */
-             $data['federations']['none'] = lang('noneatthemoment');
-             foreach ($fedCollection as $key) {
-                $data['federations'][$key->getName()] = $key->getName();
+             if(count($fedCollection)>0)
+             {
+                $data['federations'] = array();
+                /**
+                 *  generate dropdown list of public federations
+                 */
+                $data['federations']['none'] = lang('noneatthemoment');
+                foreach ($fedCollection as $key) {
+                   $data['federations'][$key->getName()] = $key->getName();
+                }
              }
-
              $this->load->view('page', $data);
              
         }

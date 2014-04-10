@@ -261,8 +261,8 @@ class Sp_registration extends MY_Controller
 
     private function _getPublicFeds()
     {
-        $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE));
-        if (!empty($fedCollection)) {
+        $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active'=>TRUE));
+        if (count($fedCollection)>0) {
             $federations[''] = lang('selectone') . '...';
             foreach ($fedCollection as $f) {
                 if (!$f->getActive()) {
@@ -273,12 +273,11 @@ class Sp_registration extends MY_Controller
                 }
             }
             $federations['none'] = lang('noneatthemoment');
+            return $federations;
         }
         else {
-            $federations[''] = lang('notfound');
-            $federations['none'] = lang('noneatthemoment');
+            return null;
         }
-        return $federations;
     }
 
     private function _submit_validate()
