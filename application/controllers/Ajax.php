@@ -252,6 +252,7 @@ class Ajax extends MY_Controller {
             $loggedin = $this->j_auth->logged_in();
             if ($loggedin)
             {
+                $lang = MY_Controller::getLang();
                 log_message('debug', 'bookentity: loggedin');
                 $username = $this->j_auth->current_user();
                 $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
@@ -259,7 +260,7 @@ class Ajax extends MY_Controller {
                 if (!empty($u) && !empty($ent))
                 {
                     $enttype = $ent->getType();
-                    $entname = $ent->getName();
+                    $entname = $ent->getNameToWebInLang($lang,$enttype);
                     $entid = $ent->getId();
                     $entityid = $ent->getEntityId();
                     $u->addEntityToBookmark($entid, $entname, $enttype, $entityid);
