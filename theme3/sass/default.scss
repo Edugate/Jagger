@@ -4,17 +4,15 @@
 // Then we'll import the compass extension
 @import "h5bp";
 @import "compass/layout/sticky-footer";
-
+//@import "foundation/components/dropdown";
 // testowe
 //@import "blueprint";
 //@import "blueprint/liquid";
 // end testowe
 
-
 // Now, you can simply include everything
 // (except print and helpers) by uncommeting this line
 @include h5bp-normalize;
-
 // Or, you can import the "overrides" partial if
 // you want more control over individual mixins
 //@import "partials/overrides";
@@ -30,4 +28,4 @@
 
 // Media should come last
 @import "partials/media";
-@include sticky-footer(50px, "#oko","#inpre_footer","#footer")
+@include sticky-footer(50px, "#oko","#inpre_footer","#footer");
