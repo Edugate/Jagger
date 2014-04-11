@@ -6,7 +6,7 @@ if (!defined('BASEPATH'))
  * 
  * @package     RR3
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -64,6 +64,25 @@ function getKeysize($cert)
    return $result;
 }
 
+function generateFingerprint($certdata,$alg)
+{
+        $fingerprint = null;
+        if (!empty($certdata))
+        {
+            $cert = getPEM($certdata);
+            $resource = openssl_x509_read($cert);
+            $output = null;
+            $result = openssl_x509_export($resource, $output);
+            if ($result !== false)
+            {
+                $output = str_replace('-----BEGIN CERTIFICATE-----', '', $output);
+                $output = str_replace('-----END CERTIFICATE-----', '', $output);
+                $output = base64_decode($output);
+                $fingerprint = $alg($output);
+            }
+        }
+        return $fingerprint;
+}
 
 function reformatPEM($value)
 {

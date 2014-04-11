@@ -914,8 +914,8 @@ class Detail extends MY_Controller {
                         $c_certtype = $v->getCertType();
                         if ($c_certtype == 'X509Certificate')
                         {
-                            $c_fingerprint_md5 = $v->generateFingerprint('md5');
-                            $c_fingerprint_sha1 = $v->generateFingerprint('sha1');
+                            $c_fingerprint_md5 = generateFingerprint($c_certData,'md5');
+                            $c_fingerprint_sha1 = generateFingerprint($c_certData,'sha1');
                             $c_certValid = validateX509($c_certData);
                             if (!$c_certValid)
                             {
@@ -983,8 +983,8 @@ class Detail extends MY_Controller {
                         $c_certtype = $v->getCertType();
                         if ($c_certtype === 'X509Certificate')
                         {
-                            $c_fingerprint_sha1 = $v->generateFingerprint('sha1');
-                            $c_fingerprint_md5 = $v->generateFingerprint('md5');
+                            $c_fingerprint_sha1 = generateFingerprint($c_certData,'sha1');
+                            $c_fingerprint_md5 = generateFingerprint($c_certData,'md5');
                             $c_certValid = validateX509($c_certData);
                             if (!$c_certValid)
                             {
@@ -1054,8 +1054,8 @@ class Detail extends MY_Controller {
                         $c_certtype = $v->getCertType();
                         if ($c_certtype == 'X509Certificate')
                         {
-                            $c_fingerprint_sha1 = $v->generateFingerprint('sha1');
-                            $c_fingerprint_md5 = $v->generateFingerprint('md5');
+                            $c_fingerprint_sha1 = generateFingerprint($c_certData,'sha1');
+                            $c_fingerprint_md5 = generateFingerprint($c_certData,'md5');
                             $c_certValid = validateX509($c_certData);
                             if (!$c_certValid)
                             {

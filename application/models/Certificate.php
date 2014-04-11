@@ -222,34 +222,6 @@ class Certificate
     }
 
 
-    public function generateFingerprint($alg=null)
-    {
-        if($alg === null)
-        {
-           $alg = 'sha1';
-        }
-        $fingerprint = null;
-        $cert = $this->certdata;
-        if (!empty($cert))
-        {
-            $cert = self::reformatPEM($cert);
-            if ($this->certtype === 'X509Certificate')
-            {
-                $resource = openssl_x509_read($cert);
-                $output = null;
-                $result = openssl_x509_export($resource, $output);
-                if ($result !== false)
-                {
-                    $output = str_replace('-----BEGIN CERTIFICATE-----', '', $output);
-                    $output = str_replace('-----END CERTIFICATE-----', '', $output);
-                    $output = base64_decode($output);
-                    $fingerprint = $alg($output);
-                }
-            }
-        }
-        return $fingerprint;
-    }
-
     public function getId()
     {
         return $this->id;
