@@ -63,10 +63,6 @@ class Certificate
      */
     protected $certdata;
 
-    /**
-     * @Column(type="string",length=77,nullable=true)
-     */
-    protected $fingerprint;
 
     /**
      * @todo add automatic generate subject
