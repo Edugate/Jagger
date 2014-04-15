@@ -859,7 +859,8 @@ class Form_element {
             $row .= '<li>' . form_label(lang('rr_contactlastname'), 'f[contact][' . $cnt->getId() . '][sname]');
             $row .= '<span class="' . $class_cnt3 . '">' . form_input(array('name' => 'f[contact][' . $cnt->getId() . '][sname]', 'id' => 'f[contact][' . $cnt->getId() . '][sname]', 'value' => $t3)) . '</span></li>';
             $row .= '<li>' . form_label(lang('rr_contactemail'), 'f[contact][' . $cnt->getId() . '][email]');
-            $row .= '<span class="' . $class_cnt4 . '">' . form_input(array('name' => 'f[contact][' . $cnt->getId() . '][email]', 'id' => 'f[contact][' . $cnt->getId() . '][email]', 'value' => $t4)) . '</span> <button type="button" class="btn contactrm" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . '</button></li>';
+            $row .= '<span class="' . $class_cnt4 . '">' . form_input(array('name' => 'f[contact][' . $cnt->getId() . '][email]', 'id' => 'f[contact][' . $cnt->getId() . '][email]', 'value' => $t4)) . '</span></li>';
+            $row .= '<li class="rmelbtn fromprevtoright"><button type="button" class="btn contactrm" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . '</button></li>';
             $row .= '</ol>' . form_fieldset_close();
             $result[] = $row;
             if ($r)
@@ -879,12 +880,13 @@ class Form_element {
                 $n .= '<li>' . form_label(lang('rr_contactlastname'), 'f[contact][' . $k . '][sname]');
                 $n .= '<span>' . form_input(array('name' => 'f[contact][' . $k . '][sname]', 'id' => 'f[contact][' . $k . '][sname]', 'value' => set_value('f[contact][' . $k . '][sname]', $v['sname']))) . '</span></li>';
                 $n .= '<li>' . form_label(lang('rr_contactemail'), 'f[contact][' . $k . '][email]');
-                $n .= '<span>' . form_input(array('name' => 'f[contact][' . $k . '][email]', 'id' => 'f[contact][' . $k . '][email]', 'value' => set_value('f[contact][' . $k . '][email]', $v['email']))) . '</span><button type="button" class="btn contactrm" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></li>';
+                $n .= '<span>' . form_input(array('name' => 'f[contact][' . $k . '][email]', 'id' => 'f[contact][' . $k . '][email]', 'value' => set_value('f[contact][' . $k . '][email]', $v['email']))) . '</span></li>';
+                $n .= '<li class="rmelbtn fromprevtoright"><button type="button" class="btn contactrm" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></li>';
                 $n .= '</ol>' . form_fieldset_close();
                 $result[] = $n;
             }
         }
-        $n = '<button class="editbutton addicon smallerbtn" type="button" id="ncontactbtn">' . lang('rr_addnewcoontact') . '</button>';
+        $n = '<button class="editbutton addicon smallerbtn" type="button" id="ncontactbtn" value="'.lang('btn_removecontact').'|'.lang('rr_contacttype').'|'.lang('rr_contactfirstname').'|'.lang('rr_contactlastname').'|'.lang('rr_contactemail').'">' . lang('rr_addnewcoontact') . '</button>';
         $result[] = $n;
 
         return $result;
@@ -1859,10 +1861,6 @@ class Form_element {
             'name' => '' . $name . '[' . $crtid . '][keyname]',
             'id' => '' . $name . '[' . $crtid . '][keyname]',
             'value' => '' . $sessionCert['keyname'] . ''));
-        if ($showremove)
-        {
-            $row .= ' <button type="button" class="btn certificaterm" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button>';
-        }
         $row .='</li>';
         $row .= '<li>'.form_label(lang('rr_computedkeysize') , 'keysize').'<input type="text" name="keysize" value="'.$keysize.'" disabled="disabled" style="font-weight: bold;background-color: transparent;min-width: 50px"></li>';
         $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), '' . $name . '[' . $crtid . '][certdata]');
@@ -1873,7 +1871,14 @@ class Form_element {
                     'rows' => 40,
                     'class' => 'certdata ',
                     'value' => '' . $certdata . '',
-                )) . '</li><li><br /></li></div>';
+                )) . '</li>';
+        if ($showremove)
+        {
+            $row .= '<li class="rmelbtn fromprevtoright"> <button type="button" class="btn certificaterm" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></li>';
+        }
+        $row .= '<li><br /></li>';
+
+        $row .='</div>';
         return $row;
 
 
@@ -1907,10 +1912,6 @@ class Form_element {
             'name' => '' . $name . '[' . $crtid . '][keyname]',
             'id' => '' . $name . '[' . $crtid . '][keyname]',
             'value' => '' . $cert->getKeyname() . ''));
-        if ($showremove)
-        {
-            $row .= ' <button type="button" class="btn certificaterm" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button>';
-        }
         $row .='</li>';
         $row .= '<li>'.form_label(lang('rr_computedkeysize') , 'keysize').'<input type="text" name="keysize" value="'.$keysize.'" disabled="disabled" style="font-weight: bold;background-color: transparent;min-width: 50px"></li>';
         $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), '' . $name . '[' . $crtid . '][certdata]');
@@ -1921,7 +1922,13 @@ class Form_element {
                     'rows' => 40,
                     'class' => 'certdata ',
                     'value' => '' . $certdata . '',
-                )) . '</li><li><br /></li></div>';
+                )) . '</li>';
+        if ($showremove)
+        {
+            $row .= '<li class="rmelbtn fromprevtoright"> <button type="button" class="btn certificaterm" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></li>';
+        }
+        
+        $row .='</div>';
         return $row;
     }
 

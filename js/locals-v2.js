@@ -298,6 +298,18 @@ var GINIT = {
     $("fieldset#dataprotection label").autoWidth();
     $("fieldset#protocols label").autoWidth();
     $("fieldset#general label").autoWidth();
+    $("li.fromprevtoright").each(function(){
+         var prevli = $(this).prev();
+         var prevliOffset = prevli.offset().left;
+         var previnput = $(this).prev().find("input,textarea").last();
+         var previnputOffset = previnput.offset().left;
+         var previnputWidth = previnput.width();
+         var ln = (previnputOffset+previnputWidth)-prevliOffset;
+         $(this).css('text-align','right').width(ln);
+    });
+
+    
+    
 
     $("form#assignedlogos input[name='logoid']").click(function(){
          $(this).after($("div#unsignlogosbtn").show());
@@ -1477,7 +1489,13 @@ $(function() {
     $(".userlist#details").tablesorter({sortList: [[3, 1], [0, 0]], widgets: ['zebra']});
     $("#options").tablesorter({sortList: [[0, 0]], headers: {3: {sorter: false}, 4: {sorter: false}}});
 
-    $("#formtabs").tabs();
+    $("#formtabs").tabs({
+       cache:false,
+       activate: function(event, ui){
+           GINIT.initialize(); 
+       },  
+
+    });
 
 
     $("#providertabs").tabs({
@@ -1486,7 +1504,7 @@ $(function() {
             $('.accordionButton').unbind();
             $('#editprovider').unbind();
             GINIT.initialize();
-        }
+        },
 
     });
     $("#fedtabs").tabs({
@@ -2723,11 +2741,12 @@ $("button#addlhelpdesk").click(function() {
     });
 $("#ncontactbtn").click(function() {
     var rname = "";
+    var btnvalues = $(this).attr('value').split('|');
     var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<li><fieldset><ol><li><label for="f[contact][n_' + rname + '][type]">Contact type</label><span class=""><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></span></li><li><label for="f[contact][n_' + rname + '][fname]">Contact first name</label><span class=""><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]"  /></span></li><li><label for="f[contact][n_' + rname + '][sname]">Contact last name</label><span class=""><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]"  /></span></li><li><label for="f[contact][n_' + rname + '][email]">Contact Email</label><span class=""><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]"  /></span><button type="button" class="btn contactrm" name="contact" value="'+rname+'">X</button></li></ol></fieldset></li>';
+    var newelement = '<li><fieldset><ol><li><label for="f[contact][n_' + rname + '][type]">'+btnvalues[1]+'</label><span class=""><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></span></li><li><label for="f[contact][n_' + rname + '][fname]">'+btnvalues[2]+'</label><span class=""><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]"  /></span></li><li><label for="f[contact][n_' + rname + '][sname]">'+btnvalues[3]+'</label><span class=""><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]"  /></span></li><li><label for="f[contact][n_' + rname + '][email]">'+btnvalues[4]+'</label><span class=""><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]"  /></span></li><li class="rmelbtn fromprevtoright"><button type="button" class="btn contactrm" name="contact" value="'+rname+'">'+btnvalues[0]+'</button></li></ol></fieldset></li>';
     $(this).parent().before(newelement);
           GINIT.initialize();
 
