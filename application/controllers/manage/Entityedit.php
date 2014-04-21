@@ -78,7 +78,6 @@ class Entityedit extends MY_Controller {
             {
                 $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entityid_unique_update[' . $id . ']');
             }
-            $this->form_validation->set_rules('f[orgname]', lang('rr_homeorganisationname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
             if(in_array('scope',$this->disallowedparts))
             {
                $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope').' (IDPSSO)', 'trim|xss_clean|valid_scopes|max_length[255]|str_matches_array['.serialize($this->idpssoscope).']');
@@ -92,14 +91,14 @@ class Entityedit extends MY_Controller {
             if($staticisdefault)
             {
                 $this->form_validation->set_rules('f[homeurl]', lang('rr_homeurl'), 'trim|xss_clean|valid_url');
-                $this->form_validation->set_rules('f[displayname]', lang('rr_displayname'), 'trim|min_length[5]|max_length[255]|xss_clean');
-                $this->form_validation->set_rules('f[helpdeskurl]', lang('rr_helpdeskurl'), 'trim|xss_clean|valid_url');
+                //$this->form_validation->set_rules('f[displayname]', lang('rr_displayname'), 'trim|min_length[5]|max_length[255]|xss_clean');
+                //$this->form_validation->set_rules('f[helpdeskurl]', lang('rr_helpdeskurl'), 'trim|xss_clean|valid_url');
             }
             else
             {
                 $this->form_validation->set_rules('f[homeurl]', lang('rr_homeurl'), 'trim|required|xss_clean|valid_url');
-                $this->form_validation->set_rules('f[displayname]', lang('rr_displayname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
-                $this->form_validation->set_rules('f[helpdeskurl]', lang('rr_helpdeskurl'), 'trim|required|xss_clean|valid_url');
+                //$this->form_validation->set_rules('f[displayname]', lang('rr_displayname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
+                //$this->form_validation->set_rules('f[helpdeskurl]', lang('rr_helpdeskurl'), 'trim|required|xss_clean|valid_url');
 
             }
             
@@ -473,6 +472,22 @@ class Entityedit extends MY_Controller {
         {
             $data['lname']= array();
         }
+        if(isset($data['ldisplayname']))
+        {
+           $data['ldisplayname']=array_filter($data['ldisplayname']);
+        }
+        else
+        {
+            $data['ldisplayname'] = array();
+        }
+        if(isset($data['lhelpdesk']))
+        {
+           $data['lhelpdesk'] = array_filter($data['lhelpdesk']);
+        }
+        else
+        {
+           $data['lhelpdesk'] = array();
+        }
         if(isset($data['crt']['idpsso']))
         {
            $data['crt']['idpsso']=array_filter($data['crt']['idpsso']);
@@ -498,22 +513,6 @@ class Entityedit extends MY_Controller {
            $data['crt']['spsso'] = array();
         }
        
-        if(isset($data['ldisplayname']))
-        {
-           $data['ldisplayname']=array_filter($data['ldisplayname']);
-        }
-        else
-        {
-            $data['ldisplayname'] = array();
-        }
-        if(isset($data['lhelpdesk']))
-        {
-           $data['lhelpdesk'] = array_filter($data['lhelpdesk']);
-        }
-        else
-        {
-           $data['lhelpdesk'] = array();
-        }
         if(isset($data['uii']['idpsso']['desc']))
         {
             $data['uii']['idpsso']['desc'] = array_filter($data['uii']['idpsso']['desc']);

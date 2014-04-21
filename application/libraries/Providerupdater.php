@@ -157,17 +157,9 @@ class Providerupdater {
                $ent->setEntityId($ch['entityid']);
             }
         }
-        if (array_key_exists('orgname', $ch) && !empty($ch['orgname']))
-        {
-            if($ent->getName() != $ch['orgname'])
-            {
-              $m['Name'] = array('before'=>$ent->getName(),'after'=>$ch['orgname']);
-            }
-            $ent->setName($ch['orgname']);
-        }
         if (array_key_exists('lname', $ch) && is_array($ch['lname']))
         {
-            $origs = $ent->getLocalName();
+            $origs = $ent->getMergedLocalName();
             $trackorigs = $origs;
             $langs = array_keys(languagesCodes());
             foreach ($ch['lname'] as $key => $value)
@@ -191,6 +183,15 @@ class Providerupdater {
                {
                     $lnamediffs = TRUE;
                }
+            }
+            if(isset($ch['lname']['en']))
+            {
+               $ent->setName($ch['lname']['en']);
+               unset($ch['lname']['en']);
+            }
+            else
+            {
+               $ent->setName(null);
             }
             $ent->setLocalName($ch['lname']);
             if($lnamediffs === TRUE)
@@ -243,18 +244,10 @@ class Providerupdater {
             }
             $ent->setRegistrationPolicyFromArray($ch['regpolicy'], TRUE);
         }
-        if (array_key_exists('displayname', $ch) && !empty($ch['displayname']))
-        {
-            if($ent->getDisplayName() !== $ch['displayname'])
-            {
-               $m['DisplayName']  = array('before'=>$ent->getDisplayName(),'after'=>$ch['displayname']);
-            }
-            $ent->setDisplayName($ch['displayname']);
-        }
 
         if (array_key_exists('ldisplayname', $ch) && is_array($ch['ldisplayname']))
         {
-            $origs = $ent->getLocalDisplayname();
+            $origs = $ent->getMergedLocalDisplayname();
             $langs = array_keys(languagesCodes());
             foreach ($ch['ldisplayname'] as $key => $value)
             {
@@ -280,6 +273,15 @@ class Providerupdater {
             }
             if($isDifferent)
             {
+               if(isset($ch['ldisplayname']['en']))
+               {
+                  $ent->setDisplayName($ch['ldisplayname']['en']);
+                  unset($ch['ldisplayname']['en']);
+               }
+               else
+               {
+                  $ent->setDisplayName(null);
+               }
                $ent->setLocalDisplayName($ch['ldisplayname']);
                $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
                $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['ldisplayname']));
@@ -374,17 +376,9 @@ class Providerupdater {
             }
             $ent->setHomeUrl($ch['homeurl']);
         }
-        if (array_key_exists('helpdeskurl', $ch))
-        {
-            if($ent->getHelpdeskUrl() !== $ch['helpdeskurl'])
-            {
-               $m['HelpdeskURL'] = array('before'=>$ent->getHelpdeskUrl(),'after'=>$ch['helpdeskurl']);
-            }
-            $ent->setHelpdeskUrl($ch['helpdeskurl']);
-        }
         if (array_key_exists('lhelpdesk', $ch) && is_array($ch['lhelpdesk']))
         {
-            $origs = $ent->getLocalHelpdeskUrl();
+            $origs = $ent->getHelpdeskUrlLocalized();
             $langs = array_keys(languagesCodes());
             foreach ($ch['lhelpdesk'] as $key => $value)
             {
@@ -410,6 +404,15 @@ class Providerupdater {
             }
             if($isDifferent)
             {
+               if(isset($ch['lhelpdesk']['en']))
+               {
+                    $ent->setHelpdeskUrl($ch['lhelpdesk']['en']);
+                    unset($ch['lhelpdesk']['en']);
+               }
+               else
+               {
+                    $ent->setHelpdeskUrl(null);
+               }
                $ent->setLocalHelpdeskUrl($ch['lhelpdesk']);
                $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
                $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['lhelpdesk']));

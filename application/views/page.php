@@ -44,6 +44,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';     
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />';
         echo '<script src="' . $base_url . 'js/modernizr-2.0.6.min.js"></script>';
+
         
         ?>
 
@@ -348,6 +349,8 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <script>window.jQuery || document.write('<script src="<?php echo $base_url; ?>js/jquery-min.js">\x3C/script>')</script>
         <script src="<?php echo $base_url; ?>js/jquery-migrate-1.2.0.js"></script>
         <script src="<?php echo $base_url; ?>js/jquery-ui.min.js"></script>
+        <script src="<?php echo $base_url; ?>js/ibootstrap.min.js"></script>
+
         <script type="text/javascript" src="<?php echo $base_url; ?>js/jquery.uitablefilter.js"></script>
         <?php
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.jqplot.min.js"></script>';

@@ -2686,6 +2686,7 @@ if ( window.location.hash  ) {
 $("button#addlhelpdesk").click(function() {
         var selected = $("span.lhelpdeskadd option:selected").first();
         var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
         if(typeof nf === 'undefined')
         {
             return false;
@@ -2693,14 +2694,13 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-      //  alert("nf: "+nf+"; nfv: "+nfv+"; inputname:"+inputname);
-      //    $("span.lhelpdeskadd option[value=" + nf + "]").attr('selected', false).toggleOption(false);
-          $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\" class=\"validurl\"/><button type=\"button\" class=\"btn langinputrm ui-icon-trash\" name=\"lhelpdesk\" value=\""+nf+"\">X</button></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">" + nfv + "</label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\" class=\"validurl\"/> <button type=\"button\" class=\"btn langinputrm ui-icon-trash\" name=\"lhelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></li>");
           GINIT.initialize();
     });
     $("button#addldisplayname").click(function() {
         var selected = $("span.ldisplaynameadd option:selected").first();
         var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
         if(typeof nf === 'undefined')
         {
             return false;
@@ -2708,8 +2708,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-      //    $("span.ldisplaynameadd option[value=" + nf + "]").toggleOption(false);
-          $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">X</button></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">" + nfv + "</label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">"+rmbtn+"</button></li>");
          GINIT.initialize();
     });
     $("button#addlname").click(function() {
@@ -2719,11 +2718,11 @@ $("button#addlhelpdesk").click(function() {
         {
             return false;
         }
+        var rmbtn = $("button#helperbutttonrm").html();
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        //  $("span.lnameadd option[value=" + nf + "]").toggleOption(false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lname\" value=\""+nf+"\">X</button></li></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">" + nfv + "</label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\">"+rmbtn+"</button></li></li>");
           GINIT.initialize();
     });
     $("button#idpadduiidesc").click(function() {
@@ -2754,6 +2753,7 @@ $("#ncontactbtn").click(function() {
     $("button#addregpolicy").click(function() {
         var selected =  $("span.regpolicyadd option:selected").first();
         var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
         if(typeof nf === 'undefined')
         {
             return false;
@@ -2761,7 +2761,7 @@ $("#ncontactbtn").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">X</button></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li>");
           GINIT.initialize();
     });
 

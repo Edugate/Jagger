@@ -102,8 +102,6 @@ class Form_element {
         $class_ent = '';
         $class_org = '';
         $t1 = set_value('f[entityid]', $ent->getEntityId());
-        $t2 = set_value('f[orgname]', $ent->getName());
-        $t_displayname = $ent->getDisplayName();
         $t_regauthority = $ent->getRegistrationAuthority();
         $t_regdate = '';
         $origregdate = '';
@@ -152,14 +150,6 @@ class Form_element {
             {
                 $t_homeurl = $ses['homeurl'];
             }
-            if (array_key_exists('displayname', $ses))
-            {
-                $t_displayname = $ses['displayname'];
-            }
-            if (array_key_exists('helpdeskurl', $ses))
-            {
-                $t_helpdeskurl = $ses['helpdeskurl'];
-            }
             if (array_key_exists('validrom', $ses))
             {
                 $t_validfrom = $ses['validfrom'];
@@ -176,14 +166,6 @@ class Form_element {
                     $t1 = $ses['entityid'];
                 }
             }
-            if (array_key_exists('orgname', $ses))
-            {
-                if ($t2 != $ses['orgname'])
-                {
-                    $class_org = 'notice';
-                    $t2 = $ses['orgname'];
-                }
-            }
 
             if (array_key_exists('description', $ses))
             {
@@ -194,10 +176,8 @@ class Form_element {
         $f_regauthority = set_value('f[regauthority]', $t_regauthority);
         $f_regdate = set_value('f[registrationdate]', $t_regdate);
         $f_homeurl = set_value('f[homeurl]', $t_homeurl);
-        $f_helpdeskurl = set_value('f[helpdeskurl]', $t_helpdeskurl);
         $f_validfrom = set_value('f[validfrom]', $t_validfrom);
         $f_validto = set_value('f[validto]', $t_validto);
-        $f_displayname = set_value('f[displayname]', $t_displayname);
         $f_description = set_value('f[description]', $t_description);
         if ($f_regauthority != $ent->getRegistrationAuthority())
         {
@@ -220,13 +200,6 @@ class Form_element {
         {
             $homeurl_notice = '';
         }
-        if ($f_helpdeskurl != $ent->getHelpdeskUrl())
-        {
-            $helpdeskurl_notice = 'notice';
-        } else
-        {
-            $helpdeskurl_notice = '';
-        }
         if ($f_validfrom != $origvalidfrom)
         {
             $validfrom_notice = 'notice';
@@ -248,13 +221,6 @@ class Form_element {
         {
             $description_notice = '';
         }
-        if ($f_displayname != $ent->getDisplayName())
-        {
-            $class_displ = 'notice';
-        } else
-        {
-            $class_displ = '';
-        }
         $result = array();
         $result[] = '';
         if (!in_array('entityid', $this->disallowedparts))
@@ -268,14 +234,11 @@ class Form_element {
 
         // providername group 
         $result[] = '';
-        /**
-         * @todo add explanation for default provider name
-         */
-        $result[] = form_label(lang('e_orgname') . ' ' . showBubbleHelp('' . lang('entname_default_expl') . ''), 'f[orgname]') . form_input(array('id' => 'f[orgname]', 'class' => $class_org, 'name' => 'f[orgname]', 'value' => $t2));
+        $result[] = '<div class="langgroup">'.lang('e_orgname').'</div>';
         /**
          * start lname
          */
-        $lnames = $ent->getLocalName();
+        $lnames = $ent->getMergedLocalName();
         $slname = array();
         $origlname = array();
         $lnamelangs = languagesCodes();
@@ -287,6 +250,7 @@ class Form_element {
         {
             $origlname = $lnames;
         }
+        $btnlangs = MY_Controller::$langselect;
         foreach ($slname as $key => $value)
         {
             $lnamenotice = '';
@@ -301,16 +265,17 @@ class Form_element {
             {
                 $lnamenotice = 'notice';
             }
-            $result[] = form_label(lang('e_orgname') . ' <small>' . $lnamelangs['' . $key . ''] . '</small>', 'f[lname][' . $key . ']') . form_input(
+            $result[] = form_label( $lnamelangs['' . $key . ''] , 'f[lname][' . $key . ']') . form_input(
                             array(
                                 'name' => 'f[lname][' . $key . ']',
                                 'id' => 'f[lname][' . $key . ']',
                                 'value' => $lvalue,
                                 'class' => $lnamenotice
                             )
-                    ) . '<button type="button" class="btn langinputrm" name="lname" value="' . $key . '">X</button>';
+                    ) . '<button type="button" class="btn langinputrm" name="lname" value="' . $key . '">'.lang('rr_remove').'</button>';
             unset($origlname['' . $key . '']);
             unset($lnamelangs['' . $key . '']);
+            unset($btnlangs[''.$key.'']);
         }
         if (!$sessform)
         {
@@ -326,31 +291,33 @@ class Form_element {
                 {
                     $lnamenotice = 'notice';
                 }
-                $result[] = form_label(lang('e_orgname') . ' <small>' . $lnamelangs['' . $key . ''] . '</small>', 'f[lname][' . $key . ']') . form_input(
+                $result[] = form_label( $lnamelangs['' . $key . ''] , 'f[lname][' . $key . ']') . form_input(
                                 array(
                                     'name' => 'f[lname][' . $key . ']',
                                     'id' => 'f[lname][' . $key . ']',
                                     'value' => $lvalue,
                                     'class' => $lnamenotice
                                 )
-                        ) . '<button type="button" class="btn langinputrm" name="lname" value="' . $key . '">X</button>';
+                        ) . '<button type="button" class="btn langinputrm" name="lname" value="' . $key . '">'.lang('rr_remove').'</button>';
                 unset($lnamelangs['' . $key . '']);
+                unset($btnlangs[''.$key.'']);
             }
         }
-        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addlname" name="addlname" value="' . lang('e_orgname') . '" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span>';
+        $result[] = '<span class="lnameadd">' . form_dropdown('lnamelangcode', $btnlangs, $this->defaultlangselect) . '<button type="button" id="addlname" name="addlname" value="' . lang('e_orgname') . '" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span>';
 
         $result[] = '';
         /**
          * end lname
          */
         $result[] = '';
-        $result[] = form_label(lang('e_orgdisplayname') . ' ' . showBubbleHelp('' . lang('entdisplname_default_expl') . ''), 'f[displayname]') . form_input(array('id' => 'f[displayname]', 'class' => $class_displ, 'name' => 'f[displayname]', 'value' => $f_displayname));
         /**
          * start ldisplayname
          */
-        $origldisplayname = $ent->getLocalDisplayName();
+        $result[] = '<div class="langgroup">'.lang('e_orgdisplayname').'</div>';
+        $origldisplayname = $ent->getMergedLocalDisplayName();
         $sldisplayname = array();
         $ldisplaynamelangs = languagesCodes();
+        $btnlangs = MY_Controller::$langselect;
         if ($sessform && array_key_exists('ldisplayname', $ses) && is_array($ses['ldisplayname']))
         {
             $sldisplayname = $ses['ldisplayname'];
@@ -376,16 +343,18 @@ class Form_element {
             }
             if (isset($ldisplaynamelangs['' . $key . '']))
             {
-                $result[] = form_label(lang('e_orgdisplayname') . ' <small>' . $ldisplaynamelangs['' . $key . ''] . '</small>', 'f[ldisplayname][' . $key . ']') . form_input(
+                $result[] = form_label($ldisplaynamelangs['' . $key . ''] , 'f[ldisplayname][' . $key . ']') . form_input(
                                 array(
                                     'name' => 'f[ldisplayname][' . $key . ']',
                                     'id' => 'f[ldisplayname][' . $key . ']',
                                     'value' => $lvalue,
                                     'class' => $ldisplaynamenotice
                                 )
-                        ) . '<button type="button" class="btn langinputrm" name="ldisplayname" value="' . $key . '">X</button>';
+                        ) . '<button type="button" class="btn langinputrm" name="ldisplayname" value="' . $key . '">'.lang('rr_remove').'</button>';
                 unset($origldisplayname['' . $key . '']);
                 unset($ldisplaynamelangs['' . $key . '']);
+                unset($btnlangs[''.$key.'']);
+                
             }
         }
         if (!$sessform)
@@ -398,18 +367,19 @@ class Form_element {
                 {
                     $ldisplaynamenotice = 'notice';
                 }
-                $result[] = form_label(lang('e_orgdisplayname') . ' <small>' . $ldisplaynamelangs['' . $key . ''] . '</small>', 'f[ldisplayname][' . $key . ']') . form_input(
+                $result[] = form_label( $ldisplaynamelangs['' . $key . ''] , 'f[ldisplayname][' . $key . ']') . form_input(
                                 array(
                                     'name' => 'f[ldisplayname][' . $key . ']',
                                     'id' => 'f[ldisplayname][' . $key . ']',
                                     'value' => $lvalue,
                                     'class' => $ldisplaynamenotice
                                 )
-                        ) . '<button type="button" class="btn langinputrm" name="ldisplayname" value="' . $key . '">X</button>';
+                        ) . '<button type="button" class="btn langinputrm" name="ldisplayname" value="' . $key . '">'.lang('rr_remove').'</button>';
                 unset($ldisplaynamelangs['' . $key . '']);
+                unset($btnlangs[''.$key.'']);
             }
         }
-        $result[] = '<span class="ldisplaynameadd">' . form_dropdown('ldisplaynamelangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addldisplayname" name="addldisplayname" value="' . lang('rr_displayname') . '" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span>';
+        $result[] = '<span class="ldisplaynameadd">' . form_dropdown('ldisplaynamelangcode', $btnlangs, $this->defaultlangselect) . '<button type="button" id="addldisplayname" name="addldisplayname" value="' . lang('rr_displayname') . '" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span>';
 
         /**
          * end ldisplayname
@@ -422,13 +392,14 @@ class Form_element {
          * start organizatiourl/helpdesk
          */
         $result[] = '';
-        $result[] = form_label(lang('rr_helpdeskurl') . ' <small>&#91;' . lang('rr_default') . '&#93;</small>', 'f[helpdeskurl]') . form_input(array('id' => 'f[helpdeskurl]', 'class' => $helpdeskurl_notice, 'name' => 'f[helpdeskurl]', 'value' => $f_helpdeskurl));
         /**
          * start lhelpdesk
          */
-        $lhelpdesk = $ent->getLocalHelpdeskUrl();
+        $result[] = '<div class="langgroup">'.lang('e_orgurl').'</div>';
+        $lhelpdesk = $ent->getHelpdeskUrlLocalized();
         $slhelpdesk = array();
         $origlhelpdesk = array();
+        $btnlangs = MY_Controller::$langselect;
         $lhelpdesklangs = languagesCodes();
         if ($sessform && array_key_exists('lhelpdesk', $ses) && is_array($ses['lhelpdesk']))
         {
@@ -456,16 +427,17 @@ class Form_element {
             {
                 $lhelpdesknotice = 'notice';
             }
-            $result[] = form_label(lang('rr_helpdeskurl') . ' <small>' . $lhelpdesklangs['' . $key . ''] . '</small>', 'f[lhelpdesk][' . $key . ']') . form_input(
+            $result[] = form_label( $lhelpdesklangs['' . $key . ''] , 'f[lhelpdesk][' . $key . ']') . form_input(
                             array(
                                 'name' => 'f[lhelpdesk][' . $key . ']',
                                 'id' => 'f[lhelpdesk][' . $key . ']',
                                 'value' => $lvalue,
                                 'class' => $lhelpdesknotice
                             )
-                    ) . '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $key . '">X</button>';
+                    ) . '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $key . '">'.lang('rr_remove').'</button>';
             unset($origlhelpdesk['' . $key . '']);
             unset($lhelpdesklangs['' . $key . '']);
+            unset($btnlangs[''.$key.'']);
         }
         if (!$sessform)
         {
@@ -477,18 +449,19 @@ class Form_element {
                 {
                     $lhelpdesknotice = 'notice';
                 }
-                $result[] = form_label(lang('rr_helpdeskurl') . ' <small>' . $lhelpdesklangs['' . $key . ''] . '</small>', 'f[lhelpdesk][' . $key . ']') . form_input(
+                $result[] = form_label( $lhelpdesklangs['' . $key . ''] , 'f[lhelpdesk][' . $key . ']') . form_input(
                                 array(
                                     'name' => 'f[lhelpdesk][' . $key . ']',
                                     'id' => 'f[lhelpdesk][' . $key . ']',
                                     'value' => $lvalue,
                                     'class' => $lhelpdesknotice
                                 )
-                        ) . '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $key . '">X</button>';
+                        ) . '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $key . '">'.lang('rr_remove').'</button>';
                 unset($lhelpdesklangs['' . $key . '']);
+                unset($btnlangs[''.$key.'']);
             }
         }
-        $result[] = '<span class="lhelpdeskadd">' . form_dropdown('lhelpdesklangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addlhelpdesk" name="addlhelpdesk" value="' . lang('rr_helpdeskurl') . '" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span>';
+        $result[] = '<span class="lhelpdeskadd">' . form_dropdown('lhelpdesklangcode', $btnlangs, $this->defaultlangselect) . '<button type="button" id="addlhelpdesk" name="addlhelpdesk" value="' . lang('rr_helpdeskurl') . '" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span>';
 
 
         $result[] = '';
@@ -539,7 +512,7 @@ class Form_element {
                                 'value' => $lvalue,
                                 'class' => $regpolicynotice
                             )
-                    ) . '<button type="button" class="btn langinputrm" name="lname" value="' . $key . '">X</button>';
+                    ) . '<button type="button" class="btn langinputrm" name="lname" value="' . $key . '">'.lang('rr_remove').'</button>';
             unset($origregpolicies['' . $key . '']);
             unset($regpolicylangs['' . $key . '']);
         }
@@ -560,7 +533,7 @@ class Form_element {
                                     'value' => $lvalue,
                                     'class' => $regpolicynotice
                                 )
-                        ) . '<button type="button" class="btn langinputrm" name="lname" value="' . $key . '">X</button>';
+                        ) . '<button type="button" class="btn langinputrm" name="lname" value="' . $key . '">'.lang('rr_remove').'</button>';
                 unset($regpolicylangs['' . $key . '']);
             }
         }
@@ -2588,7 +2561,7 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $lang . '">X</button></li></li>';
+                    $r .= '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $lang . '">'.lang('rr_remove').'</button></li></li>';
                 }
             }
             if ($sessform && isset($ses['uii']['idpsso']['desc']) && is_array($ses['uii']['idpsso']['desc']))
@@ -2605,7 +2578,7 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $key . '">X</button></li>';
+                    $r .= '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $key . '">'.lang('rr_remove').'</button></li>';
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }

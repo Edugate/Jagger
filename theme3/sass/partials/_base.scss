@@ -20,6 +20,8 @@ $titleBgColorBottom: #f5f5f5;
 $titleBorderColor: #dddddd;
 $titleBorderWidth: 1px;
 $titleShadowColor: white;
+$font-family-titles: Helvetica, Verdana,Arial, sans-serif;
+$font-color-titles: $font-color;
 
 // popup header title
 $titleBgSimpleModal: blue;
@@ -62,6 +64,7 @@ $nav-1stlevel-bgcolor2: #181818;
 $nav-1stlevel-bgcolor3: #000000;
 $nav-1stlevel-bordertop: #000000;
 
+$nav-3rdlevel-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #585858), color-stop(40%, #181818), color-stop(100%, #000000));
 
 $toggleMenuBgColor1: #666;
 $toggleMenuBgColor2: #666;

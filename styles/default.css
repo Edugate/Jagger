@@ -301,7 +301,6 @@ select, input, textarea {
 }
 
 body {
-  background-color: #f0f0f0;
   color: #333333;
 }
 
@@ -511,6 +510,8 @@ nav {
   box-shadow: 0 1px 0 white inset;
   list-style: none outside none;
   margin: 0 0 10px;
+  font-family: Helvetica, Verdana, Arial, sans-serif;
+  color: #333333;
 }
 
 div.sectiontitle {
@@ -647,7 +648,7 @@ div.sectiontitle {
 }
 
 .nav li li li a {
-  background: #249578;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #585858), color-stop(40%, #181818), color-stop(100%, black));
   z-index: 200;
   border-top: 1px solid black;
 }
@@ -3026,7 +3027,8 @@ li.notice > input, li.notice > select, li.notice > span, div.notice > span {
   font-size: smaller;
   font-weight: bolder;
   display: inline-block;
-  float: left;
+  float: none;
+  text-align: right;
 }
 #formtabs form input {
   max-width: auto;
@@ -3096,6 +3098,9 @@ li.notice > input, li.notice > select, li.notice > span, div.notice > span {
 #formtabs form ul.checkboxlist li input {
   font-size: smaller;
   min-width: 10px;
+}
+#formtabs form div.langgroup {
+  font-weight: bold;
 }
 
 div#sortable, div.nsortable {

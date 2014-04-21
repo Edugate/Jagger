@@ -720,7 +720,7 @@ class Provider {
         $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
     }  
 
-    public function setName($name)
+    public function setName($name=null)
     {
         $this->name = $name;
         return $this;
@@ -745,7 +745,7 @@ class Provider {
         }
     }
 
-    public function setDisplayName($name)
+    public function setDisplayName($name=null)
     {
         $this->displayname = $name;
         return $this;
@@ -1013,7 +1013,7 @@ class Provider {
         return $this;
     }
 
-    public function setHelpdeskUrl($url)
+    public function setHelpdeskUrl($url=null)
     {
         $this->helpdeskurl = $url;
         return $this;
@@ -1832,6 +1832,16 @@ class Provider {
         }
     }
 
+    public function getMergedLocalName()
+    {
+        $r = $this->getLocalName();
+        if(!isset($r['en']) && !empty($this->name))
+        {
+           $r['en'] = $this->name;
+        }
+        return $r;
+    }
+
     public function getNameToWebInLang($lang,$type=null)
     {
         $result = null;
@@ -1954,6 +1964,16 @@ class Provider {
           return unserialize($this->ldisplayname);
         }
         return array();
+    }
+    public function getMergedLocalDisplayName()
+    {
+        $r = $this->getLocalDisplayName();
+        if(!isset($r['en']) && !empty($this->displayname))
+        {
+            $r['en'] = $this->displayname;
+        }
+        return $r;
+
     }
 
     public function getLocalDisplayNamesToArray($type)
@@ -2166,7 +2186,7 @@ class Provider {
         $p = unserialize($this->lhelpdeskurl);
         if (is_array($p))
         {
-            if (!array_key_exists('en', $p))
+            if (!array_key_exists('en', $p) && !empty($t['en']))
             {
                 $p['en'] = $t['en'];
             }
@@ -2175,7 +2195,7 @@ class Provider {
         {
             $p = $t;
         }
-        return $p;
+        return array_filter($p);
     }
 
     public function getPrivacyUrl()
@@ -2784,7 +2804,14 @@ class Provider {
         $ns_md = 'urn:oasis:names:tc:SAML:2.0:metadata';
         $e = $parent->ownerDocument->createElementNS($ns_md, 'md:Organization');
 
-        $lorgnames = $this->getNameLocalized();
+        $lorgnames = $this->getMergedLocalName();
+        $ldorgnames = $this->getMergedLocalDisplayName();
+        $lurls = $this->getHelpdeskUrlLocalized();
+        if(count($lurls) == 0 || count($lorgnames) == 0 || count($ldorgnames) == 0)
+        {
+           \log_message('warning','Missing one of Organization elements , not generating Organization for entity: '.$this->entityid);
+           return null;
+        }
         foreach ($lorgnames as $k => $v)
         {
             if(!empty($v))
@@ -2795,7 +2822,6 @@ class Provider {
                $e->appendChild($OrganizationName_Node);
             }
         }
-        $ldorgnames = $this->getDisplayNameLocalized();
         foreach ($ldorgnames as $k => $v)
         {
             if(!empty($v))
@@ -2806,7 +2832,6 @@ class Provider {
                $e->appendChild($OrganizationDisplayName_Node);
             }
         }
-        $lurls = $this->getHelpdeskUrlLocalized();
         foreach ($lurls as $k => $v)
         {
             if(!empty($v))
@@ -3598,7 +3623,7 @@ class Provider {
         }
 
         $Organization_Node = $this->getOrganizationToXML($EntityDesc_Node);
-        if($Organization_Node->hasChildNodes())
+        if($Organization_Node !== null && $Organization_Node->hasChildNodes())
         {
            $EntityDesc_Node->appendChild($Organization_Node);
         }

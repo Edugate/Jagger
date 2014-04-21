@@ -311,7 +311,8 @@ li.notice > input, li.notice > select,li.notice > span, div.notice > span
         font-size: smaller;
         font-weight: bolder;
         display: inline-block;
-        float: left;
+        float: none;
+        text-align: right;
     }
     input {
         max-width: auto;
@@ -392,6 +393,9 @@ ul.checkboxlist {
     }
 
 }
+    div.langgroup {
+       font-weight: bold;
+    }
 
 }
 div#sortable, div.nsortable {
