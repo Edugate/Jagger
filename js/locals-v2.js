@@ -2779,6 +2779,23 @@ $("button#addlhelpdesk").click(function() {
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">" + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea> <button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">"+rmbtn+"</button></li>");
           GINIT.initialize();
     });
+    $("button#addregpolicy").click(function() {
+        var selected =  $("span.regpolicyadd option:selected").first();
+        var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
+        if(typeof nf === 'undefined')
+        {
+            return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">" + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+          GINIT.initialize();
+    });
+
+
 $("#ncontactbtn").click(function() {
     var rname = "";
     var btnvalues = $(this).attr('value').split('|');
@@ -2791,21 +2808,6 @@ $("#ncontactbtn").click(function() {
           GINIT.initialize();
 
 });
-    $("button#addregpolicy").click(function() {
-        var selected =  $("span.regpolicyadd option:selected").first();
-        var nf = selected.val();
-        var rmbtn = $("button#helperbutttonrm").html();
-        if(typeof nf === 'undefined')
-        {
-            return false;
-        }
-        var nfv = selected.text();
-        var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li>");
-          GINIT.initialize();
-    });
-
 
 });
     $("#showhelps").click(function(e){

@@ -537,6 +537,14 @@ class Entityedit extends MY_Controller {
         {
            $data['uii']['idpsso']['displayname'] = array();
         }
+        if(isset($data['prvurl']['idpsso']))
+        {
+            $data['prvurl']['idpsso'] = array_filter($data['prvurl']['idpsso']);
+        }
+        else
+        {
+            $data['prvurl']['idpsso'] = array();
+        }
         if(isset($data['regpolicy']))
         {
            $data['regpolicy'] = array_filter($data['regpolicy']);

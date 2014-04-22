@@ -560,6 +560,15 @@ class Providerupdater {
                             }
                             unset($ch['prvurl']['idpsso']['' . $key . '']);
                         }
+                        else
+                        {
+                                $value->setProvider(NULL);
+                                $ex->removeElement($value);
+                                $this->em->remove($value);
+                                unset($newex[''.$key.'']);
+                                unset($ch['prvurl']['idpsso']['' . $key . '']);
+
+                        }
                     }
 
                     foreach ($ch['prvurl']['idpsso'] as $key2 => $value2)
