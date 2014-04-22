@@ -533,7 +533,7 @@ class Form_element {
                                     'value' => $lvalue,
                                     'class' => $regpolicynotice
                                 )
-                        ) . '<button type="button" class="btn langinputrm" name="lname" value="' . $key . '">'.lang('rr_remove').'</button>';
+                        ) . ' <button type="button" class="btn langinputrm" name="lname" value="' . $key . '">'.lang('rr_remove').'</button>';
                 unset($regpolicylangs['' . $key . '']);
             }
         }
@@ -2357,7 +2357,10 @@ class Form_element {
             /**
              * start display
              */
-            $r = form_fieldset('' . lang('uiiidpdisplayname') . '');
+            $result[] = '';
+    //        $r = form_fieldset('' . lang('e_idpservicename') . '');
+            $result[] = '<div class="langgroup">'. lang('e_idpservicename').'</div>';
+            $r ='';
             $langsdisplaynames = $langs;
             if (isset($ext['idp']['mdui']['DisplayName']))
             {
@@ -2404,7 +2407,7 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '</li>';
+                    $r .= ' <button type="button" class="btn langinputrm" name="uiiidpssodisplayname" value="' . $lang . '">'.lang('rr_remove').'</button></li>';
                 }
             }
             if ($sessform && isset($ses['uii']['idpsso']['displayname']) && is_array($ses['uii']['idpsso']['displayname']))
@@ -2421,13 +2424,14 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '</li>';
+                    $r .= ' <button type="button" class="btn langinputrm" name="uiiidpssodisplayname" value="' . $key . '">'.lang('rr_remove').'</button></li>';
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiidisplayadd">' . form_dropdown('idpuiidisplaylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiidisplay" name="idpadduiidisplay" value="idpadduiidisplay" class="editbutton addicon smallerbtn">' . lang('addlocalizeduiidisplayname') . '</button></span></li>';
-            $r .= form_fieldset_close();
+            $r .= '<li><span class="idpuiidisplayadd">' . form_dropdown('idpuiidisplaylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiidisplay" name="idpadduiidisplay" value="idpadduiidisplay" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span></li>';
+          //  $r .= form_fieldset_close();
             $result[] = $r;
+            $result[] = '';
 
             /**
              * end display
@@ -2435,7 +2439,10 @@ class Form_element {
             /**
              * start helpdesk 
              */
-            $r = form_fieldset('' . lang('uiiinformationurl') . '');
+            $result[] = '';
+            //$r = form_fieldset('' . lang('e_idpserviceinfourl') . '');
+            $result[] = '<div class="langgroup">'.lang('e_idpserviceinfourl').'</div>';
+            $r = '';
             $langsdisplaynames = $langs;
             if (isset($ext['idp']['mdui']['InformationURL']))
             {
@@ -2473,7 +2480,7 @@ class Form_element {
                         $displaynotice = 'notice';
                     }
                     $r .= '<li>';
-                    $r .= form_label(lang('rr_helpdeskurl') . ' <small>' . $langtxt . '</small>', 'f[uii][idpsso][helpdesk][' . $lang . ']') . form_input(
+                    $r .= form_label($langtxt, 'f[uii][idpsso][helpdesk][' . $lang . ']') . form_input(
                                     array(
                                         'name' => 'f[uii][idpsso][helpdesk][' . $lang . ']',
                                         'id' => 'f[uii][idpsso][helpdesk][' . $lang . ']',
@@ -2482,7 +2489,7 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '</li>';
+                    $r .= ' <button type="button" class="btn langinputrm" name="uiiidpssohelpdesk" value="' . $lang . '">'.lang('rr_remove').'</button></li>';
                 }
             }
             if ($sessform && isset($ses['uii']['idpsso']['helpdesk']) && is_array($ses['uii']['idpsso']['helpdesk']))
@@ -2490,7 +2497,7 @@ class Form_element {
                 foreach ($ses['uii']['idpsso']['helpdesk'] as $key => $value)
                 {
                     $r .= '<li>';
-                    $r .= form_label(lang('rr_helpdeskurl') . ' <small>' . $key . '</small>', 'f[uii][idpsso][helpdesk][' . $key . ']') . form_input(
+                    $r .= form_label( $key, 'f[uii][idpsso][helpdesk][' . $key . ']') . form_input(
                                     array(
                                         'name' => 'f[uii][idpsso][helpdesk][' . $key . ']',
                                         'id' => 'f[uii][idpsso][helpdesk][' . $key . ']',
@@ -2499,13 +2506,14 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '</li>';
+                    $r .= '  <button type="button" class="btn langinputrm" name="uiiidpssohelpdesk" value="' . $key . '">'.lang('rr_remove').'</button></li>';
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<li><span class="idpuiihelpdeskadd">' . form_dropdown('idpuiihelpdesklangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiihelpdesk" name="idpadduiihelpdesk" value="idpadduiihelpdesk" class="editbutton addicon smallerbtn">' . lang('addlocalizedhelpdesk') . '</button></span></li>';
-            $r .= form_fieldset_close();
+            $r .= '<li><span class="idpuiihelpdeskadd">' . form_dropdown('idpuiihelpdesklangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiihelpdesk" name="idpadduiihelpdesk" value="idpadduiihelpdesk" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span></li>';
+         //   $r .= form_fieldset_close();
             $result[] = $r;
+            $result[] ='';
 
             /**
              * end helpdesk
@@ -2513,7 +2521,10 @@ class Form_element {
             /**
              * start description
              */
-            $r = form_fieldset('' . lang('rr_provdesc') . '');
+            $result[] = '';
+            //$r = form_fieldset('' . lang('e_idpservicedesc') . '');
+            $r = '';
+            $result[] = '<div class="langgroup">'.lang('e_idpservicedesc').'</div>';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['idp']['mdui']['Description']))
             {
@@ -2551,7 +2562,7 @@ class Form_element {
                         $displaynotice = 'notice';
                     }
                     $r .= '<li>';
-                    $r .= form_label(lang('rr_description') . ' <small>' . $langtxt . '</small>', 'f[uii][idpsso][desc][' . $lang . ']') . form_textarea(
+                    $r .= form_label($langtxt, 'f[uii][idpsso][desc][' . $lang . ']') . form_textarea(
                                     array(
                                         'name' => 'f[uii][idpsso][desc][' . $lang . ']',
                                         'id' => 'f[uii][idpsso][desc][' . $lang . ']',
@@ -2560,7 +2571,7 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $lang . '">'.lang('rr_remove').'</button></li></li>';
+                    $r .= ' <button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $lang . '">'.lang('rr_remove').'</button></li></li>';
                 }
             }
             if ($sessform && isset($ses['uii']['idpsso']['desc']) && is_array($ses['uii']['idpsso']['desc']))
@@ -2568,7 +2579,7 @@ class Form_element {
                 foreach ($ses['uii']['idpsso']['desc'] as $key => $value)
                 {
                     $r .= '<li>';
-                    $r .= form_label(lang('rr_description') . ' <small>' . $key . '</small>', 'f[uii][idpsso][desc][' . $key . ']') . form_textarea(
+                    $r .= form_label( $key, 'f[uii][idpsso][desc][' . $key . ']') . form_textarea(
                                     array(
                                         'name' => 'f[uii][idpsso][desc][' . $key . ']',
                                         'id' => 'f[uii][idpsso][desc][' . $key . ']',
@@ -2577,14 +2588,14 @@ class Form_element {
                                     )
                     );
 
-                    $r .= '<button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $key . '">'.lang('rr_remove').'</button></li>';
+                    $r .= ' <button type="button" class="btn langinputrm" name="lhelpdesk" value="' . $key . '">'.lang('rr_remove').'</button></li>';
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
             $r .= '<li><span class="idpuiidescadd">' . form_dropdown('idpuiidesclangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="idpadduiidesc" name="idpadduiidesc" value="' . lang('rr_description') . '" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span></li>';
-            $r .= form_fieldset_close();
+            //$r .= form_fieldset_close();
             $result[] = $r;
-
+            $result[] ='';
             /**
              * end description 
              */
@@ -2598,7 +2609,10 @@ class Form_element {
                 /**
                  * start display
                  */
-                $r = form_fieldset('' . lang('uiispdisplayname') . '');
+                $result[] = '';
+                //$r = form_fieldset('' . lang('e_spservicename') . '');
+                $result[] = '<div class="langgroup">'.lang('e_spservicename').'</div>';
+                $r = '';
                 $langsdisplaynames = $langs;
                 if (isset($ext['sp']['mdui']['DisplayName']))
                 {
@@ -2636,7 +2650,7 @@ class Form_element {
                             $displaynotice = 'notice';
                         }
                         $r .= '<li>';
-                        $r .= form_label(lang('rr_displayname') . ' <small>' . $langtxt . '</small>', 'f[uii][spsso][displayname][' . $lang . ']') . form_input(
+                        $r .= form_label( $langtxt, 'f[uii][spsso][displayname][' . $lang . ']') . form_input(
                                         array(
                                             'name' => 'f[uii][spsso][displayname][' . $lang . ']',
                                             'id' => 'f[uii][spsso][displayname][' . $lang . ']',
@@ -2645,7 +2659,7 @@ class Form_element {
                                         )
                         );
 
-                        $r .= '</li>';
+                        $r .= ' <button type="button" class="btn langinputrm" name="uiispssodisplayname" value="' . $lang . '">'.lang('rr_remove').'</button></li>';
                     }
                 }
                 if ($sessform && isset($ses['uii']['spsso']['displayname']) && is_array($ses['uii']['spsso']['displayname']))
@@ -2653,7 +2667,7 @@ class Form_element {
                     foreach ($ses['uii']['spsso']['displayname'] as $key => $value)
                     {
                         $r .= '<li>';
-                        $r .= form_label(lang('rr_displayname') . ' <small>' . $key . '</small>', 'f[uii][spsso][displayname][' . $key . ']') . form_input(
+                        $r .= form_label( $key, 'f[uii][spsso][displayname][' . $key . ']') . form_input(
                                         array(
                                             'name' => 'f[uii][spsso][displayname][' . $key . ']',
                                             'id' => 'f[uii][spsso][displayname][' . $key . ']',
@@ -2662,13 +2676,14 @@ class Form_element {
                                         )
                         );
 
-                        $r .= '</li>';
+                        $r .= ' <button type="button" class="btn langinputrm" name="uiispssodisplayname" value="' . $lang . '">'.lang('rr_remove').'</button></li>';
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiidisplayadd">' . form_dropdown('spuiidisplaylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="spadduiidisplay" name="spadduiidisplay" value="spadduiidisplay" class="editbutton addicon smallerbtn">' . lang('addlocalizeduiidisplayname') . '</button></span></li>';
-                $r .= form_fieldset_close();
+                $r .= '<li><span class="spuiidisplayadd">' . form_dropdown('spuiidisplaylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="spadduiidisplay" name="spadduiidisplay" value="spadduiidisplay" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span></li>';
+                //$r .= form_fieldset_close();
                 $result[] = $r;
+                $result[] = '';
 
                 /**
                  * end display
@@ -2676,7 +2691,10 @@ class Form_element {
                 /**
                  * start helpdesk 
                  */
-                $r = form_fieldset('' . lang('uiiinformationurl') . '');
+                $result[] = '';
+                //$r = form_fieldset('' . lang('e_spserviceinfourl') . '');
+                $result[] = '<div class="langgroup">'.lang('e_spserviceinfourl').'</div>';
+                $r = '';
                 $langsdisplaynames = $langs;
                 if (isset($ext['sp']['mdui']['InformationURL']))
                 {
@@ -2714,7 +2732,7 @@ class Form_element {
                             $displaynotice = 'notice';
                         }
                         $r .= '<li>';
-                        $r .= form_label(lang('rr_helpdeskurl') . ' <small>' . $langtxt . '</small>', 'f[uii][spsso][helpdesk][' . $lang . ']') . form_input(
+                        $r .= form_label( $langtxt , 'f[uii][spsso][helpdesk][' . $lang . ']') . form_input(
                                         array(
                                             'name' => 'f[uii][spsso][helpdesk][' . $lang . ']',
                                             'id' => 'f[uii][spsso][helpdesk][' . $lang . ']',
@@ -2723,7 +2741,7 @@ class Form_element {
                                         )
                         );
 
-                        $r .= '</li>';
+                        $r .= '  <button type="button" class="btn langinputrm" name="uiispssohelpdesk" value="' . $lang . '">'.lang('rr_remove').'</button></li>';
                     }
                 }
                 if ($sessform && isset($ses['uii']['spsso']['helpdesk']) && is_array($ses['uii']['spsso']['helpdesk']))
@@ -2731,7 +2749,7 @@ class Form_element {
                     foreach ($ses['uii']['spsso']['helpdesk'] as $key => $value)
                     {
                         $r .= '<li>';
-                        $r .= form_label(lang('rr_helpdeskurl') . ' <small>' . $key . '</small>', 'f[uii][spsso][helpdesk][' . $key . ']') . form_input(
+                        $r .= form_label( $key , 'f[uii][spsso][helpdesk][' . $key . ']') . form_input(
                                         array(
                                             'name' => 'f[uii][spsso][helpdesk][' . $key . ']',
                                             'id' => 'f[uii][spsso][helpdesk][' . $key . ']',
@@ -2740,21 +2758,24 @@ class Form_element {
                                         )
                         );
 
-                        $r .= '</li>';
+                        $r .= ' <button type="button" class="btn langinputrm" name="uiispssohelpdesk" value="' . $key . '">'.lang('rr_remove').'</button></li>';
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiihelpdeskadd">' . form_dropdown('spuiihelpdesklangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="spadduiihelpdesk" name="spadduiihelpdesk" value="spadduiihelpdesk" class="editbutton addicon smallerbtn">' . lang('addlocalizeinformationurl') . '</button></span></li>';
-                $r .= form_fieldset_close();
+                $r .= '<li><span class="spuiihelpdeskadd">' . form_dropdown('spuiihelpdesklangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="spadduiihelpdesk" name="spadduiihelpdesk" value="spadduiihelpdesk" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span></li>';
+                //$r .= form_fieldset_close();
                 $result[] = $r;
-
+                $result[] = '';
                 /**
                  * end helpdesk
                  */
                 /**
                  * start description
                  */
-                $r = form_fieldset('' . lang('rr_provdesc') . '');
+                $result[] = '';
+                //$r = form_fieldset('' . lang('e_spservicedesc') . '');
+                $result[] = '<div class="langgroup">'.lang('e_spservicedesc').'</div>';
+                $r = '';
                 $langsdisplaynames = $langs;
                 if (isset($ext['sp']['mdui']['Description']))
                 {
@@ -2792,7 +2813,7 @@ class Form_element {
                             $displaynotice = 'notice';
                         }
                         $r .= '<li>';
-                        $r .= form_label(lang('rr_description') . ' <small>' . $langtxt . '</small>', 'f[uii][spsso][desc][' . $lang . ']') . form_textarea(
+                        $r .= form_label( $langtxt , 'f[uii][spsso][desc][' . $lang . ']') . form_textarea(
                                         array(
                                             'name' => 'f[uii][spsso][desc][' . $lang . ']',
                                             'id' => 'f[uii][spsso][desc][' . $lang . ']',
@@ -2801,7 +2822,7 @@ class Form_element {
                                         )
                         );
 
-                        $r .= '</li>';
+                        $r .= ' <button type="button" class="btn langinputrm" name="uiispssodesc" value="' . $lang . '">'.lang('rr_remove').'</button></li>';
                     }
                 }
                 if ($sessform && isset($ses['uii']['spsso']['desc']) && is_array($ses['uii']['spsso']['desc']))
@@ -2809,7 +2830,7 @@ class Form_element {
                     foreach ($ses['uii']['spsso']['desc'] as $key => $value)
                     {
                         $r .= '<li>';
-                        $r .= form_label(lang('rr_description') . ' <small>' . $key . '</small>', 'f[uii][spsso][desc][' . $key . ']') . form_textarea(
+                        $r .= form_label( $key, 'f[uii][spsso][desc][' . $key . ']') . form_textarea(
                                         array(
                                             'name' => 'f[uii][spsso][desc][' . $key . ']',
                                             'id' => 'f[uii][spsso][desc][' . $key . ']',
@@ -2818,14 +2839,14 @@ class Form_element {
                                         )
                         );
 
-                        $r .= '</li>';
+                        $r .= ' <button type="button" class="btn langinputrm" name="uiispssodesc" value="' . $key . '">'.lang('rr_remove').'</button></li>';
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<li><span class="spuiidescadd">' . form_dropdown('spuiidesclangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="spadduiidesc" name="spadduiidesc" value="spadduiidesc" class="editbutton addicon smallerbtn">' . lang('addlocalizeddesc') . '</button></span></li>';
-                $r .= form_fieldset_close();
+                $r .= '<li><span class="spuiidescadd">' . form_dropdown('spuiidesclangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="spadduiidesc" name="spadduiidesc" value="spadduiidesc" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span></li>';
+                //$r .= form_fieldset_close();
                 $result[] = $r;
-
+                $result[] = '';
                 /**
                  * end description 
                  */

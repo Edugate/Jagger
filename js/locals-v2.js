@@ -1082,66 +1082,36 @@ $(function() {
         });
         return false;
     });
-    $("button#idpadduiidisplay").click(function() {
-        var nf = $("span.idpuiidisplayadd option:selected").val();
-        var nfv = $("span.idpuiidisplayadd option:selected").text();
-        $("span.idpuiidisplayadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][displayname][" + nf + "]\">DisplayName in " + nfv + " </label><input id=\"f[uii][idpsso][displayname][" + nf + "]\" name=\"f[uii][idpsso][displayname][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#spadduiidisplay").click(function() {
-        var nf = $("span.spuiidisplayadd option:selected").val();
-        var nfv = $("span.spuiidisplayadd option:selected").text();
-        $("span.spuiidisplayadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\">DisplayName in " + nfv + " </label><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#idpadduiihelpdesk").click(function() {
-        var nf = $("span.idpuiihelpdeskadd option:selected").val();
-        var nfv = $("span.idpuiihelpdeskadd option:selected").text();
-        $("span.idpuiihelpdeskadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][helpdesk][" + nf + "]\">InformationURL in " + nfv + " </label><input id=\"f[uii][idpsso][helpdesk][" + nf + "]\" name=\"f[uii][idpsso][helpdesk][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#spadduiihelpdesk").click(function() {
-        var nf = $("span.spuiihelpdeskadd option:selected").val();
-        var nfv = $("span.spuiihelpdeskadd option:selected").text();
-        $("span.spuiihelpdeskadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\">InformationURL in " + nfv + " </label><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/></li>");
-    });
     $("button#idpadduiiprvurl").click(function() {
         var nf = $("span.idpuiiprvurladd option:selected").val();
         var nfv = $("span.idpuiiprvurladd option:selected").text();
         $("span.idpuiiprvurladd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][prvurl][" + nf + "]\">PrivacyStatementURL in " + nfv + " </label><input id=\"f[uii][idpsso][prvurl][" + nf + "]\" name=\"f[uii][idpsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][prvurl][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][idpsso][prvurl][" + nf + "]\" name=\"f[uii][idpsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
     });
     $("button#spadduiiprvurl").click(function() {
         var nf = $("span.spuiiprvurladd option:selected").val();
         var nfv = $("span.spuiiprvurladd option:selected").text();
         $("span.spuiiprvurladd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][prvurl][" + nf + "]\">PrivacyStatementURL in " + nfv + " </label><input id=\"f[uii][spsso][prvurl][" + nf + "]\" name=\"f[uii][spsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][prvurl][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][spsso][prvurl][" + nf + "]\" name=\"f[uii][spsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
     });
     
     $("button#addlprivacyurl").click(function() {
         var nf = $("li.addlprivacyurl option:selected").val();
         var nfv = $("li.addlprivacyurl option:selected").text();
         $("li.addlprivacyurl option[value=" + nf + "]").toggleOption(false);
-        $(this).parent().append("<li class=\"localized\"><label for=\"lprivacyurl[" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"lprivacyurl[" + nf + "]\" name=\"lprivacyurl[" + nf + "]\" type=\"text\"/></li>");
+        $(this).parent().append("<li class=\"localized\"><label for=\"lprivacyurl[" + nf + "]\">" + nfv + "</label><input id=\"lprivacyurl[" + nf + "]\" name=\"lprivacyurl[" + nf + "]\" type=\"text\"/></li>");
     });
     $("button#addlprivacyurlspsso").click(function() {
         var nf = $("li.addlprivacyurlspsso option:selected").val();
         var nfv = $("li.addlprivacyurlspsso option:selected").text();
         $("li.addlprivacyurlspsso option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][spsso][" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][spsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/></li>");
     });
     $("button#addlprivacyurlidpsso").click(function() {
         var nf = $("li.addlprivacyurlidpsso option:selected").val();
         var nfv = $("li.addlprivacyurlidpsso option:selected").text();
         $("li.addlprivacyurlidpsso option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][idpsso][" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#spadduiidesc").click(function() {
-        var nf = $("span.spuiidescadd option:selected").val();
-        var nfv = $("span.spuiidescadd option:selected").text();
-        $("span.spuiidescadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][spsso][desc][" + nf + "]\">Description in " + nfv + " </label><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][idpsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/></li>");
     });
     $("a#fedmetasigner").click(function() {
         var link = $(this), url = link.attr("href");
@@ -2711,6 +2681,76 @@ $("button#addlhelpdesk").click(function() {
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">" + nfv + "</label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">"+rmbtn+"</button></li>");
          GINIT.initialize();
     });
+
+
+    $("button#idpadduiidisplay").click(function() {
+        var selected = $("span.idpuiidisplayadd option:selected").first();
+        var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var nfv = selected.text();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][displayname][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][idpsso][displayname][" + nf + "]\" name=\"f[uii][idpsso][displayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiidisplayname\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#idpadduiihelpdesk").click(function() {
+        var selected = $("span.idpuiihelpdeskadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var rmbtn = $("button#helperbutttonrm").html();
+        var nfv = selected.text();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][helpdesk][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][idpsso][helpdesk][" + nf + "]\" name=\"f[uii][idpsso][helpdesk][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiihelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#spadduiidisplay").click(function() {
+        var selected = $("span.spuiidisplayadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiispnamerm\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#spadduiihelpdesk").click(function() {
+        var selected = $("span.spuiihelpdeskadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\">" + nfv + " </label><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiisphelpdeskrm\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#spadduiidesc").click(function() {
+        var selected = $("span.spuiidescadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][spsso][desc][" + nf + "]\">" + nfv + "</label><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea> <button type=\"button\" class=\"btn langinputrm\" name=\"uiispdescrm\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+
     $("button#addlname").click(function() {
         var selected = $("span.lnameadd option:selected").first();
         var nf = selected.val();
@@ -2732,10 +2772,11 @@ $("button#addlhelpdesk").click(function() {
         {
             return false;
         }
+        var rmbtn = $("button#helperbutttonrm").html();
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">"+inputname+" " + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">X</button></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">" + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea> <button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">"+rmbtn+"</button></li>");
           GINIT.initialize();
     });
 $("#ncontactbtn").click(function() {

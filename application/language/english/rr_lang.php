@@ -313,6 +313,7 @@ $lang['e_spservicename']              = 'Name of the Service';
 $lang['e_spservicedesc']              = 'Description of the Service';
 $lang['e_spserviceinfourl']           = 'URL to information about the Service';
 $lang['e_spserviceprivacyurl']        = 'URL to Privacy Policy of the Service';
+
 $lang['e_idpservicename']              = 'Name of organization';
 $lang['e_idpservicedesc']              = 'Description of user comunity serviced';
 $lang['e_idpserviceinfourl']           = 'URL to information about the Identity Provider';
