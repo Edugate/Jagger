@@ -2414,8 +2414,16 @@ class Form_element {
             {
                 foreach ($ses['uii']['idpsso']['displayname'] as $key => $value)
                 {
+                    if (!array_key_exists($key, $langs))
+                    {
+                        log_message('error', 'Language code ' . $key . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                         $langtxt = $key;
+                    } else
+                    {
+                        $langtxt = $langs['' . $key . ''];
+                    }
                     $r .= '<li>';
-                    $r .= form_label( $key , 'f[uii][idpsso][displayname][' . $key . ']') . form_input(
+                    $r .= form_label( $langtxt , 'f[uii][idpsso][displayname][' . $key . ']') . form_input(
                                     array(
                                         'name' => 'f[uii][idpsso][displayname][' . $key . ']',
                                         'id' => 'f[uii][idpsso][displayname][' . $key . ']',
@@ -2496,8 +2504,16 @@ class Form_element {
             {
                 foreach ($ses['uii']['idpsso']['helpdesk'] as $key => $value)
                 {
+                    if (!array_key_exists($key, $langs))
+                    {
+                        log_message('error', 'Language code ' . $key . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                         $langtxt = $key;
+                    } else
+                    {
+                        $langtxt = $langs['' . $key . ''];
+                    }
                     $r .= '<li>';
-                    $r .= form_label( $key, 'f[uii][idpsso][helpdesk][' . $key . ']') . form_input(
+                    $r .= form_label( $langtxt, 'f[uii][idpsso][helpdesk][' . $key . ']') . form_input(
                                     array(
                                         'name' => 'f[uii][idpsso][helpdesk][' . $key . ']',
                                         'id' => 'f[uii][idpsso][helpdesk][' . $key . ']',
