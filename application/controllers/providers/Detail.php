@@ -1227,7 +1227,7 @@ class Detail extends MY_Controller {
                     $uiiarray[$e->getElement()][] = $e;
                 }
             }
-            $d[++$i]['name'] = lang('DisplayName');
+            $d[++$i]['name'] = lang('e_idpservicename');
             if (isset($uiiarray['DisplayName']))
             {
                 $str = '';
@@ -1242,7 +1242,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('Description');
+            $d[++$i]['name'] = lang('e_idpservicedesc');
             if (isset($uiiarray['Description']))
             {
                 $str = '';
@@ -1257,7 +1257,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('PrivacyStatementURL');
+            $d[++$i]['name'] = lang('e_idpserviceprivacyurl');
             if (isset($uiiarray['PrivacyStatementURL']))
             {
                 $str = '';
@@ -1272,7 +1272,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('InformationURL');
+            $d[++$i]['name'] = lang('e_idpserviceinfourl');
             if (isset($uiiarray['InformationURL']))
             {
                 $str = '';
@@ -1336,7 +1336,7 @@ class Detail extends MY_Controller {
                     $uiiarray[$e->getElement()][] = $e;
                 }
             }
-            $d[++$i]['name'] = lang('DisplayName');
+            $d[++$i]['name'] = lang('e_spservicename');
             if (isset($uiiarray['DisplayName']))
             {
                 $str = '';
@@ -1351,7 +1351,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('Description');
+            $d[++$i]['name'] = lang('e_spservicedesc');
             if (isset($uiiarray['Description']))
             {
                 $str = '';
@@ -1366,7 +1366,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('PrivacyStatementURL');
+            $d[++$i]['name'] = lang('e_spserviceprivacyurl');
             if (isset($uiiarray['PrivacyStatementURL']))
             {
                 $str = '';
@@ -1381,7 +1381,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('InformationURL');
+            $d[++$i]['name'] = lang('e_spserviceinfourl');
             if (isset($uiiarray['InformationURL']))
             {
                 $str = '';

@@ -2354,7 +2354,6 @@ class Form_element {
         if ($type != 'SP')
         {
             $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
-
             /**
              * start display
              */
@@ -2396,7 +2395,7 @@ class Form_element {
                         $displaynotice = 'notice';
                     }
                     $r .= '<li>';
-                    $r .= form_label(lang('rr_displayname') . ' <small>' . $langtxt . '</small>', 'f[uii][idpsso][displayname][' . $lang . ']') . form_input(
+                    $r .= form_label( $langtxt , 'f[uii][idpsso][displayname][' . $lang . ']') . form_input(
                                     array(
                                         'name' => 'f[uii][idpsso][displayname][' . $lang . ']',
                                         'id' => 'f[uii][idpsso][displayname][' . $lang . ']',
@@ -2413,7 +2412,7 @@ class Form_element {
                 foreach ($ses['uii']['idpsso']['displayname'] as $key => $value)
                 {
                     $r .= '<li>';
-                    $r .= form_label(lang('rr_displayname') . ' <small>' . $key . '</small>', 'f[uii][idpsso][displayname][' . $key . ']') . form_input(
+                    $r .= form_label( $key , 'f[uii][idpsso][displayname][' . $key . ']') . form_input(
                                     array(
                                         'name' => 'f[uii][idpsso][displayname][' . $key . ']',
                                         'id' => 'f[uii][idpsso][displayname][' . $key . ']',
