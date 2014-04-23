@@ -83,6 +83,9 @@ if(!empty($sessform))
 </form>
 </div>
 <div style="display: none" id="entitychangealert"><?php echo lang('alertentchange');?></div>
+<?php
+echo '<button id="helperbutttonrm" type="button" class="btn langinputrm hidden">'.lang('rr_remove').'</button>';
+?>
 <script type="text/javascript">
 
 function stopRKey(evt) {

@@ -1,5 +1,6 @@
 require 'compass-h5bp'
 require 'html5-boilerplate'
+require 'bootstrap-sass'
 # Require any additional compass plugins here.
 
 

@@ -101,8 +101,8 @@ var GINIT = {
     $("button.contactrm").click(function(){
          var bval = $(this).attr('value');
          var bname = $(this).attr('name');
-         var fieldset = $(this).closest('fieldset');
-        fieldset.parent().remove();
+         var fieldset = $(this).closest('ol');
+        fieldset.remove();
         GINIT.initialize();
     });
     $("button.certificaterm").click(function(){
@@ -298,6 +298,18 @@ var GINIT = {
     $("fieldset#dataprotection label").autoWidth();
     $("fieldset#protocols label").autoWidth();
     $("fieldset#general label").autoWidth();
+    $("li.fromprevtoright").each(function(){
+         var prevli = $(this).prev();
+         var prevliOffset = prevli.offset().left;
+         var previnput = $(this).prev().find("input,textarea").last();
+         var previnputOffset = previnput.offset().left;
+         var previnputWidth = previnput.width();
+         var ln = (previnputOffset+previnputWidth)-prevliOffset;
+         $(this).css('text-align','right').width(ln);
+    });
+
+    
+    
 
     $("form#assignedlogos input[name='logoid']").click(function(){
          $(this).after($("div#unsignlogosbtn").show());
@@ -1070,66 +1082,24 @@ $(function() {
         });
         return false;
     });
-    $("button#idpadduiidisplay").click(function() {
-        var nf = $("span.idpuiidisplayadd option:selected").val();
-        var nfv = $("span.idpuiidisplayadd option:selected").text();
-        $("span.idpuiidisplayadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][displayname][" + nf + "]\">DisplayName in " + nfv + " </label><input id=\"f[uii][idpsso][displayname][" + nf + "]\" name=\"f[uii][idpsso][displayname][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#spadduiidisplay").click(function() {
-        var nf = $("span.spuiidisplayadd option:selected").val();
-        var nfv = $("span.spuiidisplayadd option:selected").text();
-        $("span.spuiidisplayadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\">DisplayName in " + nfv + " </label><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#idpadduiihelpdesk").click(function() {
-        var nf = $("span.idpuiihelpdeskadd option:selected").val();
-        var nfv = $("span.idpuiihelpdeskadd option:selected").text();
-        $("span.idpuiihelpdeskadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][helpdesk][" + nf + "]\">InformationURL in " + nfv + " </label><input id=\"f[uii][idpsso][helpdesk][" + nf + "]\" name=\"f[uii][idpsso][helpdesk][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#spadduiihelpdesk").click(function() {
-        var nf = $("span.spuiihelpdeskadd option:selected").val();
-        var nfv = $("span.spuiihelpdeskadd option:selected").text();
-        $("span.spuiihelpdeskadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\">InformationURL in " + nfv + " </label><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/></li>");
-    });
     $("button#idpadduiiprvurl").click(function() {
         var nf = $("span.idpuiiprvurladd option:selected").val();
         var nfv = $("span.idpuiiprvurladd option:selected").text();
         $("span.idpuiiprvurladd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][prvurl][" + nf + "]\">PrivacyStatementURL in " + nfv + " </label><input id=\"f[uii][idpsso][prvurl][" + nf + "]\" name=\"f[uii][idpsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][prvurl][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][idpsso][prvurl][" + nf + "]\" name=\"f[uii][idpsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
     });
     $("button#spadduiiprvurl").click(function() {
         var nf = $("span.spuiiprvurladd option:selected").val();
         var nfv = $("span.spuiiprvurladd option:selected").text();
         $("span.spuiiprvurladd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][prvurl][" + nf + "]\">PrivacyStatementURL in " + nfv + " </label><input id=\"f[uii][spsso][prvurl][" + nf + "]\" name=\"f[uii][spsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][prvurl][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][spsso][prvurl][" + nf + "]\" name=\"f[uii][spsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
     });
     
     $("button#addlprivacyurl").click(function() {
         var nf = $("li.addlprivacyurl option:selected").val();
         var nfv = $("li.addlprivacyurl option:selected").text();
         $("li.addlprivacyurl option[value=" + nf + "]").toggleOption(false);
-        $(this).parent().append("<li class=\"localized\"><label for=\"lprivacyurl[" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"lprivacyurl[" + nf + "]\" name=\"lprivacyurl[" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#addlprivacyurlspsso").click(function() {
-        var nf = $("li.addlprivacyurlspsso option:selected").val();
-        var nfv = $("li.addlprivacyurlspsso option:selected").text();
-        $("li.addlprivacyurlspsso option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][spsso][" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#addlprivacyurlidpsso").click(function() {
-        var nf = $("li.addlprivacyurlidpsso option:selected").val();
-        var nfv = $("li.addlprivacyurlidpsso option:selected").text();
-        $("li.addlprivacyurlidpsso option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][idpsso][" + nf + "]\">Privacy Statement URL in " + nfv + " </label><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#spadduiidesc").click(function() {
-        var nf = $("span.spuiidescadd option:selected").val();
-        var nfv = $("span.spuiidescadd option:selected").text();
-        $("span.spuiidescadd option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][spsso][desc][" + nf + "]\">Description in " + nfv + " </label><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></li>");
+        $(this).parent().append("<li class=\"localized\"><label for=\"lprivacyurl[" + nf + "]\">" + nfv + "</label><input id=\"lprivacyurl[" + nf + "]\" name=\"lprivacyurl[" + nf + "]\" type=\"text\"/></li>");
     });
     $("a#fedmetasigner").click(function() {
         var link = $(this), url = link.attr("href");
@@ -1477,7 +1447,13 @@ $(function() {
     $(".userlist#details").tablesorter({sortList: [[3, 1], [0, 0]], widgets: ['zebra']});
     $("#options").tablesorter({sortList: [[0, 0]], headers: {3: {sorter: false}, 4: {sorter: false}}});
 
-    $("#formtabs").tabs();
+    $("#formtabs").tabs({
+       cache:false,
+       activate: function(event, ui){
+           GINIT.initialize(); 
+       },  
+
+    });
 
 
     $("#providertabs").tabs({
@@ -1486,7 +1462,7 @@ $(function() {
             $('.accordionButton').unbind();
             $('#editprovider').unbind();
             GINIT.initialize();
-        }
+        },
 
     });
     $("#fedtabs").tabs({
@@ -2668,6 +2644,7 @@ if ( window.location.hash  ) {
 $("button#addlhelpdesk").click(function() {
         var selected = $("span.lhelpdeskadd option:selected").first();
         var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
         if(typeof nf === 'undefined')
         {
             return false;
@@ -2675,14 +2652,13 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-      //  alert("nf: "+nf+"; nfv: "+nfv+"; inputname:"+inputname);
-      //    $("span.lhelpdeskadd option[value=" + nf + "]").attr('selected', false).toggleOption(false);
-          $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\" class=\"validurl\"/><button type=\"button\" class=\"btn langinputrm ui-icon-trash\" name=\"lhelpdesk\" value=\""+nf+"\">X</button></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">" + nfv + "</label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\" class=\"validurl\"/> <button type=\"button\" class=\"btn langinputrm ui-icon-trash\" name=\"lhelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></li>");
           GINIT.initialize();
     });
     $("button#addldisplayname").click(function() {
         var selected = $("span.ldisplaynameadd option:selected").first();
         var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
         if(typeof nf === 'undefined')
         {
             return false;
@@ -2690,10 +2666,79 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-      //    $("span.ldisplaynameadd option[value=" + nf + "]").toggleOption(false);
-          $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">X</button></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">" + nfv + "</label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">"+rmbtn+"</button></li>");
          GINIT.initialize();
     });
+
+
+    $("button#idpadduiidisplay").click(function() {
+        var selected = $("span.idpuiidisplayadd option:selected").first();
+        var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var nfv = selected.text();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][displayname][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][idpsso][displayname][" + nf + "]\" name=\"f[uii][idpsso][displayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiidisplayname\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#idpadduiihelpdesk").click(function() {
+        var selected = $("span.idpuiihelpdeskadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var rmbtn = $("button#helperbutttonrm").html();
+        var nfv = selected.text();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][helpdesk][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][idpsso][helpdesk][" + nf + "]\" name=\"f[uii][idpsso][helpdesk][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiihelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#spadduiidisplay").click(function() {
+        var selected = $("span.spuiidisplayadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiispnamerm\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#spadduiihelpdesk").click(function() {
+        var selected = $("span.spuiihelpdeskadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\">" + nfv + " </label><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiisphelpdeskrm\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#spadduiidesc").click(function() {
+        var selected = $("span.spuiidescadd option:selected").first();
+        var nf = selected.val();
+        if(typeof nf === 'undefined')
+        {
+           return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][spsso][desc][" + nf + "]\">" + nfv + "</label><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea> <button type=\"button\" class=\"btn langinputrm\" name=\"uiispdescrm\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+
     $("button#addlname").click(function() {
         var selected = $("span.lnameadd option:selected").first();
         var nf = selected.val();
@@ -2701,11 +2746,11 @@ $("button#addlhelpdesk").click(function() {
         {
             return false;
         }
+        var rmbtn = $("button#helperbutttonrm").html();
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        //  $("span.lnameadd option[value=" + nf + "]").toggleOption(false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"lname\" value=\""+nf+"\">X</button></li></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">" + nfv + "</label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\">"+rmbtn+"</button></li></li>");
           GINIT.initialize();
     });
     $("button#idpadduiidesc").click(function() {
@@ -2715,37 +2760,72 @@ $("button#addlhelpdesk").click(function() {
         {
             return false;
         }
+        var rmbtn = $("button#helperbutttonrm").html();
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">"+inputname+" " + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea><button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">X</button></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">" + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea> <button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">"+rmbtn+"</button></li>");
           GINIT.initialize();
     });
-$("#ncontactbtn").click(function() {
-    var rname = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i = 0; i < 5; i++)
-        rname += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    var newelement = '<li><fieldset><ol><li><label for="f[contact][n_' + rname + '][type]">Contact type</label><span class=""><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></span></li><li><label for="f[contact][n_' + rname + '][fname]">Contact first name</label><span class=""><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]"  /></span></li><li><label for="f[contact][n_' + rname + '][sname]">Contact last name</label><span class=""><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]"  /></span></li><li><label for="f[contact][n_' + rname + '][email]">Contact Email</label><span class=""><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]"  /></span><button type="button" class="btn contactrm" name="contact" value="'+rname+'">X</button></li></ol></fieldset></li>';
-    $(this).parent().before(newelement);
-          GINIT.initialize();
-
-});
     $("button#addregpolicy").click(function() {
         var selected =  $("span.regpolicyadd option:selected").first();
         var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
         if(typeof nf === 'undefined')
         {
             return false;
         }
         var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">"+inputname+" " + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/><button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">X</button></li>");
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">" + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li>");
           GINIT.initialize();
     });
+    $("button#addlprivacyurlidpsso").click(function() {
+        var selected = $("li.addlprivacyurlidpsso option:selected").first();
+        var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
+        if(typeof nf === 'undefined')
+        {
+            return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][idpsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#addlprivacyurlspsso").click(function() {
+        var selected = $("li.addlprivacyurlspsso option:selected").first();
+        var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
+        if(typeof nf === 'undefined')
+        {
+            return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][spsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li></li>");
+        GINIT.initialize();
+    });
 
+
+$("#ncontactbtn").click(function() {
+    var rname = "";
+    var btnvalues = $(this).attr('value').split('|');
+    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i = 0; i < 5; i++)
+        rname += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    var newelement = '<li><fieldset><ol><li><label for="f[contact][n_' + rname + '][type]">'+btnvalues[1]+'</label><span class=""><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></span></li><li><label for="f[contact][n_' + rname + '][fname]">'+btnvalues[2]+'</label><span class=""><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]"  /></span></li><li><label for="f[contact][n_' + rname + '][sname]">'+btnvalues[3]+'</label><span class=""><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]"  /></span></li><li><label for="f[contact][n_' + rname + '][email]">'+btnvalues[4]+'</label><span class=""><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]"  /></span></li><li class="rmelbtn fromprevtoright"><button type="button" class="btn contactrm" name="contact" value="'+rname+'">'+btnvalues[0]+'</button></li></ol></fieldset></li>';
+    $(this).parent().before(newelement);
+          GINIT.initialize();
+
+});
 
 });
     $("#showhelps").click(function(e){

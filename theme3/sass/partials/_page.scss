@@ -1,4 +1,4 @@
-@import "compass/css3";
+//@import "compass/css3";
 
 //-----------------------------------------------
 // The following html5-boilerplate styles should
@@ -14,7 +14,6 @@ select, input, textarea {
     color: $selectColor;
 }
 body {
-    background-color: $bodyBackground;
     color: $font-color;
 
 
@@ -196,6 +195,8 @@ nav {
     box-shadow: 0 1px 0 $titleShadowColor inset;
     list-style: none outside none;
     margin: 0 0 10px;
+    font-family: $font-family-titles; 
+    color: $font-color-titles;
 }
 div.sectiontitle {
     margin-top: 15px;
@@ -309,7 +310,7 @@ div.sectiontitle {
     border-top: 1px solid black;
 }
 .nav li li li a {
-    background:#249578;
+    background:$nav-3rdlevel-background;
     z-index:200;
     border-top: 1px solid black;
 }

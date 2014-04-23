@@ -75,6 +75,7 @@ class StaticMetadata
 		if($addNS)
 		{
 			$top = '<EntitiesDescriptor 
+                                xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
 				xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" 
 			 xmlns:ds="http://www.w3.org/2000/09/xmldsig#" 
                          xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"

@@ -348,44 +348,50 @@ class Detail extends MY_Controller {
         $d[++$i]['name'] = lang('rr_entityid');
         $d[$i]['value'] = $ent->getEntityId();
         $d[++$i]['name'] = lang('e_orgname');
-        $d[$i]['value'] = $ent->getName();
-        $lname = $ent->getLocalName();
+        $lname = $ent->getMergedLocalName();
         $lvalues = '';
         if (count($lname)>0)
         {
-            $d[++$i]['name'] = '';
             foreach ($lname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
             }
             $d[$i]['value'] = $lvalues;
         }
+        else
+        {
+            $d[$i]['value'] = '';
+        }
         $d[++$i]['name'] = lang('e_orgdisplayname');
-        $d[$i]['value'] = '<div id="selectme">' . $ent->getDisplayName() . '</div>';
-        $ldisplayname = $ent->getLocalDisplayName();
+        $ldisplayname =  $ent->getMergedLocalDisplayName();
         $lvalues = '';
         if (count($ldisplayname)>0)
         {
-            $d[++$i]['name'] = '';
             foreach ($ldisplayname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
             }
-            $d[$i]['value'] = $lvalues;
+            $d[$i]['value'] = '<div id="selectme">'.$lvalues.'</div>';
+        }
+        else
+        {
+            $d[$i]['value'] = '<div id="selectme"></div>';
         }
         $d[++$i]['name'] = lang('e_orgurl');
-        $d[$i]['value'] = $ent->getHelpdeskUrl();
-        $localizedHelpdesk = $ent->getLocalHelpdeskUrl();
+        $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
         if(is_array($localizedHelpdesk) && count($localizedHelpdesk)>0)
         {
-           $d[++$i]['name'] = '';;
            $lvalues = '';
            foreach($localizedHelpdesk as $k=>$v)
            {
-                $lvalues .= '<b>' . $k . ':</b> <div>' . $v . '</div>';
+                $lvalues .= '<div><b>' . $k . ':</b> ' . $v . '</div>';
               
            }
            $d[$i]['value'] = $lvalues;
+        }
+        else
+        {
+           $d[$i]['value'] = '';
         }
         $d[++$i]['name'] = lang('rr_regauthority');
         $regauthority = $ent->getRegistrationAuthority();
@@ -1221,7 +1227,7 @@ class Detail extends MY_Controller {
                     $uiiarray[$e->getElement()][] = $e;
                 }
             }
-            $d[++$i]['name'] = lang('DisplayName');
+            $d[++$i]['name'] = lang('e_idpservicename');
             if (isset($uiiarray['DisplayName']))
             {
                 $str = '';
@@ -1236,7 +1242,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('Description');
+            $d[++$i]['name'] = lang('e_idpservicedesc');
             if (isset($uiiarray['Description']))
             {
                 $str = '';
@@ -1251,7 +1257,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('PrivacyStatementURL');
+            $d[++$i]['name'] = lang('e_idpserviceprivacyurl');
             if (isset($uiiarray['PrivacyStatementURL']))
             {
                 $str = '';
@@ -1266,7 +1272,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('InformationURL');
+            $d[++$i]['name'] = lang('e_idpserviceinfourl');
             if (isset($uiiarray['InformationURL']))
             {
                 $str = '';
@@ -1330,7 +1336,7 @@ class Detail extends MY_Controller {
                     $uiiarray[$e->getElement()][] = $e;
                 }
             }
-            $d[++$i]['name'] = lang('DisplayName');
+            $d[++$i]['name'] = lang('e_spservicename');
             if (isset($uiiarray['DisplayName']))
             {
                 $str = '';
@@ -1345,7 +1351,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('Description');
+            $d[++$i]['name'] = lang('e_spservicedesc');
             if (isset($uiiarray['Description']))
             {
                 $str = '';
@@ -1360,7 +1366,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('PrivacyStatementURL');
+            $d[++$i]['name'] = lang('e_spserviceprivacyurl');
             if (isset($uiiarray['PrivacyStatementURL']))
             {
                 $str = '';
@@ -1375,7 +1381,7 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('InformationURL');
+            $d[++$i]['name'] = lang('e_spserviceinfourl');
             if (isset($uiiarray['InformationURL']))
             {
                 $str = '';

@@ -305,13 +305,19 @@ $lang['adminofprov']                = 'Admin of provider';
 $lang['askedyourfed']               = 'asked your federation';
 $lang['invyourprov']                = 'invited your Provider';
 
-$lang['e_orgname']                  = 'OrganizationName';
-$lang['e_orgdisplayname']           = 'OrganizationDisplayName';
-$lang['e_orgurl']                   = 'OrganizationURL';
+$lang['e_orgname']                  = 'Name of organization';
+$lang['e_orgdisplayname']           = 'Displayname of organization';
+$lang['e_orgurl']                   = 'URL to information about organization';
 
-$lang['e_servicename']              = 'ServiceName';
-$lang['e_servicedesc']              = 'ServiceDescription';
+$lang['e_spservicename']              = 'Name of the Service';
+$lang['e_spservicedesc']              = 'Description of the Service';
+$lang['e_spserviceinfourl']           = 'URL to information about the Service';
+$lang['e_spserviceprivacyurl']        = 'URL to Privacy Policy of the Service';
 
+$lang['e_idpservicename']              = 'Name of organization';
+$lang['e_idpservicedesc']              = 'Description of user comunity serviced';
+$lang['e_idpserviceinfourl']           = 'URL to information about the Identity Provider';
+$lang['e_idpserviceprivacyurl']        = 'URL to Privacy Policy of the Identity Provider';
 
 $lang['rr_resource']                = 'Resource Name';
 $lang['rr_statdefshortname']        = 'Stat definition short name';
@@ -457,13 +463,13 @@ $lang['rr_contactfirstname']        = 'Contact first name';
 $lang['rr_contactlastname']         = 'Contact last name';
 $lang['rr_contactemail']            = 'Contact Email';
 $lang['rr_newcontact']              = 'New contact details';
-$lang['rr_addnewcoontact']          = 'Add new contact';
+$lang['rr_addnewcoontact']          = 'Add contact';
 $lang['rr_addnewidpartifactres']    = 'Add new IDP ArtifactResolutionService';
 $lang['addnewacs']                  = 'Add new ACS URL';
 $lang['addnewartresservice']        = 'Add new ArtifactResolutionService';
 $lang['addnewreqinit']              = 'Add new RequestInitiator URL';
 $lang['addnewds']                   = 'Add new DiscoveryResponse URL';             
-$lang['addnewcert']                 = 'Add new Certificate';
+$lang['addnewcert']                 = 'Add certificate';
 $lang['idpcerts']                   = 'IdP Certificates';
 $lang['rr_attributes']              = 'Attributes';
 $lang['rr_requiredattributes']      = 'Required Attributes';
