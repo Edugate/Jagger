@@ -101,8 +101,8 @@ var GINIT = {
     $("button.contactrm").click(function(){
          var bval = $(this).attr('value');
          var bname = $(this).attr('name');
-         var fieldset = $(this).closest('fieldset');
-        fieldset.parent().remove();
+         var fieldset = $(this).closest('ol');
+        fieldset.remove();
         GINIT.initialize();
     });
     $("button.certificaterm").click(function(){

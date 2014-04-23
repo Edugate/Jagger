@@ -534,7 +534,7 @@ class Form_element {
                                     'value' => $lvalue,
                                     'class' => $regpolicynotice
                                 )
-                        ) . ' <button type="button" class="btn langinputrm" name="lname" value="' . $key . '">'.lang('rr_remove').'</button>';
+                        ) . ' <button type="button" class="btn langinputrm" name="regpolicy" value="' . $key . '">'.lang('rr_remove').'</button>';
                 unset($regpolicylangs['' . $key . '']);
             }
         }
@@ -663,7 +663,8 @@ class Form_element {
         $result = array();
         foreach ($origcnts as $cnt)
         {
-            $row = form_fieldset() . '<ol>';
+            //$row = form_fieldset() . '<ol>';
+            $row = '';
             $class_cnt1 = '';
             $class_cnt2 = '';
             $class_cnt3 = '';
@@ -731,8 +732,10 @@ class Form_element {
             $row .= '<li>' . form_label(lang('rr_contactemail'), 'f[contact][' . $cnt->getId() . '][email]');
             $row .= '<span class="' . $class_cnt4 . '">' . form_input(array('name' => 'f[contact][' . $cnt->getId() . '][email]', 'id' => 'f[contact][' . $cnt->getId() . '][email]', 'value' => $t4)) . '</span></li>';
             $row .= '<li class="rmelbtn fromprevtoright"><button type="button" class="btn contactrm" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . '</button></li>';
-            $row .= '</ol>' . form_fieldset_close();
+          //  $row .= '</ol>' . form_fieldset_close();
+            $result[] = '';
             $result[] = $row;
+            $result[] = '';
             if ($r)
             {
                 unset($ses['contact']['' . $cnt->getId() . '']);
@@ -757,7 +760,9 @@ class Form_element {
             }
         }
         $n = '<button class="editbutton addicon smallerbtn" type="button" id="ncontactbtn" value="'.lang('btn_removecontact').'|'.lang('rr_contacttype').'|'.lang('rr_contactfirstname').'|'.lang('rr_contactlastname').'|'.lang('rr_contactemail').'">' . lang('rr_addnewcoontact') . '</button>';
+            $result[] = '';
         $result[] = $n;
+            $result[] = '';
 
         return $result;
     }
