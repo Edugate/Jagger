@@ -1101,18 +1101,6 @@ $(function() {
         $("li.addlprivacyurl option[value=" + nf + "]").toggleOption(false);
         $(this).parent().append("<li class=\"localized\"><label for=\"lprivacyurl[" + nf + "]\">" + nfv + "</label><input id=\"lprivacyurl[" + nf + "]\" name=\"lprivacyurl[" + nf + "]\" type=\"text\"/></li>");
     });
-    $("button#addlprivacyurlspsso").click(function() {
-        var nf = $("li.addlprivacyurlspsso option:selected").val();
-        var nfv = $("li.addlprivacyurlspsso option:selected").text();
-        $("li.addlprivacyurlspsso option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][spsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/></li>");
-    });
-    $("button#addlprivacyurlidpsso").click(function() {
-        var nf = $("li.addlprivacyurlidpsso option:selected").val();
-        var nfv = $("li.addlprivacyurlidpsso option:selected").text();
-        $("li.addlprivacyurlidpsso option[value=" + nf + "]").remove();
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][idpsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/></li>");
-    });
     $("a#fedmetasigner").click(function() {
         var link = $(this), url = link.attr("href");
         $.ajax({
@@ -2793,6 +2781,36 @@ $("button#addlhelpdesk").click(function() {
         selected.attr('disabled', true).attr('selected',false);
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">" + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li>");
           GINIT.initialize();
+    });
+    $("button#addlprivacyurlidpsso").click(function() {
+        var selected = $("li.addlprivacyurlidpsso option:selected").first();
+        var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
+        if(typeof nf === 'undefined')
+        {
+            return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][idpsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        GINIT.initialize();
+    });
+    $("button#addlprivacyurlspsso").click(function() {
+        var selected = $("li.addlprivacyurlspsso option:selected").first();
+        var nf = selected.val();
+        var rmbtn = $("button#helperbutttonrm").html();
+        if(typeof nf === 'undefined')
+        {
+            return false;
+        }
+        var nfv = selected.text();
+        var rmbtn = $("button#helperbutttonrm").html();
+        var inputname = $(this).attr('value');
+        selected.attr('disabled', true).attr('selected',false);
+        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][spsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li></li>");
+        GINIT.initialize();
     });
 
 

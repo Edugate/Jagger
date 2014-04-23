@@ -640,57 +640,6 @@ class Form_element {
         {
             $extend['' . $v->getType() . '']['' . $v->getNamespace() . '']['' . $v->getElement() . ''][] = $v;
         }
-        if (strcmp($enttype, 'IDP') != 0)
-        {
-            $r = '<fieldset><legend>' . lang('PrivacyStatementURL') . ' <i>SPSSODescriptor</i></legend><ol>';
-            $origs = array();
-            $sorig = array();
-            if (isset($extend['sp']['mdui']['PrivacyStatementURL']))
-            {
-                foreach ($extend['sp']['mdui']['PrivacyStatementURL'] as $value)
-                {
-                    $l = $value->getAttributes();
-                    $origs['' . $l['xml:lang'] . ''] = array('url' => $value->getEvalue());
-                }
-                $sorig = $origs;
-            }
-            if ($sessform && isset($ses['prvurl']['spsso']))
-            {
-                foreach ($ses['prvurl']['spsso'] as $k2 => $v2)
-                {
-                    $sorig['' . $k2 . ''] = array('url' => $v2);
-                }
-            }
-            foreach ($sorig as $k3 => $v3)
-            {
-                if (array_key_exists($k3, $origs))
-                {
-                    if ($origs['' . $k3 . '']['url'] === $v3['url'])
-                    {
-                        $sorig['' . $k3 . '']['notice'] = '';
-                    } else
-                    {
-                        $sorig['' . $k3 . '']['notice'] = 'notice';
-                    }
-                } else
-                {
-                    $sorig['' . $k3 . '']['notice'] = 'notice';
-                }
-            }
-            foreach ($sorig as $k4 => $v4)
-            {
-                $r .= '<li class="localized">';
-                $r .= form_label(lang('rr_privacystatement') . ' <small>' . $langscodes['' . $k4 . ''] . '</small>', 'f[prvurl][spsso][' . $k4 . ']');
-                $r .= form_input(array('id' => 'f[prvurl][spsso][' . $k4 . ']', 'name' => 'f[prvurl][spsso][' . $k4 . ']', 'value' => $v4['url']));
-                $r .='</li>';
-            }
-            $spssolangcodes = array_diff_key($langscodes, $sorig);
-            $r .= '<li class="addlprivacyurlspsso localized">';
-            $r .= form_dropdown('langcode', MY_Controller::$langselect, $this->defaultlangselect);
-            $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="editbutton addicon smallerbtn">' . lang('addlocalized') . ' ' . lang('rr_privacystatement') . '</button>';
-            $r .= '</li></ol></fieldset>';
-            $result[] = $r;
-        }
 
         return $result;
     }
@@ -2877,6 +2826,67 @@ class Form_element {
                 /**
                  * end description 
                  */
+            /**
+             * start privacy url
+             */
+            $result[] = '';
+            $r = '';
+            $result[] = '<div class="langgroup">' . lang('e_spserviceprivacyurl') . ' </div>';
+            $origs = array();
+            $sorig = array();
+            $langsdisplaynames = $langs;
+            if (!$sessform && isset($ext['sp']['mdui']['PrivacyStatementURL']))
+            {
+                foreach ($ext['sp']['mdui']['PrivacyStatementURL'] as $value)
+                {
+                    $l = $value->getAttributes();
+                    $origs['' . $l['xml:lang'] . ''] = array('url' => $value->getEvalue());
+                }
+                $sorig = $origs;
+            }
+            if ($sessform && isset($ses['prvurl']['spsso']))
+            {
+                foreach ($ses['prvurl']['spsso'] as $k2 => $v2)
+                {
+                    $sorig['' . $k2 . ''] = array('url' => $v2);
+                }
+            }
+            foreach ($sorig as $k3 => $v3)
+            {
+                if (array_key_exists($k3, $origs))
+                {
+                    if ($origs['' . $k3 . '']['url'] === $v3['url'])
+                    {
+                        $sorig['' . $k3 . '']['notice'] = '';
+                    } else
+                    {
+                        $sorig['' . $k3 . '']['notice'] = 'notice';
+                    }
+                } else
+                {
+                    $sorig['' . $k3 . '']['notice'] = 'notice';
+                }
+            }
+            foreach ($sorig as $k4 => $v4)
+            {
+                $r .= '<li class="localized">';
+                $r .= form_label( $langsdisplaynames['' . $k4 . ''] , 'f[prvurl][spsso][' . $k4 . ']');
+                $r .= form_input(array('id' => 'f[prvurl][spsso][' . $k4 . ']', 'name' => 'f[prvurl][spsso][' . $k4 . ']', 'value' => $v4['url']));
+                $r .=' <button type="button" class="btn langinputrm" name="prvurlspsso" value="' . $k4 . '">'.lang('rr_remove').'</button></li>';
+            }
+            $idpssolangcodes = array_diff_key($langsdisplaynames, $sorig);
+            $r .= '<li class="addlprivacyurlspsso localized">';
+
+            $r .= form_dropdown('langcode', MY_Controller::$langselect, $this->defaultlangselect);
+            $r .= '<button type="button" id="addlprivacyurlspsso" name="addlprivacyurlspsso" value="addlprivacyurlspsso" class="editbutton addicon smallerbtn">'  . lang('btnaddinlang') . '</button>';
+            $r .= '</li>';
+
+            $result[] = $r;
+            $result[] = '';
+
+            /**
+             * end privacy url
+             */
             }
         }
         return $result;
