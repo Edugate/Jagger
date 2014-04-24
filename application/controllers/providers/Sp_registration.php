@@ -47,6 +47,7 @@ class Sp_registration extends MY_Controller
             $entityid = $this->input->post('entityid');
             $resource = $this->input->post('resource');
             $descresource = $this->input->post('descresource');
+            $sourceIP = $this->input->ip_address(); 
 
             $acs = array();
             $acs_url = $this->input->post('acs_url');
@@ -177,18 +178,30 @@ class Sp_registration extends MY_Controller
 
             }
             $queue->addSP($newSP->convertToArray());
-            $queue->setEmail($this->input->post('contact_mail'));
+            $contactMail = $this->input->post('contact_mail');
+            $queue->setEmail($contactMail);
             $queue->setToken();
 
             $this->em->persist($queue);
             $sbj = 'SP registration request';
-            $body = 'Dear Administrator'.PHP_EOL;
+            $body = 'Dear User'.PHP_EOL;
             $body = 'You have received this mail because your email address is on the notification list'.PHP_EOL;
             $body .= $queue->getEmail() . ' just completed a Service Provider registration'.PHP_EOL;
+            if(!empty($sourceIP))
+            {
+               $body .= 'Request sent from:' .$sourceIP . PHP_EOL; 
+            }
             $body .= 'Resource name: '.$resource.PHP_EOL;
             $body .= 'entityID: ' . $entityid .PHP_EOL;
-            $body .= 'You can approve or reject it on ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
+            $body .= 'If you have sufficient permissions you can approve or reject it on ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
             $this->email_sender->addToMailQueue(array('greqisterreq','gspregisterreq'),null,$sbj,$body,array(),FALSE);
+
+            $body2 = 'Dear user'.PHP_EOL;
+            $body2 .= 'You have received this mail as your email ('.$contactMail.') was provided during ServiceProvider Registration request on site '.$base_url.PHP_EOL;
+            $body2 .= 'You request has been sent for approval. It might take a while so please be patient';
+            $areciepents[] = $contactMail;
+            $this->email_sender->addToMailQueue(null,null,$sbj,$body2,$areciepents,FALSE);
+
             $this->em->flush();
             redirect(base_url().'providers/sp_registration/success','refresh');
         }

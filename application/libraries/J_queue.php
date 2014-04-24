@@ -141,7 +141,7 @@ class J_queue
          
          $m_subj = 'User Registration';
          $m_body = 'Dear user,'.PHP_EOL;
-         $m_body .= 'User registration request has been accepted'.PHP_EOL;
+         $m_body .= 'User registration request to use the service '.base_url().' has been accepted'.PHP_EOL;
          $m_body .= 'Details:'.PHP_EOL;
          $m_body .= 'Username: '.$u->getUsername().PHP_EOL;
          $m_body .= 'E-mail: '.$u->getEmail().PHP_EOL;

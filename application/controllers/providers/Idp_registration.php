@@ -49,6 +49,7 @@ class Idp_registration extends MY_Controller {
            $idp = new models\Provider;
            $idp->setType('IDP');
            $idpsso = $this->input->post('sso');
+           $sourceIP = $this->input->ip_address();
            if(!empty($idpsso) && is_array($idpsso))
            {
               $i = 0;
@@ -218,8 +219,18 @@ class Idp_registration extends MY_Controller {
             $body = 'Dear user,'.PHP_EOL;
             $body .= 'You have received this mail because your email address is on the notification list'.PHP_EOL;
             $body .= ''.$qu->getEmail().' completed a new Identity Provider Registration'.PHP_EOL;
+            if(!empty($sourceIP))
+            {
+               $body .= 'Request sent from: '.$sourceIP . PHP_EOL; 
+            }
             $body .='You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$qu->getToken().PHP_EOL;
             $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq'),null,$sbj,$body,array(),FALSE);
+
+            $body2 = 'Dear user'.PHP_EOL;
+            $body2 .= 'You have received this mail as your email ('.$contactMail.') was provided during IdentityProvider Registration request on site '.$base_url.PHP_EOL;
+            $body2 .= 'You request has been sent for approval. It might take a while so please be patient';
+            $areciepents[] = $contactMail;
+            $this->email_sender->addToMailQueue(null,null,$sbj,$body2,$areciepents,FALSE);
             try{
                 $this->em->flush();
                 $redirect_to = current_url();
