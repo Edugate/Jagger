@@ -26,14 +26,14 @@ class Email_sender {
     }
 
 
-   function addToMailQueue(array $notificationTypes,$obj=NULL,$subject,$body,$additionalReciepients,$sync=false)
+   function addToMailQueue($notificationTypes = NULL,$obj=NULL,$subject,$body,$additionalReciepients,$sync=false)
    {
        $subscribers = array();
-       $notificationTypes[] = 'systemnotifications';
-       if(count($notificationTypes)>0)
+       if(!empty($notificationTypes) && is_array($notificationTypes))
        {
+           $notificationTypes[] = 'systemnotifications';
            $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
-                          array('type'=>$notificationTypes,'is_enabled'=>true,'is_approved'=>true));
+                      array('type'=>$notificationTypes,'is_enabled'=>true,'is_approved'=>true));
        }
        $alreadyMailTo = array();
        foreach($subscribers as $s)

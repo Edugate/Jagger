@@ -297,7 +297,7 @@ var GINIT = {
     $("fieldset#services label").autoWidth();
     $("fieldset#dataprotection label").autoWidth();
     $("fieldset#protocols label").autoWidth();
-    $("fieldset#general label").autoWidth();
+ //   $("fieldset#general label").autoWidth();
     $("li.fromprevtoright").each(function(){
          var prevli = $(this).prev();
          var prevliOffset = prevli.offset().left;
@@ -1455,6 +1455,14 @@ $(function() {
 
     });
 
+    $(".mytabs").tabs({
+       cache:false,
+       activate: function(event, ui){
+           GINIT.initialize(); 
+       },  
+
+     });
+
 
     $("#providertabs").tabs({
         cache: true,
@@ -1567,10 +1575,12 @@ $("#nribtn").click(function() {
 $("#nidpssocert").click(function() {
 
     var rname = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    var possible = "abcdefghijklmnopqrstuvwyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    var newelement = '<div class="certgroup"><li><label for="f[crt][idpsso][n' + rname + '][type]">Certificate type</label><select name="f[crt][idpsso][n' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][idpsso][n' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][idpsso][n' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][idpsso][n' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)"></span></label><input type="text" name="f[crt][idpsso][n' + rname + '][keyname]" value="" id="f[crt][idpsso][n' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][idpsso][n' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here."></span></label><textarea name="f[crt][idpsso][n' + rname + '][certdata]" cols="65" rows="30" id="f[crt][idpsso][n' + rname + '][certdata]" class="certdata notice" ></textarea></li></div>';
+    
+    rname = "newx"+rname;
+    var newelement = '<div class="certgroup"><li><label for="f[crt][idpsso][' + rname + '][type]">Certificate type</label><select name="f[crt][idpsso][' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][idpsso][' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][idpsso][' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][idpsso][' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)"></span></label><input type="text" name="f[crt][idpsso][' + rname + '][keyname]" value="" id="f[crt][idpsso][' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][idpsso][' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here."></span></label><textarea name="f[crt][idpsso][' + rname + '][certdata]" cols="65" rows="30" id="f[crt][idpsso][' + rname + '][certdata]" class="certdata notice" ></textarea></li></div>';
     $(this).parent().before(newelement);
 
 });

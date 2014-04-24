@@ -149,7 +149,7 @@ class Auth extends MY_Controller {
         $body .= 'You have received this mail because your email address is on the notification list'.PHP_EOL;
         $body .= 'User from '.$ip.' using federated access has applied for an account.'.PHP_EOL;
         $body .= 'Please review the request and make appriopriate action (reject/approve)'.PHP_EOL;
-        $body .= 'Details about the request: '.base_url().'report/awaiting/detail/'.$queue->getToken().PHP_EOL;
+        $body .= 'Details about the request: '.base_url().'reports/awaiting/detail/'.$queue->getToken().PHP_EOL;
         $this->email_sender->addToMailQueue(array(),null,$sbj,$body,array(),FALSE);  
         /**
          * END send notification
