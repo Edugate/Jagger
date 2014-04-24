@@ -3243,7 +3243,8 @@ form.register input {
 }
 @media only screen and (max-width: 1280px) {
   #container {
-    max-width: 900px;
+    max-width: 1200px;
+    width: auto;
   }
 
   #map {
@@ -3492,12 +3493,12 @@ form.register input {
 
   div.buttons {
     text-align: center;
-    width: 100%;
   }
 
   button.btn, button.button {
     display: block;
-    width: 100%;
+    /* width: 100%;
+     */
     margin-top: 10px;
     padding-top: 3px;
     padding-bottom: 3px;

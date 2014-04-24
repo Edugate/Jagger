@@ -540,7 +540,7 @@ class Form_element {
         }
         $result[] = '<span class="regpolicyadd">' . form_dropdown('regpolicylangcode', MY_Controller::$langselect, $this->defaultlangselect) . '<button type="button" id="addregpolicy" name="addregpolicy" value="' . lang('rr_regpolicy') . '" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span>';
 
-        //$result[] = '';
+        $result[] = '';
         /**
          * end regpolicy
          */
@@ -560,13 +560,13 @@ class Form_element {
         ));
 
 
-        $result[] = '';
         $result[] = form_label(lang('rr_description'), 'f[description]') . form_textarea(array(
                     'name' => 'f[description]',
                     'id' => 'f[description]',
                     'class' => $description_notice,
                     'value' => $f_description,
         ));
+        $result[] = '';
         return $result;
     }
 

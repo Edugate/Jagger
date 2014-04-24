@@ -138,6 +138,15 @@ class J_queue
          $u->setRole($p_role);
          $this->em->persist($p_role);
          $this->em->persist($u);
+         
+         $m_subj = 'User Registration';
+         $m_body = 'Dear user,'.PHP_EOL;
+         $m_body .= 'User registration request has been accepted'.PHP_EOL;
+         $m_body .= 'Details:'.PHP_EOL;
+         $m_body .= 'Username: '.$u->getUsername().PHP_EOL;
+         $m_body .= 'E-mail: '.$u->getEmail().PHP_EOL;
+         $reciepient[] = $u->getEmail();
+         $this->ci->email_sender->addToMailQueue(array(), null, $m_subj, $m_body, $reciepient, $sync = false);
          return true;
       // $this->em->flush();
 

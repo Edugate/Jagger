@@ -48,7 +48,8 @@ only screen and (min-resolution: 144dpi) {
 }
 @media only screen and (max-width: 1280px) {
     #container {
-        max-width: 900px;
+        max-width: 1200px;
+        width: auto;
     }
     #map {
         width: 400px;
@@ -303,12 +304,13 @@ only screen and (min-resolution: 144dpi) {
     
     div.buttons {
         text-align: center;
-        width: 100%;
+        //width: 100%;
         //padding: 5px;
     } 
     button.btn, button.button {
         display: block;
-        width: 100%;
+        /* width: 100%;
+         */
         margin-top: 10px;
         padding-top: 3px;
         padding-bottom: 3px;
