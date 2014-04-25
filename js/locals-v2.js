@@ -1196,7 +1196,7 @@ $(function() {
             url: url,
             timeout: 2500,
             cache: false,
-            success: $(this).parent().remove()
+            success: $(this).remove()
         });
         return false;
     });

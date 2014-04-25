@@ -199,7 +199,7 @@ class Entityedit extends MY_Controller {
                 {
                     foreach ($y['f']['crt']['idpsso'] as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|verify_cert');
+                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
                         $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required|xss_clean');
                     }
                 }
