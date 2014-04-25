@@ -8,9 +8,9 @@ else
     $bookmark = '<a href="' . base_url() . 'ajax/delbookentity/' . $entid . '" class="bookentity"><img src="' . base_url() . 'images/icons/star--minus.png" style="float:right"/></a>';
 }
 ?>
-<div id="pagetitle"><?php echo lang('rr_providerdetails'); ?></div>
+<div id="pagetitlei"><?php //echo lang('rr_providerdetails'); ?></div>
 
-<div id="subtitle"><div style="float: right; display: block"><?php echo $edit_link . '&nbsp;' . $bookmark; ?></div><h3><?php echo $presubtitle . ': ' . $name; ?> <h3></div>
+<div id="subtitle"><div style="float: right; display: block"><?php echo  $bookmark; ?></div><h3><?php echo  $presubtitle . ': ' . $name; ?> <h3></div>
             <?php
             if (!empty($alerts) && is_array($alerts) and count($alerts) > 0)
             {
@@ -26,7 +26,7 @@ else
 if(!empty($showclearcache)){
             ?>
 
-<div style="width: 100%; display: block; text-align: right"><a class="editbutton clearcache" title="<?php echo lang('clearcache'); ?>" href="<?php echo base_url().'providers/detail/refreshentity/'.$entid.''; ?>"><?php echo lang('clearcache');?></a></div>
+<div style="width: 100%; display: block; text-align: right"><?php echo $edit_link ; ?> <a class="editbutton clearcache" title="<?php echo lang('clearcache'); ?>" href="<?php echo base_url().'providers/detail/refreshentity/'.$entid.''; ?>"><?php echo lang('clearcache');?></a></div>
 
 <?php
 }
