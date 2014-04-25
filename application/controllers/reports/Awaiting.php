@@ -484,7 +484,8 @@ class Awaiting extends MY_Controller {
                                 $membership->setFederation($fed2);
                                 $this->em->persist($membership);
                             }
-
+                            $dateNow = new \DateTime("now");
+                            $idp->setRegistrationDate($dateNow);
                             $this->em->persist($idp);
                             $this->em->remove($queueObj);
                             $requester_recipient = null;
@@ -564,6 +565,8 @@ class Awaiting extends MY_Controller {
                                 $o->setCertType('x509');
                             }
                             $creator = $queueObj->getCreator();
+                            $dateNow = new \DateTime("now");
+                            $sp->setRegistrationDate($dateNow);
                             $this->em->persist($sp);
                             $this->em->remove($queueObj);
                             $requester_recipient = '';
