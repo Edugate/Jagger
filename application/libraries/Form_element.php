@@ -810,7 +810,7 @@ class Form_element {
             /**
              * generate SSO part
              */
-            $SSOPart = '<fieldset><legend>' . lang('SingleSignOnService') . '</legend><ol>';
+            $SSOPart = '';
             if (array_key_exists('SingleSignOnService', $g))
             {
                 foreach ($g['SingleSignOnService'] as $k1 => $v1)
@@ -872,13 +872,16 @@ class Form_element {
             }
             // $result = array_merge($result,$sso);
             $SSOPart .= implode('', $sso);
-            $SSOPart .= '</ol></fieldset>';
+            $result[] = '';
+            $result[] = '<div class="langgroup">SingleSignOn Service endpoints</div>';
             $result[] = $SSOPart;
+            $result[] = '';
             // $slotmpl
             /**
              * IDP SingleLogoutService
              */
-            $IDPSLOPart = '<fieldset><legend>' . lang('IdPSLO') . '</legend><ol>';
+            //$IDPSLOPart = '<fieldset><legend>' . lang('IdPSLO') . '</legend><ol>';
+            $IDPSLOPart = '';
             $slotmpl = getBindSingleLogout();
             $idpslo = array();
             if (array_key_exists('IDPSingleLogoutService', $g))
@@ -922,8 +925,10 @@ class Form_element {
                 ++$ni;
             }
             $IDPSLOPart .= implode('', $idpslo);
-            $IDPSLOPart .= '</ol></fieldset>';
+            $result[] = '';
+            $result[] = '<div class="langgroup">Single Logout Service endpoints</div>';
             $result[] = $IDPSLOPart;
+            $result[] = '';
 
             /**
              * generate IDP ArtifactResolutionService part
@@ -1716,6 +1721,11 @@ class Form_element {
             $certuse = 'both';
         }
         $crtid = $idCert;
+        $readonly = false;
+        if(is_numeric($crtid))
+        {
+           $readonly = true;
+        }
         $certdata = set_value( ''.$name . '[' . $crtid . '][certdata]', getPEM($sessionCert['certdata']));
         if(!empty($certdata))
         {
@@ -1739,14 +1749,21 @@ class Form_element {
         $row .='</li>';
         $row .= '<li>'.form_label(lang('rr_computedkeysize') , 'keysize').'<input type="text" name="keysize" value="'.$keysize.'" disabled="disabled" style="font-weight: bold;background-color: transparent;min-width: 50px"></li>';
         $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), '' . $name . '[' . $crtid . '][certdata]');
-        $row .= form_textarea(array(
+
+        $textarea = array(
                     'name' => '' . $name . '[' . $crtid . '][certdata]',
                     'id' => '' . $name . '[' . $crtid . '][certdata]',
-                    'cols' => 65,
-                    'rows' => 40,
+                    'cols' => 55,
+                    'rows' => 30,
                     'class' => 'certdata ',
                     'value' => '' . $certdata . '',
-                )) . '</li>';
+                );
+        if($readonly)
+        {
+            $textarea['readonly'] = 'true';
+        }
+
+        $row .= form_textarea($textarea) . '</li>';
         if ($showremove)
         {
             $row .= '<li class="rmelbtn fromprevtoright"> <button type="button" class="btn certificaterm" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></li>';
@@ -1776,6 +1793,11 @@ class Form_element {
         }
 
         $crtid = $cert->getId();
+        $readonly = false;
+        if(is_numeric($crtid))
+        {
+           $readonly =true;
+        }
         $row = '<div class="certgroup">';
         $row .= '<li>' . form_label(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]');
         $row .= form_dropdown('' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($cert->getType())) . '</li>';
@@ -1790,14 +1812,20 @@ class Form_element {
         $row .='</li>';
         $row .= '<li>'.form_label(lang('rr_computedkeysize') , 'keysize').'<input type="text" name="keysize" value="'.$keysize.'" disabled="disabled" style="font-weight: bold;background-color: transparent;min-width: 50px"></li>';
         $row .= '<li>' . form_label(lang('rr_certificate') . showBubbleHelp(lang('rhelp_cert')), '' . $name . '[' . $crtid . '][certdata]');
-        $row .= form_textarea(array(
+        $textarea = array(
                     'name' => '' . $name . '[' . $crtid . '][certdata]',
                     'id' => '' . $name . '[' . $crtid . '][certdata]',
-                    'cols' => 65,
-                    'rows' => 40,
+                    'cols' => 55,
+                    'rows' => 30,
                     'class' => 'certdata ',
                     'value' => '' . $certdata . '',
-                )) . '</li>';
+                );
+        if($readonly)
+        {
+            $textarea['readonly']='true';
+        }
+        
+        $row .= form_textarea($textarea) . '</li>';
         if ($showremove)
         {
             $row .= '<li class="rmelbtn fromprevtoright"> <button type="button" class="btn certificaterm" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></li>';

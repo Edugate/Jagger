@@ -191,7 +191,14 @@ class Entityedit extends MY_Controller {
                 {
                     foreach ($y['f']['crt']['spsso'] as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert');
+                        if(is_numeric($k))
+                        {
+                           $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert_nokeysize');
+                        }
+                        else
+                        {
+                           $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert');
+                        }
                         $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required|xss_clean');
                     }
                 }
@@ -199,8 +206,30 @@ class Entityedit extends MY_Controller {
                 {
                     foreach ($y['f']['crt']['idpsso'] as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
+                        if(is_numeric($k))
+                        {
+                           $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert_nokeysize');
+                        }
+                        else
+                        {
+                           $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
+                        }
                         $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required|xss_clean');
+                    }
+                }
+                if (array_key_exists('aa', $y['f']['crt']))
+                {
+                    foreach ($y['f']['crt']['aa'] as $k => $v)
+                    {
+                        if(is_numeric($k))
+                        {
+                           $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert_nokeysize');
+                        }
+                        else
+                        {
+                           $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
+                        }
+                        $this->form_validation->set_rules('f[crt][aa][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required|xss_clean');
                     }
                 }
             }
@@ -221,17 +250,14 @@ class Entityedit extends MY_Controller {
                 {
                     $y['f']['srv']['SingleSignOnService'] = array();
                 }
-                if (array_key_exists('SingleSignOnService', $y['f']['srv']))
+                foreach ($y['f']['srv']['SingleSignOnService'] as $k => $v)
                 {
-                    foreach ($y['f']['srv']['SingleSignOnService'] as $k => $v)
+                    $nossobindings[] = $y['f']['srv']['SingleSignOnService'][$k]['bind'];
+                    $tmp1 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][url]', 'SingleSignOnService URL for: ' . $y['f']['srv']['SingleSignOnService']['' . $k . '']['bind'], 'trim|max_length[254]|valid_url');
+                    $tmp2 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][bind]', 'SingleSignOnService Binding protocol', 'required');
+                    if ($tmp1 && $tmp2 && !empty($y['f']['srv']['SingleSignOnService']['' . $k . '']['url']))
                     {
-                        $nossobindings[] = $y['f']['srv']['SingleSignOnService'][$k]['bind'];
-                        $tmp1 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][url]', 'SingleSignOnService URL for: ' . $y['f']['srv']['SingleSignOnService']['' . $k . '']['bind'], 'trim|max_length[254]|valid_url');
-                        $tmp2 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][bind]', 'SingleSignOnService Binding protocol', 'required');
-                        if ($tmp1 && $tmp2 && !empty($y['f']['srv']['SingleSignOnService']['' . $k . '']['url']))
-                        {
-                            ++$nosso;
-                        }
+                        ++$nosso;
                     }
                 }
                 if (array_key_exists('IDPSingleLogoutService', $y['f']['srv']))
