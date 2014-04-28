@@ -419,6 +419,31 @@ class MY_form_validation extends CI_form_validation {
         }
     }
 
+
+    function verify_cert_nokeysize($cert)
+    {
+        $i = explode("\n", $cert);
+        $c = count($i);
+        if ($c < 2)
+        {
+            $pem = chunk_split($cert, 64, PHP_EOL);
+            $cert = $pem;
+        }
+        $this->CI->load->helper('cert');
+        $ncert = getPEM($cert);
+        $res = openssl_x509_parse($ncert);
+        if(is_array($res))
+        {
+            return TRUE;
+        }
+        else
+        {
+            $this->set_message('verify_cert_nokeysize', "The %s : is not valid x509 cert.");
+            return FALSE;
+        }
+
+
+    }
     function verify_cert($cert)
     {
         $i = explode("\n", $cert);

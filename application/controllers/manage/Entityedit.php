@@ -221,17 +221,14 @@ class Entityedit extends MY_Controller {
                 {
                     $y['f']['srv']['SingleSignOnService'] = array();
                 }
-                if (array_key_exists('SingleSignOnService', $y['f']['srv']))
+                foreach ($y['f']['srv']['SingleSignOnService'] as $k => $v)
                 {
-                    foreach ($y['f']['srv']['SingleSignOnService'] as $k => $v)
+                    $nossobindings[] = $y['f']['srv']['SingleSignOnService'][$k]['bind'];
+                    $tmp1 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][url]', 'SingleSignOnService URL for: ' . $y['f']['srv']['SingleSignOnService']['' . $k . '']['bind'], 'trim|max_length[254]|valid_url');
+                    $tmp2 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][bind]', 'SingleSignOnService Binding protocol', 'required');
+                    if ($tmp1 && $tmp2 && !empty($y['f']['srv']['SingleSignOnService']['' . $k . '']['url']))
                     {
-                        $nossobindings[] = $y['f']['srv']['SingleSignOnService'][$k]['bind'];
-                        $tmp1 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][url]', 'SingleSignOnService URL for: ' . $y['f']['srv']['SingleSignOnService']['' . $k . '']['bind'], 'trim|max_length[254]|valid_url');
-                        $tmp2 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][bind]', 'SingleSignOnService Binding protocol', 'required');
-                        if ($tmp1 && $tmp2 && !empty($y['f']['srv']['SingleSignOnService']['' . $k . '']['url']))
-                        {
-                            ++$nosso;
-                        }
+                        ++$nosso;
                     }
                 }
                 if (array_key_exists('IDPSingleLogoutService', $y['f']['srv']))
