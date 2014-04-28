@@ -1587,20 +1587,22 @@ $("#nidpssocert").click(function() {
 $("#naacert").click(function() {
 
     var rname = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    var possible = "abcdefghijklmnopqrstuvwyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    var newelement = '<li><label for="f[crt][aa][n' + rname + '][type]">Certificate type</label><select name="f[crt][aa][n' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][aa][n' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][aa][n' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][aa][n' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)"></span></label><input type="text" name="f[crt][aa][n' + rname + '][keyname]" value="" id="f[crt][aa][n' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][aa][n' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here."></span></label><textarea name="f[crt][aa][n' + rname + '][certdata]" cols="65" rows="30" id="f[crt][aa][n' + rname + '][certdata]" class="certdata notice" ></textarea> </li>';
+    rname = "newx"+rname;
+    var newelement = '<li><label for="f[crt][aa][' + rname + '][type]">Certificate type</label><select name="f[crt][aa][' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][aa][' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][aa][' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][aa][' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)"></span></label><input type="text" name="f[crt][aa][' + rname + '][keyname]" value="" id="f[crt][aa][' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][aa][' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here."></span></label><textarea name="f[crt][aa][' + rname + '][certdata]" cols="65" rows="30" id="f[crt][aa][' + rname + '][certdata]" class="certdata notice" ></textarea> </li>';
     $(this).parent().before(newelement);
 
 });
 $("#nspssocert").click(function() {
 
     var rname = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    var possible = "abcdefghijklmnopqrstuvwyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    var newelement = '<li><label for="f[crt][spsso][n' + rname + '][type]">Certificate type</label><select name="f[crt][spsso][n' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][spsso][n' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][spsso][n' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][spsso][n' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)"></span></label><input type="text" name="f[crt][spsso][n' + rname + '][keyname]" value="" id="f[crt][spsso][n' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][spsso][n' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here."></span></label><textarea name="f[crt][spsso][n' + rname + '][certdata]" cols="65" rows="30" id="f[crt][spsso][n' + rname + '][certdata]" class="certdata notice" ></textarea> </li>';
+    rname = "newx"+rname;
+    var newelement = '<li><label for="f[crt][spsso][' + rname + '][type]">Certificate type</label><select name="f[crt][spsso][' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][spsso][' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][spsso][' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][spsso][' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)"></span></label><input type="text" name="f[crt][spsso][' + rname + '][keyname]" value="" id="f[crt][spsso][' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][spsso][' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here."></span></label><textarea name="f[crt][spsso][' + rname + '][certdata]" cols="65" rows="30" id="f[crt][spsso][' + rname + '][certdata]" class="certdata notice" ></textarea> </li>';
     $(this).parent().before(newelement);
 
 });
