@@ -3080,6 +3080,9 @@ li.notice > input, li.notice > select, li.notice > span, div.notice > span {
   padding: 10px;
   width: 100%;
 }
+#formtabs form li.section {
+  background-color: transparent;
+}
 #formtabs form div.nsortable {
   overflow: auto;
 }

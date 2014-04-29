@@ -101,7 +101,6 @@ class Form_element {
         }
         $class_ent = '';
         $class_org = '';
-        $t1 = set_value('f[entityid]', $ent->getEntityId());
         $t_regauthority = $ent->getRegistrationAuthority();
         $t_regdate = '';
         $origregdate = '';
@@ -157,14 +156,6 @@ class Form_element {
             if (array_key_exists('validto', $ses))
             {
                 $t_validto = $ses['validto'];
-            }
-            if (array_key_exists('entityid', $ses))
-            {
-                if ($t1 != $ses['entityid'])
-                {
-                    $class_ent = 'notice';
-                    $t1 = $ses['entityid'];
-                }
             }
 
             if (array_key_exists('description', $ses))
@@ -222,15 +213,6 @@ class Form_element {
             $description_notice = '';
         }
         $result = array();
-        $result[] = '';
-        if (!in_array('entityid', $this->disallowedparts))
-        {
-            $result[] = form_label(lang('rr_entityid'), 'f[entityid]') . form_input(array('id' => 'f[entityid]', 'class' => $class_ent, 'name' => 'f[entityid]', 'required' => 'required', 'value' => $t1));
-        } else
-        {
-            $result[] = form_label(lang('rr_entityid'), 'f[entityid]') . form_input(array('id' => 'f[entityid]', 'class' => $class_ent, 'name' => 'f[entityid]', 'required' => 'required', 'readonly' => 'readonly', 'value' => $t1));
-        }
-        $result[] = '';
 
         // providername group 
         $result[] = '';
@@ -1836,370 +1818,7 @@ class Form_element {
     }
 
 
-    public function NgenerateProtocols($ent, $entsession)
-    {
-        $result = array();
-        $sessform = FALSE;
-        if (!empty($entsession) && is_array($entsession))
-        {
-            $sessform = TRUE;
-        }
-        $enttype = $ent->getType();
-        $allowedproto = getAllowedProtocolEnum();
-        $allowednameids = getAllowedNameId();
-        $scopes = array();
-        if ($enttype != 'SP')
-        {
-            $scopes = array('idpsso' => $ent->getScope('idpsso'), 'aa' => $ent->getScope('aa'));
-        }
-
-        $allowedoptions = array();
-        foreach ($allowedproto as $v)
-        {
-            $allowedoptions['' . $v . ''] = $v;
-        }
-
-        if ($enttype != 'SP')
-        {
-
-
-            /**
-             * Scopes
-             */
-            if ($sessform && isset($entsession['scopes']['idpsso']))
-            {
-                $sesscope['idpsso'] = $entsession['scopes']['idpsso'];
-            } else
-            {
-                $sesscope['idpsso'] = implode(',', $scopes['idpsso']);
-            }
-            if ($sessform && isset($entsession['scopes']['aa']))
-            {
-                $sesscope['aa'] = $entsession['scopes']['aa'];
-            } else
-            {
-                $sesscope['aa'] = implode(',', $scopes['aa']);
-            }
-            $scopeidpssonotice = '';
-            $scopeaanotice = '';
-            $scopessovalue = set_value('f[scopes][idpsso]', $sesscope['idpsso']);
-            $scopeaavalue = set_value('f[scopes][aa]', $sesscope['aa']);
-            if ($scopessovalue !== implode(',', $scopes['idpsso']))
-            {
-                $scopeidpssonotice = 'notice';
-            }
-            if ($scopeaavalue !== implode(',', $scopes['aa']))
-            {
-                $scopeaanotice = 'notice';
-            }
-
-
-            $r = '<fieldset><legend>' . lang('rr_scope') . ' ' . showBubbleHelp('' . lang('rhelp_scopemultivalues') . '') . '</legend><ol>';
-
-            if (in_array('scope', $this->disallowedparts))
-            {
-                $r .= '<li>' . form_label('' . lang('rr_scope') . ' ' . lang('idpssodescriptor') . '', 'f[scopes][idpsso]') . form_input(array(
-                            'name' => 'f[scopes][idpsso]',
-                            'id' => 'f[scopes][idpsso]',
-                            'readonly' => 'readonly',
-                            'value' => $scopessovalue,
-                            'class' => $scopeidpssonotice,
-                        )) . '</li>';
-                $r .= '<li>' . form_label('' . lang('rr_scope') . ' ' . lang('atributeauthoritydescriptor') . '', 'f[scopes][aa]') . form_input(array(
-                            'name' => 'f[scopes][aa]',
-                            'id' => 'f[scopes][aa]',
-                            'readonly' => 'readonly',
-                            'value' => $scopeaavalue,
-                            'class' => $scopeaanotice,
-                        )) . '</li>';
-            } else
-            {
-                $r .= '<li>' . form_label('' . lang('rr_scope') . ' ' . lang('idpssodescriptor') . '', 'f[scopes][idpsso]') . form_input(array(
-                            'name' => 'f[scopes][idpsso]',
-                            'id' => 'f[scopes][idpsso]',
-                            'value' => $scopessovalue,
-                            'class' => $scopeidpssonotice,
-                        )) . '</li>';
-                $r .= '<li>' . form_label('' . lang('rr_scope') . ' ' . lang('atributeauthoritydescriptor') . '', 'f[scopes][aa]') . form_input(array(
-                            'name' => 'f[scopes][aa]',
-                            'id' => 'f[scopes][aa]',
-                            'value' => $scopeaavalue,
-                            'class' => $scopeaanotice,
-                        )) . '</li>';
-            }
-            $r .= '</ol></fieldset>';
-            $result[] = $r;
-
-
-            /**
-             * IDP protocols 
-             */
-            $idpssoprotocols = $ent->getProtocolSupport('idpsso');
-            $selected_options = array();
-            $idpssonotice = '';
-            if ($sessform && isset($entsession['prot']['idpsso']) && is_array($entsession['prot']['idpsso']))
-            {
-                #$selected_options = $entsession['prot']['idpsso'];
-                if (count(array_diff($entsession['prot']['idpsso'], $idpssoprotocols)) > 0 || count(array_diff($idpssoprotocols, $entsession['prot']['idpsso'])) > 0)
-                {
-                    $idpssonotice = 'notice';
-                }
-                foreach ($entsession['prot']['idpsso'] as $v)
-                {
-                    $selected_options[$v] = $v;
-                }
-            } else
-            {
-                foreach ($idpssoprotocols as $p)
-                {
-                    $selected_options[$p] = $p;
-                }
-            }
-            $r = '<fieldset><legend>' . lang('rr_supportedprotocols') . ' <i>' . lang('idpssodescriptor') . '</i></legend><ol>';
-            $r .= '<li class="' . $idpssonotice . '">';
-            $r .= '<ul class="checkboxlist">';
-            foreach ($allowedoptions as $a)
-            {
-                $is = FALSE;
-                if (in_array($a, $selected_options))
-                {
-                    $is = TRUE;
-                }
-                $r .= '<li>' . form_checkbox(array('name' => 'f[prot][idpsso][]', 'id' => 'f[prot][idpsso][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
-            }
-            $r .= '</ul>';
-            $r .='</li>';
-            $r .= '</ol></fieldset>';
-            $result[] = $r;
-
-            $r = '<fieldset><legend>' . lang('rr_supportedprotocols') . ' <i>' . lang('atributeauthoritydescriptor') . '</i></legend><ol>';
-            $aaprotocols = $ent->getProtocolSupport('aa');
-            $selected_options = array();
-            $aanotice = '';
-            if ($sessform && isset($entsession['prot']['aa']) && is_array($entsession['prot']['aa']))
-            {
-                if (count(array_diff($entsession['prot']['aa'], $aaprotocols)) > 0 || count(array_diff($aaprotocols, $entsession['prot']['aa'])) > 0)
-                {
-                    $aanotice = 'notice';
-                }
-                foreach ($entsession['prot']['aa'] as $v)
-                {
-                    $selected_options[$v] = $v;
-                }
-            } else
-            {
-                foreach ($aaprotocols as $p)
-                {
-                    $selected_options[$p] = $p;
-                }
-            }
-            $r .= '<li class="' . $aanotice . '">';
-            $r .= '<ul class="checkboxlist">';
-            foreach ($allowedoptions as $a)
-            {
-                $is = FALSE;
-                if (in_array($a, $selected_options))
-                {
-                    $is = TRUE;
-                }
-                $r .= '<li>' . form_checkbox(array('name' => 'f[prot][aa][]', 'id' => 'f[prot][aa][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
-            }
-            $r .= '</ul>';
-            $r .= '</li>';
-
-            $r .= '</ol></fieldset>';
-            $result[] = $r;
-        }
-        if ($enttype != 'IDP')
-        {
-            $r = '<fieldset><legend>' . lang('rr_supportedprotocols') . ' <i>' . lang('spssodescriptor') . '</i></legend><ol>';
-            $spssoprotocols = $ent->getProtocolSupport('spsso');
-            $selected_options = array();
-            $spssonotice = '';
-            if ($sessform && isset($entsession['prot']['spsso']) && is_array($entsession['prot']['spsso']))
-            {
-                if (count(array_diff($entsession['prot']['spsso'], $spssoprotocols)) > 0 || count(array_diff($spssoprotocols, $entsession['prot']['spsso'])) > 0)
-                {
-                    $spssonotice = 'notice';
-                }
-                foreach ($entsession['prot']['spsso'] as $v)
-                {
-                    $selected_options[$v] = $v;
-                }
-            } else
-            {
-                foreach ($spssoprotocols as $p)
-                {
-                    $selected_options[$p] = $p;
-                }
-            }
-            //$r .= '<li class="' . $spssonotice . '">' . form_multiselect('f[prot][spsso][]', $allowedoptions, $selected_options) . '</li>';
-            $r .= '<li class="' . $spssonotice . '">';
-            $r .= '<ul class="checkboxlist">';
-            foreach ($allowedoptions as $a)
-            {
-                $is = FALSE;
-                if (in_array($a, $selected_options))
-                {
-                    $is = TRUE;
-                }
-                $r .= '<li>' . form_checkbox(array('name' => 'f[prot][spsso][]', 'id' => 'f[prot][spsso][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
-            }
-            $r .= '</ul>';
-            $r .= '</li>';
-            $r .= '</ol></fieldset>';
-            $result[] = $r;
-        }
-
-        /**
-         * nameids
-         */
-        if ($enttype != 'SP')
-        {
-            /**
-             * start nameids for IDPSSODescriptor
-             */
-            $r = '<fieldset><legend>' . lang('rr_supportednameids') . ' <i>' . lang('idpssodescriptor') . '</i></legend><ol>';
-            $idpssonameids = $ent->getNameIds('idpsso');
-            $idpssonameidnotice = '';
-            $supportednameids = array();
-            $chp = array();
-            if ($sessform && is_array($entsession))
-            {
-                if (isset($entsession['nameids']['idpsso']) && is_array($entsession['nameids']['idpsso']))
-                {
-                    foreach ($entsession['nameids']['idpsso'] as $pv)
-                    {
-                        $supportednameids[] = $pv;
-                        $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $pv, 'checked' => TRUE);
-                    }
-                }
-            } else
-            {
-                foreach ($idpssonameids as $v)
-                {
-                    $supportednameids[] = $v;
-                    $chp[] = array(
-                        'name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $v, 'checked' => TRUE);
-                }
-            }
-            foreach ($allowednameids as $v)
-            {
-                if (!in_array($v, $supportednameids))
-                {
-                    $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $v, 'checked' => FALSE);
-                }
-            }
-            if (count(array_diff($supportednameids, $idpssonameids)) > 0 or count(array_diff($idpssonameids, $supportednameids)) > 0)
-            {
-                $idpssonameidnotice = 'notice';
-            }
-            $r .= '<li>' . form_label(lang('rr_supportednameids'), 'f[nameids][idpsso][]') . '<div class="nsortable ' . $idpssonameidnotice . '">';
-            foreach ($chp as $n)
-            {
-                $r .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
-            }
-            $r .= '</div></li></ol></fieldset>';
-            $result[] = $r;
-            /**
-             * end nameids for IDPSSODescriptor
-             */
-            /**
-             * start nameids for AttributeAuthorityDescriptor 
-             */
-            $r = '<fieldset><legend>' . lang('rr_supportednameids') . ' <i>' . lang('atributeauthoritydescriptor') . '</i></legend><ol>';
-            $idpaanameids = $ent->getNameIds('aa');
-            $idpaanameidnotice = '';
-            $supportednameids = array();
-            $chp = array();
-            if ($sessform && is_array($entsession))
-            {
-                if (isset($entsession['nameids']['idpaa']) && is_array($entsession['nameids']['idpaa']))
-                {
-                    foreach ($entsession['nameids']['idpaa'] as $pv)
-                    {
-                        $supportednameids[] = $pv;
-                        $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $pv, 'checked' => TRUE);
-                    }
-                }
-            } else
-            {
-                foreach ($idpaanameids as $v)
-                {
-                    $supportednameids[] = $v;
-                    $chp[] = array(
-                        'name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $v, 'checked' => TRUE);
-                }
-            }
-            foreach ($allowednameids as $v)
-            {
-                if (!in_array($v, $supportednameids))
-                {
-                    $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $v, 'checked' => FALSE);
-                }
-            }
-            if (count(array_diff($supportednameids, $idpaanameids)) > 0 or count(array_diff($idpaanameids, $supportednameids)) > 0)
-            {
-                $idpaanameidnotice = 'notice';
-            }
-            $r .= '<li>' . form_label(lang('rr_supportednameids'), 'f[nameids][idpaa][]') . '<div class="nsortable ' . $idpaanameidnotice . '">';
-            foreach ($chp as $n)
-            {
-                $r .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
-            }
-            $r .= '</div></li></ol></fieldset>';
-            $result[] = $r;
-            /**
-             * end nameids for IDPSSODescriptor
-             */
-        }
-        if ($enttype != 'IDP')
-        {
-            $r = '<fieldset><legend>' . lang('rr_supportednameids') . ' <i>' . lang('spssodescriptor') . '</i></legend><ol>';
-            $spssonameids = $ent->getNameIds('spsso');
-            $spssonameidnotice = '';
-            $supportednameids = array();
-            $chp = array();
-            if ($sessform && is_array($entsession))
-            {
-                if (isset($entsession['nameids']['spsso']) && is_array($entsession['nameids']['spsso']))
-                {
-                    foreach ($entsession['nameids']['spsso'] as $pv)
-                    {
-                        $supportednameids[] = $pv;
-                        $chp[] = array('name' => 'f[nameids][spsso][]', 'id' => 'f[nameids][spsso][]', 'value' => $pv, 'checked' => TRUE);
-                    }
-                }
-            } else
-            {
-                foreach ($spssonameids as $v)
-                {
-                    $supportednameids[] = $v;
-                    $chp[] = array(
-                        'name' => 'f[nameids][spsso][]', 'id' => 'f[nameids][spsso][]', 'value' => $v, 'checked' => TRUE);
-                }
-            }
-            foreach ($allowednameids as $v)
-            {
-                if (!in_array($v, $supportednameids))
-                {
-                    $chp[] = array('name' => 'f[nameids][spsso][]', 'id' => 'f[nameids][spsso][]', 'value' => $v, 'checked' => FALSE);
-                }
-            }
-            if (count(array_diff($supportednameids, $spssonameids)) > 0 or count(array_diff($spssonameids, $supportednameids)) > 0)
-            {
-                $spssonameidnotice = 'notice';
-            }
-            $r .= '<li>' . form_label(lang('rr_supportednameids'), 'f[nameids][spsso][]') . '<div class="nsortable ' . $spssonameidnotice . '">';
-            foreach ($chp as $n)
-            {
-                $r .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
-            }
-            $r .= '</div></li></ol></fieldset>';
-            $result[] = $r;
-        }
-        return $result;
-    }
+//    public function NgenerateProtocols($ent, $entsession)
 
     public function NgenerateStaticMetadataForm($ent, $entsession = null)
     {
@@ -2259,6 +1878,1262 @@ class Form_element {
 
 
         return $result;
+    }
+
+    public function NgenerateSAMLTab(models\Provider $ent, $ses = null)
+    {
+        $sessform = FALSE;
+        $allowednameids = getAllowedNameId();
+        $class_ent = '';
+        if (!empty($ses) && is_array($ses))
+        {
+            $sessform = TRUE;
+        }
+        $t1 = set_value('f[entityid]', $ent->getEntityId());
+        if ($sessform)
+        {
+            if (array_key_exists('entityid', $ses))
+            {
+                if ($t1 != $ses['entityid'])
+                {
+                    $class_ent = 'notice';
+                    $t1 = $ses['entityid'];
+                }
+            }
+        }
+        $result = array();
+        $result[] = '';
+        if (!in_array('entityid', $this->disallowedparts))
+        {
+            $result[] = form_label(lang('rr_entityid'), 'f[entityid]') . form_input(array('id' => 'f[entityid]', 'class' => $class_ent, 'name' => 'f[entityid]', 'required' => 'required', 'value' => $t1));
+        } else
+        {
+            $result[] = form_label(lang('rr_entityid'), 'f[entityid]') . form_input(array('id' => 'f[entityid]', 'class' => $class_ent, 'name' => 'f[entityid]', 'required' => 'required', 'readonly' => 'readonly', 'value' => $t1));
+        }
+        $result[] = '';
+
+
+        $ssotmpl = array();
+        $acsbindprotocols = array();
+        $ssobindprotocols = getBindSingleSignOn();
+
+        $tmpacsprotocols = getBindACS();
+        foreach ($tmpacsprotocols as $v)
+        {
+            $acsbindprotocols['' . $v . ''] = $v;
+        }
+
+        foreach ($ssobindprotocols as $v)
+        {
+            $ssotmpl['' . $v . ''] = $v;
+        }
+
+        $slotmpl = getBindSingleLogout();
+
+        $enttype = $ent->getType();
+        $srvs = $ent->getServiceLocations();
+        $g = array();
+        $artifacts_binding = array(
+            'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP',
+            'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding' => 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding',
+        );
+        foreach ($srvs as $s)
+        {
+            $g[$s->getType()][] = $s;
+        }
+        $sessform = FALSE;
+        if (!empty($ses) && is_array($ses))
+        {
+            $sessform = TRUE;
+        }
+        $sso = array();
+
+        if ($enttype != 'SP')
+        {
+            $result[] = '<div class="section">Identity Provider</div>';
+            /**
+             * generate SSO part
+             */
+            $SSOPart = '';
+            if (array_key_exists('SingleSignOnService', $g))
+            {
+                foreach ($g['SingleSignOnService'] as $k1 => $v1)
+                {
+                    if ($sessform && isset($ses['srv']['SingleSignOnService']['' . $v1->getId() . '']['url']))
+                    {
+                        $t1 = $ses['srv']['SingleSignOnService']['' . $v1->getId() . '']['url'];
+                    } else
+                    {
+                        $t1 = $v1->getUrl();
+                    }
+                    $t1 = set_value('f[srv][SingleSignOnService][' . $v1->getId() . '][url]', $t1);
+                    $rnotice = '';
+                    if ($t1 != $v1->getUrl())
+                    {
+                        $rnotice = 'notice';
+                    }
+                    $row = '<li>' . form_label($v1->getBindingName(), 'f[srv][SingleSignOnService][' . $v1->getId() . '][url]');
+                    $row .= form_input(array(
+                        'name' => 'f[srv][SingleSignOnService][' . $v1->getId() . '][bind]',
+                        'id' => 'f[srv][SingleSignOnService][' . $v1->getId() . '][bind]',
+                        'type' => 'hidden',
+                        'value' => set_value('f[srv][SingleSignOnService][' . $v1->getId() . '][bind]', $v1->getBindingName()),
+                    ));
+                    $row .= form_input(array(
+                                'name' => 'f[srv][SingleSignOnService][' . $v1->getId() . '][url]',
+                                'id' => 'f[srv][SingleSignOnService][' . $v1->getId() . '][url]',
+                                'class' => $rnotice,
+                                'value' => $t1,
+                            )) . '</li>';
+                    $sso[] = $row;
+                    unset($ssotmpl[$v1->getBindingName()]);
+                }
+            }
+            $i = 0;
+            foreach ($ssotmpl as $km => $vm)
+            {
+                $rnotice = '';
+                $value = set_value('f[srv][SingleSignOnService][n' . $i . '][url]');
+                if (!empty($value))
+                {
+                    $rnotice = 'notice';
+                }
+                $r = '<li>' . form_label($km, 'f[srv][SingleSignOnService][n' . $i . '][url]');
+                $r .= form_input(array(
+                    'name' => 'f[srv][SingleSignOnService][n' . $i . '][bind]',
+                    'id' => 'f[srv][SingleSignOnService][n' . $i . '][bind]',
+                    'type' => 'hidden',
+                    'value' => $vm,
+                ));
+                $r .= form_input(array(
+                            'name' => 'f[srv][SingleSignOnService][n' . $i . '][url]',
+                            'id' => 'f[srv][SingleSignOnService][n' . $i . '][url]',
+                            'class' => $rnotice,
+                            'value' => $value,
+                        )) . '</li>';
+                $sso[] = $r;
+                ++$i;
+            }
+            // $result = array_merge($result,$sso);
+            $SSOPart .= implode('', $sso);
+            $result[] = '';
+            $result[] = '<div class="langgroup">SingleSignOn Service endpoints</div>';
+            $result[] = $SSOPart;
+            $result[] = '';
+            // $slotmpl
+            /**
+             * IDP SingleLogoutService
+             */
+            //$IDPSLOPart = '<fieldset><legend>' . lang('IdPSLO') . '</legend><ol>';
+            $IDPSLOPart = '';
+            $slotmpl = getBindSingleLogout();
+            $idpslo = array();
+            if (array_key_exists('IDPSingleLogoutService', $g))
+            {
+                foreach ($g['IDPSingleLogoutService'] as $k2 => $v2)
+                {
+                    $row = '<li>' . form_label($v2->getBindingName(), 'f[srv][IDPSingleLogoutService][' . $v2->getId() . '][url]');
+                    $row .= form_input(array(
+                        'name' => 'f[srv][IDPSingleLogoutService][' . $v2->getId() . '][bind]',
+                        'id' => 'f[srv][IDPSingleLogoutService][' . $v2->getId() . '][bind]',
+                        'type' => 'hidden',
+                        'value' => set_value('f[srv][IDPSingleLogoutService][' . $v2->getId() . '][bind]', $v2->getBindingName()),
+                    ));
+                    $row .= form_input(array(
+                                'name' => 'f[srv][IDPSingleLogoutService][' . $v2->getId() . '][url]',
+                                'id' => 'f[srv][IDPSingleLogoutService][' . $v2->getId() . '][url]',
+                                'value' => set_value('f[srv][IDPSingleLogoutService][' . $v2->getId() . '][url]', $v2->getUrl()),
+                            )) . '</li>';
+                    //unset($slotmpl[$v2->getBindingName()]);
+                    unset($slotmpl[array_search($v2->getBindingName(), $slotmpl)]);
+                    $idpslo[] = $row;
+                }
+            }
+            $ni = 0;
+            foreach ($slotmpl as $k3 => $v3)
+            {
+                $row = '<li>';
+                $row .= form_label($v3, 'f[srv][IDPSingleLogoutService][n' . $ni . '][url]');
+                $row .= form_input(array(
+                    'name' => 'f[srv][IDPSingleLogoutService][n' . $ni . '][bind]',
+                    'id' => 'f[srv][IDPSingleLogoutService][n' . $ni . '][bind]',
+                    'type' => 'hidden',
+                    'value' => $v3,));
+                $row .= form_input(array(
+                            'name' => 'f[srv][IDPSingleLogoutService][n' . $ni . '][url]',
+                            'id' => 'f[srv][IDPSingleLogoutService][n' . $ni . '][url]',
+                            'value' => set_value('f[srv][IDPSingleLogoutService][n' . $ni . '][url]'),
+                        )) . '';
+                $row .= '</li>';
+                $idpslo[] = $row;
+                ++$ni;
+            }
+            $IDPSLOPart .= implode('', $idpslo);
+            $result[] = '';
+            $result[] = '<div class="langgroup">Single Logout Service endpoints</div>';
+            $result[] = $IDPSLOPart;
+            $result[] = '';
+
+            /**
+             * generate IDP ArtifactResolutionService part
+             */
+            $ACSPart = '';
+            $acs = array();
+
+            if (isset($g['IDPArtifactResolutionService']) && is_array($g['IDPArtifactResolutionService']))
+            {
+                foreach ($g['IDPArtifactResolutionService'] as $k3 => $v3)
+                {
+                    $turl = $v3->getUrl();
+                    $torder = $v3->getOrder();
+                    $tbind = $v3->getBindingName();
+                    if ($sessform && isset($ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']))
+                    {
+                        if (array_key_exists('url', $ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']))
+                        {
+                            $turl = $ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']['url'];
+                        }
+                        if (array_key_exists('order', $ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']))
+                        {
+                            $torder = $ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']['order'];
+                        }
+                        if (array_key_exists('bind', $ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']))
+                        {
+                            $tbind = $ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']['bind'];
+                        }
+                    }
+                    $furl = set_value('f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][url]', $turl);
+                    $forder = set_value('f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][order]', $torder);
+                    $fbind = set_value('f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][bind]', $tbind);
+                    $urlnotice = '';
+                    $ordernotice = '';
+                    $bindnotice = '';
+                    if ($furl != $v3->getUrl())
+                    {
+                        $urlnotice = 'notice';
+                    }
+                    if ($forder != $v3->getOrder())
+                    {
+                        $ordernotice = 'notice';
+                    }
+                    if ($fbind != $v3->getBindingName())
+                    {
+                        $bindnotice = 'notice';
+                    }
+
+
+                    $r = '<li><ol>';
+                    $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][bind]');
+                    $r .= '<span class="' . $bindnotice . '">' . form_dropdown('f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][bind]', $artifacts_binding, $fbind) . '</span></li>';
+                    $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][url]') . '';
+                    $r .= form_input(array(
+                                'name' => 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][url]',
+                                'id' => 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][url]',
+                                'value' => $furl,
+                                'class' => 'acsurl ' . $urlnotice . '',
+                            )) . '';
+                    $r .= 'index ' . form_input(array(
+                                'name' => 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][order]',
+                                'id' => 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][order]',
+                                'size' => '3',
+                                'maxlength' => '3',
+                                'class' => 'acsindex ' . $ordernotice,
+                                'value' => $forder,
+                    ));
+                    $r .= '<br /></li></ol></li>';
+                    $acs[] = $r;
+                    if ($sessform && isset($ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']))
+                    {
+                        unset($ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']);
+                    }
+                }
+            }
+            if ($sessform && isset($ses['srv']['IDPArtifactResolutionService']) && is_array($ses['srv']['IDPArtifactResolutionService']))
+            {
+                foreach ($ses['srv']['IDPArtifactResolutionService'] as $k4 => $v4)
+                {
+
+
+                    $r = '<li><ol>';
+                    $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][IDPArtifactResolutionService][' . $k4 . '][bind]');
+                    $r .= form_dropdown('f[srv][IDPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, $v4['bind']) . '</li>';
+                    $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][IDPArtifactResolutionService][' . $k4 . '][url]');
+                    $r .= form_input(array(
+                        'name' => 'f[srv][IDPArtifactResolutionService][' . $k4 . '][url]',
+                        'id' => 'f[srv][IDPArtifactResolutionService][' . $k4 . '][url]',
+                        'value' => set_value('f[srv][IDPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['IDPArtifactResolutionService']['' . $k4 . '']['url']),
+                        'class' => 'acsurl notice',
+                    ));
+                    $r .= 'index ' . form_input(array(
+                                'name' => 'f[srv][IDPArtifactResolutionService][' . $k4 . '][order]',
+                                'id' => 'f[srv][IDPArtifactResolutionService][' . $k4 . '][order]',
+                                'size' => '3',
+                                'maxlength' => '3',
+                                'class' => 'acsindex notice',
+                                'value' => set_value('f[srv][IDPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['IDPArtifactResolutionService']['' . $k4 . '']['order']),
+                            )) . '</li>';
+
+                    $r .='</ol></li>';
+                    $acs[] = $r;
+                }
+            }
+            $ACSPart .= implode('', $acs);
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nidpartifactbtn">' . lang('rr_addnewidpartifactres') . '</button></li>';
+            $ACSPart .= $newelement . '';
+            $result[] = '';
+            $result[] = '<div class="langgroup">Artifact Resolution Service endpoints</div>';
+            $result[] = $ACSPart;
+            $result[] ='';
+
+            /**
+             * start protocols enumeration
+             */
+            $r = '';
+            $allowedproto = getAllowedProtocolEnum();
+            $allowedoptions = array();
+            foreach ($allowedproto as $v)
+            {
+               $allowedoptions['' . $v . ''] = $v;
+            }
+
+            $idpssoprotocols = $ent->getProtocolSupport('idpsso');
+            $selected_options = array();
+            $idpssonotice = '';
+            if ($sessform && isset($ses['prot']['idpsso']) && is_array($ses['prot']['idpsso']))
+            {
+                if (count(array_diff($ses['prot']['idpsso'], $idpssoprotocols)) > 0 || count(array_diff($idpssoprotocols, $ses['prot']['idpsso'])) > 0)
+                {
+                    $idpssonotice = 'notice';
+                }
+                foreach ($ses['prot']['idpsso'] as $v)
+                {
+                    $selected_options[$v] = $v;
+                }
+            } else
+            {
+                foreach ($idpssoprotocols as $p)
+                {
+                    $selected_options[$p] = $p;
+                }
+            }
+            $r .= '<li class="' . $idpssonotice . '">';
+            $r .= '<ul class="checkboxlist">';
+            foreach ($allowedoptions as $a)
+            {
+                $is = FALSE;
+                if (in_array($a, $selected_options))
+                {
+                    $is = TRUE;
+                }
+                $r .= '<li>' . form_checkbox(array('name' => 'f[prot][idpsso][]', 'id' => 'f[prot][idpsso][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
+            }
+            $r .= '</ul></li>';
+            $result[] = '';
+            $result[] = '<div class="langgroup">Supported protocol enumerations</div>';
+            $result[] = $r;
+            $result[] = '';
+
+
+             /**
+              * end protocols enumeration
+              */
+
+            /**
+             * start nameids
+             */
+            $r = '';
+            $idpssonameids = $ent->getNameIds('idpsso');
+            $idpssonameidnotice = '';
+            $supportednameids = array();
+            $chp = array();
+            if ($sessform && is_array($ses))
+            {
+                if (isset($ses['nameids']['idpsso']) && is_array($ses['nameids']['idpsso']))
+                {
+                    foreach ($ses['nameids']['idpsso'] as $pv)
+                    {
+                        $supportednameids[] = $pv;
+                        $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $pv, 'checked' => TRUE);
+                    }
+                }
+            } else
+            {
+                foreach ($idpssonameids as $v)
+                {
+                    $supportednameids[] = $v;
+                    $chp[] = array(
+                        'name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $v, 'checked' => TRUE);
+                }
+            }
+            foreach ($allowednameids as $v)
+            {
+                if (!in_array($v, $supportednameids))
+                {
+                    $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $v, 'checked' => FALSE);
+                }
+            }
+            if (count(array_diff($supportednameids, $idpssonameids)) > 0 or count(array_diff($idpssonameids, $supportednameids)) > 0)
+            {
+                $idpssonameidnotice = 'notice';
+            }
+            $r .= '<li>' . form_label('', 'f[nameids][idpsso][]') . '<div class="nsortable ' . $idpssonameidnotice . '">';
+            foreach ($chp as $n)
+            {
+                $r .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
+            }
+            $r .= '</div></li>';
+            $result[] = '';
+            $result[] = '<div class="langgroup">Supported Name Identifiers</div>';
+            $result[] = $r;
+            $result[] = '';
+            /**
+             * end nameids
+             */
+
+            $scopes = array();
+            $scopes = array('idpsso' => $ent->getScope('idpsso'), 'aa' => $ent->getScope('aa'));
+
+            if ($sessform && isset($ses['scopes']['idpsso']))
+            {
+                $sesscope['idpsso'] = $ses['scopes']['idpsso'];
+            } else
+            {
+                $sesscope['idpsso'] = implode(',', $scopes['idpsso']);
+            }
+            $scopeidpssonotice = '';
+            $scopessovalue = set_value('f[scopes][idpsso]', $sesscope['idpsso']);
+            if ($scopessovalue !== implode(',', $scopes['idpsso']))
+            {
+                $scopeidpssonotice = 'notice';
+            }
+            $result[] = '';
+            if (in_array('scope', $this->disallowedparts))
+            {
+                $result[] = '' . form_label( lang('rr_scope') , 'f[scopes][idpsso]') . form_input(array(
+                            'name' => 'f[scopes][idpsso]',
+                            'id' => 'f[scopes][idpsso]',
+                            'readonly' => 'readonly',
+                            'value' => $scopessovalue,
+                            'class' => $scopeidpssonotice,
+                        )) . '';
+
+            }
+            else
+            {
+                $result[] = '' . form_label(lang('rr_scope') , 'f[scopes][idpsso]') . form_input(array(
+                            'name' => 'f[scopes][idpsso]',
+                            'id' => 'f[scopes][idpsso]',
+                            'value' => $scopessovalue,
+                            'class' => $scopeidpssonotice,
+                        )) . '';
+            }
+            $result[] = '';
+
+            
+            /**
+             * end IDPArtifactResolutionService part
+             */
+            /**
+             * start AttributeAuthorityDescriptor Locations
+             */
+
+            $result[] = '<div class="section">Attribute Authority</div>';
+            $aabinds = getAllowedSOAPBindings();
+            $aalo = array();
+            if (array_key_exists('IDPAttributeService', $g))
+            {
+                foreach ($g['IDPAttributeService'] as $k2 => $v2)
+                {
+                    $row = '<li>' . form_label($v2->getBindingName(), 'f[srv][IDPAttributeService][' . $v2->getId() . '][url]');
+                    $row .= form_input(array(
+                        'name' => 'f[srv][IDPAttributeService][' . $v2->getId() . '][bind]',
+                        'id' => 'f[srv][IDPAttributeService][' . $v2->getId() . '][bind]',
+                        'type' => 'hidden',
+                        'value' => set_value('f[srv][IDPAttributeService][' . $v2->getId() . '][bind]', $v2->getBindingName()),
+                    ));
+                    $row .= form_input(array(
+                                'name' => 'f[srv][IDPAttributeService][' . $v2->getId() . '][url]',
+                                'id' => 'f[srv][IDPAttributeService][' . $v2->getId() . '][url]',
+                                'value' => set_value('f[srv][IDPAttributeService][' . $v2->getId() . '][url]', $v2->getUrl()),
+                            )) . '</li>';
+                    unset($aabinds[array_search($v2->getBindingName(), $aabinds)]);
+                    $aalo[] = $row;
+                }
+            }
+            $ni = 0;
+            foreach ($aabinds as $k3 => $v3)
+            {
+                $row = '<li>';
+                $row .= form_label($v3, 'f[srv][IDPAttributeService][n' . $ni . '][url]');
+                $row .= form_input(array(
+                    'name' => 'f[srv][IDPAttributeService][n' . $ni . '][bind]',
+                    'id' => 'f[srv][IDPAttributeService][n' . $ni . '][bind]',
+                    'type' => 'hidden',
+                    'value' => $v3,));
+                $row .= form_input(array(
+                            'name' => 'f[srv][IDPAttributeService][n' . $ni . '][url]',
+                            'id' => 'f[srv][IDPAttributeService][n' . $ni . '][url]',
+                            'value' => set_value('f[srv][IDPAttributeService][n' . $ni . '][url]'),
+                        )) . '';
+                $row .= '</li>';
+                $aalo[] = $row;
+                ++$ni;
+            }
+
+            $result[] = '';
+            $result[] = '<div class="langgroup">'.lang('atributeauthoritydescriptor').'</div>';
+            $result[] = implode('', $aalo);
+            $result[] = '';
+            /**
+             * end AttributeAuthorityDescriptor Location
+             */
+            $r = '';
+            $aaprotocols = $ent->getProtocolSupport('aa');
+            $selected_options = array();
+            $aanotice = '';
+            if ($sessform && isset($ses['prot']['aa']) && is_array($ses['prot']['aa']))
+            {
+                if (count(array_diff($ses['prot']['aa'], $aaprotocols)) > 0 || count(array_diff($aaprotocols, $ses['prot']['aa'])) > 0)
+                {
+                    $aanotice = 'notice';
+                }
+                foreach ($ses['prot']['aa'] as $v)
+                {
+                    $selected_options[$v] = $v;
+                }
+            } else
+            {
+                foreach ($aaprotocols as $p)
+                {
+                    $selected_options[$p] = $p;
+                }
+            }
+            $r .= '<li class="' . $aanotice . '">';
+            $r .= '<ul class="checkboxlist">';
+            foreach ($allowedoptions as $a)
+            {
+                $is = FALSE;
+                if (in_array($a, $selected_options))
+                {
+                    $is = TRUE;
+                }
+                $r .= '<li>' . form_checkbox(array('name' => 'f[prot][aa][]', 'id' => 'f[prot][aa][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
+            }
+            $r .= '</ul>';
+            $r .= '</li>';
+
+            $r .= '';
+            $result[] = '';
+            $result[] = '<div class="langgroup">Supported protocol enumerations</div>';
+            $result[] = $r;
+            $result[] = '';
+
+
+            /**
+             * start nameids for AttributeAuthorityDescriptor 
+             */
+            $r = '';
+            $idpaanameids = $ent->getNameIds('aa');
+            $idpaanameidnotice = '';
+            $supportednameids = array();
+            $chp = array();
+            if ($sessform && is_array($ses))
+            {
+                if (isset($ses['nameids']['idpaa']) && is_array($ses['nameids']['idpaa']))
+                {
+                    foreach ($ses['nameids']['idpaa'] as $pv)
+                    {
+                        $supportednameids[] = $pv;
+                        $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $pv, 'checked' => TRUE);
+                    }
+                }
+            } else
+            {
+                foreach ($idpaanameids as $v)
+                {
+                    $supportednameids[] = $v;
+                    $chp[] = array(
+                        'name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $v, 'checked' => TRUE);
+                }
+            }
+            foreach ($allowednameids as $v)
+            {
+                if (!in_array($v, $supportednameids))
+                {
+                    $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $v, 'checked' => FALSE);
+                }
+            }
+            if (count(array_diff($supportednameids, $idpaanameids)) > 0 or count(array_diff($idpaanameids, $supportednameids)) > 0)
+            {
+                $idpaanameidnotice = 'notice';
+            }
+            $r .= '<li>' . form_label('', 'f[nameids][idpaa][]') . '<div class="nsortable ' . $idpaanameidnotice . '">';
+            foreach ($chp as $n)
+            {
+                $r .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
+            }
+            $r .= '</div></li>';
+            $result[] = '';
+            $result[] = '<div class="langgroup">Supported name identifiers</div>';
+            $result[] = $r;
+            $result[] = '';
+            /**
+             * end nameids for IDPSSODescriptor
+             */
+
+
+
+            /**
+             * Scopes
+             */
+            if ($sessform && isset($ses['scopes']['aa']))
+            {
+                $sesscope['aa'] = $ses['scopes']['aa'];
+            } else
+            {
+                $sesscope['aa'] = implode(',', $scopes['aa']);
+            }
+            $scopeaanotice = '';
+            $scopeaavalue = set_value('f[scopes][aa]', $sesscope['aa']);
+            if ($scopeaavalue !== implode(',', $scopes['aa']))
+            {
+                $scopeaanotice = 'notice';
+            }
+            if (in_array('scope', $this->disallowedparts))
+            {
+                $result[] = '' . form_label( lang('rr_scope') , 'f[scopes][aa]') . form_input(array(
+                            'name' => 'f[scopes][aa]',
+                            'id' => 'f[scopes][aa]',
+                            'readonly' => 'readonly',
+                            'value' => $scopeaavalue,
+                            'class' => $scopeaanotice,
+                        )) . '';
+            } else
+            {
+                $result[] = '' . form_label(lang('rr_scope') , 'f[scopes][aa]') . form_input(array(
+                            'name' => 'f[scopes][aa]',
+                            'id' => 'f[scopes][aa]',
+                            'value' => $scopeaavalue,
+                            'class' => $scopeaanotice,
+                        )) . '';
+            }
+        }
+        if ($enttype != 'IDP')
+        {
+            $result[] = '<div class="section">Service Provider</div>';
+            /**
+             * generate ACS part
+             */
+            $ACSPart = '<fieldset><legend>' . lang('assertionconsumerservice') . '</legend><ol>';
+            $acs = array();
+
+            if (isset($g['AssertionConsumerService']) && is_array($g['AssertionConsumerService']))
+            {
+                foreach ($g['AssertionConsumerService'] as $k3 => $v3)
+                {
+                    $turl = $v3->getUrl();
+                    $torder = $v3->getOrder();
+                    $tbind = $v3->getBindingName();
+                    if ($sessform && isset($ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
+                    {
+                        if (array_key_exists('url', $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
+                        {
+                            $turl = $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']['url'];
+                        }
+                        if (array_key_exists('order', $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
+                        {
+                            $torder = $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']['order'];
+                        }
+                        if (array_key_exists('bind', $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
+                        {
+                            $tbind = $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']['bind'];
+                        }
+                    }
+                    $furl = set_value('f[srv][AssertionConsumerService][' . $v3->getId() . '][url]', $turl);
+                    $forder = set_value('f[srv][AssertionConsumerService][' . $v3->getId() . '][order]', $torder);
+                    $fbind = set_value('f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]', $tbind);
+                    $urlnotice = '';
+                    $ordernotice = '';
+                    $bindnotice = '';
+                    if ($furl != $v3->getUrl())
+                    {
+                        $urlnotice = 'notice';
+                    }
+                    if ($forder != $v3->getOrder())
+                    {
+                        $ordernotice = 'notice';
+                    }
+                    if ($fbind != $v3->getBindingName())
+                    {
+                        $bindnotice = 'notice';
+                    }
+                    $r = '<li><ol>';
+                    $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]');
+                    $r .= '<span class="' . $bindnotice . '">' . form_dropdown('f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]', $acsbindprotocols, $fbind) . '</span></li>';
+                    $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][AssertionConsumerService][' . $v3->getId() . '][url]') . '';
+                    $r .= form_input(array(
+                                'name' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][url]',
+                                'id' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][url]',
+                                'value' => $furl,
+                                'class' => 'acsurl ' . $urlnotice . '',
+                            )) . '';
+                    $r .= 'index ' . form_input(array(
+                                'name' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][order]',
+                                'id' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][order]',
+                                'size' => '3',
+                                'maxlength' => '3',
+                                'class' => 'acsindex ' . $ordernotice,
+                                'value' => $forder,
+                    ));
+                    $r .= '<br /></li><li>' . form_label(lang('rr_isdefault') . '?', 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]');
+                    $ischecked = FALSE;
+                    if ($sessform)
+                    {
+                        if (isset($ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']['default']))
+                        {
+                            $ischecked = TRUE;
+                        }
+                    } else
+                    {
+                        if ($v3->getDefault())
+                        {
+                            $ischecked = TRUE;
+                        }
+                    }
+                    $acsnotice = '';
+                    if ($ischecked != $v3->getDefault())
+                    {
+                        $acsnotice = 'notice';
+                    }
+                    $r .= form_radio(array(
+                        'name' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]',
+                        'id' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]',
+                        'value' => 1,
+                        'class' => 'acsdefault ' . $acsnotice,
+                        'checked' => $ischecked,
+                    ));
+
+                    $r .='</li></ol></li>';
+                    $acs[] = $r;
+                    if ($sessform && isset($ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
+                    {
+                        unset($ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']);
+                    }
+                }
+            }
+            if ($sessform && isset($ses['srv']['AssertionConsumerService']) && is_array($ses['srv']['AssertionConsumerService']))
+            {
+                foreach ($ses['srv']['AssertionConsumerService'] as $k4 => $v4)
+                {
+
+
+                    $r = '<li><ol>';
+                    $r .= '<li>' . form_label('' . lang('rr_bindingname') . '', 'f[srv][AssertionConsumerService][' . $k4 . '][bind]');
+                    $r .= form_dropdown('f[srv][AssertionConsumerService][' . $k4 . '][bind]', $acsbindprotocols, $v4['bind']) . '</li>';
+                    $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][AssertionConsumerService][' . $k4 . '][url]');
+                    $r .= form_input(array(
+                        'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][url]',
+                        'id' => 'f[srv][AssertionConsumerService][' . $k4 . '][url]',
+                        'value' => set_value('f[srv][AssertionConsumerService][' . $k4 . '][url]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['url']),
+                        'class' => 'acsurl notice',
+                    ));
+                    $r .= 'index ' . form_input(array(
+                                'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][order]',
+                                'id' => 'f[srv][AssertionConsumerService][' . $k4 . '][order]',
+                                'size' => '3',
+                                'maxlength' => '3',
+                                'class' => 'acsindex notice',
+                                'value' => set_value('f[srv][AssertionConsumerService][' . $k4 . '][order]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['order']),
+                            )) . '</li>';
+                    $r .= '<li>' . form_label(lang('rr_isdefault'), 'f[srv][AssertionConsumerService][' . $k4 . '][default]');
+                    $ischecked = FALSE;
+
+                    if (isset($ses['srv']['AssertionConsumerService']['' . $k4 . '']['default']))
+                    {
+                        $ischecked = TRUE;
+                    }
+
+                    $r .= form_radio(array(
+                                'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][default]',
+                                'id' => 'f[srv][AssertionConsumerService][' . $k4 . '][default]',
+                                'value' => 1,
+                                'class' => 'acsdefault notice',
+                                'checked' => $ischecked,
+                            )) . '';
+
+                    $r .='</li></ol></li>';
+                    $acs[] = $r;
+                }
+            }
+            $ACSPart .= implode('', $acs);
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nacsbtn">' . lang('addnewacs') . '</button></li>';
+            $ACSPart .= $newelement . '</ol></fieldset>';
+            $result[] = $ACSPart;
+            /**
+             * end ACS part
+             */
+            /**
+             * generate ArtifactResolutionService part
+             */
+            $ACSPart = '<fieldset><legend>' . lang('artifactresolutionservice') . ' <small><i>SPSSODescriptor</i></small></legend><ol>';
+            $acs = array();
+
+            if (isset($g['SPArtifactResolutionService']) && is_array($g['SPArtifactResolutionService']))
+            {
+                foreach ($g['SPArtifactResolutionService'] as $k3 => $v3)
+                {
+                    $turl = $v3->getUrl();
+                    $torder = $v3->getOrder();
+                    $tbind = $v3->getBindingName();
+                    if ($sessform && isset($ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']))
+                    {
+                        if (array_key_exists('url', $ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']))
+                        {
+                            $turl = $ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']['url'];
+                        }
+                        if (array_key_exists('order', $ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']))
+                        {
+                            $torder = $ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']['order'];
+                        }
+                        if (array_key_exists('bind', $ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']))
+                        {
+                            $tbind = $ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']['bind'];
+                        }
+                    }
+                    $furl = set_value('f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]', $turl);
+                    $forder = set_value('f[srv][SPArtifactResolutionService][' . $v3->getId() . '][order]', $torder);
+                    $fbind = set_value('f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]', $tbind);
+                    $urlnotice = '';
+                    $ordernotice = '';
+                    $bindnotice = '';
+                    if ($furl != $v3->getUrl())
+                    {
+                        $urlnotice = 'notice';
+                    }
+                    if ($forder != $v3->getOrder())
+                    {
+                        $ordernotice = 'notice';
+                    }
+                    if ($fbind != $v3->getBindingName())
+                    {
+                        $bindnotice = 'notice';
+                    }
+
+
+                    $r = '<li><ol>';
+                    $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]');
+                    $r .= '<span class="' . $bindnotice . '">' . form_dropdown('f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]', $artifacts_binding, $fbind) . '</span></li>';
+                    $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]') . '';
+                    $r .= form_input(array(
+                                'name' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]',
+                                'id' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]',
+                                'value' => $furl,
+                                'class' => 'acsurl ' . $urlnotice . '',
+                            )) . '';
+                    $r .= 'index ' . form_input(array(
+                                'name' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][order]',
+                                'id' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][order]',
+                                'size' => '3',
+                                'maxlength' => '3',
+                                'class' => 'acsindex ' . $ordernotice,
+                                'value' => $forder,
+                    ));
+                    $r .= '<br /></li>';
+
+                    $r .='</ol></li>';
+                    $acs[] = $r;
+                    if ($sessform && isset($ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']))
+                    {
+                        unset($ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']);
+                    }
+                }
+            }
+            if ($sessform && isset($ses['srv']['SPArtifactResolutionService']) && is_array($ses['srv']['SPArtifactResolutionService']))
+            {
+                foreach ($ses['srv']['SPArtifactResolutionService'] as $k4 => $v4)
+                {
+
+
+                    $r = '<li><ol>';
+                    $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][bind]');
+                    $r .= form_dropdown('f[srv][SPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, $v4['bind']) . '</li>';
+                    $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]');
+                    $r .= form_input(array(
+                        'name' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]',
+                        'id' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]',
+                        'value' => set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['url']),
+                        'class' => 'acsurl notice',
+                    ));
+                    $r .= 'index ' . form_input(array(
+                                'name' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][order]',
+                                'id' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][order]',
+                                'size' => '3',
+                                'maxlength' => '3',
+                                'class' => 'acsindex notice',
+                                'value' => set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['order']),
+                            )) . '</li>';
+
+                    $r .='</ol></li>';
+                    $acs[] = $r;
+                }
+            }
+            $ACSPart .= implode('', $acs);
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nspartifactbtn">' . lang('addnewartresservice') . '</button></li>';
+            $ACSPart .= $newelement . '</ol></fieldset>';
+            $result[] = $ACSPart;
+            /**
+             * end SPArtifactResolutionService part
+             */
+            /**
+             * start SP SingleLogoutService
+             */
+            $SPSLOPart = '<fieldset><legend>' . lang('singlelogoutservice') . ' <small><i>' . lang('serviceprovider') . '</i></small></legend><ol>';
+            $spslotmpl = getBindSingleLogout();
+            $spslo = array();
+            if (array_key_exists('SPSingleLogoutService', $g))
+            {
+                foreach ($g['SPSingleLogoutService'] as $k2 => $v2)
+                {
+                    $row = '<li>' . form_label($v2->getBindingName(), 'f[srv][SPSingleLogoutService][' . $v2->getId() . '][url]');
+                    $row .= form_input(array(
+                        'name' => 'f[srv][SPSingleLogoutService][' . $v2->getId() . '][bind]',
+                        'id' => 'f[srv][SPSingleLogoutService][' . $v2->getId() . '][bind]',
+                        'type' => 'hidden',
+                        'value' => set_value('f[srv][SPSingleLogoutService][' . $v2->getId() . '][bind]', $v2->getBindingName()),
+                    ));
+                    $row .= form_input(array(
+                                'name' => 'f[srv][SPSingleLogoutService][' . $v2->getId() . '][url]',
+                                'id' => 'f[srv][SPSingleLogoutService][' . $v2->getId() . '][url]',
+                                'value' => set_value('f[srv][SPSingleLogoutService][' . $v2->getId() . '][url]', $v2->getUrl()),
+                            )) . '</li>';
+                    unset($spslotmpl[array_search($v2->getBindingName(), $spslotmpl)]);
+                    $spslo[] = $row;
+                }
+            }
+            $ni = 0;
+            foreach ($spslotmpl as $k3 => $v3)
+            {
+                $row = '<li>';
+                $row .= form_label($v3, 'f[srv][SPSingleLogoutService][n' . $ni . '][url]');
+                $row .= form_input(array(
+                    'name' => 'f[srv][SPSingleLogoutService][n' . $ni . '][bind]',
+                    'id' => 'f[srv][SPSingleLogoutService][n' . $ni . '][bind]',
+                    'type' => 'hidden',
+                    'value' => $v3,));
+                $row .= form_input(array(
+                            'name' => 'f[srv][SPSingleLogoutService][n' . $ni . '][url]',
+                            'id' => 'f[srv][SPSingleLogoutService][n' . $ni . '][url]',
+                            'value' => set_value('f[srv][SPSingleLogoutService][n' . $ni . '][url]'),
+                        )) . '';
+                $row .= '</li>';
+                $spslo[] = $row;
+                ++$ni;
+            }
+            $SPSLOPart .= implode('', $spslo);
+            $SPSLOPart .= '</ol></fieldset>';
+            $result[] = $SPSLOPart;
+            /**
+             * end SP SingleLogoutService
+              /**
+             * start RequestInitiator
+             */
+            $RequestInitiatorPart = '<fieldset><legend>' . lang('requestinitatorlocations') . '</legend><ol>';
+            $ri = array();
+            if (array_key_exists('RequestInitiator', $g))
+            {
+                foreach ($g['RequestInitiator'] as $k3 => $v3)
+                {
+                    $turl = $v3->getUrl();
+                    if ($sessform && isset($ses['srv']['RequestInitiator']['' . $v3->getId() . '']))
+                    {
+                        if (array_key_exists('url', $ses['srv']['RequestInitiator']['' . $v3->getId() . '']))
+                        {
+                            $turl = $ses['srv']['RequestInitiator'][$v3->getId()]['url'];
+                        }
+                    }
+                    $furl = set_value('f[srv][RequestInitiator][' . $v3->getId() . '][url]', $turl);
+                    $urlnotice = '';
+                    if ($furl != $v3->getUrl())
+                    {
+                        $urlnotice = 'notice';
+                    }
+                    $r = '<li>';
+                    $r .= '' . form_label(lang('rr_url'), 'f[srv][RequestInitiator][' . $v3->getId() . '][url]');
+                    $r .= form_input(array(
+                        'name' => 'f[srv][RequestInitiator][' . $v3->getId() . '][url]',
+                        'id' => 'f[srv][RequestInitiator][' . $v3->getId() . '][url]',
+                        'value' => $furl,
+                        'class' => 'acsurl ' . $urlnotice . '',
+                    ));
+                    $r .= '</li>';
+                    $ri[] = $r;
+                    if (isset($ses['srv']['RequestInitiator']['' . $v3->getId() . '']))
+                    {
+                        unset($ses['srv']['RequestInitiator']['' . $v3->getId() . '']);
+                    }
+                }
+            }
+            if ($sessform && isset($ses['srv']['RequestInitiator']) && is_array($ses['srv']['RequestInitiator']))
+            {
+                foreach ($ses['srv']['RequestInitiator'] as $k4 => $v4)
+                {
+                    $purl = '';
+                    if (isset($ses['srv']['RequestInitiator']['' . $k4 . '']['url']))
+                    {
+                        $purl = $ses['srv']['RequestInitiator']['' . $k4 . '']['url'];
+                    }
+
+                    $r = '<li>' . form_label(lang('rr_url'), 'f[srv][RequestInitiator][' . $k4 . '][url]');
+                    $r .= form_input(array(
+                                'name' => 'f[srv][RequestInitiator][' . $k4 . '][url]',
+                                'id' => 'f[srv][RequestInitiator][' . $k4 . '][url]',
+                                'value' => set_value('f[srv][RequestInitiator][' . $k4 . '][url]', $purl),
+                                'class' => 'acsurl notice',
+                            )) . '</li>';
+                    $ri[] = $r;
+                    unset($ses['srv']['RequestInitiator']['' . $k4 . '']);
+                }
+            }
+            $RequestInitiatorPart .= implode('', $ri);
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nribtn">' . lang('addnewreqinit') . '</button></li>';
+            $RequestInitiatorPart .= $newelement . '</ol><fieldset>';
+            $result[] = $RequestInitiatorPart;
+            /**
+             * end RequestInitiator
+             */
+            /**
+             * start DiscoveryResponse
+             */
+            $DiscoverResponsePart = '<fieldset><legend>' . lang('discoveryresponselocations') . '</legend><ol>';
+            $dr = array();
+            /**
+             * list existing DiscoveryResponse
+             */
+            if (array_key_exists('DiscoveryResponse', $g))
+            {
+                foreach ($g['DiscoveryResponse'] as $k3 => $v3)
+                {
+                    $turl = $v3->getUrl();
+                    $torder = $v3->getOrder();
+                    $tbind = $v3->getBindingName();
+                    if ($sessform && isset($ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
+                    {
+                        if (array_key_exists('url', $ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
+                        {
+                            $turl = $ses['srv']['DiscoveryResponse'][$v3->getId()]['url'];
+                        }
+                        if (array_key_exists('order', $ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
+                        {
+                            $torder = $ses['srv']['DiscoveryResponse'][$v3->getId()]['order'];
+                        }
+                        if (array_key_exists('bind', $ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
+                        {
+                            $tbind = $ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']['bind'];
+                        }
+                    }
+                    $furl = set_value('f[srv][DiscoveryResponse][' . $v3->getId() . '][url]', $turl);
+                    $forder = set_value('f[srv][DiscoveryResponse][' . $v3->getId() . '][order]', $torder);
+                    $fbind = set_value('f[srv][DiscoveryResponse][' . $v3->getId() . '][bind]', $tbind);
+                    $urlnotice = '';
+                    $ordernotice = '';
+                    $bindnotice = '';
+                    if ($furl != $v3->getUrl())
+                    {
+                        $urlnotice = 'notice';
+                    }
+                    if ($forder != $v3->getOrder())
+                    {
+                        $ordernotice = 'notice';
+                    }
+                    if ($fbind != $v3->getBindingName())
+                    {
+                        $bindnotice = 'notice';
+                    }
+                    $r = '<li><ol>';
+                    $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][DiscoveryResponse][' . $v3->getId() . '][bind]');
+                    $r .= '<span class="' . $bindnotice . '">' . form_dropdown('f[srv][DiscoveryResponse][' . $v3->getId() . '][bind]', array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'), $fbind) . '</span></li>';
+                    $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][DiscoveryResponse][' . $v3->getId() . '][url]');
+                    $r .= form_input(array(
+                                'name' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][url]',
+                                'id' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][url]',
+                                'value' => $furl,
+                                'class' => 'acsurl ' . $urlnotice . '',
+                            )) . '';
+                    $r .= 'index ' . form_input(array(
+                                'name' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][order]',
+                                'id' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][order]',
+                                'size' => '3',
+                                'maxlength' => '3',
+                                'class' => 'acsindex ' . $ordernotice,
+                                'value' => $forder,
+                    ));
+                    $r .= '<br /></li>';
+
+
+
+
+
+                    $r .='</ol></li>';
+                    $dr[] = $r;
+                    if (isset($ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
+                    {
+                        unset($ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']);
+                    }
+                }
+            }
+            if ($sessform && isset($ses['srv']['DiscoveryResponse']) && is_array($ses['srv']['DiscoveryResponse']))
+            {
+                foreach ($ses['srv']['DiscoveryResponse'] as $k4 => $v4)
+                {
+
+
+                    $r = '<li><ol>';
+                    $r .= '<li>' . form_label(lang('rr_bindingname'), 'f[srv][DiscoveryResponse][' . $k4 . '][bind]');
+                    $r .= form_dropdown('f[srv][DiscoveryResponse][' . $k4 . '][bind]', array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'), $v4['bind']) . '</li>';
+                    $r .= '<li>' . form_label(lang('rr_url'), 'f[srv][DiscoveryResponse][' . $k4 . '][url]');
+                    $r .= form_input(array(
+                                'name' => 'f[srv][DiscoveryResponse][' . $k4 . '][url]',
+                                'id' => 'f[srv][DiscoveryResponse][' . $k4 . '][url]',
+                                'value' => set_value('f[srv][DiscoveryResponse][' . $k4 . '][url]', $ses['srv']['DiscoveryResponse']['' . $k4 . '']['url']),
+                                'class' => 'acsurl notice',
+                            )) . '';
+                    $r .= 'index ' . form_input(array(
+                                'name' => 'f[srv][DiscoveryResponse][' . $k4 . '][order]',
+                                'id' => 'f[srv][DiscoveryResponse][' . $k4 . '][order]',
+                                'size' => '3',
+                                'maxlength' => '3',
+                                'class' => 'acsindex notice',
+                                'value' => set_value('f[srv][DiscoveryResponse][' . $k4 . '][order]', $ses['srv']['DiscoveryResponse']['' . $k4 . '']['order']),
+                            )) . '</li>';
+
+                    $r .='</ol></li>';
+                    $dr[] = $r;
+                    unset($ses['srv']['DiscoveryResponse']['' . $k4 . '']);
+                }
+            }
+            $DiscoverResponsePart .= implode('', $dr);
+            $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="ndrbtn">' . lang('addnewds') . '</button></li>';
+            $DiscoverResponsePart .= $newelement . '</ol><fieldset>';
+            $result[] = $DiscoverResponsePart;
+
+            /**
+             * start protocol enumeration
+             */
+             $allowedproto = getAllowedProtocolEnum();
+             $allowednameids = getAllowedNameId();
+
+             $allowedoptions = array();
+             foreach ($allowedproto as $v)
+             {
+                  $allowedoptions['' . $v . ''] = $v;
+            }
+            $r = '';
+            $spssoprotocols = $ent->getProtocolSupport('spsso');
+            $selected_options = array();
+            $spssonotice = '';
+            if ($sessform && isset($entsession['prot']['spsso']) && is_array($entsession['prot']['spsso']))
+            {
+                if (count(array_diff($ses['prot']['spsso'], $spssoprotocols)) > 0 || count(array_diff($spssoprotocols, $ses['prot']['spsso'])) > 0)
+                {
+                    $spssonotice = 'notice';
+                }
+                foreach ($ses['prot']['spsso'] as $v)
+                {
+                    $selected_options[$v] = $v;
+                }
+            } else
+            {
+                foreach ($spssoprotocols as $p)
+                {
+                    $selected_options[$p] = $p;
+                }
+            }
+            $r .= '<li class="' . $spssonotice . '">';
+            $r .= '<ul class="checkboxlist">';
+            foreach ($allowedoptions as $a)
+            {
+                $is = FALSE;
+                if (in_array($a, $selected_options))
+                {
+                    $is = TRUE;
+                }
+                $r .= '<li>' . form_checkbox(array('name' => 'f[prot][spsso][]', 'id' => 'f[prot][spsso][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
+            }
+            $r .= '</ul>';
+            $r .= '</li>';
+            $result[] = '';
+            $result[] = '<div class="langgroup">Supported protocol enumeration</div>';
+            $result[] = $r;
+            $result[] = '';
+
+
+            /**
+             * end protocol enumerations
+             */
+
+            /**
+             * start nameids 
+             */
+            $r = '';
+            $spssonameids = $ent->getNameIds('spsso');
+            $spssonameidnotice = '';
+            $supportednameids = array();
+            $chp = array();
+            if ($sessform && is_array($ses))
+            {
+                if (isset($ses['nameids']['spsso']) && is_array($ses['nameids']['spsso']))
+                {
+                    foreach ($ses['nameids']['spsso'] as $pv)
+                    {
+                        $supportednameids[] = $pv;
+                        $chp[] = array('name' => 'f[nameids][spsso][]', 'id' => 'f[nameids][spsso][]', 'value' => $pv, 'checked' => TRUE);
+                    }
+                }
+            } else
+            {
+                foreach ($spssonameids as $v)
+                {
+                    $supportednameids[] = $v;
+                    $chp[] = array(
+                        'name' => 'f[nameids][spsso][]', 'id' => 'f[nameids][spsso][]', 'value' => $v, 'checked' => TRUE);
+                }
+            }
+            foreach ($allowednameids as $v)
+            {
+                if (!in_array($v, $supportednameids))
+                {
+                    $chp[] = array('name' => 'f[nameids][spsso][]', 'id' => 'f[nameids][spsso][]', 'value' => $v, 'checked' => FALSE);
+                }
+            }
+            if (count(array_diff($supportednameids, $spssonameids)) > 0 or count(array_diff($spssonameids, $supportednameids)) > 0)
+            {
+                $spssonameidnotice = 'notice';
+            }
+            $r .= '<li>' . form_label('', 'f[nameids][spsso][]') . '<div class="nsortable ' . $spssonameidnotice . '">';
+            foreach ($chp as $n)
+            {
+                $r .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
+            }
+            $r .= '</div></li>';
+            $result[] = '';
+            $result[] = '<div class="langgroup">Supported name identifiers</div>';
+            $result[] = $r;
+            $result[] = '';
+            
+            /**
+             * end nameids
+             */
+
+        }
+
+        foreach ($g as $k => $v)
+        {
+            
+        }
+
+
+        return $result;
+
     }
 
     public function NgenerateUiiForm(models\Provider $ent, $ses = null)

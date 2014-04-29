@@ -295,6 +295,7 @@ var GINIT = {
 
     $("fieldset#certificates label").autoWidth();
     $("fieldset#services label").autoWidth();
+    $("fieldset#tabsaml label").autoWidth();
     $("fieldset#dataprotection label").autoWidth();
     $("fieldset#protocols label").autoWidth();
  //   $("fieldset#general label").autoWidth();
@@ -2865,3 +2866,5 @@ $("#ncontactbtn").click(function() {
            } 
         });
     });
+
+$("div.section").parent().addClass("section");
