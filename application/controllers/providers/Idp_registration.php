@@ -208,7 +208,8 @@ class Idp_registration extends MY_Controller {
             $qu->setAction("Create");
             $qu->setName($this->input->post('homeorg'));
             $qu->addIDP($idp->convertToArray());
-            $qu->setEmail($this->input->post('contact_mail'));
+            $contactMail =  $this->input->post('contact_mail');
+            $qu->setEmail($contactMail);
             $qu->setToken();
             $this->em->persist($qu);
           
