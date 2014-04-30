@@ -3163,11 +3163,10 @@ class Form_element {
              * start display
              */
             $result[] = '';
-    //        $r = form_fieldset('' . lang('e_idpservicename') . '');
             $result[] = '<div class="langgroup">'. lang('e_idpservicename').'</div>';
             $r ='';
             $langsdisplaynames = $langs;
-            if (isset($ext['idp']['mdui']['DisplayName']))
+            if (!$sessform && isset($ext['idp']['mdui']['DisplayName']))
             {
                 foreach ($ext['idp']['mdui']['DisplayName'] as $v1)
                 {
@@ -3217,6 +3216,7 @@ class Form_element {
             }
             if ($sessform && isset($ses['uii']['idpsso']['displayname']) && is_array($ses['uii']['idpsso']['displayname']))
             {
+                print_r($ses['uii']['idpsso']);
                 foreach ($ses['uii']['idpsso']['displayname'] as $key => $value)
                 {
                     if (!array_key_exists($key, $langs))
@@ -3257,7 +3257,7 @@ class Form_element {
             $result[] = '<div class="langgroup">'.lang('e_idpserviceinfourl').'</div>';
             $r = '';
             $langsdisplaynames = $langs;
-            if (isset($ext['idp']['mdui']['InformationURL']))
+            if (!$sessform && isset($ext['idp']['mdui']['InformationURL']))
             {
                 foreach ($ext['idp']['mdui']['InformationURL'] as $v1)
                 {
@@ -3498,7 +3498,7 @@ class Form_element {
                 $result[] = '<div class="langgroup">'.lang('e_spservicename').'</div>';
                 $r = '';
                 $langsdisplaynames = $langs;
-                if (isset($ext['sp']['mdui']['DisplayName']))
+                if (!$sessform && isset($ext['sp']['mdui']['DisplayName']))
                 {
                     foreach ($ext['sp']['mdui']['DisplayName'] as $v1)
                     {
@@ -3580,7 +3580,7 @@ class Form_element {
                 $result[] = '<div class="langgroup">'.lang('e_spserviceinfourl').'</div>';
                 $r = '';
                 $langsdisplaynames = $langs;
-                if (isset($ext['sp']['mdui']['InformationURL']))
+                if (!$sessform && isset($ext['sp']['mdui']['InformationURL']))
                 {
                     foreach ($ext['sp']['mdui']['InformationURL'] as $v1)
                     {
@@ -3661,7 +3661,7 @@ class Form_element {
                 $result[] = '<div class="langgroup">'.lang('e_spservicedesc').'</div>';
                 $r = '';
                 $langsdisplaynames = $langs;
-                if (isset($ext['sp']['mdui']['Description']))
+                if (!$sessform && isset($ext['sp']['mdui']['Description']))
                 {
                     foreach ($ext['sp']['mdui']['Description'] as $v1)
                     {
