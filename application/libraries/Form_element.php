@@ -3216,7 +3216,6 @@ class Form_element {
             }
             if ($sessform && isset($ses['uii']['idpsso']['displayname']) && is_array($ses['uii']['idpsso']['displayname']))
             {
-                print_r($ses['uii']['idpsso']);
                 foreach ($ses['uii']['idpsso']['displayname'] as $key => $value)
                 {
                     if (!array_key_exists($key, $langs))
