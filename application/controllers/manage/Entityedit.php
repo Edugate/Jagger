@@ -110,7 +110,7 @@ class Entityedit extends MY_Controller {
             $this->form_validation->set_rules('f[privacyurl]', lang('rr_defaultprivacyurl'), 'trim|xss_clean|valid_url');
             $this->form_validation->set_rules('f[validfrom]', lang('rr_validfrom'), 'trim|xss_clean');
             $this->form_validation->set_rules('f[validto]', lang('rr_validto'), 'trim|xss_clean');
-            $this->form_validation->set_rules('f[description]', lang('rr_description'), 'trim|xss_clean');
+            //$this->form_validation->set_rules('f[description]', lang('rr_description'), 'trim|xss_clean');
             if (array_key_exists('lname', $y['f']))
             {
                 foreach ($y['f']['lname'] as $k => $v)

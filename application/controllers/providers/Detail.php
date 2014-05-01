@@ -441,8 +441,8 @@ class Detail extends MY_Controller {
         }
         $d[++$i]['name'] = lang('rr_regpolicy');
         $d[$i]['value'] = $regpolicy_value;
-        $d[++$i]['name'] = lang('rr_description'). ' <div class="dhelp">'.lang('defaultdesc').'</div>';
-        $d[$i]['value'] = $ent->getDescription();
+   //     $d[++$i]['name'] = lang('rr_description'). ' <div class="dhelp">'.lang('defaultdesc').'</div>';
+   //     $d[$i]['value'] = $ent->getDescription();
 
         $d[++$i]['name'] = lang('rr_defaultprivacyurl');
         $d[$i]['value'] = $ent->getPrivacyUrl();

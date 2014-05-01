@@ -1139,7 +1139,10 @@ class Provider {
         }
         foreach ($ex as $e)
         {
-            if ($e->getElement() === $elementName && $e->getType() === $type && $e->getNameSpace() === 'mdui')
+            $origElementName = $e->getElement();
+            $origType = $e->getType();
+            $origNameSpace = $e->getNameSpace();
+            if ($origElementName === $elementName && $origType === $type && $origNameSpace === 'mdui')
             {
                 $value = $e->getElementValue();
                 $t = $e->getAttributes();
@@ -1511,7 +1514,7 @@ class Provider {
         $this->setHomeUrl($homeurl);
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
-        $this->setDescription($provider->getDescription());
+        //$this->setDescription($provider->getDescription());
         $smetadata = $provider->getStaticMetadata();
         if (!empty($smetadata))
         {
@@ -2039,7 +2042,7 @@ class Provider {
               }
            }
         }
-        if(count($result) == 0 && !isset($result['en']))
+        if(count($result) == 0 )
         {
              if($name === 'DisplayName')
              {
@@ -2056,10 +2059,10 @@ class Provider {
              }
              elseif($name === 'Description')
              {
-                $desc = $this->getDescription();
+                //$desc = $this->getDescription();
                 if(!empty($desc))
                 {
-                   $result['en'] = $desc;
+                   $result['en'] = 'no description';
                 }
              }
 
@@ -2286,6 +2289,8 @@ class Provider {
     }
 
 
+    
+
     public function getLocalDescriptionsToArray($type)
     {
         $result = array();
@@ -2374,7 +2379,6 @@ class Provider {
         }
 
         $en_displayname = FALSE;
-        $en_description = FALSE;
         $en_informationurl = FALSE;
         $en_privacyurl = FALSE;
         $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
@@ -2409,10 +2413,6 @@ class Provider {
                         $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:Description');
                         $dnode->setAttribute('xml:lang', '' . $lang['xml:lang'] . '');
                         $dnode->appendChild($e->ownerDocument->createTextNode($dm->getElementValue()));
-                        if ($lang['xml:lang'] === 'en')
-                        {
-                            $en_description = TRUE;
-                        }
                         $e->appendChild($dnode);
                     }
                 }
@@ -2484,18 +2484,6 @@ class Provider {
                 }
             }
         }
-        if ($en_description !== TRUE)
-        {
-            $gd = $this->getDescription();
-            if (!empty($gd))
-            {
-               $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:Description');
-               $dnode->setAttribute('xml:lang', 'en');
-               $dnode->appendChild($e->ownerDocument->createTextNode($gd));
-               $e->appendChild($dnode);
-            }
-        }
-
 
         if ($en_displayname !== TRUE)
         {
@@ -2641,7 +2629,7 @@ class Provider {
         $r['privacyurl'] = $this->getPrivacyUrl();
         $r['validfrom'] = $this->getValidFrom();
         $r['validto'] = $this->getValidTo();
-        $r['description'] = $this->getDescription();
+        //$r['description'] = $this->getDescription();
         $r['is_approved'] = $this->getApproved();
         $r['is_active'] = $this->getActive();
         $r['is_locked'] = $this->getLocked();
@@ -2731,7 +2719,7 @@ class Provider {
         $this->setPrivacyUrl($r['privacyurl']);
         $this->setValidFrom($r['validfrom']);
         $this->setValidTo($r['validto']);
-        $this->setDescription($r['description']);
+       // $this->setDescription($r['description']);
         $this->setApproved($r['is_approved']);
         $this->setActive($r['is_active']);
         //$this->setLocked($r['is_locked']);
@@ -3708,10 +3696,6 @@ class Provider {
             $ldesc = array();
             foreach ($ext['desc'] as $k => $p)
             {
-                if ($p['lang'] === 'en')
-                {
-                    $this->setDescription($p['val']);
-                }
                 $ldesc[$p['lang']] = $p['val'];
                 $extdesc = new ExtendMetadata;
                 $extdesc->setNamespace('mdui');

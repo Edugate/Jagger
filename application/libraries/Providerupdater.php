@@ -320,54 +320,6 @@ class Providerupdater {
                }
             }
         }
-        if (array_key_exists('validfrom', $ch))
-        {
-            $prevvalidfrom = $ent->getValidFrom();
-            if(isset($prevvalidfrom))
-            {
-               $prevvalidfrom = date('Y-m-d',$prevvalidfrom->format('U')+j_auth::$timeOffset);
-            }
-            else
-            {
-               $prevvalidfrom = '';
-            }
-            if($prevvalidfrom !== $ch['validfrom'])
-            {
-               $m['ValidFrom'] = array('before'=>$prevvalidfrom,'after'=>$ch['validfrom']);
-               if (!empty($ch['validfrom']))
-               {
-                   $ent->setValidFrom(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['validfrom'] . ' 00:00:00'));
-               }
-               else
-               {
-                  $ent->setValidFrom(null);
-               }
-            }
-        }
-        if (array_key_exists('validto', $ch))
-        {
-            $prevvalidto = $ent->getValidTo();
-            if(isset($prevvalidto))
-            {
-               $prevvalidto = date('Y-m-d',$prevvalidto->format('U')+j_auth::$timeOffset);
-            }
-            else
-            {
-               $prevvalidto = '';
-            }
-            if($prevvalidto !== $ch['validto'])
-            {
-               $m['ValidTo'] = array('before'=>$prevvalidto,'after'=>$ch['validto']);
-               if (!empty($ch['validto']))
-               {
-                   $ent->setValidTo(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['validto'] . ' 00:00:00'));
-               }
-               else
-               {
-                   $ent->setValidTo(null);
-               }
-            }
-        }
         if (array_key_exists('homeurl', $ch))
         {
             if($ent->getHomeUrl() !== $ch['homeurl'])
@@ -419,7 +371,7 @@ class Providerupdater {
                $m['Localized HelpdeskURL'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
         }
-
+        /**
         if (array_key_exists('description', $ch))
         {
             if(strcmp($ent->getDescription(), $ch['description'])!=0)
@@ -428,6 +380,7 @@ class Providerupdater {
             }
             $ent->setDescription($ch['description']);
         }
+        */
         /**
          * @todo track coc changes
          */

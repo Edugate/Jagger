@@ -404,7 +404,7 @@ $lang['defaultdesc']                = 'Default entity description. It should be 
 $lang['defaultdesc_en']             = 'en: entity description overrides default description';
 $lang['defaultheldeskpurl']         = 'Default OrganizationURL.';
 
-$lang['d_validfromto']              = 'If current DateTime does not fit in From/To then this entity does not appear in any fed/circle metadata. ValidTo is represented in metadata <b>md:EntityDescriptor</b> attribute <b>validUntil</b>';
+$lang['d_validfromto']              = 'If current DateTime does not fit in From/Until then this entity does not appear in any fed/circle metadata. ValidTo is represented in metadata <b>md:EntityDescriptor</b> attribute <b>validUntil</b>';
 
 
 $lang['rr_privacystatement']        = 'Privacy Statement URL (optional)';
@@ -435,9 +435,9 @@ $lang['rr_displayname']             = 'Display Name';
 $lang['rr_homeorganisationname']    = 'HomeOrg Name';
 $lang['rr_description']             = 'Description';
 $lang['rr_staticmetadata']          = 'Static Metadata';
-$lang['rr_validto']                 = 'Valid To';
+$lang['rr_validto']                 = 'Valid Until';
 $lang['rr_validfrom']               = 'Valid From';
-$lang['rr_validfromto']             = 'Valid From/To';
+$lang['rr_validfromto']             = 'Valid From/Until';
 $lang['rr_noticechangearp']         = 'changing this value will change your ARP and metadata urls';
 $lang['rr_notgeneratedbased']       = 'It&rsquo;s not generated based on below informations';
 $lang['rr_enabledempty']            = 'Static metadata is enabled but it&rsquo;s empty';

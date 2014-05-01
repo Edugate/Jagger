@@ -117,23 +117,23 @@ class Form_element {
             $t_homeurl = $t_helpdeskurl;
         }
 
-        $t_validfrom = '';
-        $origvalidfrom = '';
-        $tmpvalidfrom = $ent->getValidFrom();
-        if (!empty($tmpvalidfrom))
-        {
-            $t_validfrom = date('Y-m-d', $tmpvalidfrom->format('U') + j_auth::$timeOffset);
-            $origvalidfrom = date('Y-m-d', $tmpvalidfrom->format('U') + j_auth::$timeOffset);
-        }
-        $t_validto = '';
-        $origvalidto = '';
-        $tmpvalidto = $ent->getValidTo();
-        if (!empty($tmpvalidto))
-        {
-            $t_validto = date('Y-m-d', $tmpvalidto->format('U') + j_auth::$timeOffset);
-            $origvalidto = date('Y-m-d', $tmpvalidto->format('U') + j_auth::$timeOffset);
-        }
-        $t_description = $ent->getDescription();
+       // $t_validfrom = '';
+       // $origvalidfrom = '';
+       // $tmpvalidfrom = $ent->getValidFrom();
+       // if (!empty($tmpvalidfrom))
+       // {
+       //     $t_validfrom = date('Y-m-d', $tmpvalidfrom->format('U') + j_auth::$timeOffset);
+       //     $origvalidfrom = date('Y-m-d', $tmpvalidfrom->format('U') + j_auth::$timeOffset);
+       // }
+      //  $t_validto = '';
+      //  $origvalidto = '';
+      //  $tmpvalidto = $ent->getValidTo();
+      //  if (!empty($tmpvalidto))
+      //  {
+      //      $t_validto = date('Y-m-d', $tmpvalidto->format('U') + j_auth::$timeOffset);
+      //      $origvalidto = date('Y-m-d', $tmpvalidto->format('U') + j_auth::$timeOffset);
+      //  }
+       // $t_description = $ent->getDescription();
 
         if ($sessform)
         {
@@ -149,6 +149,7 @@ class Form_element {
             {
                 $t_homeurl = $ses['homeurl'];
             }
+         /**
             if (array_key_exists('validrom', $ses))
             {
                 $t_validfrom = $ses['validfrom'];
@@ -157,19 +158,21 @@ class Form_element {
             {
                 $t_validto = $ses['validto'];
             }
-
+         */
+          /**
             if (array_key_exists('description', $ses))
             {
                 $t_description = $ses['description'];
             }
+          */
         }
 
         $f_regauthority = set_value('f[regauthority]', $t_regauthority);
         $f_regdate = set_value('f[registrationdate]', $t_regdate);
         $f_homeurl = set_value('f[homeurl]', $t_homeurl);
-        $f_validfrom = set_value('f[validfrom]', $t_validfrom);
-        $f_validto = set_value('f[validto]', $t_validto);
-        $f_description = set_value('f[description]', $t_description);
+      //  $f_validfrom = set_value('f[validfrom]', $t_validfrom);
+      //  $f_validto = set_value('f[validto]', $t_validto);
+       // $f_description = set_value('f[description]', $t_description);
         if ($f_regauthority != $ent->getRegistrationAuthority())
         {
             $regauthority_notice = 'notice';
@@ -191,6 +194,7 @@ class Form_element {
         {
             $homeurl_notice = '';
         }
+      /**
         if ($f_validfrom != $origvalidfrom)
         {
             $validfrom_notice = 'notice';
@@ -205,6 +209,8 @@ class Form_element {
         {
             $validto_notice = '';
         }
+       */
+        /**
         if ($f_description != form_prep($ent->getDescription()))
         {
             $description_notice = 'notice';
@@ -212,6 +218,7 @@ class Form_element {
         {
             $description_notice = '';
         }
+        */
         $result = array();
 
         // providername group 
@@ -464,7 +471,7 @@ class Form_element {
          * start regpolicy 
          */
         $result[] = '';
-        $result[] = '<div class="langgroup">' . lang('localizedregpolicyfield') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
+        $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
         $regpolicies = $ent->getRegistrationPolicy();
         $sregpolicies = array();
         $origrepolicies = array();
@@ -528,6 +535,7 @@ class Form_element {
          */
         $result[] = '';
         $result[] = form_label(lang('rr_homeurl'), 'f[homeurl]') . form_input(array('id' => 'f[homeurl]', 'class' => $homeurl_notice, 'name' => 'f[homeurl]', 'value' => $f_homeurl));
+/**
         $result[] = form_label(lang('rr_validfrom'), 'f[validfrom]') . form_input(array(
                     'name' => 'f[validfrom]',
                     'id' => 'f[validfrom]',
@@ -540,14 +548,15 @@ class Form_element {
                     'value' => $f_validto,
                     'class' => 'validto ' . $validto_notice,
         ));
-
-
+*/
+       /**
         $result[] = form_label(lang('rr_description'), 'f[description]') . form_textarea(array(
                     'name' => 'f[description]',
                     'id' => 'f[description]',
                     'class' => $description_notice,
                     'value' => $f_description,
         ));
+        */
         $result[] = '';
         return $result;
     }
