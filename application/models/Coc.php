@@ -23,8 +23,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Coc Model
- *
- * This model for Identity and Service Providers definitions
+ * 
  * 
  * @Entity
  * @HasLifecycleCallbacks
@@ -61,7 +60,7 @@ class Coc {
     protected $is_enabled;
 
     /**
-     * @OneToMany(targetEntity="Provider",mappedBy="coc")
+     * @ManyToMany(targetEntity="Provider",mappedBy="coc")
      */
     protected $provider;
  
@@ -92,6 +91,11 @@ class Coc {
     {
         return $this->cdescription;
     }
+
+    public function getProviders()
+    {
+       return $this->provider;
+    }
     
     public function setName($name)
     {
@@ -106,6 +110,11 @@ class Coc {
     public function setDescription($desc)
     {
         $this->cdescription = $desc;
+        return $this;
+    }
+    public function setProvider($provider)
+    {
+        $this->getProviders()->add($provider);
         return $this;
     }
     public function setAvailable($a=NULL)

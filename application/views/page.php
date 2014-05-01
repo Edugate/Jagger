@@ -349,7 +349,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <script>window.jQuery || document.write('<script src="<?php echo $base_url; ?>js/jquery-min.js">\x3C/script>')</script>
         <script src="<?php echo $base_url; ?>js/jquery-migrate-1.2.0.js"></script>
         <script src="<?php echo $base_url; ?>js/jquery-ui.min.js"></script>
-        <script src="<?php echo $base_url; ?>js/ibootstrap.min.js"></script>
+        <script src="<?php echo $base_url; ?>js/bootstrap.min.js"></script>
 
         <script type="text/javascript" src="<?php echo $base_url; ?>js/jquery.uitablefilter.js"></script>
         <?php

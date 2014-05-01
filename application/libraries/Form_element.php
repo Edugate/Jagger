@@ -579,13 +579,14 @@ class Form_element {
         $r .= '</li></ol></fieldset>';
         $result[] = $r;
 
-        $current_coc = $ent->getCoc();
-        $current_coc_id = 0;
-        $cocnotice = '';
-        if (!empty($current_coc))
+        $entCategories = $this->em->getRepository("models\Coc")->findAll();
+        $entCategoriesArray = array();
+        foreach($entCategories as $v)
         {
-            $current_coc_id = $current_coc->getId();
+           $entCategoriesArray[''.$v->getId().''] = $v->getName();
         }
+        $assignedEntCategories = $ent->getCoc();
+        $assignedEntCategoriesArray = array();  
         if ($sessform && isset($ses['coc']))
         {
             if ($ses['coc'] != $current_coc_id)
@@ -594,22 +595,7 @@ class Form_element {
                 $current_coc_id = $ses['coc'];
             }
         }
-        $coc_dropdown['0'] = lang('rr_select');
-        $coccols = $this->em->getRepository("models\Coc")->findAll();
-        $r = '<fieldset><legend>' . lang('rr_coc') . '</legend><ol>';
-        if (is_array($coccols) and count($coccols) > 0)
-        {
-            $r .= '<li class="' . $cocnotice . '">';
-            $r .= form_label('' . lang('rr_cocurl') . ' ' . showBubbleHelp('' . lang('rrhelp_contactifnococ') . ''), 'f[coc]');
-            foreach ($coccols as $c)
-            {
-                $coc_dropdown['' . $c->getId() . ''] = $c->getName() . ' (' . $c->getUrl() . ')';
-            }
-            // print_r($coc_dropdown);
-            $r .= form_dropdown('f[coc]', $coc_dropdown, $current_coc_id);
-            $r .= '</li>';
-        }
-        $r .= '</ol></fieldset>';
+        $r = '';
         $result[] = $r;
 
 

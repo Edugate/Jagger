@@ -141,7 +141,11 @@ class Provider {
     protected $lprivacyurl;
 
     /**
-     * @ManyToOne(targetEntity="Coc",inversedBy="provider")
+     * @ManyToMany(targetEntity="Coc",inversedBy="provider")
+     * @JoinTable(name="Provider_Coc",
+     *      joinColumns={@JoinColumn(name="provider_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="coc_id", referencedColumnName="id")}
+     *      )
      */
     protected $coc;
    
@@ -324,6 +328,7 @@ class Provider {
         $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->extend = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->coc = new \Doctrine\Common\Collections\ArrayCollection();
         $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
         $this->is_approved = TRUE;
         $this->hidepublic = FALSE;
@@ -759,7 +764,8 @@ class Provider {
         }
         else
         {
-            $this->coc = $coc;
+            $this->getCoc()->add($coc);
+            $coc->setProvider($this);
         }
         return $this;
     }
