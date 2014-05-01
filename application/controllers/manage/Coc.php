@@ -45,7 +45,7 @@ class Coc extends MY_Controller
      
        }
        $has_write_access = $this->zacl->check_acl('coc', 'write', 'default', '');
-       $obj_list = $this->em->getRepository("models\Coc")->findAll();
+       $obj_list = $this->em->getRepository("models\Coc")->findBy( array('type'=>'entcat'));
        $data['rows'] = array(); 
        if(is_array($obj_list) && count($obj_list)>0)
        {
@@ -161,7 +161,7 @@ class Coc extends MY_Controller
           show_error('Not found',404);
           return;
        }
-       $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$id));
+       $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$id,'type'=>'entcat'));
        if(empty($coc))
        {
           show_error('Not found',404);

@@ -446,19 +446,23 @@ class Detail extends MY_Controller {
 
         $d[++$i]['name'] = lang('rr_defaultprivacyurl');
         $d[$i]['value'] = $ent->getPrivacyUrl();
-        $d[++$i]['name'] = lang('rr_coc');
+        $d[++$i]['name'] = lang('rr_entcats');
         $coc = $ent->getCoc();
         if($coc->count()>0)
         {
             $a = array();
             foreach($coc as $k=>$v)
             {
-              $cocvalue = $v->getName() . '<br />' . anchor($v->getUrl());
-              if (!$v->getAvailable())
+              $coctype = $v->getType();
+              if($coctype  === 'entcat')
               {
-                  $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
+                 $cocvalue = $v->getName() . '<br />' . anchor($v->getUrl());
+                 if (!$v->getAvailable())
+                 {
+                    $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
+                 }
+                 $a[] = $cocvalue;
               }
-              $a[] = $cocvalue;
             }
             $d[$i]['value'] = implode('<br />',$a);
         }

@@ -579,24 +579,6 @@ class Form_element {
         $r .= '</li></ol></fieldset>';
         $result[] = $r;
 
-        $entCategories = $this->em->getRepository("models\Coc")->findAll();
-        $entCategoriesArray = array();
-        foreach($entCategories as $v)
-        {
-           $entCategoriesArray[''.$v->getId().''] = $v->getName();
-        }
-        $assignedEntCategories = $ent->getCoc();
-        $assignedEntCategoriesArray = array();  
-        if ($sessform && isset($ses['coc']))
-        {
-            if ($ses['coc'] != $current_coc_id)
-            {
-                $cocnotice = 'notice';
-                $current_coc_id = $ses['coc'];
-            }
-        }
-        $r = '';
-        $result[] = $r;
 
 
 
@@ -610,6 +592,62 @@ class Form_element {
         }
 
         return $result;
+    }
+
+    public function NgenerateEntityCategoriesForm(models\Provider $ent, $ses = null)
+    {
+        $result = array();
+        $sessform = FALSE;
+        $enttype = $ent->getType();
+        if (!empty($ses) && is_array($ses))
+        {
+            $sessform = TRUE;
+        }
+        $entCategories = $this->em->getRepository("models\Coc")->findAll();
+        $entCategoriesArray = array();
+        foreach($entCategories as $v)
+        {
+           $entCategoriesArray[''.$v->getId().''] = array('name'=>$v->getName(),'enabled'=>$v->getAvailable());
+        }
+        $assignedEntCategories = $ent->getCoc();
+        $assignedEntCategoriesArray = array();  
+        if ($sessform && isset($ses['coc']))
+        {
+            foreach($ses['coc'] as $k => $v)
+            {
+                if(isset($entCategoriesArray[''.$v.'']))
+                {
+                    $entCategoriesArray[''.$v.'']['sel'] = TRUE;
+                }
+
+            }
+        }
+        else
+        {
+           foreach($assignedEntCategories as $k=>$v)
+           {
+              $entCategoriesArray[''.$v->getId().'']['sel'] = true;
+           }
+        }
+        $r = '';
+        $r = '<ul class="checkboxlist">';
+        foreach($entCategoriesArray as $k=>$v)
+        {
+           if(isset($v['sel']))
+           {
+                 $is = true;
+           }
+           else
+           {
+                 $is=false;
+           }
+           $r .= '<li>'.form_checkbox(array('name' =>'f[coc][]','id'=>'f[coc][]', 'value'=>$k,'checked'=>$is)). $v['name'].'</li>';
+        }
+        $r .= '</ul>';
+        $result[] = $r;
+        return $result;
+
+
     }
 
     public function NgenerateContactsForm(models\Provider $ent, $ses = null)
@@ -3142,6 +3180,32 @@ class Form_element {
             $sessform = TRUE;
         }
         $result = array();
+
+
+
+
+        $result[] = '';
+        $result[] = '<div class="langgroup">'.lang('e_globalprivacyurl').'<i><small> ('.lang('rr_default').') '.lang('rr_optional').'</small></i>'.showBubbleHelp('' . lang('rhelp_privacydefault1') . '').'</div>';
+        $r = '';
+        $f_privacyurl = $ent->getPrivacyUrl();
+        $p_privacyurl = $f_privacyurl;
+        $privaceurlnotice = '';
+        if ($sessform && array_key_exists('privacyurl', $ses))
+        {
+            $p_privacyurl = $ses['privacyurl'];
+        }
+        $t_privacyurl = set_value('f[privacyurl]', $p_privacyurl);
+        if ($t_privacyurl != $f_privacyurl)
+        {
+            $privaceurlnotice = 'notice';
+        }
+        $r .= form_label(lang('rr_url', 'f[privacyurl]')) . form_input(array('name' => 'f[privacyurl]', 'id' => 'f[privacyurl]', 'value' => $t_privacyurl, 'class' => $privaceurlnotice));
+        $r .= '';
+        $result[] = $r;
+        $result[] = '';
+
+
+
         if ($type != 'SP')
         {
             $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
@@ -3545,7 +3609,7 @@ class Form_element {
                                         )
                         );
 
-                        $r .= ' <button type="button" class="btn langinputrm" name="uiispssodisplayname" value="' . $lang . '">'.lang('rr_remove').'</button></li>';
+                        $r .= ' <button type="button" class="btn langinputrm" name="uiispssodisplayname" value="' . $key . '">'.lang('rr_remove').'</button></li>';
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }

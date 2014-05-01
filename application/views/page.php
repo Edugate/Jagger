@@ -234,7 +234,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                                               echo '<li><a href="'.$base_url.'smanage/reports">'.lang('sys_menulink').'</a></li>';
                                            }
                                         ?>
-                                        <li><a href="<?php echo $base_url; ?>manage/coc/show"><?php echo lang('coc_menulink'); ?></a></li>
+                                        <li><a href="<?php echo $base_url; ?>manage/coc/show"><?php echo lang('entcats_menulink'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>attributes/attributes/show"><?php echo lang('rr_attr_defs'); ?></a></li>
                                        <?php
                                         if($isAdministrator)

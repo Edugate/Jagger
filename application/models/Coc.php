@@ -45,6 +45,12 @@ class Coc {
     protected $name;
 
     /**
+     * allowed types: entcat (entity category) 
+     * @Column(type="string", length=7, nullable=true)
+     */
+    protected $type;
+
+    /**
      * @Column(type="string", length=512, nullable=false )
      */
     protected $url;
@@ -67,6 +73,7 @@ class Coc {
     public function __construct()
     {
         $this->is_enabled = FALSE;
+        $this->type = 'entcat';
     }
      
     public function getId()
@@ -77,6 +84,11 @@ class Coc {
     public function getName()
     {
         return $this->name;   
+    }
+
+    public function getType()
+    {
+       return $this->type;
     }
      
     public function getUrl()
@@ -102,6 +114,13 @@ class Coc {
         $this->name = $name;
         return $this;
     }
+    
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+   
     public function setUrl($url)
     {
         $this->url = $url;

@@ -433,14 +433,30 @@ class Providerupdater {
          */
         if (array_key_exists('coc', $ch))
         {
-            if (!empty($ch['coc']))
+            $currentEntCat = $ent->getCoc();
+            foreach($currentEntCat as $k => $v)
             {
-                $c = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $ch['coc']));
-                $ent->setCoc($c);
+                $cid = $v->getId();
+                $ctype = $v->getType();
+                if($ctype === 'entcat')
+                {
+                   $foundkey = array_search($cid,$ch['coc']);
+                   if($foundkey === null || $foundkey === false)
+                   {
+                      $ent->removeCoc($v);
+                   }
+                }
             }
-            else
+            foreach($ch['coc'] as $k=>$v)
             {
-                $ent->setCoc();
+                if(!empty($v) && is_numeric($v))
+                {
+                    $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$v,'type'=>'entcat'));
+                    if(!empty($c) && !$currentEntCat->contains($c))
+                    {
+                       $ent->setCoc($c);
+                    }
+                }
             }
         }
         if (array_key_exists('privacyurl', $ch))

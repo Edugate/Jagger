@@ -756,19 +756,6 @@ class Provider {
         return $this;
     }
 
-    public function setCoc($coc = NULL)
-    {
-        if (empty($coc))
-        {
-            $this->coc = NULL;
-        }
-        else
-        {
-            $this->getCoc()->add($coc);
-            $coc->setProvider($this);
-        }
-        return $this;
-    }
 
     public function setLocalDisplayName($name = NULL)
     {
@@ -1377,6 +1364,20 @@ class Provider {
         $this->getServiceLocations()->removeElement($service);
         $this->em->remove($service);
         return $this->serviceLocations;
+    }
+
+    public function removeCoc(Coc $coc)
+    {
+       $this->getCoc()->removeElement($coc);
+       $coc->getProviders()->removeElement($this);
+       return $this;
+    }
+
+    public function setCoc(Coc $coc)
+    {
+      $this->getCoc()->add($coc);
+      $coc->getProviders()->add($this);
+      return $this;
     }
 
     public function setStatic($static)
@@ -3576,6 +3577,32 @@ class Provider {
            }
         }
 
+        $cocs = $this->getCoc();
+        $entityCategories = array();
+        foreach($cocs as $k=>$v)
+        {
+           $cocsenabled = $v->getAvailable();
+           $cocstype = $v->getType();
+           if($cocsenabled === TRUE && $cocstype === 'entcat')
+           {
+              $entityCategories[] = $v;
+           }
+        }
+        if (count($entityCategories) > 0)
+        {
+            $AttributesGroup_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:attribute', 'mdattr:EntityAttributes');
+            $EntExtension_Node->appendChild($AttributesGroup_Node);
+            $Attribute_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:Attribute');
+            $Attribute_Node->setAttribute('Name', 'http://macedir.org/entity-category');
+            $Attribute_Node->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+            $AttributesGroup_Node->appendChild($Attribute_Node);
+            foreach($entityCategories as $v)
+            {
+               $Attribute_Value = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:AttributeValue');
+               $Attribute_Value->appendChild($Attribute_Node->ownerDocument->createTextNode($v->getUrl()));
+               $Attribute_Node->appendChild($Attribute_Value);
+            }
+        }
 
         if ($type !== 'SP')
         {
@@ -3598,24 +3625,7 @@ class Provider {
         }
         if ($type !== 'IDP')
         {
-            $dataprotection = $this->getCoc();
 
-            if (!empty($dataprotection))
-            {
-                $dataprotenabled = $dataprotection->getAvailable();
-                if ($dataprotenabled === TRUE)
-                {
-                    $AttributesGroup_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:attribute', 'mdattr:EntityAttributes');
-                    $EntExtension_Node->appendChild($AttributesGroup_Node);
-                    $Attribute_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:Attribute');
-                    $Attribute_Node->setAttribute('Name', 'http://macedir.org/entity-category');
-                    $Attribute_Node->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-                    $AttributesGroup_Node->appendChild($Attribute_Node);
-                    $Attribute_Value = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:AttributeValue');
-                    $Attribute_Value->appendChild($Attribute_Node->ownerDocument->createTextNode($dataprotection->getUrl()));
-                    $Attribute_Node->appendChild($Attribute_Value);
-                }
-            }
             $SSODesc_Node = $this->getSPSSODescriptorToXML($EntityDesc_Node, $options);
             if (!empty($SSODesc_Node))
             {

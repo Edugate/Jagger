@@ -84,12 +84,13 @@ class Metadata2array {
            $redusedlist = array_unique($this->coclist);
            foreach($redusedlist as $r)
            {
-               $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$r));
+               $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$r,'type'=>'entcat'));
                if(empty($existing))
                {
                    $nconduct = new models\Coc;
                    $nconduct->setUrl($r);
                    $nconduct->setName($r);
+                   $nconduct->setType('entcat');
                    $nconduct->setDescription($r);
                    $nconduct->setAvailable(FALSE);
                    $this->em->persist($nconduct);
@@ -154,7 +155,7 @@ class Metadata2array {
         $entity['validuntil'] = null;
         $entity['rigistrar'] = null;
         $entity['regdate'] = null;
-        $entity['coc'] = null;
+        $entity['coc'] = array();
         $entity['validuntil'] = $node->getAttribute('validUntil');
         $is_idp = false;
         $is_sp = false;
@@ -230,7 +231,7 @@ class Metadata2array {
                                 {
                                       foreach($enode2->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue') as $enode3)
                                       {
-                                          $entity['coc'] = $enode3->nodeValue;
+                                          $entity['coc'][] = $enode3->nodeValue;
                                           $this->coclist[] = $enode3->nodeValue;
                                       }
 
