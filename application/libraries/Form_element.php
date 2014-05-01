@@ -1974,7 +1974,7 @@ class Form_element {
 
         if ($enttype != 'SP')
         {
-            $result[] = '<div class="section">Identity Provider</div>';
+            $result[] = '<div class="section">'.lang('identityprovider').'</div>';
             /**
              * generate SSO part
              */
@@ -2041,7 +2041,7 @@ class Form_element {
             // $result = array_merge($result,$sso);
             $SSOPart .= implode('', $sso);
             $result[] = '';
-            $result[] = '<div class="langgroup">SingleSignOn Service endpoints</div>';
+            $result[] = '<div class="langgroup">'.lang('rr_srvssoends').'</div>';
             $result[] = $SSOPart;
             $result[] = '';
             // $slotmpl
@@ -2094,7 +2094,7 @@ class Form_element {
             }
             $IDPSLOPart .= implode('', $idpslo);
             $result[] = '';
-            $result[] = '<div class="langgroup">Single Logout Service endpoints</div>';
+            $result[] = '<div class="langgroup">'.lang('rr_srvsloends').'</div>';
             $result[] = $IDPSLOPart;
             $result[] = '';
 
@@ -2205,7 +2205,7 @@ class Form_element {
             $newelement = '<li><button class="editbutton addicon smallerbtn" type="button" id="nidpartifactbtn">' . lang('rr_addnewidpartifactres') . '</button></li>';
             $ACSPart .= $newelement . '';
             $result[] = '';
-            $result[] = '<div class="langgroup">Artifact Resolution Service endpoints</div>';
+            $result[] = '<div class="langgroup">'.lang('rr_srvartresends').'</div>';
             $result[] = $ACSPart;
             $result[] ='';
 
@@ -2253,7 +2253,7 @@ class Form_element {
             }
             $r .= '</ul></li>';
             $result[] = '';
-            $result[] = '<div class="langgroup">Supported protocol enumerations</div>';
+            $result[] = '<div class="langgroup">'.lang('rr_protenums').'</div>';
             $result[] = $r;
             $result[] = '';
 
@@ -2307,7 +2307,7 @@ class Form_element {
             }
             $r .= '</div></li>';
             $result[] = '';
-            $result[] = '<div class="langgroup">Supported Name Identifiers</div>';
+            $result[] = '<div class="langgroup">'.lang('rr_supnameids').'</div>';
             $result[] = $r;
             $result[] = '';
             /**
@@ -2448,7 +2448,7 @@ class Form_element {
 
             $r .= '';
             $result[] = '';
-            $result[] = '<div class="langgroup">Supported protocol enumerations</div>';
+            $result[] = '<div class="langgroup">'.lang('rr_protenums').'</div>';
             $result[] = $r;
             $result[] = '';
 

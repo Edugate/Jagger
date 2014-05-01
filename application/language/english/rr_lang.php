@@ -697,6 +697,13 @@ $lang['rr_serviceproviderdetails']  = 'Service Provider details';
 $lang['rr_acs']                     = 'AssertionConsumerService';
 $lang['rr_acs_fieldset']            = 'AssertionConsumerService';
 $lang['rr_singlesignon_fieldset']   = 'SingleSignOn';
+$lang['rr_srvssoends']              = 'SingleSignOn Service endpoints'; 
+$lang['rr_srvsloends']              = 'Single Logout Service endpoints'; 
+$lang['rr_srvartresends']           = 'Artifact Resolution Service endpoints';
+
+$lang['rr_protenums']               = 'Supported protocol enumerations';
+$lang['rr_supnameids']              = 'Supported Name Identifiers';
+
 $lang['rr_status']                  = 'Status';
 $lang['rr_currentstatus']           = 'current status';
 $lang['rr_url']                     = 'URL';
