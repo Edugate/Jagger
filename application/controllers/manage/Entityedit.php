@@ -39,7 +39,7 @@ class Entityedit extends MY_Controller {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
-        $this->load->library(array('form_element', 'form_validation', 'zacl'));
+        $this->load->library(array('form_element', 'form_validation', 'zacl','approval'));
         $this->tmp_providers = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmp_error = '';

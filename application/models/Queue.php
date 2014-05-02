@@ -179,6 +179,24 @@ class Queue {
         $this->action = $action;
         return $this;
     }
+    public function setObjectType($t)
+    {
+        $this->objtype = $t;
+        return $this;
+    }
+
+    public function setType($t)
+    {
+        $this->type = $t;
+        return $this;
+
+     }
+    
+    public function setObject(array $obj)
+    {
+        $this->objdata = serialize($obj);
+        return $this;
+    }
 
     public function setName($name) {
         $this->name = $name;
@@ -206,7 +224,7 @@ class Queue {
     }
 
     public function setConfirm($confirmation) {
-        $this->is_confirm = $confirmation;
+        $this->is_confirmed = $confirmation;
         return $this;
     }
 

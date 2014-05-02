@@ -46,6 +46,25 @@ class Approval {
     /**
      * 
      */
+    public function applyForEntityCategory(models\Coc $coc, models\Provider $provider)
+    {
+          $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
+          $q = new models\Queue();
+          $q->setRecipient($coc->getId());
+          $q->setRecipientType('entitycategory');
+          $q->setCreator($user);
+          $q->setName($provider->getEntityId());
+          $q->setEmail($user->getEmail());
+          $q->setConfirm(TRUE);
+          $q->setAction('APPLY');
+          $q->setType('Provider');
+          $q->setObjectType('n');
+          $q->setObject(array());
+          $q->setToken();
+          $this->em->persist($q);
+          return $q;
+    }
+
     public function invitationProviderToQueue(models\Federation $federation ,models\Provider $obj,$action)
     {
            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
