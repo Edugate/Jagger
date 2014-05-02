@@ -510,55 +510,6 @@ class Show_element {
         return $result;
     }
 
-    /**
-     * $members must be array of models\Provider objects 
-     */
-    public function IdPMembersToTable(array $members)
-    {
-        $cell_with_idp_members = '<div><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
-        $cell_with_sp_members = '<div><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
-        $cell_with_both_members = '<div><div class="firstLine"><span class="col1">&nbsp;</span><span class="col2">&nbsp;</span><span class="col3">&nbsp;</span></div>';
-        foreach ($members as $m)
-        {
-            $m_type = $m->getType();
-            $m_id = $m->getId();
-
-            $inactive = '';
-            $alertclass = '';
-            if (!($m->getAvailable()))
-            {
-                $inactive = '<span class"alert">'.lang('rr_inactive').'</span>';
-                $alertclass = 'class="alert"';
-            }
-            $m_link = base_url() . 'providers/detail/show/' . $m_id;
-            $m_entityid = $m->getEntityId();
-            $m_displayname = $m->getName();
-            if (empty($m_displayname))
-            {
-                $m_displayname = $m_entityid;
-            }
-            if ($m_type === 'IDP')
-            {
-                $cell_with_idp_members .= '<div ' . $alertclass . '><span class="col1"></span><span class="homeorg" class="col2">'. anchor($m_link, $m_displayname, 'title="' . $m->getDescription() . '"') . ' <small><i>'.$m->getEntityId().'</i></small></span><span class="col3">&nbsp;</span></div>';
-            }
-            if ($m_type === 'SP')
-            {
-                $cell_with_sp_members .= '<div ' . $alertclass . '> <span class="col1"></span><span class="col2">' . anchor($m_link, $m_displayname, 'title="' . $m->getDescription() . '"') . '  </span> <small><i>'.$m->getEntityId().'</i></small><span class="col3">&nbsp;</span></div>';
-            }
-            if ($m_type == 'BOTH')
-            {
-                $cell_with_both_members .= '<div ' . $alertclass . '><span class="col1"></span> <span class="col2">' . anchor($m_link, $m_displayname, 'title="' . $m->getDescription() . '"') . '  </span><span class="col3">&nbsp;</span></div>';
-            }
-        }
-        $cell_with_idp_members .= '<div class="lastLine"></div></div><div class="cleaner"></div>';
-        $cell_with_sp_members .= '<div class="lastLine"></div></div><div class="cleaner"></div>';
-        $cell_with_both_members .= '<div class="lastLine"></div></div><div class="cleaner"></div>';
-
-        $result['IDP'] = $cell_with_idp_members;
-        $result['SP'] = $cell_with_sp_members;
-        $result['BOTH'] = $cell_with_both_members;
-        return $result;
-    }
     public function generateRequestsList(models\Provider $idp, $count = null)
     {
         if (empty($count) or !is_numeric($count) or $count < 1)

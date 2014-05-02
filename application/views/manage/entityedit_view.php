@@ -33,7 +33,7 @@ if(!empty($sessform))
 
     foreach ($menutabs as $m)
     {
-        echo '<fieldset id="' . $m['id'] . '"><legend>' . $m['value'] . '</legend>';
+        echo '<fieldset id="' . $m['id'] . '"><legend> </legend>';
         echo '<ol>';
         /**
          * start form elemts

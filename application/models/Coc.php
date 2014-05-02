@@ -23,8 +23,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Coc Model
- *
- * This model for Identity and Service Providers definitions
+ * 
  * 
  * @Entity
  * @HasLifecycleCallbacks
@@ -46,6 +45,12 @@ class Coc {
     protected $name;
 
     /**
+     * allowed types: entcat (entity category) 
+     * @Column(type="string", length=7, nullable=true)
+     */
+    protected $type;
+
+    /**
      * @Column(type="string", length=512, nullable=false )
      */
     protected $url;
@@ -61,13 +66,14 @@ class Coc {
     protected $is_enabled;
 
     /**
-     * @OneToMany(targetEntity="Provider",mappedBy="coc")
+     * @ManyToMany(targetEntity="Provider",mappedBy="coc")
      */
     protected $provider;
  
     public function __construct()
     {
         $this->is_enabled = FALSE;
+        $this->type = 'entcat';
     }
      
     public function getId()
@@ -78,6 +84,11 @@ class Coc {
     public function getName()
     {
         return $this->name;   
+    }
+
+    public function getType()
+    {
+       return $this->type;
     }
      
     public function getUrl()
@@ -92,12 +103,24 @@ class Coc {
     {
         return $this->cdescription;
     }
+
+    public function getProviders()
+    {
+       return $this->provider;
+    }
     
     public function setName($name)
     {
         $this->name = $name;
         return $this;
     }
+    
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+   
     public function setUrl($url)
     {
         $this->url = $url;
@@ -106,6 +129,11 @@ class Coc {
     public function setDescription($desc)
     {
         $this->cdescription = $desc;
+        return $this;
+    }
+    public function setProvider($provider)
+    {
+        $this->getProviders()->add($provider);
         return $this;
     }
     public function setAvailable($a=NULL)

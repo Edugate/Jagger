@@ -126,7 +126,7 @@ class Metadata2import {
         {
             return false;
         }
-        $coclist = $this->em->getRepository("models\Coc")->findAll();
+        $coclist = $this->em->getRepository("models\Coc")->findBy(array('type'=>'entcat'));
         $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
 
         $attributes = array();
@@ -149,7 +149,7 @@ class Metadata2import {
 
         foreach ($coclist as $k => $c)
         {
-            $coclistconverted[$c->getId()] = $c;
+            $coclistconverted[''.$c->getId().''] = $c;
             $coclistarray['' . $c->getId() . ''] = $c->getUrl();
         }
 
@@ -279,22 +279,22 @@ class Metadata2import {
                             $importedProvider->setStatic($static);
                             $importedProvider->setLocal($local);
                             $importedProvider->setActive($active);
-                            // coc begin
-                            if (array_key_exists('coc', $ent) && !empty($ent['coc']))
+                            // entityCategory begin
+                            foreach($ent['coc'] as $k=>$v)
                             {
-                                $y = array_search($ent['coc'], $coclistarray);
-                                if ($y != NULL OR $y != FALSE)
+                                $y = array_search($v, $coclistarray);
+                                if ($y != NULL && $y != FALSE)
                                 {
                                     $celement = $coclistconverted['' . $y . ''];
                                     if (!empty($celement))
                                     {
-                                        $importedProvider->setCoc($celement);
+                                       $importedProvider->setCoc($celement);
                                     }
                                 }
-                            } else
-                            {
-                                $importedProvider->setCoc(NULL);
                             }
+
+                            // end entityCategory
+
                             // attr req  start
                             if (isset($ent['details']['reqattrs']))
                             {
@@ -346,21 +346,35 @@ class Metadata2import {
                             if ($updateAllowed)
                             {
                                 $existingProvider->overwriteByProvider($importedProvider);
-                                if (array_key_exists('coc', $ent) && empty($ent['coc']))
+                                $currentCocs = $existingProvider->getCoc();
+                                foreach($currentCocs as $c)
                                 {
-                                    $y = array_search($ent['coc'], $coclistarray);
-                                    if ($y != NULL OR $y != FALSE)
-                                    {
-                                        $celement = $coclistconverted['' . $y . ''];
-                                        if (!empty($celement))
-                                        {
-                                            $existingProvider->setCoc($celement);
-                                        }
-                                    }
-                                } else
-                                {
-                                    $existingProvider->setCoc(NULL);
+                                   $cType = $c->getType();
+                                   if($cType === 'entcat')
+                                   {
+                                       $cUrl = $c->getUrl();
+                                       $y = array_search($cUrl,$ent['coc']);
+                                       if($y === NULL || $y === FALSE)
+                                       {
+                                          $existingProvider->removeCoc($c);
+                                       }
+                                       else
+                                       {
+                                          unset($ent['coc'][''.$y.'']);
+                                       }
+                                       
+                                   }
                                 }
+                                foreach($ent['coc'] as $v)
+                                {
+                                   $y = array_search($v,$coclistarray);
+                                   if($y !== null && $y !== FALSE)
+                                   {
+                                        $existingProvider->setCoc($coclistconverted[''.$y.'']);
+
+                                   }
+                                }
+                                
                                 $existingProvider->setStatic($static);
                                 $duplicateControl = array();
                                 $requiredAttrs = $existingProvider->getAttributesRequirement();
@@ -549,20 +563,20 @@ class Metadata2import {
                             $importedProvider->setLocal($local);
                             $importedProvider->setActive($active);
                             // coc begin
-                            if (array_key_exists('coc', $ent) && !empty($ent['coc']))
+
+                            foreach($ent['coc'] as $v)
                             {
-                                $y = array_search($ent['coc'], $coclistarray);
-                                if ($y != NULL OR $y != FALSE)
+                                $y = array_search($v, $coclistarray);
+                                if ($y != NULL && $y != FALSE)
                                 {
                                     $celement = $coclistconverted['' . $y . ''];
                                     if (!empty($celement))
                                     {
-                                        $importedProvider->setCoc($celement);
+                                       $importedProvider->setCoc($celement);
                                     }
                                 }
-                            } else
-                            {
-                                $importedProvider->setCoc(NULL);
+                               
+
                             }
                             // coc end
                             // attr req  start
@@ -623,21 +637,38 @@ class Metadata2import {
                                 $importEntity .=  lang('provupdated');
                                 $existingProvider->overwriteByProvider($importedProvider);
                                 $existingProvider->setLocal($this->defaults['local']);
-                                if (array_key_exists('coc', $ent) && empty($ent['coc']))
+                                $currentCocs = $existingProvider->getCoc();
+                                foreach($currentCocs as $c)
                                 {
-                                    $y = array_search($ent['coc'], $coclistarray);
-                                    if ($y != NULL OR $y != FALSE)
-                                    {
-                                        $celement = $coclistconverted['' . $y . ''];
-                                        if (!empty($celement))
-                                        {
-                                            $existingProvider->setCoc($celement);
-                                        }
-                                    }
-                                } else
-                                {
-                                    $existingProvider->setCoc(NULL);
+                                   $cType = $c->getType();
+                                   if($cType === 'entcat')
+                                   {
+                                       $cUrl = $c->getUrl();
+                                       $y = array_search($cUrl,$ent['coc']);
+                                       if($y === NULL || $y === FALSE)
+                                       {
+                                          $existingProvider->removeCoc($c);
+                                       }
+                                       else
+                                       {
+                                          unset($ent['coc'][''.$y.'']);
+                                       }
+                                       
+                                   }
                                 }
+
+                                foreach($ent['coc'] as $v)
+                                {
+                                   $y = array_search($v,$coclistarray);
+                                   if($y !== null && $y !== FALSE)
+                                   {
+                                        $existingProvider->setCoc($coclistconverted[''.$y.'']);
+
+                                   }
+                                }
+
+
+
 
                                 $existingProvider->setStatic($static);
                                 /**

@@ -149,14 +149,19 @@ class Reports extends MY_Controller {
     public function vmigrate()
     {
        if(!$this->input->is_ajax_request()){
-           show_error('Bad request',401);
+           set_status_header(401);
+           echo 'Bad request';
            return;
        }
        if(!$this->j_auth->logged_in()){
-           show_error('Session lost',403);
+           set_status_header(403);
+           echo 'Session lost';
+           return;
        }
        if(!$this->j_auth->isAdministrator()){
-           show_error('No perm',403);
+           set_status_header(403);
+           echo 'No permission';
+           return;
        }
 
        $validator = new SchemaValidator($this->em);
@@ -186,13 +191,14 @@ class Reports extends MY_Controller {
            }
 
            $this->load->library('migration');
-           if($this->migration->current() === $this->migration->latest())
+           $t = $this->migration->current();
+           if($t === false)
            {
-                echo  '<div class="success">'.lang('rr_sysuptodate').'</div>';
+                echo $this->migration->error_string();
            }
            else
            {
-                echo 'Target version: '.$this->migration->current();
+                echo  '<div class="success">'.lang('rr_sysuptodate').' : '.$t.'</div>';
            }
        }
       

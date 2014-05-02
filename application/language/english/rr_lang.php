@@ -46,6 +46,7 @@ $lang['statdefdetail']             = 'Stats definition detail';
 $lang['statdefeditform']             = 'Stats definition edit form';
 $lang['statdefinition']             = 'stat definition';
 $lang['coc_menulink']               = 'Data protection CoC';
+$lang['entcats_menulink']           = 'Entity Categories';
 $lang['sys_menulink']               = 'System';
 $lang['rr_accessmngmt']             = 'Access management';
 $lang['rrprovs']                    = 'Providers';
@@ -55,13 +56,16 @@ $lang['spregsuccess']               = 'Service Provider  registration - success'
 $lang['fvalidaddsuccess']           = 'Federation validator has been added';
 $lang['fvalidupdatesuccess']           = 'Federation validator has been updated';
 $lang['rr_merged']                  = 'Merged from';
+$lang['taborganization']            = 'Organization';
+$lang['tabsaml']                    = 'SAML';
 $lang['tabgeneral']                 = 'General';
 $lang['tabprivacy']                 = 'Privacy';
 $lang['tabprotonameid']             = 'ProtEnum/NameIDs';
 $lang['tabsrvs']                    = 'Services Locations';
 $lang['tabcnts']                    = 'Contacts';
 $lang['tabcerts']                   = 'Certificates';
-$lang['tabuii']                     = 'UII';
+$lang['tabuii']                     = 'UI Information';
+$lang['tabentcategories']           = 'Entity Categories';
 $lang['tabstaticmeta']              = 'Static Metadata';
 $lang['tabotherforms']              = 'Other forms';
 $lang['btnupdate']                  = 'Update';
@@ -90,6 +94,7 @@ $lang['fedmemberschanged']         = 'Alert if a specified federation members ci
 $lang['rr_formstep']                    = 'step';
 $lang['rr_uii']                     = 'User Interface Information';
 $lang['rr_coc']                     = 'Data protection Code of Conduct';
+$lang['rr_entcats']                 = 'Entity Categories';
 $lang['rr_cocadded']                = 'Code of Conduct has been added';
 $lang['rr_cocurl']                  = 'Code Of Conduct - Document location';
 $lang['rr_providername']            = 'Provider name';
@@ -309,6 +314,8 @@ $lang['e_orgname']                  = 'Name of organization';
 $lang['e_orgdisplayname']           = 'Displayname of organization';
 $lang['e_orgurl']                   = 'URL to information about organization';
 
+$lang['e_globalprivacyurl']          = 'URL to Privacy Policy';
+
 $lang['e_spservicename']              = 'Name of the Service';
 $lang['e_spservicedesc']              = 'Description of the Service';
 $lang['e_spserviceinfourl']           = 'URL to information about the Service';
@@ -397,7 +404,7 @@ $lang['defaultdesc']                = 'Default entity description. It should be 
 $lang['defaultdesc_en']             = 'en: entity description overrides default description';
 $lang['defaultheldeskpurl']         = 'Default OrganizationURL.';
 
-$lang['d_validfromto']              = 'If current DateTime does not fit in From/To then this entity does not appear in any fed/circle metadata. ValidTo is represented in metadata <b>md:EntityDescriptor</b> attribute <b>validUntil</b>';
+$lang['d_validfromto']              = 'If current DateTime does not fit in From/Until then this entity does not appear in any fed/circle metadata. ValidTo is represented in metadata <b>md:EntityDescriptor</b> attribute <b>validUntil</b>';
 
 
 $lang['rr_privacystatement']        = 'Privacy Statement URL (optional)';
@@ -428,9 +435,9 @@ $lang['rr_displayname']             = 'Display Name';
 $lang['rr_homeorganisationname']    = 'HomeOrg Name';
 $lang['rr_description']             = 'Description';
 $lang['rr_staticmetadata']          = 'Static Metadata';
-$lang['rr_validto']                 = 'Valid To';
+$lang['rr_validto']                 = 'Valid Until';
 $lang['rr_validfrom']               = 'Valid From';
-$lang['rr_validfromto']             = 'Valid From/To';
+$lang['rr_validfromto']             = 'Valid From/Until';
 $lang['rr_noticechangearp']         = 'changing this value will change your ARP and metadata urls';
 $lang['rr_notgeneratedbased']       = 'It&rsquo;s not generated based on below informations';
 $lang['rr_enabledempty']            = 'Static metadata is enabled but it&rsquo;s empty';
@@ -690,6 +697,13 @@ $lang['rr_serviceproviderdetails']  = 'Service Provider details';
 $lang['rr_acs']                     = 'AssertionConsumerService';
 $lang['rr_acs_fieldset']            = 'AssertionConsumerService';
 $lang['rr_singlesignon_fieldset']   = 'SingleSignOn';
+$lang['rr_srvssoends']              = 'SingleSignOn Service endpoints'; 
+$lang['rr_srvsloends']              = 'Single Logout Service endpoints'; 
+$lang['rr_srvartresends']           = 'Artifact Resolution Service endpoints';
+
+$lang['rr_protenums']               = 'Supported protocol enumerations';
+$lang['rr_supnameids']              = 'Supported Name Identifiers';
+
 $lang['rr_status']                  = 'Status';
 $lang['rr_currentstatus']           = 'current status';
 $lang['rr_url']                     = 'URL';

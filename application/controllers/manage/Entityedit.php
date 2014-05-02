@@ -39,7 +39,7 @@ class Entityedit extends MY_Controller {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
-        $this->load->library(array('form_element', 'form_validation', 'zacl'));
+        $this->load->library(array('form_element', 'form_validation', 'zacl','approval'));
         $this->tmp_providers = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmp_error = '';
@@ -110,7 +110,7 @@ class Entityedit extends MY_Controller {
             $this->form_validation->set_rules('f[privacyurl]', lang('rr_defaultprivacyurl'), 'trim|xss_clean|valid_url');
             $this->form_validation->set_rules('f[validfrom]', lang('rr_validfrom'), 'trim|xss_clean');
             $this->form_validation->set_rules('f[validto]', lang('rr_validto'), 'trim|xss_clean');
-            $this->form_validation->set_rules('f[description]', lang('rr_description'), 'trim|xss_clean');
+            //$this->form_validation->set_rules('f[description]', lang('rr_description'), 'trim|xss_clean');
             if (array_key_exists('lname', $y['f']))
             {
                 foreach ($y['f']['lname'] as $k => $v)
@@ -246,7 +246,7 @@ class Entityedit extends MY_Controller {
             }
             if (array_key_exists('srv', $y['f']))
             {
-                if(!array_key_exists('SingleSignOnService', $y['f']['srv']) && ($this->type === 'IDP' or $this->type === 'BOTH'))
+                if(!array_key_exists('SingleSignOnService', $y['f']['srv']) )
                 {
                     $y['f']['srv']['SingleSignOnService'] = array();
                 }
@@ -571,6 +571,15 @@ class Entityedit extends MY_Controller {
         {
             $data['prvurl']['idpsso'] = array();
         }
+
+        if(isset($data['coc']))
+        {
+            $data['coc'] = array_filter($data['coc']);
+        }
+        else
+        {
+            $data['coc'] = array();
+        }
         if(isset($data['prvurl']['spsso']))
         {
             $data['prvurl']['spsso'] = array_filter($data['prvurl']['spsso']);
@@ -728,13 +737,13 @@ class Entityedit extends MY_Controller {
         $data['error_messages2'] = $this->tmp_error;
         $this->session->set_flashdata('entformerror', '');
 
-        $menutabs[] = array('id' => 'general', 'value' => ''.lang('tabgeneral').'', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
-        $menutabs[] = array('id' => 'dataprotection', 'value' => ''.lang('tabprivacy').'', 'form' => $this->form_element->NgeneratePrivacy($ent, $entsession));
-        $menutabs[] = array('id' => 'protocols', 'value' => ''.lang('tabprotonameid').'', 'form' => $this->form_element->NgenerateProtocols($ent, $entsession));
-        $menutabs[] = array('id' => 'services', 'value' => ''.lang('tabsrvs').'', 'form' => $this->form_element->NgenerateServiceLocationsForm($ent, $entsession));
-        $menutabs[] = array('id' => 'certificates', 'value' => ''.lang('tabcerts').'', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
+        $menutabs[] = array('id' => 'organization', 'value' => ''.lang('taborganization').'', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
         $menutabs[] = array('id' => 'contacts', 'value' => ''.lang('tabcnts').'', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => ''.lang('tabuii').'', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
+        $menutabs[] = array('id' => 'tabsaml', 'value' => ''.lang('tabsaml').'', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
+    //    $menutabs[] = array('id' => 'privacy', 'value' => ''.lang('tabprivacy').'', 'form' => $this->form_element->NgeneratePrivacy($ent, $entsession));
+        $menutabs[] = array('id' => 'certificates', 'value' => ''.lang('tabcerts').'', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
+        $menutabs[] = array('id' => 'entcategories', 'value' => ''.lang('tabentcategories').'', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
         $menutabs[] = array('id' => 'staticmetadata', 'value' => ''.lang('tabstaticmeta').'', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
         $menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
 

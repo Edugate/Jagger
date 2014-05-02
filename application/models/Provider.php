@@ -141,7 +141,11 @@ class Provider {
     protected $lprivacyurl;
 
     /**
-     * @ManyToOne(targetEntity="Coc",inversedBy="provider")
+     * @ManyToMany(targetEntity="Coc",inversedBy="provider")
+     * @JoinTable(name="Provider_Coc",
+     *      joinColumns={@JoinColumn(name="provider_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="coc_id", referencedColumnName="id")}
+     *      )
      */
     protected $coc;
    
@@ -324,6 +328,7 @@ class Provider {
         $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->extend = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->coc = new \Doctrine\Common\Collections\ArrayCollection();
         $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
         $this->is_approved = TRUE;
         $this->hidepublic = FALSE;
@@ -751,18 +756,6 @@ class Provider {
         return $this;
     }
 
-    public function setCoc($coc = NULL)
-    {
-        if (empty($coc))
-        {
-            $this->coc = NULL;
-        }
-        else
-        {
-            $this->coc = $coc;
-        }
-        return $this;
-    }
 
     public function setLocalDisplayName($name = NULL)
     {
@@ -1146,7 +1139,10 @@ class Provider {
         }
         foreach ($ex as $e)
         {
-            if ($e->getElement() === $elementName && $e->getType() === $type && $e->getNameSpace() === 'mdui')
+            $origElementName = $e->getElement();
+            $origType = $e->getType();
+            $origNameSpace = $e->getNameSpace();
+            if ($origElementName === $elementName && $origType === $type && $origNameSpace === 'mdui')
             {
                 $value = $e->getElementValue();
                 $t = $e->getAttributes();
@@ -1373,6 +1369,20 @@ class Provider {
         return $this->serviceLocations;
     }
 
+    public function removeCoc(Coc $coc)
+    {
+       $this->getCoc()->removeElement($coc);
+       $coc->getProviders()->removeElement($this);
+       return $this;
+    }
+
+    public function setCoc(Coc $coc)
+    {
+      $this->getCoc()->add($coc);
+      $coc->getProviders()->add($this);
+      return $this;
+    }
+
     public function setStatic($static)
     {
         if ($static === true)
@@ -1504,7 +1514,7 @@ class Provider {
         $this->setHomeUrl($homeurl);
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
-        $this->setDescription($provider->getDescription());
+        //$this->setDescription($provider->getDescription());
         $smetadata = $provider->getStaticMetadata();
         if (!empty($smetadata))
         {
@@ -2032,7 +2042,7 @@ class Provider {
               }
            }
         }
-        if(count($result) == 0 && !isset($result['en']))
+        if(count($result) == 0 )
         {
              if($name === 'DisplayName')
              {
@@ -2049,10 +2059,10 @@ class Provider {
              }
              elseif($name === 'Description')
              {
-                $desc = $this->getDescription();
+                //$desc = $this->getDescription();
                 if(!empty($desc))
                 {
-                   $result['en'] = $desc;
+                   $result['en'] = 'no description';
                 }
              }
 
@@ -2279,6 +2289,8 @@ class Provider {
     }
 
 
+    
+
     public function getLocalDescriptionsToArray($type)
     {
         $result = array();
@@ -2367,7 +2379,6 @@ class Provider {
         }
 
         $en_displayname = FALSE;
-        $en_description = FALSE;
         $en_informationurl = FALSE;
         $en_privacyurl = FALSE;
         $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:UIInfo');
@@ -2402,10 +2413,6 @@ class Provider {
                         $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:Description');
                         $dnode->setAttribute('xml:lang', '' . $lang['xml:lang'] . '');
                         $dnode->appendChild($e->ownerDocument->createTextNode($dm->getElementValue()));
-                        if ($lang['xml:lang'] === 'en')
-                        {
-                            $en_description = TRUE;
-                        }
                         $e->appendChild($dnode);
                     }
                 }
@@ -2477,18 +2484,6 @@ class Provider {
                 }
             }
         }
-        if ($en_description !== TRUE)
-        {
-            $gd = $this->getDescription();
-            if (!empty($gd))
-            {
-               $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:Description');
-               $dnode->setAttribute('xml:lang', 'en');
-               $dnode->appendChild($e->ownerDocument->createTextNode($gd));
-               $e->appendChild($dnode);
-            }
-        }
-
 
         if ($en_displayname !== TRUE)
         {
@@ -2634,7 +2629,7 @@ class Provider {
         $r['privacyurl'] = $this->getPrivacyUrl();
         $r['validfrom'] = $this->getValidFrom();
         $r['validto'] = $this->getValidTo();
-        $r['description'] = $this->getDescription();
+        //$r['description'] = $this->getDescription();
         $r['is_approved'] = $this->getApproved();
         $r['is_active'] = $this->getActive();
         $r['is_locked'] = $this->getLocked();
@@ -2724,7 +2719,7 @@ class Provider {
         $this->setPrivacyUrl($r['privacyurl']);
         $this->setValidFrom($r['validfrom']);
         $this->setValidTo($r['validto']);
-        $this->setDescription($r['description']);
+       // $this->setDescription($r['description']);
         $this->setApproved($r['is_approved']);
         $this->setActive($r['is_active']);
         //$this->setLocked($r['is_locked']);
@@ -3570,6 +3565,32 @@ class Provider {
            }
         }
 
+        $cocs = $this->getCoc();
+        $entityCategories = array();
+        foreach($cocs as $k=>$v)
+        {
+           $cocsenabled = $v->getAvailable();
+           $cocstype = $v->getType();
+           if($cocsenabled === TRUE && $cocstype === 'entcat')
+           {
+              $entityCategories[] = $v;
+           }
+        }
+        if (count($entityCategories) > 0)
+        {
+            $AttributesGroup_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:attribute', 'mdattr:EntityAttributes');
+            $EntExtension_Node->appendChild($AttributesGroup_Node);
+            $Attribute_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:Attribute');
+            $Attribute_Node->setAttribute('Name', 'http://macedir.org/entity-category');
+            $Attribute_Node->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+            $AttributesGroup_Node->appendChild($Attribute_Node);
+            foreach($entityCategories as $v)
+            {
+               $Attribute_Value = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:AttributeValue');
+               $Attribute_Value->appendChild($Attribute_Node->ownerDocument->createTextNode($v->getUrl()));
+               $Attribute_Node->appendChild($Attribute_Value);
+            }
+        }
 
         if ($type !== 'SP')
         {
@@ -3592,24 +3613,7 @@ class Provider {
         }
         if ($type !== 'IDP')
         {
-            $dataprotection = $this->getCoc();
 
-            if (!empty($dataprotection))
-            {
-                $dataprotenabled = $dataprotection->getAvailable();
-                if ($dataprotenabled === TRUE)
-                {
-                    $AttributesGroup_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:attribute', 'mdattr:EntityAttributes');
-                    $EntExtension_Node->appendChild($AttributesGroup_Node);
-                    $Attribute_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:Attribute');
-                    $Attribute_Node->setAttribute('Name', 'http://macedir.org/entity-category');
-                    $Attribute_Node->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-                    $AttributesGroup_Node->appendChild($Attribute_Node);
-                    $Attribute_Value = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:AttributeValue');
-                    $Attribute_Value->appendChild($Attribute_Node->ownerDocument->createTextNode($dataprotection->getUrl()));
-                    $Attribute_Node->appendChild($Attribute_Value);
-                }
-            }
             $SSODesc_Node = $this->getSPSSODescriptorToXML($EntityDesc_Node, $options);
             if (!empty($SSODesc_Node))
             {
@@ -3692,10 +3696,6 @@ class Provider {
             $ldesc = array();
             foreach ($ext['desc'] as $k => $p)
             {
-                if ($p['lang'] === 'en')
-                {
-                    $this->setDescription($p['val']);
-                }
                 $ldesc[$p['lang']] = $p['val'];
                 $extdesc = new ExtendMetadata;
                 $extdesc->setNamespace('mdui');

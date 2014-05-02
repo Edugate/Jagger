@@ -441,26 +441,35 @@ class Detail extends MY_Controller {
         }
         $d[++$i]['name'] = lang('rr_regpolicy');
         $d[$i]['value'] = $regpolicy_value;
-        $d[++$i]['name'] = lang('rr_description'). ' <div class="dhelp">'.lang('defaultdesc').'</div>';
-        $d[$i]['value'] = $ent->getDescription();
+   //     $d[++$i]['name'] = lang('rr_description'). ' <div class="dhelp">'.lang('defaultdesc').'</div>';
+   //     $d[$i]['value'] = $ent->getDescription();
 
         $d[++$i]['name'] = lang('rr_defaultprivacyurl');
         $d[$i]['value'] = $ent->getPrivacyUrl();
-        $d[++$i]['name'] = lang('rr_coc');
+        $d[++$i]['name'] = lang('rr_entcats');
         $coc = $ent->getCoc();
-        if (!empty($coc))
+        if($coc->count()>0)
         {
-            $cocvalue = $coc->getName() . '<br />' . anchor($coc->getUrl());
-            if (!$coc->getAvailable())
+            $a = array();
+            foreach($coc as $k=>$v)
             {
-                $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
+              $coctype = $v->getType();
+              if($coctype  === 'entcat')
+              {
+                 $cocvalue = $v->getName() . '<br />' . anchor($v->getUrl());
+                 if (!$v->getAvailable())
+                 {
+                    $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
+                 }
+                 $a[] = $cocvalue;
+              }
             }
+            $d[$i]['value'] = implode('<br />',$a);
         }
         else
         {
-            $cocvalue = lang('rr_notset');
+             $d[$i]['value'] = lang('rr_notset');
         }
-        $d[$i]['value'] = $cocvalue;
 
         $d[++$i]['name'] = lang('rr_validfromto'). ' <div class="dhelp">'.lang('d_validfromto').'</div>';
         if ($ent->getValidFrom())
