@@ -110,12 +110,7 @@ class Form_element {
             $t_regdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
             $origregdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
         }
-        $t_homeurl = $ent->getHomeUrl();
         $t_helpdeskurl = $ent->getHelpdeskUrl();
-        if (empty($t_homeurl))
-        {
-            $t_homeurl = $t_helpdeskurl;
-        }
 
        // $t_validfrom = '';
        // $origvalidfrom = '';
@@ -145,10 +140,6 @@ class Form_element {
             {
                 $t_regdate = $ses['registrationdate'];
             }
-            if (array_key_exists('homeurl', $ses))
-            {
-                $t_homeurl = $ses['homeurl'];
-            }
          /**
             if (array_key_exists('validrom', $ses))
             {
@@ -169,7 +160,6 @@ class Form_element {
 
         $f_regauthority = set_value('f[regauthority]', $t_regauthority);
         $f_regdate = set_value('f[registrationdate]', $t_regdate);
-        $f_homeurl = set_value('f[homeurl]', $t_homeurl);
       //  $f_validfrom = set_value('f[validfrom]', $t_validfrom);
       //  $f_validto = set_value('f[validto]', $t_validto);
        // $f_description = set_value('f[description]', $t_description);
@@ -186,13 +176,6 @@ class Form_element {
         } else
         {
             $regdate_notice = '';
-        }
-        if ($f_homeurl != $ent->getHomeUrl())
-        {
-            $homeurl_notice = 'notice';
-        } else
-        {
-            $homeurl_notice = '';
         }
       /**
         if ($f_validfrom != $origvalidfrom)
@@ -533,8 +516,6 @@ class Form_element {
         /**
          * end regpolicy
          */
-        $result[] = '';
-        $result[] = form_label(lang('rr_homeurl'), 'f[homeurl]') . form_input(array('id' => 'f[homeurl]', 'class' => $homeurl_notice, 'name' => 'f[homeurl]', 'value' => $f_homeurl));
 /**
         $result[] = form_label(lang('rr_validfrom'), 'f[validfrom]') . form_input(array(
                     'name' => 'f[validfrom]',
@@ -557,7 +538,6 @@ class Form_element {
                     'value' => $f_description,
         ));
         */
-        $result[] = '';
         return $result;
     }
 

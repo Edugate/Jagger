@@ -289,8 +289,6 @@ class J_queue
             $provider[$i]['name'] = lang('type');
             $provider[$i++]['value'] = lang('serviceprovider');
         }
-        $provider[$i]['name'] = lang('rr_homeurl');
-        $provider[$i++]['value'] = $objData->getHomeUrl();
 
         $provider[$i]['name'] = lang('rr_helpdeskurl');
         $provider[$i++]['value'] = $objData->getHelpdeskUrl();

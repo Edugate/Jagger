@@ -359,7 +359,6 @@ class Providers
         $rsm->addFieldResult('u', 'name', 'name');
         $rsm->addFieldResult('u', 'entityid', 'entityid');
         $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
-        $rsm->addFieldResult('u', 'homeurl', 'homeurl');
         $rsm->addFieldResult('u', 'is_active', 'is_active');
         $rsm->addFieldResult('u', 'is_approved', 'is_approved');
         $rsm->addFieldResult('u', 'validfrom', 'validfrom');
@@ -367,10 +366,10 @@ class Providers
         $rsm->addFieldResult('u', 'displayname', 'displayname');
         $rsm->addFieldResult('u', 'contacts', 'contacts');
         if (!empty($local) && $local === TRUE) {
-            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
+            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
         }
         else {
-            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
+            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
         }
         $query->setParameter(1, 'IDP');
         $query->setParameter(2, 'BOTH');
@@ -389,14 +388,13 @@ class Providers
         $rsm->addFieldResult('u', 'name', 'name');
         $rsm->addFieldResult('u', 'entityid', 'entityid');
         $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
-        $rsm->addFieldResult('u', 'homeurl', 'homeurl');
         $rsm->addFieldResult('u', 'is_active', 'is_active');
         $rsm->addFieldResult('u', 'is_approved', 'is_approved');
         $rsm->addFieldResult('u', 'validfrom', 'validfrom');
         $rsm->addFieldResult('u', 'validto', 'validto');
         $rsm->addFieldResult('u', 'displayname', 'displayname');
         $rsm->addFieldResult('u', 'contacts', 'contacts');
-        $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' AND hidepublic = \'0\' AND is_active = \'1\' ORDER BY name ASC', $rsm);
+        $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' AND hidepublic = \'0\' AND is_active = \'1\' ORDER BY name ASC', $rsm);
         $query->setParameter(1, 'IDP');
         $query->setParameter(2, 'BOTH');
         $this->providers = $query->execute();
@@ -414,7 +412,6 @@ class Providers
         $rsm->addFieldResult('u', 'name', 'name');
         $rsm->addFieldResult('u', 'entityid', 'entityid');
         $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
-        $rsm->addFieldResult('u', 'homeurl', 'homeurl');
         $rsm->addFieldResult('u', 'displayname', 'displayname');
         $rsm->addFieldResult('u', 'is_active', 'is_active');
         $rsm->addFieldResult('u', 'is_approved', 'is_approved');
@@ -422,12 +419,12 @@ class Providers
         $rsm->addFieldResult('u', 'validto', 'validto');
         $rsm->addFieldResult('u', 'contacts', 'contacts');
         if (!empty($local) && $local === TRUE) {
-            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
+            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
             $query->setParameter(1, 'SP');
             $query->setParameter(2, 'BOTH');
         }
         else {
-            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
+            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
             $query->setParameter(1, 'SP');
             $query->setParameter(2, 'BOTH');
         }
@@ -446,14 +443,13 @@ class Providers
         $rsm->addFieldResult('u', 'name', 'name');
         $rsm->addFieldResult('u', 'entityid', 'entityid');
         $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
-        $rsm->addFieldResult('u', 'homeurl', 'homeurl');
         $rsm->addFieldResult('u', 'displayname', 'displayname');
         $rsm->addFieldResult('u', 'is_active', 'is_active');
         $rsm->addFieldResult('u', 'is_approved', 'is_approved');
         $rsm->addFieldResult('u', 'validfrom', 'validfrom');
         $rsm->addFieldResult('u', 'validto', 'validto');
         $rsm->addFieldResult('u', 'contacts', 'contacts');
-        $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,homeurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' AND hidepublic = \'0\' AND is_active = \'1\' ORDER BY name ASC', $rsm);
+        $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' AND hidepublic = \'0\' AND is_active = \'1\' ORDER BY name ASC', $rsm);
         $query->setParameter(1, 'SP');
         $query->setParameter(2, 'BOTH');
         $this->providers = $query->execute();

@@ -88,19 +88,6 @@ class Entityedit extends MY_Controller {
                $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
                $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
             }
-            if($staticisdefault)
-            {
-                $this->form_validation->set_rules('f[homeurl]', lang('rr_homeurl'), 'trim|xss_clean|valid_url');
-                //$this->form_validation->set_rules('f[displayname]', lang('rr_displayname'), 'trim|min_length[5]|max_length[255]|xss_clean');
-                //$this->form_validation->set_rules('f[helpdeskurl]', lang('rr_helpdeskurl'), 'trim|xss_clean|valid_url');
-            }
-            else
-            {
-                $this->form_validation->set_rules('f[homeurl]', lang('rr_homeurl'), 'trim|required|xss_clean|valid_url');
-                //$this->form_validation->set_rules('f[displayname]', lang('rr_displayname'), 'trim|required|min_length[5]|max_length[255]|xss_clean');
-                //$this->form_validation->set_rules('f[helpdeskurl]', lang('rr_helpdeskurl'), 'trim|required|xss_clean|valid_url');
-
-            }
             
 
 

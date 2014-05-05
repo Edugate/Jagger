@@ -139,7 +139,6 @@ class Idp_registration extends MY_Controller {
             $idp->setEntityId($this->input->post('entityid'));
             $idp->setDefaultState();
             $idp->setHelpdeskUrl($this->input->post('helpdeskurl'));
-            $idp->setHomeUrl($this->input->post('homeurl'));
             $idpssoscope = $this->input->post('idpssoscope'); 
             if(empty($idpssoscope))
             {
@@ -305,7 +304,6 @@ class Idp_registration extends MY_Controller {
         $this->form_validation->set_rules('contact_mail', 'Contact email', 'trim|required|max_length[255]|valid_email');
         $this->form_validation->set_rules('helpdeskurl', lang('rr_homeorganisationurl'), 'trim|required|valid_url|xss_clean');
         $this->form_validation->set_rules('idpssoscope', 'Scope', 'trim|required|xss_clean');
-        $this->form_validation->set_rules('homeurl', 'Home Url', 'trim|required|valid_url[homeurl]');
         $this->form_validation->set_rules('privacyurl', 'Privacy Statement URL', 'trim|valid_url');
         $this->form_validation->set_rules('nameids', 'NameId(s)', 'trim|xss_clean');
         return $this->form_validation->run();

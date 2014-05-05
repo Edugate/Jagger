@@ -234,7 +234,6 @@ $lang['rr_cnt_type_support']        = 'Pagalbos';
 $lang['rr_cnt_type_bill']           = 'Finansinis';
 $lang['rr_cnt_type_other']          = 'Kitas';
 $lang['rr_homeorganisationurl']     = 'Institucijos URL';
-$lang['rr_homeurl']                 = 'Home URL';
 $lang['rr_submitwait']              = 'Pateikite ir laukite patvirtinimo';
 $lang['rr_detailsfor']              = 'Details for ';
 $lang['rr_displayname']             = 'Rodomas vardas';

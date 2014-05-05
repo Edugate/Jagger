@@ -463,7 +463,6 @@ class Awaiting extends MY_Controller {
                         {
                             $idp->setNameId();
                             $idp->setAsLocal();
-                            $idp->setHomeUrl($idp->getHelpdeskUrl());
                             $fed = $idp->getFederations()->get(0);
                             if (!empty($fed))
                             {

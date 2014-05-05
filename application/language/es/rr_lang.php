@@ -178,7 +178,6 @@ $lang['rr_cnt_type_other'] = 'Otro';
 
 
 $lang['rr_homeorganisationurl'] = 'Dirección de la Organización';
-$lang['rr_homeurl'] = 'Dirección principal';
 
 
 $lang['rr_submitwait'] = 'Enviar y esperar por aprobación';

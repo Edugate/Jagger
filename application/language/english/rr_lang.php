@@ -428,7 +428,6 @@ $lang['rr_cnt_type_support']        = 'Support';
 $lang['rr_cnt_type_bill']           = 'Billing';
 $lang['rr_cnt_type_other']          = 'Other';
 $lang['rr_homeorganisationurl']     = 'HomeOrg URL';
-$lang['rr_homeurl']                 = 'Home URL';
 $lang['rr_submitwait']              = 'Submit and wait for approval';
 $lang['rr_detailsfor']              = 'Details for ';
 $lang['rr_displayname']             = 'Display Name';

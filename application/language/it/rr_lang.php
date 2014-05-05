@@ -398,7 +398,6 @@ $lang['rr_cnt_type_support'] ="Supporto";
 $lang['rr_cnt_type_bill'] ="Commerciale";
 $lang['rr_cnt_type_other'] ="Altro";
 $lang['rr_homeorganisationurl'] ="URL dell’Organizzazione";
-$lang['rr_homeurl'] ="URL della Home";
 $lang['rr_submitwait'] ="Invia e attendi l’approvazione";
 $lang['rr_detailsfor'] ="Dettagli per";
 $lang['rr_displayname'] ="Nome visualizzato";
