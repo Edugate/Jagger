@@ -2358,12 +2358,10 @@ $("button#parsemetadataidp").click(function(){
     if($helpdeskurl === null)
     {
        $("#helpdeskurl").val("");
-       $("#homeurl").val("");
     }
     else
     {
        $("#helpdeskurl").val($helpdeskurl.text());
-       $("#homeurl").val($helpdeskurl.text());
     }
 
     $("#nameids").val($.trim($nameids));
@@ -2408,7 +2406,6 @@ $("button#parsemetadatasp").click(function() {
     $("#resource").val($orgname.text());
     $("#descresource").val($orgdisname.text());
     $("#helpdeskurl").val($helpdeskurl.text());
-    $("#homeurl").val($helpdeskurl.text());
     var rname = "";
     var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
     var defaultacs = false;

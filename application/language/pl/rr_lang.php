@@ -242,7 +242,6 @@ $lang['rr_cnt_type_support'] ="Wsparcie";
 $lang['rr_cnt_type_bill'] ="Billing";
 $lang['rr_cnt_type_other'] ="Inne";
 $lang['rr_homeorganisationurl'] ="Adres URL strony domowej";
-$lang['rr_homeurl'] ="Strona domowa";
 $lang['rr_submitwait'] ="Wyslij i czekaj na akceptację";
 $lang['rr_detailsfor'] ="Szczegóły dla";
 $lang['rr_displayname'] ="Nazwa wyświetlana";

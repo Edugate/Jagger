@@ -496,9 +496,6 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = '<span class="lbl lbl-alert">' . $validfrom . ' <b>--</b> ' . $validto . '</span>';
         }
-        $d[++$i]['name'] = lang('rr_homeurl').' <div class="dhelp">'.lang('optinforpurposeonly').'</div>';
-
-        $d[$i]['value'] = $ent->getHomeUrl() . ' <br /><small>' . lang('rr_notincludedmetadata') . '</small>';
         $result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
 
 

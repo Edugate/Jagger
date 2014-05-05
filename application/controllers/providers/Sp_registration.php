@@ -43,7 +43,6 @@ class Sp_registration extends MY_Controller
             $contact_phone = $this->input->post('contact_phone');
             $contact_mail = $this->input->post('contact_mail');
             $helpdeskurl = $this->input->post('helpdeskurl');
-            $homeurl = $this->input->post('homeurl');
             $entityid = $this->input->post('entityid');
             $resource = $this->input->post('resource');
             $descresource = $this->input->post('descresource');
@@ -77,7 +76,6 @@ class Sp_registration extends MY_Controller
             $newSP->setAsSP();
             $newSP->setDefaultState();
             $newSP->setHelpdeskUrl($helpdeskurl);
-            $newSP->setHomeUrl($homeurl);
 
             if (!empty($federation)) {
                 $ispublic = $federation->getPublic();
@@ -302,7 +300,6 @@ class Sp_registration extends MY_Controller
         $this->form_validation->set_rules('descresource', '' . lang('rr_descriptivename') . '', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('entityid', '' . lang('rr_entityid') . '', 'required|trim|no_white_spaces|min_length[3]|max_length[255]|entity_unique[entityid]');
         $this->form_validation->set_rules('helpdeskurl', '' . lang('rr_helpdeskurl') . '', 'required|valid_url|min_length[6]|max_length[255]');
-        $this->form_validation->set_rules('homeurl', '' . lang('rr_homeurl') . '', 'required|valid_url|min_length[6]|max_length[255]');
         $this->form_validation->set_rules('contact_name', '' . lang('rr_contactname') . '', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('contact_mail', '' . lang('rr_contactemail') . '', 'required|min_length[3]|max_length[255]|valid_email');
         $this->form_validation->set_rules('contact_phone', '' . lang('rr_contactphone') . '', 'numeric');

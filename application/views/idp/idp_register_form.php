@@ -97,15 +97,6 @@ echo form_input(array(
     'class' => 'required',
 ));
 echo '</li>';
-echo '<li>' . form_label(lang('rr_homeurl'), 'homeurl');
-echo form_input(array(
-    'id' => 'homeurl',
-    'name' => 'homeurl',
-    'value' => set_value('homeurl'),
-    'max-length' => 255,
-    'class' => 'required',
-));
-echo '</li>';
 
 echo '</ol>';
 ?>

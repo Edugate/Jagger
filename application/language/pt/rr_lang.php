@@ -234,7 +234,6 @@ $lang['rr_cnt_type_support'] ="Suporte";
 $lang['rr_cnt_type_bill'] ="Billing";
 $lang['rr_cnt_type_other'] ="Outro";
 $lang['rr_homeorganisationurl'] ="URL da HomeOrg";
-$lang['rr_homeurl'] ="Home URL";
 $lang['rr_submitwait'] ="Submeta o pedido e aguarde pela respetiva aprovação";
 $lang['rr_detailsfor'] ="Detalhes para";
 $lang['rr_displayname'] ="Display Name";

@@ -320,14 +320,6 @@ class Providerupdater {
                }
             }
         }
-        if (array_key_exists('homeurl', $ch))
-        {
-            if($ent->getHomeUrl() !== $ch['homeurl'])
-            {
-               $m['HomeURL'] = array('before'=>$ent->getHomeUrl(),'after'=>$ch['homeurl']);
-            }
-            $ent->setHomeUrl($ch['homeurl']);
-        }
         if (array_key_exists('lhelpdesk', $ch) && is_array($ch['lhelpdesk']))
         {
             $origs = $ent->getHelpdeskUrlLocalized();

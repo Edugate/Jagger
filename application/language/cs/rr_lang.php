@@ -382,7 +382,6 @@ $lang['rr_cnt_type_support'] ="Podpora";
 $lang['rr_cnt_type_bill'] ="Účtování";
 $lang['rr_cnt_type_other'] ="Ostatní";
 $lang['rr_homeorganisationurl'] ="URL domovské organizace";
-$lang['rr_homeurl'] ="Domovská URL";
 $lang['rr_submitwait'] ="Odeslat a čekat na schválení";
 $lang['rr_detailsfor'] ="Detaily pro";
 $lang['rr_displayname'] ="Display Name";

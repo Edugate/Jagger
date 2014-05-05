@@ -111,10 +111,6 @@ class Provider {
      */
     protected $scope;
 
-    /**
-     * @Column(type="string", length=255, nullable=true)
-     */
-    protected $homeurl;
 
     /**
      * helpdeskurl is used in metadata, it can be http(s) or mailto
@@ -350,11 +346,6 @@ class Provider {
         {
             $differ['Displayname']['before'] = $provider->getDisplayName();
             $differ['Displayname']['after'] = $this->getDisplayName();
-        }
-        if ($provider->getHomeUrl() != $this->getHomeUrl())
-        {
-            $differ['Home URL']['before'] = $provider->getHomeUrl();
-            $differ['Home URL']['after'] = $this->getHomeUrl();
         }
         if ($provider->getHelpdeskUrl() != $this->getHelpdeskUrl())
         {
@@ -1031,14 +1022,6 @@ class Provider {
         }
     }
 
-    /**
-     * set homeurl
-     */
-    public function setHomeUrl($url)
-    {
-        $this->homeurl = $url;
-        return $this;
-    }
 
     public function setPrivacyUrl($url = null)
     {
@@ -1506,12 +1489,6 @@ class Provider {
         }
         $this->setType($provider->getType());
         $this->setHelpdeskUrl($provider->getHelpdeskUrl());
-        $homeurl = $provider->getHomeUrl();
-        if (empty($homeurl))
-        {
-            $homeurl = $provider->getHelpdeskUrl();
-        }
-        $this->setHomeUrl($homeurl);
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
         //$this->setDescription($provider->getDescription());
@@ -2168,10 +2145,6 @@ class Provider {
         }
     }
 
-    public function getHomeUrl()
-    {
-        return $this->homeurl;
-    }
 
     public function getHelpdeskUrl()
     {
@@ -2624,7 +2597,6 @@ class Provider {
         $r['type'] = $this->getType();
         $r['scope'] = $this->getScope('idpsso');
         $r['aascope'] = $this->getScope('aa');
-        $r['homeurl'] = $this->getHomeUrl();
         $r['helpdeskurl'] = $this->getHelpdeskUrl();
         $r['privacyurl'] = $this->getPrivacyUrl();
         $r['validfrom'] = $this->getValidFrom();
@@ -2714,7 +2686,6 @@ class Provider {
         $this->setType($r['type']);
         $this->setScope('idpsso',$r['scope']);
         $this->setScope('aa',$r['aascope']);
-        $this->setHomeUrl($r['homeurl']);
         $this->setHelpdeskUrl($r['helpdeskurl']);
         $this->setPrivacyUrl($r['privacyurl']);
         $this->setValidFrom($r['validfrom']);
