@@ -109,9 +109,11 @@ class Metadata extends MY_Controller
             foreach ($namespaces as $key => $value) {
                 $xpath->registerNamespace($key, $value);
             }
+            $publisher = $federation->getPublisher();
             $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
             $Entities_Node->setAttribute('Name', $federation->getUrn());
             $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+            $creationInstant = $validfor->format('Y-m-d\TH:i:s\Z');
             $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
             $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
             $Entities_Node->setAttribute('validUntil', $validuntil);
@@ -122,6 +124,16 @@ class Metadata extends MY_Controller
             }
             $idsuffix = $validfor->format('YmdHis');
             $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
+            if(!empty($publisher))
+            {
+               $extensionNode = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
+               $publicationNode = $docXML->createElementNS('urn:oasis:names:tc:SAML:metadata:rpi', 'mdrpi:PublicationInfo');
+               $publicationNode->setAttribute('creationInstant',$creationInstant);
+               $publicationNode->setAttribute('publisher', $publisher);
+               $extensionNode->appendChild($publicationNode);
+               $Entities_Node->appendChild($extensionNode);
+
+            }
 
             /**
              * @todo ValidUntil

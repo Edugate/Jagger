@@ -670,6 +670,7 @@ $lang['rhelp_multargvalinputseparator'] = 'Multiple args/vals. The separator amo
 $lang['rhelp_multiplvalssep'] = 'Multipe values seperated with %s';
 $lang['rr_fed_name']                = 'Federation name';
 $lang['rr_fed_urn']                 = 'Federation URI';
+$lang['rr_fed_publisher']           = 'Publisher';
 $lang['rr_fed_cntidps_list']        = 'Contact list of idp members';
 $lang['rr_fed_cntisps_list']        = 'Contact list of sp members';
 $lang['rr_fed_cnt_list']            = 'Contact list of all federation members';
