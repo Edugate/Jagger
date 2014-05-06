@@ -324,6 +324,7 @@ class Manage extends MY_Controller
         }
         $data['result']['general'][] = array(lang('rr_fed_name'), $federation->getName());
         $data['result']['general'][] = array(lang('rr_fed_urn'), $federation->getUrn());
+        $data['result']['general'][] = array(lang('rr_fed_publisher'), $federation->getPublisher());
         $data['result']['general'][] = array(lang('rr_fed_desc'), $federation->getDescription());
         $data['result']['general'][] = array(lang('rr_fed_tou'), $federation->getTou());
         $data['result']['general'][] = array(lang('rr_fedownercreator'), $federation->getOwner());

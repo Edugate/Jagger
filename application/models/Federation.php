@@ -53,6 +53,12 @@ class Federation
      */
     protected $urn;
 
+
+    /**
+     * @Column(type="string", length=512, nullable=true, unique=false)
+     */
+     protected $publisher;
+
     /**
      * @Column(type="string", length=255, nullable=true)
      */
@@ -170,6 +176,19 @@ class Federation
         return $this;
     }
 
+    public function setPublisher($publisher = null)
+    {
+        if(!empty($publisher))
+        {
+            $this->publisher = trim($publisher);
+        }
+        else
+        {
+           $this->publisher = null;
+        }
+        return $this;
+    }
+
     public function setDescription($description = null)
     {
         $this->description = $description;
@@ -206,6 +225,8 @@ class Federation
         }
         return $this;
     }
+
+   
 
     public function setPublic($is_public = null)
     {
@@ -485,6 +506,11 @@ class Federation
         return $this->owner;
     }
 
+    public function getPublisher()
+    {
+        return $this->publisher;
+    }
+
     public function importFromArray(array $r)
     {
        $this->setName($r['name']);
@@ -495,6 +521,11 @@ class Federation
        $this->setProtected($r['is_protected']); 
        $this->setLocal($r['is_local']);
        $this->setTou($r['tou']);
+       if(isset($r['publisher']))
+       {
+          $this->setPublisher($r['publisher']);
+       }
+       return $this;
     }
     public function convertToArray()
     {

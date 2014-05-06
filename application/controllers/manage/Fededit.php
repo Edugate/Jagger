@@ -43,6 +43,7 @@ class Fededit extends MY_Controller {
         $this->form_validation->set_rules('incattrs',lang('rr_include_attr_in_meta'),'trim|xss_clean|max_length[10]');
         $this->form_validation->set_rules('ispublic',lang('rr_isfedpublic'),'trim|xss_clean|max_length[10]');
         $this->form_validation->set_rules('lexport',lang('rr_lexport_enabled'),'trim|xss_clean|max_length[10]');
+        $this->form_validation->set_rules('publisher',lang('rr_fed_publisher'),'trim|xss_clean|max_length[500]');
         return $this->form_validation->run();
     }
 
@@ -78,6 +79,7 @@ class Fededit extends MY_Controller {
             $incattrs = $this->input->post('incattrs');
             $lexport = $this->input->post('lexport');
             $ispublic = $this->input->post('ispublic');
+            $publisher = $this->input->post('publisher');
             if ($infedid != $fedid)
             {
                 show_error('Incorrect post', 403);
@@ -108,6 +110,7 @@ class Fededit extends MY_Controller {
             {
                 $fed->setLocalExport(FALSE);
             }
+            $fed->setPublisher($publisher);
             $fed->setDescription($indesc);
             $fed->setTou($intou);
             $this->em->persist($fed);
