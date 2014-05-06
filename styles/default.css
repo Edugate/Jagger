@@ -2782,7 +2782,7 @@ form textarea {
 }
 form ol li {
   background: #e2e9f6;
-  border-color: #e3ebc3;
+  border-color: transparent;
   border-style: solid;
   border-width: 1px;
   -webkit-border-radius: 2px 2px;
