@@ -4126,10 +4126,10 @@ class Form_element {
     {
         $r = form_fieldset('');
         $r .= '<ol>';
-        $r .= '<li>' . form_label(lang('coc_enabled'), 'cenabled') . form_checkbox('cenabled', 'accept') . '</li>';
-        $r .= '<li>' . form_label(lang('coc_shortname'), 'name') . form_input('name', set_value('name')) . '</li>';
-        $r .= '<li>' . form_label(lang('coc_url'), 'url') . form_input('url', set_value('url')) . '</li>';
-        $r .= '<li>' . form_label(lang('coc_description'), 'description') . form_textarea('description', set_value('description')) . '</li>';
+        $r .= '<li>' . form_label(lang('entcat_enabled'), 'cenabled') . form_checkbox('cenabled', 'accept') . '</li>';
+        $r .= '<li>' . form_label(lang('entcat_shortname'), 'name') . form_input('name', set_value('name')) . '</li>';
+        $r .= '<li>' . form_label(lang('entcat_url'), 'url') . form_input('url', set_value('url')) . '</li>';
+        $r .= '<li>' . form_label(lang('entcat_description'), 'description') . form_textarea('description', set_value('description')) . '</li>';
         $r .= '</ol>';
         $r .= form_fieldset_close();
         return $r;
@@ -4139,10 +4139,10 @@ class Form_element {
     {
         $r = form_fieldset('');
         $r .= '<ol>';
-        $r .= '<li>' . form_label(lang('coc_enabled'), 'cenabled') . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</li>';
-        $r .= '<li>' . form_label(lang('coc_shortname'), 'name') . form_input('name', set_value('name', $coc->getName())) . '</li>';
-        $r .= '<li>' . form_label(lang('coc_url'), 'url') . form_input('url', set_value('url', $coc->getUrl())) . '</li>';
-        $r .= '<li>' . form_label(lang('coc_description'), 'description') . form_textarea('description', set_value('description', $coc->getDescription())) . '</li>';
+        $r .= '<li>' . form_label(lang('entcat_enabled'), 'cenabled') . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</li>';
+        $r .= '<li>' . form_label(lang('entcat_shortname'), 'name') . form_input('name', set_value('name', $coc->getName())) . '</li>';
+        $r .= '<li>' . form_label(lang('entcat_url'), 'url') . form_input('url', set_value('url', $coc->getUrl())) . '</li>';
+        $r .= '<li>' . form_label(lang('entcat_description'), 'description') . form_textarea('description', set_value('description', $coc->getDescription())) . '</li>';
         $r .= '</ol>';
         $r .= form_fieldset_close();
         return $r;

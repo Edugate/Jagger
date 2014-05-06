@@ -1,4 +1,4 @@
-<div id="pagetitle"><?php echo lang('title_addcoc');?></div>
+<div id="pagetitle"><?php echo lang('title_addentcat');?></div>
 <?php
 $errors_v = validation_errors('<p class="error">', '</p>');
 if (!empty($errors_v)) {

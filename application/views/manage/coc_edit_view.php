@@ -1,5 +1,5 @@
-<div id="pagetitle"><?php echo lang('title_editcoc');?></div>
-<div id="subtitle"><h3>CoC: <?php echo htmlentities($coc_name) ?></h3></div>
+<div id="pagetitle"><?php echo lang('title_entcatedit');?></div>
+<div id="subtitle"><h3><?php echo htmlentities($coc_name) ?></h3></div>
 <?php
 $errors_v = validation_errors('<p class="error">', '</p>');
 if (!empty($errors_v)) {

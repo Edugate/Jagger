@@ -37,7 +37,7 @@ class Coc extends MY_Controller
       
     public function show($id=null)
     {
-       $this->title=lang('coc_list_title');
+       $this->title=lang('title_entcats');
        if(isset($id))
        {
            show_error('Argument passed to page  not allowed',403);
@@ -53,7 +53,7 @@ class Coc extends MY_Controller
           {
               if($has_write_access)
               {
-                 $l = ' '.anchor(base_url().'manage/coc/edit/'.$c->getId(),'<span class="lbl lbl-edit">edit</span>');
+                 $l = ' '.anchor(base_url().'manage/coc/edit/'.$c->getId(),'<span class="lbl lbl-edit">'.lang('rr_edit').'</span>');
               }
               else
               {
@@ -74,11 +74,11 @@ class Coc extends MY_Controller
        }
        else
        {
-          $data['error_message'] = 'No Code of Conduct registered';
+          $data['error_message'] = lang('rr_noentcatsregistered');
        }
        if($has_write_access)
        {
-         $data['rows'][] = array(anchor(base_url().'manage/coc/add','<button type="submit" class="addbutton addicon">'.lang('rr_addcoc_btn').'</button>'), '','','');
+         $data['rows'][] = array(anchor(base_url().'manage/coc/add','<button type="submit" class="addbutton addicon">'.lang('addentcat_btn').'</button>'), '','','');
        }
 
        $data['content_view'] = 'manage/coc_show_view';
@@ -87,23 +87,23 @@ class Coc extends MY_Controller
     }
     private function _add_submit_validate()
     {
-        $this->form_validation->set_rules('name','Name','required|trim|cocname_unique');
-        $this->form_validation->set_rules('url',lang('coc_url'),'required|trim|valid_url|cocurl_unique');
-        $this->form_validation->set_rules('description','Description','xss_clean');
+        $this->form_validation->set_rules('name',lang('entcat_shortname'),'required|trim|cocname_unique');
+        $this->form_validation->set_rules('url',lang('entcat_url'),'required|trim|valid_url|cocurl_unique');
+        $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
         $this->form_validation->set_rules('cenabled','Enabled','xss_clean');
         return $this->form_validation->run();
     }
     private function _edit_submit_validate($id)
     {
-        $this->form_validation->set_rules('name','Name','required|trim|cocname_unique_update['.$id.']');
-        $this->form_validation->set_rules('url',lang('coc_url'),'required|trim|valid_url|cocurl_unique_update['.$id.']');
-        $this->form_validation->set_rules('description','Description','xss_clean');
+        $this->form_validation->set_rules('name',lang('entcat_shortname'),'required|trim|cocname_unique_update['.$id.']');
+        $this->form_validation->set_rules('url',lang('entcat_url'),'required|trim|valid_url|cocurl_unique_update['.$id.']');
+        $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
         $this->form_validation->set_rules('cenabled','Enabled','xss_clean');
         return $this->form_validation->run();
     }
     public function add()
     {
-        $this->title = lang('title_addcoc');
+        $this->title = lang('title_addentcat');
         $has_write_access = $this->zacl->check_acl('coc', 'write', 'default', '');
         if(!$has_write_access)
         {
@@ -121,6 +121,7 @@ class Coc extends MY_Controller
            $ncoc = new models\Coc;
            $ncoc->setName($name);
            $ncoc->setUrl($url);
+           $ncoc->setType('entcat');
            if(!empty($description))
            {
                $ncoc->setDescription($description);
@@ -136,7 +137,7 @@ class Coc extends MY_Controller
            $this->em->persist($ncoc);
            $this->em->flush();
            
-          $data['success_message'] = lang('rr_cocadded');
+          $data['success_message'] = lang('rr_entcatadded');
         }
         else
         {
@@ -155,7 +156,7 @@ class Coc extends MY_Controller
     }
     public function edit($id)
     {
-       $this->title = lang('title_editcoc');
+       $this->title = lang('title_entcatedit');
        if(empty($id) OR !is_numeric($id))
        {
           show_error('Not found',404);
