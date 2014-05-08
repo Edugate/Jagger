@@ -9,6 +9,7 @@ application/libraries/geshi/*
 
 application/libraries/third_party/*
 
+application/helpers/custom_helper.php
 application/logs/*
 application/cache/*
 application/models/Proxies/*

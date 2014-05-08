@@ -3482,6 +3482,16 @@ class Provider {
 
 
         $EntityDesc_Node->setAttribute('entityID', $this->getEntityId());
+        if( $this->is_local && function_exists('customGenerateEntityDescriptorID'))
+        {
+            $cid = customGenerateEntityDescriptorID(array('id'=>''.$this->getId().'','entityid'=>''.$this->getEntityId().''));
+            if(!empty($cid))
+            {
+
+                $EntityDesc_Node->setAttribute('ID',$cid);
+            }
+         
+        }
         $ci = & get_instance();
         if (!empty($this->registrar))
         {
