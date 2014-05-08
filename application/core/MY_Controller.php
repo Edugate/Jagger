@@ -81,6 +81,12 @@ class MY_Controller extends CI_Controller {
         }
 
         self::$langselect = languagesCodes($this->config->item('langselectlimit')); 
+
+        if(file_exists(APPPATH.'helpers/custom_helper.php'))
+        {
+          $this->load->helper('custom');
+          log_message('debug',__METHOD__.' custom_helper loaded');
+        }
     }
     public static function getLang()
     {
