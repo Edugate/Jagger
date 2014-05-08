@@ -200,8 +200,17 @@ class Sp_registration extends MY_Controller
             $areciepents[] = $contactMail;
             $this->email_sender->addToMailQueue(null,null,$sbj,$body2,$areciepents,FALSE);
 
-            $this->em->flush();
-            redirect(base_url().'providers/sp_registration/success','refresh');
+            try {
+                $this->em->flush();
+                redirect(base_url().'providers/sp_registration/success','auto');
+            }
+            catch(PDOException $e)
+            {
+                log_message('error',__METHOD__.' '.$e);
+                show_error('Internal Server Error',500);
+                return;
+
+           }
         }
         else
         {

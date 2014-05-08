@@ -240,6 +240,7 @@ class Idp_registration extends MY_Controller {
             {
                 log_message('error',__METHOD__.' '.$e);
                 show_error('Internal Server Error',500);
+                return;
             }
         }
         else
