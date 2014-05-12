@@ -29,7 +29,7 @@ class Email_sender {
    function addToMailQueue($notificationTypes = NULL,$obj=NULL,$subject,$body,$additionalReciepients,$sync=false)
    {
        $subscribers = array();
-       if(!empty($notificationTypes) && is_array($notificationTypes))
+       if($notificationTypes !== null && is_array($notificationTypes))
        {
            $notificationTypes[] = 'systemnotifications';
            $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
