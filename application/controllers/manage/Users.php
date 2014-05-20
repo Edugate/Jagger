@@ -42,7 +42,7 @@ class Users extends MY_Controller {
     private function _add_submit_validate() {
         log_message('debug',  '(add user) validating form initialized');
         $this->form_validation->set_rules('username', ''.lang('rr_username').'', 'required|min_length[5]|max_length[128]|user_username_unique[username]|xss_clean');
-        $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|user_mail_unique[email]|xss_clean');
+        $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|valid_email|user_mail_unique[email]|xss_clean');
         $this->form_validation->set_rules('password', 'Password', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
         $this->form_validation->set_rules('passwordconf', 'Password Confirmation', 'required|min_length[5]|max_length[23]');
         $this->form_validation->set_rules('fname', 'First name', 'required|min_length[3]|max_length[255]|xss_clean');
