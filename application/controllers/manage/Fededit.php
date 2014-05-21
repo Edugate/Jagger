@@ -37,7 +37,7 @@ class Fededit extends MY_Controller {
 
     private function _submit_validate()
     {
-        $this->form_validation->set_rules('urn', lang('rr_fed_urn'), 'required|trim|min_length[5]|max_length[128]|xss_clean');
+        $this->form_validation->set_rules('urn', lang('fednameinmeta'), 'required|trim|min_length[5]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[500]|xss_clean');
         $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'trim|min_length[5]|max_length[1000]|xss_clean');
         $this->form_validation->set_rules('incattrs',lang('rr_include_attr_in_meta'),'trim|xss_clean|max_length[10]');

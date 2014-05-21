@@ -160,6 +160,7 @@ $lang['attrfullname']               = 'Full name';
 $lang['attroid']                    = 'OID';
 $lang['attrurn']                    = 'URN';
 $lang['fedurn']                     = 'URI';
+$lang['fednameinmeta']              = 'Name in metadata';
 $lang['nomembers']                  = 'No members';
 $lang['certsinidpsso']              = 'Certificates in IDPSSODescriptor';
 $lang['certsinaa']                  = 'Certificates in AttributeAuthorityDescriptor';

@@ -22,6 +22,7 @@ class Xmlvalidator {
 
     public function validateMetadata($xml,$signed = FALSE,$pubkey = FALSE)
     {
+        \log_message('debug',__METHOD__.' started');
          
         $result = FALSE;
         $this->pubKey=$pubkey;
@@ -135,7 +136,7 @@ class Xmlvalidator {
                 log_message('warning', __METHOD__.' validated metadata is not with schema');
             }
        }
-       
+       \log_message('debug',__METHOD__.' end');
        return $result; 
     }
 
