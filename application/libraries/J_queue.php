@@ -227,7 +227,7 @@ class J_queue
         $fedrows[] = array('name' => lang('rr_regdate'), 'value' => $q->getCreatedAt());
         $fedrows[] = array('header' => lang('rr_basicinformation'));
         $fedrows[] = array('name' => lang('rr_fed_name'), 'value' => $objData->getName());
-        $fedrows[] = array('name' => lang('rr_fed_urn'), 'value' => $objData->getUrn());
+        $fedrows[] = array('name' => lang('fednameinmeta'), 'value' => $objData->getUrn());
         $fedrows[] = array('name' => lang('Description'), 'value' => $objData->getDescription());
         $fedrows[] = array('name' => lang('rr_fed_tou'), 'value' => $objData->getTou());
 
@@ -257,7 +257,7 @@ class J_queue
         $fedrows[] = array('name' => lang('rr_requestdate'), 'value' => $q->getCreatedAt());
         $fedrows[] = array('header' => lang('rr_basicinformation'));
         $fedrows[] = array('name' => lang('rr_fed_name'), 'value' => $objData->getName());
-        $fedrows[] = array('name' => lang('rr_fed_urn'), 'value' => $objData->getUrn());
+        $fedrows[] = array('name' => lang('fednameinmeta'), 'value' => $objData->getUrn());
 
         return $fedrows;
     }

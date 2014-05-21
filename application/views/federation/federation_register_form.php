@@ -14,7 +14,7 @@ echo form_label(lang('rr_fed_name'),'fedname');
 $fedarray = array('name'=>'fedname','id'=>'fedname', 'value'=>set_value('fedname'),'required'=>'required');
 echo form_input($fedarray);
 echo '</li><li>';
-echo form_label(lang('rr_fed_urn'),'fedurn');
+echo form_label(lang('fednameinmeta'),'fedurn');
 $urnarray = array('name'=>'fedurn','placeholder'=>'urn:mace:heanet.ie:edugate:...','id'=>'fedurn','value'=>set_value('fedurn'),'required'=>'required');
 echo form_input($urnarray);
 echo '</li><li>';

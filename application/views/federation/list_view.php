@@ -58,6 +58,6 @@ echo $catButtons;
 
 <?php
 echo '<table  id="detailsnosort" class="fedistpercat tablesorter drop-shadow lifted"> <thead> <tr>
-<th>'.lang('rr_tbltitle_name').'</th><th>'.lang('fedurn').'</th><th></th><th>'.lang('Description').'</th><th>#</th></tr> </thead>
+<th>'.lang('rr_tbltitle_name').'</th><th>'.lang('fednameinmeta').'</th><th></th><th>'.lang('Description').'</th><th>#</th></tr> </thead>
 <tbody> </tbody> </table> ';
 ?>
