@@ -13,7 +13,13 @@
 ?>
 <div id="subtitle"><h3><?php echo lang('attrsdeflist');?></h3></div>
 <?php
-
+if($isadmin)
+{
+?>
+<div style="float: right; witdth: 99%;"><a href="<?php echo base_url().'attributes/attributes/add'; ?>" class="addbutton addicon"><?php echo lang('rr_add');?></a></div>
+<div style="clear: both;"></div>
+<?php
+}
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.

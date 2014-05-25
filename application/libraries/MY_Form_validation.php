@@ -216,6 +216,19 @@ class MY_form_validation extends CI_form_validation {
         }
 
     }
+ 
+    function attribute_unique($value,$name)
+    {
+        $attr = $this->em->getRepository("models\Attribute")->findOneBy(array(''.$name.''=>$value));
+        if(empty($attr))
+        {
+            return true;
+        }
+        $this->set_message('attribute_unique','%s: already exists in the system');
+        return false;
+ 
+    }
+  
     function fedcategory_unique($name,$id=null)
     {
        $ent = $this->em->getRepository("models\FederationCategory")->findOneBy(array('shortname' => $name));
