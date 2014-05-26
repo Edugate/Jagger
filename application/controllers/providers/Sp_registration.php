@@ -305,10 +305,10 @@ class Sp_registration extends MY_Controller
         log_message('debug', 'validating form initialized');
         $post = $this->input->post();
         $allowedAcsBinds = serialize(getBindACS());
-        $this->form_validation->set_rules('resource', '' . lang('rr_resource') . '', 'required|min_length[3]|max_length[255]');
-        $this->form_validation->set_rules('descresource', '' . lang('rr_descriptivename') . '', 'required|min_length[3]|max_length[255]');
+        $this->form_validation->set_rules('resource', '' . lang('e_orgname') . '', 'required|min_length[3]|max_length[255]');
+        $this->form_validation->set_rules('descresource', '' . lang('e_orgdisplayname') . '', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('entityid', '' . lang('rr_entityid') . '', 'required|trim|no_white_spaces|min_length[3]|max_length[255]|entity_unique[entityid]');
-        $this->form_validation->set_rules('helpdeskurl', '' . lang('rr_helpdeskurl') . '', 'required|valid_url|min_length[6]|max_length[255]');
+        $this->form_validation->set_rules('helpdeskurl', '' . lang('e_orgurl') . '', 'required|valid_url|min_length[6]|max_length[255]');
         $this->form_validation->set_rules('contact_name', '' . lang('rr_contactname') . '', 'required|min_length[3]|max_length[255]');
         $this->form_validation->set_rules('contact_mail', '' . lang('rr_contactemail') . '', 'required|min_length[3]|max_length[255]|valid_email');
         $this->form_validation->set_rules('contact_phone', '' . lang('rr_contactphone') . '', 'numeric');

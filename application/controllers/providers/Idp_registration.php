@@ -294,8 +294,8 @@ class Idp_registration extends MY_Controller {
               return false;
            }
         }
-        $this->form_validation->set_rules('homeorg', lang('rr_homeorganisation'), 'trim|required|min_length[3]|max_length[128]|xss_clean');
-        $this->form_validation->set_rules('deschomeorg', lang('rr_homeorganisationdisplay'), 'trim|required|min_length[3]|max_length[128]|xss_clean');
+        $this->form_validation->set_rules('homeorg', lang('e_orgname'), 'trim|required|min_length[3]|max_length[128]|xss_clean');
+        $this->form_validation->set_rules('deschomeorg', lang('e_orgdisplayname'), 'trim|required|min_length[3]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('entityid', 'entityID', 'trim|required|no_white_spaces|min_length[5]|max_length[128]|entity_unique[entity]|xss_clean');
         $this->form_validation->set_rules('sso[]', 'SingleSignOn', 'trim|valid_url');
         $this->form_validation->set_rules('sign_cert_body', lang('rr_certificatesigning'), 'trim|required|xss_clean|verify_cert[certbody]');
@@ -303,10 +303,10 @@ class Idp_registration extends MY_Controller {
         $this->form_validation->set_rules('contact_phone', 'Phone','trim|xss_clean');
         $this->form_validation->set_rules('contact_name', 'Contact name', 'trim|required|min_length[5]|max_length[255]|xss_clean');
         $this->form_validation->set_rules('contact_mail', 'Contact email', 'trim|required|max_length[255]|valid_email');
-        $this->form_validation->set_rules('helpdeskurl', lang('rr_homeorganisationurl'), 'trim|required|valid_url|xss_clean');
+        $this->form_validation->set_rules('helpdeskurl', lang('e_orgurl'), 'trim|required|valid_url|xss_clean');
         $this->form_validation->set_rules('idpssoscope', 'Scope', 'trim|required|xss_clean');
         $this->form_validation->set_rules('privacyurl', 'Privacy Statement URL', 'trim|valid_url');
-        $this->form_validation->set_rules('nameids', 'NameId(s)', 'trim|xss_clean');
+        $this->form_validation->set_rules('nameids', 'NameIdentifiers(s)', 'trim|xss_clean');
         return $this->form_validation->run();
     }
 
