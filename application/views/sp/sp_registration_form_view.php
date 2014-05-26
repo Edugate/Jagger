@@ -64,7 +64,7 @@ echo form_input(array(
     'class' => 'required'
 ));
 echo '</li>';
-echo '<li>' . form_label(lang('rr_resource'), 'resource');
+echo '<li>' . form_label(lang('e_orgname'), 'resource');
 echo form_input(array(
     'id' => 'resource',
     'name' => 'resource',
@@ -74,7 +74,7 @@ echo form_input(array(
 ));
 echo '</li>';
 
-echo '<li>' . form_label(lang('rr_descriptivename'), 'descresource');
+echo '<li>' . form_label(lang('e_orgdisplayname'), 'descresource');
 echo form_input(array(
     'id' => 'descresource',
     'name' => 'descresource',
@@ -83,7 +83,7 @@ echo form_input(array(
     'class' => 'required',
 ));
 echo '</li>';
-echo '<li>' . form_label(lang('rr_helpdeskurl'), 'helpdeskurl');
+echo '<li>' . form_label(lang('e_orgurl'), 'helpdeskurl');
 echo form_input(array(
     'id' => 'helpdeskurl',
     'name' => 'helpdeskurl',

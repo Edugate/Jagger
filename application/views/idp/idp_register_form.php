@@ -69,7 +69,7 @@ echo form_input(array(
     'class' => 'required'
 ));
 echo '</li>';
-echo '<li>' . form_label(lang('rr_homeorganisation'), 'homeorg');
+echo '<li>' . form_label(lang('e_orgname'), 'homeorg');
 echo form_input(array(
     'id' => 'homeorg',
     'name' => 'homeorg',
@@ -79,7 +79,7 @@ echo form_input(array(
 ));
 echo '</li>';
 
-echo '<li>' . form_label(lang('rr_homeorganisationdisplay'), 'deschomeorg');
+echo '<li>' . form_label(lang('e_orgdisplayname'), 'deschomeorg');
 echo form_input(array(
     'id' => 'deschomeorg',
     'name' => 'deschomeorg',
@@ -88,7 +88,7 @@ echo form_input(array(
     'class' => 'required',
 ));
 echo '</li>';
-echo '<li>' . form_label(lang('rr_homeorganisationurl').'<br /><small><i>('.lang('rr_helpdeskurl').')</i></small>', 'helpdeskurl');
+echo '<li>' . form_label(lang('e_orgurl').'<br /><small><i>('.lang('rr_helpdeskurl').')</i></small>', 'helpdeskurl');
 echo form_input(array(
     'id' => 'helpdeskurl',
     'name' => 'helpdeskurl',
