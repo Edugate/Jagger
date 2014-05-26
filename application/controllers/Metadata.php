@@ -310,7 +310,8 @@ class Metadata extends MY_Controller
         $data = array();
 
         $name = base64url_decode($entityId);
-        $options = array();
+       // $options = array();
+        $options['attrs'] = 1;
         $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
         if (!empty($entity)) {
             $y = $entity->getProviderToXML($parent = null, $options);
