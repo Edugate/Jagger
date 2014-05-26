@@ -367,6 +367,8 @@ class Metadata extends MY_Controller
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
         $cacheId = 'circlemeta_' . $me->getId();
 
+        $options['attrs'] = 1;
+
 
         $p = new models\Providers;
         $p1 = $p->getCircleMembersByType($me,$excludeDisabledFeds=TRUE);
@@ -408,7 +410,7 @@ class Metadata extends MY_Controller
                     $y = $metadataCached;
                 }
                 else {
-                    $y = $v->getProviderToXML();
+                    $y = $v->getProviderToXML(NULL,$options);
                     if (!empty($y)) {
                         $y = $y->saveXML();
                     }
