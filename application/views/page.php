@@ -191,24 +191,10 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                             <ul class="nav">
                                 <li><a href="<?php echo $base_url; ?>"><img src="<?php echo $base_url; ?>images/icons/home.png" alt="home"/></a></li>
                                 <li><a href="<?php echo $base_url; ?>federations/manage"><?php echo lang('federations'); ?></a>
-                                    <ul>
-                                        <li><a href="<?php echo $base_url; ?>federations/manage"><?php echo lang('rr_list'); ?></a></li>
-                                        <li><a href="<?php echo $base_url; ?>federations/federation_registration"><?php echo lang('register'); ?></a></li>
-                                        <li><a href="<?php echo $base_url; ?>manage/fedcategory/show"><?php echo lang('rrfedcatslist'); ?></a></li>
-                                    </ul>
                                 </li>
                                 <li><a href="<?php echo $base_url; ?>providers/idp_list/show"><?php echo lang('identityproviders'); ?></a>
-                                    <ul>
-                                        <li><a href="<?php echo $base_url; ?>providers/idp_list/show"><?php echo lang('rr_list'); ?></a></li>
-                                        <li><a href="<?php echo $base_url; ?>providers/idp_registration"><?php echo lang('register'); ?></a></li>
-
-                                    </ul>
                                 </li>
                                 <li><a href="<?php echo $base_url; ?>providers/sp_list/show"><?php echo lang('serviceproviders'); ?></a>
-                                    <ul>
-                                        <li><a href="<?php echo $base_url; ?>providers/sp_list/show"><?php echo lang('rr_list'); ?></a></li>
-                                        <li><a href="<?php echo $base_url; ?>providers/sp_registration"><?php echo lang('register'); ?></a></li>
-                                    </ul>
                                 </li>
                                 <li><a href="<?php echo $base_url; ?>"><?php echo lang('register'); ?></a>
                                     <ul><li><a href="<?php echo $base_url; ?>providers/idp_registration"><?php echo lang('identityprovider'); ?></a></li>
@@ -234,6 +220,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
                                               echo '<li><a href="'.$base_url.'smanage/reports">'.lang('sys_menulink').'</a></li>';
                                            }
                                         ?>
+                                        <li><a href="<?php echo $base_url; ?>manage/fedcategory/show"><?php echo lang('rrfedcatslist'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>manage/coc/show"><?php echo lang('entcats_menulink'); ?></a></li>
                                         <li><a href="<?php echo $base_url; ?>attributes/attributes/show"><?php echo lang('rr_attr_defs'); ?></a></li>
                                        <?php
