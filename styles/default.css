@@ -3159,6 +3159,12 @@ form.register input {
   min-width: 400px;
 }
 
+input[type='text'].inputtime, input[type='text'].inputdate {
+  width: 50px;
+  min-width: 90px;
+  margin-left: 0px;
+}
+
 .ir {
   background-color: transparent;
   border: 0;

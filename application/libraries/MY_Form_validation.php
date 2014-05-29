@@ -136,6 +136,17 @@ class MY_form_validation extends CI_form_validation {
         $this->set_message('valid_date', "The %s : \"$date\" doesn't exist or invalid format. Valid format: yyyy-mm-dd.");
         return FALSE;
     }
+
+    public function valid_time_hhmm($time)
+    {
+        $e = explode(":",$time);
+        if(count($e) === 2 &&  is_numeric($e['0']) && is_numeric($e['1']) && ($e['0'] < 24 && $e['0']>=0) && ($e['1'] >=0 && $e['1']<60))
+        {
+            return true;
+        }
+        $this->set_message('valid_time_hhmm', "The %s : invalid format. Valid format: HH:mm.");
+        return false;
+    }
   /**
      * Validates a date (yyyy-mm-dd) and check if not future
      * 

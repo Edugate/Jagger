@@ -480,11 +480,24 @@ class Manage extends MY_Controller
                     $data['result']['fvalidators'][] = array('data' => lang('fvalid_url'), 'value' => $f->getUrl());
                     $data['result']['fvalidators'][] = array('data' => lang('rr_httpmethod'), 'value' => $method);
                     $data['result']['fvalidators'][] = array('data' => lang('fvalid_entparam'), 'value' => $f->getEntityParam());
-                    if (strcmp($method, 'POST') == 0) {
-                        $data['result']['fvalidators'][] = array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $f->getOptargs()));
+                    $optargs1 = $f->getOptargs();
+                    $optargsStr = array();
+                    foreach($optargs1 as $k=>$v)
+                    {
+                           if($v === null)
+                           {
+                              $optargsStr[] = $k;
+                           }
+                           else
+                           {
+                              $optargsStr[] = $k.'='.$v;
+                           }
+                    }
+                    $data['result']['fvalidators'][] = array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $optargsStr));
+                    if (strcmp($method, 'GET') == 0) {
+                        $data['result']['fvalidators'][] = array('data' => lang('rr_argsep'), 'value' => $f->getSeparator());
                     }
                     else {
-                        $data['result']['fvalidators'][] = array('data' => lang('rr_argsep'), 'value' => $f->getSeparator());
                     }
                     $data['result']['fvalidators'][] = array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement()));
 

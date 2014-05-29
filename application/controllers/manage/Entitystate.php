@@ -49,6 +49,10 @@ class Entitystate extends MY_Controller {
         $this->form_validation->set_rules('eactive', lang('rr_entityactive'), 'max_length[1]');
         $this->form_validation->set_rules('extint', lang('rr_entitylocalext'), 'max_length[1]');
         $this->form_validation->set_rules('publicvisible','public visible', 'max_length[1]');
+        $this->form_validation->set_rules('validuntiltime','time until', 'trim|valid_time_hhmm');
+        $this->form_validation->set_rules('validfromtime','Valid from time', 'trim|valid_time_hhmm');
+        $this->form_validation->set_rules('validfromdate','Valid from date', 'trim|valid_date');
+        $this->form_validation->set_rules('validuntildate','Valid until date', 'trim|valid_date');
         return $this->form_validation->run();
     }
 
@@ -71,10 +75,37 @@ class Entitystate extends MY_Controller {
         $data['current_active'] = $this->entity->getActive();
         $data['current_extint'] = $this->entity->getLocal();
         $data['current_publicvisible'] = (int) $this->entity->getPublicVisible();
+        $validfrom = $this->entity->getValidFrom();
+        if(!empty($validfrom))
+        {
+            $validfromdate = date('Y-m-d', $validfrom->format('U') );
+            $validfromtime = date('H:i', $validfrom->format('U') );
+        }
+        else
+        {
+            $validfromdate = '';
+            $validfromtime = '';
+        }
+        $validuntil = $this->entity->getValidTo();
+        if(!empty($validuntil))
+        {
+            $validuntildate = date('Y-m-d', $validuntil->format('U'));
+            $validuntiltime = date('H:i', $validuntil->format('U'));
+        }
+        else
+        {
+           $validuntildate = '';
+           $validuntiltime = '';
+        }
+        $data['current_validuntildate'] = $validuntildate;
+        $data['current_validuntiltime'] = $validuntiltime;
+        $data['current_validfromdate'] = $validfromdate;
+        $data['current_validfromtime'] = $validfromtime;
         $has_manage_access = $this->zacl->check_acl($this->entity->getId(), 'manage', 'entity', '');
         if (!$has_manage_access)
         {
             show_error('No sufficient permision to manage entity', 403);
+            return;
         }
 
 
@@ -84,6 +115,11 @@ class Entitystate extends MY_Controller {
             $active = $this->input->post('eactive');
             $extint = $this->input->post('extint');
             $publicvisible = $this->input->post('publicvisible');
+            $validfromdate = $this->input->post('validfromdate');
+            $validfromtime = $this->input->post('validfromtime');
+            $validuntildate = $this->input->post('validuntildate');
+            $validuntiltime = $this->input->post('validuntiltime');
+            
             $changed = false;
             $differ = array();
             if (isset($locked))
@@ -156,15 +192,38 @@ class Entitystate extends MY_Controller {
                     $changed = true;
                 }
             }
+            if(!empty($validuntildate) and !empty($validuntiltime))
+            {
+                $validuntil = new DateTime($validuntildate.'T'.$validuntiltime);
+                $this->entity->setValidTo($validuntil);
+            }
+            else
+            {
+                $this->entity->setValidTo(null);
+
+            }
+            if(!empty($validfromdate) and !empty($validfromtime))
+            {
+                $validfrom = new DateTime($validfromdate.'T'.$validfromtime);
+                $this->entity->setValidFrom($validfrom);
+            }
+            else
+            {
+                $this->entity->setValidFrom(null);
+            }
             if (count($differ) > 0)
             {
                 $this->tracker->save_track('idp', 'modification', $this->entity->getEntityId(), serialize($differ), false);
             }
             $this->em->persist($this->entity);
-            $this->em->flush();
-            if($changed)
-            {
+            try{
+                $this->em->flush();
                 $data['success_message'] = lang('rr_entstate_updated');
+            }
+            catch(Exception $e)
+            {
+                $data['error'] = 'Unkwown error occured during saving changes';
+                log_message('error',__METHOD__.' '.$e);
             }
         }
         $data['current_locked'] = $this->entity->getLocked();
@@ -175,6 +234,32 @@ class Entitystate extends MY_Controller {
         $data['name'] = $this->entity->getName();
         $data['id'] = $this->entity->getId();
         $data['type'] = strtolower($this->entity->getType());
+        $validfrom = $this->entity->getValidFrom();
+        if(!empty($validfrom))
+        {
+            $validfromdate = date('Y-m-d', $validfrom->format('U') + j_auth::$timeOffset);
+            $validfromtime = date('H:i', $validfrom->format('U') + j_auth::$timeOffset);
+        }
+        else
+        {
+            $validfromdate = '';
+            $validfromtime = '';
+        }
+        $validuntil = $this->entity->getValidTo();
+        if(!empty($validuntil))
+        {
+            $validuntildate = date('Y-m-d', $validuntil->format('U') );
+            $validuntiltime = date('H:i', $validuntil->format('U') );
+        }
+        else
+        {
+           $validuntildate = '';
+           $validuntiltime = '';
+        }
+        $data['current_validuntildate'] = $validuntildate;
+        $data['current_validuntiltime'] = $validuntiltime;
+        $data['current_validfromdate'] = $validfromdate;
+        $data['current_validfromtime'] = $validfromtime;
 
 
 
