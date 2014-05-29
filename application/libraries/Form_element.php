@@ -93,7 +93,7 @@ class Form_element {
     public function NgenerateEntityGeneral(models\Provider $ent, $ses = null)
     {
 
-
+        $isAdmin = $this->ci->j_auth->isAdministrator();
         $sessform = FALSE;
         if (!empty($ses) && is_array($ses))
         {
@@ -101,15 +101,15 @@ class Form_element {
         }
         $class_ent = '';
         $class_org = '';
-        $t_regauthority = $ent->getRegistrationAuthority();
-        $t_regdate = '';
-        $origregdate = '';
-        $tmpregdate = $ent->getRegistrationDate();
-        if (!empty($tmpregdate))
-        {
-            $t_regdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
-            $origregdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
-        }
+           $t_regauthority = $ent->getRegistrationAuthority();
+           $t_regdate = '';
+           $origregdate = '';
+           $tmpregdate = $ent->getRegistrationDate();
+           if (!empty($tmpregdate))
+           {
+               $t_regdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
+               $origregdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
+           }
         $t_helpdeskurl = $ent->getHelpdeskUrl();
 
        // $t_validfrom = '';
@@ -140,29 +140,10 @@ class Form_element {
             {
                 $t_regdate = $ses['registrationdate'];
             }
-         /**
-            if (array_key_exists('validrom', $ses))
-            {
-                $t_validfrom = $ses['validfrom'];
-            }
-            if (array_key_exists('validto', $ses))
-            {
-                $t_validto = $ses['validto'];
-            }
-         */
-          /**
-            if (array_key_exists('description', $ses))
-            {
-                $t_description = $ses['description'];
-            }
-          */
         }
 
         $f_regauthority = set_value('f[regauthority]', $t_regauthority);
         $f_regdate = set_value('f[registrationdate]', $t_regdate);
-      //  $f_validfrom = set_value('f[validfrom]', $t_validfrom);
-      //  $f_validto = set_value('f[validto]', $t_validto);
-       // $f_description = set_value('f[description]', $t_description);
         if ($f_regauthority != $ent->getRegistrationAuthority())
         {
             $regauthority_notice = 'notice';
@@ -177,31 +158,6 @@ class Form_element {
         {
             $regdate_notice = '';
         }
-      /**
-        if ($f_validfrom != $origvalidfrom)
-        {
-            $validfrom_notice = 'notice';
-        } else
-        {
-            $validfrom_notice = '';
-        }
-        if ($f_validto != $origvalidto)
-        {
-            $validto_notice = 'notice';
-        } else
-        {
-            $validto_notice = '';
-        }
-       */
-        /**
-        if ($f_description != form_prep($ent->getDescription()))
-        {
-            $description_notice = 'notice';
-        } else
-        {
-            $description_notice = '';
-        }
-        */
         $result = array();
 
         // providername group 
@@ -435,7 +391,8 @@ class Form_element {
         }
         $result[] = '<span class="lhelpdeskadd">' . form_dropdown('lhelpdesklangcode', $btnlangs, $this->defaultlangselect) . '<button type="button" id="addlhelpdesk" name="addlhelpdesk" value="' . lang('rr_helpdeskurl') . '" class="editbutton addicon smallerbtn">' . lang('btnaddinlang') . '</button></span>';
 
-
+        if($isAdmin)
+       {
         $result[] = '';
         /**
          * end organizatiourl/helpdesk
@@ -450,6 +407,7 @@ class Form_element {
                     'class' => 'registrationdate ' . $regdate_notice,
         ));
         $result[] = '';
+        }
         /**
          * start regpolicy 
          */

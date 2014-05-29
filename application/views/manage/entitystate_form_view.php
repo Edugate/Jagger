@@ -1,5 +1,7 @@
 <div id="pagetitle"><?php echo lang('rr_status_mngmt');?></div>
+
 <?php
+$errors_v = validation_errors('<div class="error">', '</div>');
 if (!empty($message))
 {
     echo '<span class="message">' . $message . '</span>';
@@ -16,6 +18,10 @@ if (!empty($error))
 if(!empty($success_message))
 {
   echo '<div class="success">'.$success_message.'</div>';
+}
+if (!empty($errors_v))
+{
+    echo '<span class="error">' . $errors_v . '</span>';
 }
 
 $attributes = array('class' => 'span-16', 'id' => 'formver1');
@@ -42,6 +48,41 @@ echo '</li>';
 echo '<li>';
 echo form_label(lang('rr_entitylocalext'),'extint');
 echo form_dropdown('extint', $extint,$current_extint);
+echo '</li>';
+echo '<li>';
+echo form_label(lang('rr_validfrom'),'validfromdate');
+echo form_input(array(
+            'id'=>'validfromdate',
+            'name'=>'validfromdate',
+            'value'=>$current_validfromdate,
+            'class'=>'inputdate validfrom',
+            'placeholder'=>'YY-MM-DD'
+         ));
+echo form_input(array(
+            'id'=>'validfromtime',
+            'name'=>'validfromtime',
+            'value'=>$current_validfromtime,
+            'class'=>'inputtime',
+            'placeholder'=>'HH:mm',
+      ));
+echo '</li>';
+echo '<li>';
+echo form_label(lang('rr_validto'),'validuntildate');
+echo form_input(array(
+           'id'=>'validuntildate',
+           'name'=>'validuntildate',
+           'value'=>$current_validuntildate,
+           'class'=>'inputdate validto',
+           'placeholder'=>'YY-MM-DD'
+           ));
+echo form_input(
+           array('id'=>'validuntiltime',
+                 'name'=>'validuntiltime',
+                 'value'=>$current_validuntiltime,
+                 'class'=>'inputtime',
+                 'placeholder'=>'HH:mm',
+              )
+           );
 echo '</li></ol>';
 echo form_fieldset_close();
 echo '<div class="buttons"><button name="submit" type="submit" id="submit" value="Modify" class="savebutton saveicon">'.lang('rr_modify').'</button></div>';

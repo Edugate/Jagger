@@ -474,7 +474,7 @@ class Detail extends MY_Controller {
         $d[++$i]['name'] = lang('rr_validfromto'). ' <div class="dhelp">'.lang('d_validfromto').'</div>';
         if ($ent->getValidFrom())
         {
-            $validfrom = date('Y M d',$ent->getValidFrom()->format('U')+j_auth::$timeOffset);
+            $validfrom = date('Y M d HH:MM',$ent->getValidFrom()->format('U')+j_auth::$timeOffset);
         }
         else
         {
@@ -482,7 +482,7 @@ class Detail extends MY_Controller {
         }
         if ($ent->getValidTo())
         {
-            $validto = date('Y M d',$ent->getValidTo()->format('U')+j_auth::$timeOffset);
+            $validto = date('Y M d H:i',$ent->getValidTo()->format('U')+j_auth::$timeOffset);
         }
         else
         {

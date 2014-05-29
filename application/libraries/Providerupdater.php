@@ -288,6 +288,8 @@ class Providerupdater {
                $m['Localized DisplayName'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
         }
+        if($isAdmin)
+        {
         if (array_key_exists('regauthority', $ch))
         {
             if($ent->getRegistrationAuthority() !== $ch['regauthority'])
@@ -319,6 +321,7 @@ class Providerupdater {
                    $ent->setRegistrationDate(null);
                }
             }
+        }
         }
         if (array_key_exists('lhelpdesk', $ch) && is_array($ch['lhelpdesk']))
         {
