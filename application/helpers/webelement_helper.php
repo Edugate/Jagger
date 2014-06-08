@@ -1,5 +1,7 @@
 <?php
 
+
+
 function confirmDialog($title, $msg, $yes, $no)
 {
     $r = '<div id="sconfirm"><div class="header"><span>' . htmlentities($title) . '</span></div>
@@ -11,9 +13,10 @@ function confirmDialog($title, $msg, $yes, $no)
   </div>';
     return $r;
 }
-function resultDialog($title,$msg,$close)
+
+function resultDialog($title, $msg, $close)
 {
-     $r = '<div id="resultdialog"><div class="header"><span>' . htmlentities($title) . '</span></div>
+    $r = '<div id="resultdialog"><div class="header"><span>' . htmlentities($title) . '</span></div>
   <p class="message">' . htmlentities($msg) . '</p>
   <div class="buttons">
   <div class="no simplemodal-close">' . htmlentities($close) . '</div>
@@ -22,14 +25,19 @@ function resultDialog($title,$msg,$close)
     return $r;
 }
 
-function recurseTree($var){
-  $out = '<li>';
-  foreach($var as $v){
-    if(is_array($v)){
-      $out .= '<ul>'.recurseTree($v).'</ul>';
-    }else{
-      $out .= $v;
+function recurseTree($var)
+{
+    $out = '<li>';
+    foreach ($var as $v)
+    {
+        if (is_array($v))
+        {
+            $out .= '<ul>' . recurseTree($v) . '</ul>';
+        }
+        else
+        {
+            $out .= $v;
+        }
     }
-  }
-  return $out.'</li>';
+    return $out . '</li>';
 }

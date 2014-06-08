@@ -8,7 +8,7 @@ else
     $blink = '<a href="' . base_url() . 'ajax/delbookfed/' . $federation_id . '" class="bookentity"><img src="' . base_url() . 'images/icons/star--minus.png" /></a>';
 }
 ?>
-<div id="subtitle"><h3><?php echo lang('rr_feddetail') . ': ' . $federation_name . '  ' . $blink; ?></h3></div>
+<div><?php echo  $blink; ?></div>
 
 <?php
 echo '<div id="fedtabs">';

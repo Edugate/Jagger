@@ -287,7 +287,7 @@ class Detail extends MY_Controller {
         }
         else
         {
-            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
+            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon button small" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
             $data['showclearcache'] = TRUE;
         }
         $data['edit_link'] = $edit_link;
@@ -306,7 +306,7 @@ class Detail extends MY_Controller {
             }
             if ($v->getElement() === 'Logo')
             {
-                $data['provider_logo_url'] = $v->getLogoValue();
+                $providerlogourl = $v->getLogoValue();
                 $is_logo = TRUE;
             }
         }
@@ -1483,6 +1483,11 @@ class Detail extends MY_Controller {
          * @todo finish show alert block if some warnings realted to entity 
          */
         //$data['alerts'] = $alerts;
+        if(!empty($providerlogourl))
+        {
+           $data['providerlogourl'] = $providerlogourl;
+        }
+        $data['titlepage'] = $data['presubtitle'] . ': ' . $data['name']; 
         $data['content_view'] = 'providers/detail_view.php';
         $this->load->view('page', $data);
     }

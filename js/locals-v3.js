@@ -35,6 +35,8 @@ jQuery.fn.toggleOption = function( show ) {
 
 var GINIT = {
     initialize: function() {
+//$(document).foundation();
+//$(document).foundationAlerts();
 
     var baseurl = $("[name='baseurl']").val();
     if (baseurl === undefined)
@@ -61,7 +63,7 @@ var GINIT = {
         });
     }
 
-
+    $(".langinputrm").addClass("alert");
     $(".dhelp").click(function(){
          var curSize= parseInt($(this).css('font-size'));
          if(curSize<=10)
@@ -78,12 +80,13 @@ var GINIT = {
  
     });
     $("button.langinputrm").click(function(){
+         var lrow = $(this).closest('div').parent();
          var bval = $(this).attr('value');
          var bname = $(this).attr('name');
-         $(this).parent().find("input").each(function(){
+         lrow.find("input").each(function(){
            $(this).attr('value','');
         });
-        $(this).parent().find("textarea").each(function(){
+        lrow.find("textarea").each(function(){
            $(this).val("");
         });
         $(this).parent().parent().find("option[value="+bval+"]").each(
@@ -93,7 +96,8 @@ var GINIT = {
                 
                 }
                 );
-        $(this).parent().remove();
+        //$(this).parent().remove();
+        lrow.remove();
         GINIT.initialize();
 
        
@@ -293,11 +297,6 @@ var GINIT = {
         });
     }));
 
-    $("fieldset#certificates label").autoWidth();
-    $("fieldset#services label").autoWidth();
-    $("fieldset#tabsaml label").autoWidth();
-    $("fieldset#dataprotection label").autoWidth();
-    $("fieldset#protocols label").autoWidth();
  //   $("fieldset#general label").autoWidth();
     $("li.fromprevtoright").each(function(){
          var prevli = $(this).prev();
@@ -885,16 +884,6 @@ $(document).ready(function() {
 
 });
 //$("#login").hide();
-$("button#loginbtn").click(function() {
-    parent = window;
-
-    $("#login").css({
-        'position': 'absolute',
-        'top': ((($(parent).height() - $("#login").outerHeight()) / 4) + $(parent).scrollTop() + "px"),
-        'left': ((($(parent).width() - $("#login").outerWidth()) / 2) + $(parent).scrollLeft() + "px"),
-        'z-index': '10'
-    }).show();
-});
 $(function() {
 
 
@@ -1071,17 +1060,19 @@ $(function() {
     $.ajaxSetup({
         cache: false
     });
-    $('#langchange select').on('change', function() {
-        var link = document.getElementById('langurl').innerHTML;
-        var url = link + this.value;
+    $('#languageset select').on('change', function() {
+         var link = $("div#languageset form").attr('action');
+         var url = link + this.value;
         $.ajax({
             url: url,
             timeout: 2500,
             cache: false
         }).done(function() {
+            $('#languageset').foundation('reveal', 'close');
             setTimeout('go_to_private_page()', 1000);
         });
         return false;
+         
     });
     $("button#idpadduiiprvurl").click(function() {
         var nf = $("span.idpuiiprvurladd option:selected").val();
@@ -1467,9 +1458,12 @@ $(function() {
 
     $("#providertabs").tabs({
         cache: true,
+     //   data-theme: "none",
         load: function(event, ui) {
             $('.accordionButton').unbind();
             $('#editprovider').unbind();
+            
+           $(".ui-widget").removeClass("ui-widget");
             GINIT.initialize();
         },
 
@@ -1531,7 +1525,7 @@ $("#nacsbtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<li><ol><li><label for="f[srv][AssertionConsumerService][n_' + rname + '][bind]">Binding Name</label><span class=""><select name="f[srv][AssertionConsumerService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:PAOS">urn:oasis:names:tc:SAML:2.0:bindings:PAOS</option> <option value="urn:oasis:names:tc:SAML:2.0:profiles:browser-post">urn:oasis:names:tc:SAML:2.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:browser-post">urn:oasis:names:tc:SAML:1.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01">urn:oasis:names:tc:SAML:1.0:profiles:artifact-01</option> </select> </li><li><label for="f[srv][AssertionConsumerService][n_' + rname + '][url]">URL</label><input name="f[srv][AssertionConsumerService][n_' + rname + '][url]" id="f[srv][AssertionConsumerService][n_' + rname + '][url]" type="text"> index <input type="text" name="f[srv][AssertionConsumerService][n_' + rname + '][order]" value="" id="f[srv][AssertionConsumerService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></li><li><label for="f[srv][AssertionConsumerService][n_' + rname + '][default]">Is default</label><input type="radio" name="f[srv][AssertionConsumerService][n_' + rname + '][default]" value="1" id="f[srv][AssertionConsumerService][n_' + rname + '][default]" class="acsdefault "  /></li></ol></li>';
+    var newelement = '<div class=\"srvgroup\"><div class=\"row\"><div class=\"small-3 columns\"><label for="f[srv][AssertionConsumerService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-8 large-7 columns inline\"><select name="f[srv][AssertionConsumerService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:PAOS">urn:oasis:names:tc:SAML:2.0:bindings:PAOS</option> <option value="urn:oasis:names:tc:SAML:2.0:profiles:browser-post">urn:oasis:names:tc:SAML:2.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:browser-post">urn:oasis:names:tc:SAML:1.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01">urn:oasis:names:tc:SAML:1.0:profiles:artifact-01</option> </select></div> <div class=\"small-1 large-2 columns\"></div></div>           <div class="row"><div class="small-3 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][url]" class=\"right inline\">URL</label></div><div class=\"small-8 large-7 columns inline\"><input name="f[srv][AssertionConsumerService][n_' + rname + '][url]" id="f[srv][AssertionConsumerService][n_' + rname + '][url]" type="text"></div><div class=\"small-3 large-2 columns\"><div class=\"small-3 large-3 columns\"> <input type="text" name="f[srv][AssertionConsumerService][n_' + rname + '][order]" value="" id="f[srv][AssertionConsumerService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div><div class=\"small-9 large-9 columns\"><label for="f[srv][AssertionConsumerService][n_' + rname + '][default]">Is default</label><input type="radio" name="f[srv][AssertionConsumerService][n_' + rname + '][default]" value="1" id="f[srv][AssertionConsumerService][n_' + rname + '][default]" class="acsdefault "  /></div></div></div></div></div>';
     $(this).parent().before(newelement);
 
 });
@@ -1541,7 +1535,7 @@ $("#nspartifactbtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<li><ol><li><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]">Binding Name</label><span class=""><select name="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select> </li><li><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][url]">URL</label><input name="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" type="text"> index <input type="text" name="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></li></ol></li>';
+    var newelement = '<div class="srvgroup"><div class="row"><div class=\"small-3 columns\"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-8 large-7 columns inline\"><select name="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select> </div> <div class=\"small-1 large-2 columns\"></div></div>           <div class="row"><div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" class="right inline">URL</label></div><div class=\"small-6 large-7 columns inline\"><input name="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" type="text"> </div><div class=\"small-3 large-2 columns\"><div class=\"small-3 large-3 columns\"> <input type="text" name="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div><div class="small-9 large-9 columns"></div></div></div>';
     $(this).parent().before(newelement);
 });
 $("#nidpartifactbtn").click(function() {
@@ -1581,7 +1575,7 @@ $("#nidpssocert").click(function() {
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
     
     rname = "newx"+rname;
-    var newelement = '<div class="certgroup"><li><label for="f[crt][idpsso][' + rname + '][type]">Certificate type</label><select name="f[crt][idpsso][' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][idpsso][' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][idpsso][' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][idpsso][' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)"></span></label><input type="text" name="f[crt][idpsso][' + rname + '][keyname]" value="" id="f[crt][idpsso][' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][idpsso][' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here."></span></label><textarea name="f[crt][idpsso][' + rname + '][certdata]" cols="65" rows="30" id="f[crt][idpsso][' + rname + '][certdata]" class="certdata notice" ></textarea></li></div>';
+    var newelement = '<div class="certgroup row"><div class="row"><div class="small-3 columns"><label for="f[crt][idpsso][' + rname + '][type]" class="inline right">Certificate type</label></div><div class="small-6 large-7 columns"><select name="f[crt][idpsso][' + rname + '][type]"> <option value="x509">x509</option> </select></div><div class="small-3 large-2 columns"></div><div class="small-3 large-2 columns"></div></div><div class="row"><div class="small-3 columns"><label for="f[crt][idpsso][' + rname + '][usage]" class="inline right">Certificate use</label></div><div class="small-6 large-7 columns"><select name="f[crt][idpsso][' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </div><div class="small-3 large-2 columns"></div></div><div class="row"><div class="small-3 columns"><label for="f[crt][idpsso][' + rname + '][keyname]" class="inline right">KeyName</label></div><div class="small-6 large-7 columns"><input type="text" name="f[crt][idpsso][' + rname + '][keyname]" value="" id="f[crt][idpsso][' + rname + '][keyname]" class=""  /> </div><div class="small-3 large-2 columns"></div></div><div class="row"><div class="small-3 columns"><label for="f[crt][idpsso][' + rname + '][certdata]" class="inline right">Certificate</label></div><div class="small-6 large-7 columns"><textarea name="f[crt][idpsso][' + rname + '][certdata]" cols="65" rows="30" id="f[crt][idpsso][' + rname + '][certdata]" class="certdata notice" ></textarea></div><div class="small-3 large-2 columns"></div></div>';
     $(this).parent().before(newelement);
 
 });
@@ -1592,7 +1586,7 @@ $("#naacert").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
     rname = "newx"+rname;
-    var newelement = '<li><label for="f[crt][aa][' + rname + '][type]">Certificate type</label><select name="f[crt][aa][' + rname + '][type]"> <option value="x509">x509</option> </select> </li><li><label for="f[crt][aa][' + rname + '][usage]">Certificate use</label><span class=""><select name="f[crt][aa][' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </span></li><li><label for="f[crt][aa][' + rname + '][keyname]">KeyName&nbsp;<span title="Multiple keynames separeated with coma(s)"></span></label><input type="text" name="f[crt][aa][' + rname + '][keyname]" value="" id="f[crt][aa][' + rname + '][keyname]" class=""  /> </li><li><label for="f[crt][aa][' + rname + '][certdata]">Certificate&nbsp;<span title="Paste your certificate here."></span></label><textarea name="f[crt][aa][' + rname + '][certdata]" cols="65" rows="30" id="f[crt][aa][' + rname + '][certdata]" class="certdata notice" ></textarea> </li>';
+    var newelement = '<div class="certgroup row"><div class="row"><div class="small-3 columns"><label for="f[crt][aa][' + rname + '][type]" class="inline right">Certificate type</label></div><div class="small-6 large-7 columns"><select name="f[crt][aa][' + rname + '][type]"> <option value="x509">x509</option> </select> </div><div class="small-3 large-2 columns"></div><div class="small-3 large-2 columns"></div></div><div class="row"><div class="small-3 columns"><label for="f[crt][aa][' + rname + '][usage]" class="inline right">Certificate use</label></div><div class="small-6 large-7 columns"><select name="f[crt][aa][' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </div><div class="small-3 large-2 columns"></div></div><div class="row"><div class="small-3 columns"><label for="f[crt][aa][' + rname + '][keyname]" class="inline right">KeyName</label></div><div class="small-6 large-7 columns"><input type="text" name="f[crt][aa][' + rname + '][keyname]" value="" id="f[crt][aa][' + rname + '][keyname]" class=""  /> </div><div class="small-3 large-2 columns"></div></div><div class="row"><div class="small-3 columns"><label for="f[crt][aa][' + rname + '][certdata]" class="inline right">Certificate</label></div><div class="small-6 large-7 columns"><textarea name="f[crt][aa][' + rname + '][certdata]" cols="65" rows="30" id="f[crt][aa][' + rname + '][certdata]" class="certdata notice" ></textarea> </div><div class="small-3 large-2 columns"></div></div> ';
     $(this).parent().before(newelement);
 
 });
@@ -2662,7 +2656,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lhelpdesk][" + nf + "]\">" + nfv + "</label><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\" class=\"validurl\"/> <button type=\"button\" class=\"btn langinputrm ui-icon-trash\" name=\"lhelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[lhelpdesk][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm ui-icon-trash button inline tiny left\" name=\"lhelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());;
           GINIT.initialize();
     });
     $("button#addldisplayname").click(function() {
@@ -2676,7 +2670,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[ldisplayname][" + nf + "]\">" + nfv + "</label><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"ldisplayname\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[ldisplayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"ldisplayname\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
          GINIT.initialize();
     });
 
@@ -2692,7 +2686,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][displayname][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][idpsso][displayname][" + nf + "]\" name=\"f[uii][idpsso][displayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiidisplayname\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[[uii][idpsso][displayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][idpsso][displayname][" + nf + "]\" name=\"f[uii][idpsso][displayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiidisplayname\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#idpadduiihelpdesk").click(function() {
@@ -2706,7 +2700,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][idpsso][helpdesk][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][idpsso][helpdesk][" + nf + "]\" name=\"f[uii][idpsso][helpdesk][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiihelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[[uii][idpsso][helpdesk][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][idpsso][helpdesk][" + nf + "]\" name=\"f[uii][idpsso][helpdesk][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiihelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#spadduiidisplay").click(function() {
@@ -2719,7 +2713,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiispnamerm\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm inline left tiny button alert\" name=\"uiispnamerm\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#spadduiihelpdesk").click(function() {
@@ -2732,7 +2726,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\">" + nfv + " </label><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"uiisphelpdeskrm\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm inline tiny left button alert\" name=\"uiisphelpdeskrm\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#spadduiidesc").click(function() {
@@ -2745,7 +2739,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][spsso][desc][" + nf + "]\">" + nfv + "</label><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea> <button type=\"button\" class=\"btn langinputrm\" name=\"uiispdescrm\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiispdescrm\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
 
@@ -2760,7 +2754,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[lname][" + nf + "]\">" + nfv + "</label><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\">"+rmbtn+"</button></li></li>");
+        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[lname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline alert\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
           GINIT.initialize();
     });
     $("button#idpadduiidesc").click(function() {
@@ -2774,7 +2768,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[uii][idpsso][desc][" + nf + "]\">" + nfv + " </label><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea> <button type=\"button\" class=\"btn langinputrm\" name=\"ldesc\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"ldesc\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
           GINIT.initialize();
     });
     $("button#addregpolicy").click(function() {
@@ -2789,11 +2783,11 @@ $("button#addlhelpdesk").click(function() {
         var rmbtn = $("button#helperbutttonrm").html();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[regpolicy][" + nf + "]\">" + nfv + " </label><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[regpolicy][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());;
           GINIT.initialize();
     });
     $("button#addlprivacyurlidpsso").click(function() {
-        var selected = $("li.addlprivacyurlidpsso option:selected").first();
+        var selected = $("span.addlprivacyurlidpsso option:selected").first();
         var nf = selected.val();
         var rmbtn = $("button#helperbutttonrm").html();
         if(typeof nf === 'undefined')
@@ -2801,16 +2795,14 @@ $("button#addlhelpdesk").click(function() {
             return false;
         }
         var nfv = selected.text();
-        var rmbtn = $("button#helperbutttonrm").html();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][idpsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li>");
+        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[prvurl][idpsso][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\">  <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#addlprivacyurlspsso").click(function() {
-        var selected = $("li.addlprivacyurlspsso option:selected").first();
+        var selected = $("span.addlprivacyurlspsso option:selected").first();
         var nf = selected.val();
-        var rmbtn = $("button#helperbutttonrm").html();
         if(typeof nf === 'undefined')
         {
             return false;
@@ -2819,7 +2811,7 @@ $("button#addlhelpdesk").click(function() {
         var rmbtn = $("button#helperbutttonrm").html();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $(this).parent().prepend("<li class=\"localized\"><label for=\"f[prvurl][spsso][" + nf + "]\">" + nfv + "</label><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/> <button type=\"button\" class=\"btn langinputrm\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></li></li>");
+        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[prvurl][spsso][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
 
@@ -2831,7 +2823,7 @@ $("#ncontactbtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<li><fieldset><ol><li><label for="f[contact][n_' + rname + '][type]">'+btnvalues[1]+'</label><span class=""><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></span></li><li><label for="f[contact][n_' + rname + '][fname]">'+btnvalues[2]+'</label><span class=""><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]"  /></span></li><li><label for="f[contact][n_' + rname + '][sname]">'+btnvalues[3]+'</label><span class=""><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]"  /></span></li><li><label for="f[contact][n_' + rname + '][email]">'+btnvalues[4]+'</label><span class=""><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]"  /></span></li><li class="rmelbtn fromprevtoright"><button type="button" class="btn contactrm" name="contact" value="'+rname+'">'+btnvalues[0]+'</button></li></ol></fieldset></li>';
+    var newelement = '<li class="row"><ol><li class="row"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][type]" class="right inline">'+btnvalues[1]+'</label></div><div class="small-6 large-7 columns inline"><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></div><div class="small-3 large-2 columns"></div></li> <li class="row"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][fname]" class="right inline">'+btnvalues[2]+'</label></div><div  class="small-6 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]" class="right inline" /></div><div class="small-3 large-2 columns"></div></li> <li class="row"><div  class="small-3 columns"><label for="f[contact][n_' + rname + '][sname]" class="right inline">'+btnvalues[3]+'</label></div><div class="small-6 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]" class="right inline" /></div><div class="small-3 large-2 columns"></div></li><li class="row"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][email]" class="right inline ">'+btnvalues[4]+'</label></div><div class="small-6 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]" class="right inline" /></div><div class="small-3 large-2 columns"></div></li><li class="rmelbtn row"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm tiny alert button right" name="contact" value="'+rname+'">'+btnvalues[0]+'</button></div><div class="small-3 large-2 columns"></div></li></ol></li>';
     $(this).parent().before(newelement);
           GINIT.initialize();
 
@@ -2865,3 +2857,46 @@ $("#ncontactbtn").click(function() {
     });
 
 $("div.section").parent().addClass("section");
+
+
+
+
+
+
+$("div#loginform form").submit(function(){
+     //e.preventDefault;
+     var link = $("div#loginform form").attr('action');
+     var str = $(this).serializeArray();
+     $.ajax({
+        type: "POST",
+        cache: false,
+        timeout: 2500,
+        url: link, // Send the login info to this page
+        data: str,
+        beforeSend: function(){
+              $("#loginresponse").html("").hide(); 
+
+        },
+        success: function(data){
+            if(data == 'OK')
+            {
+               $('#loginform').foundation('reveal', 'close');               
+               setTimeout('go_to_private_page()', 1000); 
+            }
+            else
+            {
+              $("#loginresponse").html(data).show(); 
+
+            }
+           
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+             ("#loginresponse").html("Error").show();
+
+        },
+     
+     });
+     return false;
+
+});
+

@@ -35,6 +35,7 @@ class Manage extends MY_Controller
          * @todo add check loggedin
          */
         $this->tmp_providers = new models\Providers;
+        MY_Controller::$menuactive = 'f';
     }
 
     function index()
@@ -55,6 +56,7 @@ class Manage extends MY_Controller
                     'desc' => '' . $v->getDescription() . '',
                     'default' => '' . $v->getIsDefault() . '');
             }
+            $data['titlepage'] = lang('rr_federation_list');
             $data['content_view'] = 'federation/list_view.php';
             $this->load->view('page', $data);
         }
@@ -293,6 +295,7 @@ class Manage extends MY_Controller
         $required_attributes = $federation->getAttributesRequirement()->getValues();
 
 
+        $data['titlepage'] = lang('rr_feddetail').': '.$data['federation_name'];
         $data['meta_link'] = base_url() . 'metadata/federation/' . base64url_encode($data['federation_name']) . '/metadata.xml';
         $data['meta_link_signed'] = base_url() . 'signedmetadata/federation/' . base64url_encode($data['federation_name']) . '/metadata.xml';
 

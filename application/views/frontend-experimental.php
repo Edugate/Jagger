@@ -1,9 +1,11 @@
 <?php
 $loggedin = $this->j_auth->logged_in();
+
 $isAdministrator = FALSE;
 if($loggedin)
 {
    $isAdministrator = (boolean) $this->j_auth->isAdministrator();
+   $args['user']  = $this->j_auth->current_user();
 }
 
 $langs = array(
@@ -65,9 +67,9 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';     
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />';
-        echo '<link rel="stylesheet" href="'.$foundation.'css/foundation.css" />';
        // echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/'.$colorTheme.'.css" />';
-        echo '<script src="' . $foundation . 'js/vendor/modernizr.js"></script>';
+        echo '<link rel="stylesheet" href="'.$foundation.'css/foundation.css" />';
+        echo '<script src="' . $foundation . 'js/modernizr.js"></script>';
 
         
         ?>
@@ -77,6 +79,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <!--[if lt IE 7]>
                     <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
                 <![endif]-->
+<header>
         <?php
         $iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
         if(isset($iscookieconsent['status']) && (boolean) $iscookieconsent['status'] === TRUE && isset($iscookieconsent['value']))
@@ -100,14 +103,26 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 
 $this->load->view('toppanel',$args);
 
-        ?>
 
+        if(!empty($titlepage))
+        {
+           if(!empty($providerlogourl))
+           {
+              echo '<div id="titlepage" class="fullWidth"><div class="row"><div class="large-8 columns left">'.$titlepage.'</div><div class="large-4 columns show-for-medium-up"><img src="'.$providerlogourl.'" class="right" style="max-height: 40px; background-color: white;"/></div></div></div>';
+           }
+           else
+           {
+              echo '<div id="titlepage" class="fullWidth"><div class="row" style="text-align:center;">'.$titlepage.'</div></div>';
+           }
+        }
 
+?>
+</header>
 
         <div id="container" class="row">
             <div class="header-container">
                 <header class="wrapper clearfix" role="banner">
-                    <div class="header-top clearfix" style="text-align: right;">
+                    <div class="header-top clearfix hide-for-small-only" style="text-align: right;">
                         <?php
                         if (!empty($provider_logo_url))
                         {
@@ -155,11 +170,11 @@ $this->load->view('toppanel',$args);
                                 if(!empty($showloginform))
                                 {
                                    $datalogin['showloginform'] = $showloginform;
-                                   $this->load->view('auth/login',$datalogin);
+                                   $this->load->view('loginform_view',$datalogin);
                                 }
                                 else
                                 {
-                                      $this->load->view('auth/login');
+                                      $this->load->view('loginform_view');
                                  }
 
                             }
@@ -189,9 +204,10 @@ $this->load->view('toppanel',$args);
             <div id="inpre_footer"></div>
         </div>
 
-            <div id="footer">
+            <div id="footer" class="fullWidth">
 
-                <footer>
+                <footer class="row">
+                  <div class="large-12 columns">
                     <?php
                     $footer = $this->rrpreference->getPreferences('pageFooter');
                     if(isset($footer['status']) && (boolean) $footer['status'] === TRUE && isset($footer['value']))
@@ -204,6 +220,7 @@ $this->load->view('toppanel',$args);
                         echo echo_memory_usage();
                     }
                     ?>
+                  </div>
 
                 </footer>
             </div>
@@ -217,11 +234,38 @@ $this->load->view('toppanel',$args);
              <input type="hidden" name="csrfname" value="<?php echo $this->security->get_csrf_token_name(); ?>">
              <input type="hidden" name="csrfhash" value="<?php echo $this->security->get_csrf_hash(); ?>">
         </div>
+
+
+    <div id="languageset" class="reveal-modal tiny" data-reveal>
+                  <h4>Change language</h4>
+                   <form action="<?php echo $base_url.'ajax/changelanguage/';?>" method="POST">
+                   <label>
+                   <select  name="changelanguage">
+                     <?php
+                       $selset = false;
+                       foreach($langs as $key=>$value)
+                       {
+                          if($key === MY_Controller::getLang())
+                          {
+                              echo '<option value="'.$value['path'].'" selected="selected">'.strtoupper($key).'</option>';
+                          }
+                          else
+                          {
+                              echo '<option value="'.$value['path'].'">('.$key.') '.$value['val'].'</option>';
+
+                          }
+                       }
+                     ?>
+                   </select>
+                   </label>
+                  </form>
+                </div>
+
         
         <button id="jquerybubblepopupthemes" style="display:none;" value="<?php echo $jquerybubblepopupthemes; ?>"></button> 
 
-        <script src="<?php echo $foundation;?>js/vendor/jquery.js"></script>
-        <script src="<?php echo $foundation;?>js/vendor/jquery-ui-1.10.4.custom.min.js"></script>
+        <script src="<?php echo $foundation;?>js/jquery.js"></script>
+        <script src="<?php echo $foundation;?>js/jquery-ui-1.10.4.custom.min.js"></script>
 
         <script type="text/javascript" src="<?php echo $base_url; ?>js/jquery.uitablefilter.js"></script>
         <?php
@@ -232,7 +276,18 @@ $this->load->view('toppanel',$args);
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.tablesorter.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.inputfocus-0.9.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery-bubble-popup-v3.min.js"></script>';
+?>
+        <script src="<?php echo $foundation;?>js/foundation.min.js"></script>
+        <script src="<?php echo $foundation;?>js/foundation.topbar.js"></script>
+        <script src="<?php echo $foundation;?>js/foundation.tab.js"></script>
+        <script src="<?php echo $foundation;?>js/foundation.alert.js"></script>
+        <script src="<?php echo $foundation;?>js/foundation.reveal.js"></script>
+
+
+<?php
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.simplemodal.js"></script>';
+
+
         echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v3.js"></script>';
         if (!empty($load_matrix_js))
         {
@@ -242,9 +297,6 @@ $this->load->view('toppanel',$args);
         }
         ?>
 
-        <script src="<?php echo $foundation;?>js/foundation.min.js"></script>
-        <script src="<?php echo $foundation;?>js/foundation/foundation.topbar.js"></script>
-        <script src="<?php echo $foundation;?>js/foundation/foundation.tab.js"></script>
     <script>
       $(document).foundation();
     </script>

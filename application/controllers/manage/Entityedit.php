@@ -728,13 +728,13 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'contacts', 'value' => ''.lang('tabcnts').'', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => ''.lang('tabuii').'', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
         $menutabs[] = array('id' => 'tabsaml', 'value' => ''.lang('tabsaml').'', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
-    //    $menutabs[] = array('id' => 'privacy', 'value' => ''.lang('tabprivacy').'', 'form' => $this->form_element->NgeneratePrivacy($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => ''.lang('tabcerts').'', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
         $menutabs[] = array('id' => 'entcategories', 'value' => ''.lang('tabentcategories').'', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
         $menutabs[] = array('id' => 'staticmetadata', 'value' => ''.lang('tabstaticmeta').'', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
         $menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
 
         $data['menutabs'] = $menutabs;
+        $data['titlepage'] = '<a href="'.base_url() . 'providers/detail/show/'.$data['entdetail']['id'].'">'.$data['entdetail']['displayname'].'</a>';
         $data['content_view'] = 'manage/entityedit_view.php';
         $this->load->view('page', $data);
     }
