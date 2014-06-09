@@ -830,7 +830,7 @@ class Form_element
             $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-6 large-7 columns">' . form_input(
                             $arg
                     ) . '</div>';
-            $result .='<div class="small-3 large-2 columns"><button type="button" class="inline left button tiny" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
+            $result .='<div class="small-3 large-2 columns"><button type="button" class="inline left button tiny alert rmfield" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
         }
         else
         {
@@ -2036,7 +2036,7 @@ class Form_element
              */
             $RequestInitiatorPart = '<fieldset><legend>' . lang('requestinitatorlocations') . '</legend>';
             $ri = array();
-            if (array_key_exists('RequestInitiator', $g))
+            if (!$sessform && array_key_exists('RequestInitiator', $g))
             {
                 foreach ($g['RequestInitiator'] as $k3 => $v3)
                 {
@@ -2055,7 +2055,7 @@ class Form_element
                         $urlnotice = 'notice';
                     }
                     $r = '<div class="row">';
-                    $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][RequestInitiator][' . $v3->getId() . '][url]', $furl, 'acsurl ' . $urlnotice . '', FALSE, NULL);
+                    $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][RequestInitiator][' . $v3->getId() . '][url]', $furl, 'acsurl ' . $urlnotice . '', TRUE, NULL);
                     $r .= '</div>';
                     $ri[] = $r;
                     if (isset($ses['srv']['RequestInitiator']['' . $v3->getId() . '']))
@@ -2075,7 +2075,7 @@ class Form_element
                     }
 
                     $r = '<div class="row">';
-                    $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][RequestInitiator][' . $k4 . '][url]', set_value('f[srv][RequestInitiator][' . $k4 . '][url]', $purl), 'acsurl notice', FALSE, NULL);
+                    $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][RequestInitiator][' . $k4 . '][url]', set_value('f[srv][RequestInitiator][' . $k4 . '][url]', $purl), 'acsurl notice', TRUE, NULL);
                     $r .= '</div>';
 
                     $ri[] = $r;
@@ -2083,10 +2083,9 @@ class Form_element
                 }
             }
             $RequestInitiatorPart .= implode('', $ri);
-            $newelement = '<div><button class="editbutton addicon smallerbtn button tiny" type="button" id="nribtn">' . lang('addnewreqinit') . '</button></div>';
+            $newelement = '<div><button class="editbutton addicon smallerbtn button tiny" type="button" id="nribtn" value="'.lang('rr_remove').'">' . lang('addnewreqinit') . '</button></div>';
             $RequestInitiatorPart .= $newelement . '</fieldset>';
             $result[] = $RequestInitiatorPart;
-            return $result;
             /**
              * end RequestInitiator
              */
@@ -2098,7 +2097,8 @@ class Form_element
             /**
              * list existing DiscoveryResponse
              */
-            if (array_key_exists('DiscoveryResponse', $g))
+            \log_message('debug','DUPA DiscoveryResponse');
+            if (!$sessform && array_key_exists('DiscoveryResponse', $g))
             {
                 foreach ($g['DiscoveryResponse'] as $k3 => $v3)
                 {
@@ -2138,17 +2138,30 @@ class Form_element
                     {
                         $bindnotice = 'notice';
                     }
-                    $r = '<div><div>';
-                    $r .= '<div>' . form_label(lang('rr_bindingname'), 'f[srv][DiscoveryResponse][' . $v3->getId() . '][bind]');
-                    $r .= '<span class="' . $bindnotice . '">' . form_dropdown('f[srv][DiscoveryResponse][' . $v3->getId() . '][bind]', array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'), $fbind) . '</span></div>';
-                    $r .= '<div>' . form_label(lang('rr_url'), 'f[srv][DiscoveryResponse][' . $v3->getId() . '][url]');
+                    $r = '<div class="srvgroup">';
+                     
+                    $r .= '<div class="row">';
+
+
+
+                    $r .= $this->_generateLabelSelect(lang('rr_bindingname'),'f[srv][DiscoveryResponse][' . $v3->getId() . '][bind]',array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'),$fbind,'',FALSE); 
+
+                    $r .='</div>';
+
+
+                    $r .= '<div class="row">';
+
+                    $r .= '<div  class="small-3 columns">' ;
+                    $r .= '<label for="f[srv][DiscoveryResponse][' . $v3->getId() . '][url]" class="inline right">' . lang('rr_url') . '</label>';
+                    $r .= '</div>';
+                    $r .= '<div class="small-6 large-7 columns inline">';
                     $r .= form_input(array(
                                 'name' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][url]',
                                 'id' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][url]',
                                 'value' => $furl,
                                 'class' => 'acsurl ' . $urlnotice . '',
-                            )) . '';
-                    $r .= 'index ' . form_input(array(
+                            )) . '</div>';
+                    $r .= '<div class="small-3 large-2 columns"><div class="small-3 large-3 columns">' . form_input(array(
                                 'name' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][order]',
                                 'id' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][order]',
                                 'size' => '3',
@@ -2156,9 +2169,9 @@ class Form_element
                                 'class' => 'acsindex ' . $ordernotice,
                                 'value' => $forder,
                     ));
+                    $r .= '</div><div class="small-9 large-9 columns"></div>';
+
                     $r .= '</div>';
-
-
 
 
 
@@ -2201,7 +2214,7 @@ class Form_element
                 }
             }
             $DiscoverResponsePart .= implode('', $dr);
-            $newelement = '<div><button class="editbutton addicon smallerbtn" type="button" id="ndrbtn">DUPA' . lang('addnewds') . '</button></div>';
+            $newelement = '<div><button class="editbutton addicon smallerbtn button tiny" type="button" id="ndrbtn">' . lang('addnewds') . '</button></div>';
             $DiscoverResponsePart .= $newelement . '';
             $result[] = $DiscoverResponsePart . '</fieldset>';
 
@@ -2220,7 +2233,7 @@ class Form_element
             $spssoprotocols = $ent->getProtocolSupport('spsso');
             $selected_options = array();
             $spssonotice = '';
-            if ($sessform && isset($entsession['prot']['spsso']) && is_array($entsession['prot']['spsso']))
+            if ($sessform && isset($ses['prot']['spsso']) && is_array($ses['prot']['spsso']))
             {
                 if (count(array_diff($ses['prot']['spsso'], $spssoprotocols)) > 0 || count(array_diff($spssoprotocols, $ses['prot']['spsso'])) > 0)
                 {
@@ -2238,7 +2251,11 @@ class Form_element
                     $selected_options[$p] = $p;
                 }
             }
-            $r .= '<li class="' . $spssonotice . '">';
+            $r .= '<div class="row">';
+            $r .= '<div class="small-3 large-3 columns">&nbsp;';
+            $r .= '</div>';
+            $r .= '<div class="small-6 large-7 columns inline">';
+            $r .= '<div class="' . $spssonotice . '">';
             $r .= '<ul class="checkboxlist">';
             foreach ($allowedoptions as $a)
             {
@@ -2250,12 +2267,15 @@ class Form_element
                 $r .= '<li>' . form_checkbox(array('name' => 'f[prot][spsso][]', 'id' => 'f[prot][spsso][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
             }
             $r .= '</ul>';
-            $r .= '</li>';
+            $r .= '</div>';
+            $r .='</div>';
+            $r .='<div class="small-1 large-2 colum">';
+            $r .='</div>';
+            $r .= '</div>'; //row
             $result[] = '';
             $result[] = '<div class="langgroup">Supported protocol enumeration</div>';
             $result[] = $r;
             $result[] = '';
-
 
             /**
              * end protocol enumerations
@@ -2299,14 +2319,18 @@ class Form_element
             {
                 $spssonameidnotice = 'notice';
             }
-            $r .= '<li>' . form_label('', 'f[nameids][spsso][]') . '<div class="nsortable ' . $spssonameidnotice . '">';
-            foreach ($chp as $n)
-            {
-                $r .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
-            }
-            $r .= '</div></li>';
+            $r .= '<div class="row">';
+            $r .= '<div class="small-3 large-3 columns">' . form_label('Supported name identifiers', 'f[nameids][spsso][]') . '</div>';
+            $r .='<div class="small-8 large-7 columns nsortable ' . $spssonameidnotice . '">';
+                foreach ($chp as $n)
+                {
+                    $r .= '<div>' . form_checkbox($n) . $n['value'] . '</div>';
+                }
+            $r .='</div>';
+            $r .= '<div class="columns"></div>';
+
+            $r .= '</div>'; //row
             $result[] = '';
-            $result[] = '<div class="langgroup">Supported name identifiers</div>';
             $result[] = $r;
             $result[] = '';
 
@@ -2360,7 +2384,7 @@ class Form_element
             $privaceurlnotice = 'notice';
         }
 
-        $r .= $this->_generateLabelInput(lang('rr_url'), 'f[privacyurl]', $t_privacyurl, $privaceurlnotice, FALSE);
+        $r .= $this->_generateLabelInput(lang('rr_url'), 'f[privacyurl]', $t_privacyurl, $privaceurlnotice, FALSE,NULL);
         $r .= '';
         $result[] = $r;
         $result[] = '';

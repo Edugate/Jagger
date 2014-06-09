@@ -46,6 +46,7 @@ class Federation_registration extends MY_Controller
         $access = $this->zacl->check_acl('federation','read','','');
         if($access)
         {
+                $data['titlepage'] =  lang('rr_federation_regform_title');
                 $data['content_view'] = 'federation/federation_register_form';
         }
         else

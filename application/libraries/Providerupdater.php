@@ -39,6 +39,9 @@ class Providerupdater {
 
     public function updateProvider(models\Provider $ent, array $ch)
     {
+        echo '<pre>';
+        print_r($ch['srv']);
+        echo '</pre>';
         // $m - array for modifications
         $m  = array();
         $type = $ent->getType();
@@ -1030,6 +1033,7 @@ class Providerupdater {
                     elseif ($srvtype === 'RequestInitiator')
                     {
                         log_message('debug', 'GG:RequestInitiator type found');
+                        log_message('debug', 'DUPA:RequestInitiator: '.serialize($srvs['' . $srvtype . '']));
                         if ($type === 'IDP')
                         {
                             log_message('debug', 'GG:RequestInitiator entity recognized as IDP removin service');
@@ -1038,13 +1042,18 @@ class Providerupdater {
                         }
                         else
                         {
-                            if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']))
+                            if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']) && !empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']))
                             {
                                 $v->setDefault(FALSE);
                                 $v->setUrl($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']);
                                 $v->setOrderNull();
                                 $v->setBindingName('urn:oasis:names:tc:SAML:profiles:SSO:request-init');
                                 $this->em->persist($v);
+                            }
+                            else
+                            {
+                               $ent->removeServiceLocation($v);
+                               $this->em->remove($v); 
                             }
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
                         }

@@ -583,6 +583,32 @@ class Entityedit extends MY_Controller {
         {
            $data['regpolicy'] = array();
         }
+
+        if(isset($data['srv']['RequestInitiator']))
+        {
+           $data['srv']['RequestInitiator'] = array_filter($data['srv']['RequestInitiator']);
+        }
+        else
+        {
+           $data['srv']['RequestInitiator'] = array();
+        }
+        if(isset($data['srv']['DiscoveryResponse']))
+        {
+           $data['srv']['DiscoveryResponse'] = array_filter($data['srv']['DiscoveryResponse']);
+        }
+        else
+        {
+           $data['srv']['DiscoveryResponse'] = array();
+        }
+        if(isset($data['prot']['spsso']))
+        {
+            log_message('debug','DUPA ssp: '.serialize($data['prot']['spsso'])); 
+            $data['prot']['spsso'] = array_filter($data['prot']['spsso']);
+        }
+        else
+        {
+             $data['prot']['spsso'] = array();
+        }
         if(isset($data['contact']))
         {
             foreach($data['contact'] as $k=>$v)

@@ -102,6 +102,20 @@ var GINIT = {
 
        
     });
+    $("button.rmfield").click(function(){
+         var lrow = $(this).closest('div.row');
+         var bval = $(this).attr('value');
+         var bname = $(this).attr('name');
+         lrow.find("input").each(function(){
+           $(this).attr('value','');
+        });
+        lrow.find("textarea").each(function(){
+           $(this).val("");
+        });
+        lrow.remove();
+        GINIT.initialize();
+       
+    });
     $("button.contactrm").click(function(){
          var bval = $(this).attr('value');
          var bname = $(this).attr('name');
@@ -1392,46 +1406,6 @@ var adjustMenu = function() {
     }
 }
 
-$(function() {
-    var sticky_navigation_offset_top = 0;
-    try {
-        sticky_navigation_offset_top = $('nav').offset().top;
-    }
-    catch (err)
-    {
-        return false;
-    }
-    if ($('#submenuProvider').length)
-    {
-        var sticky_submenu_offset_top = $('#submenuProvider').offset().top;
-    }
-
-    // our function that decides weather the navigation bar should have "fixed" css position or not.
-    var sticky_navigation = function() {
-        var scroll_top = $(window).scrollTop(); // our current vertical position from the top
-        var widthelement = $('nav').width();
-        // if we've scrolled more than the navigation, change its position to fixed to stick to top, otherwise change it back to relative
-        if (scroll_top > sticky_navigation_offset_top) {
-            //$('nav').css({ 'position': 'fixed', 'top':0, 'left':0, 'width': '100%','zIndex':9999});
-            $('nav').css({'position': 'fixed', 'top': 0, 'width': widthelement, 'zIndex': 999});
-
-        } else {
-            $('nav').css({'position': 'relative', 'width': 'auto', });
-        }
-        if (sticky_submenu_offset_top != 'undefined')
-        {
-            if (scroll_top > sticky_submenu_offset_top) {
-                $('#submenuProvider').css({'position': 'fixed', 'top': 50, 'left': 0, 'width': '100%', 'zIndex': 9999, 'clear': 'both'});
-            } else {
-                $('#submenuProvider').css({'position': 'relative'});
-            }
-        }
-    };
- //   sticky_navigation();
-    $(window).scroll(function() {
- //       sticky_navigation();
-    });
-});
 
 
 $(function() {
@@ -1553,7 +1527,7 @@ $("#ndrbtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<li><ol><li><label for="f[srv][DiscoveryResponse][n_' + rname + '][bind]">Binding Name</label><span class=""><select name="f[srv][DiscoveryResponse][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol">urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol</option></select> </li><li><label for="f[srv][DiscoveryResponse][n_' + rname + '][url]">URL</label><input name="f[srv][DiscoveryResponse][n_' + rname + '][url]" id="f[srv][DiscoveryResponse][n_' + rname + '][url]" type="text"> index <input type="text" name="f[srv][DiscoveryResponse][n_' + rname + '][order]" value="" id="f[srv][DiscoveryResponse][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></li></ol></li>';
+    var newelement = '<div class="srvgroup"><div class="row"><div class=\"small-3 columns\"><label for="f[srv][DiscoveryResponse][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div><select name="f[srv][DiscoveryResponse][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol">urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol</option></select> </div><div></div></div><div class="row"><div><label for="f[srv][DiscoveryResponse][n_' + rname + '][url]">URL</label></div><div><div><input name="f[srv][DiscoveryResponse][n_' + rname + '][url]" id="f[srv][DiscoveryResponse][n_' + rname + '][url]" type="text"></div><div><input type="text" name="f[srv][DiscoveryResponse][n_' + rname + '][order]" value="" id="f[srv][DiscoveryResponse][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div></div>';
     $(this).parent().before(newelement);
 
 });
@@ -1563,8 +1537,10 @@ $("#nribtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<li><label for="f[srv][RequestInitiator][n_' + rname + '][url]">URL</label><input name="f[srv][RequestInitiator][n_' + rname + '][url]" id="f[srv][RequestInitiator][n_' + rname + '][url]" type="text"></li>';
+    var newelement = '<div class="row"><div class="small-3 columns"><label for="f[srv][RequestInitiator][n_' + rname + '][url]" class="right inline">URL</label></div><div class="small-6 large-7 columns"><input name="f[srv][RequestInitiator][n_' + rname + '][url]" id="f[srv][RequestInitiator][n_' + rname + '][url]" type="text"></div><div class="small-3 large-2 columns"><button type="button" class="inline left button tiny alert rmfield" name="rmfield" value="">remove</button></div></div>';
     $(this).parent().before(newelement);
+     GINIT.initialize();
+
 
 });
 $("#nidpssocert").click(function() {
@@ -2110,6 +2086,8 @@ $(document).ready(function() {
             position: ["20%", ],
             overlayId: 'simpledialog-overlay',
             minHeight: '500px',
+            Height: '500px',
+            minWidth: '600px',
             containerId: 'simpledialog-container',
             onShow: function(dialog) {
                 var modal = this;
