@@ -1,8 +1,7 @@
-<div id="pagetitle"><?php echo lang('rrfedcatslist');?></div>
 <?php
 if(!empty($showaddbtn) && $showaddbtn === TRUE)
 {
-   echo '<div style="width-min: 100%; text-align: right; margin-right: 0px" class="buttons"><a href="'.base_url().'manage/fedcategory/addnew"><button class="addbutton addicon">'.lang('rr_add').'</button></a></div>';
+   echo '<div class="small-12 columns text-right"><a href="'.base_url().'manage/fedcategory/addnew" class="button small addbutton addicon">'.lang('rr_add').'</a></div>';
 }
 
 if(count($result) > 0)

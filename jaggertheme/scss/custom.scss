@@ -11,12 +11,18 @@ $alert-background: red;
 
 }
 
-article {
+iarticle {
+
 
   background-color: white;
   
 }
+.tabs-content {
 
+
+  background-color: white;
+
+}
 #navbuttons1 {
   @include sub-nav();
 }
@@ -198,3 +204,21 @@ div.langgroup {
   font-family: monospace;
   height: 50px;
 }
+div#wrapper {
+   padding-top: 10px;
+
+}
+
+
+#simplemodal-overlay {background-color:#aaaaaa; cursor:wait;}
+.simplemodal-container {
+    min-width: 600px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: $body-bg;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+
+}
+
+
+

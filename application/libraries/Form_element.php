@@ -1847,7 +1847,7 @@ class Form_element
             $ACSPart = '<fieldset><legend>' . lang('artifactresolutionservice') . ' <small><i>SPSSODescriptor</i></small></legend>';
             $acs = array();
 
-            if (isset($g['SPArtifactResolutionService']) && is_array($g['SPArtifactResolutionService']))
+            if (!$sessform && isset($g['SPArtifactResolutionService']) && is_array($g['SPArtifactResolutionService']))
             {
                 foreach ($g['SPArtifactResolutionService'] as $k3 => $v3)
                 {
@@ -1891,28 +1891,25 @@ class Form_element
 
                     $r = '<div class="srvgroup">';
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLabelSelect(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]', $artifacts_binding, $fbind, $bindnotice, FALSE);
-                    $r .= '</div>';
-
-                    $r .= '<div class="small-12 columns"><div class="small-3 columns">';
-                    $r .= '<label for="f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]" class="inline right">' . lang('rr_url') . '</label>';
-                    $r .= '</div>';
-                    $r .= '<div class="small-6 large-7 columns inline ">' . form_input(array(
-                                'name' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]',
-                                'id' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]',
-                                'value' => $furl,
-                                'class' => 'acsurl ' . $urlnotice . '',
-                            )) . '</div>';
-                    $r .= '<div class="small-3 large-2 columns"><div class="small-3 large-3 columns">' . form_input(array(
+                    $r .= '<div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]" class="right inline ">' . lang('rr_bindingname') . '</label></div><div class="small-6 large-7 columns inline ">' .
+                             form_dropdown('f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]', $artifacts_binding, $fbind);
+                     $r .=  '</div>';
+                    $r .='<div class="small-3 large-2 columns">';
+                    $r .= '<div class="small-12 large-6 columns left">' . form_input(array(
                                 'name' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][order]',
                                 'id' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][order]',
                                 'size' => '3',
                                 'maxlength' => '3',
                                 'class' => 'acsindex ' . $ordernotice,
                                 'value' => $forder,
-                    ));
+                    )).'</div>';
+                    $r .='</div>';
+                    $r .= '</div>'; // row
 
-                    $r .='</div><div class="small-9 large-9 columns"></div></div></div>';
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]', $furl,'acsurl ' . $urlnotice . '', TRUE,FALSE);
+
+                        $r .='</div></div>';
                     $acs[] = $r;
                     if ($sessform && isset($ses['srv']['SPArtifactResolutionService']['' . $v3->getId() . '']))
                     {
@@ -1926,22 +1923,12 @@ class Form_element
                 {
 
 
-                    $r = '<div class="DUPA">';
+                    $r = '<div class="srvgroup">';
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLabelSelect(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, $v4['bind'], '', FALSE);
-                    $r .= '</div>';
-                    $r .= '<div class="small-12 columns"><div class="small-3 columns">';
-                    $r .= '<label for="f[srv][SPArtifactResolutionService][' . $k4 . '][url]" class="inline right">' . lang('rr_url') . '</label>';
-                    $r .= '</div>';
-                    $r .= '<div class="small-6 large-7 columns inline ">';
-                    $r .= form_input(array(
-                        'name' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]',
-                        'id' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]',
-                        'value' => set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['url']),
-                        'class' => 'acsurl notice',
-                    ));
-                    $r .= '</div>';
-                    $r .= '<div class="small-3 large-2 columns"><div class="small-3 large-3 columns">';
+                    $r .= '<div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][' . $k4 . '][bind]" class="right inline ">' . lang('rr_bindingname') . '</label></div><div class="small-6 large-7 columns inline ">' .
+                    form_dropdown('f[srv][SPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, $v4['bind'])
+                    . '</div>';
+                    $r .='<div class="small-2 large-1 columns end">';
                     $r .= '' . form_input(array(
                                 'name' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][order]',
                                 'id' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][order]',
@@ -1951,7 +1938,27 @@ class Form_element
                                 'value' => set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['order']),
                             )) . '';
 
-                    $r .='</div><div class="small-9 large-9 columns"></div></div></div>';
+
+
+                    $r .='</div>';
+                    $r .= '</div>';
+
+                    $r .= '<div class="small-12 columns"><div class="small-3 columns">';
+                    $r .= '<label for="f[srv][SPArtifactResolutionService][' . $k4 . '][url]" class="inline right">' . lang('rr_url') . '</label>';
+                    $r .= '</div>';
+                    $r .= '<div class="small-6 large-7 columns">';
+                    $r .= form_input(array(
+                        'name' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]',
+                        'id' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]',
+                        'value' => set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['url']),
+                        'class' => 'acsurl notice',
+                    ));
+                    $r .= '</div>';
+                    $r .= '<div class="small-3 large-2 columns">';
+                     
+                    $r .= '<button class="inline left button tiny alert rmfield" name="rmfield">'.lang('rr_remove').'</button>';
+                    
+                    $r .='</div></div></div>';
                     $acs[] = $r;
                 }
             }
@@ -2078,39 +2085,12 @@ class Form_element
                     $turl = $v3->getUrl();
                     $torder = $v3->getOrder();
                     $tbind = $v3->getBindingName();
-                    if ($sessform && isset($ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
-                    {
-                        if (array_key_exists('url', $ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
-                        {
-                            $turl = $ses['srv']['DiscoveryResponse'][$v3->getId()]['url'];
-                        }
-                        if (array_key_exists('order', $ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
-                        {
-                            $torder = $ses['srv']['DiscoveryResponse'][$v3->getId()]['order'];
-                        }
-                        if (array_key_exists('bind', $ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
-                        {
-                            $tbind = $ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']['bind'];
-                        }
-                    }
                     $furl = set_value('f[srv][DiscoveryResponse][' . $v3->getId() . '][url]', $turl);
                     $forder = set_value('f[srv][DiscoveryResponse][' . $v3->getId() . '][order]', $torder);
                     $fbind = set_value('f[srv][DiscoveryResponse][' . $v3->getId() . '][bind]', $tbind);
                     $urlnotice = '';
                     $ordernotice = '';
                     $bindnotice = '';
-                    if ($furl != $v3->getUrl())
-                    {
-                        $urlnotice = 'notice';
-                    }
-                    if ($forder != $v3->getOrder())
-                    {
-                        $ordernotice = 'notice';
-                    }
-                    if ($fbind != $v3->getBindingName())
-                    {
-                        $bindnotice = 'notice';
-                    }
                     $r = '<div class="srvgroup">';
                      
                     $r .= '<div class="small-12 columns">';
@@ -3109,18 +3089,32 @@ class Form_element
     public function generateFederationEditForm(models\Federation $federation)
     {
         $f = null;
-        $f .= form_fieldset(lang('rr_basicinformation'));
-        $f .='<ol><li>' . form_label(lang('fednameinmeta'), 'urn');
-        $f .= form_input('urn', set_value('urn', $federation->getUrn())) . '</li>';
-        $f .= '<li>' . form_label(lang('rr_fed_publisher'), 'publisher') . form_input('publisher', set_value('publisher', $federation->getPublisher())) . '</li>';
-        $f .= '<li>' . form_label(lang('rr_isfedpublic') . ' ' . showBubbleHelp(lang('rhelppublicfed')), 'ispublic') . form_checkbox('ispublic', 'accept', set_value('ispublic', $federation->getPublic())) . '</li>';
-        $f .= '<li>' . form_label(lang('rr_include_attr_in_meta'), 'incattrs') . form_checkbox('incattrs', 'accept', set_value('incattrs', $federation->getAttrsInmeta())) . '</li>';
-        $f .= '<li>' . form_label(lang('rr_lexport_enabled'), 'lexport') . form_checkbox('lexport', 'accept', set_value('lexport', $federation->getLocalExport())) . '</li>';
-        $f .='<li>' . form_label(lang('rr_description'), 'description');
-        $f .=form_textarea('description', set_value('description', $federation->getDescription())) . '</li>';
-        $f .='<li>' . form_label(lang('rr_fed_tou'), 'tou');
-        $f .= form_textarea('tou', set_value('tou', $federation->getTou())) . '</li>';
-        $f .='</ol>' . form_fieldset_close();
+        $f .= '<div class="small-12 columns">';
+        $f .='<div class="small-3 columns">' . form_label(lang('fednameinmeta'), 'urn').'</div>';
+        $f .= '<div class="small-8 large-7 columns">'.form_input('urn', set_value('urn', $federation->getUrn())) . '</div><div></div>';
+        $f .= '</div>';
+        $f .= '<div class="small-12 columns">';
+        $f .= '<div class="small-3 columns">' . form_label(lang('rr_fed_publisher'), 'publisher') .'</div><div class="small-8 large-7 columns">'. form_input('publisher', set_value('publisher', $federation->getPublisher())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '</div>';
+        $f .= '<div class="small-12 columns">';
+        $f .= '<div class="small-3 columns">' . form_label(lang('rr_isfedpublic') . ' ' . showBubbleHelp(lang('rhelppublicfed')), 'ispublic') .'</div><div class="small-8 large-7 columns">' .form_checkbox('ispublic', 'accept', set_value('ispublic', $federation->getPublic())) . '</div>';
+        $f .= '</div>';
+        $f .= '<div class="small-12 columns">';
+        $f .= '<div class="small-3 columns">' . form_label(lang('rr_include_attr_in_meta'), 'incattrs') .'</div><div class="small-8 large-7 columns">'. form_checkbox('incattrs', 'accept', set_value('incattrs', $federation->getAttrsInmeta())) . '</div><div class="small-1 large-2 "></div></div>';
+        $f .= '</div>';
+        $f .= '<div class="small-12 columns">';
+        $f .= '<div class="small-3 columns">' . form_label(lang('rr_lexport_enabled'), 'lexport') .'</div><div class="small-8 large-7 columns">' .form_checkbox('lexport', 'accept', set_value('lexport', $federation->getLocalExport())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '</div>';
+        $f .= '<div class="small-12 columns">';
+        $f .='<div class="small-3 columns">' . form_label(lang('rr_description'), 'description').'</div>';
+        $f .='<div class="small-8 large-7 columns">'.form_textarea('description', set_value('description', $federation->getDescription())) . '</div>';
+        $f .= '<div class="small-1 large-2 "></div>';
+        $f .= '</div>';
+        $f .= '<div class="small-12 columns">';
+        $f .='<div class="small-3 columns">' . form_label(lang('rr_fed_tou'), 'tou').'</div>';
+        $f .= '<div class="small-8 large-7 columns">'.form_textarea('tou', set_value('tou', $federation->getTou())) . '</div>';
+        $f .= '<div class="small-1 large-2 "></div>';
+        $f .= '</div>';
         return $f;
     }
 

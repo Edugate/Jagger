@@ -602,6 +602,14 @@ class Entityedit extends MY_Controller {
         {
            $data['srv']['RequestInitiator'] = array();
         }
+        if(isset($data['srv']['SPArtifactResolutionService']))
+        {
+           $data['srv']['SPArtifactResolutionService'] = array_filter($data['srv']['SPArtifactResolutionService']);
+        }
+        else
+        {
+           $data['srv']['SPArtifactResolutionService'] = array();
+        }
         if(isset($data['srv']['DiscoveryResponse']))
         {
            $data['srv']['DiscoveryResponse'] = array_filter($data['srv']['DiscoveryResponse']);

@@ -112,6 +112,9 @@ class Idp_matrix extends MY_Controller {
                 }
             }
         }
+        $data['titlepage'] = lang('rr_arpoverview').'<br />';
+        $data['titlepage'] .= lang('identityprovider').': '.anchor(''.base_url().'providers/detail/show/'.$data['idpid'],$data['idpname']).'<br />';
+        $data['titlepage'] .= $data['entityid'];
         if (empty($arparray))
         {
             $data['content_view'] = 'reports/idp_matrix_show_view';

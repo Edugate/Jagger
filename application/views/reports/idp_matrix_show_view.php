@@ -2,17 +2,8 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-?>
-<div id="pagetitle"><?php echo lang('rr_arpoverview');?></div>
-<?php
 
 
-if(!empty($entityid))
-{
-   echo '<div id="subtitle"><h3>';
-   echo lang('identityprovider').': '.anchor(''.base_url().'providers/detail/show/'.$idpid,$idpname) ;
-   echo '</h3><h4>'.$entityid.'</h4></div>';
-}
 if(!empty($error_message))
 {
   echo '<div class="alert">'.$error_message.'</div>';
@@ -46,7 +37,6 @@ if(!empty($result))
    echo   $this->table->generate($result);
    $this->table->clear();
 
-   //echo confirmDialog(''.lang('title_confirm').'', ''.sprintf(lang('douwanttoremove'),lang('statdefinition')).'', ''.lang('rr_yes').'', ''.lang('rr_no').'');
    $arpinherit = $this->config->item('arpbyinherit');
    if(!empty($arpinherit))
    {
@@ -54,14 +44,15 @@ if(!empty($result))
 
    $this->load->helper('form');
    echo form_open(base_url().'manage/attribute_policyajax/submit_sp/'.$idpid,$rrs);
+   //echo '<form method="post" action="'.base_url().'manage/attribute_policyajax/submit_sp/'.$idpid.'" id="idpmatrixform" style="display: none">';
    echo form_input(array('name'=>'attribute','id'=>'attribute','type'=>'hidden','value'=>''));
    echo form_input(array('name'=>'idpid','id'=>'idpid','type'=>'hidden','value'=>''.$idpid.''));
    echo form_input(array('name'=>'requester','id'=>'requester','type'=>'hidden','value'=>''));
    ?>
-      <div class="header">
-      <span><?php echo lang('confirmupdpolicy');?></span>
+      <div class="small-12 columns">
+      <?php echo lang('confirmupdpolicy');?>
       </div>
-      <div class="attrflow"></div>
+      <div class="attrflow small-12 columns"></div>
       <p class="message"><?php echo lang('rr_tbltitle_requester').': ' ;?><span class="mrequester"></span><br /><?php echo lang('attrname').': ';?><span class="mattribute"></span></p>
      <div>
       <?php
@@ -70,9 +61,9 @@ if(!empty($result))
        echo form_dropdown('policy', $dropdown,set_value('policy'));
      ?>
     </div>
-      <div class="buttons">
-      <div class="yes"><?php echo lang('btnupdate');?></div>
-      <div class="no simplemodal-close"><?php echo lang('rr_cancel');?></div>
+      <div class="buttons small-12 columns">
+      <div class="yes button"><?php echo lang('btnupdate');?></div>
+      <div class="no simplemodal-close button"><?php echo lang('rr_cancel');?></div>
      </div>
    <?php
    echo form_close();

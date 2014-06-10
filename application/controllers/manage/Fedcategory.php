@@ -74,6 +74,7 @@ class Fedcategory extends MY_Controller {
         }
         else
         {
+           $data['titlepage'] = lang('newfedcategory');
            $data['content_view'] = 'manage/fedcatnew_view';
            $this->load->view('page',$data);
 
@@ -229,7 +230,7 @@ class Fedcategory extends MY_Controller {
                 'desc' => $c->getDescription(),
             );
         }
-
+        $data['titlepage'] = lang('rrfedcatslist');
         $data['result'] = $result;
         $data['content_view'] = 'manage/fedcategory_view';
         $this->load->view('page', $data);

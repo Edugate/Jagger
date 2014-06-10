@@ -1511,8 +1511,10 @@ $("#nspartifactbtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<div class="srvgroup"><div class="row"><div class=\"small-3 columns\"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-8 large-7 columns inline\"><select name="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select> </div> <div class=\"small-1 large-2 columns\"></div></div>           <div class="row"><div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" class="right inline">URL</label></div><div class=\"small-6 large-7 columns inline\"><input name="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" type="text"> </div><div class=\"small-3 large-2 columns\"><div class=\"small-3 large-3 columns\"> <input type="text" name="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div><div class="small-9 large-9 columns"></div></div></div>';
+    var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-8 large-7 columns inline\"><select name="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select> </div> <div class=\"small-1  columns left\"><input type="text" name="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div>           <div class="small-12 columns"><div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" class="right inline">URL</label></div><div class=\"small-6 large-7 columns inline\"><input name="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" type="text"> </div><div class=\"small-3 large-2 columns\"><button class="inline left button tiny alert rmfield"  name="rmfield" type="button">Remove</button></div></div>';
     $(this).parent().before(newelement);
+    GINIT.initialize();
+ 
 });
 $("#nidpartifactbtn").click(function() {
     var rname = "";
@@ -1529,8 +1531,9 @@ $("#ndrbtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<div class="srvgroup"><div class="row"><div class=\"small-3 columns\"><label for="f[srv][DiscoveryResponse][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div><select name="f[srv][DiscoveryResponse][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol">urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol</option></select> </div><div></div></div><div class="row"><div><label for="f[srv][DiscoveryResponse][n_' + rname + '][url]">URL</label></div><div><div><input name="f[srv][DiscoveryResponse][n_' + rname + '][url]" id="f[srv][DiscoveryResponse][n_' + rname + '][url]" type="text"></div><div><input type="text" name="f[srv][DiscoveryResponse][n_' + rname + '][order]" value="" id="f[srv][DiscoveryResponse][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div></div>';
+    var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][DiscoveryResponse][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class="small-6 large-7 columns"><select name="f[srv][DiscoveryResponse][n_' + rname + '][bind]"><option value="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol">urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol</option></select> </div><div class="small-1 columns end"><input type="text" name="f[srv][DiscoveryResponse][n_' + rname + '][order]" value="" id="f[srv][DiscoveryResponse][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][DiscoveryResponse][n_' + rname + '][url]" class="right inline">URL</label></div><div class="small-6 large-7 columns"><input name="f[srv][DiscoveryResponse][n_' + rname + '][url]" id="f[srv][DiscoveryResponse][n_' + rname + '][url]" type="text"></div><div class="small-1 columns end"><button class="rmfield button alert tiny left" name="rmfield">Remove</button></div></div></div>';
     $(this).parent().before(newelement);
+    GINIT.initialize();
 
 });
 $("#nribtn").click(function() {
@@ -1838,7 +1841,7 @@ $(document).ready(function() {
                             var trdata = '<tr><td>' + v.name + '</td><td>' + v.value + '</td/></tr>';
                             tbody_data.append(trdata);
                         });
-                        var tbl = $('<table/>').css({'font-size': 'smaller'}).css({'border': '1px solid'}).css({'width': '100%'}).addClass('detailsnosort');
+                        var tbl = $('<table/>').css({'font-size': 'smaller'}).css({'border': '1px solid'}).addClass('detailsnosort').addClass('small-12').addClass('columns');
                         ;
                         var pl = $('<div/>');
                         tbl.append(thdata);

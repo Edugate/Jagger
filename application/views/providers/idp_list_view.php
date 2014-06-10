@@ -1,5 +1,5 @@
 <?php
-$form = '<form id="filter-form">'. lang('rr_filter') .': <input name="filter" id="filter" value="" maxlength="30" size="30" type="text"></form>';
+$form = '<form id="filter-form"><input name="filter" id="filter" value="" placeholder="'.lang('rr_filter').'" size="30" type="text"></form>';
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -8,7 +8,7 @@ $form = '<form id="filter-form">'. lang('rr_filter') .': <input name="filter" id
 
 $prefurl = base_url().'providers/idp_list/';
 ?>
-<div id="navbuttons1" class="row">
+<div class="row">
 <div class="small-10 medium-9 large-9 columns">
 <?php
 if($typeidps === 'local')
