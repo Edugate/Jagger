@@ -947,6 +947,11 @@ class Providerupdater {
                                     $this->em->persist($v);
                                 }
                             }
+                            else
+                            {
+
+                               $ent->removeServiceLocation($v);
+                            }
                             unset($srvs[$srvtype][$v->getId()]);
                         }
                     }

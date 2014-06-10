@@ -103,7 +103,7 @@ var GINIT = {
        
     });
     $("button.rmfield").click(function(){
-         var lrow = $(this).closest('div.row');
+         var lrow = $(this).closest('div.srvgroup');
          var bval = $(this).attr('value');
          var bname = $(this).attr('name');
          lrow.find("input").each(function(){
@@ -119,7 +119,7 @@ var GINIT = {
     $("button.contactrm").click(function(){
          var bval = $(this).attr('value');
          var bname = $(this).attr('name');
-         var fieldset = $(this).closest('ol');
+         var fieldset = $(this).closest('div.group');
         fieldset.remove();
         GINIT.initialize();
     });
@@ -1499,8 +1499,10 @@ $("#nacsbtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<div class=\"srvgroup\"><div class=\"row\"><div class=\"small-3 columns\"><label for="f[srv][AssertionConsumerService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-8 large-7 columns inline\"><select name="f[srv][AssertionConsumerService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:PAOS">urn:oasis:names:tc:SAML:2.0:bindings:PAOS</option> <option value="urn:oasis:names:tc:SAML:2.0:profiles:browser-post">urn:oasis:names:tc:SAML:2.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:browser-post">urn:oasis:names:tc:SAML:1.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01">urn:oasis:names:tc:SAML:1.0:profiles:artifact-01</option> </select></div> <div class=\"small-1 large-2 columns\"></div></div>           <div class="row"><div class="small-3 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][url]" class=\"right inline\">URL</label></div><div class=\"small-8 large-7 columns inline\"><input name="f[srv][AssertionConsumerService][n_' + rname + '][url]" id="f[srv][AssertionConsumerService][n_' + rname + '][url]" type="text"></div><div class=\"small-3 large-2 columns\"><div class=\"small-3 large-3 columns\"> <input type="text" name="f[srv][AssertionConsumerService][n_' + rname + '][order]" value="" id="f[srv][AssertionConsumerService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div><div class=\"small-9 large-9 columns\"><label for="f[srv][AssertionConsumerService][n_' + rname + '][default]">Is default</label><input type="radio" name="f[srv][AssertionConsumerService][n_' + rname + '][default]" value="1" id="f[srv][AssertionConsumerService][n_' + rname + '][default]" class="acsdefault "  /></div></div></div></div></div>';
+    var newelement = '<div class=\"srvgroup\"><div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for="f[srv][AssertionConsumerService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-5 columns inline\"><select name="f[srv][AssertionConsumerService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:PAOS">urn:oasis:names:tc:SAML:2.0:bindings:PAOS</option> <option value="urn:oasis:names:tc:SAML:2.0:profiles:browser-post">urn:oasis:names:tc:SAML:2.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:browser-post">urn:oasis:names:tc:SAML:1.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01">urn:oasis:names:tc:SAML:1.0:profiles:artifact-01</option> </select></div> <div class="small-4 columns"><div class="small-6 columns"><input type="text" name="f[srv][AssertionConsumerService][n_' + rname + '][order]" value="" id="f[srv][AssertionConsumerService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div><div class="small-6 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][default]">Is default</label><input type="radio" name="f[srv][AssertionConsumerService][n_' + rname + '][default]" value="1" id="f[srv][AssertionConsumerService][n_' + rname + '][default]" class="acsdefault"/></div></div> </div>          <div class="small-12 columns"><div class="small-3 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][url]" class=\"right inline\">URL</label></div><div class=\"small-8 large-7 columns inline\"><input name="f[srv][AssertionConsumerService][n_' + rname + '][url]" id="f[srv][AssertionConsumerService][n_' + rname + '][url]" type="text"></div><div class=\"small-3 large-2 columns\"><button class="inline left button tiny alert rmfield"  name="rmfield" type="button">Remove</button></div></div></div>';
     $(this).parent().before(newelement);
+    GINIT.initialize();
+ 
 
 });
 $("#nspartifactbtn").click(function() {
@@ -1537,7 +1539,7 @@ $("#nribtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<div class="row"><div class="small-3 columns"><label for="f[srv][RequestInitiator][n_' + rname + '][url]" class="right inline">URL</label></div><div class="small-6 large-7 columns"><input name="f[srv][RequestInitiator][n_' + rname + '][url]" id="f[srv][RequestInitiator][n_' + rname + '][url]" type="text"></div><div class="small-3 large-2 columns"><button type="button" class="inline left button tiny alert rmfield" name="rmfield" value="">remove</button></div></div>';
+    var newelement = '<div class="small-12 columns srvgroup"><div class="small-3 columns"><label for="f[srv][RequestInitiator][n_' + rname + '][url]" class="right inline">URL</label></div><div class="small-6 large-7 columns"><input name="f[srv][RequestInitiator][n_' + rname + '][url]" id="f[srv][RequestInitiator][n_' + rname + '][url]" type="text"></div><div class="small-3 large-2 columns"><button type="button" class="inline left button tiny alert rmfield" name="rmfield" value="">remove</button></div></div>';
     $(this).parent().before(newelement);
      GINIT.initialize();
 
@@ -2691,7 +2693,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
         selected.attr('disabled', true).attr('selected',false);
-        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm inline left tiny button alert\" name=\"uiispnamerm\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm inline left tiny button alert\" name=\"uiispnamerm\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#spadduiihelpdesk").click(function() {
@@ -2704,7 +2706,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
         selected.attr('disabled', true).attr('selected',false);
-        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm inline tiny left button alert\" name=\"uiisphelpdeskrm\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm inline tiny left button alert\" name=\"uiisphelpdeskrm\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#spadduiidesc").click(function() {
@@ -2717,7 +2719,7 @@ $("button#addlhelpdesk").click(function() {
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
         selected.attr('disabled', true).attr('selected',false);
-        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiispdescrm\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiispdescrm\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
 
@@ -2789,7 +2791,7 @@ $("button#addlhelpdesk").click(function() {
         var rmbtn = $("button#helperbutttonrm").html();
         var inputname = $(this).attr('value');
         selected.attr('disabled', true).attr('selected',false);
-        $("<li class=\"localized row\"><div class=\"small-3 columns\"><label for=\"f[prvurl][spsso][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></div></li>").insertBefore($(this).closest('span').parent());
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[prvurl][spsso][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
 
@@ -2801,7 +2803,7 @@ $("#ncontactbtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<li class="row"><ol><li class="row"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][type]" class="right inline">'+btnvalues[1]+'</label></div><div class="small-6 large-7 columns inline"><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></div><div class="small-3 large-2 columns"></div></li> <li class="row"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][fname]" class="right inline">'+btnvalues[2]+'</label></div><div  class="small-6 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]" class="right inline" /></div><div class="small-3 large-2 columns"></div></li> <li class="row"><div  class="small-3 columns"><label for="f[contact][n_' + rname + '][sname]" class="right inline">'+btnvalues[3]+'</label></div><div class="small-6 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]" class="right inline" /></div><div class="small-3 large-2 columns"></div></li><li class="row"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][email]" class="right inline ">'+btnvalues[4]+'</label></div><div class="small-6 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]" class="right inline" /></div><div class="small-3 large-2 columns"></div></li><li class="rmelbtn row"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm tiny alert button right" name="contact" value="'+rname+'">'+btnvalues[0]+'</button></div><div class="small-3 large-2 columns"></div></li></ol></li>';
+    var newelement = '<div class="group"><div class="small-12 columns"><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][type]" class="right inline">'+btnvalues[1]+'</label></div><div class="small-8 large-7 columns inline"><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][fname]" class="right inline">'+btnvalues[2]+'</label></div><div  class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div  class="small-3 columns"><label for="f[contact][n_' + rname + '][sname]" class="right inline">'+btnvalues[3]+'</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][email]" class="right inline ">'+btnvalues[4]+'</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="rmelbtn small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm tiny alert button inline right" name="contact" value="'+rname+'">'+btnvalues[0]+'</button></div><div class="small-3 large-2 columns"></div></div></div></div>';
     $(this).parent().before(newelement);
           GINIT.initialize();
 

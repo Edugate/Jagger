@@ -610,24 +610,24 @@ class Form_element
             }
 
 
-            $row .='<div class="row">';
+            $row .='<div class="small-12 columns">';
             $row .= $this->_generateLabelSelect(lang('rr_contacttype'), 'f[contact][' . $cnt->getId() . '][type]', $formtypes, $t1, $class_cnt1, FALSE);
             $row .= '</div>';
 
-            $row .= '<div class="row">';
+            $row .= '<div class="small-12 columns">';
             $row .= $this->_generateLabelInput(lang('rr_contactfirstname'), 'f[contact][' . $cnt->getId() . '][fname]', $t2, $class_cnt2, FALSE);
             $row .= '</div>';
 
 
-            $row .= '<div class="row">';
+            $row .= '<div class="small-12 columns">';
             $row .= $this->_generateLabelInput(lang('rr_contactlastname'), 'f[contact][' . $cnt->getId() . '][sname]', $t3, $class_cnt3, FALSE);
             $row .= '</div>';
 
 
-            $row .= '<div class="row">';
+            $row .= '<div class="small-12 columns">';
             $row .= $this->_generateLabelInput(lang('rr_contactemail'), 'f[contact][' . $cnt->getId() . '][email]', $t4, $class_cnt4, FALSE);
             $row .= '</div>';
-            $row .= '<div class="row"><div class="small-9 large-10 columns"><button type="button" class="contactrm button tiny alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
+            $row .= '<div class="small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="contactrm button tiny alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
             //  $row .= '</ol>' . form_fieldset_close();
             $result[] = '';
             $result[] = $row;
@@ -643,22 +643,22 @@ class Form_element
             {
                 $n = '<fieldset class="newcontact"><legend>' . lang('rr_newcontact') . '</legend><div>';
 
-                $n .= '<div class="row">';
+                $n .= '<div class="small-12 columns">';
                 $n .= $this->_generateLabelSelect(lang('rr_contacttype'), 'f[contact][' . $k . '][type]', $formtypes, set_value('f[contact][' . $k . '][type]', $v['type']), '', FALSE);
                 $n .= '</div>';
 
-                $n .= '<div class="row">';
+                $n .= '<div class="small-12 columns">';
                 $n .= $this->_generateLabelInput(lang('rr_contactfirstname'), 'f[contact][' . $k . '][fname]', set_value('f[contact][' . $k . '][fname]', $v['fname']), '', FALSE);
                 $n .= '</div>';
 
-                $n .= '<div class="row">';
+                $n .= '<div class="small-12 columns">';
                 $n .= $this->_generateLabelInput(lang('rr_contactlastname'), 'f[contact][' . $k . '][sname]', set_value('f[contact][' . $k . '][sname]', $v['sname']), '', FALSE);
                 $n .= '</div>';
 
-                $n .= '<div class="row">';
+                $n .= '<div class="small-12 columns">';
                 $n .= $this->_generateLabelInput(lang('rr_contactemail'), 'f[contact][' . $k . '][email]', set_value('f[contact][' . $k . '][email]', $v['email']), '', FALSE);
                 $n .= '</div>';
-                $n .= '<div class="rmelbtn fromprevtoright row"><div class="small-3 columns"></div><div class="small-6 large-7 columns inline right"><button type="button" class="btn contactrm button alert tiny" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
+                $n .= '<div class="rmelbtn fromprevtoright small-12 columns"><div class="small-3 columns"></div><div class="small-6 large-7 columns inline right"><button type="button" class="btn contactrm button alert tiny" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
                 $n .= '</div>' . form_fieldset_close();
                 $result[] = $n;
             }
@@ -790,6 +790,7 @@ class Form_element
         return $r;
     }
 
+
     private function _generateLabelSelect($label, $name, $dropdowns, $value, $classes, $showremovebutton = false)
     {
         if ($showremovebutton)
@@ -893,33 +894,33 @@ class Form_element
         {
             $keysize = lang('unknown');
         }
-        $row = '<div class="certgroup row">';
+        $row = '<div class="certgroup small-12 columns">';
 
-        $row .= '<div class="row">';
+        $row .= '<div class="small-12 columns">';
         $row .= $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($sessionCert['type']), '', FALSE);
         $row .= '</div>';
 
 
-        $row .= '<div class="row">';
+        $row .= '<div class="small-12 columns">';
         $row .= $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE);
         $row .= '</div>';
 
 
-        $row .= '<div class="row">';
+        $row .= '<div class="small-12 columns">';
         $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $sessionCert['keyname'], '', FALSE, NULL);
         $row .= '</div>';
-        $row .= '<div class="row">';
+        $row .= '<div class="small-12 columns">';
         $row .= $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled'));
         $row .= '</div>';
 
 
-        $row .= '<div class="row"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][certdata]" class="right inline">' . lang('rr_certificate') . '</label></div>';
+        $row .= '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][certdata]" class="right inline">' . lang('rr_certificate') . '</label></div>';
         $row .= '<div class="small-6 large-7 columns">';
         $textarea = array(
             'name' => '' . $name . '[' . $crtid . '][certdata]',
             'id' => '' . $name . '[' . $crtid . '][certdata]',
             'cols' => 55,
-            'rows' => 30,
+            'rows' => 20,
             'class' => 'certdata ',
             'value' => '' . $certdata . '',
         );
@@ -931,7 +932,7 @@ class Form_element
         $row .= form_textarea($textarea) . '</div><div class="small-3 large-2 columns"></div></div>';
         if ($showremove)
         {
-            $row .= '<div class="row"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert tiny right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
+            $row .= '<div class="small-12 columns"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert tiny right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
         }
 
 
@@ -962,35 +963,35 @@ class Form_element
         {
             $readonly = true;
         }
-        $row = '<div class="certgroup row">';
+        $row = '<div class="certgroup small-12 columns">';
 
-        $row .= '<div class="row">';
+        $row .= '<div class="small-12 columns">';
         $row .= $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($cert->getType()), '', FALSE);
         $row .= '</div>';
 
 
-        $row .= '<div class="row">';
+        $row .= '<div class="small-12 columns">';
         $row .= $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE);
         $row .= '</div>';
 
 
-        $row .= '<div class="row">';
+        $row .= '<div class="small-12 columns">';
         $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $cert->getKeyname(), '', FALSE, NULL);
         $row .= '</div>';
 
 
-        $row .= '<div class="row">';
+        $row .= '<div class="small-12 columns">';
         $row .= $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled'));
         $row .= '</div>';
 
 //$name . '[' . $crtid . '][certdata]
-        $row .= '<div class="row"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][certdata]" class="right inline">' . lang('rr_certificate') . '</label></div>';
+        $row .= '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][certdata]" class="right inline">' . lang('rr_certificate') . '</label></div>';
         $row .= '<div class="small-6 large-7 columns">';
         $textarea = array(
             'name' => '' . $name . '[' . $crtid . '][certdata]',
             'id' => '' . $name . '[' . $crtid . '][certdata]',
             'cols' => 55,
-            'rows' => 30,
+            'rows' => 20,
             'class' => 'certdata ',
             'value' => '' . $certdata . '',
         );
@@ -1002,7 +1003,7 @@ class Form_element
         $row .= form_textarea($textarea) . '</div><div class="small-3 large-2 columns"></div></div>';
         if ($showremove)
         {
-            $row .= '<div class="row"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert tiny right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
+            $row .= '<div class="small-12 columns"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert tiny right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
         }
         $row .='</div>';
 
@@ -1065,7 +1066,7 @@ class Form_element
                     'name' => 'f[static]',
                     'id' => 'f[static]',
                     'cols' => 65,
-                    'rows' => 40,
+                    'rows' => 20,
                     'class' => 'metadata',
                     'value' => $value
         ));
@@ -1171,7 +1172,7 @@ class Form_element
                     {
                         $rnotice = 'notice';
                     }
-                    $row = '<div class="row">';
+                    $row = '<div class="small-12 columns">';
                     $row .= form_input(array(
                         'name' => 'f[srv][SingleSignOnService][' . $v1->getId() . '][bind]',
                         'id' => 'f[srv][SingleSignOnService][' . $v1->getId() . '][bind]',
@@ -1193,7 +1194,7 @@ class Form_element
                 {
                     $rnotice = 'notice';
                 }
-                $r = '<div class="row">';
+                $r = '<div class="small-12 columns">';
                 $r .= form_input(array(
                     'name' => 'f[srv][SingleSignOnService][n' . $i . '][bind]',
                     'id' => 'f[srv][SingleSignOnService][n' . $i . '][bind]',
@@ -1223,7 +1224,7 @@ class Form_element
             {
                 foreach ($g['IDPSingleLogoutService'] as $k2 => $v2)
                 {
-                    $row = '<div class="row">';
+                    $row = '<div class="small-12 columns">';
                     $row .= form_input(array(
                         'name' => 'f[srv][IDPSingleLogoutService][' . $v2->getId() . '][bind]',
                         'id' => 'f[srv][IDPSingleLogoutService][' . $v2->getId() . '][bind]',
@@ -1240,7 +1241,7 @@ class Form_element
             foreach ($slotmpl as $k3 => $v3)
             {
 
-                $row = '<div class="row">';
+                $row = '<div class="small-12 columns">';
                 $row .= form_input(array(
                     'name' => 'f[srv][IDPSingleLogoutService][n' . $ni . '][bind]',
                     'id' => 'f[srv][IDPSingleLogoutService][n' . $ni . '][bind]',
@@ -1693,28 +1694,13 @@ class Form_element
             $ACSPart = '<fieldset><legend>' . lang('assertionconsumerservice') . '</legend>';
             $acs = array();
 
-            if (isset($g['AssertionConsumerService']) && is_array($g['AssertionConsumerService']))
+            if (!$sessform && isset($g['AssertionConsumerService']) && is_array($g['AssertionConsumerService']))
             {
                 foreach ($g['AssertionConsumerService'] as $k3 => $v3)
                 {
                     $turl = $v3->getUrl();
                     $torder = $v3->getOrder();
                     $tbind = $v3->getBindingName();
-                    if ($sessform && isset($ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
-                    {
-                        if (array_key_exists('url', $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
-                        {
-                            $turl = $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']['url'];
-                        }
-                        if (array_key_exists('order', $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
-                        {
-                            $torder = $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']['order'];
-                        }
-                        if (array_key_exists('bind', $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
-                        {
-                            $tbind = $ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']['bind'];
-                        }
-                    }
                     $furl = set_value('f[srv][AssertionConsumerService][' . $v3->getId() . '][url]', $turl);
                     $forder = set_value('f[srv][AssertionConsumerService][' . $v3->getId() . '][order]', $torder);
                     $fbind = set_value('f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]', $tbind);
@@ -1735,23 +1721,12 @@ class Form_element
                     }
                     $r = '<div class="srvgroup">';
 
-                    $r .= '<div class="row">';
-                    $r .= $this->_generateLabelSelect(lang('rr_bindingname'), 'f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]', $acsbindprotocols, $fbind, $bindnotice, FALSE);
-                    $r .= '</div>';
-
-                    $r .= '<div class="row">';
-                    $r .= '<div class="small-3 columns"><label for="f[srv][AssertionConsumerService][' . $v3->getId() . '][url]" class="right inline ">' . lang('rr_url') . '</label></div><div class="small-6 large-7 columns inline ">';
-                    $r .= form_input(array(
-                                'name' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][url]',
-                                'id' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][url]',
-                                'value' => $furl,
-                                'class' => 'acsurl ' . $urlnotice . '',
-                            )) . '';
-                    $r .= '</div>';
-                    $r .= '<div class="small-3 large-2 columns">';
-
-                    $r .= '<div class="small-3 large-3 columns">';
-                    $r .= ' ' . form_input(array(
+                    $r .= '<div class="small-12 columns">';
+                    $r .= '<div class="small-3 columns"><label for="f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]" class="right inline ">' . lang('rr_bindingname') . '</label></div>';
+                    $r .= '<div class="small-5 columns inline ">'.form_dropdown('f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]', $acsbindprotocols, $fbind).'</div>';
+                    $r .= '<div class="small-4 columns">';
+                       $r .= '<div class="small-6 columns">';
+                         $r .= ' ' . form_input(array(
                                 'name' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][order]',
                                 'id' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][order]',
                                 'size' => '3',
@@ -1759,50 +1734,48 @@ class Form_element
                                 'class' => 'acsindex ' . $ordernotice,
                                 'value' => $forder,
                     ));
-                    $r .= '</div>';
-
-                    $r .= '<div class="small-9 large-9 columns">';
-                    $r .= '' . form_label(lang('rr_isdefault') . '?', 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]');
-                    $ischecked = FALSE;
-                    if ($sessform)
-                    {
-                        if (isset($ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']['default']))
-                        {
-                            $ischecked = TRUE;
-                        }
-                    }
-                    else
-                    {
-                        if ($v3->getDefault())
-                        {
-                            $ischecked = TRUE;
-                        }
-                    }
-                    $acsnotice = '';
-                    if ($ischecked != $v3->getDefault())
-                    {
-                        $acsnotice = 'notice';
-                    }
-                    $r .= form_radio(array(
+                       $r .='</div>';
+                       $r .= '<div class="small-6 columns">';
+                         $r .= '' . form_label(lang('rr_isdefault') . '?', 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]');
+                         $ischecked = FALSE;
+                         if ($sessform)
+                         {
+                            if (isset($ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']['default']))
+                            {
+                               $ischecked = TRUE;
+                            }
+                         }
+                         else
+                         {
+                            if ($v3->getDefault())
+                            {
+                               $ischecked = TRUE;
+                            }
+                         }
+                         $acsnotice = '';
+                         if ($ischecked != $v3->getDefault())
+                         {
+                            $acsnotice = 'notice';
+                         }
+                         $r .= form_radio(array(
                         'name' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]',
                         'id' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]',
                         'value' => 1,
                         'class' => 'acsdefault ' . $acsnotice,
                         'checked' => $ischecked,
                     ));
-
+ 
+                       $r .='</div>';
+                    $r .='</div>';
                     $r .= '</div>';
-                    $r .= '</div>';
 
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLabelInput(lang('rr_url'),'f[srv][AssertionConsumerService][' . $v3->getId() . '][url]',$furl, 'acsurl ' . $urlnotice . '',TRUE,NULL);
                     $r .='</div></div>';
 
 
 
                     $acs[] = $r;
-                    if ($sessform && isset($ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']))
-                    {
-                        unset($ses['srv']['AssertionConsumerService']['' . $v3->getId() . '']);
-                    }
                 }
             }
             if ($sessform && isset($ses['srv']['AssertionConsumerService']) && is_array($ses['srv']['AssertionConsumerService']))
@@ -1812,48 +1785,48 @@ class Form_element
 
 
                     $r = '<div class="srvgroup">';
-                    $r .= '<div class="row">';
-
-                    $r .= $this->_generateLabelSelect(lang('rr_bindingname'), 'f[srv][AssertionConsumerService][' . $k4 . '][bind]', $acsbindprotocols, $v4['bind'], '', FALSE);
-                    $r .= '</div>';
-                    $r .= '<div class="row">';
-                    $r .= '<div class="small-3 columns"><label for="f[srv][AssertionConsumerService][' . $k4 . '][url]" class="right inline ">' . lang('rr_url') . '</label></div><div class="small-6 large-7 columns inline ">';
-                    $r .= form_input(array(
-                                'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][url]',
-                                'id' => 'f[srv][AssertionConsumerService][' . $k4 . '][url]',
-                                'value' => set_value('f[srv][AssertionConsumerService][' . $k4 . '][url]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['url']),
-                                'class' => 'acsurl notice',
-                            )) . '';
-                    $r .= '</div>';
-                    $r .= '<div class="small-3 large-2 columns">';
-
-                    $r .= '<div class="small-3 large-3 columns">';
-                    $r .= ' ' . form_input(array(
+                    $r .= '<div class="small-12 columns">';
+                    $r .= '<div class="small-3 columns"><label for="f[srv][AssertionConsumerService][' . $k4 . '][bind]" class="right inline ">' . lang('rr_bindingname') . '</label></div>';
+                    $r .= '<div class="small-5 columns inline ">'.form_dropdown('f[srv][AssertionConsumerService][' . $k4 . '][bind]', $acsbindprotocols, $v4['bind']).'</div>';
+                    $r .= '<div class="small-4 columns">';
+                       $r .= '<div class="small-6 columns">';
+                         $r .= ' ' . form_input(array(
                                 'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][order]',
                                 'id' => 'f[srv][AssertionConsumerService][' . $k4 . '][order]',
                                 'size' => '3',
                                 'maxlength' => '3',
                                 'class' => 'acsindex notice',
-                                'value' => set_value('f[srv][AssertionConsumerService][' . $k4 . '][order]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['order']),
+                                'value' =>  set_value('f[srv][AssertionConsumerService][' . $k4 . '][order]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['order']),
                     ));
-                    $r .= '</div>';
-                    $r .= '<div class="small-9 large-9 columns">';
-                    $r .= '' . form_label(lang('rr_isdefault') . '?', 'f[srv][AssertionConsumerService][' . $k4 . '][default]');
+                       $r .='</div>';
+                       $r .= '<div class="small-6 columns">';
+                         $r .= '' . form_label(lang('rr_isdefault') . '?', 'f[srv][AssertionConsumerService][' . $k4 . '][default]');
+                         $ischecked = FALSE;
+                         if ($sessform)
+                         {
+                            if (isset($ses['srv']['AssertionConsumerService']['' . $k4 . '']['default']))
+                            {
+                               $ischecked = TRUE;
+                            }
+                         }
+                         $r .= form_radio(array(
+                        'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][default]',
+                        'id' => 'f[srv][AssertionConsumerService][' . $k4 . '][default]',
+                        'value' => 1,
+                        'class' => 'acsdefault notice',
+                        'checked' => $ischecked,
+                    ));
+ 
+                       $r .='</div>';
+                    $r .='</div>';
 
-                    $ischecked = FALSE;
-                    if (isset($ses['srv']['AssertionConsumerService']['' . $k4 . '']['default']))
-                    {
-                        $ischecked = TRUE;
-                    }
-                    $r .= form_radio(array(
-                                'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][default]',
-                                'id' => 'f[srv][AssertionConsumerService][' . $k4 . '][default]',
-                                'value' => 1,
-                                'class' => 'acsdefault notice',
-                                'checked' => $ischecked,
-                            )) . '';
+//                    $r .= $this->_generateLabelSelect(lang('rr_bindingname'), 'f[srv][AssertionConsumerService][' . $k4 . '][bind]', $acsbindprotocols, $v4['bind'], '', FALSE);
+
+
+
                     $r .= '</div>';
-                    $r .= '</div>';
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLabelInput(lang('rr_url'),'f[srv][AssertionConsumerService][' . $k4 . '][url]',set_value('f[srv][AssertionConsumerService][' . $k4 . '][url]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['url']), 'acsurl notice ',TRUE,NULL);
 
                     $r .= '</div></div>'; //row
 
@@ -1917,11 +1890,11 @@ class Form_element
 
 
                     $r = '<div class="srvgroup">';
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLabelSelect(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]', $artifacts_binding, $fbind, $bindnotice, FALSE);
                     $r .= '</div>';
 
-                    $r .= '<div class="row"><div class="small-3 columns">';
+                    $r .= '<div class="small-12 columns"><div class="small-3 columns">';
                     $r .= '<label for="f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]" class="inline right">' . lang('rr_url') . '</label>';
                     $r .= '</div>';
                     $r .= '<div class="small-6 large-7 columns inline ">' . form_input(array(
@@ -1954,10 +1927,10 @@ class Form_element
 
 
                     $r = '<div class="DUPA">';
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLabelSelect(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, $v4['bind'], '', FALSE);
                     $r .= '</div>';
-                    $r .= '<div class="row"><div class="small-3 columns">';
+                    $r .= '<div class="small-12 columns"><div class="small-3 columns">';
                     $r .= '<label for="f[srv][SPArtifactResolutionService][' . $k4 . '][url]" class="inline right">' . lang('rr_url') . '</label>';
                     $r .= '</div>';
                     $r .= '<div class="small-6 large-7 columns inline ">';
@@ -1999,7 +1972,7 @@ class Form_element
             {
                 foreach ($g['SPSingleLogoutService'] as $k2 => $v2)
                 {
-                    $row .= '<div class="row">';
+                    $row = '<div class="small-12 columns">';
                     $row .= form_input(array(
                         'name' => 'f[srv][SPSingleLogoutService][' . $v2->getId() . '][bind]',
                         'id' => 'f[srv][SPSingleLogoutService][' . $v2->getId() . '][bind]',
@@ -2015,7 +1988,7 @@ class Form_element
             $ni = 0;
             foreach ($spslotmpl as $k3 => $v3)
             {
-                $row = '<div class="row">';
+                $row = '<div class="small-12 columns">';
                 $row .= form_input(array(
                     'name' => 'f[srv][SPSingleLogoutService][n' . $ni . '][bind]',
                     'id' => 'f[srv][SPSingleLogoutService][n' . $ni . '][bind]',
@@ -2054,7 +2027,7 @@ class Form_element
                     {
                         $urlnotice = 'notice';
                     }
-                    $r = '<div class="row">';
+                    $r = '<div class="small-12 columns srvgroup">';
                     $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][RequestInitiator][' . $v3->getId() . '][url]', $furl, 'acsurl ' . $urlnotice . '', TRUE, NULL);
                     $r .= '</div>';
                     $ri[] = $r;
@@ -2074,7 +2047,7 @@ class Form_element
                         $purl = $ses['srv']['RequestInitiator']['' . $k4 . '']['url'];
                     }
 
-                    $r = '<div class="row">';
+                    $r = '<div class="small-12 columns srvgroup">';
                     $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][RequestInitiator][' . $k4 . '][url]', set_value('f[srv][RequestInitiator][' . $k4 . '][url]', $purl), 'acsurl notice', TRUE, NULL);
                     $r .= '</div>';
 
@@ -2140,7 +2113,7 @@ class Form_element
                     }
                     $r = '<div class="srvgroup">';
                      
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
 
 
 
@@ -2149,7 +2122,7 @@ class Form_element
                     $r .='</div>';
 
 
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
 
                     $r .= '<div  class="small-3 columns">' ;
                     $r .= '<label for="f[srv][DiscoveryResponse][' . $v3->getId() . '][url]" class="inline right">' . lang('rr_url') . '</label>';
@@ -2251,7 +2224,7 @@ class Form_element
                     $selected_options[$p] = $p;
                 }
             }
-            $r .= '<div class="row">';
+            $r .= '<div class="small-12 columns">';
             $r .= '<div class="small-3 large-3 columns">&nbsp;';
             $r .= '</div>';
             $r .= '<div class="small-6 large-7 columns inline">';
@@ -2319,7 +2292,7 @@ class Form_element
             {
                 $spssonameidnotice = 'notice';
             }
-            $r .= '<div class="row">';
+            $r .= '<div class="small-12 columns">';
             $r .= '<div class="small-3 large-3 columns">' . form_label('Supported name identifiers', 'f[nameids][spsso][]') . '</div>';
             $r .='<div class="small-8 large-7 columns nsortable ' . $spssonameidnotice . '">';
                 foreach ($chp as $n)
@@ -2364,13 +2337,6 @@ class Form_element
         {
             $sessform = TRUE;
         }
-        $result = array();
-
-
-
-        $result[] = '';
-        $result[] = '<div class="langgroup">' . lang('e_globalprivacyurl') . '<i><small> (' . lang('rr_default') . ') ' . lang('rr_optional') . '</small></i>' . showBubbleHelp('' . lang('rhelp_privacydefault1') . '') . '</div>';
-        $r = '';
         $f_privacyurl = $ent->getPrivacyUrl();
         $p_privacyurl = $f_privacyurl;
         $privaceurlnotice = '';
@@ -2384,10 +2350,15 @@ class Form_element
             $privaceurlnotice = 'notice';
         }
 
-        $r .= $this->_generateLabelInput(lang('rr_url'), 'f[privacyurl]', $t_privacyurl, $privaceurlnotice, FALSE,NULL);
-        $r .= '';
-        $result[] = $r;
-        $result[] = '';
+        if(!empty($t_privacyurl))
+        {
+           $r = $this->_generateLabelInput(lang('rr_url'), 'f[privacyurl]', $t_privacyurl, $privaceurlnotice, FALSE,NULL);
+           $result = array();
+           $result[] = '';
+           $result[] = '<div class="langgroup">' . lang('e_globalprivacyurl') . '<i><small> (' . lang('rr_default') . ') ' . lang('rr_optional') . '</small></i>' . showBubbleHelp('' . lang('rhelp_privacydefault1') . '') . '</div>';
+           $result[] = $r;
+           $result[] = '';
+         }
 
 
 
@@ -2438,7 +2409,7 @@ class Form_element
                     {
                         $displaynotice = 'notice';
                     }
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][displayname][' . $lang . ']', 'uiiidpssodisplayname', '' . $lang . '', $currval, $displaynotice);
                     $r .= '</div>';
                 }
@@ -2456,14 +2427,14 @@ class Form_element
                     {
                         $langtxt = $langs['' . $key . ''];
                     }
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
                     $tmpvalue = set_value('f[uii][idpsso][displayname][' . $key . ']', $value);
                     $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][displayname][' . $key . ']', 'uiiidpssodisplayname', $key, $tmpvalue, 'notice');
                     $r .= '</div>';
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<div class="row">';
+            $r .= '<div class="small-12 columns">';
             $r.= $this->_generateLangAddButton('idpuiidisplayadd', 'idpuiidisplaylangcode', MY_Controller::$langselect, 'idpadduiidisplay', 'idpadduiidisplay');
             $r .='</div>';
             //  $r .= form_fieldset_close();
@@ -2518,7 +2489,7 @@ class Form_element
                     {
                         $displaynotice = 'notice';
                     }
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][helpdesk][' . $lang . ']', 'uiiidpssohelpdesk', $lang, $currval, $displaynotice);
                     $r .= '</div>';
                 }
@@ -2536,13 +2507,13 @@ class Form_element
                     {
                         $langtxt = $langs['' . $key . ''];
                     }
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][helpdesk][' . $key . ']', 'uiiidpssohelpdesk', $key, set_value('f[uii][idpsso][helpdesk][' . $key . ']', $value), 'notice');
                     $r .= '</div>';
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .= '<div class="row">';
+            $r .= '<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('idpuiihelpdeskadd', 'idpuiihelpdesklangcode', MY_Controller::$langselect, 'idpadduiihelpdesk', 'idpadduiihelpdesk');
             $r .= '</div>';
             //   $r .= form_fieldset_close();
@@ -2597,7 +2568,7 @@ class Form_element
                     {
                         $displaynotice = 'notice';
                     }
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][idpsso][desc][' . $lang . ']', 'lhelpdesk', $lang, $currval, $displaynotice);
                     $r .= '</div>';
                 }
@@ -2606,13 +2577,13 @@ class Form_element
             {
                 foreach ($ses['uii']['idpsso']['desc'] as $key => $value)
                 {
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][idpsso][desc][' . $key . ']', 'lhelpdesk', $key, set_value('f[uii][idpsso][desc][' . $key . ']', $value), 'notice');
                     $r .= '</div>';
                     unset($langsdisplaynames['' . $key . '']);
                 }
             }
-            $r .='<div class="row">';
+            $r .='<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('idpuiidescadd', 'idpuiidesclangcode', MY_Controller::$langselect, 'idpadduiidesc', '' . lang('rr_description') . '');
             $r .='</div>';
             //$r .= form_fieldset_close();
@@ -2666,12 +2637,12 @@ class Form_element
             }
             foreach ($sorig as $k4 => $v4)
             {
-                $r .= '<div class="row">';
+                $r .= '<div class="small-12 columns">';
                 $r .= $this->_generateLangInputWithRemove($langsdisplaynames['' . $k4 . ''], 'f[prvurl][idpsso][' . $k4 . ']', 'prvurlidpsso', $k4, $v4['url'], '');
                 $r .= '</div>';
             }
             $idpssolangcodes = array_diff_key($langsdisplaynames, $sorig);
-            $r .='<div class="row">';
+            $r .='<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('addlprivacyurlidpsso localized', 'langcode', MY_Controller::$langselect, 'addlprivacyurlidpsso', 'addlprivacyurlidpsso');
             $r .= '</div>';
 
@@ -2690,7 +2661,10 @@ class Form_element
                  * start display
                  */
                 $result[] = '';
-                $result[] = '<div class="section">' . lang('serviceprovider') . '</div>';
+                if($type === 'BOTH')
+                {
+                   $result[] = '<div class="section label small-12">' . lang('serviceprovider') . '</div>';
+                }
                 $result[] = '<div class="langgroup">' . lang('e_spservicename') . '</div>';
                 $r = '';
                 $langsdisplaynames = $langs;
@@ -2731,16 +2705,16 @@ class Form_element
                         {
                             $displaynotice = 'notice';
                         }
-                        $r .= '<div class="row">';
+                        $r .= '<div class="small-12 columns">';
                         $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][displayname][' . $lang . ']', 'uiispssodisplayname', $lang, $currval, $displaynotice);
-                        $r .= '</div class="row">';
+                        $r .= '</div>';
                     }
                 }
                 if ($sessform && isset($ses['uii']['spsso']['displayname']) && is_array($ses['uii']['spsso']['displayname']))
                 {
                     foreach ($ses['uii']['spsso']['displayname'] as $key => $value)
                     {
-                        $r .= '<div class="row">';
+                        $r .= '<div class="small-12 columns">';
                         if (isset($langs['' . $key . '']))
                         {
                             $langtxt = $langs['' . $key . ''];
@@ -2755,7 +2729,7 @@ class Form_element
                     }
                 }
 
-                $r .= '<div class="row">';
+                $r .= '<div class="small-12 columns">';
                 $r .= $this->_generateLangAddButton('spuiidisplayadd', 'spuiidisplaylangcode', MY_Controller::$langselect, 'spadduiidisplay', 'spadduiidisplay');
                 $r .= '</div>';
                 $result[] = $r;
@@ -2809,7 +2783,7 @@ class Form_element
                         {
                             $displaynotice = 'notice';
                         }
-                        $r .= '<div class="row">';
+                        $r .= '<div class="small-12 columns">';
                         $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][helpdesk][' . $lang . ']', 'uiispssohelpdesk', $lang, $currval, $displaynotice);
                         $r .= '</div>';
                     }
@@ -2818,7 +2792,7 @@ class Form_element
                 {
                     foreach ($ses['uii']['spsso']['helpdesk'] as $key => $value)
                     {
-                        $r .= '<div class="row">';
+                        $r .= '<div class="small-12 columns">';
                         if (isset($langs['' . $key . '']))
                         {
                             $langtxt = $langs['' . $key . ''];
@@ -2832,7 +2806,7 @@ class Form_element
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .='<div class="row">';
+                $r .='<div class="small-12 columns">';
                 $r .= $this->_generateLangAddButton('spuiihelpdeskadd', 'spuiihelpdesklangcode', MY_Controller::$langselect, 'spadduiihelpdesk', 'spadduiihelpdesk');
                 $r .='</div>';
 
@@ -2887,8 +2861,8 @@ class Form_element
                         {
                             $displaynotice = 'notice';
                         }
-                        $r .= '<div class="row">';
-                        $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][desc][' . $lang . ']', 'uiispssodesc', $lang, $currval, $displaynotice);
+                        $r .= '<div class="small-12 columns">';
+                        $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][spsso][desc][' . $lang . ']', 'uiispssodesc', $lang, $currval, $displaynotice);
                         $r .= '</div>';
                     }
                 }
@@ -2896,13 +2870,13 @@ class Form_element
                 {
                     foreach ($ses['uii']['spsso']['desc'] as $key => $value)
                     {
-                        $r .= '<div class="row">';
+                        $r .= '<div class="small-12 columns">';
                         $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][spsso][desc][' . $key . ']', 'uiispssodesc', $key, set_value('f[uii][spsso][desc][' . $key . ']', $value), 'notice');
                         $r .= '</div>';
                         unset($langsdisplaynames['' . $key . '']);
                     }
                 }
-                $r .= '<div class="row">';
+                $r .= '<div class="small-12 columns">';
                 $r .= $this->_generateLangAddButton('spuiidescadd', 'spuiidesclangcode', MY_Controller::$langselect, 'spadduiidesc', 'spadduiidesc');
                 $r .= '</div>';
                 //$r .= form_fieldset_close();
@@ -2956,12 +2930,12 @@ class Form_element
                 }
                 foreach ($sorig as $k4 => $v4)
                 {
-                    $r .= '<div class="row">';
+                    $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLangInputWithRemove($langsdisplaynames['' . $k4 . ''], 'f[prvurl][spsso][' . $k4 . ']', 'prvurlspsso', $k4, $v4['url'], '');
                     $r .= '</div>';
                 }
                 $idpssolangcodes = array_diff_key($langsdisplaynames, $sorig);
-                $r .= '<div class="row">';
+                $r .= '<div class="small-12 columns">';
 
 
                 $r .= $this->_generateLangAddButton('addlprivacyurlspsso localized', 'langcode', MY_Controller::$langselect, 'addlprivacyurlspsso', 'addlprivacyurlspsso');

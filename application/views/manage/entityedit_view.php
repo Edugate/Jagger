@@ -2,7 +2,7 @@
 <?php
 if(!empty($error_messages) || !empty($error_messages2))
 {
-   echo '<div class="alert alert-box" alert-data><pre>';
+   echo '<div class="alert alert-box" alert-data>';
    if (!empty($error_messages))
    {
       echo $error_messages;
@@ -11,11 +11,11 @@ if(!empty($error_messages) || !empty($error_messages2))
    {
       echo $error_messages2;
    }
-   echo '</pre></div>';
+   echo '</div>';
 }
 if(!empty($sessform))
 {
-  echo '<div class="warning alert-box" alert-data>'.lang('formfromsess').' <a href="#" class="close">&times;</a></div>';
+  echo '<div class="warning alert-box" alert-data>'.lang('formfromsess').'</div>';
 }
 ?>
 
@@ -29,9 +29,19 @@ if(!empty($sessform))
 ?>
     <ul class="tabs" data-tab>
         <?php
+        $active = false;
         foreach ($menutabs as $m)
         {
-            echo '<li class="tab-title"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
+            if(!$active && $m['id'] === 'organization')
+            {
+                echo '<li class="tab-title active"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
+                $active = true;
+            }
+            else
+            {
+                echo '<li class="tab-title"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
+            }
+            
         }
         ?>
     </ul>
@@ -40,9 +50,20 @@ if(!empty($sessform))
     <?php
 
 
+    $active=false;
     foreach ($menutabs as $m)
     {
-        echo '<div id="' . $m['id'] . '" class="content tabgroup row">';
+        if(!$active && $m['id'] === 'organization')
+        {
+           echo '<div id="' . $m['id'] . '" class="content tabgroup active">';
+           $active = true;
+        }
+        else
+        {
+           echo '<div id="' . $m['id'] . '" class="content tabgroup">';
+
+        }
+         
         /**
          * start form elemts
          */
@@ -65,7 +86,7 @@ if(!empty($sessform))
                 }
                 else
                 {
-                   echo '<div class="large-12 small-12 columns">'.$g.'</div>';
+                   echo '<div class="small-12 columns">'.$g.'</div>';
                 }
             }
         }

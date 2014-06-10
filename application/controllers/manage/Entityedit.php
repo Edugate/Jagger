@@ -268,7 +268,6 @@ class Entityedit extends MY_Controller {
                 if(!array_key_exists('AssertionConsumerService', $y['f']['srv']) && ($this->type === 'SP' or $this->type === 'BOTH') )
                 {
                       $y['f']['srv']['AssertionConsumerService'] = array();
-                      log_message('debug','GGGG : creating AssertionConsumerService array');
                 }
                 if (array_key_exists('AssertionConsumerService', $y['f']['srv']))
                 {
@@ -583,6 +582,17 @@ class Entityedit extends MY_Controller {
         {
            $data['regpolicy'] = array();
         }
+        log_message('debug','GGKS:'.serialize($data['srv']['AssertionConsumerService']));
+
+        if(isset($data['srv']['AssertionConsumerService']))
+        {
+           $data['srv']['AssertionConsumerService'] = array_filter($data['srv']['AssertionConsumerService']);
+        }
+        else
+        {
+           $data['srv']['AssertionConsumerService'] = array();
+        }
+
 
         if(isset($data['srv']['RequestInitiator']))
         {
