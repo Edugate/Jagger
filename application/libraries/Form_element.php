@@ -509,7 +509,7 @@ class Form_element
             }
         }
         $r = '';
-        $r = '<ul class="checkboxlist">';
+        $r = '<div class="large-8 small-offset-0 large-offset-3 columns"><ul class="checkboxlist">';
         foreach ($entCategoriesArray as $k => $v)
         {
             if (isset($v['sel']))
@@ -522,7 +522,7 @@ class Form_element
             }
             $r .= '<li>' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is)) . $v['name'] . '</li>';
         }
-        $r .= '</ul>';
+        $r .= '</ul></div>';
         $result[] = $r;
         return $result;
     }
@@ -775,7 +775,7 @@ class Form_element
                 }
             }
             $Part .= implode('', $spssocerts);
-            $newelement = '<div><button class="editbutton addicon smallerbtn" type="button" id="nspssocert">' . lang('addnewcert') . '</button></div>';
+            $newelement = '<div><button class="editbutton addicon smallerbtn button tiny" type="button" id="nspssocert">' . lang('addnewcert') . '</button></div>';
             $Part .= $newelement . '</div></fieldset>';
             $result[] = $Part;
         }
@@ -1055,21 +1055,21 @@ class Form_element
         $value = set_value('f[static]', $svalue);
         $result = array();
 
-        $result[] = form_label(lang('rr_usestaticmetadata'), 'f[usestatic]') . form_checkbox(array(
+        $result[] = '<div class="small-3 columns"><label for="f[usestatic]" class="right">'.lang('rr_usestaticmetadata').'</label></div><div class="small-6 large-7 columns">' . form_checkbox(array(
                     'name' => 'f[usestatic]',
                     'id' => 'f[usestatic]',
                     'value' => 'accept',
                     'checked' => set_value('f[usestatic]', $susestatic)
-        ));
+        )).'</div><div class="small-3 large-2 columns"></div>';
 
-        $result[] = form_label(lang('rr_staticmetadataxml'), 'f[static]') . form_textarea(array(
+        $result[] = '<div class="small-3 columns"><label for="f[static]" class="right">'.lang('rr_staticmetadataxml').'</label></div><div class="small-6 large-7 columns">' . form_textarea(array(
                     'name' => 'f[static]',
                     'id' => 'f[static]',
                     'cols' => 65,
                     'rows' => 20,
                     'class' => 'metadata',
                     'value' => $value
-        ));
+        )).'</div><div class="small-3 large-2 columns"></div>';
 
 
         return $result;

@@ -195,6 +195,8 @@ class Attribute_requirement extends MY_Controller {
         $data['spid'] = $sp->getId();
         $data['sp_name'] = $sp->getName();
         $data['sp_entityid'] = $sp->getEntityId();
+        $data['titlepage'] = lang('rr_attributerequirements') .': ';
+        $data['titlepage'] .= lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$data['spid'].'">'.$data['sp_name'].'</a> '.$data['sp_entityid'].'';
         $this->load->view('page', $data);
     }
 

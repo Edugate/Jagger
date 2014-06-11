@@ -1,4 +1,3 @@
-<div id="pagetitle">Attribute Requirements</div>
 <?php
 if (!empty($message))
 {
@@ -14,14 +13,10 @@ $spid_hidden = array('spid' => $spid, 'type' => 'SP');
 $target = current_url();
 ?>
 
-<div id="subtitle">
-<h3><?php echo lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$spid.'">'.$sp_name.'</a>';?></h3>
-<h4><?php echo $sp_entityid ;?></h4>
-</div>
 
-<div>
-<button class="addbutton addicon showform"><?php echo lang('rr_addreqattr'); ?></button>
-<button class="resetbutton deleteicon hideform hidden"><?php echo lang('btn_hide') ;?></button></div>
+<div class="button-group">
+<button class="addbutton addicon showform button small"><?php echo lang('rr_addreqattr'); ?></button>
+<button class="resetbutton deleteicon hideform hidden alert small"><?php echo lang('btn_hide') ;?></button></div>
 
 <table id="details" class="reqattraddform hidden">
     <caption><?php echo lang('rr_addreqattr');?></caption>

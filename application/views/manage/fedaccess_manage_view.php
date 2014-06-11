@@ -2,8 +2,6 @@
 
 if(!empty($row))
 {
-        echo '<div id="pagetitle">'.lang('rr_federation').' '.strtolower(lang('rr_accessmngmt')).'</div>';
-        echo '<div id="subtitle"><h3>'.anchor($fedlink,$resourcename).'</h3></div>';
         $tmpl = array('table_open' => '<table  id="details">');
         $this->table->set_template($tmpl);
 

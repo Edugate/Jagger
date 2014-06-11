@@ -229,10 +229,6 @@ class Entityedit extends MY_Controller {
             $noidpslo = array();
             if (array_key_exists('srv', $y['f']))
             {
-                log_message('debug', 'GGGG f[srv] exists ');
-            }
-            if (array_key_exists('srv', $y['f']))
-            {
                 if(!array_key_exists('SingleSignOnService', $y['f']['srv']) )
                 {
                     $y['f']['srv']['SingleSignOnService'] = array();
@@ -271,7 +267,6 @@ class Entityedit extends MY_Controller {
                 }
                 if (array_key_exists('AssertionConsumerService', $y['f']['srv']))
                 {
-                    log_message('debug',__METHOD__.'AssertionConsumerService array exists');
                     $acsindexes = array();
                     $acsurls = array();
                     $acsdefault = array();
@@ -310,7 +305,6 @@ class Entityedit extends MY_Controller {
                             $this->tmp_error = 'Not unique indexes found for ACS';
                             return false;
                         }
-                        log_message('debug','GGGG staticdefault:'.$staticisdefault); 
                         if (count($acsurls) < 1 && empty($staticisdefault))
                         {
 
@@ -328,7 +322,6 @@ class Entityedit extends MY_Controller {
 
                 if (array_key_exists('SPArtifactResolutionService', $y['f']['srv']))
                 {
-                    log_message('debug','GGGG : SPArtifactResolutionService array exists');
                     $spartindexes = array();
                     $sparturls = array();
                     foreach ($y['f']['srv']['SPArtifactResolutionService'] as $k => $v)
@@ -431,7 +424,6 @@ class Entityedit extends MY_Controller {
                     {
                         if (count($drindexes) != count(array_unique($drindexes)))
                         {
-                            log_message('error', 'GGG: not unique ACS indexes found');
                             $this->tmp_error = 'Not unique indexes found for DiscoveryResponse';
                             return false;
                         }
@@ -582,7 +574,6 @@ class Entityedit extends MY_Controller {
         {
            $data['regpolicy'] = array();
         }
-        log_message('debug','GGKS:'.serialize($data['srv']['AssertionConsumerService']));
 
         if(isset($data['srv']['AssertionConsumerService']))
         {
@@ -620,7 +611,6 @@ class Entityedit extends MY_Controller {
         }
         if(isset($data['prot']['spsso']))
         {
-            log_message('debug','DUPA ssp: '.serialize($data['prot']['spsso'])); 
             $data['prot']['spsso'] = array_filter($data['prot']['spsso']);
         }
         else

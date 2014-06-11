@@ -40,11 +40,11 @@ class Access_manage extends MY_Controller
         $form = '<div class="permset">'.form_open() . form_hidden('user',$user) . form_hidden('action',$action);
         if($access === 'allow')
         {
-        	$form .='<button type="submit" name="change_access"  value="'.$access.'" class="addbutton addicon">'.lang('btn_allow').'</button>';
+        	$form .='<button type="submit" name="change_access"  value="'.$access.'" class="addbutton addicon button tiny">'.lang('btn_allow').'</button>';
         }
         else
         {
-        	$form .='<button  type="submit" name="change_access"  value="'.$access.'"  class="resetbutton deleteicon">'.lang('btn_deny').'</button>';
+        	$form .='<button  type="submit" name="change_access"  value="'.$access.'"  class="resetbutton deleteicon button tiny alert">'.lang('btn_deny').'</button>';
         }
         $form .= form_close().'</div>';
         return $form;
@@ -402,7 +402,8 @@ class Access_manage extends MY_Controller
         }
         $data['fedlink'] = base_url().'federations/manage/show/'. base64url_encode($fed->getName());
         $data['resourcename'] = $fed->getName() ;
-        $data['row'] = $row;
+        $data['row'] = $row ;
+        $data['titlepage'] = lang('rr_federation').' '.lang('rr_accessmngmt') .': '.anchor($data['fedlink'],$data['resourcename']);
         $data['readlegend'] = lang('fedaclreadinfo');
         $data['content_view'] = 'manage/fedaccess_manage_view';
         $this->load->view('page',$data);

@@ -80,9 +80,16 @@ a.bookentity {
 #titlepage {
  background-color: #074E68 !important;
  color: white;
- font-size: $h4-font-size;
- padding: 22px 0;
+ font-size: $h5-font-size;
+ padding: 10px 0;
+ min-height: 80px;
  margin-bottom: 15px;
+ a {
+   text-decoration: underline;
+   color: white;
+
+
+ }
 
 }
 #pagetitle {
@@ -203,6 +210,11 @@ div.langgroup {
 
   font-family: monospace;
   height: 50px;
+}
+.metadata {
+  font-family: monospace;
+
+
 }
 div#wrapper {
    padding-top: 10px;

@@ -112,7 +112,7 @@ $this->load->view('toppanel',$args);
            }
            else
            {
-              echo '<div id="titlepage" class="fullWidth"><div class="row" style="text-align:center;">'.$titlepage.'</div></div>';
+              echo '<div id="titlepage" class="fullWidth"><div class="row">'.$titlepage.'</div></div>';
            }
         }
 
