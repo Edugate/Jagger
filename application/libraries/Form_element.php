@@ -295,6 +295,7 @@ class Form_element
         if ($sessform && array_key_exists('lhelpdesk', $ses) && is_array($ses['lhelpdesk']))
         {
             $slhelpdesk = $ses['lhelpdesk'];
+            print_r($slhelpdesk);
         }
         if (is_array($lhelpdesk))
         {
@@ -319,7 +320,7 @@ class Form_element
             {
                 $lhelpdesknotice = 'notice';
             }
-            $result[] = $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk' . $key, $lvalue, $lhelpdesknotice);
+            $result[] = $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk' , $key, $lvalue, $lhelpdesknotice);
             unset($origlhelpdesk['' . $key . '']);
             unset($lhelpdesklangs['' . $key . '']);
             unset($btnlangs['' . $key . '']);

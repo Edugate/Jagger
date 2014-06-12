@@ -25,77 +25,76 @@ echo form_open($action, $form_attributes);
 <!-- step1 -->
 <?php
 echo form_fieldset('Step1');
-echo '<ol>';
-echo '<li>';
-echo form_label('Metadata <small>(' . lang('rr_optional') . ')</small>'.showBubbleHelp(lang('rhelp_regspparsemeta')), 'metadatabody');
-echo form_textarea(array(
+echo '<ol class="small-12 columns">';
+echo '<li class="small-12 columns">';
+echo '<div class="small-3 columns">'.form_label('Metadata <small>(' . lang('rr_optional') . ')</small>'.showBubbleHelp(lang('rhelp_regspparsemeta')), 'metadatabody').'</div>';
+echo '<div class="small-6 large-7 columns">'.form_textarea(array(
     'id' => 'metadatabody',
     'name' => 'metadatabody',
     'value' => set_value('metadatabody'),
     'cols' => 65,
     'rows' => 20,
     'style' => 'font-family: monospace; font-size: smaller'
-));
-echo '<div class="buttons"><button  type="button" name="parsemetadataidp" id="parsemetadataidp" value="parsemetadataidp" class="savebutton">'.lang('btnparsemeta').'</button>';
+)).'</div>';
+echo '<div class="small-3 large-2 columns"><button  type="button" name="parsemetadataidp" id="parsemetadataidp" value="parsemetadataidp" class="savebutton button tiny">'.lang('btnparsemeta').'</button></div>';
 echo '</li>';
 echo '</ol>';
 ?>
-<button type="button" name="next" class="next savebutton"><?php echo lang('nextstep'); ?></button>
+<button type="button" name="next" class="next savebutton button"><?php echo lang('nextstep'); ?></button>
 <?php
 echo form_fieldset_close();
 ?>
 <!-- step2 -->
 <?php
 echo form_fieldset('General');
-echo '<ol>';
-echo '</li>';
+echo '<ol class="small-12 columns">';
 /**
  * federation select
  */
 if(!empty($federations) && is_array($federations))
 {
-   echo '<li>';
-   echo form_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'federation');
-   echo form_dropdown('federation', $federations,set_value('federation'));
+   echo '<li class="small-12 columns">';
+   echo '<div class="small-3 columns">'.form_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'federation').'</div>';
+   echo '<div class="small-6 large-7 columns end">'.form_dropdown('federation', $federations,set_value('federation')).'</div>';
    echo '</li>';
 }
 
-echo '<li>' . form_label(lang('rr_entityid'), 'entityid');
-echo form_input(array(
+echo '<li class="small-12 columns"><div class="small-3 columns">' . form_label(lang('rr_entityid'), 'entityid').'</div>';
+echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'id' => 'entityid',
     'name' => 'entityid',
     'value' => set_value('entityid'),
     'max-length' => 255,
     'class' => 'required'
-));
+)).'</div>';
 echo '</li>';
-echo '<li>' . form_label(lang('e_orgname'), 'homeorg');
-echo form_input(array(
+echo '<li class="small-12 columns"><div class="small-3 columns">' . form_label(lang('e_orgname'), 'homeorg').'</div>';
+echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'id' => 'homeorg',
     'name' => 'homeorg',
     'value' => set_value('homeorg'),
     'max-length' => 255,
     'class' => 'required',
-));
+)).'</div>';
 echo '</li>';
 
-echo '<li>' . form_label(lang('e_orgdisplayname'), 'deschomeorg');
-echo form_input(array(
+echo '<li class="small-12 columns"><div class="small-3 columns">' . form_label(lang('e_orgdisplayname'), 'deschomeorg').'</div>';
+echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'id' => 'deschomeorg',
     'name' => 'deschomeorg',
     'value' => set_value('deschomeorg'),
     'max-length' => 255,
     'class' => 'required',
-));
+)).'</div>';
 echo '</li>';
-echo '<li>' . form_label(lang('e_orgurl').'<br /><small><i>('.lang('rr_helpdeskurl').')</i></small>', 'helpdeskurl');
-echo form_input(array(
+echo '<li class="small-12 columns"><div class="small-3 columns">' . form_label(lang('e_orgurl').'<br /><small><i>('.lang('rr_helpdeskurl').')</i></small>', 'helpdeskurl').'</div>';
+echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'id' => 'helpdeskurl',
     'name' => 'helpdeskurl',
     'value' => set_value('helpdeskurl'),
     'max-length' => 255,
     'class' => 'required',
-));
+)).'</div>';
 echo '</li>';
 
 echo '</ol>';

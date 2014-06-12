@@ -64,7 +64,7 @@ class Logomngmt extends MY_Controller
             $form1 .= form_open(base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id, $attributes);
             $form1 .= $this->logo->displayCurrentInGridForm($provider, $type, $canEdit);
             $form1 .= '<div class="buttons" id="unsignlogosbtn" >';
-            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon">' . lang('rr_unsignselectedlogo') . '</button> ';
+            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon alert">' . lang('rr_unsignselectedlogo') . '</button> ';
             $form1 .= '</div>';
             $form1 .= form_close();
             $form1 .= '</span>';
@@ -464,7 +464,7 @@ class Logomngmt extends MY_Controller
             $form1 .= form_open(base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id, $attributes);
             $form1 .= $this->logo->displayCurrentInGridForm($provider, $type, $canEdit);
             $form1 .= '<div class="buttons" id="unsignlogosbtn" >';
-            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon">' . lang('rr_unsignselectedlogo') . '</button> ';
+            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon alert">' . lang('rr_unsignselectedlogo') . '</button> ';
             $form1 .= '</div>';
             $form1 .= form_close();
             $form1 .= '</span>';

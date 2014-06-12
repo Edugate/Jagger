@@ -282,13 +282,17 @@ $this->load->view('toppanel',$args);
         <script src="<?php echo $foundation;?>js/foundation.tab.js"></script>
         <script src="<?php echo $foundation;?>js/foundation.alert.js"></script>
         <script src="<?php echo $foundation;?>js/foundation.reveal.js"></script>
-
+<?php
+        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v3.js"></script>';
+?>
 
 <?php
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.simplemodal.js"></script>';
-
-
-        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v3.js"></script>';
+?>
+    <script>
+      $(document).foundation();
+    </script>
+<?php
         if (!empty($load_matrix_js))
         {
             echo '<script type="text/javascript">';
@@ -297,9 +301,6 @@ $this->load->view('toppanel',$args);
         }
         ?>
 
-    <script>
-      $(document).foundation();
-    </script>
 
         <!--[if lt IE 7]>
            <script src='//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js'></script>

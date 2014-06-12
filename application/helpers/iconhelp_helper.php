@@ -29,7 +29,7 @@ function showHelp($string)
 function showBubbleHelp($string)
 {
     //$h = '<button type="button" class="bubblepopup" style="background: transparent; border:0px" value="'.htmlspecialchars($string).'"><img src="'.base_url().'images/icons/question.png"></button>';
-    $h = '<button type="button" class="bubblepopup" style="background:url(\''.base_url().'images/icons/question.png\') no-repeat; border:1px" value="'.htmlspecialchars($string).'">&nbsp;</button>';
+    $h = '<span data-tooltip class="has-tip" data-options="show_on:large" title="'.htmlspecialchars($string).'"><img src="'.base_url().'images/icons/question.png"></span>';
     return $h;
 
 }

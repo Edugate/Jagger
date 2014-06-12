@@ -29,22 +29,36 @@ if(!empty($showclearcache)){
 <?php
 }
 ?>
-            <div id="providertabs" class="columns">
-                <ul>
+            <div id="providertabsi">
+                <ul class="tabs" data-tab>
 <?php
+$activetab = 'general';
+$tset = false;
 foreach ($tabs as $t)
 {
-    echo '<li>';
+    if($tset || ($t['section'] !== $activetab))
+    { 
+       echo '<li class="tab-title">';
+    }
+    else
+    {
+       echo '<li class="tab-title active">';
+       $tset = true;
+
+    }
     echo '<a href="#' . $t['section'] . '">' . $t['title'] . '</a>';
     echo '</li>';
 }
-echo '<li>';
-echo '<a href="' . base_url() . 'providers/detail/showlogs/' . $entid . '">' . lang('tabLogs') . '/' . lang('tabStats') . '</a>';
+echo '<li class="tab-title">';
+//echo '<a href="' . base_url() . 'providers/detail/showlogs/' . $entid . '" data-reveal-ajax="true" data-reveal-id="myModal">' . lang('tabLogs') . '/' . lang('tabStats') . '</a>';
+echo '<a href="#providerlogtab" data-reveal-ajax-tab="' . base_url() .'providers/detail/showlogs/' . $entid . '">' . lang('tabLogs') . '/' . lang('tabStats') . '</a>';
 echo '</li>';
 ?>
                 </ul>
                     <?php
                     $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
+                    echo '<div class="tabs-content">';
+                    $tset = false;
                     foreach ($tabs as $t)
                     {
                         $d = $t['data'];
@@ -82,11 +96,25 @@ echo '</li>';
                                 $this->table->add_row($c1, $c2);
                             }
                         }
-                        echo '<div id="' . $t['section'] . '" class="nopadding">';
+                        if($tset || ($t['section'] !== $activetab))
+                        {
+                            echo '<div id="' . $t['section'] . '" class="content nopadding">';
+                        }
+                        else
+                        {
+                            echo '<div id="' . $t['section'] . '" class="content active nopadding">';
+                            $tset = true;
+                            
+                        }
                         echo $this->table->generate();
                         $this->table->clear();
                         echo '</div>';
                     }
+                    // logs tab reveal //
+                    echo '<div id="providerlogtab" class="content">';
+                    echo '</div>';
+                    // end logs
+                    echo '</div>';
                     ?>
             </div>
 

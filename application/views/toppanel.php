@@ -34,7 +34,7 @@
 
                     <?php
                     $k = MY_Controller::getLang();
-                    echo '<a href="#" class="button full"  data-reveal-id="languageset">' . strtoupper($langs['' . $k . '']['val']) . '</a>';
+                    echo '<a href="#" class="button full"  data-reveal-id="languageset">' . $langs['' . $k . '']['val'] . '</a>';
                     ?>
 
                 </li>
