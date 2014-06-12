@@ -5,7 +5,7 @@
     $image = base_url() . 'images/icons/star--minus.png';
     ?>
  
-    <div class="row" data-equalizer>
+    <div class="small-12 columns" data-equalizer>
     <div id="idps" class="box small-12 medium-6 columns" data-equalizer-watch>
         <div class="box-header"><h4><?php echo '<a href="'.base_url().'providers/idp_list/show">'.lang('identityproviders').'</a>'; ?></h4></div>
         <div class="box-content">
@@ -35,7 +35,8 @@
 
     </div>
     </div>
-    <div class="row" data-equalizer>
+    <div class="small-12 columns" data-equalizer>
+
     <div id="feds" class="box small-12 medium-6 columns" data-equalizer-watch>
         <div class="box-header"><h4><?php echo '<a href="'.base_url().'federations/manage">'.lang('federations').'</a>'; ?></h4></div>
         <div class="box-content">
@@ -51,7 +52,7 @@ foreach ($feds as $k => $i)
     </div>
 
    <div id="queue" class="box small-12 medium-6 columns">
-       <div class="box-header"><h4><?php echo lang('rr_queue'); ?></h4></div>
+       <div class="box-header"><h4><a href="<?php echo base_url().'reports/awaiting'?>"><?php echo lang('rr_queue'); ?></a></h4></div>
       <div class="box-content"><div id="dashresponsecontainer"></div></div>
     </div>
    </div>
