@@ -110,6 +110,7 @@ $lang['rr_removed']                 = 'Removed';
 $lang['rr_modify']                  = 'Modify';
 $lang['rr_cancel']                  = 'Cancel';
 $lang['rr_create']                  = 'Create';
+$lang['rr_category']                = 'Category';
 $lang['rrfedcatslist']              = 'Federations Categories';
 $lang['newfedcategory']             = 'Federations Category :: Form';
 $lang['fedcategory'] = 'Federations Category';

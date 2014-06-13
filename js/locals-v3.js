@@ -857,8 +857,8 @@ $(document).ready(function() {
         }, false).FreezeBubblePopup()
 
     });
-    if ($('button.activated').length) {
-        var url = $('button.activated').attr('value');
+    if ($('#fedcategories dd.active').length) {
+        var url = $('dd.active').find('a').first().attr('href');
         var value = $('table.fedistpercat');
         var data;
         $.ajax({
@@ -890,9 +890,9 @@ $(document).ready(function() {
 
     $(".fedcategory").on('click', '', function(event) {
 
-        $('button.fedcategory').removeClass('activated');
-        $(this).addClass('activated');
-        var url = $(this).attr("value");
+        $('dd').removeClass('active');
+        $(this).closest('dd').addClass('active');
+        var url = $(this).attr("href");
         var value = $('table.fedistpercat');
         var data;
         $.ajax({
@@ -1557,8 +1557,9 @@ $("#nidpartifactbtn").click(function() {
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<li><ol><li><label for="f[srv][IDPArtifactResolutionService][n_' + rname + '][bind]">Binding Name</label><span class=""><select name="f[srv][IDPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select> </li><li><label for="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]">URL</label><input name="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" type="text"> index <input type="text" name="f[srv][IDPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][IDPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></li></ol></li>';
+    var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][IDPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class="small-6 large-7 columns inline"><select name="f[srv][IDPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select></div> <div class="small-2 large-1 columns end"><input type="text" name="f[srv][IDPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][IDPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div> <div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" class=\"right inline\">URL</label></div><div class="small-6 large-7 columns inline"><input name="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" type="text"></div><div class="small-3 large-2 columns"><button class="inline left button tiny alert rmfield" value="" name="rmfield" type="button">Remove</button></div></div>';
     $(this).parent().before(newelement);
+    GINIT.initialize();
 });
 $("#ndrbtn").click(function() {
     var rname = "";

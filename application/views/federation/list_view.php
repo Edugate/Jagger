@@ -1,5 +1,5 @@
 
-<div id="fedcategories" class="button-group">
+<div id="fedcategories" class="">
 <?php
 
 $defaultSet = FALSE;
@@ -7,46 +7,39 @@ $catButtons = '';
 
 if(count($categories)>0)
 {
+   echo '<dl class="sub-nav"> <dt>'.lang('rr_category').':</dt>';
    foreach($categories as $v)
    {
        
        if($defaultSet)
        {
-           $catButtons .= '<button type="button" class="btn fedcategory button small" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
+           echo  '<dd><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></dd>';
        }
        elseif(!empty($v['default']))
        {
-           $catButtons .= '<button type="button" class="btn fedcategory button activated active small" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
+           echo  '<dd class="active"><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></dd>';
            $defaultSet = TRUE;
        }
        else
        {
-           $catButtons .= '<button type="button" class="btn fedcategory button small" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
+           echo  '<dd><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></dd>';
 
        }
    }
 
    if($defaultSet)
    {
-     $allFedsBtn =  '<button type="button" class="btn fedcategory button small" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+           echo  '<dd><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></dd>';
    }
     else
    {
-     $allFedsBtn =  '<button type="button" class="btn fedcategory activated active button small" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+           echo  '<dd class="active"><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></dd>';
 
    }
-}
-else
-{
-     $allFedsBtn =  '<button type="button" class="btn fedcategory activated button hidden small" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
-
-
+   echo '</dl>';
 }
 
 
-
-echo $allFedsBtn;
-echo $catButtons;
 
 ?>
 </div>

@@ -295,7 +295,6 @@ class Form_element
         if ($sessform && array_key_exists('lhelpdesk', $ses) && is_array($ses['lhelpdesk']))
         {
             $slhelpdesk = $ses['lhelpdesk'];
-            print_r($slhelpdesk);
         }
         if (is_array($lhelpdesk))
         {
@@ -1211,8 +1210,9 @@ class Form_element
             // $result = array_merge($result,$sso);
             $SSOPart .= implode('', $sso);
             $result[] = '';
-            $result[] = '<div class="langgroup">' . lang('rr_srvssoends') . '</div>';
-            $result[] = $SSOPart;
+            //$result[] = '<div class="langgroup">' . lang('rr_srvssoends') . '</div>';
+            $result[] = '<fieldset><legend>'.lang('rr_srvssoends').'</legend>' . $SSOPart . '</fieldset>';
+          //  $result[] = $SSOPart;
             $result[] = '';
             // $slotmpl
             /**
@@ -1255,8 +1255,8 @@ class Form_element
             }
             $IDPSLOPart .= implode('', $idpslo);
             $result[] = '';
-            $result[] = '<div class="langgroup">' . lang('rr_srvsloends') . '</div>';
-            $result[] = $IDPSLOPart;
+           // $result[] = '<div class="langgroup">' . lang('rr_srvsloends') . '</div>';
+            $result[] = '<fieldset><legend>'. lang('rr_srvsloends').'</legend>'.$IDPSLOPart.'</fieldset>';
             $result[] = '';
 
             /**
@@ -1265,7 +1265,7 @@ class Form_element
             $ACSPart = '';
             $acs = array();
 
-            if (isset($g['IDPArtifactResolutionService']) && is_array($g['IDPArtifactResolutionService']))
+            if (!$sessform &&  isset($g['IDPArtifactResolutionService']) && is_array($g['IDPArtifactResolutionService']))
             {
                 foreach ($g['IDPArtifactResolutionService'] as $k3 => $v3)
                 {
@@ -1306,31 +1306,16 @@ class Form_element
                         $bindnotice = 'notice';
                     }
 
-
-                    $r = '<div><div>';
-                    $r .= '<div>' . form_label(lang('rr_bindingname'), 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][bind]');
-                    $r .= '<span class="' . $bindnotice . '">' . form_dropdown('f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][bind]', $artifacts_binding, $fbind) . '</span></div>';
-                    $r .= '<div>' . form_label(lang('rr_url'), 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][url]') . '';
-                    $r .= form_input(array(
-                                'name' => 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][url]',
-                                'id' => 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][url]',
-                                'value' => $furl,
-                                'class' => 'acsurl ' . $urlnotice . '',
-                            )) . '';
-                    $r .= 'index ' . form_input(array(
-                                'name' => 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][order]',
-                                'id' => 'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][order]',
-                                'size' => '3',
-                                'maxlength' => '3',
-                                'class' => 'acsindex ' . $ordernotice,
-                                'value' => $forder,
-                    ));
-                    $r .= '</div></div></div>';
+                    $r  = '<div class="srvgroup">';
+                    $r .= '<div class="small-12 columns">';
+                    $r .= generateSelectInputFields(lang('rr_bindingname'),'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][bind]', $artifacts_binding,$fbind,'','f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][order]',$forder,NULL);
+                    $r .= '</div>';
+                    $r .= '<div class="small-12 columns">';
+                    $r .= generateInputWithRemove(lang('rr_url'),'f[srv][IDPArtifactResolutionService][' . $v3->getId() . '][url]','rmfield','',$furl,'acsurl '.$urlnotice,'rmfield');
+                    $r .= '</div>';
+                    
+                    $r .= '</div>';
                     $acs[] = $r;
-                    if ($sessform && isset($ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']))
-                    {
-                        unset($ses['srv']['IDPArtifactResolutionService']['' . $v3->getId() . '']);
-                    }
                 }
             }
             if ($sessform && isset($ses['srv']['IDPArtifactResolutionService']) && is_array($ses['srv']['IDPArtifactResolutionService']))
@@ -1359,6 +1344,17 @@ class Form_element
                             )) . '</div>';
 
                     $r .='</div></div>';
+                    $furl  = set_value('f[srv][IDPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['IDPArtifactResolutionService']['' . $k4 . '']['url']);
+                    $forder = set_value('f[srv][IDPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['IDPArtifactResolutionService']['' . $k4 . '']['order']);
+                    $r  = '<div class="srvgroup">';
+                    $r .= '<div class="small-12 columns">';
+                    $r .= generateSelectInputFields(lang('rr_bindingname'),'f[srv][IDPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding,''.$v4['bind'].'','','f[srv][IDPArtifactResolutionService][' . $k4 . '][order]',$forder,NULL);
+                    $r .= '</div>';
+                    $r .= '<div class="small-12 columns">';
+                    $r .= generateInputWithRemove(lang('rr_url'),'f[srv][IDPArtifactResolutionService][' . $k4 . '][url]','rmfield','',$furl,'acsurl','rmfield');
+                    $r .= '</div>';
+                    
+                    $r .= '</div>';
                     $acs[] = $r;
                 }
             }
@@ -1373,7 +1369,6 @@ class Form_element
             /**
              * start protocols enumeration
              */
-            $r = '';
             $allowedproto = getAllowedProtocolEnum();
             $allowedoptions = array();
             foreach ($allowedproto as $v)
@@ -1402,8 +1397,9 @@ class Form_element
                     $selected_options[$p] = $p;
                 }
             }
-            $r .= '<div class="' . $idpssonotice . '">';
-            $r .= '<ul class="checkboxlist">';
+            $r = '<div class="small-12 columns">';
+            $r .= '<div class="small-12 medium-6 large-7  medium-push-3 large-push-3 columns inline end">';
+            $r .= '<div class="checkboxlist">';
             foreach ($allowedoptions as $a)
             {
                 $is = FALSE;
@@ -1411,22 +1407,21 @@ class Form_element
                 {
                     $is = TRUE;
                 }
-                $r .= '<li>' . form_checkbox(array('name' => 'f[prot][idpsso][]', 'id' => 'f[prot][idpsso][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
+                $r .= '<div>' . form_checkbox(array('name' => 'f[prot][idpsso][]', 'id' => 'f[prot][idpsso][]', 'value' => $a, 'checked' => $is)) . $a . '</div>';
             }
-            $r .= '</ul></div>';
+            $r .= '</div></div></div>';
             $result[] = '';
-            $result[] = '<div class="langgroup">' . lang('rr_protenums') . '</div>';
-            $result[] = $r;
+            $result[] = '<fieldset><legend>' . lang('rr_protenums') . '</legend>'.$r.'</fieldset>';
             $result[] = '';
 
 
             /**
              * end protocols enumeration
              */
+
             /**
              * start nameids
              */
-            $r = '';
             $idpssonameids = $ent->getNameIds('idpsso');
             $idpssonameidnotice = '';
             $supportednameids = array();
@@ -1462,15 +1457,19 @@ class Form_element
             {
                 $idpssonameidnotice = 'notice';
             }
-            $r .= '<div>' . form_label('', 'f[nameids][idpsso][]') . '<div class="nsortable ' . $idpssonameidnotice . '">';
+            $r = '';
+            $r .= '<div class="small-12 columns">';
+            $r .= '<div class="small-3 large-3 columns">&nbsp;</div>';
+            $r .= '<div class="small-8 large-7 columns nsortable end' . $idpssonameidnotice . '">';
             foreach ($chp as $n)
             {
-                $r .= '<span>' . form_checkbox($n) . $n['value'] . '</span>';
+                $r .= '<div>' . form_checkbox($n) . $n['value'] . '</div>';
             }
-            $r .= '</div></div>';
+            $r .= '</div>';
+            $r .= '</div>';
+            ///////////////
             $result[] = '';
-            $result[] = '<div class="langgroup">' . lang('rr_supnameids') . '</div>';
-            $result[] = $r;
+            $result[] = '<fieldset><legend>' . lang('rr_supnameids') . '</legend>'.$r.'</fieldset>';
             $result[] = '';
             /**
              * end nameids
@@ -1513,23 +1512,22 @@ class Form_element
             $result[] = '<div class="section">Attribute Authority</div>';
             $aabinds = getAllowedSOAPBindings();
             $aalo = array();
-            if (array_key_exists('IDPAttributeService', $g))
+            if (!$sessform && array_key_exists('IDPAttributeService', $g))
             {
                 foreach ($g['IDPAttributeService'] as $k2 => $v2)
                 {
-                    $row = '<div>' . form_label($v2->getBindingName(), 'f[srv][IDPAttributeService][' . $v2->getId() . '][url]');
+                    $row = '<div class="srvgroup">';
+                    $row .= '<div class="small-12 columns">';
                     $row .= form_input(array(
                         'name' => 'f[srv][IDPAttributeService][' . $v2->getId() . '][bind]',
                         'id' => 'f[srv][IDPAttributeService][' . $v2->getId() . '][bind]',
                         'type' => 'hidden',
                         'value' => set_value('f[srv][IDPAttributeService][' . $v2->getId() . '][bind]', $v2->getBindingName()),
                     ));
-                    $row .= form_input(array(
-                                'name' => 'f[srv][IDPAttributeService][' . $v2->getId() . '][url]',
-                                'id' => 'f[srv][IDPAttributeService][' . $v2->getId() . '][url]',
-                                'value' => set_value('f[srv][IDPAttributeService][' . $v2->getId() . '][url]', $v2->getUrl()),
-                            )) . '</div>';
+                    $row .= $this->_generateLabelInput($v2->getBindingName(),'f[srv][IDPAttributeService][' . $v2->getId() . '][url]',set_value('f[srv][IDPAttributeService][' . $v2->getId() . '][url]', $v2->getUrl()),'',TRUE,NULL);
+                    $row .='</div>';
                     unset($aabinds[array_search($v2->getBindingName(), $aabinds)]);
+                    $row .= '</div>';
                     $aalo[] = $row;
                 }
             }
@@ -1560,7 +1558,6 @@ class Form_element
             /**
              * end AttributeAuthorityDescriptor Location
              */
-            $r = '';
             $aaprotocols = $ent->getProtocolSupport('aa');
             $selected_options = array();
             $aanotice = '';
@@ -1582,8 +1579,9 @@ class Form_element
                     $selected_options[$p] = $p;
                 }
             }
-            $r .= '<div class="' . $aanotice . '">';
-            $r .= '<ul class="checkboxlist">';
+            $r = '<div class="small-12 columns">';
+            $r .= '<div class="' . $aanotice . ' small-12 medium-6 large-7  medium-push-3 large-push-3 columns inline end">';
+            $r .= '<div class="checkboxlist">';
             foreach ($allowedoptions as $a)
             {
                 $is = FALSE;
@@ -1591,22 +1589,21 @@ class Form_element
                 {
                     $is = TRUE;
                 }
-                $r .= '<li>' . form_checkbox(array('name' => 'f[prot][aa][]', 'id' => 'f[prot][aa][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
+                $r .= '<div>' . form_checkbox(array('name' => 'f[prot][aa][]', 'id' => 'f[prot][aa][]', 'value' => $a, 'checked' => $is)) . $a . '</div>';
             }
-            $r .= '</ul>';
+            $r .= '</div>';
+            $r .= '</div>';
             $r .= '</div>';
 
             $r .= '';
             $result[] = '';
-            $result[] = '<div class="langgroup">' . lang('rr_protenums') . '</div>';
-            $result[] = $r;
+            $result[] = '<fieldset><legend>' . lang('rr_protenums') . '</legend>'.$r.'</fieldset>';
             $result[] = '';
 
 
             /**
              * start nameids for AttributeAuthorityDescriptor 
              */
-            $r = '';
             $idpaanameids = $ent->getNameIds('aa');
             $idpaanameidnotice = '';
             $supportednameids = array();
@@ -1642,15 +1639,16 @@ class Form_element
             {
                 $idpaanameidnotice = 'notice';
             }
-            $r .= '<div>' . form_label('', 'f[nameids][idpaa][]') . '<ol class="nsortable ' . $idpaanameidnotice . '">';
+            $r = '<div class="small-12 columns">';
+            $r .= '<div class="small-3 large-3 columns">&nbsp;</div>';
+            $r .= '<div class="small-8 large-7 columns nsortable end' . $idpaanameidnotice . '">';
             foreach ($chp as $n)
             {
-                $r .= '<li>' . form_checkbox($n) . $n['value'] . '</li>';
+                $r .= '<div>' . form_checkbox($n) . $n['value'] . '</div>';
             }
-            $r .= '</ol></div>';
+            $r .= '</div></div>';
             $result[] = '';
-            $result[] = '<div class="langgroup">Supported name identifiers</div>';
-            $result[] = $r;
+            $result[] = '<fieldset><legend>' . lang('rr_supnameids') . '</legend>'.$r.'</fieldset>';
             $result[] = '';
             /**
              * end nameids for IDPSSODescriptor
@@ -1683,10 +1681,12 @@ class Form_element
             }
             $result[] = '';
         }
-        if ($enttype != 'IDP')
+        if ($enttype !== 'IDP')
         {
-            log_message('debug', 'DUPA4 match not IDP');
-            $result[] = '<div class="section">iService Provider</div>';
+            if($enttype === 'BOTH')
+            {
+               $result[] = '<div class="section">'.lang('serviceprovider').'</div>';
+            }
             // return $result;
 
             /**
@@ -1721,23 +1721,6 @@ class Form_element
                         $bindnotice = 'notice';
                     }
                     $r = '<div class="srvgroup">';
-
-                    $r .= '<div class="small-12 columns">';
-                    $r .= '<div class="small-3 columns"><label for="f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]" class="right inline ">' . lang('rr_bindingname') . '</label></div>';
-                    $r .= '<div class="small-5 columns inline ">'.form_dropdown('f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]', $acsbindprotocols, $fbind).'</div>';
-                    $r .= '<div class="small-4 columns">';
-                       $r .= '<div class="small-6 columns">';
-                         $r .= ' ' . form_input(array(
-                                'name' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][order]',
-                                'id' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][order]',
-                                'size' => '3',
-                                'maxlength' => '3',
-                                'class' => 'acsindex ' . $ordernotice,
-                                'value' => $forder,
-                    ));
-                       $r .='</div>';
-                       $r .= '<div class="small-6 columns">';
-                         $r .= '' . form_label(lang('rr_isdefault') . '?', 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]');
                          $ischecked = FALSE;
                          if ($sessform)
                          {
@@ -1758,23 +1741,13 @@ class Form_element
                          {
                             $acsnotice = 'notice';
                          }
-                         $r .= form_radio(array(
-                        'name' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]',
-                        'id' => 'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]',
-                        'value' => 1,
-                        'class' => 'acsdefault ' . $acsnotice,
-                        'checked' => $ischecked,
-                    ));
- 
-                       $r .='</div>';
-                    $r .='</div>';
-                    $r .= '</div>';
+
+
+                    $r .= '<div class="srvgroup"><div class="small-12 columns">'.generateSelectInputCheckboxFields(lang('rr_bindingname'),'f[srv][AssertionConsumerService][' . $v3->getId() . '][bind]',$acsbindprotocols,$fbind,'','f[srv][AssertionConsumerService][' . $v3->getId() . '][order]',$forder,lang('rr_isdefault'),'f[srv][AssertionConsumerService][' . $v3->getId() . '][default]',1,$ischecked,NULL).'</div>';
 
                     $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLabelInput(lang('rr_url'),'f[srv][AssertionConsumerService][' . $v3->getId() . '][url]',$furl, 'acsurl ' . $urlnotice . '',TRUE,NULL);
                     $r .='</div></div>';
-
-
 
                     $acs[] = $r;
                 }
@@ -1783,54 +1756,27 @@ class Form_element
             {
                 foreach ($ses['srv']['AssertionConsumerService'] as $k4 => $v4)
                 {
+                    $ischecked = FALSE;
+                    if ($sessform && isset($ses['srv']['AssertionConsumerService']['' . $k4 . '']['default']))
+                    {
+                       $ischecked = TRUE;
+                    }
 
-
+                    
                     $r = '<div class="srvgroup">';
-                    $r .= '<div class="small-12 columns">';
-                    $r .= '<div class="small-3 columns"><label for="f[srv][AssertionConsumerService][' . $k4 . '][bind]" class="right inline ">' . lang('rr_bindingname') . '</label></div>';
-                    $r .= '<div class="small-5 columns inline ">'.form_dropdown('f[srv][AssertionConsumerService][' . $k4 . '][bind]', $acsbindprotocols, $v4['bind']).'</div>';
-                    $r .= '<div class="small-4 columns">';
-                       $r .= '<div class="small-6 columns">';
-                         $r .= ' ' . form_input(array(
-                                'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][order]',
-                                'id' => 'f[srv][AssertionConsumerService][' . $k4 . '][order]',
-                                'size' => '3',
-                                'maxlength' => '3',
-                                'class' => 'acsindex notice',
-                                'value' =>  set_value('f[srv][AssertionConsumerService][' . $k4 . '][order]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['order']),
-                    ));
-                       $r .='</div>';
-                       $r .= '<div class="small-6 columns">';
-                         $r .= '' . form_label(lang('rr_isdefault') . '?', 'f[srv][AssertionConsumerService][' . $k4 . '][default]');
-                         $ischecked = FALSE;
-                         if ($sessform)
-                         {
-                            if (isset($ses['srv']['AssertionConsumerService']['' . $k4 . '']['default']))
-                            {
-                               $ischecked = TRUE;
-                            }
-                         }
-                         $r .= form_radio(array(
-                        'name' => 'f[srv][AssertionConsumerService][' . $k4 . '][default]',
-                        'id' => 'f[srv][AssertionConsumerService][' . $k4 . '][default]',
-                        'value' => 1,
-                        'class' => 'acsdefault notice',
-                        'checked' => $ischecked,
-                    ));
+
  
-                       $r .='</div>';
+                 
+                    $r .='<div class="small-12 columns">';
+                    $ordervalue = set_value('f[srv][AssertionConsumerService][' . $k4 . '][order]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['order']);
+                    $r .= generateSelectInputCheckboxFields(lang('rr_bindingname'),'f[srv][AssertionConsumerService][' . $k4 . '][bind]',$acsbindprotocols,''.$v4['bind'].'','','f[srv][AssertionConsumerService][' . $k4 . '][order]',$ordervalue,lang('rr_isdefault'),'f[srv][AssertionConsumerService][' . $k4 . '][default]',1,$ischecked,NULL);
                     $r .='</div>';
-
-//                    $r .= $this->_generateLabelSelect(lang('rr_bindingname'), 'f[srv][AssertionConsumerService][' . $k4 . '][bind]', $acsbindprotocols, $v4['bind'], '', FALSE);
-
-
-
-                    $r .= '</div>';
+                  
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLabelInput(lang('rr_url'),'f[srv][AssertionConsumerService][' . $k4 . '][url]',set_value('f[srv][AssertionConsumerService][' . $k4 . '][url]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['url']), 'acsurl notice ',TRUE,NULL);
+                    $r .= generateInputWithRemove(lang('rr_url'),'f[srv][AssertionConsumerService][' . $k4 . '][url]','rmfield','',set_value('f[srv][AssertionConsumerService][' . $k4 . '][url]', $ses['srv']['AssertionConsumerService']['' . $k4 . '']['url']),'acsurl notice ','rmfield');
 
-                    $r .= '</div></div>'; //row
-
+                    $r .= '</div>'; //row
+                     $r.='</div>'; // end srvgroup
 
                     $acs[] = $r;
                 }
@@ -1891,22 +1837,12 @@ class Form_element
 
 
                     $r = '<div class="srvgroup">';
+                    ////
                     $r .= '<div class="small-12 columns">';
-                    $r .= '<div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]" class="right inline ">' . lang('rr_bindingname') . '</label></div><div class="small-6 large-7 columns inline ">' .
-                             form_dropdown('f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]', $artifacts_binding, $fbind);
-                     $r .=  '</div>';
-                    $r .='<div class="small-3 large-2 columns">';
-                    $r .= '<div class="small-12 large-6 columns left">' . form_input(array(
-                                'name' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][order]',
-                                'id' => 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][order]',
-                                'size' => '3',
-                                'maxlength' => '3',
-                                'class' => 'acsindex ' . $ordernotice,
-                                'value' => $forder,
-                    )).'</div>';
-                    $r .='</div>';
-                    $r .= '</div>'; // row
-
+                    $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][bind]',  $artifacts_binding, $fbind, '','f[srv][SPArtifactResolutionService][' . $v3->getId() . '][order]',$forder,NULL);
+                    $r .= '</div>';
+                    ////
+ 
                     $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][url]', $furl,'acsurl ' . $urlnotice . '', TRUE,FALSE);
 
@@ -1925,41 +1861,18 @@ class Form_element
 
 
                     $r = '<div class="srvgroup">';
+                    /////
                     $r .= '<div class="small-12 columns">';
-                    $r .= '<div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][' . $k4 . '][bind]" class="right inline ">' . lang('rr_bindingname') . '</label></div><div class="small-6 large-7 columns inline ">' .
-                    form_dropdown('f[srv][SPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, $v4['bind'])
-                    . '</div>';
-                    $r .='<div class="small-2 large-1 columns end">';
-                    $r .= '' . form_input(array(
-                                'name' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][order]',
-                                'id' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][order]',
-                                'size' => '3',
-                                'maxlength' => '3',
-                                'class' => 'acsindex notice',
-                                'value' => set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['order']),
-                            )) . '';
-
-
-
-                    $r .='</div>';
+                    $forder = set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['order']);
+                    $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][bind]',  $artifacts_binding, ''.$v4['bind'].'', '','f[srv][SPArtifactResolutionService][' . $k4 . '][order]',$forder,NULL);
                     $r .= '</div>';
 
-                    $r .= '<div class="small-12 columns"><div class="small-3 columns">';
-                    $r .= '<label for="f[srv][SPArtifactResolutionService][' . $k4 . '][url]" class="inline right">' . lang('rr_url') . '</label>';
-                    $r .= '</div>';
-                    $r .= '<div class="small-6 large-7 columns">';
-                    $r .= form_input(array(
-                        'name' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]',
-                        'id' => 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]',
-                        'value' => set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['url']),
-                        'class' => 'acsurl notice',
-                    ));
-                    $r .= '</div>';
-                    $r .= '<div class="small-3 large-2 columns">';
-                     
-                    $r .= '<button class="inline left button tiny alert rmfield" name="rmfield">'.lang('rr_remove').'</button>';
+                    $r .= '<div class="small-12 columns">';
                     
-                    $r .='</div></div></div>';
+                    $r .= generateInputWithRemove(lang('rr_url'),'f[srv][SPArtifactResolutionService][' . $k4 . '][url]','rmfield','',set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['url']),'acsurl notice','rmfield');
+                    $r .= '</div>';
+                    ////
+                    $r .='</div>';
                     $acs[] = $r;
                 }
             }
@@ -2095,38 +2008,12 @@ class Form_element
                     $r = '<div class="srvgroup">';
                      
                     $r .= '<div class="small-12 columns">';
-
-
-
-                    $r .= $this->_generateLabelSelect(lang('rr_bindingname'),'f[srv][DiscoveryResponse][' . $v3->getId() . '][bind]',array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'),$fbind,'',FALSE); 
-
+                    $r .= generateSelectInputFields(lang('rr_bindingname'),'f[srv][DiscoveryResponse][' . $v3->getId() . '][bind]',array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'),$fbind,'','f[srv][DiscoveryResponse][' . $v3->getId() . '][order]',$forder,NULL);
                     $r .='</div>';
 
-
                     $r .= '<div class="small-12 columns">';
-
-                    $r .= '<div  class="small-3 columns">' ;
-                    $r .= '<label for="f[srv][DiscoveryResponse][' . $v3->getId() . '][url]" class="inline right">' . lang('rr_url') . '</label>';
-                    $r .= '</div>';
-                    $r .= '<div class="small-6 large-7 columns inline">';
-                    $r .= form_input(array(
-                                'name' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][url]',
-                                'id' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][url]',
-                                'value' => $furl,
-                                'class' => 'acsurl ' . $urlnotice . '',
-                            )) . '</div>';
-                    $r .= '<div class="small-3 large-2 columns"><div class="small-3 large-3 columns">' . form_input(array(
-                                'name' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][order]',
-                                'id' => 'f[srv][DiscoveryResponse][' . $v3->getId() . '][order]',
-                                'size' => '3',
-                                'maxlength' => '3',
-                                'class' => 'acsindex ' . $ordernotice,
-                                'value' => $forder,
-                    ));
-                    $r .= '</div><div class="small-9 large-9 columns"></div>';
-
-                    $r .= '</div>';
-
+                    $r .= generateInputWithRemove(lang('rr_url'),'f[srv][DiscoveryResponse][' . $v3->getId() . '][url]','rmfield','',$furl,'acsurl','rmfield');
+                    $r .='</div>';
 
 
                     $r .='</div></div>';
@@ -2143,27 +2030,17 @@ class Form_element
                 {
 
 
-                    $r = '<div>';
-                    $r .= '<div>' . form_label(lang('rr_bindingname'), 'f[srv][DiscoveryResponse][' . $k4 . '][bind]');
-                    $r .= form_dropdown('f[srv][DiscoveryResponse][' . $k4 . '][bind]', array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'), $v4['bind']) . '</div>';
-                    $r .= '<div>' . form_label(lang('rr_url'), 'f[srv][DiscoveryResponse][' . $k4 . '][url]');
-                    $r .= form_input(array(
-                                'name' => 'f[srv][DiscoveryResponse][' . $k4 . '][url]',
-                                'id' => 'f[srv][DiscoveryResponse][' . $k4 . '][url]',
-                                'value' => set_value('f[srv][DiscoveryResponse][' . $k4 . '][url]', $ses['srv']['DiscoveryResponse']['' . $k4 . '']['url']),
-                                'class' => 'acsurl notice',
-                            )) . '';
-                    $r .= 'index ' . form_input(array(
-                                'name' => 'f[srv][DiscoveryResponse][' . $k4 . '][order]',
-                                'id' => 'f[srv][DiscoveryResponse][' . $k4 . '][order]',
-                                'size' => '3',
-                                'maxlength' => '3',
-                                'class' => 'acsindex notice',
-                                'value' => set_value('f[srv][DiscoveryResponse][' . $k4 . '][order]', $ses['srv']['DiscoveryResponse']['' . $k4 . '']['order']),
-                            )) . '</div>';
-
-                    $r .='</div>';
-                    $dr[] = $r;
+           
+                    ///////////
+                    $forder =  set_value('f[srv][DiscoveryResponse][' . $k4 . '][order]', $ses['srv']['DiscoveryResponse']['' . $k4 . '']['order']);
+                    $furl =  set_value('f[srv][DiscoveryResponse][' . $k4 . '][url]', $ses['srv']['DiscoveryResponse']['' . $k4 . '']['url']);
+                    $r = '<div class="small-12 columns">';
+                    $r .= generateSelectInputFields(lang('rr_bindingname'),'f[srv][DiscoveryResponse][' . $k4 . '][bind]',array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'),''.$v4['bind'].'','','f[srv][DiscoveryResponse][' . $k4 . '][order]',$forder,NULL);
+                    $r .= '</div>';
+                    $r .= '<div class="small-12 columns">';
+                    $r .= generateInputWithRemove(lang('rr_url'),'f[srv][DiscoveryResponse][' . $k4 . '][url]','rmfield','',$furl,'acsurl','rmfield');
+                    $r .= '</div>';
+                    $dr[] = '<div class="srvgroup">'.$r.'</div>';
                     unset($ses['srv']['DiscoveryResponse']['' . $k4 . '']);
                 }
             }
@@ -2183,7 +2060,6 @@ class Form_element
             {
                 $allowedoptions['' . $v . ''] = $v;
             }
-            $r = '';
             $spssoprotocols = $ent->getProtocolSupport('spsso');
             $selected_options = array();
             $spssonotice = '';
@@ -2205,12 +2081,9 @@ class Form_element
                     $selected_options[$p] = $p;
                 }
             }
-            $r .= '<div class="small-12 columns">';
-            $r .= '<div class="small-3 large-3 columns">&nbsp;';
-            $r .= '</div>';
-            $r .= '<div class="small-6 large-7 columns inline">';
-            $r .= '<div class="' . $spssonotice . '">';
-            $r .= '<ul class="checkboxlist">';
+            $r = '<div class="small-12 columns">';
+            $r .= '<div class="small-12 medium-6 large-7  medium-push-3 large-push-3 columns inline end">';
+            $r .= '<div class="checkboxlist">';
             foreach ($allowedoptions as $a)
             {
                 $is = FALSE;
@@ -2218,17 +2091,13 @@ class Form_element
                 {
                     $is = TRUE;
                 }
-                $r .= '<li>' . form_checkbox(array('name' => 'f[prot][spsso][]', 'id' => 'f[prot][spsso][]', 'value' => $a, 'checked' => $is)) . $a . '</li>';
+                $r .= '<div>' . form_checkbox(array('name' => 'f[prot][spsso][]', 'id' => 'f[prot][spsso][]', 'value' => $a, 'checked' => $is)) . $a . '</div>';
             }
-            $r .= '</ul>';
             $r .= '</div>';
-            $r .='</div>';
-            $r .='<div class="small-1 large-2 colum">';
             $r .='</div>';
             $r .= '</div>'; //row
             $result[] = '';
-            $result[] = '<div class="langgroup">Supported protocol enumeration</div>';
-            $result[] = $r;
+            $result[] = '<fieldset><legend>'.lang('rr_protenums').'</legend>'.$r.'</fieldset>';
             $result[] = '';
 
             /**
@@ -2274,7 +2143,7 @@ class Form_element
                 $spssonameidnotice = 'notice';
             }
             $r .= '<div class="small-12 columns">';
-            $r .= '<div class="small-3 large-3 columns">' . form_label('Supported name identifiers', 'f[nameids][spsso][]') . '</div>';
+            $r .= '<div class="small-3 large-3 columns">&nbsp;</div>';
             $r .='<div class="small-8 large-7 columns nsortable ' . $spssonameidnotice . '">';
                 foreach ($chp as $n)
                 {
@@ -2285,7 +2154,7 @@ class Form_element
 
             $r .= '</div>'; //row
             $result[] = '';
-            $result[] = $r;
+            $result[] = '<fieldset><legend>'.lang('rr_supnameids').'</legend>'.$r.'</fieldset>';
             $result[] = '';
 
             /**
