@@ -38,6 +38,12 @@ if(count($categories)>0)
    }
    echo '</dl>';
 }
+else
+{
+           echo  '<dl class="hidden"><dd class="active"><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></dd></dl>';
+
+
+}
 
 
 
