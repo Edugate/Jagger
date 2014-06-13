@@ -73,6 +73,7 @@ $lang['btnupdate']                  = 'Update';
 $lang['btnparsemeta']               = 'Parse metadata';
 $lang['btnaddinlang']               = 'Add in new language';
 $lang['btnlogout']                 = 'Sign out';
+$lang['rr_search']                 = 'Search';
 $lang['nameid']                    = 'NameIDFormat';
 $lang['clearcache']                 = 'Clear cache';
 $lang['btnsynch']                   = 'Synchronize';

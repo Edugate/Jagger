@@ -1,6 +1,8 @@
-
 <?php
-$form = '<form id="filter-form"><input name="filter" id="filter" value="" type="text" placeholder="'.lang('rr_filter').'"></form>';
+$allactive = '';
+$extactive = '';
+$localactive = '';
+$form = '<form id="filter-form"><input name="filter" id="filter" value="" type="text" placeholder="'.lang('rr_search').'"></form>';
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -14,30 +16,26 @@ $prefurl = base_url().'providers/sp_list/';
 <?php
 if($typesps === 'local')
 {
+   $localactive = 'active';
 ?>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" ><?php echo lang('allprov');?></button>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" ><?php echo lang('extprov');?></button>
-<button type="button" class="btn tchosen small" disabled="disabled"><?php echo lang('localprov');?></button>
 <?php
 }
 elseif($typesps === 'external')
 {
+   $extactive = 'active';
 ?>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" ><?php echo lang('allprov');?></button>
-<button type="button" class="btn tchosen small" disabled="disabled"><?php echo lang('extprov');?></button>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show'" ><?php echo lang('localprov');?></button>
 
 <?php
 }
 elseif($typesps === 'all')
 {
+   $allactive = 'active';
 ?>
-<button type="button" class="btn tchosen small" disabled="disabled"><?php echo lang('allprov');?></button>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" ><?php echo lang('extprov');?></button>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show'" ><?php echo lang('localprov');?></button>
 
 <?php
 }
+echo '<dl class="sub-nav"> <dt>'.lang('rr_filter').':</dt> <dd class="'.$allactive.'"><a href="'.$prefurl.'show/all">'.lang('allprov').'</a></dd> <dd class="'.$extactive.'"><a href="'.$prefurl.'show/ext">'. lang('extprov').'</a></dd> <dd class="'.$localactive.'"><a href="'.$prefurl.'show">'.lang('localprov').'</a></dd> </dl>';
+
 echo '</div>';
 echo '<div class="small-2 medium-3 large-3 columns">';
 echo $form;

@@ -1,5 +1,8 @@
 <?php
-$form = '<form id="filter-form"><input name="filter" id="filter" value="" placeholder="'.lang('rr_filter').'" size="30" type="text"></form>';
+$allactive = '';
+$extactive = '';
+$localactive = '';
+$form = '<form id="filter-form"><input name="filter" id="filter" value="" placeholder="'.lang('rr_search').'" size="30" type="text"></form>';
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -13,32 +16,22 @@ $prefurl = base_url().'providers/idp_list/';
 <?php
 if($typeidps === 'local')
 {
-
-?>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" ><?php echo lang('allprov');?></button>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" ><?php echo lang('extprov');?></button>
-<button type="button" class="btn tchosen small" disabled="disabled"><?php echo lang('localprov');?></button>
-<?php
+   $localactive = 'active';
 }
 elseif($typeidps === 'external')
 {
-?>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show/all'" ><?php echo lang('allprov');?></button>
-<button type="button" class="btn tchosen small" disabled="disabled"><?php echo lang('extprov'); ?></button>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show'" ><?php echo lang('localprov');?></button>
-
-<?php
+   $extactive = 'active';
 }
 elseif($typeidps === 'all')
 {
-?>
-<button type="button" class="btn tchosen small" disabled="disabled"><?php echo lang('allprov');?></button>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show/ext'" ><?php echo lang('extprov');?></button>
-<button type="button" class="btn typelist small" onclick="window.location.href='<?php echo $prefurl; ?>show'" ><?php echo lang('localprov');?></button>
-
-<?php
+   $allactive = 'active';
 }
+echo '<dl class="sub-nav"> <dt>'.lang('rr_filter').':</dt> <dd class="'.$allactive.'"><a href="'.$prefurl.'show/all">'.lang('allprov').'</a></dd> <dd class="'.$extactive.'"><a href="'.$prefurl.'show/ext">'. lang('extprov').'</a></dd> <dd class="'.$localactive.'"><a href="'.$prefurl.'show">'.lang('localprov').'</a></dd> </dl>';
+
 echo '</div>';
+
+
+
 echo '<div class="small-2 medium-3 large-3 columns">';
 echo $form;
 echo '</div>';
