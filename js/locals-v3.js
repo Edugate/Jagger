@@ -709,6 +709,7 @@ var GINIT = {
         $("a#getmembers").click(function() {
             var link = $(this), url = link.attr("href");
             var value = $('<ul/>');
+ 
             $.ajax({
                 url: url,
                 timeout: 2500,
@@ -723,7 +724,7 @@ var GINIT = {
                     else
                     {
                         var nlist = $('<ul/>');
-                        nlist.addClass('zebralist');
+                        nlist.addClass('zebralist alert small-12 columns');
                         nlist.css("list-style-type","decimal");
                         var div_data;
                         var n = 1;
@@ -733,7 +734,7 @@ var GINIT = {
                                 var spanb = '<span>'+z+'</span>';
                                 span_feds.append(spanb);
                             });
-                            div_data = '<li>'+n+'. <a href="' + v.url + '">' + v.name + '</a> <small><i> (' + v.entityid + ') </i></small> <div class="fedlbl">'+span_feds.html()+'</div></li>';
+                            div_data = '<li><div class="small-8 columns"><a href="' + v.url + '">' + v.name + '</a> <small><i> (' + v.entityid + ') </i></small></div><div class="label fedlbl small-1 end right columns">'+span_feds.html()+'</div></li>';
                             nlist.append(div_data);
                             n = n+1;
                         });

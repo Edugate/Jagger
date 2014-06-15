@@ -24,16 +24,53 @@ else
 if(!empty($showclearcache)){
             ?>
 
-<div style="width: 100%; display: block; text-align: right"><?php echo $edit_link ; ?> <a class="button clearcache small" title="<?php echo lang('clearcache'); ?>" href="<?php echo base_url().'providers/detail/refreshentity/'.$entid.''; ?>"><?php echo lang('clearcache');?></a></div>
+<div style="width: 100%; display: block; text-align: right"><a class="button clearcache small" title="<?php echo lang('clearcache'); ?>" href="<?php echo base_url().'providers/detail/refreshentity/'.$entid.''; ?>"><?php echo lang('clearcache');?></a></div>
 
 <?php
 }
 ?>
+<div class="off-canvas-wrap" data-offcanvas>
+ <div class="inner-wrap">
+
+
+    <!-- Off Canvas Menu -->
+<?php
+    echo '<aside class="left-off-canvas-menu">';
+    echo '<ul class="off-canvas-list">';
+    echo '<li><label>Actions</label></li>';
+    ksort($entmenu);
+    foreach($entmenu as $v)
+    {
+       if(isset($v['label']))
+       {
+          echo '<li><label>'.$v['label'].'</label></li>';
+       }
+       else {
+         echo '<li><a href="'.$v['link'].'" class="'.$v['class'].'">'.$v['name'].'</a></li>';
+       }
+    }
+?>
+        </ul>
+    </aside>
+
+
+
+
+
+
+
             <div id="providertabsi">
                 <ul class="tabs" data-tab>
 <?php
 $activetab = 'general';
 $tset = false;
+
+echo '<li class="tab-title" >
+        <a class="left-off-canvas-toggle" href="#"><img src="'.base_url().'images/jicons/appbar.cog.png" style="height: 20px"/></a>
+      </li>';
+
+
+//<a class="left-off-canvas-toggle menu-icon" href="#" ><span></span></a></li>';
 foreach ($tabs as $t)
 {
     if($tset || ($t['section'] !== $activetab))
@@ -50,7 +87,6 @@ foreach ($tabs as $t)
     echo '</li>';
 }
 echo '<li class="tab-title">';
-//echo '<a href="' . base_url() . 'providers/detail/showlogs/' . $entid . '" data-reveal-ajax="true" data-reveal-id="myModal">' . lang('tabLogs') . '/' . lang('tabStats') . '</a>';
 echo '<a href="#providerlogtab" data-reveal-ajax-tab="' . base_url() .'providers/detail/showlogs/' . $entid . '">' . lang('tabLogs') . '/' . lang('tabStats') . '</a>';
 echo '</li>';
 ?>
@@ -117,7 +153,10 @@ echo '</li>';
                     echo '</div>';
                     ?>
             </div>
+ <a class="exit-off-canvas"></a>
 
+  </div>
+<?php echo '</div>'; //end offcan ?>
 
 <div class="metadataresult" style="display: none"></div>
 

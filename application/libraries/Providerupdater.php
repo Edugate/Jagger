@@ -39,9 +39,6 @@ class Providerupdater {
 
     public function updateProvider(models\Provider $ent, array $ch)
     {
-        echo '<pre>';
-        print_r($ch['srv']);
-        echo '</pre>';
         // $m - array for modifications
         $m  = array();
         $type = $ent->getType();

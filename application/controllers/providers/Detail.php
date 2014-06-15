@@ -231,6 +231,9 @@ class Detail extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+        // off canvas menu for provider
+        $entmenu = array();
+
         $is_validtime = $ent->getIsValidFromTo();
         $is_active = $ent->getActive();
         $is_local = $ent->getLocal();
@@ -276,21 +279,26 @@ class Detail extends MY_Controller {
         if (!$has_write_access)
         {
             $edit_link .= makeLabel('noperm', lang('rr_nopermission'), lang('rr_nopermission'));
+            $entmenu[0] = array('name'=>''.lang('rr_nopermission').'','link'=>'#','class'=>'alert');
         }
         elseif (!$is_local)
         {
             $edit_link .= makeLabel('external', lang('rr_externalentity'), lang('rr_external'));
+            $entmenu[0] = array('name'=>''.lang('rr_externalentity').'','link'=>'#','class'=>'alert');
         }
         elseif ($locked)
         {
             $edit_link .= makeLabel('locked', lang('rr_lockedentity'), lang('rr_lockedentity'));
+            $entmenu[0] = array('name'=>''.lang('rr_lockedentity').'','link'=>'#','class'=>'alert');
         }
         else
         {
             $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon button small" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
+            $entmenu[0] = array('name'=>''.lang('rr_editentity').'','link'=>''.base_url().'manage/entityedit/show/'.$id.'','class'=>'');
             $data['showclearcache'] = TRUE;
         }
         $data['edit_link'] = $edit_link;
+        $data['entmenu'] = &$entmenu;
 
 
         $extend = $ent->getExtendMetadata();
@@ -614,7 +622,8 @@ class Detail extends MY_Controller {
             {
                 if (!$locked)
                 {
-                    $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                  //  $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                    $entmenu[11] = array('name'=>lang('rr_federationleave'),'link'=>''.base_url() . 'manage/leavefed/leavefederation/' . $ent->getId().'','class'=>'');
                 }
                 else
                 {
@@ -625,7 +634,8 @@ class Detail extends MY_Controller {
             {
                 if (!$locked)
                 {
-                    $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                   // $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                    $entmenu[10] = array('name'=>lang('rr_federationjoin'),'link'=>''.base_url() . 'manage/joinfed/joinfederation/' . $ent->getId().'','class'=>'');
                 }
                 else
                 {
@@ -1140,7 +1150,10 @@ class Detail extends MY_Controller {
             $exc = $ent->getExcarps();
             if (!$locked && $has_write_access && $ent->getLocal())
             {
-                $mlink = '<a href="' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '" class="editbutton editicon">' . lang('rr_editarpexc') . '</a>';
+                
+                $mlink = '';
+                $entmenu[20]  = array('label'=> ''.lang('rr_attributes').'');
+                $entmenu[21] = array('name'=>lang('rr_arpexclist_edit'),'link'=>'' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '','class'=>'');
                 $d[++$i]['name'] = lang('rr_arpexclist_title') . ' <br />' . $mlink;
                 if (is_array($exc) && count($exc) > 0)
                 {
@@ -1168,8 +1181,11 @@ class Detail extends MY_Controller {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
             if ($has_write_access)
             {
-                $edit_attributes = '<span style="float: right;"><a href="' . base_url() . 'manage/supported_attributes/idp/' . $id . ' " class="editbutton editicon">'.  lang('rr_edit') . '</a></span>';
-                $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " id="editattributesbutton" class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
+                $entmenu[20] = array('label'=>''.lang('rr_attributes').'');
+                $entmenu[22] = array('name'=>''.lang('rr_supportedattributes').'','link'=>'' . base_url() . 'manage/supported_attributes/idp/' . $id . '','class'=>'');
+              //  $edit_attributes = '<span style="float: right;"><a href="' . base_url() . 'manage/supported_attributes/idp/' . $id . ' " class="editbutton editicon">'.  lang('rr_edit') . '</a></span>';
+                $entmenu[23] = array('name'=>''.lang('rr_attributepolicy').'','link'=>'' . base_url() . 'manage/attribute_policy/globals/' . $id . '','class'=>'');
+               // $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " id="editattributesbutton" class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
             }
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;
