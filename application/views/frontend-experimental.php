@@ -106,14 +106,20 @@ $this->load->view('toppanel',$args);
 
         if(!empty($titlepage))
         {
+           echo '<div id="titlepage" class="fullWidth">';
            if(!empty($providerlogourl))
            {
-              echo '<div id="titlepage" class="fullWidth"><div class="row"><div class="large-8 columns left">'.$titlepage.'</div><div class="large-4 columns show-for-medium-up"><img src="'.$providerlogourl.'" class="right" style="max-height: 40px; background-color: white;"/></div></div></div>';
+              echo '<div class="row"><div class="large-8 columns left">'.$titlepage.'</div><div class="large-4 columns show-for-medium-up"><img src="'.$providerlogourl.'" class="right" style="max-height: 40px; background-color: white;"/></div></div>';
            }
            else
            {
-              echo '<div id="titlepage" class="fullWidth"><div class="row">'.$titlepage.'</div></div>';
+              echo '<div class="row">'.$titlepage.'</div>';
            }
+           if(!empty($subtitlepage))
+           {
+              echo '<div class="ingrid small-12 columns text-center subtitle">'.$subtitlepage.'</div>';
+           }
+           echo '</div>';
         }
 
 ?>

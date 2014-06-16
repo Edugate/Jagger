@@ -1,16 +1,8 @@
-<div id="pagetitle">
-<?php echo lang('title_fedvalidator') ;?>
-</div>
-<div id="subtitle"><h3>
-<?php
-echo lang('rr_federation').': '.anchor($federationlink,$federationname);
-?></h3>
-</div>
 <?php
 
 if(!empty($successMsg))
 {
-   echo '<div class="success">'.$successMsg.'</div>';
+   echo '<div data-alert class="alert-box success">'.$successMsg.'</div>';
 ?>
 <script type="text/javascript">
 function Redirect()
@@ -23,6 +15,6 @@ setTimeout('Redirect()', 1000);
 }
 elseif(!empty($errorMsg))
 {
-   echo '<div class="alert">'.$errorMsg.'</div>';
+   echo '<div data-alert class="alert-box alert">'.$errorMsg.'</div>';
 }
 

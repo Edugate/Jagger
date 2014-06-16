@@ -1210,18 +1210,20 @@ class Detail extends MY_Controller {
 
             if ($has_write_access)
             {
+                $entmenu[20] = array('label'=>''.lang('rr_attributes').'');
                 $d[++$i]['name'] = lang('rr_attrsoverview');
-                $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'),'class="editbutton"');
+                $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'),'class="button small editbutton"');
 
                 $image_link = '<img src="' . base_url('images/icons/pencil-field.png') . '"/>';
                 $edit_req_attrs_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '" class="editbutton editicon" title="edit" >' .  lang('rr_edit') . '</a></span>';
+                $entmenu[24] = array('name'=>''.lang('rr_requiredattributes').'','link'=>''.base_url().'manage/attribute_requirement/sp/' . $ent->getId() . '','class'=>'');
             }
-            $d[++$i]['header'] = '<span id="reqattrs"></span>' . lang('rr_requiredattributes') . $edit_req_attrs_link;
+           // $d[++$i]['header'] = '<span id="reqattrs"></span>' . lang('rr_requiredattributes') . $edit_req_attrs_link;
             $requiredAttributes = $ent->getAttributesRequirement();
             if ($requiredAttributes->count() === 0)
             {
                 $d[++$i]['name'] = '';
-                $d[$i]['value'] = '<span class="notice">' . lang('rr_noregspecified_inherit_from_fed') . '</span>';
+                $d[$i]['value'] = '<div data-alert class="alert-box warning">' . lang('rr_noregspecified_inherit_from_fed') . '</div>';
             }
             else
             {

@@ -12,7 +12,7 @@ else
             <?php
             if (!empty($alerts) && is_array($alerts) and count($alerts) > 0)
             {
-                echo '<div class="warnbox">';
+                echo '<div  data-alert class="alert-box warning" >';
                 echo '<ol>';
                 foreach ($alerts as $v)
                 {
@@ -21,13 +21,6 @@ else
                 echo '</ol>';
                 echo '</div>';
             }
-if(!empty($showclearcache)){
-            ?>
-
-<div style="width: 100%; display: block; text-align: right"><a class="button clearcache small" title="<?php echo lang('clearcache'); ?>" href="<?php echo base_url().'providers/detail/refreshentity/'.$entid.''; ?>"><?php echo lang('clearcache');?></a></div>
-
-<?php
-}
 ?>
 <div class="off-canvas-wrap" data-offcanvas>
  <div class="inner-wrap">
@@ -37,7 +30,11 @@ if(!empty($showclearcache)){
 <?php
     echo '<aside class="left-off-canvas-menu">';
     echo '<ul class="off-canvas-list">';
-    echo '<li><label>Actions</label></li>';
+    echo '<li><label>'.lang('menu_actions').'</label></li>';
+    if(!empty($showclearcache))
+    {
+        echo '<li><a href="'.base_url().'providers/detail/refreshentity/'.$entid.'" class="button clearcache small">'. lang('clearcache').'</a></li>';
+    }
     ksort($entmenu);
     foreach($entmenu as $v)
     {
@@ -49,15 +46,9 @@ if(!empty($showclearcache)){
          echo '<li><a href="'.$v['link'].'" class="'.$v['class'].'">'.$v['name'].'</a></li>';
        }
     }
+    echo '</ul>';
+    echo '</aside>';
 ?>
-        </ul>
-    </aside>
-
-
-
-
-
-
 
             <div id="providertabsi">
                 <ul class="tabs" data-tab>
@@ -66,11 +57,8 @@ $activetab = 'general';
 $tset = false;
 
 echo '<li class="tab-title" >
-        <a class="left-off-canvas-toggle" href="#"><img src="'.base_url().'images/jicons/appbar.cog.png" style="height: 20px"/></a>
+        <a class="left-off-canvas-toggle" href="#none"><img src="'.base_url().'images/jicons/appbar.cog.png" style="height: 20px"/></a>
       </li>';
-
-
-//<a class="left-off-canvas-toggle menu-icon" href="#" ><span></span></a></li>';
 foreach ($tabs as $t)
 {
     if($tset || ($t['section'] !== $activetab))

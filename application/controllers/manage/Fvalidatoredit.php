@@ -250,6 +250,8 @@ class Fvalidatoredit extends MY_Controller {
             $this->em->remove($fvalidator);
             $this->em->flush();
             $data['content_view'] = 'manage/fvalidator_edit_success';
+            $data['titlepage'] = lang('rr_federation').': '.anchor($data['federationlink'],$data['federationname']);
+            $data['subtitlepage'] = lang('title_fedvalidator');
             $this->load->view('page', $data);
         } else
         {
@@ -285,6 +287,8 @@ class Fvalidatoredit extends MY_Controller {
                 $data['venabled'] = $fvalidator->getEnabled();
             }
             $data['content_view'] = 'manage/fvalidator_edit_view';
+            $data['titlepage'] = lang('rr_federation').': '.anchor($data['federationlink'],$data['federationname']);
+            $data['subtitlepage'] = lang('title_fedvalidator');
             $this->load->view('page', $data);
         }
     }

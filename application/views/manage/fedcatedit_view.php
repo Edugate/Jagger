@@ -12,29 +12,27 @@
     }
 
 echo form_open();
-echo '<fieldset><legend>'.lang('general').'</legend><ol>';
-echo '<li>';
-echo '<label for="buttonname">'.lang('tbl_catbtnname').'</label>';
-echo '<input type="text" id="buttonname" name="buttonname" 
-                           value="'.$buttonname.'" />';
-echo '</li>';
-echo '<li>';
-echo '<label for="fullname">'.lang('tbl_catbtnititlename').'</label>';
-echo '<input type="text" id="fullname" name="fullname" 
-                           value="'.$fullname.'" />';
-echo '</li>';
-echo '<li>';
-echo '<label for="description">'.lang('rr_description').'</label>';
-echo '<textarea id="description" name="description" rows="5">';
+echo '<fieldset><legend>'.lang('general').'</legend><div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="buttonname" class="right inline">'.lang('tbl_catbtnname').'</label></div>';
+echo '<div class="small-6 large-7 columns end"><input type="text" id="buttonname" name="buttonname" 
+                           value="'.$buttonname.'" /></div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns"><label for="fullname" class="right inline">'.lang('tbl_catbtnititlename').'</label></div>';
+echo '<div class="small-6 large-7 columns end"><input type="text" id="fullname" name="fullname" 
+                           value="'.$fullname.'" /></div>';
+echo '</div>';
+echo '<div  class="small-12 columns">';
+echo '<div class="small-3 columns"><label for="description"  class="right inline">'.lang('rr_description').'</label></div>';
+echo '<div class="small-6 large-7 columns end"><textarea id="description" name="description" rows="5">';
 echo $description;
-echo '</textarea>';
+echo '</textarea></div>';
                         
-echo '</li>';
-echo '</ol></fieldset>';
+echo '</div>';
+echo '</fieldset>';
 echo '<fieldset><legend>'.lang('rrfedcatmembers').'</legend>';
 echo '<span style="display: none"><input type="hidden" name="fed[controlkey]" id="fed[controlkey]" value="0"/></span>';
-echo '<ol>';
-echo '<table>';
 foreach($multi as $m)
 {
    if($m['member'])
@@ -51,15 +49,14 @@ foreach($multi as $m)
     'id'          => 'fed[]',
     'value'       => ''.$fedid.'',
     'checked'     => $c,
-    'style'       => 'margin-right:10px; margin-left: 70px;',
+    'class'       => 'inline right',
     );
-   echo '<li><label for="fed[]">'.$m['fedname'].'</label>'.form_checkbox($data).'</li>';
+   echo '<div class="small-12 columns"><div class="small-3 columns">'.form_checkbox($data).'</div><div class="small-6 large-7 columns end">'.$m['fedname'].'</div></div>';
 
 }
-echo '</table>';
-echo '</ol>';
+
 echo '</fieldset>';
-echo '<div class="buttons"><button type="submit" id="rmfedcategory" name="formsubmit" value="remove" class="resetbutton deleteicon">'.lang('rr_remove').'</button> <button type="submit" name="formsubmit" value="update" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
+echo '<div class="buttons"><button type="submit" id="rmfedcategory" name="formsubmit" value="remove" class="resetbutton deleteicon alert">'.lang('rr_remove').'</button> <button type="submit" name="formsubmit" value="update" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
 echo form_close();
 
 echo confirmDialog(''.lang('title_confirm').'', ''.sprintf(lang('douwanttoremove'),lang('fedcategory')).'', ''.lang('rr_yes').'', ''.lang('rr_no').'');

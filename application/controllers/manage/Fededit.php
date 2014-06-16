@@ -143,8 +143,8 @@ class Fededit extends MY_Controller {
             $data['form'] .= form_close();
         
         }
-            $data['titlepage'] = lang('rr_fededitform').'<br />';
-            $data['titlepage'] .= lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.htmlspecialchars($fedname).'</a>';
+            $data['subtitlepage'] =  lang('rr_fededitform').'';
+            $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.htmlspecialchars($fedname).'</a>';
             $data['content_view'] = 'manage/fededit_view';
             $this->load->view('page', $data);
         

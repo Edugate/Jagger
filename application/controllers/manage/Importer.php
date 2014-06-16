@@ -64,7 +64,8 @@ class Importer extends MY_Controller {
         } else
         {
 
-            $data['title'] = "import metadata";
+            $data['title'] = lang('titleimportmeta');
+            $data['titlepage'] = lang('titleimportmeta');
             $data['content_view'] = "manage/import_metadata_form";
             $data['other_error'] = $this->other_error;
             $data['global_erros'] = $this->globalerrors;

@@ -2152,6 +2152,8 @@ $(document).ready(function() {
         $('#sconfirm').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%", ],
+            minHeight: '300px',
+            minWidth: '300px', 
             overlayId: 'simpledialog-overlay',
             containerId: 'simpledialog-container',
             onShow: function(dialog) {

@@ -4,11 +4,11 @@
 
 function confirmDialog($title, $msg, $yes, $no)
 {
-    $r = '<div id="sconfirm"><div class="header"><span>' . htmlentities($title) . '</span></div>
+    $r = '<div id="sconfirm" class="small-12 columns"><div class="header small-12 columns"><span>' . htmlentities($title) . '</span></div>
   <p class="message">' . htmlentities($msg) . '</p>
-  <div class="buttons">
-  <div class="no simplemodal-close">' . htmlentities($no) . '</div>
-  <div class="yes">' . htmlentities($yes) . '</div>
+  <div class="small-12 columns button-groups">
+       <div class="no simplemodal-close small-3 columns"><div class="button tiny">' . htmlentities($no) . '</div></div>
+  <div class="yes small-3 columns "><div class="button tiny alert">' . htmlentities($yes) . '</div></div>
   </div>
   </div>';
     return $r;

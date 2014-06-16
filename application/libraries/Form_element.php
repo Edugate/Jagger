@@ -2967,7 +2967,7 @@ class Form_element
         $f .= '<div class="small-3 columns">' . form_label(lang('rr_fed_publisher'), 'publisher') .'</div><div class="small-8 large-7 columns">'. form_input('publisher', set_value('publisher', $federation->getPublisher())) . '</div><div class="small-1 large-2 "></div>';
         $f .= '</div>';
         $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('rr_isfedpublic') . ' ' . showBubbleHelp(lang('rhelppublicfed')), 'ispublic') .'</div><div class="small-8 large-7 columns">' .form_checkbox('ispublic', 'accept', set_value('ispublic', $federation->getPublic())) . '</div>';
+        $f .= '<div class="small-3 columns">' . form_label(lang('rr_isfedpublic') . ' ' . showBubbleHelp(lang('rhelppublicfed')), 'ispublic') .'</div><div class="small-8 large-7 columns end">' .form_checkbox('ispublic', 'accept', set_value('ispublic', $federation->getPublic())) . '</div>';
         $f .= '</div>';
         $f .= '<div class="small-12 columns">';
         $f .= '<div class="small-3 columns">' . form_label(lang('rr_include_attr_in_meta'), 'incattrs') .'</div><div class="small-8 large-7 columns">'. form_checkbox('incattrs', 'accept', set_value('incattrs', $federation->getAttrsInmeta())) . '</div><div class="small-1 large-2 "></div></div>';
@@ -3097,35 +3097,27 @@ class Form_element
     {
         $result = '';
         $result .= form_fieldset(lang('rr_attr_name') . ': ' . $arp->getAttribute()->getFullName() . ' (' . $arp->getAttribute()->getName() . ')');
-        $result .= '<ol><li>' . form_label(lang('rr_setpolicy'), 'policy');
-        $result .= form_dropdown('policy', $this->ci->config->item('policy_dropdown'), $arp->getPolicy());
-        $result .= '</li></ol>' . form_fieldset_close();
+        $result .= '<div class="small-12 columns"><div class="small-3 columns">' . form_label(lang('rr_setpolicy'), 'policy').'</div><div class="small-6 large-7 columns end">';
+        $result .= form_dropdown('policy', $this->ci->config->item('policy_dropdown'), $arp->getPolicy()).'</div></div>';
+        $result .=  form_fieldset_close();
         return $result;
     }
 
     public function generateAddCoc()
     {
-        $r = form_fieldset('');
-        $r .= '<ol>';
-        $r .= '<li>' . form_label(lang('entcat_enabled'), 'cenabled') . form_checkbox('cenabled', 'accept') . '</li>';
-        $r .= '<li>' . form_label(lang('entcat_shortname'), 'name') . form_input('name', set_value('name')) . '</li>';
-        $r .= '<li>' . form_label(lang('entcat_url'), 'url') . form_input('url', set_value('url')) . '</li>';
-        $r .= '<li>' . form_label(lang('entcat_description'), 'description') . form_textarea('description', set_value('description')) . '</li>';
-        $r .= '</ol>';
-        $r .= form_fieldset_close();
+        $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">'.lang('entcat_enabled').'</label></div><div class="small-6 large-7 columns end">'. form_checkbox('cenabled', 'accept') . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">'.lang('entcat_shortname').'</label></div><div class="small-6 large-7 columns end">'. form_input('name', set_value('name')) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">'.lang('entcat_url').'</label></div><div class="small-6 large-7 columns end">'. form_input('url', set_value('url')) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">'.lang('entcat_description').'</label></div><div class="small-6 large-7 columns end">'. form_textarea('description', set_value('description')) . '</div></div>';
         return $r;
     }
 
     public function generateEditCoc(models\Coc $coc)
     {
-        $r = form_fieldset('');
-        $r .= '<ol>';
-        $r .= '<li>' . form_label(lang('entcat_enabled'), 'cenabled') . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</li>';
-        $r .= '<li>' . form_label(lang('entcat_shortname'), 'name') . form_input('name', set_value('name', $coc->getName())) . '</li>';
-        $r .= '<li>' . form_label(lang('entcat_url'), 'url') . form_input('url', set_value('url', $coc->getUrl())) . '</li>';
-        $r .= '<li>' . form_label(lang('entcat_description'), 'description') . form_textarea('description', set_value('description', $coc->getDescription())) . '</li>';
-        $r .= '</ol>';
-        $r .= form_fieldset_close();
+        $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">'.lang('entcat_enabled').'</label></div><div class="small-6 large-7 columns end">'. form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">'.lang('entcat_shortname').'</label></div><div class="small-6 large-7 columns end">' .form_input('name', set_value('name', $coc->getName())) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">'.lang('entcat_url').'</label></div><div class="small-6 large-7 columns end">'.form_input('url', set_value('url', $coc->getUrl())) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">'.lang('entcat_description').'</label></div><div class="small-6 large-7 columns end">' .form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
         return $r;
     }
 

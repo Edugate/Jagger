@@ -1,16 +1,14 @@
-<div id="subtitle"><h3><?php echo lang('rr_newattr_title');?></h3></div>
 <?php
 $errors_v = validation_errors('<span>', '</span><br />');
 if (!empty($errors_v)) {
-    echo '<div class="error">' . $errors_v . '</div>';
+    echo '<div data-alert class="alert-box alert">' . $errors_v . '</div>';
 }
 
 echo form_open();
 echo form_fieldset('');
-echo '<ol>';
-echo '<li>';
-//echo '<div class="dhelp" ></div>';
-echo form_label(lang('attrname').'','attrname');
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns"><label for="attrname" class="right inline">'.lang('attrname').'</label></div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrname',
      'name'=>'attrname',
@@ -18,9 +16,12 @@ echo form_input(array(
      'max-length'=>'128',
      'class'=>'required' 
     ));
-echo '</li>';
-echo '<li>';
-echo form_label(lang('attrfullname'),'attrfullname');
+echo '</div>';
+echo '</div>';
+
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns"><label for="attrfullname" class="right inline">'.lang('attrfullname').'</label></div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrfullname',
      'name'=>'attrfullname',
@@ -28,9 +29,11 @@ echo form_input(array(
      'max-length'=>'128',
      'class'=>'required' 
     ));
-echo '</li>';
-echo '<li>';
-echo form_label(lang('attroid'),'attroidname');
+echo '</div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns"><label for="attroidname" class="right inline">'.lang('attroid').'</label></div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attroidname',
      'name'=>'attroidname',
@@ -38,9 +41,11 @@ echo form_input(array(
      'max-length'=>'128',
      'class'=>'required' 
     ));
-echo '</li>';
-echo '<li>';
-echo form_label(lang('attrurn'),'attrurnname');
+echo '</div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns"><label for="attrurnname" class="right inline">'.lang('attrurn').'</label></div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrurnname',
      'name'=>'attrurnname',
@@ -48,9 +53,11 @@ echo form_input(array(
      'max-length'=>'128',
      'class'=>'required' 
     ));
-echo '</li>';
-echo '<li>';
-echo form_label('' . lang('rr_description') . '','description');
+echo '</div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns"><label for="description" class="right inline">'.lang('rr_description').'</label></div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_textarea(array(
     'id' => 'description',
     'name' => 'description',
@@ -59,9 +66,9 @@ echo form_textarea(array(
     'rows' => 10,
     'style' => 'font-family: monospace; font-size: smaller'
 ));
-echo '</li>';
-echo '</ol>';
-echo '<div class="buttons"><button type="submit" name="submit" class="savebutton">'. lang('rr_submit').'</button></div>';
+echo '</div>';
+echo '</div>';
+echo '<div class="buttons small-12"><div class="small-9 large-10 columns end text-right"><button type="submit" name="submit" class="savebutton">'. lang('rr_submit').'</button></div></div>';
 echo form_fieldset_close();
 
 echo form_close();

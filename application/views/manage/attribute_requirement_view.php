@@ -27,20 +27,26 @@ $target = current_url();
                     for ($i = 0; $i < $no_new_attr; $i++)
                     {
                         echo form_open(base_url() . "manage/attribute_requirement/submit", $attributes, $spid_hidden);
-                        echo '<ol><li>';
-                        echo form_label(lang('rr_selectattr'), 'attribute');
-
-                        echo form_dropdown('attribute', $add_attr_final,set_value('attribute'));
-                        echo '</li><li>';
-                        echo form_label(lang('rr_selectreq'), 'requirement');
-                        echo form_dropdown('requirement', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''),set_value('requirement'));
-                        echo '</li><li>';
-                        echo form_label(lang('rr_reqattrreason'), 'reason');
+                        echo '<div class="small-12 columns">';
+                          echo '<div class="small-3 columns">';
+                          echo '<label for="attribute" class="right inline">'.lang('rr_selectattr').'</label>';
+                          echo '</div>';
+                          echo '<div class="small-3 columns">'.form_dropdown('attribute', $add_attr_final,set_value('attribute')).'</div>';
+                          echo '<div class="small-3 columns">';
+                          echo '<label for="requirement" class="right inline">'.lang('rr_selectreq').'</label>';
+                          echo '</div>';
+                        echo '<div class="small-3 columns">'.form_dropdown('requirement', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''),set_value('requirement')).'</div>';
+                        echo '</div>';
+                        echo '<div class="small-12 columns">';
+                        echo '<div class="small-3 columns"> ';
+                        echo '<label for="reason">'.lang('rr_reqattrreason').'</label>';
+                        echo '</div>';
+                        echo '<div class="small-9 columns end">'; 
                         echo form_textarea(array('name' => 'reason', 'cols' => 30, 'rows' => 5));
-                        echo '</li></ol>';
+                        echo '</div></div>';
                         $tf = '';
-                        $tf .='<div class="buttons">';
-                        $tf .='<button type="submit" name="submit" id="submit" value="Add" class="savebutton saveicon">
+                        $tf .='<div class="buttons small-12  columns">';
+                        $tf .='<button type="submit" name="submit" id="submit" value="Add" class="savebutton saveicon button">
                   '.lang('rr_add').'</button>';
                         $tf .= '</div>';
                         echo $tf;
@@ -66,21 +72,29 @@ $target = current_url();
                         $spid_hidden['type'] = 'SP';
                         echo form_open(base_url() . 'manage/attribute_requirement/submit', $attributes2, $spid_hidden);
                         echo form_fieldset($a['name']);
-                        echo '<ol>';
+                        echo '<div class="small-12 columns">';
                         echo '<div><b>"' . $a['fullname'] . '":</b> ' . $a['description'] . '<br />
 			<b>SAML1:</b> ' . $a['urn'] . '<br />
 			<b>SAML2:</b> ' . $a['oid'] . '</div>';
-                        echo '<li>';
-                        echo form_label(lang('rr_reqattr_currenttype'), 'requirement');
+                      //  echo '<div class="small-12 columns">';
+                        echo '<div class="small-3 columns">';
+                        echo '<label for="requirement" class="inline right">'.lang('rr_reqattr_currenttype').'</label>';
+                        echo '</div>';
+                        echo '<div class="small-6 columns end">';
                         echo form_dropdown('requirement', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''), $a['status']);
-                        echo '</li><li>';
-                        echo form_label(lang('rr_reqattrreason'), 'reason');
+                        echo '</div></div>';
+                        echo '<div class="small-12 columns">';
+                        echo '<div class="small-3 columns">';
+                        echo '<label for="reason" class="inline right">'.lang('rr_reqattrreason').'</label>';
+                        echo '</div>';
+                        echo '<div class="small-6 columns end">';
                         echo form_textarea(array('name' => 'reason', 'cols' => 30, 'rows' => 5, 'value' => $a['reason']));
-                        echo '</li><ol>';
+                        echo '</div><div>';
+                       // echo '</div>';
                         echo form_fieldset_close();
                         $tf = '';
                         $tf .='<div class="buttons">';
-                        $tf .='<button type="submit" name="submit" value="Remove" class="resetbutton reseticon">
+                        $tf .='<button type="submit" name="submit" value="Remove" class="resetbutton reseticon alert">
                   '.lang('rr_remove').'</button>';
                         $tf .='<button type="submit" name="submit" value="Modify" class="savebutton saveicon">
                   '.lang('rr_modify').'</button>';
