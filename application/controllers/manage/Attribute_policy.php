@@ -315,6 +315,16 @@ class Attribute_policy extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+        $lang = MY_Controller::getLang();
+        $displayname = $idp->getNameToWebInLang($lang,'idp');
+        if(empty($displayname))
+        {
+               $displayname = $idp->getEntityId();
+        }
+
+
+        $data['titlepage'] = lang('identityprovider').': '.'<a href="'.base_url().'providers/detail/show/'.$idp_id.'">'.$displayname.'</a>';
+        $data['subtitlepage'] =  lang('rr_attributereleasepolicy');
        
         /**
          * pull default arp - it's equal to supported attributes 

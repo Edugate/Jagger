@@ -102,7 +102,16 @@ class Arpsexcl extends MY_Controller {
         $data['idp_name'] = $idp->getName();
         $data['idp_id'] = $idp->getId();
         $data['idp_entityid'] = $idp->getEntityId(); 
+        $lang = MY_Controller::getLang();
+        $displayname = $idp->getNameToWebInLang($lang,'idp');
+        if(empty($displayname))
+        {
+             $displayname = $idp->getEntityId();
+        }
+
         $data['content_view'] =  'manage/arpsexcl_view';
+        $data['titlepage'] = anchor(base_url().'providers/detail/show/'.$data['idp_id'],  $displayname );
+        $data['subtitlepage'] =  lang('rr_arpexcl1');
         $this->load->view('page', $data);
 
     }

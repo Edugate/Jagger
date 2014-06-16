@@ -997,11 +997,13 @@ $(function() {
                     })
                     .addClass("ui-widget ui-widget-content ui-corner-left");
 
-            input.data("autocomplete")._renderItem = function(ul, item) {
+            input.data("uiAutocomplete")._renderItem = function(ul, item) {
+                 if (!_.include(self.idArr, item.id)) {
                 return $("<li></li>")
                         .data("item.autocomplete", item)
                         .append("<a>" + item.label + "</a>")
                         .appendTo(ul);
+                  }
             };
 
             this.button = $("<button type='button'>&nbsp;</button>")

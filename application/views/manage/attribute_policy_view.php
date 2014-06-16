@@ -5,16 +5,16 @@
     <?php
     $action = base_url().'manage/attribute_policy/specific/'.$idpid.'/sp';
     $attributes = array('id'=>'formver3');
+    echo '<div class="small-12 columns">';
     echo form_open($action,$attributes);
-    echo form_fieldset();
-    echo form_label(''.lang('rr_selectsp').'','service');
+    echo '<div class="small-3 columns">'.jform_label(''.lang('rr_selectsp').'','service').'</div>';
     //echo "<br />";
     $js = 'id="combobox"';
     
-    echo form_dropdown('service',$formdown,'0',$js );
-    echo '<span class="buttons"><button type="submit" name="submit" value="submit" class="savebutton nexticon v2">'.lang('rr_go').'</button></span>';
-    echo form_fieldset_close();
-    echo form_close()
+    echo '<div class="small-3 columns">'.form_dropdown('service',$formdown,'0',$js ).'</div>';
+    echo '<div class="small-6 columns"><button type="submit" name="submit" value="submit" class="savebutton nexticon v2 tiny">'.lang('rr_go').'</button></div>';
+    echo form_close();
+    echo '</div>';
     ?>
     
 	
@@ -23,28 +23,26 @@
 <button id="toggle">Show underlying select</button>
 -->
 </div>
-<div id="pagetitle"><?php echo lang('rr_attributereleasepolicy');?></div>
 <?php
 //$this->load->view('autosuggest_script_view');
 
 $idp_link = anchor(base_url().'providers/detail/show/'.$idpid,'<img src="' . base_url() . 'images/icons/home.png" />');
 
-echo '<div id="subtitle"><h3>'.lang('identityprovider').': <a href="'.base_url().'providers/detail/show/'.$idpid.'">'.$idp_name.'</a></h3><h4>'.$idp_entityid.'</h4></div>';
 ?>
-<span class="span-24">
+<div class="small-12 columns">
 <?php
 
 
 
 if (!empty($message))
 {
-    echo '<div class="notice">'. $message . '</div>';
+    echo '<div  data-alert class="alert-box info">'. $message . '</div>';
 }
 if (!empty($error))
 {
-    echo '<div class="alert">'. $error .'</div>';
+    echo '<div  data-alert class="alert-box alert">'. $error .'</div>';
 }
-echo '</span>';
+echo '</div>';
 
 ?>
 <div id="arptabs">
