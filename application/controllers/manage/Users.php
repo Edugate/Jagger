@@ -360,6 +360,7 @@ class Users extends MY_Controller {
             $ip = $u->getIp();
             $userlist[] = array('user' => anchor($showlink . $encoded_username, $u->getUsername()), 'fullname' => $u->getFullname(), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $ip);
         }
+        $data['titlepage'] =  lang('rr_userslist');
         $data['userlist'] = $userlist;
         $data['content_view'] = 'manage/userlist_view';
         $this->load->view('page', $data);
@@ -499,31 +500,29 @@ class Users extends MY_Controller {
             $form_attributes = array('id'=>'formver2','class'=>'register');
             $action = base_url() . "manage/users/passedit/".$encoded_username;
             $form = form_open($action,$form_attributes);
-            $form .= form_fieldset('Password change for user '.$user->getUsername());
-            $form .="<ol>";
+            
             if($write_access  && !$manage_access)
             {
-                $form .= "<li>";
-                $form .= form_label('Current password', 'oldpassword');
-                $form .= form_password('oldpassword');
-                $form .="</li>";
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-3 columns">'.jform_label('Current password', 'oldpassword').'</div>';
+                $form .= '<div class="small-6 large-6 columns end">'. form_password('oldpassword').'</div>';
+                $form .="</div>";
               
             }
-            $form .= "<li>";
-            $form .= form_label('New password', 'password');
-            $form .= form_password('password');
-            $form .="</li>";
-            $form .= "<li>";
-            $form .= form_label('New password confirmation', 'passwordconf');
-            $form .= form_password('passwordconf');
-            $form .="</li>";
-            $form .= "</ol>";
-            $form .= form_fieldset_close();
-            $form .= '<div class="buttons">';
-            $form .= '<button type="submit"  name="submit", value="submit" class="savebutton saveicon">'.lang('rr_changepass').'</button>';
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-3 columns">'.jform_label('New password', 'password').'</div>';
+            $form .= '<div class="small-6 large-6 columns end">'.form_password('password').'</div>';
+            $form .= '</div>';
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-3 columns">'.jform_label('New password confirmation', 'passwordconf').'</div>';
+            $form .= '<div class="small-6 large-6 columns end">'.form_password('passwordconf').'</div>';
+            $form .="</div>";
+            $form .= '<div class="buttons small-12 columns text-right">';
+            $form .= '<div class="small-9 columns "><button type="submit"  name="submit", value="submit" class="button savebutton saveicon">'.lang('rr_changepass').'</button></div>';
             $form .='</div>';
             $form .= form_close();
             $data['message'] = $form;
+            $data['titlepage'] = lang('rr_changepass').': '. htmlentities($user->getUsername());
             $data['content_view'] = 'manage/password_change_view';
             $this->load->view('page', $data);
         }
@@ -537,7 +536,7 @@ class Users extends MY_Controller {
                 $user->setLocalEnabled();
                 $this->em->persist($user);
                 $this->em->flush();
-                $data['message'] = "<div class=\"notice\">password changed for user ".$user->getUsername()."</div>"; 
+                $data['message'] = ''.lang('rr_passchangedsucces').': '.htmlentities($user->getUsername());
                 $data['content_view'] = 'manage/password_change_view';
                 $this->load->view('page', $data);
             }

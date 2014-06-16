@@ -1,5 +1,6 @@
 <?php
-
+   $this->load->view('frontend-experimental');
+/**
 $experimentalTheme = $this->config->item('experimentaltheme');
 
 if(empty($experimentalTheme))
@@ -8,5 +9,5 @@ if(empty($experimentalTheme))
 }
 else
 {
-   $this->load->view('frontend-experimental');
 }
+*/

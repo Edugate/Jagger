@@ -140,3 +140,8 @@ function generateInputWithRemove($label, $name, $buttonname, $buttonvalue, $valu
     return $result;
 }
 
+function jform_label($a,$b)
+{
+  return '<label form="'.$b.'" class="right inline">'.$a.'</label>';
+
+}

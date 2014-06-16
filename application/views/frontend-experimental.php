@@ -25,7 +25,7 @@ $pageTitle = $this->config->item('pageTitlePref');
 $colorTheme = $this->config->item('colortheme');
 if(empty($colorTheme))
 {
-   $colorTheme = 'default';
+   $colorTheme = 'jagger';
 }
 $base_url = base_url();
 $pageTitle .= $this->title;
@@ -67,9 +67,9 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';     
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />';
-       // echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/'.$colorTheme.'.css" />';
-        echo '<link rel="stylesheet" href="'.$foundation.'css/foundation.css" />';
-        echo '<script src="' . $foundation . 'js/modernizr.js"></script>';
+        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/'.$colorTheme.'.css" />';
+       // echo '<link rel="stylesheet" href="'.$foundation.'css/foundation.css" />';
+        echo '<script src="' . $base_url . 'js/modernizr.js"></script>';
 
         
         ?>
@@ -270,8 +270,8 @@ $this->load->view('toppanel',$args);
         
         <button id="jquerybubblepopupthemes" style="display:none;" value="<?php echo $jquerybubblepopupthemes; ?>"></button> 
 
-        <script src="<?php echo $foundation;?>js/jquery.js"></script>
-        <script src="<?php echo $foundation;?>js/jquery-ui-1.10.4.custom.min.js"></script>
+        <script src="<?php echo $base_url;?>js/jquery.js"></script>
+        <script src="<?php echo $base_url;?>js/jquery-ui-1.10.4.custom.min.js"></script>
 
         <script type="text/javascript" src="<?php echo $base_url; ?>js/jquery.uitablefilter.js"></script>
         <?php
@@ -283,11 +283,11 @@ $this->load->view('toppanel',$args);
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.inputfocus-0.9.min.js"></script>';
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery-bubble-popup-v3.min.js"></script>';
 ?>
-        <script src="<?php echo $foundation;?>js/foundation.min.js"></script>
-        <script src="<?php echo $foundation;?>js/foundation.topbar.js"></script>
-        <script src="<?php echo $foundation;?>js/foundation.tab.js"></script>
-        <script src="<?php echo $foundation;?>js/foundation.alert.js"></script>
-        <script src="<?php echo $foundation;?>js/foundation.reveal.js"></script>
+        <script src="<?php echo $base_url;?>js/foundation.min.js"></script>
+        <script src="<?php echo $base_url;?>js/foundation.topbar.js"></script>
+        <script src="<?php echo $base_url;?>js/foundation.tab.js"></script>
+        <script src="<?php echo $base_url;?>js/foundation.alert.js"></script>
+        <script src="<?php echo $base_url;?>js/foundation.reveal.js"></script>
 <?php
         echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v3.js"></script>';
 ?>

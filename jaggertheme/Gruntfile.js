@@ -11,7 +11,7 @@ module.exports = function (grunt) {
                     outputStyle: 'compressed'
                 },
                 files: {
-                    '../foundation/css/foundation.css': 'scss/app.scss'
+                    '../styles/jagger.css': 'scss/app.scss'
                 }
             }
         },
@@ -37,7 +37,7 @@ module.exports = function (grunt) {
                             'bower_components/jquery-placeholder/jquery.placeholder.js',
                             'bower_components/modernizr/modernizr.js'
                         ],
-                        dest: '../foundation/js/'
+                        dest: '../js/'
                     }
                 ]
             },
