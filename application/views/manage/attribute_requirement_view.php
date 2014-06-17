@@ -1,11 +1,11 @@
 <?php
 if (!empty($message))
 {
-    echo '<span class="notice">' . $message . '</span>';
+    echo '<div data-alert class="alert-box  info">' . $message . '</div>';
 }
 if (!empty($error))
 {
-    echo '<span class="alert">' . $error . '</span>';
+    echo '<span data-alert class=" alert-box  alert">' . $error . '</span>';
 }
 $attributes = array('class' => 'email', 'id' => 'formver2');
 $attributes2 = array('class' => 'email', 'id' => 'formver2');
@@ -15,10 +15,10 @@ $target = current_url();
 
 
 <div class="button-group">
-<button class="addbutton addicon showform button small"><?php echo lang('rr_addreqattr'); ?></button>
+<button data-reveal-id="newattrmodal" class="button small"><?php echo lang('rr_addreqattr'); ?></button>
 <button class="resetbutton deleteicon hideform hidden alert small"><?php echo lang('btn_hide') ;?></button></div>
 
-<table id="details" class="reqattraddform hidden">
+<div  id="newattrmodal" class="reveal-modal small" data-reveal><table>
     <caption><?php echo lang('rr_addreqattr');?></caption>
     <tbody><tr><td style="border: 0px;padding: 0px">
                 <?php
@@ -28,7 +28,7 @@ $target = current_url();
                     {
                         echo form_open(base_url() . "manage/attribute_requirement/submit", $attributes, $spid_hidden);
                         echo '<div class="small-12 columns">';
-                        echo '<div class="small-3 columns">';
+                        echo '<div class="small-6 medium-3 columns">';
                         echo '<label for="attribute" class="right inline">'.lang('rr_selectattr').'</label>';
                         echo '</div>';
                         echo '<div class="small-3 columns">'.form_dropdown('attribute', $add_attr_final,set_value('attribute')).'</div>';
@@ -46,28 +46,28 @@ $target = current_url();
                         echo '</div></div>';
                         $tf = '';
                         $tf .='<div class="buttons small-12  columns">';
-                        $tf .='<button type="submit" name="submit" id="submit" value="Add" class="savebutton saveicon button">
-                  '.lang('rr_add').'</button>';
+                        $tf .='<div class="small-12 text-right"><button type="submit" name="submit" id="submit" value="Add" class="savebutton saveicon button small">
+                  '.lang('rr_add').'</button></div>';
                         $tf .= '</div>';
                         echo $tf;
                         echo form_close();
                     }
                 }
-                echo '</td></tr></table>';
+                echo '</td></tr></table><a class="close-reveal-modal">&#215;</a></div>';
                 if (count($already_in_attr) > 0)
                 {
 
-                    echo '<table id="details"><caption>'.lang('rr_modreqattr').'</caption><theader><td>'.lang('rr_tbltitle_name').'</td><td>Oid</td><td>'.lang('rr_tbltitle_reason').'</td><td>'.lang('rr_tbltitle_status').'</td></theader><tbody>';
+                    echo '<table id="details" class=""><caption>'.lang('rr_modreqattr').'</caption><theader><td>'.lang('rr_tbltitle_name').'</td><td>Oid</td><td>'.lang('rr_tbltitle_reason').'</td><td>'.lang('rr_tbltitle_status').'</td></theader><tbody>';
                     foreach ($already_in_attr as $a)
                     {
                         echo '<tr class="accordionButton">';
                         echo '<td>' . $a['fullname'] . '</td>';
                         echo '<td>' . $a['oid'] . '</td>';
                         echo '<td>' . $a['reason'] . '</td>';
-                        echo '<td>' . $a['status'] . '</td>';
+                        echo '<td><span class="label">' . $a['status'] . '</span></td>';
                         echo '</tr>';
                         echo '<tr class="accordionContent"><td colspan="4">';
-
+                        echo '<div alert-data class="alert-box secondary">';
                         $spid_hidden['attribute'] = $a['attr_id'];
                         $spid_hidden['type'] = 'SP';
                         echo form_open(base_url() . 'manage/attribute_requirement/submit', $attributes2, $spid_hidden);
@@ -101,6 +101,7 @@ $target = current_url();
                         $tf .= '</div>';
                         echo $tf;
                         echo form_close();
+                        echo '</div>';
                         echo '</td></tr>';
                     }
                     echo '</tbody></table>';
