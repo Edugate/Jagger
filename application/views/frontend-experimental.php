@@ -231,7 +231,6 @@ $this->load->view('toppanel',$args);
                 </footer>
             </div>
 
-        <div style="height: 50px;"></div>
         <div id="spinner" class="spinner" style="display:none;">
             <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="<?php echo lang('loading');?>"/>
         </div>

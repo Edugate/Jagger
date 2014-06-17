@@ -1,7 +1,6 @@
 <?php
 $this->load->helper("cert");
 ?>
-<div id="subtitle"><h3><?php echo lang('rr_idp_register_title'); ?></h3></div>
 <?php
 $errors_v = validation_errors('<span>', '</span><br />');
 if (!empty($errors_v)) {

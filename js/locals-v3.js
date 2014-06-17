@@ -46,6 +46,22 @@ var GINIT = {
 
 //$("#providerlogtab").on("toggled", function (event, tab){
 //});
+    $("a.bookentity").click(function() {
+        var link = $(this), url = link.attr("href");
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            timeout: 2500,
+            cache: false,
+            success:function(data){
+                $("a.bookentity").show();
+                $(this).hide();
+                GINIT.initialize(); 
+           }
+        });
+        return false;
+    });
 
 
   $('#providerlogtab').on('toggled', function (event, tab) {
@@ -1245,17 +1261,6 @@ $(function() {
         return false;
     });
 
-    $("a.bookentity").click(function() {
-        var link = $(this), url = link.attr("href");
-
-        $.ajax({
-            type: "GET",
-            url: url,
-            timeout: 2500,
-            cache: false
-        });
-        return false;
-    });
     $("a.delbookentity").click(function() {
         var link = $(this), url = link.attr("href");
 

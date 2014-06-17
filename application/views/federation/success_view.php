@@ -2,7 +2,7 @@
 
 if(!empty($success))
 {
-   echo '<div class="span-12 prepend-6"><div class="success">'.$success.'</div></div>';
+   echo '<div  data-alert class="alert-box success">'.$success.'</div>';
 }
 else
 {

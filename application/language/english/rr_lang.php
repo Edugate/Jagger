@@ -145,6 +145,7 @@ $lang['DisplayName']                = 'DisplayName';
 $lang['Description']                = 'Description';
 $lang['PrivacyStatementURL']        = 'PrivacyStatementURL';
 $lang['InformationURL']             = 'InformationURL';
+
 $lang['rr_provdesc']                = 'Provider Description';
 $lang['rr_management']              = 'Management';
 $lang['attrsdeflist']               = 'Attributes definitions';
@@ -1024,7 +1025,7 @@ $lang['rr_noentcatsregistered']     = 'No Entity Categories registered';
 
 $lang['err_atleastonesso']         = 'At least one SingleSignOn URL must be defined';
 $lang['entdswayf']                          = 'The link contains list of all trusted Identity Providers in json format. Generaly it can be consumed by DiscoveryService particularly DiscoJuice';
-
+$lang['nosession']                 = 'No valid session. Please re-login!';
 $lang['entname_default_expl']              = 'This is default value for OrganizationName.<br /> If localized name is not set for English language then this value is used instead in generated SAML metadata: /EntityDescriptor/Organization/OrganizationName';
 $lang['entdisplname_default_expl']              = 'This is default value for OrganizationDisplayName.<br /> If localized name is not set for English language then this value is used instead in generated SAML metadata: /EntityDescriptor/Organization/OrganizationDisplayName.<br /> Also is used as default English lang in metadata: /EntityDescriptor/[IDPSSODescriptor|SPSSODescriptor]/Extensions/UIInfo/DisplayName';
 

@@ -1,3 +1,13 @@
+body {
+height: 100%;
+
+}
+#footer {
+ min-height: 100px;
+ background-color: darken(#074E68,10%) !important;
+
+
+}
 $alert-background: red;
 
 .fullWidth {
@@ -11,21 +21,27 @@ $alert-background: red;
 
 }
 
-iarticle {
-
-
-  background-color: white;
+article {
+  padding: 10px;
+  //padding-top: 15px;
+  background-color: lighten($body-bg, 5%);
+  border: 1px solid darken(white,10%);
+  margin-bottom: 5px;
+  height: 100%;
   
 }
 .tabs-content {
 
-  background-color: white;
+  //background-color: white;
 
 }
 #navbuttons1 {
   @include sub-nav();
 }
 a.editbutton, a.addbutton {
+ @include button;
+}
+div.buttons > div {
  @include button;
 }
 
@@ -62,9 +78,9 @@ a#showhelps {
 }
 a.bookentity {
   padding: 5px;
-  background-color: lighten(black,20%);
-  width: 15px;
-  height: 15px;
+  background-color: lighten(black,40%);
+  width: 24px;
+  height: 24px;
   border: 0px;
   position:fixed;
   top:120px;
@@ -93,7 +109,9 @@ a.bookentity {
 
 }
 #container {
-//background-color:#fff;
+ @include grid-row;
+ min-height: 100%;
+ 
 
 }
 .spinner {
@@ -376,8 +394,8 @@ span.alert{
 }
 td.highlight {
 
-        background-color: #394C5F;
-        color: white;
+        background-color: darken($body-bg,10%);
+   //     color: white;
 
         font-weight: bolder;
         text-align: left;

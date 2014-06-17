@@ -1,12 +1,15 @@
 <?php
 if (empty($bookmarked))
 {
-    $bookmark = '<a href="' . base_url() . 'ajax/bookentity/' . $entid . '" class="bookentity"><img src="' . base_url() . 'images/icons/star--plus.png" style="float:right"/></a>';
+    echo '<a href="' . base_url() . 'ajax/bookentity/' . $entid . '" class="bookentity notbooked"><img src="' . base_url() . 'images/icons/star--plus.png" style="float:right"/></a>';
+    echo '<a href="' . base_url() . 'ajax/delbookentity/' . $entid . '" class="bookentity booked" style="display:none"><img src="' . base_url() . 'images/icons/star--minus.png" style="float:right"/></a>';
 }
 else
 {
-    $bookmark = '<a href="' . base_url() . 'ajax/delbookentity/' . $entid . '" class="bookentity"><img src="' . base_url() . 'images/icons/star--minus.png" style="float:right"/></a>';
+    echo '<a href="' . base_url() . 'ajax/bookentity/' . $entid . '" class="bookentity notbooked" style="display:none"><img src="' . base_url() . 'images/icons/star--plus.png" style="float:right"/></a>';
+    echo '<a href="' . base_url() . 'ajax/delbookentity/' . $entid . '" class="bookentity booked"><img src="' . base_url() . 'images/icons/star--minus.png" style="float:right"/></a>';
 }
+
 ?>
 
             <?php

@@ -48,7 +48,7 @@
                     </li>
                     <?php
                 }
-                elseif (empty($showloginform))
+                else
                 {
                     ?>
                     <li class="has-form">
