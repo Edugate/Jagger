@@ -24,10 +24,7 @@ $alert-background: red;
 article {
   padding: 10px;
   //padding-top: 15px;
-  background-color: lighten($body-bg, 5%);
-  border: 1px solid darken(white,10%);
-  margin-bottom: 5px;
-  height: 100%;
+  min-height: 100%;
   
 }
 .tabs-content {
@@ -56,6 +53,13 @@ table {
 form ol, form ul {
 list-style-type: none
 
+}
+div.error {
+
+   @include alert(
+    $bg: red,
+    $radius: true
+  );
 }
 a#showhelps {
   border: 0px;
@@ -111,6 +115,8 @@ a.bookentity {
 #container {
  @include grid-row;
  min-height: 100%;
+  background-color: lighten($body-bg, 5%);
+  border: 1px solid darken(white,10%);
  
 
 }
