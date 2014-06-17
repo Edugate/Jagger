@@ -231,6 +231,8 @@ class Access_manage extends MY_Controller
         $data['entityid'] = $ent->getEntityId();
         $data['resourceid'] = $id_of_entity;
         $data['row'] = $row;
+        $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$ent->getId().'">'.$data['resourcename'].'</a>';
+        $data['subtitlepage'] = lang('rr_accessmngmt');
         $data['content_view'] = 'manage/access_manage_view';
         $this->load->view('page',$data);
 

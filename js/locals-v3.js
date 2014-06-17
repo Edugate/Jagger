@@ -731,10 +731,10 @@ var GINIT = {
                         $.each(data, function(i, v) {
                             var span_feds = $('<span/>');
                             $.each(v.feds, function(x,z){
-                                var spanb = '<span>'+z+'</span>';
+                                var spanb = '<span class="label">'+z+'</span>&nbsp;';
                                 span_feds.append(spanb);
                             });
-                            div_data = '<li><div class="small-8 columns"><a href="' + v.url + '">' + v.name + '</a> <small><i> (' + v.entityid + ') </i></small></div><div class="label fedlbl small-1 end right columns">'+span_feds.html()+'</div></li>';
+                            div_data = '<li class="small-12 columns"><div class="small-9 columns"><a href="' + v.url + '">' + v.name + '</a> <small><i> (' + v.entityid + ') </i></small></div><div class="fedlbl small-3 end text-right columns">'+span_feds.html()+'</div></li>';
                             nlist.append(div_data);
                             n = n+1;
                         });
@@ -933,7 +933,7 @@ $(document).ready(function() {
     });
 
 });
-//$("#login").hide();
+$("#testcombo").autocomplete();
 $(function() {
 
 

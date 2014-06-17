@@ -147,7 +147,7 @@ class Detail extends MY_Controller {
                     {
                         $tmp_logs = new models\Trackers;
                         $arp_logs = $tmp_logs->getArpDownloaded($ent);
-                        $logg_tmp = '<ul>';
+                        $logg_tmp = '<ul class="no-bullet">';
                         if (!empty($arp_logs))
                         {
                             foreach ($arp_logs as $l)
@@ -348,7 +348,7 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
         $d[++$i]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation');
-        $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
+        $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
 
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
@@ -543,7 +543,7 @@ class Detail extends MY_Controller {
         if ($is_local && $has_write_access && !empty($gearman_enabled))
         {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
-            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon">' . lang('btn_signmetadata') . '</button></a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon button small">' . lang('btn_signmetadata') . '</button></a>';
         }
         if ($sppart)
         {
@@ -583,7 +583,7 @@ class Detail extends MY_Controller {
         $membershipNotLeft = array();
         if (!empty($membership))
         {
-            $federationsString = '<ul>';
+            $federationsString = '<ul class="no-bullet>';
             foreach ($membership as $f)
             {
                 $joinstate = $f->getJoinState();
@@ -622,7 +622,7 @@ class Detail extends MY_Controller {
             {
                 if (!$locked)
                 {
-                  //  $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                    $manage_membership .= '<div><a href="'.base_url().'manage/leavefed/leavefederation/'.$ent->getId().'" class="button tiny alert">'.lang('rr_federationleave').'</a></div>';
                     $entmenu[11] = array('name'=>lang('rr_federationleave'),'link'=>''.base_url() . 'manage/leavefed/leavefederation/' . $ent->getId().'','class'=>'');
                 }
                 else
@@ -635,6 +635,7 @@ class Detail extends MY_Controller {
                 if (!$locked)
                 {
                    // $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                    $manage_membership .= '<div><a href="'.base_url().'manage/joinfed/joinfederation/'.$ent->getId().'" class="button tiny">'.lang('rr_federationjoin').'</a></div>';
                     $entmenu[10] = array('name'=>lang('rr_federationjoin'),'link'=>''.base_url() . 'manage/joinfed/joinfederation/' . $ent->getId().'','class'=>'');
                 }
                 else
@@ -647,7 +648,7 @@ class Detail extends MY_Controller {
         if ($no_feds > 0)
         {
             $d[++$i]['name'] = '';
-            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="savebutton arrowdownicon">' . lang('showmemb_btn') . '</button></a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="savebutton arrowdownicon small secondary">' . lang('showmemb_btn') . '</button></a>';
 
             $d[++$i]['2cols'] = '<div id="membership"></div>';
         }
@@ -694,7 +695,7 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = $v;
             $d[++$i]['name'] = lang('rr_domainscope');
             $scopes = $ent->getScope('idpsso');
-            $scopeString = '<ul>';
+            $scopeString = '<ul class="no-bullet">';
             foreach ($scopes as $key => $value)
             {
                 $scopeString .= '<li>' . $value . '</li>';
@@ -702,7 +703,7 @@ class Detail extends MY_Controller {
             $scopeString .= '</ul>';
             $d[$i]['value'] = $scopeString;
             $d[++$i]['name'] = lang('rr_supportednameids') ;
-            $nameids = '';
+            $nameids = '<ul class="no-bullet">';
             foreach ($ent->getNameIds('idpsso') as $r)
             {
                 $nameids .= '<li>' . $r . '</li>';
@@ -717,7 +718,7 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = $v;
             $d[++$i]['name'] = lang('rr_domainscope') . '';
             $scopes = $ent->getScope('aa');
-            $scopeString = '<ul>';
+            $scopeString = '<ul class="no-bullet">';
             foreach ($scopes as $key => $value)
             {
                 $scopeString .= '<li>' . $value . '</li>';
@@ -790,7 +791,7 @@ class Detail extends MY_Controller {
                     }
                     $ssovalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                 }
-                $d[$i]['value'] = '<ul>' . $ssovalues . '</ul>';
+                $d[$i]['value'] = '<ul class="no-bullet">' . $ssovalues . '</ul>';
             }
             if (array_key_exists('IDPSingleLogoutService', $services))
             {
@@ -840,7 +841,7 @@ class Detail extends MY_Controller {
                     }
                     $acsvalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . ' </small></li>';
                 }
-                $d[$i]['value'] = '<ul>' . $acsvalues . '</ul>';
+                $d[$i]['value'] = '<ul class="no-bullet">' . $acsvalues . '</ul>';
             }
             if (array_key_exists('SPArtifactResolutionService', $services))
             {
@@ -855,7 +856,7 @@ class Detail extends MY_Controller {
                     }
                     $acsvalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . ' </small></li>';
                 }
-                $d[$i]['value'] = '<ul>' . $acsvalues . '</ul>';
+                $d[$i]['value'] = '<ul class="no-bullet">' . $acsvalues . '</ul>';
             }
             if (array_key_exists('SPSingleLogoutService', $services))
             {
@@ -865,7 +866,7 @@ class Detail extends MY_Controller {
                 {
                     $slvalues .= '<li><b> ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                 }
-                $d[$i]['value'] = '<ul>' . $slvalues . '</ul>';
+                $d[$i]['value'] = '<ul class="no-bullet">' . $slvalues . '</ul>';
             }
             if(array_key_exists('RequestInitiator', $services) || array_key_exists('DiscoveryResponse', $services))
             {
@@ -878,7 +879,7 @@ class Detail extends MY_Controller {
                     {
                        $rivalues .= '<li><b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                     }
-                    $d[$i]['value'] = '<ul>' . $rivalues . '</ul>';
+                    $d[$i]['value'] = '<ul class="no-bullet">' . $rivalues . '</ul>';
                 }
                 if (array_key_exists('DiscoveryResponse', $services))
                 {
@@ -888,7 +889,7 @@ class Detail extends MY_Controller {
                     {
                         $drvalues .= '<li><b>' . $s->getUrl() . '</b>&nbsp;&nbsp;<small><i>index:' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . '</small></li>';
                     }
-                    $d[$i]['value'] = '<ul>' . $drvalues . '</ul>';
+                    $d[$i]['value'] = '<ul class="no-bullet">' . $drvalues . '</ul>';
                 }
 
             }
@@ -1157,7 +1158,7 @@ class Detail extends MY_Controller {
                 $d[++$i]['name'] = lang('rr_arpexclist_title') . ' <br />' . $mlink;
                 if (is_array($exc) && count($exc) > 0)
                 {
-                    $l = '<ul>';
+                    $l = '<ul class="no-bullet">';
                     foreach ($exc as $e)
                     {
                         $l .= '<li>' . $e . '</li>';

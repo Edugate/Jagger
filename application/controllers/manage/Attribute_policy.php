@@ -389,12 +389,21 @@ class Attribute_policy extends MY_Controller {
         $resource = $idp->getId();
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access) {
+        if (!$has_write_access)
+        {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_nopermission');
             $this->load->view('page', $data);
             return;
         }
+       $lang = MY_Controller::getLang();
+       $displayname = $idp->getNameToWebInLang($lang,'idp');
+       if(empty($displayname))
+       {
+          $displayname = $idp->getEntityId();
+       }
+       $data['idpname'] = $displayname;
+       $data['titlepage'] = lang('identityprovider').': <a href="'.base_url().'providers/detail/show/'.$idp->getId().'">'.$displayname.'</a>';
 
         if (($this->input->post('fedid')) && empty($fed_id)) {
             redirect(base_url('manage/attribute_policy/show_feds/' . $idp_id . '/' . $this->input->post('fedid')), 'location');
@@ -404,11 +413,15 @@ class Attribute_policy extends MY_Controller {
             $feds = $idp->getFederations();
             $data['federations'] = $this->form_element->generateFederationsElement($feds);
             $data['idpid'] = $idp->getId();
-            $data['idpname'] = $idp->getName();
+            $data['idpname'] = $displayname;
+            $data['titlepage'] = lang('identityprovider').': <a href="'.base_url().'providers/detail/show/'.$idp->getId().'">'.$displayname.'</a>';
+            $data['subtitlepage'] =lang('rr_arpforfed');
             $data['content_view'] = 'manage/attribute_policy_feds_view';
             $this->load->view('page', $data);
         } else {
             $data = array();
+            $data['idpname'] = $displayname;
+            $data['titlepage'] = lang('identityprovider').': <a href="'.base_url().'providers/detail/show/'.$idp->getId().'">'.$displayname.'</a>';
 
             $tmp_fed = new models\Federations();
             $fed = $tmp_fed->getOneFederationById($fed_id);
@@ -468,11 +481,8 @@ class Attribute_policy extends MY_Controller {
             $data['fedname'] = $fed->getName();
             $data['fedencoded'] = base64url_encode($fed->getName());
             $data['entityid'] = $idp->getEntityId();
-            $data['idpname'] = $idp->getName();
-            if(empty($data['idpname']))
-            {
-               $data['idpname'] = $data['entityid'];
-            }
+            $data['subtitlepage'] =lang('rr_arpforfed').': <a fref="'.base_url().'federations/manage/show/'.$data['fedencoded'].'">'.$data['fedname'];
+
             $data['caption'] = $idp->getName() . '<br /><br />'.lang('rr_arpforfed').': ' . $fed->getName();
 
             $data['content_view'] = 'manage/attribute_policy_form_for_fed_view';
@@ -803,8 +813,15 @@ class Attribute_policy extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+        $lang = MY_Controller::getLang();
+        $idpDisplayname =  $idp->getNameToWebInLang($lang,'idp');
+        if(empty($idpDisplayname))
+        {
+           $idpDisplayname = $idp->getEntityId();
+        }
         $data['provider'] = $idp->getName();
         $data['provider_id'] = $idp->getId();
+        $data['titlepage'] = lang('identityprovider').': <a href="'.base_url().'providers/detail/show/'.$idp->getId().'">'.$idpDisplayname.'</a>';
         if ($type == 'sp') {
             log_message('debug',  '(manage/attribute_policy/multi) type SP');
             $data['content_view'] = 'manage/attribute_policy_multi_sp_view';
@@ -814,10 +831,16 @@ class Attribute_policy extends MY_Controller {
                 log_message('error', '(manage/attribute_policy/multi) Service Provider as requester not found with id:' . $requester);
                 show_error( lang('rerror_spnotfound'), 404);
             }
-            
+           
             $data['requester'] = $sp->getName();
             $data['requester_id'] = $sp->getId();
             $data['requester_type'] = 'SP';
+            $spDisplayname =  $sp->getNameToWebInLang($lang,'sp');
+            if(empty($spDisplayname))
+            {
+              $spDisplayname = $sp->getEntityId();
+            }
+            $data['subtitlepage'] = lang('rr_specarpforsp').': <a href="'.base_url().'providers/detail/show/'.$sp->getId().'">'.$spDisplayname.'</a>'; 
             /**
              * @todo fix it
              */
