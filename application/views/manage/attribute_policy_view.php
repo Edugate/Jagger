@@ -9,7 +9,7 @@
     echo form_open($action,$attributes);
     echo '<div class="small-3 columns">'.jform_label(''.lang('rr_selectsp').'','service').'</div>';
     //echo "<br />";
-    $js = 'id="combobox"';
+    $js = 'id="icombobox"';
     
     echo '<div class="small-3 columns">'.form_dropdown('service',$formdown,'0',$js ).'</div>';
     echo '<div class="small-6 columns"><button type="submit" name="submit" value="submit" class="savebutton nexticon v2 tiny">'.lang('rr_go').'</button></div>';
@@ -76,8 +76,8 @@ if (count($attrs_array_newform) > 0)
     echo form_dropdown('policy', array('0' => ''.lang('dropnever').'', '1' => ''.lang('dropokreq').'', '2' => ''.lang('dropokreqdes').''),set_value('policy'));
     echo '</li></ol>';
     echo '<div class="buttons">';
-    echo '<button type="submit" name="submit" value="Cancel" class="resetbutton reseticon">'.lang('rr_cancel').'</button>';
-    echo '<button type="submit" name="submit" value="Add default policy" class="savebutton saveicon">'.lang('adddefaultpolicy').'</button>';
+    echo '<button type="submit" name="submit" value="Cancel" class="resetbutton reseticon small alert">'.lang('rr_cancel').'</button>';
+    echo '<button type="submit" name="submit" value="Add default policy" class="savebutton saveicon small">'.lang('adddefaultpolicy').'</button>';
     echo '</span>';
     echo form_fieldset_close();
 
@@ -96,7 +96,7 @@ echo '</div>';
 echo '<div id="fedarptab">';
 
 echo '<div class="buttons clear">';
-echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="savebutton saveicon">'.lang('rr_arpforfed').'</button></span>');
+echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="savebutton saveicon small">'.lang('rr_arpforfed').'</button></span>');
 echo '</div>';
 
 if (!empty($federations_policy))

@@ -11,7 +11,7 @@ module.exports = function (grunt) {
                     outputStyle: 'compressed'
                 },
                 files: {
-                    '../styles/jagger.css': 'scss/app.scss'
+                    '../styles/default.css': 'scss/app.scss'
                 }
             }
         },

@@ -25,7 +25,7 @@ $pageTitle = $this->config->item('pageTitlePref');
 $colorTheme = $this->config->item('colortheme');
 if(empty($colorTheme))
 {
-   $colorTheme = 'jagger';
+   $colorTheme = 'default';
 }
 $base_url = base_url();
 $pageTitle .= $this->title;
