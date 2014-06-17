@@ -4,7 +4,7 @@
 
 function confirmDialog($title, $msg, $yes, $no)
 {
-    $r = '<div id="sconfirm" class="small-12 columns"><div class="header small-12 columns"><span>' . htmlentities($title) . '</span></div>
+    $r = '<div id="sconfirm" class="small-12 columns hidden"><div class="header small-12 columns"><span>' . htmlentities($title) . '</span></div>
   <p class="message">' . htmlentities($msg) . '</p>
   <div class="small-12 columns button-groups">
        <div class="no simplemodal-close small-3 columns"><div class="button tiny">' . htmlentities($no) . '</div></div>
@@ -16,7 +16,7 @@ function confirmDialog($title, $msg, $yes, $no)
 
 function resultDialog($title, $msg, $close)
 {
-    $r = '<div id="resultdialog"><div class="header"><span>' . htmlentities($title) . '</span></div>
+    $r = '<div id="resultdialog" class="hidden"><div class="header"><span>' . htmlentities($title) . '</span></div>
   <p class="message">' . htmlentities($msg) . '</p>
   <div class="buttons">
   <div class="no simplemodal-close">' . htmlentities($close) . '</div>

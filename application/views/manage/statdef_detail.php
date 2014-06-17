@@ -1,14 +1,9 @@
-<div id="pagetitle"><?php echo lang('statdefdetail');?></div>
-<div id="subtitle">
- <h3><?php echo anchor(base_url().'providers/detail/show/'.$providerid, $providername ) ;?></h3>
- <h4><?php echo $providerentity;?></h4>
- <h5><?php echo anchor(base_url().'manage/statdefs/show/'.$providerid,lang('statdeflist')) ;?></h5>
-
+<div class="small-12 columns text-right">
 <?php
 
 if(!empty($defid))
 {
-echo '<div style="float: right;display: block">';
+echo '<div style="">';
 $formAttrs = array('id'=>'rmstatdef','class'=>'ajform');
 $hidden = array('prvid'=>''.$providerid.'','defid'=>''.$defid.'');
 echo form_open(''.base_url().'manage/statdefs/remove/'.$defid.'',$formAttrs,$hidden);
@@ -21,9 +16,8 @@ echo '</div>';
 }
 ?>
 </div>
-<div style="clear: both;"></a>
 <?php
-    $tmpl = array ( 'table_open'  => '<table id="detailsnosort" class="zebra">' );
+    $tmpl = array ( 'table_open'  => '<table id="detailsnosort" class="zebra small-12 columns">' );
     $this->table->set_template($tmpl);
     echo $this->table->generate($details);
     $this->table->clear();

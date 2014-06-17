@@ -189,6 +189,9 @@ class Statdefs extends MY_Controller {
             {
                 $data['providername'] = $data['providerentity'];
             }
+            $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$data['providerid'].'">'.$data['providername'].'</a>';
+            $data['subtitlepage'] = lang('statsmngmt');
+            
             if (empty($defid))
             {
                 $this->title = lang('title_statdefs');
@@ -456,6 +459,9 @@ class Statdefs extends MY_Controller {
       $data['statdefauthuser'] = $statdef->getAuthUser();
       $data['statdefpass'] =$statdef->getAuthPass();
       $data['statdefpostparam'] = '';
+      $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$data['providerid'].'">'.$data['providername'].'</a>';
+      $data['subtitlepage'] = lang('statdefeditform');
+      $data['submenupage'][] = array('name'=>lang('statdeflist'),'link'=>''.base_url().'manage/statdefs/show/'.$data['providerid'].'');
       if(!empty($statdefpostparam))
       {
          foreach($statdefpostparam as $key=>$value)
@@ -592,7 +598,9 @@ class Statdefs extends MY_Controller {
             $data['providerid'] = $provider->getId();
             $data['providerentity'] = $provider->getEntityId();
             $data['providername'] = $provider->getName();
-            
+            $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$data['providerid'].'">'.$data['providername'].'</a>';
+            $data['subtitlepage'] = lang('title_newstatdefs'); 
+            $data['submenupage'][] = array('name'=>lang('statdeflist'),'link'=>''.base_url().'manage/statdefs/show/'.$data['providerid'].'');
             $ispreworkers = $this->config->item('predefinedstats');
             $workersdescriptions ='<ul>';
             if(!empty($ispreworkers) && is_array($ispreworkers) && count($ispreworkers)>0)
