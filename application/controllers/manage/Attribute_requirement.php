@@ -141,6 +141,7 @@ class Attribute_requirement extends MY_Controller {
         } else {
             log_message('debug', $this->log_prefix . "sp not found");
             show_error(lang('rerror_spnotfound'), 404);
+            return;
         }
         $resource = $sp->getId();
         $group = 'entity';
@@ -195,8 +196,15 @@ class Attribute_requirement extends MY_Controller {
         $data['spid'] = $sp->getId();
         $data['sp_name'] = $sp->getName();
         $data['sp_entityid'] = $sp->getEntityId();
-        $data['titlepage'] = lang('rr_attributerequirements') .': ';
-        $data['titlepage'] .= lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$data['spid'].'">'.$data['sp_name'].'</a> '.$data['sp_entityid'].'';
+        $lang = MY_Controller::getLang();
+        $displayname = $sp->getNameToWebInLang($lang,'sp');
+        if(empty($displayname))
+        {
+            $displayname = $sp->getEntityId();
+        }
+
+        $data['titlepage'] = lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$data['spid'].'">'.$displayname.'</a> ';
+        $data['subtitlepage'] = lang('rr_attributerequirements');
         $this->load->view('page', $data);
     }
 

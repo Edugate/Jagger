@@ -388,18 +388,16 @@ class Users extends MY_Controller {
                 $form_attributes = array('id' => 'formver2', 'class' => 'register');
                 $action = base_url() . "manage/users/remove";
                 $f = form_open($action, $form_attributes);
-                $f .= form_fieldset(''.lang('rr_rminguser').'');
-                $f .='<ol>';
-                $f .= '<li>';
-                $f .= form_label(''.lang('rr_username').'', 'username');
-                $f .= form_input('username');
-                $f .= '</li>';
-                $f .= '</ol>';
-                $f .= form_fieldset_close();
-                $f .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">'.lang('rr_rmuserbtn').'</button></div>';
+                $f .='<div class="small-12 columns">';
+                $f .= '<div class="small-3 columns">';
+                $f .= jform_label(''.lang('rr_username').'', 'username').'</div>';
+                $f .= '<div class="small-6 large-7 end columns">'.form_input('username').'</div>';
+                $f .= '</div>';
+                $f .= '<div class="buttons small-12 columns"><div class="small-9 large-10 end columns text-right"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">'.lang('rr_rmuserbtn').'</button></div></div>';
                 $f .= form_close();
 
                 $data['form'] = $f;
+                $data['titlepage'] = lang('rr_rminguser');
                 $data['content_view'] = 'manage/remove_user_view';
                 $this->load->view('page', $data);
             } else {

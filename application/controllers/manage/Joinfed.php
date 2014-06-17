@@ -210,10 +210,10 @@ class Joinfed extends MY_Controller {
         }
         else
         {  
-             $data['error_message'] = validation_errors('<p>', '</p>');
+             $data['error_message'] = validation_errors('<div>', '</div>');
                if(count($feds_dropdown) > 0)
              {
-                  $n[0]=lang('selectfed');
+                  $n['']=lang('selectfed');
                   $feds_dropdown = $n + $feds_dropdown; 
                   $this->load->helper('form');
                   $buttons = '<div class="buttons small-9 columns text-right end"><button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_apply').'</button></div>';
