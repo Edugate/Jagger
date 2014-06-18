@@ -340,10 +340,10 @@ class Form_element
             }
         }
         $result[] = $this->_generateLangAddButton('lhelpdeskadd', 'lhelpdesklangcode', $btnlangs, 'addlhelpdesk', '' . lang('rr_helpdeskurl') . '');
+        $result[] = '';
 
         if ($isAdmin)
         {
-            $result[] = '';
             /**
              * end organizatiourl/helpdesk
              */
@@ -354,6 +354,7 @@ class Form_element
             $result[] = $this->_generateLabelInput(lang('rr_regdate'), 'f[registrationdate]', $f_regdate, 'registrationdate' . $regdate_notice . '', FALSE);
             $result[] = '';
         }
+        
         /**
          * start regpolicy 
          */
