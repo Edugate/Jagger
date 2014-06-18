@@ -24,9 +24,8 @@ echo form_open($action, $form_attributes);
 <!-- step1 -->
 <?php
 echo form_fieldset('Step1');
-echo '<ol class="small-12 columns">';
-echo '<li class="small-12 columns">';
-echo '<div class="small-3 columns">'.form_label('Metadata <small>(' . lang('rr_optional') . ')</small>'.showBubbleHelp(lang('rhelp_regspparsemeta')), 'metadatabody').'</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns text-right">'.jform_label('Metadata <small>(' . lang('rr_optional') . ')</small>'.showBubbleHelp(lang('rhelp_regspparsemeta')), 'metadatabody').'</div>';
 echo '<div class="small-6 large-7 columns">'.form_textarea(array(
     'id' => 'metadatabody',
     'name' => 'metadatabody',
@@ -36,8 +35,7 @@ echo '<div class="small-6 large-7 columns">'.form_textarea(array(
     'style' => 'font-family: monospace; font-size: smaller'
 )).'</div>';
 echo '<div class="small-3 large-2 columns"><button  type="button" name="parsemetadataidp" id="parsemetadataidp" value="parsemetadataidp" class="savebutton button tiny">'.lang('btnparsemeta').'</button></div>';
-echo '</li>';
-echo '</ol>';
+echo '</div>';
 ?>
 <button type="button" name="next" class="next savebutton button"><?php echo lang('nextstep'); ?></button>
 <?php
@@ -46,19 +44,18 @@ echo form_fieldset_close();
 <!-- step2 -->
 <?php
 echo form_fieldset('General');
-echo '<ol class="small-12 columns">';
 /**
  * federation select
  */
 if(!empty($federations) && is_array($federations))
 {
-   echo '<li class="small-12 columns">';
-   echo '<div class="small-3 columns">'.form_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'federation').'</div>';
+   echo '<div class="small-12 columns">';
+   echo '<div class="small-3 columns">'.jform_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'federation').'</div>';
    echo '<div class="small-6 large-7 columns end">'.form_dropdown('federation', $federations,set_value('federation')).'</div>';
-   echo '</li>';
+   echo '</div>';
 }
 
-echo '<li class="small-12 columns"><div class="small-3 columns">' . form_label(lang('rr_entityid'), 'entityid').'</div>';
+echo '<div class="small-12 columns"><div class="small-3 columns">' . jform_label(lang('rr_entityid'), 'entityid').'</div>';
 echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'id' => 'entityid',
     'name' => 'entityid',
@@ -66,8 +63,8 @@ echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'max-length' => 255,
     'class' => 'required'
 )).'</div>';
-echo '</li>';
-echo '<li class="small-12 columns"><div class="small-3 columns">' . form_label(lang('e_orgname'), 'homeorg').'</div>';
+echo '</div>';
+echo '<div class="small-12 columns"><div class="small-3 columns">' . jform_label(lang('e_orgname'), 'homeorg').'</div>';
 echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'id' => 'homeorg',
     'name' => 'homeorg',
@@ -75,9 +72,9 @@ echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'max-length' => 255,
     'class' => 'required',
 )).'</div>';
-echo '</li>';
+echo '</div>';
 
-echo '<li class="small-12 columns"><div class="small-3 columns">' . form_label(lang('e_orgdisplayname'), 'deschomeorg').'</div>';
+echo '<div class="small-12 columns"><div class="small-3 columns">' . jform_label(lang('e_orgdisplayname'), 'deschomeorg').'</div>';
 echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'id' => 'deschomeorg',
     'name' => 'deschomeorg',
@@ -85,8 +82,8 @@ echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'max-length' => 255,
     'class' => 'required',
 )).'</div>';
-echo '</li>';
-echo '<li class="small-12 columns"><div class="small-3 columns">' . form_label(lang('e_orgurl').'<br /><small><i>('.lang('rr_helpdeskurl').')</i></small>', 'helpdeskurl').'</div>';
+echo '</div>';
+echo '<div class="small-12 columns"><div class="small-3 columns">' . jform_label(lang('e_orgurl').'<br /><small><i>('.lang('rr_helpdeskurl').')</i></small>', 'helpdeskurl').'</div>';
 echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'id' => 'helpdeskurl',
     'name' => 'helpdeskurl',
@@ -94,9 +91,8 @@ echo '<div class="small-6 large-7 columns end">'.form_input(array(
     'max-length' => 255,
     'class' => 'required',
 )).'</div>';
-echo '</li>';
+echo '</div>';
 
-echo '</ol>';
 ?>
 <button type="button" name="previous" class="previous savebutton"><?php echo lang('prevstep'); ?></button>
 <button type="button" name="next" class="next savebutton"><?php echo lang('nextstep'); ?></button>
@@ -110,11 +106,12 @@ echo form_fieldset_close();
 
 
 echo form_fieldset(lang('rr_technicalinformation'));
-echo '<ol>';
+echo '<div class="small-12 columns">';
 
-echo '<li>';
-echo form_label(lang('rr_scope').'<br /><small>IDPSSODescriptor</small>','idpssoscope');
-
+echo '<div class="small-3 columns">';
+echo jform_label(lang('rr_scope').'<br /><small>IDPSSODescriptor</small>','idpssoscope');
+echo '</div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_input(
     array(
      'id'=>'idpssoscope',
@@ -123,27 +120,33 @@ echo form_input(
      'class'=>'required' 
    )
 );
+echo '</div>';
 
-echo '</li>';
+echo '</div>';
 
 
 foreach($idpssobindprotocols as $k=> $s)
 {
-   echo '<li class="ssourls">';
-   echo form_label(lang('rr_singlesignon_fieldset').'<br /><small>'.$s.'</small>','sso['.$k.']');
+   echo '<div class="ssourls small-12 columns">';
+   echo '<div class="small-3 columns">';
+   echo jform_label(lang('rr_singlesignon_fieldset').'<br /><small>'.$s.'</small>','sso['.$k.']');
+   echo '</div>';
+   echo '<div class="small-6 large-7 columns end">';
    echo form_input(array(
         'id'=>'sso['.$k.']',
         'name'=>'sso['.$k.']',
         'value'=>set_value('sso['.$k.']'),
       ));
-   echo '</li>';
+   echo '</div>';
+   echo '</div>';
 }
 
 
 
 
-echo '<li>';
-echo form_label('NameId(s)<br/> <small>IDPSSODescriptor (' . lang('rr_optional') . ')</small>', 'nameids');
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">'.jform_label('NameId(s)<br/> <small>IDPSSODescriptor (' . lang('rr_optional') . ')</small>', 'nameids').'</div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_textarea(array(
     'id' => 'nameids',
     'name' => 'nameids',
@@ -152,14 +155,15 @@ echo form_textarea(array(
     'rows' => 2,
     'style' => 'font-family: monospace; font-size: smaller;'
 ));
+echo '</div>';
 
 
-echo '</li>';
+echo '</div>';
 
 
-echo '<li>';
-echo form_label(lang('rr_certificatesigning') .'<br /><small>IDPSSODescriptor</small>', 'sign_cert_body');
-echo form_textarea(array(
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">'.jform_label(lang('rr_certificatesigning') .'<br /><small>IDPSSODescriptor</small>', 'sign_cert_body').'</div>';
+echo '<div class="small-6 large-7 columns end">'.form_textarea(array(
     'id' => 'sign_cert_body',
     'name' => 'sign_cert_body',
     'value' => reformatPEM(set_value('sign_cert_body')),
@@ -168,9 +172,13 @@ echo form_textarea(array(
     'style' => 'font-family: monospace; font-size: smaller;',
     'class' => 'required'
 ));
-echo '</li>';
-echo '<li>';
-echo form_label(lang('rr_certificateencrypting') .'<br /><small>IDPSSODescriptor</small>' , 'encrypt_cert_body');
+echo '</div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo jform_label(lang('rr_certificateencrypting') .'<br /><small>IDPSSODescriptor</small>' , 'encrypt_cert_body');
+echo '</div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_textarea(array(
     'id' => 'encrypt_cert_body',
     'name' => 'encrypt_cert_body',
@@ -180,9 +188,11 @@ echo form_textarea(array(
     'style' => 'font-family: monospace; font-size: smaller',
     'class'=>'required'
 ));
-echo '</li>';
-echo '</ol>';
+echo '</div>';
+echo '</div>';
 ?>
+
+
 <button type="button" name="previous" class="previous savebutton"><?php echo lang('prevstep'); ?></button>
 <button type="button" name="next" class="next savebutton"><?php echo lang('nextstep'); ?></button>
 
@@ -192,33 +202,48 @@ echo form_fieldset_close();
 <!-- step4 -->
 <?php
 echo form_fieldset(lang('rr_primarycontact'));
-echo '<ol><li>';
-echo form_label(lang('rr_contactname'), 'contact_name');
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo jform_label(lang('rr_contactname'), 'contact_name');
+echo '</div>';
+echo '<div class="small-6 large-7 columns end">';
+
 echo form_input(array(
     'id' => 'contact_name',
     'name' => 'contact_name',
     'value' => set_value('contact_name'),
     'class' => 'required',
 ));
-echo '</li><li>';
+echo '</div></div>';
 $in3 = array('id' => 'contact_mail',
     'name' => 'contact_mail',
     'value' => set_value('contact_mail'),
     'class' => 'required',
 );
-echo form_label(lang('rr_contactemail'), 'contact_mail');
-echo form_input($in3) . '</li>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
 
-echo '<li>';
+echo jform_label(lang('rr_contactemail'), 'contact_mail');
+echo '</div>';
+echo '<div class="small-6 large-7 columns end">';
+
+echo form_input($in3) . '</div>';
+echo '</div>';
+
 $in4 = array(
     'id' => 'contact_phone',
     'name' => 'contact_phone',
     'value' => set_value('contact_phone'),
 );
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
 
-echo form_label(lang('rr_contactphone') . ' <small>(' . lang('rr_optional') . ')</small>', 'contact_phone');
-echo form_input($in4) . '</li>';
-echo '</ol>';
+echo jform_label(lang('rr_contactphone') . ' <small>(' . lang('rr_optional') . ')</small>', 'contact_phone');
+echo '</div>';
+echo '<div class="small-6 large-7 columns end">';
+
+echo form_input($in4) . '</div>';
+echo '</div>';
 ?>
 <button type="button" name="previous" class="previous savebutton"><?php echo lang('prevstep'); ?></button>
 <button type="submit" name="submit" value="Submit and wait for approval" class="savebutton saveicon"><?php echo lang('rr_submitwait'); ?></button>

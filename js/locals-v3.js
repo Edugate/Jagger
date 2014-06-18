@@ -2395,7 +2395,7 @@ $("button#parsemetadataidp").click(function(){
 
 });
 $("button#parsemetadatasp").click(function() {
-    $("li.spregacsopt").remove();
+    $("div.spregacsopt").remove();
     var xmlsource = $('textarea#metadatabody').val();
     try {
         var xmlDoc = $.parseXML(xmlsource);
@@ -2422,7 +2422,7 @@ $("button#parsemetadatasp").click(function() {
         alert("SPSSODescriptor not found");
         return false;
     }
-    $("li.optspregacs").remove();
+    $("div.optspregacs").remove();
     $("#entityid").val($entity.attr("entityID"));
     $orgname = $entity.find("md\\:OrganizationName,OrganizationName").first();
     $orgdisname = $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName").first();
@@ -2449,13 +2449,13 @@ $("button#parsemetadatasp").click(function() {
         }
         else
         {
-            var nelement = $("li.spregacs").first().clone().removeAttr("class").addClass("spregacsopt");
+            var nelement = $("div.spregacs").first().clone().removeAttr("class").addClass("spregacsopt");
             
             $("#acs_url\\[0\\]",nelement).removeAttr("name").attr("name","acs_url\["+rname+"\]").attr("id","acs_url\["+rname+"\]").val($(this).attr("Location"));
             $("#acs_order\\[0\\]",nelement).removeAttr("name").attr("name","acs_order\["+rname+"\]").attr("id","acs_order\["+rname+"\]").val($(this).attr("index"));
             var acsbind = $("#acs_bind\\[0\\]",nelement).removeAttr("name").attr("name","acs_bind\["+rname+"\]").attr("id","acs_bind\["+rname+"\]");
             $('option', acsbind).removeAttr('selected').filter('[value="'+$(this).attr('Binding')+'"]').attr('selected',true);
-            $("li.spregacs").after(nelement);
+            $("div.spregacs").after(nelement);
         }
     });
 

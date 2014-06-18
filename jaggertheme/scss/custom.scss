@@ -1,3 +1,11 @@
+$btn1bgcolor: #080808;
+
+$progressBarActiveBgColor: #080808;
+$progressBarActiveBgColor: $btn1bgcolor;
+$progressBarActiveColor: #fff;
+
+
+
 body {
 height: 100%;
 
@@ -287,7 +295,7 @@ form#multistepform fieldset {
     }
 }
 form#multistepform label {
-      text-align: left;
+    //  text-align: left;
 
 }
 #multistepform fieldset:not(:first-of-type) {
@@ -374,8 +382,8 @@ ul.fivesteps li {
 /*marking active/completed steps green*/
 /*The number of the step and the connector before it = green*/
 #progressbar li.active:before,  #progressbar li.active:after{
-  //      background: $progressBarActiveBgColor;
-  //      color: $progressBarActiveColor;
+        background: $progressBarActiveBgColor;
+        color: $progressBarActiveColor;
 }
 
 
