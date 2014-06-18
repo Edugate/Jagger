@@ -20,15 +20,13 @@ elseif($memberstype == 'sp')
 {
 	$ptitle = lang('rr_addnewspsnoinv');
 }
-echo '<div id="pagetitle">'. $ptitle .' </div>';
-echo '<div id="subtitle"><h3>'.lang('rr_federation').': '. $fed_link .'<h3></div>';
 if($message)
 {
-	echo $message;
+	echo '<div data-alert class="alert-box info">'.$message.'</div>';
 }
 echo $this->table->generate($form_elements);
-echo '<div class="buttons">';
-echo '<button type="reset" name="reset" value="reset" class="resetbutton reseticon">'.lang('rr_reset').'</button>';
+echo '<div class="buttons small-12 columns text-center">';
+echo '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">'.lang('rr_reset').'</button> ';
 echo '<button type="submit" name="ass" value="add selected new members" class="savebutton saveicon"><span class="save">'.lang('rr_add').'</button>';
 echo "</div>";
 echo form_close();

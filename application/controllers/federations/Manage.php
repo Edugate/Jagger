@@ -595,6 +595,7 @@ class Manage extends MY_Controller
             $providers = $this->tmp_providers->getIdps();
             $memberstype = 'idp';
             $data['memberstype'] = $memberstype;
+            $data['subtitlepage'] = lang('rr_addnewidpsnoinv');
         }
         elseif ($type === 'sp') {
             $this->load->library('show_element');
@@ -610,6 +611,7 @@ class Manage extends MY_Controller
             $federation_members = $federation->getMembers();
             $providers = $this->tmp_providers->getSps();
             $data['memberstype'] = 'sp';
+            $data['subtitlepage'] = lang('rr_addnewspsnoinv');
         }
         else {
             log_message('error', 'type is expected to be sp or idp but ' . $type . 'given');
@@ -631,6 +633,7 @@ class Manage extends MY_Controller
         $data['form_elements'] = $form_elements;
         $data['fed_encoded'] = $fed_name;
         $data['message'] = $message;
+        $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$data['fed_encoded'].'">'.$federation->getName().'</a>';
         $this->load->view('page', $data);
     }
 
@@ -824,6 +827,8 @@ class Manage extends MY_Controller
         }
         $data['fedname'] = $federation->getName();
         $this->load->helper('form');
+
+        $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.base64url_encode($federation->getName()).'">'.$federation->getName().'</a>';
 
         $data['content_view'] = 'federation/invite_provider_view';
         $this->load->view('page', $data);

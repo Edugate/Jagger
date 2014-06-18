@@ -114,8 +114,10 @@ class Attribute_requirement extends MY_Controller {
         $data['already_in_attr'] = $already_in_attr;
         $data['add_attr_final'] = $add_attr_final;
         $data['fed_name'] = $fed->getName();
-        $data['fed_encoded'] = base64url_encode($fed->getName());
         $data['fedid'] = $fed->getId();
+        $data['fed_encoded'] = base64url_encode($fed->getName());
+        $data['titlepage']= lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$data['fed_encoded'].'">'.$data['fed_name'].'</a>';
+        $data['subtitlepage'] = lang('rr_requiredattributes');
         $this->load->view('page', $data);
     }
 

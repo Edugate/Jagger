@@ -43,10 +43,7 @@ article {
 #navbuttons1 {
   @include sub-nav();
 }
-a.editbutton, a.addbutton {
- @include button;
-}
-div.buttons > div {
+a.editbutton, a.addbutton, div.yes, div.no {
  @include button;
 }
 
