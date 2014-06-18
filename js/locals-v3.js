@@ -94,7 +94,7 @@ var GINIT = {
 
       
 
-    function notificationupdate(message, callback) {
+    function notificationupdateOld(message, callback) {
         $('#notificationupdateform').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%", ],
@@ -112,6 +112,26 @@ var GINIT = {
                 });
             }
         });
+    }
+    function notificationupdate(message, callback) {
+           $("#notificationupdatemodal").foundation('reveal','open',{});
+           $(document).on('opened', '#notificationupdatemodal', function () {
+                var modal = this;
+                 $(".no").click(function(){
+                 $("#notificationupdatemodal").foundation('reveal', 'close');
+                 });
+
+                $('.message').append(message);
+                $('.yes').click(function() {
+                    if ($.isFunction(callback)) {
+                        callback.apply();
+                 $("#notificationupdatemodal").foundation('reveal', 'close');
+                    }
+                });
+
+           });
+
+
     }
 
     $(".langinputrm").addClass("alert");
@@ -495,7 +515,7 @@ var GINIT = {
                             {
                                 var related = v.langany;
                             }
-                            trdata = '<tr><td>' + number + '</td><td>' + v.langtype + '</td><td>' + related + '</td><td>' + v.delivery + '</td><td>' + v.rcptto + '</td><td>' + v.langstatus + '</td><td>' + v.updated + '</td><td><button class="updatenotifactionstatus editbutton" type="button" value="' + v.id + '">update</button></td></tr>';
+                            trdata = '<tr><td>' + number + '</td><td>' + v.langtype + '</td><td>' + related + '</td><td>' + v.delivery + '</td><td>' + v.rcptto + '</td><td>' + v.langstatus + '</td><td>' + v.updated + '</td><td><button class="updatenotifactionstatus editbuttoni tiny" type="button" value="' + v.id + '">update</button></td></tr>';
                             ctbl.append(trdata);
                             number = number + 1;
 
@@ -1825,11 +1845,10 @@ $(document).ready(function() {
 
     }); // end submit event
 
-
-    $("button#registernotification").click(function(ev) {
+    $("button#registernotification2").click(function(ev) {
         ev.preventDefault();
         var notiform = $("form#notificationaddform");
-        notificationadd('', function(ev) {
+        notificationadd2('', function(ev) {
             var serializedData = notiform.serializeArray();
             $.ajax({
                 type: "POST",
@@ -1839,19 +1858,18 @@ $(document).ready(function() {
                     $(".message").html(data);
                     if (data == 'OK')
                     {
-                        alert('refresh page to see updated table');
-
-                        $.modal.close();
+                       $(this).foundation('reveal', 'close'); 
+                       location.reload(); 
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error occured: ' + errorThrown);
                 }
-
             });
-        });
 
+        });
     });
+
 
     // updatenotifactionstatus old place
     $("#idpmatrix tr td:not(:first-child)").click(function(ev) {
@@ -2044,6 +2062,78 @@ $(document).ready(function() {
         });
         ev.preventDefault();
     });
+
+    function  notificationadd2(message, callback) {
+        $("#notificationaddmodal").foundation('reveal','open',{});
+        $(document).on('opened', '#notificationaddmodal', function () {
+           var modal = $(this);
+           $('select#sfederation').parent().hide();
+           $('select#sprovider').parent().hide();
+           $('select#type').change(function()
+           {
+               $('select#sfederation').parent().hide();
+               $('select#sprovider').parent().hide();
+               var optionSelected = $(this).find("option:selected");
+               var valueSelected = optionSelected.val();
+               var textSelected = optionSelected.text();
+               var selfed = $('#sfederation');
+               var selprovider = $('#sprovider');
+               selfed.find('option').remove();
+               selprovider.find('option').remove();
+               if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged")
+               {
+                   $.ajax({
+                      type: "GET",
+                      url: baseurl + 'ajax/getfeds',
+                      cache: true,
+                      success: function(json) {
+                         $.each(json, function(key, value) {
+                         $('<option>').val(value.id).text(value.name).appendTo(selfed);
+                         });
+                         $('select#sfederation').parent().show();
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                         $(".message").html(errorThrown);
+                      }
+
+                  });
+               }
+               else if(valueSelected === "requeststoproviders" )
+               {
+                   $.ajax({
+                      type: "GET",
+                      url: baseurl + 'ajax/getproviders',
+                      cache: false,
+                      //datatype: "json",
+                      success: function(json) {
+                          var data = $.parseJSON(json);
+                          $.each(data, function(key, value) {
+                               $('<option>').val(value.key).text(value.value).appendTo(selprovider);
+                           });
+                          $('select#sprovider').parent().show();
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                                $(".message").html(errorThrown);
+                      }
+
+                  });
+               }
+            });//end change
+            $(".no").click(function(){
+                 $("#notificationaddmodal").foundation('reveal', 'close');
+            });
+                $('.yes').click(function() {
+                    if ($.isFunction(callback)) {
+                        callback.apply();
+                    }
+
+                    //     modal.close(); // or $.modal.close();
+                });
+
+           
+         });
+
+   };
 
     function notificationadd(message, callback) {
         $('#notificationaddform').modal({

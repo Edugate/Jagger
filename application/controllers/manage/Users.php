@@ -328,6 +328,7 @@ class Users extends MY_Controller {
         }
 
         $data['det'] = $det;
+        $data['titlepage'] = lang('rr_detforuser').': '.$data['caption']; 
         $data['content_view'] = 'manage/userdetail_view';
         $this->load->view('page', $data);
     }

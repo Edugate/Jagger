@@ -1,31 +1,31 @@
 <?php
-echo '<div id="pagetitle">'. lang('title_usersubscriptions').'</div>';
-echo '<div id="subtitle"><h3>'.lang('rr_user').': '.$subscriber['username'].'</h3><h4>'.$subscriber['fullname'].' '.mailto($subscriber['email']).'</h4></div>';
 
 
 if(!empty($warnmessage))
 {
-    echo '<div class="alert">'.$warnmessage.'</div>';
+    echo '<div data-alert class="alert-box warning">'.$warnmessage.'</div>';
  
 }
 ?>
-<div style="float: right; witdth: 99%;"><button id="registernotification" class="addbutton addicon" type="button"><?php echo lang('rr_add');?></button></div>
-<div style="clear: both;"></div>
+<div class="small-12 columns text-right"><button id="registernotification2" class="addbutton addicon" type="button" ><?php echo lang('rr_add');?></button></div>
 <?php
   if(count($rows)>1)
   {
    $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
    $this->table->set_template($tmpl);
+   echo '<div class="small-12 columns">';
    echo $this->table->generate($rows); 
+   echo '</div>';
    $this->table->clear();
   }
 
 /**
  * update form
  */
-   $rrs = array('id'=>'notificationupdateform','style'=>'display: none');
+   $rrs = array('id'=>'notificationupdateform');
 
    $this->load->helper('form');
+   echo '<div id="notificationupdatemodal" class="reveal-modal" data-reveal>';
    echo form_open(base_url().'notification/subscriber/updatestatus/',$rrs);
    echo form_input(array('name'=>'noteid','id'=>'noteid','type'=>'hidden','value'=>''));
    ?>
@@ -40,11 +40,12 @@ if(!empty($warnmessage))
      ?>
     </div>
       <div class="buttons">
+      <div class="no"><?php echo lang('rr_cancel');?></div>
       <div class="yes"><?php echo lang('btnupdate');?></div>
-      <div class="no simplemodal-close"><?php echo lang('rr_cancel');?></div>
      </div>
    <?php
    echo form_close();
+   echo '</div>';
 
 /**
  * add form
@@ -52,8 +53,8 @@ if(!empty($warnmessage))
    $rrs = array('id'=>'notificationaddform');
 
    $this->load->helper('form');
+   echo '<div id="notificationaddmodal" class="reveal-modal" data-reveal>';
    echo form_open(base_url().'notifications/subscriber/add/'.$encodeduser.'',$rrs);
-   //echo form_input(array('name'=>'noteid','id'=>'noteid','type'=>'hidden','value'=>''));
    ?>
       <div class="header">
       <span><?php echo lang('registerfornotification'); ?></span>
@@ -89,10 +90,10 @@ if(!empty($warnmessage))
      ?>
     </div>
       <div class="buttons">
+      <div class="no"><?php echo lang('rr_cancel');?></div>
       <div class="yes"><?php echo lang('rr_add');?></div>
-      <div class="no simplemodal-close"><?php echo lang('rr_cancel');?></div>
      </div>
    <?php
    echo form_close();
-
+   echo '</div>';
 
