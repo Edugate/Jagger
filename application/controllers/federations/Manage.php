@@ -173,7 +173,18 @@ class Manage extends MY_Controller
             }
             $members['' . $type . ''][] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId());
         }
+        /**
+        foreach($members as $k => $v)
+        {
+           foreach($v as $key => $p)
+           {
+                $namerow[$key]  = $p['name'];
+                $entityidrow[$key] = $p['entityid'];
+           }
+           array_multisort($namerow, SORT_ASC, $entityidrow, SORT_ASC, $members[$v]);
 
+        }
+        */
         echo json_encode($members);
     }
 
@@ -407,6 +418,7 @@ class Manage extends MY_Controller
         else {
 
             $membersInArray = array('IDP'=>array(),'SP'=>array(),'BOTH'=>array());
+            $lang = MY_Controller::getLang();
             foreach($membership as $m)
             {
                 $joinstate = $m->getJoinState();
@@ -415,12 +427,20 @@ class Manage extends MY_Controller
                    continue;
                 }
                 $p = $m->getProvider();
-                $name = $p->getName();
+                $ptype = $p->getType();
+                if($ptype === 'IDP')
+                {
+                   $name = $p->getNameToWebInLang($lang,'idp');
+                }
+                else
+                {
+                   $name = $p->getNameToWebInLang($lang,'sp');
+                }
                 if(empty($name))
                 {
                    $name = $p->getEntityId();
                 }
-                $membersInArray[''.$p->getType().''][] = array(
+                $membersInArray[''.$ptype.''][] = array(
                    'pid'=>$p->getId(),
                    'mdisabled'=>(int) $m->getIsDisabled(),
                    'mbanned' => (int) $m->getIsBanned(),
