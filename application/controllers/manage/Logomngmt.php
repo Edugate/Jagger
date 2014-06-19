@@ -473,6 +473,15 @@ class Logomngmt extends MY_Controller
         $data['addnewlogobtn'] = true;
         $data['content_view'] = 'manage/logomngmt_view';
         $data['sub'] = lang('assignedlogoslistfor') . ' ';
+        $lang = MY_Controller::getLang();
+        $displayname = $provider->getNameToWebInLang($lang,$type);
+        if(empty($displayname))
+        {
+            $displayname = $provider->getEntityId();
+        }
+
+        $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$provider->getId().'">'.$displayname.'</a>';
+        $data['subtitlepage'] = lang('rr_logosmngt');
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
         $data['provider_detail']['entityid'] = $provider->getEntityId();

@@ -99,7 +99,7 @@ var GINIT = {
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%", ],
             overlayId: 'simpledialog-overlay',
-            minHeight: '20px',
+            minHeight: '200px',
             containerId: 'simpledialog-container',
             onShow: function(dialog) {
                 var modal = this;
@@ -237,7 +237,7 @@ var GINIT = {
                    closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
                    position: ["20%", ],
                    overlayId: 'simpledialog-overlay',
-                   minHeight: '20px',
+                   minHeight: '200px',
                    containerId: 'simpledialog-container',
                    onShow: function(dialog) {
                         var modal = this;
@@ -253,7 +253,7 @@ var GINIT = {
                    closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
                    position: ["20%", ],
                    overlayId: 'simpledialog-overlay',
-                   minHeight: '20px',
+                   minHeight: '200px',
                    containerId: 'simpledialog-container',
                    onShow: function(dialog) {
                         var modal = this;
@@ -293,7 +293,7 @@ var GINIT = {
                    closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
                    position: ["20%", ],
                    overlayId: 'simpledialog-overlay',
-                   minHeight: '20px',
+                   minHeight: '200px',
                    containerId: 'simpledialog-container',
                    onShow: function(dialog) {
                         var modal = this;
@@ -348,7 +348,7 @@ var GINIT = {
                    closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
                    position: ["20%", ],
                    overlayId: 'simpledialog-overlay',
-                   minHeight: '20px',
+                   minHeight: '200px',
                    containerId: 'simpledialog-container',
                    onShow: function(dialog) {
                         var modal = this;
@@ -365,7 +365,7 @@ var GINIT = {
                    closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
                    position: ["20%", ],
                    overlayId: 'simpledialog-overlay',
-                   minHeight: '20px',
+                   minHeight: '200px',
                    containerId: 'simpledialog-container',
                    onShow: function(dialog) {
                         var modal = this;
@@ -452,7 +452,7 @@ var GINIT = {
                    closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
                    position: ["20%", ],
                    overlayId: 'simpledialog-overlay',
-                   minHeight: '20px',
+                   minHeight: '200px',
                    containerId: 'simpledialog-container',
                    onShow: function(dialog) {
                         var modal = this;
@@ -468,7 +468,7 @@ var GINIT = {
                    closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
                    position: ["20%", ],
                    overlayId: 'simpledialog-overlay',
-                   minHeight: '20px',
+                   minHeight: '200px',
                    containerId: 'simpledialog-container',
                    onShow: function(dialog) {
                         var modal = this;

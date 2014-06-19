@@ -431,4 +431,7 @@ code {
     overflow: hidden;
 }
 
+.help {
 
+@include panel();
+}

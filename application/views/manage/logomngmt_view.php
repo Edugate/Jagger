@@ -1,23 +1,20 @@
-<?php
-echo '<div id="pagetitle">'.lang('rr_logosmngt').'</div>';
-?>
-<div id="subtitle">
-<?php 
-echo  '<h3>'.anchor(base_url() . 'providers/detail/show/' . $provider_detail['id'],$provider_detail['name']) . '</h3><h4> ' . $provider_detail['entityid'] . '</h4>'; ?>
-</div>
 <div>
 <?php
 
-
+     echo '<div class="small-12 columns">';
      if(!empty($infomessage))
      {
-         echo '<div class="help" style="display: inline-block; width: 60%;">'.$infomessage.'</div>';
+         echo '<div class="help large-7 columns">'.$infomessage.'</div>';
+     }
+     else
+     {
+        echo '<div class="large-7 columns">&nbsp</div>';
      }
 
 
 if($canEdit === TRUE)
 {
-     echo '<div id="upload" style="display: block-inline; float: right; width: 40%; ">';
+     echo '<div id="upload" class="large-5 columns" ">';
      $hidden = array('origurl'=>current_url(),'upload'=>'upload','prvid'=>''.$provider_detail['id'].'','prvtype'=>''.$provider_detail['type'].'');
      $attrs = array('id'=>'uploadlogo','name'=>'uploadlogo');
      echo '<div style="position: relative;">';
@@ -26,16 +23,16 @@ if($canEdit === TRUE)
      echo '<input type="url" name="extlogourl" id="extlogourl" site="40" style="width: 90%" />';
      if($upload_enabled)
      {
-         echo form_label(lang('rr_uploadlogo'),'userfile');
-         echo '<input type="file" name="userfile" id="userfile" size="20" class="clearable" style="background: transparent" />';
+         echo '<div class="small-12 columns"><div class="large-3 columns">'.form_label(lang('rr_uploadlogo'),'userfile').'</div>';
+         echo '<div class="large-9 columns"><input type="file" name="userfile" id="userfile" size="20" class="clearable" style="background: transparent" /></div></div>';
      }
-     echo '<div class="buttons"><button type="submit" name="upload" value="upload" class="savebutton saveicon">'.lang('rr_add').'</button></div>';
+     echo '<div class="buttons small-12 columns text-right"><button type="submit" name="upload" value="upload" class="savebutton saveicon">'.lang('rr_add').'</button></div>';
      echo form_close();
      echo '</div>';
 }
 ?>		
 </div>
-
+</div>
 
 
 <div style="clear: both;"><br /></div>
