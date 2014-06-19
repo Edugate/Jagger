@@ -34,10 +34,6 @@ else
     echo '<aside class="left-off-canvas-menu">';
     echo '<ul class="off-canvas-list">';
     echo '<li><label>'.lang('menu_actions').'</label></li>';
-    if(!empty($showclearcache))
-    {
-        echo '<li><a href="'.base_url().'providers/detail/refreshentity/'.$entid.'" class="button clearcache small">'. lang('clearcache').'</a></li>';
-    }
     ksort($entmenu);
     foreach($entmenu as $v)
     {
@@ -48,6 +44,10 @@ else
        else {
          echo '<li><a href="'.$v['link'].'" class="'.$v['class'].'">'.$v['name'].'</a></li>';
        }
+    }
+    if(!empty($showclearcache))
+    {
+        echo '<li><a href="'.base_url().'providers/detail/refreshentity/'.$entid.'" class="button clearcache small">'. lang('clearcache').'</a></li>';
     }
     echo '</ul>';
     echo '</aside>';

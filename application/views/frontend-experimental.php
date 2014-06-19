@@ -72,7 +72,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         ?>
 
     </head>
-    <body class="clearfix">
+    <body>
         <!--[if lt IE 7]>
                     <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
                 <![endif]-->
@@ -101,24 +101,43 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 
 $this->load->view('toppanel',$args);
 
+        echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
+
+        echo '<div class="row">'; //start titlepage part
 
         if(!empty($titlepage))
         {
-           echo '<div id="titlepage" class="fullWidth">';
            if(!empty($providerlogourl))
            {
-              echo '<div class="row"><div class="large-8 columns left">'.$titlepage.'</div><div class="large-4 columns show-for-medium-up"><img src="'.$providerlogourl.'" class="right" style="max-height: 40px; background-color: white;"/></div></div>';
+              echo '<div class="small-12 columns"><div class="large-8 columns text-left">'.$titlepage.'</div><div class="large-4 columns show-for-medium-up end"><img src="'.$providerlogourl.'" class="right" style="max-height: 40px; background-color: white;"/></div></div>';
            }
            else
            {
-              echo '<div class="row">'.$titlepage.'</div>';
+              echo '<div class="small-12 columns end text-left">'.$titlepage.'</div>';
            }
-           if(!empty($subtitlepage))
-           {
-              echo '<div class="ingrid small-12 columns text-center subtitle">'.$subtitlepage.'</div>';
-           }
-           echo '</div>';
         }
+        if(!empty($subtitlepage))
+        {
+           echo '<div class="small-12 columns text-center subtitle">'.$subtitlepage.'</div>';
+        }
+        
+        ///////////// start submenupage
+        if(!empty($submenupage))
+        {
+          echo '<div><div class="small-12 columns text-right">';
+          echo '<dl class="subnav">';
+          echo '<dt></dt>';
+          foreach($submenupage as $v)
+          {
+             echo '<dd><a href="'.$v['url'].'">'.$v['name'].'</a></dd>';
+          }
+          echo '</dl>';
+          echo '</div>';
+          echo '</div>';
+        }
+        /////////////// end submenupage
+        echo '</div>'; // end titlepage part
+        echo '</div>'; // end id="titlepage"
 
 ?>
 </header>
