@@ -421,3 +421,14 @@ code {
  white-space: pre;
 
 }
+
+#map {
+    width: 100%;
+    //width: 500px;
+    height: 500px;
+    position: relative;
+    background-color: rgb(229, 227, 223);
+    overflow: hidden;
+}
+
+

@@ -1,9 +1,4 @@
-<div id="pagetitle"><?php echo lang('rr_geolocation');?></div>
 <?php
-if(!empty($subtitle))
-{
-     echo $subtitle;
-}
 if(!empty($error))
 {
     ?>
@@ -27,7 +22,22 @@ if(!empty($type) && !empty($provider_id))
     }
     
 }
+
+echo '<div class="small-12 columns">';
+
+// left for the map
+echo '<div class="large-8 columns">';
+echo $mapdiv;
+echo '</div>';
+
+
+// right for form
+echo '<div class="large-4 columns">';
+echo $formulars;
+echo '</div>';
+echo '</div>';
+
 if(!empty($mapa))
 {
-        echo $mapa;
+      //  echo $mapa;
 }

@@ -62,13 +62,10 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         <meta content='width=device-width, initial-scale=1.0, user-scalable=0' name='viewport'>
         <link rel="stylesheet" type="text/css" href="<?php echo $base_url; ?>styles/jquery-ui.css"/>
         <?php
-        
-        //echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/'.$colorTheme.'.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';     
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/'.$colorTheme.'.css" />';
-       // echo '<link rel="stylesheet" href="'.$foundation.'css/foundation.css" />';
         echo '<script src="' . $base_url . 'js/modernizr.js"></script>';
 
         
@@ -94,6 +91,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         if (!empty($headerjs))
         {
             echo $headerjs;
+  
         }
         if (!empty($headermap))
         {
@@ -163,7 +161,8 @@ $this->load->view('toppanel',$args);
                 $height100 = '';
                 if (!empty($loadGoogleMap))
                 {
-                    $height100 = ' style="height: 100%" ';
+                    
+                    $height100 = ' style="min-height: 300px;height: 100%" ';
                 }
                 ?>
                 <div   <?php echo $height100 ?>>
