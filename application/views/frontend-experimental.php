@@ -100,6 +100,8 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
 
 
 $this->load->view('toppanel',$args);
+        if(!empty($titlepage) || !empty($subtitlepage))
+        {
 
         echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
 
@@ -138,6 +140,7 @@ $this->load->view('toppanel',$args);
         /////////////// end submenupage
         echo '</div>'; // end titlepage part
         echo '</div>'; // end id="titlepage"
+        }
 
 ?>
 </header>
