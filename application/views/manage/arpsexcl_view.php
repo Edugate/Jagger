@@ -1,6 +1,3 @@
-<div id="pagetitle"><?php echo lang('rr_arpexcl1');?></div>
-<div id="subtitle"><h3><?php echo anchor(base_url().'providers/detail/show/'.$idp_id, $idp_name ) ;?></h3><h4><?php echo $idp_entityid;?></h4></div>
-
 <?php
 
 if(!empty($rows) && is_array($rows))
@@ -8,16 +5,14 @@ if(!empty($rows) && is_array($rows))
     $attrs = array('id'=>'arpexlusions');
     echo form_open(current_url(),$attrs);
     echo form_fieldset();
-    echo '<ol>';
     foreach($rows as $r)
     {
-       echo '<li>'.$r.'</li>';
+       echo '<div class="small-12 columns"><div class="small-11 medium-9 large-8 small-centered columns ">'.$r.'</div></div>';
       
     }
-    echo '</ol>';
     echo form_fieldset_close();
-    echo '<div class="buttons">';
-    echo '<button type="reset" name="reset" value="reset" class="resetbutton reseticon">
+    echo '<div class="buttons mall-11 medium-9 large-8 small-centered columns">';
+    echo '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">
                   '.lang('rr_reset').'</button> ';
     echo '<button type="submit" name="modify" value="submit" class="savebutton saveicon">
                   '.lang('rr_save').'</button>';

@@ -147,7 +147,7 @@ class Detail extends MY_Controller {
                     {
                         $tmp_logs = new models\Trackers;
                         $arp_logs = $tmp_logs->getArpDownloaded($ent);
-                        $logg_tmp = '<ul>';
+                        $logg_tmp = '<ul class="no-bullet">';
                         if (!empty($arp_logs))
                         {
                             foreach ($arp_logs as $l)
@@ -231,6 +231,9 @@ class Detail extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
+        // off canvas menu for provider
+        $entmenu = array();
+
         $is_validtime = $ent->getIsValidFromTo();
         $is_active = $ent->getActive();
         $is_local = $ent->getLocal();
@@ -276,21 +279,26 @@ class Detail extends MY_Controller {
         if (!$has_write_access)
         {
             $edit_link .= makeLabel('noperm', lang('rr_nopermission'), lang('rr_nopermission'));
+            $entmenu[0] = array('name'=>''.lang('rr_nopermission').'','link'=>'#','class'=>'alert');
         }
         elseif (!$is_local)
         {
             $edit_link .= makeLabel('external', lang('rr_externalentity'), lang('rr_external'));
+            $entmenu[0] = array('name'=>''.lang('rr_externalentity').'','link'=>'#','class'=>'alert');
         }
         elseif ($locked)
         {
             $edit_link .= makeLabel('locked', lang('rr_lockedentity'), lang('rr_lockedentity'));
+            $entmenu[0] = array('name'=>''.lang('rr_lockedentity').'','link'=>'#','class'=>'alert');
         }
         else
         {
-            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
+            $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon button small" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
+            $entmenu[0] = array('name'=>''.lang('rr_editentity').'','link'=>''.base_url().'manage/entityedit/show/'.$id.'','class'=>'');
             $data['showclearcache'] = TRUE;
         }
         $data['edit_link'] = $edit_link;
+        $data['entmenu'] = &$entmenu;
 
 
         $extend = $ent->getExtendMetadata();
@@ -306,7 +314,7 @@ class Detail extends MY_Controller {
             }
             if ($v->getElement() === 'Logo')
             {
-                $data['provider_logo_url'] = $v->getLogoValue();
+                $providerlogourl = $v->getLogoValue();
                 $is_logo = TRUE;
             }
         }
@@ -340,7 +348,7 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
         $d[++$i]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation');
-        $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
+        $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
 
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
@@ -535,7 +543,7 @@ class Detail extends MY_Controller {
         if ($is_local && $has_write_access && !empty($gearman_enabled))
         {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
-            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon">' . lang('btn_signmetadata') . '</button></a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon button small">' . lang('btn_signmetadata') . '</button></a>';
         }
         if ($sppart)
         {
@@ -567,7 +575,7 @@ class Detail extends MY_Controller {
         /**
          * Federation
          */
-        $d[++$i]['header'] = '<span id="federation"></span>' . lang('rr_federation');
+      //  $d[++$i]['header'] = '<span id="federation"></span>' . lang('rr_federation');
         $d[++$i]['name'] = lang('rr_memberof');
         $federationsString = "";
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
@@ -575,7 +583,7 @@ class Detail extends MY_Controller {
         $membershipNotLeft = array();
         if (!empty($membership))
         {
-            $federationsString = '<ul>';
+            $federationsString = '<ul class="no-bullet">';
             foreach ($membership as $f)
             {
                 $joinstate = $f->getJoinState();
@@ -614,7 +622,8 @@ class Detail extends MY_Controller {
             {
                 if (!$locked)
                 {
-                    $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . anchor(base_url() . 'manage/leavefed/leavefederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                    $manage_membership .= '<div><a href="'.base_url().'manage/leavefed/leavefederation/'.$ent->getId().'" class="button tiny alert">'.lang('rr_federationleave').'</a></div>';
+                    $entmenu[11] = array('name'=>lang('rr_federationleave'),'link'=>''.base_url() . 'manage/leavefed/leavefederation/' . $ent->getId().'','class'=>'');
                 }
                 else
                 {
@@ -625,7 +634,9 @@ class Detail extends MY_Controller {
             {
                 if (!$locked)
                 {
-                    $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                   // $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
+                    $manage_membership .= '<div><a href="'.base_url().'manage/joinfed/joinfederation/'.$ent->getId().'" class="button tiny">'.lang('rr_federationjoin').'</a></div>';
+                    $entmenu[10] = array('name'=>lang('rr_federationjoin'),'link'=>''.base_url() . 'manage/joinfed/joinfederation/' . $ent->getId().'','class'=>'');
                 }
                 else
                 {
@@ -637,7 +648,7 @@ class Detail extends MY_Controller {
         if ($no_feds > 0)
         {
             $d[++$i]['name'] = '';
-            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="savebutton arrowdownicon">' . lang('showmemb_btn') . '</button></a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="savebutton arrowdownicon small secondary">' . lang('showmemb_btn') . '</button></a>';
 
             $d[++$i]['2cols'] = '<div id="membership"></div>';
         }
@@ -684,7 +695,7 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = $v;
             $d[++$i]['name'] = lang('rr_domainscope');
             $scopes = $ent->getScope('idpsso');
-            $scopeString = '<ul>';
+            $scopeString = '<ul class="no-bullet">';
             foreach ($scopes as $key => $value)
             {
                 $scopeString .= '<li>' . $value . '</li>';
@@ -692,7 +703,7 @@ class Detail extends MY_Controller {
             $scopeString .= '</ul>';
             $d[$i]['value'] = $scopeString;
             $d[++$i]['name'] = lang('rr_supportednameids') ;
-            $nameids = '';
+            $nameids = '<ul class="no-bullet">';
             foreach ($ent->getNameIds('idpsso') as $r)
             {
                 $nameids .= '<li>' . $r . '</li>';
@@ -707,7 +718,7 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = $v;
             $d[++$i]['name'] = lang('rr_domainscope') . '';
             $scopes = $ent->getScope('aa');
-            $scopeString = '<ul>';
+            $scopeString = '<ul class="no-bullet">';
             foreach ($scopes as $key => $value)
             {
                 $scopeString .= '<li>' . $value . '</li>';
@@ -780,7 +791,7 @@ class Detail extends MY_Controller {
                     }
                     $ssovalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                 }
-                $d[$i]['value'] = '<ul>' . $ssovalues . '</ul>';
+                $d[$i]['value'] = '<ul class="no-bullet">' . $ssovalues . '</ul>';
             }
             if (array_key_exists('IDPSingleLogoutService', $services))
             {
@@ -830,7 +841,7 @@ class Detail extends MY_Controller {
                     }
                     $acsvalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . ' </small></li>';
                 }
-                $d[$i]['value'] = '<ul>' . $acsvalues . '</ul>';
+                $d[$i]['value'] = '<ul class="no-bullet">' . $acsvalues . '</ul>';
             }
             if (array_key_exists('SPArtifactResolutionService', $services))
             {
@@ -845,7 +856,7 @@ class Detail extends MY_Controller {
                     }
                     $acsvalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . ' </small></li>';
                 }
-                $d[$i]['value'] = '<ul>' . $acsvalues . '</ul>';
+                $d[$i]['value'] = '<ul class="no-bullet">' . $acsvalues . '</ul>';
             }
             if (array_key_exists('SPSingleLogoutService', $services))
             {
@@ -855,7 +866,7 @@ class Detail extends MY_Controller {
                 {
                     $slvalues .= '<li><b> ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                 }
-                $d[$i]['value'] = '<ul>' . $slvalues . '</ul>';
+                $d[$i]['value'] = '<ul class="no-bullet">' . $slvalues . '</ul>';
             }
             if(array_key_exists('RequestInitiator', $services) || array_key_exists('DiscoveryResponse', $services))
             {
@@ -868,7 +879,7 @@ class Detail extends MY_Controller {
                     {
                        $rivalues .= '<li><b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                     }
-                    $d[$i]['value'] = '<ul>' . $rivalues . '</ul>';
+                    $d[$i]['value'] = '<ul class="no-bullet">' . $rivalues . '</ul>';
                 }
                 if (array_key_exists('DiscoveryResponse', $services))
                 {
@@ -878,7 +889,7 @@ class Detail extends MY_Controller {
                     {
                         $drvalues .= '<li><b>' . $s->getUrl() . '</b>&nbsp;&nbsp;<small><i>index:' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . '</small></li>';
                     }
-                    $d[$i]['value'] = '<ul>' . $drvalues . '</ul>';
+                    $d[$i]['value'] = '<ul class="no-bullet">' . $drvalues . '</ul>';
                 }
 
             }
@@ -1140,11 +1151,14 @@ class Detail extends MY_Controller {
             $exc = $ent->getExcarps();
             if (!$locked && $has_write_access && $ent->getLocal())
             {
-                $mlink = '<a href="' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '" class="editbutton editicon">' . lang('rr_editarpexc') . '</a>';
+                
+                $mlink = '';
+                $entmenu[20]  = array('label'=> ''.lang('rr_attributes').'');
+                $entmenu[21] = array('name'=>lang('rr_arpexclist_edit'),'link'=>'' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '','class'=>'');
                 $d[++$i]['name'] = lang('rr_arpexclist_title') . ' <br />' . $mlink;
                 if (is_array($exc) && count($exc) > 0)
                 {
-                    $l = '<ul>';
+                    $l = '<ul class="no-bullet">';
                     foreach ($exc as $e)
                     {
                         $l .= '<li>' . $e . '</li>';
@@ -1168,8 +1182,11 @@ class Detail extends MY_Controller {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
             if ($has_write_access)
             {
-                $edit_attributes = '<span style="float: right;"><a href="' . base_url() . 'manage/supported_attributes/idp/' . $id . ' " class="editbutton editicon">'.  lang('rr_edit') . '</a></span>';
-                $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " id="editattributesbutton" class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
+                $entmenu[20] = array('label'=>''.lang('rr_attributes').'');
+                $entmenu[22] = array('name'=>''.lang('rr_supportedattributes').'','link'=>'' . base_url() . 'manage/supported_attributes/idp/' . $id . '','class'=>'');
+              //  $edit_attributes = '<span style="float: right;"><a href="' . base_url() . 'manage/supported_attributes/idp/' . $id . ' " class="editbutton editicon">'.  lang('rr_edit') . '</a></span>';
+                $entmenu[23] = array('name'=>''.lang('rr_attributepolicy').'','link'=>'' . base_url() . 'manage/attribute_policy/globals/' . $id . '','class'=>'');
+               // $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " id="editattributesbutton" class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
             }
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;
@@ -1194,18 +1211,20 @@ class Detail extends MY_Controller {
 
             if ($has_write_access)
             {
+                $entmenu[20] = array('label'=>''.lang('rr_attributes').'');
                 $d[++$i]['name'] = lang('rr_attrsoverview');
-                $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'),'class="editbutton"');
+                $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'),'class="button small editbutton"');
 
                 $image_link = '<img src="' . base_url('images/icons/pencil-field.png') . '"/>';
                 $edit_req_attrs_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '" class="editbutton editicon" title="edit" >' .  lang('rr_edit') . '</a></span>';
+                $entmenu[24] = array('name'=>''.lang('rr_requiredattributes').'','link'=>''.base_url().'manage/attribute_requirement/sp/' . $ent->getId() . '','class'=>'');
             }
-            $d[++$i]['header'] = '<span id="reqattrs"></span>' . lang('rr_requiredattributes') . $edit_req_attrs_link;
+           // $d[++$i]['header'] = '<span id="reqattrs"></span>' . lang('rr_requiredattributes') . $edit_req_attrs_link;
             $requiredAttributes = $ent->getAttributesRequirement();
             if ($requiredAttributes->count() === 0)
             {
                 $d[++$i]['name'] = '';
-                $d[$i]['value'] = '<span class="notice">' . lang('rr_noregspecified_inherit_from_fed') . '</span>';
+                $d[$i]['value'] = '<div data-alert class="alert-box warning">' . lang('rr_noregspecified_inherit_from_fed') . '</div>';
             }
             else
             {
@@ -1483,6 +1502,11 @@ class Detail extends MY_Controller {
          * @todo finish show alert block if some warnings realted to entity 
          */
         //$data['alerts'] = $alerts;
+        if(!empty($providerlogourl))
+        {
+           $data['providerlogourl'] = $providerlogourl;
+        }
+        $data['titlepage'] = $data['presubtitle'] . ': ' . $data['name']; 
         $data['content_view'] = 'providers/detail_view.php';
         $this->load->view('page', $data);
     }

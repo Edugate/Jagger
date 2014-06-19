@@ -229,10 +229,6 @@ class Entityedit extends MY_Controller {
             $noidpslo = array();
             if (array_key_exists('srv', $y['f']))
             {
-                log_message('debug', 'GGGG f[srv] exists ');
-            }
-            if (array_key_exists('srv', $y['f']))
-            {
                 if(!array_key_exists('SingleSignOnService', $y['f']['srv']) )
                 {
                     $y['f']['srv']['SingleSignOnService'] = array();
@@ -268,11 +264,9 @@ class Entityedit extends MY_Controller {
                 if(!array_key_exists('AssertionConsumerService', $y['f']['srv']) && ($this->type === 'SP' or $this->type === 'BOTH') )
                 {
                       $y['f']['srv']['AssertionConsumerService'] = array();
-                      log_message('debug','GGGG : creating AssertionConsumerService array');
                 }
                 if (array_key_exists('AssertionConsumerService', $y['f']['srv']))
                 {
-                    log_message('debug',__METHOD__.'AssertionConsumerService array exists');
                     $acsindexes = array();
                     $acsurls = array();
                     $acsdefault = array();
@@ -311,7 +305,6 @@ class Entityedit extends MY_Controller {
                             $this->tmp_error = 'Not unique indexes found for ACS';
                             return false;
                         }
-                        log_message('debug','GGGG staticdefault:'.$staticisdefault); 
                         if (count($acsurls) < 1 && empty($staticisdefault))
                         {
 
@@ -329,7 +322,6 @@ class Entityedit extends MY_Controller {
 
                 if (array_key_exists('SPArtifactResolutionService', $y['f']['srv']))
                 {
-                    log_message('debug','GGGG : SPArtifactResolutionService array exists');
                     $spartindexes = array();
                     $sparturls = array();
                     foreach ($y['f']['srv']['SPArtifactResolutionService'] as $k => $v)
@@ -432,7 +424,6 @@ class Entityedit extends MY_Controller {
                     {
                         if (count($drindexes) != count(array_unique($drindexes)))
                         {
-                            log_message('error', 'GGG: not unique ACS indexes found');
                             $this->tmp_error = 'Not unique indexes found for DiscoveryResponse';
                             return false;
                         }
@@ -583,6 +574,49 @@ class Entityedit extends MY_Controller {
         {
            $data['regpolicy'] = array();
         }
+
+        if(isset($data['srv']['AssertionConsumerService']))
+        {
+           $data['srv']['AssertionConsumerService'] = array_filter($data['srv']['AssertionConsumerService']);
+        }
+        else
+        {
+           $data['srv']['AssertionConsumerService'] = array();
+        }
+
+
+        if(isset($data['srv']['RequestInitiator']))
+        {
+           $data['srv']['RequestInitiator'] = array_filter($data['srv']['RequestInitiator']);
+        }
+        else
+        {
+           $data['srv']['RequestInitiator'] = array();
+        }
+        if(isset($data['srv']['SPArtifactResolutionService']))
+        {
+           $data['srv']['SPArtifactResolutionService'] = array_filter($data['srv']['SPArtifactResolutionService']);
+        }
+        else
+        {
+           $data['srv']['SPArtifactResolutionService'] = array();
+        }
+        if(isset($data['srv']['DiscoveryResponse']))
+        {
+           $data['srv']['DiscoveryResponse'] = array_filter($data['srv']['DiscoveryResponse']);
+        }
+        else
+        {
+           $data['srv']['DiscoveryResponse'] = array();
+        }
+        if(isset($data['prot']['spsso']))
+        {
+            $data['prot']['spsso'] = array_filter($data['prot']['spsso']);
+        }
+        else
+        {
+             $data['prot']['spsso'] = array();
+        }
         if(isset($data['contact']))
         {
             foreach($data['contact'] as $k=>$v)
@@ -728,13 +762,13 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'contacts', 'value' => ''.lang('tabcnts').'', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => ''.lang('tabuii').'', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
         $menutabs[] = array('id' => 'tabsaml', 'value' => ''.lang('tabsaml').'', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
-    //    $menutabs[] = array('id' => 'privacy', 'value' => ''.lang('tabprivacy').'', 'form' => $this->form_element->NgeneratePrivacy($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => ''.lang('tabcerts').'', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
         $menutabs[] = array('id' => 'entcategories', 'value' => ''.lang('tabentcategories').'', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
         $menutabs[] = array('id' => 'staticmetadata', 'value' => ''.lang('tabstaticmeta').'', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
         $menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
 
         $data['menutabs'] = $menutabs;
+        $data['titlepage'] = '<a href="'.base_url() . 'providers/detail/show/'.$data['entdetail']['id'].'">'.$data['entdetail']['displayname'].'</a>';
         $data['content_view'] = 'manage/entityedit_view.php';
         $this->load->view('page', $data);
     }

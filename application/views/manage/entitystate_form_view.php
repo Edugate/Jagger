@@ -1,23 +1,19 @@
-<div id="pagetitle"><?php echo lang('rr_status_mngmt');?></div>
 
 <?php
 $errors_v = validation_errors('<div class="error">', '</div>');
 if (!empty($message))
 {
-    echo '<span class="message">' . $message . '</span>';
+    echo '<span data-alert class="alert-box notice message">' . $message . '</span>';
 }
 if (!empty($error))
 {
-    echo '<span class="error">' . $error . '</span>';
+    echo '<span data-alert class="alert-box alert error">' . $error . '</span>';
 }
 ?>
-<div id="subtitle"><h3>
-    <?php echo lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$id.'">'.$name.'</a>'; ?>
-</h3><h4><?php echo $entityid;?></h4></div>
 <?php
 if(!empty($success_message))
 {
-  echo '<div class="success">'.$success_message.'</div>';
+  echo '<div data-alert class="alert-box success">'.$success_message.'</div>';
 }
 if (!empty($errors_v))
 {
@@ -34,23 +30,45 @@ $publicvisible = array('0'=>lang('rr_hiddeninpubliclist'),'1'=>lang('rr_visiblei
 echo form_open($target,$attributes,$hidden);
 echo form_fieldset(lang('rr_chngentsettings'));
 echo '<ol><li>';
-echo form_label(lang('rr_lock_entity'),'elock');
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="elock" class="inline right">'.lang('rr_lock_entity').'</label>';
+echo '</div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_dropdown('elock', $elock,$current_locked);
-echo '</li>';
-echo '<li>';
-echo form_label(lang('rr_entityactive'),'eactive');
+echo '</div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="eactive" class="inline right">'.lang('rr_entityactive').'</label>';
+echo '</div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_dropdown('eactive', $eactive,$current_active);
-echo '</li>';
-echo '<li>';
-echo form_label(lang('rr_visibilityonpublists'),'publicvisible');
+echo '</div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="publicvisible" class="inline right">'.lang('rr_visibilityonpublists').'</label>';
+echo '</div>';
+echo '<div class="small-6 large-7 columns end">';
 echo form_dropdown('publicvisible', $publicvisible,$current_publicvisible);
-echo '</li>';
-echo '<li>';
-echo form_label(lang('rr_entitylocalext'),'extint');
+echo '</div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="extint" class="inline right">'.lang('rr_entitylocalext').'</label>';
+echo '</div>';
+echo '<div class="small-6 large-7 columns end">';
+
 echo form_dropdown('extint', $extint,$current_extint);
-echo '</li>';
-echo '<li>';
-echo form_label(lang('rr_validfrom'),'validfromdate');
+echo '</div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+
+echo '<label for="validfromdate" class="inline right">'.lang('rr_validfrom').'</label>';
+echo '</div>';
+echo '<div class="small-4 medium-2 columns">';
 echo form_input(array(
             'id'=>'validfromdate',
             'name'=>'validfromdate',
@@ -58,6 +76,8 @@ echo form_input(array(
             'class'=>'inputdate validfrom',
             'placeholder'=>'YY-MM-DD'
          ));
+echo '</div>';
+echo '<div class="small-4 medium-2 columns end">';
 echo form_input(array(
             'id'=>'validfromtime',
             'name'=>'validfromtime',
@@ -65,9 +85,13 @@ echo form_input(array(
             'class'=>'inputtime',
             'placeholder'=>'HH:mm',
       ));
-echo '</li>';
-echo '<li>';
-echo form_label(lang('rr_validto'),'validuntildate');
+echo '</div>';
+echo '</div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="validuntildate" class="inline right">'.lang('rr_validto').'</label>';
+echo '</div>';
+echo '<div class="small-4 medium-2 columns">';
 echo form_input(array(
            'id'=>'validuntildate',
            'name'=>'validuntildate',
@@ -75,6 +99,8 @@ echo form_input(array(
            'class'=>'inputdate validto',
            'placeholder'=>'YY-MM-DD'
            ));
+echo '</div>';
+echo '<div class="small-4 medium-2  columns end">';
 echo form_input(
            array('id'=>'validuntiltime',
                  'name'=>'validuntiltime',
@@ -83,7 +109,8 @@ echo form_input(
                  'placeholder'=>'HH:mm',
               )
            );
-echo '</li></ol>';
+echo '</div>';
+echo '</div>';
 echo form_fieldset_close();
-echo '<div class="buttons"><button name="submit" type="submit" id="submit" value="Modify" class="savebutton saveicon">'.lang('rr_modify').'</button></div>';
+echo '<div class="buttons text-right medium-10 end"><button name="submit" type="submit" id="submit" value="Modify" class="savebutton saveicon">'.lang('rr_modify').'</button></div>';
 echo form_close();

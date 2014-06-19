@@ -128,11 +128,14 @@ class Fededit extends MY_Controller {
             $f = validation_errors('<p class="error">', '</p>');
             $f .= form_open($action, $attributes, $hidden);
             $f .= $this->form_element->generateFederationEditForm($fed);
-            $tf = '<div class="buttons">';
-            $tf .='<button type="reset" name="reset" value="reset" class="resetbutton reseticon">
+            $tf = '<div class="small-12 columns">';
+            $tf = '<div class="buttons small-11 large-10 columns text-right">';
+            $tf .='<button type="reset" name="reset" value="reset" class="resetbutton reseticon button alert">
                   ' . lang('rr_reset') . '</button> ';
-            $tf .='<button type="submit" name="modify" value="submit" class="savebutton saveicon">
+            $tf .='<button type="submit" name="modify" value="submit" class="savebutton saveicon button">
                   ' . lang('rr_save') . '</button>';
+            $tf .= '</div><div class="small-1 large-2 columns end"></div>';
+            
             $tf .= '</div>';
 
             $f .=$tf;
@@ -140,8 +143,8 @@ class Fededit extends MY_Controller {
             $data['form'] .= form_close();
         
         }
-            $data['pagetitle'] = lang('rr_fededitform');
-            $data['subtitle'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.htmlspecialchars($fedname).'</a>';
+            $data['subtitlepage'] =  lang('rr_fededitform').'';
+            $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.htmlspecialchars($fedname).'</a>';
             $data['content_view'] = 'manage/fededit_view';
             $this->load->view('page', $data);
         

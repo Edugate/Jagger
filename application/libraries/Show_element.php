@@ -485,7 +485,16 @@ class Show_element {
         $meminactive = makeLabel('disabled',lang('membership_inactive'),lang('membership_inactive'));
         $membanned = makeLabel('disabled',lang('membership_banned'),lang('membership_banned'));
         $providerdisabled = makeLabel('disabled',lang('rr_inactive'),lang('rr_inactive'));
-        $result = '<div class="zebramembers">';
+        $result = '<ol class="zebramembers">';
+        $pname = array();
+        $pentity = array();
+        foreach($members as $key => $row)
+        {
+             $pname[$key]  = $row['pname'];
+             $pentity[$key] = $row['entityid'];
+        }
+        array_multisort($pname, SORT_STRING, $pentity, SORT_STRING, $members);
+
         foreach($members as $m)
         {
            $t1 = '';
@@ -503,9 +512,9 @@ class Show_element {
            {
               $t3 = $providerdisabled;
            }
-           $result .= '<div><a href="'.$urlprefix.$m['pid'].'">'.$m['pname'].'</a> <small>'.$m['entityid'].'</small><div style="float: right">'.$t1.' '.$t2.' '.$t3.'</div></div>';
+           $result .= '<li class="small-12 columns"><div class="large-5 columns"><a href="'.$urlprefix.$m['pid'].'">'.$m['pname'].'</a></div><div class="large-5 columns"><small>'.$m['entityid'].'</small></div><div class="large-2 columns text-right">'.$t1.' '.$t2.' '.$t3.'</div></li>';
         }
-        $result .='</div>';
+        $result .='</ol>';
 
         return $result;
     }

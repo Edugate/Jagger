@@ -1,15 +1,7 @@
-<div id="pagetitle">
-<?php echo lang('title_fedvalidator') ;?>
-</div>
-<div id="subtitle"><h3>
 <?php
-echo lang('rr_federation').': '.anchor($federationlink,$federationname);
-?></h3>
-</div>
-<?php
-$errors_v = validation_errors('<p class="error">', '</p>');
+$errors_v = validation_errors('<div class="error">', '</div>');
 if (!empty($errors_v)) {
-    echo '<div class="alert">'.$errors_v.'</div>';
+    echo '<div data-alert class="alert-box alert">'.$errors_v.'</div>';
 }
 if(!isset($vname))
 {
@@ -73,98 +65,143 @@ if(!isset($venabled))
 }
 
 echo form_open();
-echo '<fieldset><legend>'.lang('general').'</legend><ol>';
-echo '<li>';
-echo '<label for="vname">'.lang('fvalid_name').'</label>';
+echo '<fieldset><legend>'.lang('general').'</legend>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="vname" class="right inline">'.lang('fvalid_name').'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<input type="text" id="vname" name="vname" 
                            value="'.set_value('vname',$vname).'" maxlength="31"/>';
-echo '</li>';
-echo '<li>';
-echo '<label for="venabled">'.lang('rr_enabled').'</label>';
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="venabled" class="right inline">'.lang('rr_enabled').'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
+
 ?>
 <input type="checkbox" name="venabled" id="venabled" value="yes" <?php echo set_checkbox('venabled', 'yes',$venabled); ?> style="margin:10px" />
 <?php
-echo '</li>';
-echo '<li>';
-echo '<label for="vdesc">'.lang('rr_description').'</label>';
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+
+echo '<label for="vdesc" class="right inline">'.lang('rr_description').'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<textarea id="vdesc" name="vdesc">'.set_value('vdesc',$vdesc).'</textarea>' ;
-echo '</li>';
-echo '<li>';
-echo '<label for="vurl">'.lang('fvalid_url').'</label>';
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+
+echo '<label for="vurl" class="right inline">'.lang('fvalid_url').'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<input type="text" id="vurl" name="vurl"
                            value="'.set_value('vurl',$vurl).'" />';
-echo '</li>';
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="vmethod" class="right inline">'.lang('rr_httpmethod').'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 
-echo '<li>';
-echo '<label for="vmethod">'.lang('rr_httpmethod').'</label>';
 echo '<input type="text" id="vmethod" name="vmethod"
                            value="'.set_value('vmethod',$vmethod).'" maxlength="4" />';
-echo '</li>';
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
 
-echo '<li>';
-echo '<label for="vparam">'.lang('fvalid_entparam').'</label>';
+echo '<label for="vparam" class="right inline">'.lang('fvalid_entparam').'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
+
 echo '<input type="text" id="vparam" name="vparam"
                            value="'.set_value('vparam',$vparam).'" />';
-echo '</li>';
+
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
 
 
-echo '<li>';
-echo '<label for="voptparams">'.lang('fvalid_optargs').' '.showBubbleHelp(sprintf(lang('rhelp_multargvalinputseparator'),'&#36;&#36;','&#36;:&#36;','arg1:val1  arg2:val2 - &gt; arg1&#36;:&#36;val1&#36;&#36;arg2&#36;:&#36;val2')).'</label>';
+echo '<label for="voptparams" class="right inline">'.lang('fvalid_optargs').' '.showBubbleHelp(sprintf(lang('rhelp_multargvalinputseparator'),'&#36;&#36;','&#36;:&#36;','arg1:val1  arg2:val2 - &gt; arg1&#36;:&#36;val1&#36;&#36;arg2&#36;:&#36;val2')).'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<textarea id="voptparams" name="voptparams">'.set_value('voptparams',$voptparams).'</textarea>';
-echo '</li>';
 
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
 
-echo '<li>';
-echo '<label for="vargsep">'.lang('rr_argsep').' (GET)</label>';
+echo '<label for="vargsep" class="right inline">'.lang('rr_argsep').' (GET)</label>';
+echo '</div><div class="small-6 large-7 columns end">';
+
 echo '<input type="text" id="vargsep" name="vargsep"
                            value="'.set_value('vargsep',$vargsep).'" maxlength="10" />';
-echo '</li>';
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
 
-echo '<li>';
-echo '<label for="vdoctype">'.lang('fvalid_doctype').'</label>';
+echo '<label for="vdoctype" class="right inline">'.lang('fvalid_doctype').'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
+
 echo '<input type="text" id="vdoctype" name="vdoctype"
                            value="'.set_value('vdoctype',$vdoctype).'" maxlength="5" readonly="readonly"/>';
-echo '</li>';
+echo '</div></div>';
 
 
-echo '</ol></fieldset>';
-echo '<fieldset><legend>Response</legend><ol>';
-echo '<li>';
-echo '<label for="vretelements">'.lang('fvalid_retelements').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'whitespace')).'</label>';
+echo '</fieldset>';
+echo '<fieldset><legend>Response</legend>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+
+echo '<label for="vretelements" class="right inline">'.lang('fvalid_retelements').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'whitespace')).'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<input type="text" id="vretelements" name="vretelements"
                            value="'.set_value('vretelements',$vretelements).'" maxlength="100" />';
-echo '</li>';
 
-echo '<li>';
-echo '<label for="vsuccesscode">'.lang('fcode_succes').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'&#36;&#36;')).'</label>';
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+
+echo '<label for="vsuccesscode" class="right inline">'.lang('fcode_succes').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'&#36;&#36;')).'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<input type="text" id="vsuccesscode" name="vsuccesscode"
                            value="'.set_value('vsuccesscode',$vsuccesscode).'" maxlength="100" />';
-echo '</li>';
-echo '<li>';
-echo '<label for="vwarningcode">'.lang('fcode_warning').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'&#36;&#36;')).'</label>';
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+
+echo '<label for="vwarningcode" class="right inline">'.lang('fcode_warning').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'&#36;&#36;')).'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<input type="text" id="vwarningcode" name="vwarningcode"
                            value="'.set_value('vwarningcode',$vwarningcode).'" maxlength="100" />';
-echo '</li>';
-echo '<li>';
-echo '<label for="verrorcode">'.lang('fcode_error').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'&#36;&#36;')).'</label>';
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+
+echo '<label for="verrorcode" class="right inline">'.lang('fcode_error').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'&#36;&#36;')).'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<input type="text" id="verrorcode" name="verrorcode"
                            value="'.set_value('verrorcode',$verrorcode).'" maxlength="100" />';
-echo '</li>';
-echo '<li>';
-echo '<label for="vcriticalcode">'.lang('fcode_crit').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'&#36;&#36;')).'</label>';
+echo '</div></div>';
+
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+
+echo '<label for="vcriticalcode" class="right inline">'.lang('fcode_crit').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'&#36;&#36;')).'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<input type="text" id="vcriticalcode" name="vcriticalcode"
                            value="'.set_value('vcriticalcode',$vcriticalcode).'" maxlength="100" />';
-echo '</li>';
-echo '<li>';
-echo '<label for="vmsgelements">'.lang('fvalid_msgelements').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'whitespace')).'</label>';
+echo '</div></div>';
+
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+
+echo '<label for="vmsgelements" class="right inline">'.lang('fvalid_msgelements').' '.showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'),'whitespace')).'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
 echo '<input type="text" id="vmsgelements" name="vmsgelements"
                            value="'.set_value('vmsgelements',$vmsgelements).'" maxlength="100" />';
-echo '</li>';
 
+echo '</div></div>';
 
-echo '<ol></fieldset>';
+echo '</fieldset>';
 
-echo '<div class="buttons">';
+echo '<div class="buttons small-12 medium-10 large-10 end columns text-right">';
 if(empty($newfvalidator))
 {
    echo '<button type="submit" id="rmfedvalidator" name="formsubmit" value="remove" class="resetbutton deleteicon">'.lang('rr_remove').'</button>';

@@ -144,6 +144,20 @@ class Idp_list extends MY_Controller {
             }
             $idprows[] = array('data' => array('data' =>  $col1 ),$iconsblock, $col2,'<div class="squiz s2">'.$col3.'</div>');
         }
+        if($data['typeidps'] === 'local')
+        {
+            $t = lang('rr_tbltitle_listlocalidps');
+        }
+        elseif($data['typeidps'] === 'external')
+        {
+            $t = lang('rr_tbltitle_listextidps');
+        }
+        else
+        {
+            $t = lang('rr_tbltitle_listidps');
+        }
+        $data['titlepage'] = $t.' ('. lang('rr_found') .' '.$data['idps_count'].')';
+
         $data['idprows'] = $idprows;
         $data['content_view'] = 'providers/idp_list_view';
         $this->load->view('page', $data);

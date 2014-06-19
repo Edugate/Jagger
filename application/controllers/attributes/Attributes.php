@@ -55,11 +55,13 @@ class Attributes extends MY_Controller
     {
         $this->title = lang('rr_newattr_title');
         $isAdmin = $this->j_auth->isAdministrator();
+        $data['titlepage'] = lang('rr_newattr_title');
         if(!$isAdmin)
         {
            show_error('Access Denied',401);
            return;
         }
+        
         $this->load->helper('form');
         if($this->_add_submit_validate())
         {
@@ -103,6 +105,8 @@ class Attributes extends MY_Controller
 		$attributes = $attributes_tmp->getAttributes();
         $a_ar = array();
         $excluded = '<span class="lbl lbl-alert" title="'.lang('rr_attronlyinarpdet').'">'.lang('rr_attronlyinarp').'</span>';
+
+        $data['titlepage'] = lang('attrsdeflist');
 
         foreach ($attributes as $a)
         {

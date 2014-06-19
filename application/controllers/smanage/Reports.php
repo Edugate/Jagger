@@ -42,6 +42,7 @@ class Reports extends MY_Controller {
         {
             show_error('no perm',403);
         }
+        $data['titlepage'] = 'system reporter';
         $data['content_view']= 'smanage/index_view';
         $this->load->view('page',$data);
 
@@ -66,12 +67,12 @@ class Reports extends MY_Controller {
        $compared=Doctrine\ORM\Version::compare($minRequiredVersion);
        if($compared>0)
        {
-          echo '<div class="error">'.lang('rr_doctrinever').': '.$currentVersion.'</div>';
-          echo '<div class="error">'.lang('rr_mimumreqversion').': '.$minRequiredVersion.'</div>';
+          echo '<div class="warning alert-box" data-alert>'.lang('rr_doctrinever').': '.$currentVersion.'</div>';
+          echo '<div class="warning alert-box" data-alert>'.lang('rr_mimumreqversion').': '.$minRequiredVersion.'</div>';
        }
        else
        {
-          echo '<div class="success">'.lang('rr_doctrinever').': '.$currentVersion.' : '.lang('rr_meetsminimumreq').'</div>';
+          echo '<div class="success alert-box" data-alert>'.lang('rr_doctrinever').': '.$currentVersion.' : '.lang('rr_meetsminimumreq').'</div>';
        }
 
     }
@@ -91,12 +92,12 @@ class Reports extends MY_Controller {
        $errors = $validator->validateMapping();
        if(count($errors)>0)
        {
-           $result = '<div class="error"><ul>'.recurseTree($errors).'</ul></div>';
+           $result = '<div class="waring alert-box" data-alert><ul>'.recurseTree($errors).'</ul></div>';
 
        }
        else
        {
-           $result = '<div class="success">The mapping files are correct</div>';
+           $result = '<div class="success alert-box" data-alert>The mapping files are correct</div>';
        }
        echo $result;
        
@@ -119,11 +120,11 @@ class Reports extends MY_Controller {
        $result = $validator->schemaInSyncWithMetadata();
        if($result)
        {
-          echo '<div class="success">'.lang('rr_dbinsync').'</div>';
+          echo '<div class="success alert-box" data-alert>'.lang('rr_dbinsync').'</div>';
        }
        else
        {
-          echo '<div class="error">'.lang('rerror_dbinsync').'</div>';
+          echo '<div class="warning alert-box" data-alert>'.lang('rerror_dbinsync').'</div>';
        }
     }
 
@@ -172,11 +173,11 @@ class Reports extends MY_Controller {
            echo '<h5 class="error">'.lang('rerror_migrate1').'</h5>';
            if(count($errors)>0)
            {
-              echo '<div class="error"><ul>'.recurseTree($errors).'</ul></div>';
+              echo '<div class="warning alert-box" data-alert><ul>'.recurseTree($errors).'</ul></div>';
            }
            if(!$errors2)
            {
-              echo '<div class="error">'.lang('rerror_dbinsync').'</div>';
+              echo '<div class="warning alert-box" data-alert>'.lang('rerror_dbinsync').'</div>';
            }
        }
        else
@@ -198,7 +199,7 @@ class Reports extends MY_Controller {
            }
            else
            {
-                echo  '<div class="success">'.lang('rr_sysuptodate').' : '.$t.'</div>';
+                echo  '<div class="success alert-box" data-alert>'.lang('rr_sysuptodate').' : '.$t.'</div>';
            }
        }
       

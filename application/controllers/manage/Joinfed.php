@@ -90,6 +90,10 @@ class Joinfed extends MY_Controller {
            show_error(lang('error_lockednoedit'),403);
            return;
         }
+
+        
+        $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$provider->getId().'">'.$data['name'].'</a>';
+        $data['subtitlepage'] = lang('fedejoinform');
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
         $federations = $provider->getFederations();
         
@@ -205,25 +209,30 @@ class Joinfed extends MY_Controller {
              }
         }
         else
-        {    if(count($feds_dropdown) > 0)
+        {  
+             $data['error_message'] = validation_errors('<div>', '</div>');
+               if(count($feds_dropdown) > 0)
              {
-                  $n[0]=lang('selectfed');
+                  $n['']=lang('selectfed');
                   $feds_dropdown = $n + $feds_dropdown; 
                   $this->load->helper('form');
-                  $buttons = '<div class="buttons"><button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_apply').'</button></div>';
+                  $buttons = '<div class="buttons small-9 columns text-right end"><button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_apply').'</button></div>';
                    
                   $form = form_open(current_url(),array('id'=>'joinfed'));
                   $form .= form_fieldset(lang('joinfederation'));
-                  $form .= '<ol><li>';
-                  $form .= form_label(''.lang('rr_selectfedtojoin').'','fedid');
+
+                  $form .= '<div class="small-12 columns"><div class="small-3 columns">';
+                  $form .= '<label for="fedid" class="right inline">'.lang('rr_selectfedtojoin').'</label></div>';
                   $addid = 'id="fedid"'; 
-                  $form .= form_dropdown('fedid', $feds_dropdown,'0',$addid);
-                  $form .= '</li><li>';
-                  $form .= form_label('Message','formmessage');
-                  $form .= form_textarea('formmessage',set_value('formmessage'));
-                  $form .= '</li></ol>';
-                  $form .= $buttons;
+                  $form .= '<div class="small-6 large-7 columns end">'.form_dropdown('fedid', $feds_dropdown,'0',$addid).'</div>';
+                  $form .= '</div><div class="small-12 columns">';
+
+                  $form .= '<div class="small-3 columns"><label for="formmessage" class="inline right">'.lang('rr_message').'</label></div>';
+                  $form .= '<div class="small-6 large-7 columns end">'.form_textarea('formmessage',set_value('formmessage')).'</div>';
+                  $form .= '</div>';
                   $form .= form_fieldset_close();
+
+                  $form .= $buttons;
                   $form .= form_close();
                   $data['form'] = $form;
                   $data['content_view'] = 'manage/joinfederation_view';

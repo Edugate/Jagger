@@ -70,6 +70,11 @@ class Entitystate extends MY_Controller {
         {
             show_error('Provider not found', 404);
         }
+        $lang = MY_Controller::getLang();
+        $titlename = $this->entity->getNameToWebInLang($lang,$this->entity->getType());
+
+        $data['titlepage'] = lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$this->entity->getId().'">'.$titlename.'</a>';
+        $data['subtitlepage'] = lang('rr_status_mngmt');
         $data['entid'] = $id;
         $data['current_locked'] = $this->entity->getLocked();
         $data['current_active'] = $this->entity->getActive();

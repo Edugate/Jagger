@@ -1,40 +1,69 @@
-<div id="subtitle"><h3><a href="<?php echo base_url() . 'providers/detail/show/' . $entdetail['id']; ?>"><?php echo $entdetail['displayname']; ?></a></h3><h4><?php echo $entdetail['entityid']; ?></h4> </div>
 
 <?php
-echo '<div class="alert"><pre>';
-if (!empty($error_messages))
+if(!empty($error_messages) || !empty($error_messages2))
 {
-    echo $error_messages;
+   echo '<div class="alert alert-box" alert-data>';
+   if (!empty($error_messages))
+   {
+      echo $error_messages;
+   }
+   if (!empty($error_messages2))
+   {
+      echo $error_messages2;
+   }
+   echo '</div>';
 }
-if (!empty($error_messages2))
-{
-    echo $error_messages2;
-}
-echo '</pre></div>';
 if(!empty($sessform))
 {
-  echo '<div class="alert">'.lang('formfromsess').'</div>';
+  echo '<div class="warning alert-box" alert-data>'.lang('formfromsess').'</div>';
 }
 ?>
-<div id="formtabs">
-    <ul>
-        <?php
-        foreach ($menutabs as $m)
-        {
-            echo '<li><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
-        }
-        ?>
-    </ul>
-    <?php
+
+<?php
     $action = current_url();
     $attrs = array('id' => 'formver2');
+    echo '<div class="tabs-content">';
     echo form_open($action, $attrs);
 
 
+?>
+    <ul class="tabs" data-tab>
+        <?php
+        $active = false;
+        foreach ($menutabs as $m)
+        {
+            if(!$active && $m['id'] === 'organization')
+            {
+                echo '<li class="tab-title active"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
+                $active = true;
+            }
+            else
+            {
+                echo '<li class="tab-title"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
+            }
+            
+        }
+        ?>
+    </ul>
+
+<div class="tabs-content">
+    <?php
+
+
+    $active=false;
     foreach ($menutabs as $m)
     {
-        echo '<fieldset id="' . $m['id'] . '"><legend> </legend>';
-        echo '<ol>';
+        if(!$active && $m['id'] === 'organization')
+        {
+           echo '<div id="' . $m['id'] . '" class="content tabgroup active">';
+           $active = true;
+        }
+        else
+        {
+           echo '<div id="' . $m['id'] . '" class="content tabgroup">';
+
+        }
+         
         /**
          * start form elemts
          */
@@ -47,17 +76,17 @@ if(!empty($sessform))
                 {
                    if($counter % 2 == 0)
                    {
-                        echo '<ol class="group">';
+                        echo '<div class="group">';
                    }
                    else
                    {
-                        echo '</ol>';
+                        echo '</div>';
                    }
                    $counter++;
                 }
                 else
                 {
-                   echo '<li>'.$g.'</li>';
+                   echo '<div class="small-12 columns">'.$g.'</div>';
                 }
             }
         }
@@ -67,9 +96,9 @@ if(!empty($sessform))
         /**
          * end form elemts
          */
-        echo '</ol>';
-        echo '</fieldset>';
+        echo '</div>';
     }
+    echo '</div>';
     echo '<div class="buttons">
         <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('discardall').'</button>
         <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
@@ -84,7 +113,7 @@ if(!empty($sessform))
 </div>
 <div style="display: none" id="entitychangealert"><?php echo lang('alertentchange');?></div>
 <?php
-echo '<button id="helperbutttonrm" type="button" class="btn langinputrm hidden">'.lang('rr_remove').'</button>';
+echo '<button id="helperbutttonrm" type="button" class="btn langinputrm hidden tiny left inline button">'.lang('rr_remove').'</button>';
 ?>
 <script type="text/javascript">
 

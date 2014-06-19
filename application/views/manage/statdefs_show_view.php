@@ -1,6 +1,4 @@
-<div id="pagetitle"><?php echo lang('statsmngmt');?></div>
-<div id="subtitle"><h3><?php echo anchor(base_url().'providers/detail/show/'.$providerid, $providername ) ;?></h3><h4><?php echo $providerentity;?></h4></div>
-<div style="float: right; witdth: 99%;"><a href="<?php echo base_url().'manage/statdefs/newstatdef/'.$providerid.''; ?>" class="addbutton addicon"><?php echo lang('rr_add');?></a></div>
+<div class="small-12 columns text-right"><a href="<?php echo base_url().'manage/statdefs/newstatdef/'.$providerid.''; ?>" class="addbutton addicon button small"><?php echo lang('rr_add');?></a></div>
 <div style="clear: both;"></div>
 <div id="statdefs" style="width: 100%">
 <?php
@@ -30,7 +28,7 @@ if(!empty($existingStatDefs))
 }
 else
 {
-     echo '<div class="alert" style="width: 100%; text-align: center;">'.lang('nostatsdefsfound').' </div>';
+     echo '<div data-alert class="alert-box warning">'.lang('nostatsdefsfound').' </div>';
 }
 ?>
 </div>

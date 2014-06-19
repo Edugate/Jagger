@@ -158,7 +158,9 @@ class Geolocation extends MY_Controller {
             $display_name = $provider->getName();
         }
 
-        
+       
+        $data['subtitlepage'] = lang('rr_geolocation'); 
+        $data['titlepage']= anchor(base_url() . 'providers/detail/show/' . $provider->getId(), $display_name);
         $data['subtitle'] = '<div id="subtitle"><h3>'.$lockicon.' &nbsp;&nbsp;' . anchor(base_url() . 'providers/detail/show/' . $provider->getId(), $display_name) . '<h3><h4>'.$provider->getEntityId().'</h4> </div>';
         $data['form_errors'] = validation_errors('<p class="error">', '</p>');
 
@@ -169,7 +171,7 @@ class Geolocation extends MY_Controller {
             foreach ($extends as $e) {
                 $element = $e->getElement();
                 $etype = $e->getType();
-                if ($element == 'GeolocationHint' && $etype == $type) {
+                if ($element === 'GeolocationHint' && $etype == $type) {
                     $geolocations[] = $e;
                 }
             }
@@ -208,16 +210,18 @@ class Geolocation extends MY_Controller {
 
         $hidden = array('idp' => $provider->getId());
         $action = current_url();
-        $formular = '<span class="geoform" >';
-        $errors_v = validation_errors('<span class="span-5">', '</span><br />');
+
+
+        $formular = '<div class="geoform" >';
+        $errors_v = validation_errors('<div>', '</div>');
         if (!empty($errors_v)) {
-            $formular .= '<div class="error">' . $errors_v . '</div>';
+            $formular .= '<div data-alert class="alert-box alert">' . $errors_v . '</div>';
         }
         $spacebreak = '<div><hr class="span-23" /></div>';
 
         $formular .= form_open($action, '', $hidden);
-        $formular .=' <label for="latinput">'.lang('rr_latitude').'</label><input type="text" id="latinput"  name="latinput" value="" /><br />
-<label for="lnginput">'.lang('rr_longitude').'</label><input type="text" id="lnginput" name="lnginput" value="" /><br /> ';
+        $formular .='<div class="small-12 columns"><div class="large-3 columns"><label for="latinput">'.lang('rr_latitude').'</label></div><div class="large-9 columns" ><input type="text" id="latinput"  name="latinput" value="" /></div></div>
+<div class="small-12 columns"><div class="large-3 columns"><label for="lnginput">'.lang('rr_longitude').'</label></div><div class="large-9 columns" ><input type="text" id="lnginput" name="lnginput" value="" /></div></div> ';
         if($locked)
         {
              $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="addbutton addicon" disabled="disabled">'.lang('rerror_cannotaddpoint').' ('.lang('rr_locked').')</button></div>';
@@ -227,14 +231,16 @@ class Geolocation extends MY_Controller {
              $formular .='<div class="buttons"><button type="submit" name="addPoint" id="addPoint" value="add geolocation" class="addbutton addicon">'.lang('rr_addpoint').'</button></div>';
         }
         $formular .= form_close();
-        $formular .='</span>';
+        $formular .='</div>';
 
 
-        $formular2 = '<span class="span-24 geoform" >' . form_open();
+        $formular2 = '<div class="geoform" >' . form_open();
 
         foreach ($geolocations as $g) {
-            $formular2 .= '<input type="checkbox" name="geoloc[]" id="geoloc[]" value=' . $g->getEvalue() . ' >';
-            $formular2 .= '<input type="text" disabled="disabled" name="info" id="info" value=' . $g->getEvalue() . ' /><br />';
+            $formular2 .= '<div class="small-12 columns" >';
+            $formular2 .= '<div class="small-1 columns"><input type="checkbox" name="geoloc[]" id="geoloc[]" value=' . $g->getEvalue() . '  ></div>';
+            $formular2 .= '<div class="small-10 columns end"><input type="text" disabled="disabled" name="info" id="info" value=' . $g->getEvalue() . ' /></div>';
+            $formular2 .= '</div>';
         }
         if($locked)
         {
@@ -243,9 +249,9 @@ class Geolocation extends MY_Controller {
         }
         else
         {
-            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="resetbutton reseticon">'.lang('rr_rmselectedpoints').'</button></div>';
+            $formular2 .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="resetbutton reseticon alert">'.lang('rr_rmselectedpoints').'</button></div>';
         }
-        $formular2 .= form_close() . '</span>';
+        $formular2 .= form_close() . '</div>';
 
         $formulars = $formular . $spacebreak ;
        if(count($geolocations) > 0)
@@ -254,9 +260,11 @@ class Geolocation extends MY_Controller {
        }
 
 
-        $content = '<div class="mapform">' . $formulars .  '</div><div class="span-11 map">' . $content . '</div>';
+        //$content = '<div class="mapform">' . $formulars .  '</div><div class="span-11 map">' . $content . '</div>';
+        $data['formulars'] = $formulars;
+        $data['mapdiv']= $content;
         $data['loadGoogleMap'] = true;
-        $data['mapa'] = $content;
+        //$data['mapa'] = $content;
 
         $data['provider_id'] = $provider->getId();
         $data['type'] = $type;

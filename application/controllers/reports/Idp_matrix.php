@@ -107,11 +107,15 @@ class Idp_matrix extends MY_Controller {
                 $el = $ex->getElement();
                 if ($el === 'Logo')
                 {
-                    $data['provider_logo_url'] = $ex->getLogoValue();
+                    $data['providerlogourl'] = $ex->getLogoValue();
                     break;
                 }
             }
         }
+        
+        $data['titlepage'] = lang('identityprovider').': '.anchor(''.base_url().'providers/detail/show/'.$data['idpid'],$data['idpname']).'<br />';
+        $data['titlepage'] .= $data['entityid'];
+        $data['subtitlepage']= lang('rr_arpoverview');
         if (empty($arparray))
         {
             $data['content_view'] = 'reports/idp_matrix_show_view';

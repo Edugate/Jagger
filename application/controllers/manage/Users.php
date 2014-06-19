@@ -63,45 +63,42 @@ class Users extends MY_Controller {
                 $action = base_url() . "manage/users/add";
 
                 $form = form_open($action, $form_attributes);
-                $form .= form_fieldset(''.lang('userdetails').'');
-                $form .="<ol>";
-                $form .= "<li>";
-                $form .= form_label(''.lang('rr_username').'', 'username');
-                $form .= form_input('username',set_value('username'));
-                $form .="</li>";
-                $form .= "<li>";
-                $form .= form_label(''.lang('rr_uemail').'', 'email');
-                $form .= form_input('email',set_value('email'));
-                $form .="</li>";
-                $form .= "<li>";
-                $form .= form_label(''.lang('rr_password').'', 'password');
-                $form .= form_password('password');
-                $form .="</li>";
-                $form .= "<li>";
-                $form .= form_label(''.lang('rr_passwordconf').'', 'passwordconf');
-                $form .= form_password('passwordconf');
-                $form .="</li>";
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_username').'', 'username').'</div>';
+                $form .= '<div class="small-6 large-7 columns end">'.form_input('username',set_value('username')).'</div>';
+                $form .= '</div>';
 
-                $form .= "<li>";
-                $form .= form_label(''.lang('rr_fname').'', 'fname');
-                $form .= form_input('fname',set_value('fname'));
-                $form .="</li>";
-                $form .= "<li>";
-                $form .= form_label(''.lang('rr_lname').'', 'sname');
-                $form .= form_input('sname',set_value('sname'));
-                $form .= "</li>";
-                $form .="<li>";
-                $form .= form_label(''.lang('rr_typeaccess').'', 'access');
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_uemail').'', 'email').'</div>';
+                $form .= '<div class="small-6 large-7 columns end">'.form_input('email',set_value('email')).'</div>';
+                $form .= '</div>';
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_password').'', 'password').'</div>';
+                $form .= '<div class="small-6 large-7 columns end">'.form_password('password').'</div>';
+                $form .= '</div>';
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_passwordconf').'', 'passwordconf').'</div>';
+                $form .= '<div class="small-6 large-7 columns end">'.form_password('passwordconf').'</div>';
+                $form .= '</div>';
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_fname').'', 'fname').'</div>';
+                $form .= '<div class="small-6 large-7 columns end">'.form_input('fname',set_value('fname')).'</div>';
+                $form .= '</div>';
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_lname').'', 'sname').'</div>';
+                $form .= '<div class="small-6 large-7 columns end">'.form_input('sname',set_value('sname')).'</div>';
+                $form .= '</div>';
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_typeaccess').'', 'access').'</div>';
                 $access_type = array('' => ''.lang('rr_select').'', 'local' => ''.lang('rr_onlylocalauthn').'', 'fed' => ''.lang('rr_onlyfedauth').'', 'both' => ''.lang('rr_bothauth').'');
-                $form .= form_dropdown('access', $access_type,set_value('access'));
-                $form .= "</li>";
-                $form .= "</ol>";
-                $form .= form_fieldset_close();
-                $form .= '<div class="buttons">';
-                $form .= '<button type="submit"  name="submit" value="submit" class="addbutton addicon">'.lang('adduser_btn').'</button>';
+                $form .= '<div class="small-6 large-7 columns end">'.form_dropdown('access', $access_type,set_value('access')).'</div>';
+                $form .= '</div>';
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-9 large-10 text-right columns"><button type="submit"  name="submit" value="submit" class="addbutton addicon">'.lang('adduser_btn').'</button></div>';
                 $form .='</div>';
                 $form .= form_close();
                 $data['message'] = $form;
+                $data['titlepage'] = lang('userregisterform');
                 $data['content_view'] = 'manage/new_user_view';
                 $this->load->view('page', $data);
             } else {
@@ -331,6 +328,7 @@ class Users extends MY_Controller {
         }
 
         $data['det'] = $det;
+        $data['titlepage'] = lang('rr_detforuser').': '.$data['caption']; 
         $data['content_view'] = 'manage/userdetail_view';
         $this->load->view('page', $data);
     }
@@ -360,6 +358,7 @@ class Users extends MY_Controller {
             $ip = $u->getIp();
             $userlist[] = array('user' => anchor($showlink . $encoded_username, $u->getUsername()), 'fullname' => $u->getFullname(), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $ip);
         }
+        $data['titlepage'] =  lang('rr_userslist');
         $data['userlist'] = $userlist;
         $data['content_view'] = 'manage/userlist_view';
         $this->load->view('page', $data);
@@ -390,18 +389,16 @@ class Users extends MY_Controller {
                 $form_attributes = array('id' => 'formver2', 'class' => 'register');
                 $action = base_url() . "manage/users/remove";
                 $f = form_open($action, $form_attributes);
-                $f .= form_fieldset(''.lang('rr_rminguser').'');
-                $f .='<ol>';
-                $f .= '<li>';
-                $f .= form_label(''.lang('rr_username').'', 'username');
-                $f .= form_input('username');
-                $f .= '</li>';
-                $f .= '</ol>';
-                $f .= form_fieldset_close();
-                $f .= '<div class="buttons"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">'.lang('rr_rmuserbtn').'</button></div>';
+                $f .='<div class="small-12 columns">';
+                $f .= '<div class="small-3 columns">';
+                $f .= jform_label(''.lang('rr_username').'', 'username').'</div>';
+                $f .= '<div class="small-6 large-7 end columns">'.form_input('username').'</div>';
+                $f .= '</div>';
+                $f .= '<div class="buttons small-12 columns"><div class="small-9 large-10 end columns text-right"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">'.lang('rr_rmuserbtn').'</button></div></div>';
                 $f .= form_close();
 
                 $data['form'] = $f;
+                $data['titlepage'] = lang('rr_rminguser');
                 $data['content_view'] = 'manage/remove_user_view';
                 $this->load->view('page', $data);
             } else {
@@ -499,31 +496,29 @@ class Users extends MY_Controller {
             $form_attributes = array('id'=>'formver2','class'=>'register');
             $action = base_url() . "manage/users/passedit/".$encoded_username;
             $form = form_open($action,$form_attributes);
-            $form .= form_fieldset('Password change for user '.$user->getUsername());
-            $form .="<ol>";
+            
             if($write_access  && !$manage_access)
             {
-                $form .= "<li>";
-                $form .= form_label('Current password', 'oldpassword');
-                $form .= form_password('oldpassword');
-                $form .="</li>";
+                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-3 columns">'.jform_label('Current password', 'oldpassword').'</div>';
+                $form .= '<div class="small-6 large-6 columns end">'. form_password('oldpassword').'</div>';
+                $form .="</div>";
               
             }
-            $form .= "<li>";
-            $form .= form_label('New password', 'password');
-            $form .= form_password('password');
-            $form .="</li>";
-            $form .= "<li>";
-            $form .= form_label('New password confirmation', 'passwordconf');
-            $form .= form_password('passwordconf');
-            $form .="</li>";
-            $form .= "</ol>";
-            $form .= form_fieldset_close();
-            $form .= '<div class="buttons">';
-            $form .= '<button type="submit"  name="submit", value="submit" class="savebutton saveicon">'.lang('rr_changepass').'</button>';
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-3 columns">'.jform_label('New password', 'password').'</div>';
+            $form .= '<div class="small-6 large-6 columns end">'.form_password('password').'</div>';
+            $form .= '</div>';
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-3 columns">'.jform_label('New password confirmation', 'passwordconf').'</div>';
+            $form .= '<div class="small-6 large-6 columns end">'.form_password('passwordconf').'</div>';
+            $form .="</div>";
+            $form .= '<div class="buttons small-12 columns text-right">';
+            $form .= '<div class="small-9 columns "><button type="submit"  name="submit", value="submit" class="button savebutton saveicon">'.lang('rr_changepass').'</button></div>';
             $form .='</div>';
             $form .= form_close();
             $data['message'] = $form;
+            $data['titlepage'] = lang('rr_changepass').': '. htmlentities($user->getUsername());
             $data['content_view'] = 'manage/password_change_view';
             $this->load->view('page', $data);
         }
@@ -537,7 +532,7 @@ class Users extends MY_Controller {
                 $user->setLocalEnabled();
                 $this->em->persist($user);
                 $this->em->flush();
-                $data['message'] = "<div class=\"notice\">password changed for user ".$user->getUsername()."</div>"; 
+                $data['message'] = ''.lang('rr_passchangedsucces').': '.htmlentities($user->getUsername());
                 $data['content_view'] = 'manage/password_change_view';
                 $this->load->view('page', $data);
             }

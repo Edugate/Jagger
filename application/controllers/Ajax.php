@@ -268,6 +268,7 @@ class Ajax extends MY_Controller {
                     $userprefs = $u->getUserpref();
                     $this->session->set_userdata(array('board' => $userprefs['board']));
                     $this->em->flush();
+                    echo 'added';
                 }
             }
             else
@@ -294,6 +295,7 @@ class Ajax extends MY_Controller {
                     $userprefs = $u->getUserpref();
                     $this->session->set_userdata(array('board' => $userprefs['board']));
                     $this->em->flush();
+                    echo 'deleted';
                 }
             }
         }

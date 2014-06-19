@@ -1,56 +1,46 @@
 
-<div class="specificpolicy">
-
-<div class="ui-widget">
+<div class="iui-widget small-12 columns">
     <?php
     $action = base_url().'manage/attribute_policy/specific/'.$idpid.'/sp';
     $attributes = array('id'=>'formver3');
-    echo form_open($action,$attributes);
-    echo form_fieldset();
-    echo form_label(''.lang('rr_selectsp').'','service');
+    echo '<div class="small-12 columns">';
+       echo form_open($action,$attributes);
+       echo '<div class="small-3 columns">'.jform_label(''.lang('rr_selectsp').'','service').'</div>';
     //echo "<br />";
-    $js = 'id="combobox"';
+       $js = 'id="itestcombo"';
     
-    echo form_dropdown('service',$formdown,'0',$js );
-    echo '<span class="buttons"><button type="submit" name="submit" value="submit" class="savebutton nexticon v2">'.lang('rr_go').'</button></span>';
-    echo form_fieldset_close();
-    echo form_close()
+       echo '<div class="small-3 columns">'.form_dropdown('service',$formdown,'0',$js ).'</div>';
+       echo '<div class="small-6 columns"><button type="submit" name="submit" value="submit" class="savebutton nexticon v2 tiny">'.lang('rr_go').'</button></div>';
+       echo form_close();
+    echo '</div>';
     ?>
-    
-	
 </div>
-    <!--
-<button id="toggle">Show underlying select</button>
--->
-</div>
-<div id="pagetitle"><?php echo lang('rr_attributereleasepolicy');?></div>
 <?php
 //$this->load->view('autosuggest_script_view');
-
 $idp_link = anchor(base_url().'providers/detail/show/'.$idpid,'<img src="' . base_url() . 'images/icons/home.png" />');
 
-echo '<div id="subtitle"><h3>'.lang('identityprovider').': <a href="'.base_url().'providers/detail/show/'.$idpid.'">'.$idp_name.'</a></h3><h4>'.$idp_entityid.'</h4></div>';
 ?>
-<span class="span-24">
+<div class="small-12 columns">
 <?php
 
 
 
 if (!empty($message))
 {
-    echo '<div class="notice">'. $message . '</div>';
+    echo '<div  data-alert class="alert-box info">'. $message . '</div>';
 }
 if (!empty($error))
 {
-    echo '<div class="alert">'. $error .'</div>';
+    echo '<div  data-alert class="alert-box alert">'. $error .'</div>';
 }
-echo '</span>';
+echo '</div>';
+//return;
 
 ?>
-<div id="arptabs">
-<ul><li><a href="#defaultarptab"><?php echo lang('rr_defaultarp');?></a></li><li><a href="#fedarptab"><?php echo lang('rr_arpforfeds');?></a></li><li><a href="#specarptab"><?php echo lang('rr_specpolicies'); ?></a></li><li><a href="#supportedattrtab"><?php echo lang('rr_supportedattributes'); ?></a></li></ul>
-
-<div id="defaultarptab">
+<div id="arptabsi" class="itabs">
+<ul  class="tabs" data-tab><li class="tab-title active"><a href="#defaultarptab"><?php echo lang('rr_defaultarp');?></a></li><li class="tab-title"><a href="#fedarptab"><?php echo lang('rr_arpforfeds');?></a></li><li class="tab-title"><a href="#specarptab"><?php echo lang('rr_specpolicies'); ?></a></li><li class="tab-title"><a href="#supportedattrtab"><?php echo lang('rr_supportedattributes'); ?></a></li></ul>
+<div class="tabs-content">
+<div id="defaultarptab" class="content active">
 <?php
 
 $attributes = array('class' => 'email', 'id' => 'formver2');
@@ -78,8 +68,8 @@ if (count($attrs_array_newform) > 0)
     echo form_dropdown('policy', array('0' => ''.lang('dropnever').'', '1' => ''.lang('dropokreq').'', '2' => ''.lang('dropokreqdes').''),set_value('policy'));
     echo '</li></ol>';
     echo '<div class="buttons">';
-    echo '<button type="submit" name="submit" value="Cancel" class="resetbutton reseticon">'.lang('rr_cancel').'</button>';
-    echo '<button type="submit" name="submit" value="Add default policy" class="savebutton saveicon">'.lang('adddefaultpolicy').'</button>';
+    echo '<button type="submit" name="submit" value="Cancel" class="resetbutton reseticon small alert">'.lang('rr_cancel').'</button>';
+    echo '<button type="submit" name="submit" value="Add default policy" class="savebutton saveicon small">'.lang('adddefaultpolicy').'</button>';
     echo '</span>';
     echo form_fieldset_close();
 
@@ -95,10 +85,10 @@ if (!empty($default_policy))
 
 }
 echo '</div>';
-echo '<div id="fedarptab">';
+echo '<div id="fedarptab" class="content" >';
 
 echo '<div class="buttons clear">';
-echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="savebutton saveicon">'.lang('rr_arpforfed').'</button></span>');
+echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="savebutton saveicon small">'.lang('rr_arpforfed').'</button></span>');
 echo '</div>';
 
 if (!empty($federations_policy))
@@ -108,7 +98,7 @@ if (!empty($federations_policy))
 }
 ?>
 </div>
-<div id="specarptab">
+<div id="specarptab" class="content" >
 <span class="span-24">
 <?php
 if (!empty($specific_policy))
@@ -118,9 +108,10 @@ if (!empty($specific_policy))
 ?>
 </span>
 </div>
-<div id="supportedattrtab">
+<div id="supportedattrtab" class="content" >
 <?php
 echo lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_attributes/idp/'.$idpid.'"><img src="'.base_url().'images/icons/arrow.png" /></a>';
 ?>
+</div>
 </div>
 </div>

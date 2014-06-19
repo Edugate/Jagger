@@ -35,6 +35,7 @@ class Manage extends MY_Controller
          * @todo add check loggedin
          */
         $this->tmp_providers = new models\Providers;
+        MY_Controller::$menuactive = 'f';
     }
 
     function index()
@@ -55,6 +56,7 @@ class Manage extends MY_Controller
                     'desc' => '' . $v->getDescription() . '',
                     'default' => '' . $v->getIsDefault() . '');
             }
+            $data['titlepage'] = lang('rr_federation_list');
             $data['content_view'] = 'federation/list_view.php';
             $this->load->view('page', $data);
         }
@@ -171,7 +173,18 @@ class Manage extends MY_Controller
             }
             $members['' . $type . ''][] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId());
         }
+        /**
+        foreach($members as $k => $v)
+        {
+           foreach($v as $key => $p)
+           {
+                $namerow[$key]  = $p['name'];
+                $entityidrow[$key] = $p['entityid'];
+           }
+           array_multisort($namerow, SORT_ASC, $entityidrow, SORT_ASC, $members[$v]);
 
+        }
+        */
         echo json_encode($members);
     }
 
@@ -293,6 +306,7 @@ class Manage extends MY_Controller
         $required_attributes = $federation->getAttributesRequirement()->getValues();
 
 
+        $data['titlepage'] = lang('rr_feddetail').': '.$data['federation_name'];
         $data['meta_link'] = base_url() . 'metadata/federation/' . base64url_encode($data['federation_name']) . '/metadata.xml';
         $data['meta_link_signed'] = base_url() . 'signedmetadata/federation/' . base64url_encode($data['federation_name']) . '/metadata.xml';
 
@@ -306,10 +320,10 @@ class Manage extends MY_Controller
         }
         else {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-            $edit_link = '<span style="float: right;"><a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon" title="edit">' . lang('rr_edit') . '</a></span>';
+            $edit_link = '<span style="float: right;"><a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon small" title="edit">' . lang('rr_edit') . '</a></span>';
         }
 
-        $data['result']['general'][] = array('data' => array('data' => lang('rr_basicinformation') . ' ' . $edit_link, 'class' => 'highlight', 'colspan' => 2));
+        $data['result']['general'][] = array('data' => array('data' =>  ' ' . $edit_link, 'class' => '', 'colspan' => 2));
         if (empty($data['federation_is_active'])) {
             $data['result']['general'][] = array(
                         'data'=>array( 'data'=>'<span class="alert">'.lang('rr_fed_inactive_full').'</span>', 'class'=>'fedstatusinactive','colspan'=>2)
@@ -335,11 +349,11 @@ class Manage extends MY_Controller
         $data['result']['general'][] = array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '">Diagram</a>');
 
         $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-        $edit_attributes_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a></span>';
+        $edit_attributes_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a></span>';
         if (!$has_write_access) {
             $edit_attributes_link = '';
         }
-        $data['result']['attrs'][] = array('data' => array('data' => lang('rr_fed_req_attrs') . $edit_attributes_link . '', 'class' => 'highlight', 'colspan' => 2));
+        $data['result']['attrs'][] = array('data' => array('data' => lang('rr_fed_req_attrs') . $edit_attributes_link . '', 'class' => '', 'colspan' => 2));
         if (!$has_write_access) {
             $data['result']['attrs'][] = array('data' => array('data' => '<small><div class="notice">' . lang('rr_noperm_edit') . '</div></small>', 'colspan' => 2));
         }
@@ -364,14 +378,13 @@ class Manage extends MY_Controller
         }
 
 
-        $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt'), 'class' => 'highlight', 'colspan' => 2));
 
         if ($has_manage_access) {
             $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/access_manage/federation/' . $resource, '<img src="' . base_url() . 'images/icons/arrow.png"/>'), 'colspan' => 2));
             $data['hiddenspan'] =  '<span id="fednameencoded" style="display:none">'.$fed_name.'</span>';
             if($federation->getActive())
             {
-                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon" title="'. lang('btn_deactivatefed').': ' .$federation->getName().'">'.lang('btn_deactivatefed').'</button>';
+                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert" title="'. lang('btn_deactivatefed').': ' .$federation->getName().'">'.lang('btn_deactivatefed').'</button>';
                 $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
                 $b = '<br /><button type="button" name="fedstatus" value="enablefed" class="savebutton staricon" style="display:none">'.lang('btn_activatefed').'</button>';
                 $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
@@ -391,7 +404,6 @@ class Manage extends MY_Controller
             $data['result']['management'][] = array('data' => array('data' => '<small><div class="notice">' . lang('rr_noperm_accessmngt') . '</div></small>', 'colspan' => 2));
         }
 
-        $data['result']['metadata'][] = array('data' => array('data' => lang('rr_metadata'), 'class' => 'highlight', 'colspan' => 2));
         if ($federation->getAttrsInmeta()) {
             $data['result']['metadata'][] = array('data' => array('data' => lang('rr_meta_with_attr'), 'class' => 'lbl lbl-notice', 'colspan' => 2));
         }
@@ -406,6 +418,7 @@ class Manage extends MY_Controller
         else {
 
             $membersInArray = array('IDP'=>array(),'SP'=>array(),'BOTH'=>array());
+            $lang = MY_Controller::getLang();
             foreach($membership as $m)
             {
                 $joinstate = $m->getJoinState();
@@ -414,12 +427,20 @@ class Manage extends MY_Controller
                    continue;
                 }
                 $p = $m->getProvider();
-                $name = $p->getName();
+                $ptype = $p->getType();
+                if($ptype === 'IDP')
+                {
+                   $name = $p->getNameToWebInLang($lang,'idp');
+                }
+                else
+                {
+                   $name = $p->getNameToWebInLang($lang,'sp');
+                }
                 if(empty($name))
                 {
                    $name = $p->getEntityId();
                 }
-                $membersInArray[''.$p->getType().''][] = array(
+                $membersInArray[''.$ptype.''][] = array(
                    'pid'=>$p->getId(),
                    'mdisabled'=>(int) $m->getIsDisabled(),
                    'mbanned' => (int) $m->getIsBanned(),
@@ -432,6 +453,7 @@ class Manage extends MY_Controller
             $SPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['SP']);
             $BOTHmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['BOTH']);
             $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"'));
+
             $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
 
             $lexportenabled = $federation->getLocalExport();
@@ -458,8 +480,8 @@ class Manage extends MY_Controller
         if ($has_write_access) {
             $data['fvalidator'] = TRUE;
             $data['result']['fvalidators'] = array();
-            $addbtn = '<span style="float: right;"><a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '" class="addbutton addicon">' . lang('rr_add') . '</a></span>';
-            $data['result']['fvalidators'][] = array('data' => array('data' => $addbtn, 'class' => 'highlight', 'colspan' => 2));
+            $addbtn = '<span style="float: right;"><a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '" class="button addbutton small addicon">' . lang('rr_add') . '</a></span>';
+            $data['result']['fvalidators'][] = array('data' => array('data' => $addbtn, 'class' => '', 'colspan' => 2));
         }
         if ($fvalidators->count() > 0) {
 
@@ -593,6 +615,7 @@ class Manage extends MY_Controller
             $providers = $this->tmp_providers->getIdps();
             $memberstype = 'idp';
             $data['memberstype'] = $memberstype;
+            $data['subtitlepage'] = lang('rr_addnewidpsnoinv');
         }
         elseif ($type === 'sp') {
             $this->load->library('show_element');
@@ -608,6 +631,7 @@ class Manage extends MY_Controller
             $federation_members = $federation->getMembers();
             $providers = $this->tmp_providers->getSps();
             $data['memberstype'] = 'sp';
+            $data['subtitlepage'] = lang('rr_addnewspsnoinv');
         }
         else {
             log_message('error', 'type is expected to be sp or idp but ' . $type . 'given');
@@ -629,6 +653,7 @@ class Manage extends MY_Controller
         $data['form_elements'] = $form_elements;
         $data['fed_encoded'] = $fed_name;
         $data['message'] = $message;
+        $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$data['fed_encoded'].'">'.$federation->getName().'</a>';
         $this->load->view('page', $data);
     }
 
@@ -822,6 +847,8 @@ class Manage extends MY_Controller
         }
         $data['fedname'] = $federation->getName();
         $this->load->helper('form');
+
+        $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.base64url_encode($federation->getName()).'">'.$federation->getName().'</a>';
 
         $data['content_view'] = 'federation/invite_provider_view';
         $this->load->view('page', $data);

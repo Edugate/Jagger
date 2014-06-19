@@ -1,18 +1,16 @@
-<div id="pagetitle"><?php echo lang('rr_requiredattributes'); ?></div>
 <?php
 $fed_link = anchor(base_url().'federations/manage/show/'.$fed_encoded,'<img src="'.base_url().'images/icons/arrow-in.png"/>');
 $fed_link = anchor(base_url().'federations/manage/show/'.$fed_encoded,$fed_name);
 ?>
-<div id="subtitle"><h3><?php echo lang('rr_federation').': '.$fed_link;?></h3></div>
 <?php
 
 if (!empty($message))
 {
-    echo '<span class="message">' . $message . '</span>';
+    echo '<div data-alert class="alert-box info">' . $message . '</div>';
 }
 if (!empty($error))
 {
-    echo '<span class="error">' . $error . '</span>';
+    echo '<div data-alert class="alert-box alert">' . $error . '</div>';
 }
 ?>
 <?php
@@ -23,8 +21,8 @@ $target = current_url();
 if (count($add_attr_final) > 0)
 {
 ?>
-<button class="addbutton addicon showform"><?php echo lang('rr_addreqattr'); ?></button>
-<button class="resetbutton minusicon hideform hidden"><?php echo lang('btn_hide');?></button></div>
+<button class="addbutton addicon showform small"><?php echo lang('rr_addreqattr'); ?></button>
+<button class="resetbutton minusicon hideform hidden alert small"><?php echo lang('btn_hide');?></button></div>
 
 <?php
     for ($i = 0; $i < $no_new_attr; $i++)

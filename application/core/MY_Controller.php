@@ -35,6 +35,7 @@ class MY_Controller extends CI_Controller {
     public $globalerrors = array();
     public $globalnotices = array();
     public static $langselect = array();
+    public static $menuactive;
 
     public function __construct()
     {
@@ -81,6 +82,7 @@ class MY_Controller extends CI_Controller {
         }
 
         self::$langselect = languagesCodes($this->config->item('langselectlimit')); 
+        self::$menuactive = '';
 
         if(file_exists(APPPATH.'helpers/custom_helper.php'))
         {

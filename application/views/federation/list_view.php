@@ -1,6 +1,5 @@
-<div id="subtitle"><h3><?php echo lang('rr_federation_list');?></h3></div>
 
-<div id="fedcategories">
+<div id="fedcategories" class="">
 <?php
 
 $defaultSet = FALSE;
@@ -8,46 +7,45 @@ $catButtons = '';
 
 if(count($categories)>0)
 {
+   echo '<dl class="sub-nav"> <dt>'.lang('rr_category').':</dt>';
    foreach($categories as $v)
    {
        
        if($defaultSet)
        {
-           $catButtons .= '<button type="button" class="btn fedcategory" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
+           echo  '<dd><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></dd>';
        }
        elseif(!empty($v['default']))
        {
-           $catButtons .= '<button type="button" class="btn fedcategory activated" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
+           echo  '<dd class="active"><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></dd>';
            $defaultSet = TRUE;
        }
        else
        {
-           $catButtons .= '<button type="button" class="btn fedcategory" title="'.$v['title'].'" value="'.base_url().'ajax/fedcat/'.$v['catid'].'">'.$v['name'].'</button> ';
+           echo  '<dd><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></dd>';
 
        }
    }
 
    if($defaultSet)
    {
-     $allFedsBtn =  '<button type="button" class="btn fedcategory" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+           echo  '<dd><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></dd>';
    }
     else
    {
-     $allFedsBtn =  '<button type="button" class="btn fedcategory activated" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+           echo  '<dd class="active"><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></dd>';
 
    }
+   echo '</dl>';
 }
 else
 {
-     $allFedsBtn =  '<button type="button" class="btn fedcategory activated hidden" title="All federations" value="'.base_url().'ajax/fedcat/" id="fedcategoryall">'.lang('rr_allfeds').'</button> ';
+           echo  '<dl class="hidden"><dd class="active"><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></dd></dl>';
 
 
 }
 
 
-
-echo $allFedsBtn;
-echo $catButtons;
 
 ?>
 </div>
@@ -57,7 +55,7 @@ echo $catButtons;
 
 
 <?php
-echo '<table  id="detailsnosort" class="fedistpercat tablesorter drop-shadow lifted"> <thead> <tr>
+echo '<table  id="detailsnosort" class="fedistpercat tablesorter drop-shadow lifted columns"> <thead> <tr>
 <th>'.lang('rr_tbltitle_name').'</th><th>'.lang('fednameinmeta').'</th><th></th><th>'.lang('Description').'</th><th>#</th></tr> </thead>
 <tbody> </tbody> </table> ';
 ?>

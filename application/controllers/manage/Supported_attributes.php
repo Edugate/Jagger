@@ -135,7 +135,7 @@ class Supported_attributes extends MY_Controller {
         if (empty($form_attributes)) {
             show_error(lang('error_noattrdefs'), 503);
         }
-
+        $lang = MY_Controller::getLang();
         $data = array();
         $buttons = form_submit(array('name' => 'submit', 'value' => 'submit'));
         $buttons = '<div class="buttons"><button type="submit" value="submit" name="submit" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
@@ -146,6 +146,9 @@ class Supported_attributes extends MY_Controller {
         $data['idp_id'] = $idp->getId();
         $data['idp_name'] = $idp->getName();
         $data['idp_entityid'] = $idp->getEntityId();
+        $data['titlepage'] = lang('identityprovider').': '.anchor(base_url()."providers/detail/show/".$idp->getId(),$idp->getNameToWebInLang($lang,'idp'));
+        $data['subtitlepage'] =  lang('rr_supportedattributes');
+        $data['submenupage'] = array(array('name'=>''.lang('rr_attributereleasepolicy').'','url'=>''.base_url().'manage/attribute_policy/globals/'.$idp_id.''));
         $data['content_view'] = 'manage/supported_attributes_view.php';
         $this->load->view('page', $data);
 

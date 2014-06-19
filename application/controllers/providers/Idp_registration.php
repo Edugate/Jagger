@@ -36,7 +36,7 @@ class Idp_registration extends MY_Controller {
     }
 
     function index() {
-
+        $data['titlepage'] = lang('rr_idp_register_title');
         $idpssobindprotocols = array(
           'saml2httppost'=>'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
           'saml2httppostsimplesign'=>'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',

@@ -114,8 +114,10 @@ class Attribute_requirement extends MY_Controller {
         $data['already_in_attr'] = $already_in_attr;
         $data['add_attr_final'] = $add_attr_final;
         $data['fed_name'] = $fed->getName();
-        $data['fed_encoded'] = base64url_encode($fed->getName());
         $data['fedid'] = $fed->getId();
+        $data['fed_encoded'] = base64url_encode($fed->getName());
+        $data['titlepage']= lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$data['fed_encoded'].'">'.$data['fed_name'].'</a>';
+        $data['subtitlepage'] = lang('rr_requiredattributes');
         $this->load->view('page', $data);
     }
 
@@ -141,6 +143,7 @@ class Attribute_requirement extends MY_Controller {
         } else {
             log_message('debug', $this->log_prefix . "sp not found");
             show_error(lang('rerror_spnotfound'), 404);
+            return;
         }
         $resource = $sp->getId();
         $group = 'entity';
@@ -195,6 +198,15 @@ class Attribute_requirement extends MY_Controller {
         $data['spid'] = $sp->getId();
         $data['sp_name'] = $sp->getName();
         $data['sp_entityid'] = $sp->getEntityId();
+        $lang = MY_Controller::getLang();
+        $displayname = $sp->getNameToWebInLang($lang,'sp');
+        if(empty($displayname))
+        {
+            $displayname = $sp->getEntityId();
+        }
+
+        $data['titlepage'] = lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$data['spid'].'">'.$displayname.'</a> ';
+        $data['subtitlepage'] = lang('rr_attributerequirements');
         $this->load->view('page', $data);
     }
 
@@ -260,6 +272,7 @@ class Attribute_requirement extends MY_Controller {
         $spid = $this->input->post('spid');
         if($this->_submit_validate() === FALSE)
         {
+           log_message('debug','KLS1');
            return $this->sp($spid);
         }
         
@@ -267,6 +280,7 @@ class Attribute_requirement extends MY_Controller {
         $status = $this->input->post('requirement');
         $reason = $this->input->post('reason');
         $action = $this->input->post('submit');
+        log_message('debug', 'KLS: action: '.$action.'; status: '.$status.'; reason: '.$reason);
         //$spid = $this->input->post('spid');
         if (empty($spid) or !is_numeric($spid)) {
             show_error('Incorect sp id', 404);
@@ -278,7 +292,7 @@ class Attribute_requirement extends MY_Controller {
             show_error('Service Provider not found',404);
         }
         $resource = $spid;
-        $group = 'sp';
+        $group = 'entity';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
@@ -294,6 +308,12 @@ class Attribute_requirement extends MY_Controller {
             return;
         }
         if ($attr && $status && $action == 'Add') {
+            $checkattrreq = $this->em->getRepository("models\AttributeRequirement")->findBy(array('sp_id' => $spid, 'attribute_id' => $attr));
+            foreach($checkattrreq as $v)
+            {
+                $this->_remove($v);
+            }
+
             $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attr));
             $attr_req = new models\AttributeRequirement;
             $attr_req->setReason($reason);
@@ -302,22 +322,35 @@ class Attribute_requirement extends MY_Controller {
             $attr_req->setType('SP');
             $this->_add($spid, $attr_req);
         } elseif ($attr && $status && $action == 'Remove') {
-            $attr_req = $this->em->getRepository("models\AttributeRequirement")->findOneBy(array('sp_id' => $spid, 'attribute_id' => $attr));
-            if (!empty($attr_req)) {
-                $this->_remove($attr_req);
+            $attr_req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('sp_id' => $spid, 'attribute_id' => $attr));
+            foreach($attr_req as $v)
+            {
+                $this->_remove($v);
             }
         } elseif ($attr && $status && $action == 'Modify') {
             log_message('debug', $this->log_prefix . 'for spid:' . $spid . ' and attr:' . $attr . ' submited for modification');
-            $attr_req = $this->em->getRepository("models\AttributeRequirement")->findOneBy(array('sp_id' => $spid, 'attribute_id' => $attr));
-            if (!empty($attr_req)) {
-                log_message('debug',  'requirement found');
-                log_message('debug',  'args passed. reason:' . $reason . ', status:' . $status);
+            $attr_req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('sp_id' => $spid, 'attribute_id' => $attr));
+            if(count($attr_req)>1)
+            {
+               $tomodify = true;
+               foreach($attr_req as $v)
+               {
+                  if($tomodify)
+                  {
+                     $v->setReason($reason);
+                     $v->setStatus($status);
+                     $v->setType('SP');
+                     $this->em->persist($v);
+                     $tomodify = false;
+
+                  }
+                  else
+                  {
+                     $this->_remove($v);
+                  }
+               }
+               $this->em->flush();
             }
-            $attr_req->setReason($reason);
-            $attr_req->setStatus($status);
-            $attr_req->setType('SP');
-            $this->em->persist($attr_req);
-            $this->em->flush();
         } else {
             echo $action;
         }

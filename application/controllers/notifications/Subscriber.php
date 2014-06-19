@@ -144,6 +144,8 @@ class Subscriber extends MY_Controller {
        $data['subscriber']['username'] = $subscribtionOwner->getUsername();
        $data['subscriber']['fullname'] = $subscribtionOwner->getFullname();
        $data['subscriber']['email'] = $subscribtionOwner->getEmail();
+       $data['titlepage'] = $data['subscriber']['username'];
+       $data['subtitlepage'] = lang('title_usersubscriptions');
        $n=json_decode($this->_getSubscriptionsToJson($subscribtionOwner),true);
        $row[] = array('',lang('subscrtype'),lang('rr_relatedto'),lang('rr_deliverytype'),lang('subscrmail'),lang('subscrstatus'),lang('updatedat'),'');
        if(! count($n)>0)
@@ -178,7 +180,7 @@ class Subscriber extends MY_Controller {
              {
                  $relatedto = $v['langany'];
              }
-             $button = '<button type="button" value="'.$v['id'].'" class="updatenotifactionstatus editbutton">update</button>';
+             $button = '<button type="button" value="'.$v['id'].'" class="updatenotifactionstatus editbutton tiny">'.lang('btnupdate').'</button>';
              $row[] = array(++$i,$type,$relatedto,$v['delivery'],$v['rcptto'],$v['langstatus'],$v['updated'],$button);
          }
        }

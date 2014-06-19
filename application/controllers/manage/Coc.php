@@ -53,7 +53,7 @@ class Coc extends MY_Controller
           {
               if($has_write_access)
               {
-                 $l = ' '.anchor(base_url().'manage/coc/edit/'.$c->getId(),'<span class="lbl lbl-edit">'.lang('rr_edit').'</span>');
+                 $l = '<a href="'.base_url().'manage/coc/edit/'.$c->getId().'" class="button tiny">'.lang('rr_edit').'</a>';
               }
               else
               {
@@ -68,7 +68,7 @@ class Coc extends MY_Controller
               {
                   $lbl = '<span class="lbl lbl-disabled">'.lang('rr_disabled').'</span>';
               }
-              $data['rows'][] = array($c->getName().$l, anchor($c->getUrl(),$c->getUrl(),array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(),$lbl);
+              $data['rows'][] = array($c->getName(),$lbl ,anchor($c->getUrl(),$c->getUrl(),array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(),$l);
          
           } 
        }
@@ -76,10 +76,14 @@ class Coc extends MY_Controller
        {
           $data['error_message'] = lang('rr_noentcatsregistered');
        }
+       $data['showaddbutton'] = FALSE;
        if($has_write_access)
        {
-         $data['rows'][] = array(anchor(base_url().'manage/coc/add','<button type="submit" class="addbutton addicon">'.lang('addentcat_btn').'</button>'), '','','');
+//         $data['rows'][] = array(anchor(base_url().'manage/coc/add','<button type="submit" class="addbutton addicon">'.lang('addentcat_btn').'</button>'), '','','');
+         $data['showaddbutton'] = TRUE;
        }
+
+       $data['titlepage'] = lang('ent_list_title');
 
        $data['content_view'] = 'manage/coc_show_view';
        $this->load->view('page',$data);
@@ -104,6 +108,7 @@ class Coc extends MY_Controller
     public function add()
     {
         $this->title = lang('title_addentcat');
+        $data['titlepage'] =  lang('title_addentcat');
         $has_write_access = $this->zacl->check_acl('coc', 'write', 'default', '');
         if(!$has_write_access)
         {
@@ -144,8 +149,8 @@ class Coc extends MY_Controller
             $f = form_open();
             $this->load->library('form_element');
             $f .= $this->form_element->generateAddCoc();
-            $f .= '<div class="buttons">';
-            $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon">'.lang('rr_reset').'</button> ';
+            $f .= '<div class="buttons small-12 medium-10 large-10 columns end text-right">';
+            $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">'.lang('rr_reset').'</button> ';
             $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
 
             $f .= form_close();
@@ -157,6 +162,7 @@ class Coc extends MY_Controller
     public function edit($id)
     {
        $this->title = lang('title_entcatedit');
+      
        if(empty($id) OR !is_numeric($id))
        {
           show_error('Not found',404);
@@ -174,6 +180,9 @@ class Coc extends MY_Controller
            show_error('No access',401);
            return;
        }
+       $data['titlepage'] = lang('title_entcat').': '.htmlentities($coc->getName());
+       $data['subtitlepage'] = lang('title_entcatedit');
+
        if($this->_edit_submit_validate($id) === TRUE)
        {
            $enable = $this->input->post('cenabled');
@@ -196,8 +205,8 @@ class Coc extends MY_Controller
        $this->load->library('form_element');
        $f = form_open();
        $f .= $this->form_element->generateEditCoc($coc);
-       $f .= '<div class="buttons">';
-       $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon">'.lang('rr_reset').'</button> ';
+       $f .= '<div class="buttons large-10 medium-10 small-12 text-right columns end">';
+       $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">'.lang('rr_reset').'</button> ';
        $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
        $f .= form_close();
        $data['form'] = $f;

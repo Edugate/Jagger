@@ -1,7 +1,11 @@
-<div id="pagetitle"><?php echo lang('userregisterform');?></div>
 
 <?php
-echo validation_errors('<p class="error">', '</p>');
+$errors= validation_errors('<div>', '</div>');
+
+if(!empty($errors))
+{
+   echo '<div  data-alert class="alert-box alert ">'.$errors.'</div>';
+}
 
 if(!empty($message))
 {
