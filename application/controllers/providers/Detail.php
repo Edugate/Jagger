@@ -575,7 +575,7 @@ class Detail extends MY_Controller {
         /**
          * Federation
          */
-        $d[++$i]['header'] = '<span id="federation"></span>' . lang('rr_federation');
+      //  $d[++$i]['header'] = '<span id="federation"></span>' . lang('rr_federation');
         $d[++$i]['name'] = lang('rr_memberof');
         $federationsString = "";
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
@@ -583,7 +583,7 @@ class Detail extends MY_Controller {
         $membershipNotLeft = array();
         if (!empty($membership))
         {
-            $federationsString = '<ul class="no-bullet>';
+            $federationsString = '<ul class="no-bullet">';
             foreach ($membership as $f)
             {
                 $joinstate = $f->getJoinState();
