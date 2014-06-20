@@ -603,7 +603,7 @@ class Detail extends MY_Controller {
                     $membershipBanned = makeLabel('disabled',lang('membership_banned'),lang('membership_banned'));
                 }
                 $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getFederation()->getName()));
-                $metalink = base_url('metadata/federation/' . base64url_encode($f->getFederation()->getName()) . '/metadata.xml');
+                $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
                 $fedActive = $f->getFederation()->getActive();
                 if($fedActive)
                 {

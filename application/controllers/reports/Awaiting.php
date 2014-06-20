@@ -658,6 +658,12 @@ class Awaiting extends MY_Controller {
                         $fed = new models\Federation;
 
                         $fed->importFromArray($queueObj->getData());
+                        $fedsysname = $fed->getSysname();
+                        if(empty($fedsysname))
+                        {
+                           $fedsysname = base64url_encode($fed->getName());
+                           $fed->setSysname($fedsysname);
+                        }
                         $creator = $queueObj->getCreator();
                         if (!empty($creator))
                         {
@@ -669,10 +675,14 @@ class Awaiting extends MY_Controller {
                         {
                             $fed_check = $this->em->getRepository("models\Federation")->findOneBy(array('urn' => $fed->getUrn()));
                         }
+                        if (empty($fed_check))
+                        {
+                            $fed_check = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $fed->getSysname()));
+                        }
 
                         if ($fed_check)
                         {
-                            $error_message = "Federation already exists with provided name or urn";
+                            $error_message = lang('error_fedexists') .'( '.lang('rr_fed_sysname').','.lang('rr_fed_name').','.lang('fednameinmeta').')';
                             $data['error_message'] = $error_message;
                             $data['content_view'] = 'error_message';
                             $this->load->view('page', $data);
@@ -694,7 +704,7 @@ class Awaiting extends MY_Controller {
                             $this->em->persist($acl_res);
                             $this->em->flush();
 
-                            $message = "Federation " . $fedname . "witch ID:" . $fed->getId() . " has been added";
+                            $message = lang('rr_federation').' ' . $fedname . ' ID:' . $fed->getId() . ' '.lang('hasbeenadded');
                             log_message('debug', "Federation " . $fedname . "witch ID:" . $fed->getId() . " has been added");
                         }
                     } else

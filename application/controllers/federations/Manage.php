@@ -297,6 +297,7 @@ class Manage extends MY_Controller
         }
         $data['bookmarked'] = $bookmarked;
         $data['federation_name'] = $federation->getName();
+        $data['federation_sysname'] = $federation->getSysname();
         $data['federation_urn'] = $federation->getUrn();
         $data['federation_desc'] = $federation->getDescription();
 
@@ -307,11 +308,11 @@ class Manage extends MY_Controller
 
 
         $data['titlepage'] = lang('rr_feddetail').': '.$data['federation_name'];
-        $data['meta_link'] = base_url() . 'metadata/federation/' . base64url_encode($data['federation_name']) . '/metadata.xml';
-        $data['meta_link_signed'] = base_url() . 'signedmetadata/federation/' . base64url_encode($data['federation_name']) . '/metadata.xml';
+        $data['meta_link'] = base_url() . 'metadata/federation/' . $data['federation_sysname'] . '/metadata.xml';
+        $data['meta_link_signed'] = base_url() . 'signedmetadata/federation/' . $data['federation_sysname'] . '/metadata.xml';
 
-        $data['metaexport_link'] = base_url() . 'metadata/federationexport/' . base64url_encode($data['federation_name']) . '/metadata.xml';
-        $data['metaexport_link_signed'] = base_url() . 'signedmetadata/federationexport/' . base64url_encode($data['federation_name']) . '/metadata.xml';
+        $data['metaexport_link'] = base_url() . 'metadata/federationexport/' . $data['federation_sysname'] . '/metadata.xml';
+        $data['metaexport_link_signed'] = base_url() . 'signedmetadata/federationexport/' . $data['federation_sysname'] . '/metadata.xml';
 
         $data['content_view'] = 'federation/federation_show_view';
         if (!$can_edit) {
@@ -338,6 +339,8 @@ class Manage extends MY_Controller
         }
         $data['result']['general'][] = array(lang('rr_fed_name'), $federation->getName());
         $data['result']['general'][] = array(lang('fednameinmeta'), $federation->getUrn());
+        $data['result']['general'][] = array(lang('rr_fed_sysname'), $federation->getSysname());
+        
         $data['result']['general'][] = array(lang('rr_fed_publisher'), $federation->getPublisher());
         $data['result']['general'][] = array(lang('rr_fed_desc'), $federation->getDescription());
         $data['result']['general'][] = array(lang('rr_fed_tou'), $federation->getTou());

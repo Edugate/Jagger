@@ -99,7 +99,8 @@ class Msigner extends MY_Controller {
                echo lang('error403');
                return;
            }
-           $encfedname = base64url_encode($fed->getName());
+           //$encfedname = base64url_encode($fed->getName());
+           $encfedname = $fed->getSysname();
            $sourceurl = base_url().'metadata/federation/'.$encfedname.'/metadata.xml';
            $options[] = array('src'=>''.$sourceurl.'','type'=>'federation','encname'=>''.$encfedname.'');
            $localexport = $fed->getLocalExport();
