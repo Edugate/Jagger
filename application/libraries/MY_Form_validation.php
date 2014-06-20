@@ -199,6 +199,32 @@ class MY_form_validation extends CI_form_validation {
         }
     }
 
+
+    function federation_updateunique($value,$params)
+    {
+        $p = unserialize($params);
+        if(!isset($p['fedid']))
+        {
+           $this->set_message('federation_updateunique','The %s: '.htmlentities($value).' missing federation id');
+           return false;
+        }
+        $pid = $p['fedid'];
+        $attr = $p['attr'];
+        $fed = $this->em->getRepository("models\Federation")->findOneBy(array($attr => $value));
+        if(empty($fed))
+        {
+           return true;
+        }
+        $fedid = $fed->getId();
+        if((int)$pid === (int) $fedid)
+        {
+           return true;
+        }
+        $this->set_message('federation_updateunique','The %s: '.htmlentities($value).' already exists');
+        return false;
+ 
+
+    }
     function federation_unique($arg, $argtype)
     {
         if($argtype === 'name')
