@@ -435,3 +435,10 @@ code {
 
 @include panel();
 }
+.dhelp {
+ @include alert(
+       $bg : $info-color
+  );
+
+
+}
