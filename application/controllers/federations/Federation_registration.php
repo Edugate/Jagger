@@ -73,8 +73,10 @@ class Federation_registration extends MY_Controller
             
         }
         $fedname = $this->input->post('fedname');
+        $fedsysname = $this->input->post('fedsysname');
         $federation = new models\Federation;
         $federation->setName($fedname);
+        $federation->setSysname($fedsysname);
         $federation->setUrn($this->input->post('fedurn'));
         $ispub = $this->input->post('ispublic');
         if (!empty($ispub) && $ispub == 'public')
@@ -114,6 +116,7 @@ class Federation_registration extends MY_Controller
     private function _submit_validate()
     {
         $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'required|min_length[5]|max_length[128]|xss_clean|federation_unique[name]');
+        $this->form_validation->set_rules('fedsysname', lang('rr_fed_sysname'), 'required|min_length[5]|max_length[128]|alpha_dash|xss_clean|federation_unique[sysname]');
         $this->form_validation->set_rules('fedurn', lang('fednameinmeta'), 'required|min_length[5]|max_length[128]|xss_clean|federation_unique[uri]');
         $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'min_length[5]|max_length[500]|xss_clean');
         $this->form_validation->set_rules('termsofuse', lang('rr_fed_tou'), 'min_length[5]|max_length[1000]|xss_clean');

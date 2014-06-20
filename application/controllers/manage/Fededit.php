@@ -37,6 +37,7 @@ class Fededit extends MY_Controller {
 
     private function _submit_validate()
     {
+        $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'required|min_length[5]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('urn', lang('fednameinmeta'), 'required|trim|min_length[5]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[500]|xss_clean');
         $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'trim|min_length[5]|max_length[1000]|xss_clean');
@@ -73,6 +74,7 @@ class Fededit extends MY_Controller {
         if ($this->_submit_validate() === TRUE)
         {
             $inurn = $this->input->post('urn');
+            $fedname = $this->input->post('fedname');
             $indesc = $this->input->post('description');
             $intou = $this->input->post('tou');
             $infedid = $this->input->post('fed');
@@ -84,6 +86,7 @@ class Fededit extends MY_Controller {
             {
                 show_error('Incorrect post', 403);
             }
+            $fed->setName($fedname);
             $fed->setUrn($inurn);
             if($incattrs == 'accept')
             {

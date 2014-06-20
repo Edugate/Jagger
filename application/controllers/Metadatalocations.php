@@ -38,7 +38,7 @@ class Metadatalocations extends MY_Controller {
         $farray = array();
         foreach($feds as $fed)
         {
-            $farray[] = array('<a href="'.$federationprefix. base64url_encode($fed->getName()).'/metadata.xml">signed metadata</a>', 
+            $farray[] = array('<a href="'.$federationprefix. $fed->getSysname().'/metadata.xml">signed metadata</a>', 
                               '<span title="'.$fed->getName().'">'.$fed->getName().'</span>',$fed->getUrn());
         }
         $tarray = array();

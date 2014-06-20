@@ -2961,6 +2961,10 @@ class Form_element
     {
         $f = null;
         $f .= '<div class="small-12 columns">';
+        $f .='<div class="small-3 columns">' . form_label(lang('rr_fed_name'), 'fedname').'</div>';
+        $f .= '<div class="small-8 large-7 columns">'.form_input('fedname', set_value('fedname', $federation->getName())) . '</div><div></div>';
+        $f .= '</div>';
+        $f .= '<div class="small-12 columns">';
         $f .='<div class="small-3 columns">' . form_label(lang('fednameinmeta'), 'urn').'</div>';
         $f .= '<div class="small-8 large-7 columns">'.form_input('urn', set_value('urn', $federation->getUrn())) . '</div><div></div>';
         $f .= '</div>';

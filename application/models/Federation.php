@@ -49,6 +49,11 @@ class Federation
     protected $name;
 
     /**
+     * @Column(type="string", length=128, nullable=true, unique=true)
+     */
+    protected $sysname;
+
+    /**
      * @Column(type="string", length=255, nullable=false, unique=true)
      */
     protected $urn;
@@ -168,6 +173,12 @@ class Federation
         $this->name = $name;
         return $this;
     }
+
+   public function setSysname($name)
+   {
+       $this->sysname = trim($name);
+       return $this;
+   }
     
 
     public function setUrn($urn)
@@ -353,6 +364,10 @@ class Federation
     {
         return $this->name;
     }
+    public function getSysname()
+    {
+        return $this->sysname;
+    }
 
 
     public function getLocal()
@@ -514,6 +529,7 @@ class Federation
     public function importFromArray(array $r)
     {
        $this->setName($r['name']);
+       $this->setSysname($r['sysname']);
        $this->setUrn($r['urn']);
        $this->setDescription($r['description']);
        $this->setActive($r['is_active']);
@@ -535,6 +551,7 @@ class Federation
           $r['id'] = $this->id;
        }
        $r['name'] = $this->getName();
+       $r['sysname'] = $this->getSysname();
        $r['urn'] = $this->getUrn();
        $r['description'] = $this->getDescription();
        $r['is_active'] = $this->getActive();

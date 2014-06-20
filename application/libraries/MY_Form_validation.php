@@ -209,6 +209,10 @@ class MY_form_validation extends CI_form_validation {
         {
            $attr = 'urn';
         }
+        elseif($argtype ==='sysname')
+        {
+           $attr = 'sysname';
+        }
         else
         {
             \log_message('error',__METHOD__.' missing argtype');

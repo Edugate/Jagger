@@ -35,7 +35,8 @@ class Metadata extends MY_Controller
             show_error('Not found',404);
         }
         $data = array();
-        $name = base64url_decode($federationName);
+        //$name = base64url_decode($federationName);
+        $name = $federationName;
         if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);
         }
@@ -50,7 +51,7 @@ class Metadata extends MY_Controller
            show_error('Access denied', 403);
         }
 
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $name));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name));
 
 
         if (empty($federation)) {
@@ -169,7 +170,8 @@ class Metadata extends MY_Controller
            show_error('Not found', 404);
         }
         $data = array();
-        $name = base64url_decode($federationName);
+        //$name = base64url_decode($federationName);
+        $name =$federationName;
         if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);
         }
@@ -184,7 +186,7 @@ class Metadata extends MY_Controller
         }
 
 
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $name, 'is_lexport' => TRUE));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name, 'is_lexport' => TRUE));
 
 
         if (empty($federation)) {
