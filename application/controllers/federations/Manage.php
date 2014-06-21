@@ -141,7 +141,9 @@ class Manage extends MY_Controller
     function showmembers($fedid)
     {
         if (!$this->input->is_ajax_request()) {
-            show_error('Request not allowed', 403);
+            set_status_header(404);
+            echo 'Request not allowed';
+            return;
         }
         if (!$this->j_auth->logged_in()) {
             set_status_header(403);
@@ -165,9 +167,11 @@ class Manage extends MY_Controller
         }
         $preurl = base_url() . 'providers/detail/show/';
         $members = array();
+        $lang = MY_Controller::getLang();
         foreach ($fmembers as $m) {
-            $name = $m->getName();
             $type = strtolower($m->getType());
+            //$name = $m->getName();
+            $name= $m->getNameToWebInLang($lang,''.$type.'');
             if (empty($name)) {
                 $name = $m->getEntityId();
             }
