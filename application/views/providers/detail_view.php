@@ -16,12 +16,12 @@ else
             if (!empty($alerts) && is_array($alerts) and count($alerts) > 0)
             {
                 echo '<div  data-alert class="alert-box warning" >';
-                echo '<ol>';
+                //echo '<ul>';
                 foreach ($alerts as $v)
                 {
-                    echo '<li>' . $v . '</li>';
+                    echo '<div>' . $v . '</div>';
                 }
-                echo '</ol>';
+                //echo '</ul>';
                 echo '</div>';
             }
 ?>
