@@ -261,6 +261,7 @@ class Awaiting extends MY_Controller {
             $data = $queueList->getData();
             $objType = $queueList->getObjType();
             $objAction = $queueList->getAction();
+            $recipientType = $queueList->getRecipientType();
 
             if ($objType === 'Provider')
             {
@@ -374,12 +375,30 @@ class Awaiting extends MY_Controller {
                     $data['error'] = lang('rr_nopermission');
                     $this->load->view('page', $data);
                 }
-            } else
+            }elseif( $objType === 'n' && strcasecmp($objAction,'apply') == 0 && strcasecmp( $recipientType,'entitycategory') == 0) // apply for entity category
+            {
+               if ($this->_hasAccess($queueList))
+               {
+                    $data['requestdata'] = $this->j_queue->displayApplyForEntityCategory($queueList);
+                    $buttons = $this->j_queue->displayFormsButtons($queueList->getId());
+                    $data['content_view'] = 'reports/awaiting_applyforentcat_view';
+                    $data['requestdata'][]['2cols'] = $buttons;
+                    $this->load->view('page', $data);
+               }
+               else
+               {
+                    $data['content_view'] = 'nopermission';
+                    $data['error'] = lang('rr_nopermission');
+                    $this->load->view('page', $data);
+               }
+            }
+            else
             {
                 $data['error'] = 'Unknown type';
             }
         } else
         {
+            
             $data['content_view'] = 'error_message';
             $data['error_message'] = lang('rerror_qid_noexist');
             $this->load->view('page', $data);
@@ -830,7 +849,42 @@ class Awaiting extends MY_Controller {
                     {
                         show_error('Something went wrong', 500);
                     }
-                } else
+                }
+                elseif( strcasecmp($queueAction,'apply')==0 )
+                {
+                     $recipient = $queueObj->getRecipient();
+                     $recipienttype = $queueObj->getRecipientType();
+                     $type = $queueObj->getType();
+                     $name = $queueObj->getName();
+                     if(strcasecmp($recipienttype,'entitycategory')==0 && strcasecmp($type,'Provider')==0 && !empty($name))
+                     {
+                        $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$recipient,'type'=>'entcat'));
+                        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid'=>$name));
+                        if(empty($coc) || empty($provider))
+                        {
+                            log_message('error',__METHOD__.' couldn approve request as EntityCategory with id '.$recipient .' or provider with entityid '.$name.' does not exists');
+                            show_error('Entity category or provider does not exist',404);
+                            return ; /// @todo finish
+                        }
+                        $isAdmin = $this->j_auth->isAdministrator();
+                        if(!$isAdmin)
+                        {
+                             show_error('no permission',403);
+                             return;
+                        }                        
+
+                        
+                            $coc->setProvider($provider);
+                            $provider->setCoc($coc);
+                            $this->em->persist($provider);
+                            $this->em->persist($coc);
+                            $this->em->remove($queueObj);
+                            $this->em->flush(); 
+                        
+                     }
+
+                }
+                else
                 {
                     
                 }

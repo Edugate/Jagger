@@ -402,16 +402,14 @@ class Providerupdater {
                     $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$v,'type'=>'entcat'));
                     if(!empty($c) && !$currentEntCat->contains($c))
                     {
-                      // if($isAdmin)
-                      // {
+                       if($isAdmin)
+                       {
                           $ent->setCoc($c);
-                      // }
-                      // else
-                      // {
-                      //    $this->ci->approval->applyForEntityCategory($c, $ent);
-                          
-
-                      // }
+                       }
+                       else
+                       {
+                          $this->ci->approval->applyForEntityCategory($c, $ent);
+                       }
                     }
                 }
             }

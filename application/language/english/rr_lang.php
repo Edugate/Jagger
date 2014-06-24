@@ -50,6 +50,7 @@ $lang['statdefeditform']             = 'Stats definition edit form';
 $lang['statdefinition']             = 'stat definition';
 $lang['coc_menulink']               = 'Data protection CoC';
 $lang['entcats_menulink']           = 'Entity Categories';
+$lang['entcat']                     = 'Entity Category';
 $lang['sys_menulink']               = 'System';
 $lang['rr_accessmngmt']             = 'Access management';
 $lang['rrprovs']                    = 'Providers';
@@ -998,6 +999,8 @@ $lang['alertentchange']             = 'Be aware that changing entityID follows c
 $lang['alertimportintofed']         = 'Be aware! Importing external metadata into federation may cause removing entities from federation if such entities will not be found in source metadata.';
 
 $lang['userregreceived']            = 'Your request has been received';
+$lang['req_userregistration']           = 'User registration';
+$lang['req_entcatapply']            = 'Apply for assigning Entity Category';
 $lang['err_userexist']              = 'Provided username already in the system';
 $lang['err_mailexist']              = 'Provided email already in the system';
 $lang['err_userinqueue']            = 'It looks like you already applied for an account';
@@ -1023,8 +1026,9 @@ $lang['queremoved']                 = 'Then entry has been removed from the queu
 $lang['error_fedexists']            = 'Federation already exists';
 $lang['rr_jobinqueue']              = 'The job is still on the queue';
 $lang['rr_jobdonein']                 = 'The job done in';
-
+$lang['prov_notexist']              = 'Provider does not exist';
 $lang['rr_noentcatsregistered']     = 'No Entity Categories registered';
+$lang['entcat_notexist']            = 'Entity Category does not exist';
 
 $lang['err_atleastonesso']         = 'At least one SingleSignOn URL must be defined';
 $lang['entdswayf']                          = 'The link contains list of all trusted Identity Providers in json format. Generaly it can be consumed by DiscoveryService particularly DiscoJuice';
