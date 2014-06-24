@@ -1501,7 +1501,7 @@ class Detail extends MY_Controller {
         /**
          * @todo finish show alert block if some warnings realted to entity 
          */
-        //$data['alerts'] = $alerts;
+        $data['alerts'] = $alerts;
         if(!empty($providerlogourl))
         {
            $data['providerlogourl'] = $providerlogourl;
