@@ -183,7 +183,10 @@ a.bookentity {
     border-left: 0px gray solid;
     border-bottom: 0px gray solid;
     box-sizing: border-box;
+}
+#idpmatrix tr td:not(:first-child) {
 
+  text-transform: uppercase;
 }
 #idpmatrix td:first-child {
     text-align: left;
@@ -204,7 +207,8 @@ div.perm:not(:empty){
 }
 div.dis {
     background-color: #E3E5FF;
-    text-transform: uppercase;
+//    text-transform: uppercase;
+
     font-weight: bold;
 }
 div.dis:not(:empty){
@@ -212,7 +216,8 @@ div.dis:not(:empty){
 }
 div.spec {
     background-color: #FFFF00;
-    text-transform: uppercase;
+ //   text-transform: uppercase;
+
     font-weight: bold;
 }
 div.spec:not(:empty){
@@ -220,7 +225,8 @@ div.spec:not(:empty){
 }
 div.den {
     background-color: red;
-    text-transform: uppercase;
+ //text-transform: uppercase;
+
     font-weight: bold;
 }
 div.den:not(:empty){
@@ -339,7 +345,7 @@ form#multistepform label {
         list-style-type: none;
         color: white;
         text-transform: uppercase;
-        font-size: 9px;
+//        font-size: 9px;
         float: left;
         position: relative;
 }
