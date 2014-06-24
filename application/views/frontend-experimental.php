@@ -234,17 +234,17 @@ $this->load->view('toppanel',$args);
             <div id="footer" class="fullWidth">
 
                 <footer class="row">
-                  <div class="large-12 columns">
+                  <div class="large-12 columns text-center">
                     <?php
                     $footer = $this->rrpreference->getPreferences('pageFooter');
                     if(isset($footer['status']) && (boolean) $footer['status'] === TRUE && isset($footer['value']))
                     {
-                          echo '<small>'.$footer['value'].'</small><br />';
+                          echo '<div>'.$footer['value'].'<div>';
                     }
                     $disp_mem = $this->rrpreference->getPreferences('rr_display_memory_usage');
                     if (isset($disp_mem['status']) && (boolean) $disp_mem['status'] === TRUE )
                     {
-                        echo echo_memory_usage();
+                        echo '<div>'.echo_memory_usage().'</div>';
                     }
                     ?>
                   </div>
