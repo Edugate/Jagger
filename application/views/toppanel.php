@@ -34,7 +34,8 @@
 
                     <?php
                     $k = MY_Controller::getLang();
-                    echo '<a href="#" class="button full"  data-reveal-id="languageset">' . $langs['' . $k . '']['val'] . '</a>';
+//                    echo '<a href="#" class="button full"  data-reveal-id="languageset">' . $langs['' . $k . '']['val'] . '</a>';
+                    echo '<a href="#" class="button full"  data-reveal-id="languageset">' .  strtoupper($k)  . '</a>';
                     ?>
 
                 </li>
@@ -119,8 +120,10 @@
                         </ul>
 
                     </li>
+                    <li class="divider"></li>
 
                     <?php
+                    echo '<li><a href="'.$base_url.'reports/awaiting">'.lang('rr_queue').'</a></li>';
                 }
                 ?>
             </ul>

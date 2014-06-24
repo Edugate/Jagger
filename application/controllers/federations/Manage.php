@@ -325,19 +325,19 @@ class Manage extends MY_Controller
         }
         else {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-            $edit_link = '<span style="float: right;"><a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon small" title="edit">' . lang('rr_edit') . '</a></span>';
+            $edit_link = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon small" title="edit">' . lang('rr_edit') . '</a>';
         }
 
-        $data['result']['general'][] = array('data' => array('data' =>  ' ' . $edit_link, 'class' => '', 'colspan' => 2));
+        $data['result']['general'][] = array('data' => array('data' =>  ' ' . $edit_link, 'class' => 'text-right', 'colspan' => 2));
         if (empty($data['federation_is_active'])) {
             $data['result']['general'][] = array(
-                        'data'=>array( 'data'=>'<span class="alert">'.lang('rr_fed_inactive_full').'</span>', 'class'=>'fedstatusinactive','colspan'=>2)
+                        'data'=>array( 'data'=>'<div data-alert class="alert-box alert">'.lang('rr_fed_inactive_full').'</div>', 'class'=>'fedstatusinactive','colspan'=>2)
                 );
         }
         else
         {
             $data['result']['general'][] = array(
-                        'data'=>array( 'data'=>'<span class="alert">'.lang('rr_fed_inactive_full').'</span>', 'class'=>'fedstatusinactive', 'style'=>'display: none','colspan'=>2)
+                        'data'=>array( 'data'=>'<div data-alert class="alert-box alert">'.lang('rr_fed_inactive_full').'</div>', 'class'=>'fedstatusinactive', 'style'=>'display: none','colspan'=>2)
                 );
 
         }
@@ -353,14 +353,14 @@ class Manage extends MY_Controller
         $sp_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/sp', lang('rr_fed_cntisps_list'));
         $all_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '', lang('rr_fed_cnt_list'));
         $data['result']['general'][] = array(lang('rr_downcontactsintxt'), $idp_contactlist . '<br />' . $sp_contactlist . '<br />' . $all_contactlist);
-        $data['result']['general'][] = array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '">Diagram</a>');
+        $data['result']['general'][] = array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '" class="button secondary">Diagram</a>');
 
         $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-        $edit_attributes_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a></span>';
+        $edit_attributes_link = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
         if (!$has_write_access) {
             $edit_attributes_link = '';
         }
-        $data['result']['attrs'][] = array('data' => array('data' => lang('rr_fed_req_attrs') . $edit_attributes_link . '', 'class' => '', 'colspan' => 2));
+        $data['result']['attrs'][] = array('data' => array('data' =>  $edit_attributes_link . '', 'class' => 'text-right', 'colspan' => 2));
         if (!$has_write_access) {
             $data['result']['attrs'][] = array('data' => array('data' => '<small><div class="notice">' . lang('rr_noperm_edit') . '</div></small>', 'colspan' => 2));
         }
@@ -391,36 +391,36 @@ class Manage extends MY_Controller
             $data['hiddenspan'] =  '<span id="fednameencoded" style="display:none">'.$fed_name.'</span>';
             if($federation->getActive())
             {
-                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert" title="'. lang('btn_deactivatefed').': ' .$federation->getName().'">'.lang('btn_deactivatefed').'</button>';
+                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" title="'. lang('btn_deactivatefed').': ' .$federation->getName().'">'.lang('btn_deactivatefed').'</button>';
                 $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
-                $b = '<br /><button type="button" name="fedstatus" value="enablefed" class="savebutton staricon" style="display:none">'.lang('btn_activatefed').'</button>';
+                $b = '<br /><button type="button" name="fedstatus" value="enablefed" class="savebutton staricon small" style="display:none">'.lang('btn_activatefed').'</button>';
                 $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
-                $b = '<br /><button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon" style="display: none" title="'. lang('btn_applytodelfed').': ' .$federation->getName().'">'.lang('btn_applytodelfed').'</button>';
+                $b = '<br /><button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon alert small" style="display: none" title="'. lang('btn_applytodelfed').': ' .$federation->getName().'">'.lang('btn_applytodelfed').'</button>';
                 $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
             }
             else
             {
-                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon" style="display: none" title="'. lang('btn_deactivatefed').': ' .$federation->getName().'">'.lang('btn_deactivatefed').'</button>';
-                $b .= '<br /><button type="button" name="fedstatus" value="enablefed" class="savebutton staricon">'.lang('btn_activatefed').'</button>';
+                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" style="display: none" title="'. lang('btn_deactivatefed').': ' .$federation->getName().'">'.lang('btn_deactivatefed').'</button>';
+                $b .= '<br /><button type="button" name="fedstatus" value="enablefed" class="savebutton staricon small">'.lang('btn_activatefed').'</button>';
                 $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
-                $b = '<button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon" title="'. lang('btn_applytodelfed').': ' .$federation->getName().'">'.lang('btn_applytodelfed').'</button>';
+                $b = '<button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon alert small" title="'. lang('btn_applytodelfed').': ' .$federation->getName().'">'.lang('btn_applytodelfed').'</button>';
                 $data['result']['management'][] = array('data' => array('data' => ''.$b.'', 'colspan' => 2));
             }
         }
         else {
-            $data['result']['management'][] = array('data' => array('data' => '<small><div class="notice">' . lang('rr_noperm_accessmngt') . '</div></small>', 'colspan' => 2));
+            $data['result']['management'][] = array('data' => array('data' => '<small><div data-alert class="alert-box warning">' . lang('rr_noperm_accessmngt') . '</div></small>', 'colspan' => 2));
         }
 
         if ($federation->getAttrsInmeta()) {
-            $data['result']['metadata'][] = array('data' => array('data' => lang('rr_meta_with_attr'), 'class' => 'lbl lbl-notice', 'colspan' => 2));
+            $data['result']['metadata'][] = array('data' => array('data' => '<div data-alert class="alert-box warning">'.lang('rr_meta_with_attr').'</div>', 'class' => '', 'colspan' => 2));
         }
         else {
-            $data['result']['metadata'][] = array('data' => array('data' => lang('rr_meta_with_noattr'), 'class' => 'lbl lbl-notice', 'colspan' => 2));
+            $data['result']['metadata'][] = array('data' => array('data' => '<div data-alert class="alert-box warning">'.lang('rr_meta_with_noattr').'</div>', 'class' => '', 'colspan' => 2));
         }
 
         if (empty($data['federation_is_active'])) {
-            $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span>' . anchor($data['meta_link']));
-            $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span>' . anchor($data['meta_link_signed']));
+            $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span> ' . anchor($data['meta_link']));
+            $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span> ' . anchor($data['meta_link_signed']));
         }
         else {
 
