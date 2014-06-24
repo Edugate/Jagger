@@ -485,7 +485,9 @@ class Show_element {
         $meminactive = makeLabel('disabled',lang('membership_inactive'),lang('membership_inactive'));
         $membanned = makeLabel('disabled',lang('membership_banned'),lang('membership_banned'));
         $providerdisabled = makeLabel('disabled',lang('rr_inactive'),lang('rr_inactive'));
-        $result = '<ol class="zebramembers">';
+     //   $result = '<ol class="zebramembers">';
+        
+        $result = '<div  class="zebramembers">';
         $pname = array();
         $pentity = array();
         foreach($members as $key => $row)
@@ -494,9 +496,10 @@ class Show_element {
              $pentity[$key] = $row['entityid'];
         }
         array_multisort($pname, SORT_STRING, $pentity, SORT_STRING, $members);
-
+        $nr = 1;
         foreach($members as $m)
         {
+           
            $t1 = '';
            $t2 = '';
            $t3 = '';
@@ -512,9 +515,18 @@ class Show_element {
            {
               $t3 = $providerdisabled;
            }
-           $result .= '<li class="small-12 columns"><div class="large-5 columns"><a href="'.$urlprefix.$m['pid'].'">'.$m['pname'].'</a></div><div class="large-5 columns"><small>'.$m['entityid'].'</small></div><div class="large-2 columns text-right">'.$t1.' '.$t2.' '.$t3.'</div></li>';
+           if($nr%2)
+           {
+              $rowclass = 'odd';
+           }
+           else
+           {
+              $rowclass = 'even';
+           }
+           $result .= '<div class="small-12 columns '.$rowclass.'"><div class="large-5 columns">'.$nr++.'. <a href="'.$urlprefix.$m['pid'].'">'.$m['pname'].'</a></div><div class="large-5 columns">'.$m['entityid'].'</div><div class="large-2 columns text-right">'.$t1.' '.$t2.' '.$t3.'</div></div>';
         }
-        $result .='</ol>';
+      //  $result .='</ol>';
+        $result .='</div>';
 
         return $result;
     }

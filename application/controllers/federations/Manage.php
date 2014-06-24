@@ -325,7 +325,7 @@ class Manage extends MY_Controller
         }
         else {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-            $edit_link = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon small" title="edit">' . lang('rr_edit') . '</a>';
+            $edit_link = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon button small" title="edit">' . lang('rr_edit') . '</a>';
         }
 
         $data['result']['general'][] = array('data' => array('data' =>  ' ' . $edit_link, 'class' => 'text-right', 'colspan' => 2));
@@ -487,15 +487,16 @@ class Manage extends MY_Controller
         if ($has_write_access) {
             $data['fvalidator'] = TRUE;
             $data['result']['fvalidators'] = array();
-            $addbtn = '<span style="float: right;"><a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '" class="button addbutton small addicon">' . lang('rr_add') . '</a></span>';
-            $data['result']['fvalidators'][] = array('data' => array('data' => $addbtn, 'class' => '', 'colspan' => 2));
+            $addbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '" class="button small">' . lang('rr_add') . '</a>';
+            $data['result']['fvalidators'][] = array('data' => array('data' => $addbtn, 'class' => 'text-right', 'colspan' => 2));
         }
         if ($fvalidators->count() > 0) {
 
             if ($has_write_access) {
                 foreach ($fvalidators as $f) {
-                    $editbtn = '<span style="float: right;"><a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon">' . lang('rr_edit') . '</a></span>';
-                    $data['result']['fvalidators'][] = array('data' => array('data' => $f->getName() . ' ' . $editbtn, 'class' => 'highlight', 'colspan' => 2));
+                    $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
+
+                    $data['result']['fvalidators'][] = array('data' => array('data' => $f->getName() . ' ' . $editbtn, 'class' => '', 'colspan' => 2));
                     $isenabled = $f->getEnabled();
                     $method = $f->getMethod();
                     if ($isenabled) {

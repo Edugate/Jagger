@@ -29,6 +29,18 @@ $alert-background: red;
   display: none;
 
 }
+div.zebramembers > div{
+ padding: 2px;
+
+}
+div.zebramembers > div.even
+{
+    background-color: white;
+}
+div.zebramembers > div.odd
+{
+    background-color: darken(white,10%);
+}
 
 article {
   padding: 10px;
