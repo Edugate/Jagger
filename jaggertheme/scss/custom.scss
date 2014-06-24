@@ -3,6 +3,7 @@ $btn1bgcolor: #080808;
 $progressBarActiveBgColor: #080808;
 $progressBarActiveBgColor: $btn1bgcolor;
 $progressBarActiveColor: #fff;
+$warning-background: orange;
 
 
 
@@ -145,10 +146,12 @@ a.bookentity {
 .lbl-disabled {
   background-color: $alert-background;
 }
+.lbl-locked, .lbl-static {
+   background-color: $warning-background;
+
+}
 .ui-tabs-nav li {
     font-size: 70%;
-
-
 }
 .ui-tabs-nav li.ui-tabs-selected,
 .ui-tabs-nav li.ui-state-active { 
@@ -440,5 +443,10 @@ code {
        $bg : $info-color
   );
 
+
+}
+
+div.alert {
+ color: red;
 
 }

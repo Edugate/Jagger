@@ -325,10 +325,10 @@ class Manage extends MY_Controller
         }
         else {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-            $edit_link = '<span style="float: right;"><a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon small" title="edit">' . lang('rr_edit') . '</a></span>';
+            $edit_link = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon small" title="edit">' . lang('rr_edit') . '</a>';
         }
 
-        $data['result']['general'][] = array('data' => array('data' =>  ' ' . $edit_link, 'class' => '', 'colspan' => 2));
+        $data['result']['general'][] = array('data' => array('data' =>  ' ' . $edit_link, 'class' => 'text-right', 'colspan' => 2));
         if (empty($data['federation_is_active'])) {
             $data['result']['general'][] = array(
                         'data'=>array( 'data'=>'<div data-alert class="alert-box alert">'.lang('rr_fed_inactive_full').'</div>', 'class'=>'fedstatusinactive','colspan'=>2)
@@ -353,14 +353,14 @@ class Manage extends MY_Controller
         $sp_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/sp', lang('rr_fed_cntisps_list'));
         $all_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '', lang('rr_fed_cnt_list'));
         $data['result']['general'][] = array(lang('rr_downcontactsintxt'), $idp_contactlist . '<br />' . $sp_contactlist . '<br />' . $all_contactlist);
-        $data['result']['general'][] = array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '">Diagram</a>');
+        $data['result']['general'][] = array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '" class="button secondary">Diagram</a>');
 
         $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-        $edit_attributes_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a></span>';
+        $edit_attributes_link = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
         if (!$has_write_access) {
             $edit_attributes_link = '';
         }
-        $data['result']['attrs'][] = array('data' => array('data' => lang('rr_fed_req_attrs') . $edit_attributes_link . '', 'class' => '', 'colspan' => 2));
+        $data['result']['attrs'][] = array('data' => array('data' =>  $edit_attributes_link . '', 'class' => 'text-right', 'colspan' => 2));
         if (!$has_write_access) {
             $data['result']['attrs'][] = array('data' => array('data' => '<small><div class="notice">' . lang('rr_noperm_edit') . '</div></small>', 'colspan' => 2));
         }
