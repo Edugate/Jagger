@@ -57,7 +57,7 @@ article {
 #navbuttons1 {
   @include sub-nav();
 }
-a.editbutton, a.addbutton, div.yes, div.no {
+a.editbutton, a.addbutton  {
  @include button;
 }
 
@@ -115,7 +115,7 @@ a.bookentity {
   
 }
 
-#titlepage {
+#titlepage, .title-header {
  background-color: #074E68 !important;
  color: white;
  font-size: $h4-font-size;
@@ -377,7 +377,8 @@ ul.fivesteps li {
         width: 20px;
         line-height: 20px;
         display: block;
-        font-size: 10px;
+  //      font-size: 10px;
+
         color: #333;
         background: white;
         border-radius: 3px;
