@@ -759,20 +759,22 @@ var GINIT = {
                     }
                     else
                     {
-                        var nlist = $('<ul/>');
-                        nlist.addClass('zebralist alert small-12 columns');
+                        var nlist = $('<div/>');
+                        nlist.addClass('zebralist row');
                         nlist.css("list-style-type","decimal");
                         var div_data;
                         var n = 1;
+                        var counter = 1;
                         $.each(data, function(i, v) {
                             var span_feds = $('<span/>');
                             $.each(v.feds, function(x,z){
                                 var spanb = '<span class="label">'+z+'</span>&nbsp;';
                                 span_feds.append(spanb);
                             });
-                            div_data = '<li class="small-12 columns"><div class="small-9 columns"><a href="' + v.url + '">' + v.name + '</a> <small><i> (' + v.entityid + ') </i></small></div><div class="fedlbl small-3 end text-right columns">'+span_feds.html()+'</div></li>';
+                            div_data = '<div class="large-12 columns" style="margin-top: 2px; margin-bottom: 2px"><div class="large-9 columns">'+counter+'. <a href="' + v.url + '">' + v.name + '</a> <i> (' + v.entityid + ') </i></div><div class="fedlbl large-3 end text-right columns">'+span_feds.html()+'</div></div>';
                             nlist.append(div_data);
                             n = n+1;
+                            counter = counter +1;
                         });
                         value.append(nlist);
 
