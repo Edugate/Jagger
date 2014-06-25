@@ -30,34 +30,26 @@ class Awaiting extends MY_Controller {
         $this->load->helper('url');
         $this->load->helper('cert');
         $this->load->library('table');
-        $loggedin = $this->j_auth->logged_in();
-        $this->current_site = current_url();
         $this->title = lang('title_approval');
 
-
-        if ($loggedin)
-        {
-            $this->session->set_userdata(array('currentMenu' => 'awaiting'));
-            $this->load->library('zacl');
-            $this->load->library('j_queue');
-            return;
-        } elseif (!$this->input->is_ajax_request())
-        {
-            $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'location');
-        } else
-        {
-            show_error('session not valid', 403);
-        }
     }
 
     function alist()
     {
-        $this->title = "Identity Provider (Home Organization) registration - success";
+        $loggedin = $this->j_auth->logged_in();
+        if ($loggedin)
+        {
+            $this->load->library('zacl');
+            $this->load->library('j_queue');
+        }
+        else
+        {
+            redirect('auth/login', 'location');
+        }
+
         $data['content_view'] = 'reports/awaiting_view';
         $data['message'] = $this->alert;
         $data['error_message'] = $this->error_message;
-
         $this->load->view('page', $data);
     }
 
@@ -74,6 +66,8 @@ class Awaiting extends MY_Controller {
             echo "not authenticated";
             return;
         }
+        $this->load->library('zacl');
+        $this->load->library('j_queue');
         $queueArray = $this->em->getRepository("models\Queue")->findAll();
         $kid = 0;
         $queuelist = $this->_getQueueList();
@@ -240,12 +234,37 @@ class Awaiting extends MY_Controller {
             echo "not authenticated";
             return;
         }
+        $this->load->library('zacl');
+        $this->load->library('j_queue');
 
         $queuelist = $this->_getQueueList();
         $data['list'] = $queuelist;
 
         $data['content_view'] = 'reports/dashawaiting_list_view';
         $this->load->view('reports/dashawaiting_list_view', $data);
+    }
+
+    function counterqueue()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            set_status_header(403);
+            echo 'Access denied';
+            return;
+        }
+        if (!$this->j_auth->logged_in())
+        {
+           set_status_header(403);
+           echo "not authenticated";
+           return;
+        }
+        $this->load->library('zacl');
+        $this->load->library('j_queue');
+        $queuelist = $this->_getQueueList();
+        $c = count($queuelist);
+        set_status_header(200);
+        echo $c ;
+        return;
     }
 
     private function idpDetails($queueList)
@@ -259,6 +278,15 @@ class Awaiting extends MY_Controller {
 
     function detail($token)
     {
+        $loggedin = $this->j_auth->logged_in();
+        if ($loggedin)
+        {
+            $this->load->library('zacl');
+            $this->load->library('j_queue');
+        }
+        else {
+            redirect('auth/login', 'location');
+        } 
 
         $queueList = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $token));
         if (!empty($queueList))
@@ -431,6 +459,19 @@ class Awaiting extends MY_Controller {
 
     function approve()
     {
+        $loggedin = $this->j_auth->logged_in();
+        if ($loggedin)
+        {
+            $this->load->library('zacl');
+            $this->load->library('j_queue');
+        }
+        else
+        {
+            redirect('auth/login', 'location');
+
+        }
+
+
         log_message('debug', 'approve');
         $message = "";
         $error_message = null;
@@ -924,6 +965,18 @@ class Awaiting extends MY_Controller {
 
     function reject()
     {
+        $loggedin = $this->j_auth->logged_in();
+        if ($loggedin)
+        {
+            $this->load->library('zacl');
+            $this->load->library('j_queue');
+        }
+        else
+        {
+            redirect('auth/login', 'location');
+
+        }
+
         if ($this->input->post('qaction') === 'reject')
         {
             $notification = $this->config->item('notify_if_queue_rejected');

@@ -5,11 +5,11 @@ if (empty($list))
 }
 if (!empty($message))
 {
-    echo '<p>' . $message . '</p>';
+    echo '<div data-alert class="alert-box info"><p>' . $message . '</p></div>';
 }
 if (!empty($error_message))
 {
-    echo '<span class="alert">' . $error_message . '</span>';
+    echo '<div data-alert class="alert-box warning">' . $error_message . '</div>';
 }
 if (!empty($list))
 {

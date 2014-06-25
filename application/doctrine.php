@@ -4,7 +4,8 @@ define('APPPATH', dirname(__FILE__) . '/');
 define('BASEPATH',  '/opt/codeigniter/system/');
 define('ENVIRONMENT', 'development');
 define('ATTR_DEFAULT_TABLE_COLLATE', 'utf8_general_ci');
-define('ATTR_DEFAULT_TABLE_CHARSET', 'utf8');
+//define('ATTR_DEFAULT_TABLE_CHARSET', 'utf8');
+//define('ATTR_DEFAULT_TABLE_CHARSET', 'latin1');
 chdir(APPPATH);
 
 require_once 'libraries/Doctrine/Common/ClassLoader.php';

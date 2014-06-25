@@ -1134,22 +1134,31 @@ $(function() {
     $("#registrationdate").datepicker({
         dateFormat: 'yy-mm-dd'
     });
-    $("#responsecontainer").load("awaiting/ajaxrefresh");
+    var baseurl = $("[name='baseurl']").val();
+    if (baseurl === undefined)
+    {
+        baseurl = '';
+    }
+
+    $("#responsecontainer").load(baseurl+"reports/awaiting/ajaxrefresh");
     var refreshId = setInterval(function() {
-        $("#responsecontainer").load('awaiting/ajaxrefresh');
+        $("#responsecontainer").load(baseurl+'reports/awaiting/ajaxrefresh');
     }, 172000);
-    $("#dashresponsecontainer").load("reports/awaiting/dashajaxrefresh");
+    $("#dashresponsecontainer").load(baseurl+"reports/awaiting/dashajaxrefresh");
     var refreshId = setInterval(function() {
-        $("#dashresponsecontainer").load('reports/awaiting/dashajaxrefresh');
+        $("#dashresponsecontainer").load(baseurl+'reports/awaiting/dashajaxrefresh');
     }, 172000);
+    
 
     $.ajaxSetup({
         cache: false
     });
+    $("#qcounter").load(baseurl+'reports/awaiting/counterqueue');
+    var refreshId = setInterval(function() {
+            $("#qcounter").load(baseurl+'reports/awaiting/counterqueue');
+     }, 86000);
+    
 
-    $.ajaxSetup({
-        cache: false
-    });
     $('#languageset select').on('change', function() {
          var link = $("div#languageset form").attr('action');
          var url = link + this.value;

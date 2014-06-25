@@ -19,6 +19,8 @@
                 <?php
                 if ($loggedin)
                 {
+                    echo '<li><a href="'.$base_url.'reports/awaiting">Q<sup><span id="qcounter" class="label alert tiny round"></span></sup></a></li>';
+                    
                     ?>
                     <li class="has-dropdown">
                         <a href="#"><?php echo htmlentities($user); ?></a>
@@ -123,7 +125,6 @@
                     <li class="divider"></li>
 
                     <?php
-                    echo '<li><a href="'.$base_url.'reports/awaiting">'.lang('rr_queue').'</a></li>';
                 }
                 ?>
             </ul>
