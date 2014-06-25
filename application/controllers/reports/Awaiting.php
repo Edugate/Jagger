@@ -120,6 +120,12 @@ class Awaiting extends MY_Controller {
                 }
             }
         }
+        elseif(strcasecmp($action,'apply') ==0 && strcasecmp( $recipientType,'entitycategory') == 0)
+        {
+           /**
+            * @todo decide who can approve it
+            */
+        } 
         return $result;
     }
 
@@ -379,8 +385,16 @@ class Awaiting extends MY_Controller {
             {
                if ($this->_hasAccess($queueList))
                {
+                    $approveaccess = $this->_hasApproveAccess($queueList);
                     $data['requestdata'] = $this->j_queue->displayApplyForEntityCategory($queueList);
-                    $buttons = $this->j_queue->displayFormsButtons($queueList->getId());
+                    if($approveaccess)
+                    {
+                       $buttons = $this->j_queue->displayFormsButtons($queueList->getId());
+                    }
+                    else
+                    {
+                       $buttons = $this->j_queue->displayFormsButtons($queueList->getId(),TRUE);
+                    }
                     $data['content_view'] = 'reports/awaiting_applyforentcat_view';
                     $data['requestdata'][]['2cols'] = $buttons;
                     $this->load->view('page', $data);
@@ -921,9 +935,10 @@ class Awaiting extends MY_Controller {
                 $queueAction = $queueObj->getAction();
                 $creator = $queueObj->getCreator();
                 $reject_access = $this->_hasAccess($queueObj);
+                $recipienttype = $queueObj->getRecipientType();
                 if (!empty($creator))
                 {
-                    $reject_access = (bool) $creator->getUsername() === $this->j_auth->current_user();
+                    $reject_access = (bool) ($creator->getUsername() === $this->j_auth->current_user());
                 }
                 if ($reject_access === FALSE)
                 {
@@ -942,7 +957,6 @@ class Awaiting extends MY_Controller {
                     } elseif (($queueAction === 'Join'))
                     {
                         $recipient = $queueObj->getRecipient();
-                        $recipienttype = $queueObj->getRecipientType();
                         $type = $queueObj->getType();
                         if (!empty($recipienttype) && !empty($recipient))
                         {
@@ -966,6 +980,16 @@ class Awaiting extends MY_Controller {
                             }
                         }
                     }
+                    elseif(strcasecmp($queueAction,'apply')==0 && strcasecmp($recipienttype,'entitycategory')==0)
+                    {
+                        $isAdmin = $this->j_auth->isAdministrator();
+                        if ($isAdmin)
+                        {
+                            $reject_access = TRUE;
+                        }
+      
+
+                    }
                 }
                 $p = $queueObj->getName();
                 $qtoken = $queueObj->getToken();
@@ -981,12 +1005,12 @@ class Awaiting extends MY_Controller {
                         $additionalReciepients[] = $queueObj->getEmail();
                     }
 
-                    $subject = 'Your request has been rejected';
-                    $body = "Hi,\r\n";
-                    $body .= "Your request placed on " . base_url() . "\r\n";
-                    $body .= "Unfortunately your request with tokenID: " . $queueObj->getToken() . " has been rejected\r\n";
+                    $subject = 'Request has been canceled/rejected';
+                    $body = 'Hi,'.PHP_EOL;
+                    $body .= 'The request placed on ' . base_url() .PHP_EOL ;
+                    $body .= 'Request with tokenID: ' . $queueObj->getToken() . ' has been canceled/rejected'.PHP_EOL;
                     $body .= "";
-                    log_message('debug', 'Queue with token:' . $queueObj->getToken() . ' has been rejected by ' . $this->j_auth->current_user());
+                    log_message('debug', 'Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->j_auth->current_user());
                     $this->em->remove($queueObj);
                     if ($notification === TRUE)
                     {

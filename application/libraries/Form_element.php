@@ -509,8 +509,13 @@ class Form_element
                 $entCategoriesArray['' . $v->getId() . '']['sel'] = true;
             }
         }
-        $r = '';
-        $r = '<div class="large-8 small-offset-0 large-offset-3 columns"><ul class="checkboxlist">';
+        $isAdmin = $this->ci->j_auth->isAdministrator();
+        $r ='';
+        if(!$isAdmin)
+        {
+           $r .= '<div class="small-12 columns"><div data-alert class="alert-box info">'.lang('approval_required').'</div></div>'; 
+        }
+        $r .= '<div class="large-8 small-offset-0 large-offset-3 end columns"><ul class="checkboxlist">';
         foreach ($entCategoriesArray as $k => $v)
         {
             if (isset($v['sel']))
@@ -521,7 +526,15 @@ class Form_element
             {
                 $is = false;
             }
-            $r .= '<li>' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is)) . $v['name'] . '</li>';
+            if(empty($v['enabled']))
+            {
+               $lbl = '<span class="label alert">'.lang('rr_disabled').'</span>';
+            }
+            else
+            {
+               $lbl =  '<span class="label">'.lang('rr_enabled').'</span>';
+            }
+            $r .= '<li>' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is)) . $v['name'] . ' '.$lbl.'</li>';
         }
         $r .= '</ul></div>';
         $result[] = $r;

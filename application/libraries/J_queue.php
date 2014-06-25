@@ -39,19 +39,28 @@ class J_queue
      * @param type $qid
      * @return string 
      */
-    function displayFormsButtons($qid)
+    function displayFormsButtons($qid,$onlycancel = FALSE)
     {
         /* add approve form */
-        $approve_hidden_attributes = array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes');
-        $approve_attrid = array('id' => 'approvequeue');
-        $approve_form = form_open('reports/awaiting/approve', $approve_attrid, $approve_hidden_attributes);
-        $approve_form .= '<button type="submit" name="mysubmit" value="Accept request!" class="savebutton saveicon right">' . lang('rr_submitapprove') . '</button>';
-        $approve_form .= form_close();
+        $rejecttext = lang('rr_submitreject');
+        if(!$onlycancel)
+        {
+           $approve_hidden_attributes = array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes');
+           $approve_attrid = array('id' => 'approvequeue');
+           $approve_form = form_open('reports/awaiting/approve', $approve_attrid, $approve_hidden_attributes);
+           $approve_form .= '<button type="submit" name="mysubmit" value="Accept request!" class="savebutton saveicon right">' . lang('rr_submitapprove') . '</button>';
+           $approve_form .= form_close();
+        }
+        else
+        {
+           $approve_form = '';
+           $rejecttext = lang('rr_cancel');
+        }
         /* add reject form */
         $reject_hidden_attributes = array('qaction' => 'reject', 'qid' => $qid);
         $reject_attrid = array('id' => 'rejectqueue');
         $reject_form = form_open('reports/awaiting/reject', $reject_attrid, $reject_hidden_attributes);
-        $reject_form .= '<button type="submit" name="mysubmit" value="Reject request!" class="resetbutton reseticon left alert">' . lang('rr_submitreject') . '</button>';
+        $reject_form .= '<button type="submit" name="mysubmit" value="Reject request!" class="resetbutton reseticon left alert">' . $rejecttext . '</button>';
         $reject_form .= form_close();
 
 

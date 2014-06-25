@@ -1029,6 +1029,7 @@ $lang['rr_jobdonein']                 = 'The job done in';
 $lang['prov_notexist']              = 'Provider does not exist';
 $lang['rr_noentcatsregistered']     = 'No Entity Categories registered';
 $lang['entcat_notexist']            = 'Entity Category does not exist';
+$lang['approval_required']         = 'The approval will be required';
 
 $lang['err_atleastonesso']         = 'At least one SingleSignOn URL must be defined';
 $lang['entdswayf']                          = 'The link contains list of all trusted Identity Providers in json format. Generaly it can be consumed by DiscoveryService particularly DiscoJuice';
