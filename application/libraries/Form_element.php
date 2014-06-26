@@ -484,7 +484,7 @@ class Form_element
         {
             $sessform = TRUE;
         }
-        $entCategories = $this->em->getRepository("models\Coc")->findAll();
+        $entCategories = $this->em->getRepository("models\Coc")->findBy(array('type'=>'entcat'));
         $entCategoriesArray = array();
         foreach ($entCategories as $v)
         {

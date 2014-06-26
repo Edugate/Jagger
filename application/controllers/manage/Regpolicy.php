@@ -80,7 +80,7 @@ class Regpolicy extends MY_Controller
          $data['showaddbutton'] = TRUE;
        }
 
-       $data['titlepage'] = lang('ent_list_title');
+       $data['titlepage'] = lang('title_regpols');
 
        $data['content_view'] = 'manage/regpol_show_view';
        $this->load->view('page',$data);

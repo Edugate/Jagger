@@ -367,16 +367,6 @@ class Providerupdater {
             }
         }
         /**
-        if (array_key_exists('description', $ch))
-        {
-            if(strcmp($ent->getDescription(), $ch['description'])!=0)
-            {
-               $m['Description'] = array('before'=>$ent->getDescription(),'after'=>$ch['description']);
-            }
-            $ent->setDescription($ch['description']);
-        }
-        */
-        /**
          * @todo track coc changes
          */
         if (array_key_exists('coc', $ch))
