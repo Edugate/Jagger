@@ -66,6 +66,11 @@ class Coc {
     protected $is_enabled;
 
     /**
+     * @Column(type="string",length=6,nullable=true)
+     */
+    protected $lang;
+
+    /**
      * @ManyToMany(targetEntity="Provider",mappedBy="coc")
      */
     protected $provider;
@@ -103,6 +108,11 @@ class Coc {
     {
         return $this->cdescription;
     }
+   
+    public function getLang()
+    {
+        return $this->lang;
+    }
 
     public function getProviders()
     {
@@ -114,7 +124,10 @@ class Coc {
         $this->name = $name;
         return $this;
     }
-    
+
+    /**
+     * allowed types: entcat, regpol
+     */
     public function setType($type)
     {
         $this->type = $type;
@@ -128,7 +141,13 @@ class Coc {
     }
     public function setDescription($desc)
     {
-        $this->cdescription = $desc;
+        $this->cdescription = trim($desc);
+        return $this;
+    }
+
+    public function setLang($lang)
+    {
+        $this->lang = trim($lang);
         return $this;
     }
     public function setProvider($provider)

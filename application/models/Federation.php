@@ -142,7 +142,7 @@ class Federation
 
 
     /** 
-     * @OneToMany(targetEntity="FederationValidator",mappedBy="federation")
+     * @OneToMany(targetEntity="FederationValidator",mappedBy="federation", cascade={"persist", "remove"})
      */
     protected $fvalidator;
 

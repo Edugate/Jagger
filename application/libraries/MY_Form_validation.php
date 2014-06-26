@@ -615,6 +615,19 @@ class MY_form_validation extends CI_form_validation {
 		}
 
 	}
+    function match_language($str)
+    {
+       $langs = languagesCodes();
+       
+       if(array_key_exists($str,$langs))
+       {
+          return TRUE;
+       }
+       $this->set_message('match_language', ''.lang('wronglangcode').': '.htmlentities($str) );
+       return FALSE;
+
+    }
+
 
      function valid_url_or_empty($str)
      {
@@ -705,6 +718,8 @@ class MY_form_validation extends CI_form_validation {
             return true;
         }
     }
+
+
     function valid_static($usage, $t_metadata_entity)
     {
         $tmp_array=array();
