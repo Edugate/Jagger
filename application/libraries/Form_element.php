@@ -3120,6 +3120,36 @@ class Form_element
         $result .=  form_fieldset_close();
         return $result;
     }
+    public function generateAddRegpol()
+    {
+        $langs = languagesCodes();
+        $langselected = set_value('regpollang',$this->defaultlangselect);
+        $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">'.lang('entcat_enabled').'</label></div><div class="small-6 large-7 columns end">'. form_checkbox('cenabled', 'accept') . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">'.lang('regpol_language').'</label></div><div class="small-6 large-7 columns end">'.form_dropdown('regpollang',$langs,$langselected).'</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">'.lang('entcat_shortname').'</label></div><div class="small-6 large-7 columns end">'. form_input('name', set_value('name')) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">'.lang('entcat_url').'</label></div><div class="small-6 large-7 columns end">'. form_input('url', set_value('url')) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">'.lang('entcat_description').'</label></div><div class="small-6 large-7 columns end">'. form_textarea('description', set_value('description')) . '</div></div>';
+        return $r;
+    }
+    public function generateEditRegpol(models\Coc $coc)
+    {
+        $langs = languagesCodes();
+        $langset = $coc->getLang();
+        if(!empty($langset))
+        {
+           if(!array_key_exists($langset,$langs))
+           {
+              $langs[''.$langset.''] = $langset;
+           }
+        }
+        $langselected = set_value($langset,$this->defaultlangselect);
+        $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">'.lang('entcat_enabled').'</label></div><div class="small-6 large-7 columns end">'. form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">'.lang('regpol_language').'</label></div><div class="small-6 large-7 columns end">'.form_dropdown('regpollang',$langs,$langselected).'</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">'.lang('entcat_shortname').'</label></div><div class="small-6 large-7 columns end">' .form_input('name', set_value('name', $coc->getName())) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">'.lang('entcat_url').'</label></div><div class="small-6 large-7 columns end">'.form_input('url', set_value('url', $coc->getUrl())) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">'.lang('entcat_description').'</label></div><div class="small-6 large-7 columns end">' .form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
+        return $r;
+    }
 
     public function generateAddCoc()
     {

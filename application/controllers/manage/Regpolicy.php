@@ -6,28 +6,26 @@ if (!defined('BASEPATH'))
  * 
  * @package     RR3
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
 
 /**
- * Coc Class
+ * Regpolicy Class
  * 
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 
-class Coc extends MY_Controller
+class Regpolicy extends MY_Controller
 {
 
     function __construct()
     {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
-        $this->current_site = current_url();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
         $this->load->helper('form');
@@ -37,15 +35,15 @@ class Coc extends MY_Controller
       
     public function show($id=null)
     {
-       $this->title=lang('title_entcats');
+       $this->title=lang('title_regpols');
        if(isset($id))
        {
            show_error('Argument passed to page  not allowed',403);
            return;
      
        }
-       $has_write_access = $this->zacl->check_acl('coc', 'write', 'default', '');
-       $obj_list = $this->em->getRepository("models\Coc")->findBy( array('type'=>'entcat'));
+       $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
+       $obj_list = $this->em->getRepository("models\Coc")->findBy( array('type'=>'regpol'));
        $data['rows'] = array(); 
        if(is_array($obj_list) && count($obj_list)>0)
        {
@@ -53,7 +51,7 @@ class Coc extends MY_Controller
           {
               if($has_write_access)
               {
-                 $l = '<a href="'.base_url().'manage/coc/edit/'.$c->getId().'" class="button tiny">'.lang('rr_edit').'</a>';
+                 $l = '<a href="'.base_url().'manage/regpolicy/edit/'.$c->getId().'" class="button tiny">'.lang('rr_edit').'</a>';
               }
               else
               {
@@ -68,13 +66,13 @@ class Coc extends MY_Controller
               {
                   $lbl = '<span class="lbl lbl-disabled">'.lang('rr_disabled').'</span>';
               }
-              $data['rows'][] = array($c->getName(),$lbl ,anchor($c->getUrl(),$c->getUrl(),array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(),$l);
+              $data['rows'][] = array($c->getName(),$c->getLang(),$lbl ,anchor($c->getUrl(),$c->getUrl(),array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(),$l);
          
           } 
        }
        else
        {
-          $data['error_message'] = lang('rr_noentcatsregistered');
+          $data['error_message'] = lang('rr_noregpolsregistered');
        }
        $data['showaddbutton'] = FALSE;
        if($has_write_access)
@@ -84,31 +82,33 @@ class Coc extends MY_Controller
 
        $data['titlepage'] = lang('ent_list_title');
 
-       $data['content_view'] = 'manage/coc_show_view';
+       $data['content_view'] = 'manage/regpol_show_view';
        $this->load->view('page',$data);
           
     }
     private function _add_submit_validate()
     {
-        $this->form_validation->set_rules('name',lang('entcat_shortname'),'required|trim|cocname_unique');
-        $this->form_validation->set_rules('url',lang('entcat_url'),'required|trim|valid_url|cocurl_unique');
-        $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
-        $this->form_validation->set_rules('cenabled','Enabled','xss_clean');
+        $this->form_validation->set_rules('name',lang('regpol_shortname'),'required|trim|cocname_unique');
+        $this->form_validation->set_rules('regpollang',lang('regpol_language'),'required|trim|match_language');
+        $this->form_validation->set_rules('url',lang('regpol_url'),'required|trim|valid_url|cocurl_unique');
+        $this->form_validation->set_rules('description',lang('regpol_description'),'xss_clean');
+        $this->form_validation->set_rules('cenabled',lang('regpol_enabled'),'xss_clean');
         return $this->form_validation->run();
     }
     private function _edit_submit_validate($id)
     {
-        $this->form_validation->set_rules('name',lang('entcat_shortname'),'required|trim|cocname_unique_update['.$id.']');
-        $this->form_validation->set_rules('url',lang('entcat_url'),'required|trim|valid_url|cocurl_unique_update['.$id.']');
-        $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
-        $this->form_validation->set_rules('cenabled','Enabled','xss_clean');
+        $this->form_validation->set_rules('name',lang('regpol_shortname'),'required|trim|cocname_unique_update['.$id.']');
+        $this->form_validation->set_rules('url',lang('regpol_url'),'required|trim|valid_url|cocurl_unique_update['.$id.']');
+        $this->form_validation->set_rules('regpollang',lang('regpol_language'),'required|trim|match_language');
+        $this->form_validation->set_rules('description',lang('regpol_description'),'xss_clean');
+        $this->form_validation->set_rules('cenabled',lang('regpol_enabled'),'xss_clean');
         return $this->form_validation->run();
     }
     public function add()
     {
-        $this->title = lang('title_addentcat');
-        $data['titlepage'] =  lang('title_addentcat');
-        $has_write_access = $this->zacl->check_acl('coc', 'write', 'default', '');
+        $this->title = lang('title_addregpol');
+        $data['titlepage'] =  lang('title_addregpol');
+        $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
         if(!$has_write_access)
         {
             show_error('No access',401);
@@ -121,11 +121,13 @@ class Coc extends MY_Controller
            $url = $this->input->post('url');
            $cenabled = $this->input->post('cenabled');
            $description = $this->input->post('description');
+           $lang = $this->input->post('regpollang');
+         
           
            $ncoc = new models\Coc;
            $ncoc->setName($name);
            $ncoc->setUrl($url);
-           $ncoc->setType('entcat');
+           $ncoc->setType('regpol');
            if(!empty($description))
            {
                $ncoc->setDescription($description);
@@ -138,16 +140,17 @@ class Coc extends MY_Controller
            {
               $ncoc->setAvailable(FALSE);
            }
+           $ncoc->setLang($lang);
            $this->em->persist($ncoc);
            $this->em->flush();
            
-          $data['success_message'] = lang('rr_entcatadded');
+          $data['success_message'] = lang('rr_regpoladded');
         }
         else
         {
             $f = form_open();
             $this->load->library('form_element');
-            $f .= $this->form_element->generateAddCoc();
+            $f .= $this->form_element->generateAddRegpol();
             $f .= '<div class="buttons small-12 medium-10 large-10 columns end text-right">';
             $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">'.lang('rr_reset').'</button> ';
             $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
@@ -155,32 +158,32 @@ class Coc extends MY_Controller
             $f .= form_close();
             $data['form'] = $f;
         }
-            $data['content_view'] = 'manage/coc_add_view';
+            $data['content_view'] = 'manage/regpol_add_view';
             $this->load->view('page',$data);
     }
     public function edit($id)
     {
-       $this->title = lang('title_entcatedit');
+       $this->title = lang('title_regpoledit');
       
        if(empty($id) OR !is_numeric($id))
        {
           show_error('Not found',404);
           return;
        }
-       $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$id,'type'=>'entcat'));
+       $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$id,'type'=>'regpol'));
        if(empty($coc))
        {
           show_error('Not found',404);
           return;
        }
-       $has_write_access = $this->zacl->check_acl('coc', 'write', 'default', '');
+       $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
        if(!$has_write_access)
        {
            show_error('No access',401);
            return;
        }
-       $data['titlepage'] = lang('title_entcat').': '.htmlentities($coc->getName());
-       $data['subtitlepage'] = lang('title_entcatedit');
+       $data['titlepage'] = lang('title_regpol').': '.htmlentities($coc->getName());
+       $data['subtitlepage'] = lang('title_regpoledit');
 
        if($this->_edit_submit_validate($id) === TRUE)
        {
@@ -196,6 +199,7 @@ class Coc extends MY_Controller
            $coc->setName($this->input->post('name'));
            $coc->setUrl($this->input->post('url'));
            $coc->setDescription($this->input->post('description'));
+           $coc->setLang($this->input->post('regpollang'));
            $this->em->persist($coc);
            $this->em->flush();
            $data['success_message'] = lang('updated');
@@ -203,13 +207,13 @@ class Coc extends MY_Controller
        $data['coc_name'] = $coc->getName();
        $this->load->library('form_element');
        $f = form_open();
-       $f .= $this->form_element->generateEditCoc($coc);
+       $f .= $this->form_element->generateEditRegpol($coc);
        $f .= '<div class="buttons large-10 medium-10 small-12 text-right columns end">';
        $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">'.lang('rr_reset').'</button> ';
        $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
        $f .= form_close();
        $data['form'] = $f;
-       $data['content_view'] = 'manage/coc_edit_view';
+       $data['content_view'] = 'manage/regpol_edit_view';
        $this->load->view('page',$data);
        
     }
