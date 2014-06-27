@@ -100,7 +100,10 @@
                             }
                             ?>
                             <li><a href="<?php echo $base_url; ?>manage/fedcategory/show"><?php echo lang('rrfedcatslist'); ?></a></li>
+                            <li class="divider"></li>
                             <li><a href="<?php echo $base_url; ?>manage/coc/show"><?php echo lang('entcats_menulink'); ?></a></li>
+                            <li><a href="<?php echo $base_url; ?>manage/regpolicy/show"><?php echo lang('regpols_menulink'); ?></a></li>
+                            <li class="divider"></li>
                             <li><a href="<?php echo $base_url; ?>attributes/attributes/show"><?php echo lang('rr_attr_defs'); ?></a></li>
                             <?php
                             if ($isAdministrator)

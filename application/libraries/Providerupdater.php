@@ -321,12 +321,14 @@ class Providerupdater {
                $m['Localized HelpdeskURL'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
         }
+
+        $currentCocs = $ent->getCoc();
         /**
          * @todo track coc changes
          */
         if (array_key_exists('coc', $ch))
         {
-            $currentEntCat = $ent->getCoc();
+            $currentEntCat = &$currentCocs;
             foreach($currentEntCat as $k => $v)
             {
                 $cid = $v->getId();
@@ -359,6 +361,43 @@ class Providerupdater {
                 }
             }
         }
+
+        if (array_key_exists('regpol', $ch))
+        {
+            $currentRegPol = &$currentCocs;
+            foreach($currentRegPol as $k => $v)
+            {
+                $cid = $v->getId();
+                $ctype = $v->getType();
+                if($ctype === 'regpol')
+                {
+                   $foundkey = array_search($cid,$ch['regpol']);
+                   if($foundkey === null || $foundkey === false)
+                   {
+                      $ent->removeCoc($v);
+                   }
+                }
+            }
+            foreach($ch['regpol'] as $k=>$v)
+            {
+                if(!empty($v) && is_numeric($v))
+                {
+                    $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$v,'type'=>'regpol'));
+                    if(!empty($c) && !$currentRegPol->contains($c))
+                    {
+                       if($isAdmin)
+                       {
+                          $ent->setCoc($c);
+                       }
+                       else
+                       {
+                          $this->ci->approval->applyForRegistrationPolicy($c, $ent);
+                       }
+                    }
+                }
+            }
+        }
+        
         if (array_key_exists('privacyurl', $ch))
         {
             if($ent->getPrivacyURL() !== $ch['privacyurl'])

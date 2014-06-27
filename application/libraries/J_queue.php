@@ -218,6 +218,60 @@ class J_queue
         
 
     }
+    function displayApplyForRegistrationPolicy(models\Queue $q)
+    {
+      
+        $result['entityid'] = $q->getName();
+        $result['entcatid'] = $q->getRecipient();
+        $r = array();
+        $r[] = array('header'=>lang('request'));
+
+        $r[] = array('name'=>lang('type'), 'value'=>lang('req_reqpolapply'));
+        $creator = $q->getCreator();
+        if ($creator) {
+           $r[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
+        }
+        else {
+           $r[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
+        }
+        $entityid = $q->getName();
+        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid'=>$entityid));
+
+        if(!empty($provider))
+        {
+           $r[] = array('name'=>lang('rr_provider'),'value'=>$entityid);
+        }
+        else
+        {
+
+           $r[] = array('name'=>lang('rr_provider'),'value'=>$entityid.' <span class="label alert">'.lang('prov_notexist').'</span>');
+
+        }
+
+        $entcatid = $q->getRecipient();
+        $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$entcatid,'type'=>'regpol'));
+        $cocenabled = $coc->getAvailable();
+        if($cocenabled)
+        {
+           $lenabled = '';
+        }
+        else
+        {
+           $lenabled = '<span class="label alert">'.lang('rr_disabled').'</span>';
+        }
+        if(empty($coc))
+        {
+            $r[] = array('name'=>lang('rr_regpolicy'),'value'=>'<div data-alert class="alert-box alert">'.lang('regpol_notexist').'</div>');
+        }
+        else
+        {
+            $r[] = array('name'=>lang('rr_regpolicy'),'value'=>'<span class="label info">'.$coc->getLang().'</span> '.$coc->getName().': '.$coc->getUrl() . ' '.$lenabled);
+
+        }
+        return $r;
+        
+
+    }
 
     function displayRegisterUser(models\Queue $q)
     {

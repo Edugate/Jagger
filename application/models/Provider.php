@@ -170,6 +170,7 @@ class Provider {
 
     /**
      * regpolicy is used in metadata for RegistrationPolicy
+     * DEPRECATED - to be removed in v 2.x
      * @Column(type="text",nullable=true)
      */
     protected $regpolicy;
@@ -1477,7 +1478,7 @@ class Provider {
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
         //$regdate = $provider->getRegistrationDate();
         $this->setRegistrationDate($provider->getRegistrationDate());
-        $this->setRegistrationPolicyFromArray($provider->getRegistrationPolicy(), TRUE);
+        //$this->setRegistrationPolicyFromArray($provider->getRegistrationPolicy(), TRUE);
 
         $this->overwriteWithNameid($provider);
         log_message('debug','GG :'.serialize($this->getNameIds())); 
@@ -3523,18 +3524,49 @@ class Provider {
                 $EntExtension_Node->appendChild($RegistrationInfo_Node);
             }
         }
+
+
+        $cocs = $this->getCoc();
+        $entityCategories = array();
+        $registrationPolicies = array();
+        foreach($cocs as $k=>$v)
+        {
+           $cocsenabled = $v->getAvailable();
+           $cocstype = $v->getType();
+           if($cocsenabled === TRUE)
+           {
+             if( $cocstype === 'entcat')
+             {
+                $entityCategories[] = $v;
+             }
+             elseif($cocstype === 'regpol')
+             {
+               $registrationPolicies[] = $v;
+             }
+           }
+        }
+
         if(!empty($RegistrationInfo_Node))
         {
-           $regpolicies = $this->getRegistrationPolicy();
-           if(count($regpolicies)>0)
+          // $regpolicies = $this->getRegistrationPolicy();
+           if(count($registrationPolicies)>0)
            {
-              foreach($regpolicies as $rkey=>$rvalue)
+              $langsset = array();
+              foreach($registrationPolicies as $v)
               {
+                  $vlang = $v->getLang();
+                  if(in_array($vlang,$langsset))
+                  {
+                     \log_message('error',__METHOD__.' multiple registration policies are set for lang:'.$vlang.' for entityId: '.$this->entityid);
+                     continue;
+                  }
+                  $langsset[] = $vlang;
                   $RegPolicyNode = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:rpi', 'mdrpi:RegistrationPolicy');
-                  $RegPolicyNode->setAttribute('xml:lang',$rkey);
-                  $RegPolicyNode->appendChild($RegistrationInfo_Node->ownerDocument->createTextNode($rvalue));
+                  $RegPolicyNode->setAttribute('xml:lang',$v->getLang());
+                  $RegPolicyNode->appendChild($RegistrationInfo_Node->ownerDocument->createTextNode($v->getUrl()));
                   $RegistrationInfo_Node->appendChild($RegPolicyNode);
               }
+              unset($langsset);
            }
            elseif($this->is_local === TRUE && empty($this->registrar) && !empty($configRegistrationPolicy) && !empty($configRegistrarLoad))
            {
@@ -3542,21 +3574,9 @@ class Provider {
                   $RegPolicyNode->setAttribute('xml:lang','en');
                   $RegPolicyNode->appendChild($EntityDesc_Node->ownerDocument->createTextNode($configRegistrationPolicy));
                   $RegistrationInfo_Node->appendChild($RegPolicyNode);
-
            }
         }
 
-        $cocs = $this->getCoc();
-        $entityCategories = array();
-        foreach($cocs as $k=>$v)
-        {
-           $cocsenabled = $v->getAvailable();
-           $cocstype = $v->getType();
-           if($cocsenabled === TRUE && $cocstype === 'entcat')
-           {
-              $entityCategories[] = $v;
-           }
-        }
         if (count($entityCategories) > 0)
         {
             $AttributesGroup_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:attribute', 'mdattr:EntityAttributes');
@@ -4118,24 +4138,6 @@ class Provider {
                 }
             }
 
-            foreach ($a['details']['regpolicy'] as $rp)
-            {
-                /**
-                 * extend regpolicy 
-                 */
-            }
-            if(array_key_exists('regpolicy',$a['details']))
-            {
-                if(is_array($a['details']['regpolicy']))
-                {
-                     $this->setRegistrationPolicyFromArray($a['details']['regpolicy'], TRUE);
-                }
-                else
-                {
-                     $this->resetRegistrationPolicy();
-                }
-
-            }
 
             foreach ($a['details']['contacts'] as $c)
             {
