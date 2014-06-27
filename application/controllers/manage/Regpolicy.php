@@ -90,7 +90,7 @@ class Regpolicy extends MY_Controller
     {
         $this->form_validation->set_rules('name',lang('regpol_shortname'),'required|trim|cocname_unique');
         $this->form_validation->set_rules('regpollang',lang('regpol_language'),'required|trim|match_language');
-        $this->form_validation->set_rules('url',lang('regpol_url'),'required|trim|valid_url|cocurl_unique');
+        $this->form_validation->set_rules('url',lang('regpol_url'),'required|trim|valid_url');
         $this->form_validation->set_rules('description',lang('regpol_description'),'xss_clean');
         $this->form_validation->set_rules('cenabled',lang('regpol_enabled'),'xss_clean');
         return $this->form_validation->run();
@@ -98,7 +98,7 @@ class Regpolicy extends MY_Controller
     private function _edit_submit_validate($id)
     {
         $this->form_validation->set_rules('name',lang('regpol_shortname'),'required|trim|cocname_unique_update['.$id.']');
-        $this->form_validation->set_rules('url',lang('regpol_url'),'required|trim|valid_url|cocurl_unique_update['.$id.']');
+        $this->form_validation->set_rules('url',lang('regpol_url'),'required|trim|valid_url');
         $this->form_validation->set_rules('regpollang',lang('regpol_language'),'required|trim|match_language');
         $this->form_validation->set_rules('description',lang('regpol_description'),'xss_clean');
         $this->form_validation->set_rules('cenabled',lang('regpol_enabled'),'xss_clean');
