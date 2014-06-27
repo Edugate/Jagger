@@ -104,13 +104,6 @@ class Entityedit extends MY_Controller {
                     $this->form_validation->set_rules('f[lname][' . $k . ']', lang('localizednamein').' ' . $k, 'xss_clean|trim');
                 }
             }
-            if (array_key_exists('regpolicy', $y['f']))
-            {
-                foreach ($y['f']['regpolicy'] as $k => $v)
-                {
-                    $this->form_validation->set_rules('f[regpolicy][' . $k . ']', ''.sprintf(lang('localizedregpolicy'),$k).'' , 'xss_clean|trim|valid_url');
-                }
-            }
             if (isset($y['f']['uii']['idpsso']['displayname']) && is_array($y['f']['uii']['idpsso']['displayname']))
             {
                 foreach ($y['f']['uii']['idpsso']['displayname'] as $k => $v)
@@ -548,6 +541,14 @@ class Entityedit extends MY_Controller {
         {
             $data['prvurl']['idpsso'] = array();
         }
+        if(isset($data['regpol']))
+        {
+            $data['regpol'] = array_filter($data['regpol']);
+        }
+        else
+        {
+            $data['regpol'] = array();
+        }
 
         if(isset($data['coc']))
         {
@@ -565,15 +566,6 @@ class Entityedit extends MY_Controller {
         {
             $data['prvurl']['spsso'] = array();
         }
-        if(isset($data['regpolicy']))
-        {
-           $data['regpolicy'] = array_filter($data['regpolicy']);
-        }
-        else
-        {
-           $data['regpolicy'] = array();
-        }
-
         if(isset($data['srv']['AssertionConsumerService']))
         {
            $data['srv']['AssertionConsumerService'] = array_filter($data['srv']['AssertionConsumerService']);

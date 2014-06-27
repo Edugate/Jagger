@@ -1041,8 +1041,8 @@ $lang['prov_notexist']              = 'Provider does not exist';
 $lang['rr_noentcatsregistered']     = 'No Entity Categories registered';
 $lang['rr_noregpolsregistered']     = 'No registration policies are defined';
 $lang['entcat_notexist']            = 'Entity Category does not exist';
-$lang['approval_required']         = 'The approval will be required';
-
+$lang['approval_required']         = 'An approval will be required';
+$lang['noregpolsavalabletoapply']         = 'No Registration Policies available to apply for';
 $lang['wronglangcode']             = 'Not valid language code';
 $lang['err_atleastonesso']         = 'At least one SingleSignOn URL must be defined';
 $lang['entdswayf']                          = 'The link contains list of all trusted Identity Providers in json format. Generaly it can be consumed by DiscoveryService particularly DiscoJuice';

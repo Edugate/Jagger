@@ -199,51 +199,6 @@ class Providerupdater {
                 $m['Localized name'] = array('before'=>arrayWithKeysToHtml($trackorigs),'after'=>arrayWithKeysToHtml($ch['lname']));
             }
         }
-        /**
-         * @todo add trck regpolicy
-         */
-        if (array_key_exists('regpolicy', $ch) && is_array($ch['regpolicy']))
-        {
-            $origs = $ent->getRegistrationPolicy();
-            $langs = array_keys(languagesCodes());
-            foreach ($ch['regpolicy'] as $key => $value)
-            {
-                if(!in_array($key, $langs))
-                {
-                    log_message('warning',__METHOD__.' registrationPolicy contain unsuported lang ... removing');
-                    unset($ch['regpolicy'][''.$key.'']);
-                    continue;
-                }
-                if(empty($value))
-                {
-                    log_message('warning',__METHOD__.' registrationPolicy contain empty value ... removing');
-                    unset($ch['regpolicy'][''.$key.'']);
-                    continue;
-                }
-            }
-            $repoldiff = FALSE;
-            $diff1 = array_diff_assoc($ch['regpolicy'],$origs);
-            if(count($diff1)>0)
-            {
-                $repoldiff = TRUE;
-            }
-            else
-            {
-                $diff1 = array_diff_assoc($origs,$ch['regpolicy']);
-                if(count($diff1)>0)
-                {
-                    $repoldiff = TRUE;
-                }
-
-            }
-            if($repoldiff)
-            {
-               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
-               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['regpolicy']));
-               $m['RegPolicy'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
-            }
-            $ent->setRegistrationPolicyFromArray($ch['regpolicy'], TRUE);
-        }
 
         if (array_key_exists('ldisplayname', $ch) && is_array($ch['ldisplayname']))
         {
