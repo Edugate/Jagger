@@ -28,6 +28,7 @@ $lang['title_fededit']              = 'Federation edit';
 $lang['title_addentcat']               = 'New Entity Category - Form';
 $lang['title_addregpol']               = 'New Registration Policy - Form';
 $lang['title_entcats']              = 'Entity Categories';
+$lang['title_regpol']              = 'Registration Policy';
 $lang['title_regpols']              = 'Registration Policies';
 $lang['title_entcat']               = 'Entity Category';
 $lang['title_entcatedit']               = 'Entity Category - Edit Form';
