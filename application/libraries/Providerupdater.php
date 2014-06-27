@@ -199,51 +199,6 @@ class Providerupdater {
                 $m['Localized name'] = array('before'=>arrayWithKeysToHtml($trackorigs),'after'=>arrayWithKeysToHtml($ch['lname']));
             }
         }
-        /**
-         * @todo add trck regpolicy
-         */
-        if (array_key_exists('regpolicy', $ch) && is_array($ch['regpolicy']))
-        {
-            $origs = $ent->getRegistrationPolicy();
-            $langs = array_keys(languagesCodes());
-            foreach ($ch['regpolicy'] as $key => $value)
-            {
-                if(!in_array($key, $langs))
-                {
-                    log_message('warning',__METHOD__.' registrationPolicy contain unsuported lang ... removing');
-                    unset($ch['regpolicy'][''.$key.'']);
-                    continue;
-                }
-                if(empty($value))
-                {
-                    log_message('warning',__METHOD__.' registrationPolicy contain empty value ... removing');
-                    unset($ch['regpolicy'][''.$key.'']);
-                    continue;
-                }
-            }
-            $repoldiff = FALSE;
-            $diff1 = array_diff_assoc($ch['regpolicy'],$origs);
-            if(count($diff1)>0)
-            {
-                $repoldiff = TRUE;
-            }
-            else
-            {
-                $diff1 = array_diff_assoc($origs,$ch['regpolicy']);
-                if(count($diff1)>0)
-                {
-                    $repoldiff = TRUE;
-                }
-
-            }
-            if($repoldiff)
-            {
-               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
-               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['regpolicy']));
-               $m['RegPolicy'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
-            }
-            $ent->setRegistrationPolicyFromArray($ch['regpolicy'], TRUE);
-        }
 
         if (array_key_exists('ldisplayname', $ch) && is_array($ch['ldisplayname']))
         {
@@ -366,22 +321,14 @@ class Providerupdater {
                $m['Localized HelpdeskURL'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
             }
         }
-        /**
-        if (array_key_exists('description', $ch))
-        {
-            if(strcmp($ent->getDescription(), $ch['description'])!=0)
-            {
-               $m['Description'] = array('before'=>$ent->getDescription(),'after'=>$ch['description']);
-            }
-            $ent->setDescription($ch['description']);
-        }
-        */
+
+        $currentCocs = $ent->getCoc();
         /**
          * @todo track coc changes
          */
         if (array_key_exists('coc', $ch))
         {
-            $currentEntCat = $ent->getCoc();
+            $currentEntCat = &$currentCocs;
             foreach($currentEntCat as $k => $v)
             {
                 $cid = $v->getId();
@@ -414,6 +361,43 @@ class Providerupdater {
                 }
             }
         }
+
+        if (array_key_exists('regpol', $ch))
+        {
+            $currentRegPol = &$currentCocs;
+            foreach($currentRegPol as $k => $v)
+            {
+                $cid = $v->getId();
+                $ctype = $v->getType();
+                if($ctype === 'regpol')
+                {
+                   $foundkey = array_search($cid,$ch['regpol']);
+                   if($foundkey === null || $foundkey === false)
+                   {
+                      $ent->removeCoc($v);
+                   }
+                }
+            }
+            foreach($ch['regpol'] as $k=>$v)
+            {
+                if(!empty($v) && is_numeric($v))
+                {
+                    $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$v,'type'=>'regpol'));
+                    if(!empty($c) && !$currentRegPol->contains($c))
+                    {
+                       if($isAdmin)
+                       {
+                          $ent->setCoc($c);
+                       }
+                       else
+                       {
+                          $this->ci->approval->applyForRegistrationPolicy($c, $ent);
+                       }
+                    }
+                }
+            }
+        }
+        
         if (array_key_exists('privacyurl', $ch))
         {
             if($ent->getPrivacyURL() !== $ch['privacyurl'])

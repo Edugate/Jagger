@@ -434,18 +434,35 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = null;
         }
-        $regpolicy = $ent->getRegistrationPolicy();
+        //$regpolicy = $ent->getRegistrationPolicy();
+        $regpolicy = $ent->getCoc();
         $regpolicy_value = '';
         if (count($regpolicy) > 0)
         {
             foreach ($regpolicy as $rkey => $rvalue)
             {
-                $regpolicy_value .= '<b>' . $rkey . ':</b> ' . $rvalue . '<br />';
+              //  $regpolicy_value .= '<b>' . $rkey . ':</b> ' . $rvalue . '<br />';
+            }
+            foreach($regpolicy as $v)
+            {
+                $vtype = $v->getType();
+                $venabled = $v->getAvailable();
+                $l = '';
+                if(!$venabled)
+                {
+                   $l= '<span class="label alert">'.lang('rr_disabled').'</span>';
+                }
+                if(strcasecmp($vtype,'regpol')==0)
+                { 
+                  $regpolicy_value .='<div><b>'.$v->getLang().'</b>: '.$v->getUrl().' '.$l.'</div>';
+                }
+
             }
         }
+         
         elseif (!empty($confRegistrationPolicy) && !empty($confRegLoad))
         {
-            $regpolicy_value .= '<b>en:</b> ' . $confRegistrationPolicy . ' <br /><small><i>' . lang('loadedfromglobalcnf') . '</i></small>';
+            $regpolicy_value .= '<b>en:</b> ' . $confRegistrationPolicy . ' <div data-alert class="alert-box info">' . lang('loadedfromglobalcnf') . '</div>';
         }
         $d[++$i]['name'] = lang('rr_regpolicy');
         $d[$i]['value'] = $regpolicy_value;

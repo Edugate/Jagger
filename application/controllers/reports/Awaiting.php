@@ -117,7 +117,13 @@ class Awaiting extends MY_Controller {
         elseif(strcasecmp($action,'apply') ==0 && strcasecmp( $recipientType,'entitycategory') == 0)
         {
            /**
-            * @todo decide who can approve it
+            * @todo decide who can approve entity category request
+            */
+        } 
+        elseif(strcasecmp($action,'apply') ==0 && strcasecmp( $recipientType,'regpolicy') == 0)
+        {
+           /**
+            * @todo decide who can approve registration policy request
             */
         } 
         return $result;
@@ -409,12 +415,38 @@ class Awaiting extends MY_Controller {
                     $data['error'] = lang('rr_nopermission');
                     $this->load->view('page', $data);
                 }
-            }elseif( $objType === 'n' && strcasecmp($objAction,'apply') == 0 && strcasecmp( $recipientType,'entitycategory') == 0) // apply for entity category
+            }
+            elseif( $objType === 'n' && strcasecmp($objAction,'apply') == 0 && strcasecmp( $recipientType,'entitycategory') == 0) // apply for entity category
             {
                if ($this->_hasAccess($queueList))
                {
                     $approveaccess = $this->_hasApproveAccess($queueList);
                     $data['requestdata'] = $this->j_queue->displayApplyForEntityCategory($queueList);
+                    if($approveaccess)
+                    {
+                       $buttons = $this->j_queue->displayFormsButtons($queueList->getId());
+                    }
+                    else
+                    {
+                       $buttons = $this->j_queue->displayFormsButtons($queueList->getId(),TRUE);
+                    }
+                    $data['content_view'] = 'reports/awaiting_applyforentcat_view';
+                    $data['requestdata'][]['2cols'] = $buttons;
+                    $this->load->view('page', $data);
+               }
+               else
+               {
+                    $data['content_view'] = 'nopermission';
+                    $data['error'] = lang('rr_nopermission');
+                    $this->load->view('page', $data);
+               }
+            }
+            elseif( $objType === 'n' && strcasecmp($objAction,'apply') == 0 && strcasecmp( $recipientType,'regpolicy') == 0) // apply for entity category
+            {
+               if ($this->_hasAccess($queueList))
+               {
+                    $approveaccess = $this->_hasApproveAccess($queueList);
+                    $data['requestdata'] = $this->j_queue->displayApplyForRegistrationPolicy($queueList);
                     if($approveaccess)
                     {
                        $buttons = $this->j_queue->displayFormsButtons($queueList->getId());
@@ -937,6 +969,33 @@ class Awaiting extends MY_Controller {
                             $this->em->flush(); 
                         
                      }
+                     elseif(strcasecmp($recipienttype,'regpolicy')==0 && strcasecmp($type,'Provider')==0 && !empty($name))
+                     {
+                        $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$recipient,'type'=>'regpol'));
+                        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid'=>$name));
+                        if(empty($coc) || empty($provider))
+                        {
+                            log_message('error',__METHOD__.' couldn approve request as RegistrationPolicy with id '.$recipient .' or provider with entityid '.$name.' does not exists');
+                            show_error('Entity category or provider does not exist',404);
+                            return ; /// @todo finish
+                        }
+                        $isAdmin = $this->j_auth->isAdministrator();
+                        if(!$isAdmin)
+                        {
+                             show_error('no permission',403);
+                             return;
+                        }                        
+
+                        
+                            $coc->setProvider($provider);
+                            $provider->setCoc($coc);
+                            $this->em->persist($provider);
+                            $this->em->persist($coc);
+                            $this->em->remove($queueObj);
+                            $this->em->flush(); 
+
+
+                     }
 
                 }
                 else
@@ -1034,6 +1093,16 @@ class Awaiting extends MY_Controller {
                         }
                     }
                     elseif(strcasecmp($queueAction,'apply')==0 && strcasecmp($recipienttype,'entitycategory')==0)
+                    {
+                        $isAdmin = $this->j_auth->isAdministrator();
+                        if ($isAdmin)
+                        {
+                            $reject_access = TRUE;
+                        }
+      
+
+                    }
+                    elseif(strcasecmp($queueAction,'apply')==0 && strcasecmp($recipienttype,'regpolicy')==0)
                     {
                         $isAdmin = $this->j_auth->isAdministrator();
                         if ($isAdmin)

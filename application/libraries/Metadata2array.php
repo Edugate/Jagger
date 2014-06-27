@@ -25,6 +25,7 @@ class Metadata2array {
     private $occurance;
     private $metaArray;
     private $coclist;
+    private $regpollist;
     private $nameidsattrs = array();
     private $newNameSpaces = array();
 
@@ -36,6 +37,7 @@ class Metadata2array {
         $this->occurance = array();
         $this->metaArray = array();
         $this->coclist = array();
+        $this->regpollist = array();
         $tmpnemaids = $this->em->getRepository("models\Attribute")->findBy(array('name'=>array('persistentId','transientId')));
         foreach($tmpnemaids as $p)
         {
@@ -79,25 +81,50 @@ class Metadata2array {
         {
             $this->entitiesConvert($child, $full);
         }
-        if(count($this->coclist)> 0)
+        if(count($this->coclist)> 0 || count($this->regpollist)> 0)
         {
-           $redusedlist = array_unique($this->coclist);
-           foreach($redusedlist as $r)
+           if(count($this->coclist)> 0)
            {
-               $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$r,'type'=>'entcat'));
-               if(empty($existing))
-               {
-                   $nconduct = new models\Coc;
-                   $nconduct->setUrl($r);
-                   $nconduct->setName($r);
-                   $nconduct->setType('entcat');
-                   $nconduct->setDescription($r);
-                   $nconduct->setAvailable(FALSE);
-                   $this->em->persist($nconduct);
-               }
+              $redusedlist = array_unique($this->coclist);
+              foreach($redusedlist as $r)
+              {
+                  $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$r,'type'=>'entcat'));
+                  if(empty($existing))
+                  {
+                     $nconduct = new models\Coc;
+                     $nconduct->setUrl($r);
+                     $nconduct->setName($r);
+                     $nconduct->setType('entcat');
+                     $nconduct->setDescription($r);
+                     $nconduct->setAvailable(FALSE);
+                     $this->em->persist($nconduct);
+                  }
+             }
+           }
+           if(count($this->regpollist)> 0)
+           {
+              foreach($this->regpollist as $k => $v)
+              {
+                  $redusedlist = array_unique($v);
+                  foreach($redusedlist as $c)
+                  {
+                      $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$c,'type'=>'regpol','lang'=>$k));
+                      if(empty($existing))
+                      {
+                         $nregpol = new models\Coc;
+                         $nregpol->setUrl($c);
+                         $nregpol->setName($c);
+                         $nregpol->setType('regpol');
+                         $nregpol->setLang($k);
+                         $nregpol->setDescription($c);
+                         $nregpol->setAvailable(FALSE);
+                         $this->em->persist($nregpol);
+                      }
+                  }
+              }
            }
            $this->em->flush();
-        }
+       }
         return $this->metaArray;
     }
 
@@ -156,12 +183,13 @@ class Metadata2array {
         $entity['rigistrar'] = null;
         $entity['regdate'] = null;
         $entity['coc'] = array();
+        $entity['regpol'] = array();
         $entity['validuntil'] = $node->getAttribute('validUntil');
         $is_idp = false;
         $is_sp = false;
         $entity['details']['org'] = array('OrganizationName'=>array(), 'OrganizationDisplayName'=>array(), 'OrganizationURL'=>array());
         $entity['details']['contacts'] = array();
-        $entity['details']['regpolicy'] = array();
+        //$entity['details']['regpolicy'] = array();
         $entity['details']['reqattrs'] = array();
         foreach ($node->childNodes as $gnode)
         {
@@ -213,11 +241,12 @@ class Metadata2array {
                                 {
                                     if ($ch->nodeName == 'mdrpi:RegistrationPolicy')
                                     {
-                                        $chlang = $ch->getAttribute('xml:lang');
+                                        $chlang = strtolower($ch->getAttribute('xml:lang'));
                                         $chvalue = $ch->nodeValue;
                                         if (!empty($chlang) && !empty($chvalue))
                                         {
-                                            $entity['details']['regpolicy'][''.$chlang.''] =  $chvalue;
+                                            $entity['regpol'][] = array('lang'=>$chlang, 'url'=>  $chvalue);
+                                            $this->regpollist[''.$chlang.''][]= $chvalue;
                                         }
                                     }
                                 }

@@ -40,7 +40,7 @@ class Coc {
     protected $id;
 
     /**
-     * @Column(type="string", length=255, nullable=false, unique=true)
+     * @Column(type="string", length=255, nullable=false, unique=false)
      */
     protected $name;
 

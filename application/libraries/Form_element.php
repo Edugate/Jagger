@@ -358,6 +358,7 @@ class Form_element
         /**
          * start regpolicy 
          */
+       /**
         $result[] = '';
         $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
         $regpolicies = $ent->getRegistrationPolicy();
@@ -405,31 +406,89 @@ class Form_element
         $result[] = $this->_generateLangAddButton('regpolicyadd', 'regpolicylangcode', MY_Controller::$langselect, 'addregpolicy', '' . lang('rr_regpolicy') . '');
 
         $result[] = '';
+         */
         /**
          * end regpolicy
          */
+        
         /**
-          $result[] = form_label(lang('rr_validfrom'), 'f[validfrom]') . form_input(array(
-          'name' => 'f[validfrom]',
-          'id' => 'f[validfrom]',
-          'value' => $f_validfrom,
-          'class' => 'validfrom ' . $validfrom_notice,
-          ));
-          $result[] = form_label(lang('rr_validto'), 'f[validto]') . form_input(array(
-          'name' => 'f[validto]',
-          'id' => 'f[validto]',
-          'value' => $f_validto,
-          'class' => 'validto ' . $validto_notice,
-          ));
+         * new regpolicy start
          */
+         $result[] = '';
+         $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
+         $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type'=>'regpol'));
+         $entRegPoliciesArray = array();
+         foreach($entRegPolicies as $v)
+         {
+            $entRegPoliciesArray[''.$v->getId().''] = array('name'=>$v->getName(),'enabled'=>$v->getAvailable(),'lang'=>$v->getLang(),'link'=>$v->getUrl(),'desc'=>$v->getDescription());
+         }
+         $isAdmin = $this->ci->j_auth->isAdministrator();
+
+         if(count($entRegPolicies) == 0)
+         {
+            $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">'.lang('noregpolsavalabletoapply').'</div></div>';
+         }
+         elseif(!$isAdmin)
+         {
+            $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">'.lang('approval_required').'</div></div>';
+         }
+         $assignedRegPolicies = $ent->getCoc();
+         $assignedRegPoliciesArray = array();
+         if($sessform && isset($ses['regpol']))
+         {
+             foreach($ses['regpol'] as $k=>$v)
+             {
+                 if(isset($entRegPoliciesArray[''.$v.'']))
+                 {
+                     $entRegPoliciesArray['' . $v . '']['sel'] = TRUE;
+                 }
+             }
+         }
+         else
+         {
+            foreach( $assignedRegPolicies as $k=>$v)
+            {
+                $vtype = $v->getType();
+                if(strcmp($vtype,'regpol')==0)
+                {
+                     $entRegPoliciesArray['' . $v->getId() . '']['sel'] = true;
+                }
+ 
+            }
+
+         }
+         $r = '<div class="large-8 small-offset-0 large-offset-3 end columns"><div class="checkboxlist">';
+         foreach($entRegPoliciesArray as $k=>$v)
+         {
+            if (isset($v['sel']))
+            {
+                $is = true;
+            }
+            else
+            {
+                $is = false;
+            }
+            if(empty($v['enabled']))
+            {
+               $lbl = '<span class="label alert">'.lang('rr_disabled').'</span>';
+            }
+            else
+            {
+               $lbl =  '';
+            }
+            $r .= '<div>' . form_checkbox(array('name' => 'f[regpol][]', 'id' => 'f[regpol][]', 'value' => $k, 'checked' => $is)) .'<span class="label secondary"><b>'.$v['lang'].'</b></span> '. $v['name'] . ': <span data-tooltip class="has-tip" title="'.$v['desc'].'">'.$v['link'] .'</span> '.$lbl.'</div>';
+            
+         }
+        $r .= '</div></div>';
+      
+         $result[] = $r;
+         $result[] = '';
+
         /**
-          $result[] = form_label(lang('rr_description'), 'f[description]') . form_textarea(array(
-          'name' => 'f[description]',
-          'id' => 'f[description]',
-          'class' => $description_notice,
-          'value' => $f_description,
-          ));
+         * new regpolicy end
          */
+
+
         return $result;
     }
 
@@ -484,7 +543,7 @@ class Form_element
         {
             $sessform = TRUE;
         }
-        $entCategories = $this->em->getRepository("models\Coc")->findAll();
+        $entCategories = $this->em->getRepository("models\Coc")->findBy(array('type'=>'entcat'));
         $entCategoriesArray = array();
         foreach ($entCategories as $v)
         {
@@ -506,7 +565,11 @@ class Form_element
         {
             foreach ($assignedEntCategories as $k => $v)
             {
-                $entCategoriesArray['' . $v->getId() . '']['sel'] = true;
+                $vtype = $v->getType();
+                if(strcmp($vtype,'entcat')==0)
+                {
+                   $entCategoriesArray['' . $v->getId() . '']['sel'] = true;
+                }
             }
         }
         $isAdmin = $this->ci->j_auth->isAdministrator();

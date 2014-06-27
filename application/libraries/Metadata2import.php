@@ -127,6 +127,7 @@ class Metadata2import
             return false;
         }
         $coclist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
+        $regpollist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
         $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
 
         $attributes = array();
@@ -146,11 +147,20 @@ class Metadata2import
         }
         $coclistconverted = array();
         $coclistarray = array();
+        $regpollistconverted = array();
+        $regpollistarray = array();
+        $regpollistlangarray = array();
 
         foreach ($coclist as $k => $c)
         {
             $coclistconverted['' . $c->getId() . ''] = $c;
             $coclistarray['' . $c->getId() . ''] = $c->getUrl();
+        }
+        foreach($regpollist as $k=>$c)
+        {
+           $regpollistconverted['' . $c->getId() . ''] = $c;
+           $regpollistarray['' . $c->getId() . ''] = $c->getUrl();
+           $regpollistlangarray['' . $c->getId() . ''] = $c->getLang();
         }
 
 
@@ -299,6 +309,24 @@ class Metadata2import
                                     }
                                 }
                             }
+                            foreach ($ent['regpol'] as $k => $v)
+                            {
+                                $y = array_search($v['url'], $regpollistarray);
+                                
+                                if ($y != NULL && $y != FALSE)
+                                {
+                                    foreach($regpollistconverted as $p)
+                                    {
+                                       $purl = $p->getUrl();
+                                       $plang = $p->getLang();
+                                       if(strcmp($purl,$v['url'])==0 && strcasecmp($plang,$v['lang'])==0)
+                                       {
+                                          $importedProvider->setCoc($p);
+                                          break;
+                                       }
+                                    }
+                                }
+                            }
 
                             // end entityCategory
                             // attr req  start
@@ -371,6 +399,30 @@ class Metadata2import
                                             unset($ent['coc']['' . $y . '']);
                                         }
                                     }
+                                    elseif($cType === 'regpol')
+                                    {
+                                       $cUrl = $c->getUrl();
+                                       $cLang = $c->getLang();
+                                       $cExist = FALSE;
+                                       $cKey = null;
+                                       foreach($ent['regpol'] as $k => $v)
+                                       {
+                                           if(strcmp($cUrl,$v['url'])==0 && strcasecmp($cLang,$v['lang'])==0)
+                                           {
+                                              $cExist = TRUE;
+                                              $cKey = $k;
+                                              break;
+                                           }
+                                       }
+                                       if($cExist === FALSE)
+                                       {
+                                           $existingProvider->removeCoc($c);
+                                       }
+                                       else
+                                       {
+                                           unset($ent['regpol'][''.$cKey.'']);
+                                       }
+                                    }
                                 }
                                 foreach ($ent['coc'] as $v)
                                 {
@@ -379,6 +431,19 @@ class Metadata2import
                                     {
                                         $existingProvider->setCoc($coclistconverted['' . $y . '']);
                                     }
+                                }
+                                foreach($ent['regpol'] as $v)
+                                {
+                                   foreach($regpollistconverted as $c)
+                                   {
+                                     $cUrl = $c->getUrl();
+                                     $cLang = $c->getLang();
+                                     if(strcmp($cUrl,$v['url'])==0 && strcasecmp($cLang,$v['lang'])==0)
+                                     {
+                                        $existingProvider->setCoc($c);
+                                        break;
+                                     }
+                                   }
                                 }
 
                                 $existingProvider->setStatic($static);
@@ -590,6 +655,22 @@ class Metadata2import
                                 }
                             }
                             // coc end
+                            foreach($ent['regpol'] as $v)
+                            {
+                                foreach($regpollistconverted as $c)
+                                {
+                                   $cUrl = $c->getUrl();
+                                   $cLang = $c->getLang();
+                                   if(strcmp($cUrl,$v['url'])==0 && strcasecmp($cLang,$v['lang']) ==0)
+                                   {
+                                        $importedProvider->setCoc($c);
+                                        break;
+                                   }
+
+                                }
+
+                            }
+                        
                             // attr req  start
                             if (isset($ent['details']['reqattrs']))
                             {
@@ -668,6 +749,30 @@ class Metadata2import
                                             unset($ent['coc']['' . $y . '']);
                                         }
                                     }
+                                    elseif($cType === 'regpol')
+                                    {
+                                       $cUrl = $c->getUrl();
+                                       $cLang = $c->getLang();
+                                       $cExist = FALSE;
+                                       $cKey = null;
+                                       foreach($ent['regpol'] as $k => $v)
+                                       {
+                                           if(strcmp($cUrl,$v['url'])==0 && strcasecmp($cLang,$v['lang'])==0)
+                                           {
+                                              $cExist = TRUE;
+                                              $cKey = $k;
+                                              break;
+                                           }
+                                       }
+                                       if($cExist === FALSE)
+                                       {
+                                           $existingProvider->removeCoc($c);
+                                       }
+                                       else
+                                       {
+                                           unset($ent['regpol'][''.$cKey.'']);
+                                       }
+                                    }
                                 }
 
                                 foreach ($ent['coc'] as $v)
@@ -677,6 +782,19 @@ class Metadata2import
                                     {
                                         $existingProvider->setCoc($coclistconverted['' . $y . '']);
                                     }
+                                }
+                                foreach($ent['regpol'] as $v)
+                                {
+                                   foreach($regpollistconverted as $c)
+                                   {
+                                     $cUrl = $c->getUrl();
+                                     $cLang = $c->getLang();
+                                     if(strcmp($cUrl,$v['url'])==0 && strcasecmp($cLang,$v['lang'])==0)
+                                     {
+                                        $existingProvider->setCoc($c);
+                                        break;
+                                     }
+                                   }
                                 }
 
 
