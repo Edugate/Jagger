@@ -476,7 +476,7 @@ class Form_element
             {
                $lbl =  '';
             }
-            $r .= '<div>' . form_checkbox(array('name' => 'f[regpol][]', 'id' => 'f[regpol][]', 'value' => $k, 'checked' => $is)) .'<span class="label secondary"><b>'.$v['lang'].'</b></span> '. $v['name'] . ': <span data-tooltip class="has-tip" title="'.$v['desc'].'">'.$v['link'] .'</span> '.$lbl.'</div>';
+            $r .= '<div>' . form_checkbox(array('name' => 'f[regpol][]', 'id' => 'f[regpol][]', 'value' => $k, 'checked' => $is)) .'<span class="label secondary"><b>'.$v['lang'].'</b></span>  <span data-tooltip class="has-tip" title="'.$v['desc'].'">'.$v['link'] .'</span> '.$lbl.'</div>';
             
          }
         $r .= '</div></div>';
