@@ -358,7 +358,7 @@ class MY_form_validation extends CI_form_validation {
             }
             else
             {
-                $this->set_message('cocname_unique', "The %s : \"$name\" does already exist in the system.");
+                $this->set_message('cocname_unique_update', "The %s : \"$name\" does already exist in the system.");
                 return FALSE;
             }
         }
