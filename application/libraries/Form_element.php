@@ -2093,7 +2093,7 @@ class Form_element
                     $r .='</div>';
 
 
-                    $r .='</div></div>';
+                    $r .='</div>';
                     $dr[] = $r;
                     if (isset($ses['srv']['DiscoveryResponse']['' . $v3->getId() . '']))
                     {
