@@ -3135,6 +3135,7 @@ class Provider {
 
         /* DiscoveryResponse */
         
+        $discrespindex = array(); 
         foreach ($services as $t)
         {
             $loc_type = $t->getType();
@@ -3151,9 +3152,14 @@ class Provider {
                 $disc_node->setAttribute('Binding', $t->getBindingName());
                 $disc_node->setAttribute('Location', $t->getUrl());
                 $discorder = $t->getOrder();
-                if(empty($$discorder))
+                if(is_null($discorder) || in_array($discorder,$discrespindex))
                 {
-                   $discorder = 0;
+                   $discorder = max($discrespindex)+1;
+                   $discrespindex[] = $discorder;
+                }
+                else
+                {
+                   $discrespindex[] = $discorder;           
                 }
                 $disc_node->setAttribute('index', $discorder);
                 $Extensions_Node->appendChild($disc_node);
