@@ -32,14 +32,7 @@ class Entityedit extends MY_Controller {
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
-        $this->current_site = current_url();
-        if (!$loggedin)
-        {
-            $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'location');
-        }
-        $this->load->library(array('form_element', 'form_validation', 'zacl','approval'));
+        $this->load->library(array('form_element', 'form_validation', 'approval'));
         $this->tmp_providers = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmp_error = '';
@@ -80,13 +73,13 @@ class Entityedit extends MY_Controller {
             }
             if(in_array('scope',$this->disallowedparts))
             {
-               $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope').' (IDPSSO)', 'trim|xss_clean|valid_scopes|max_length[255]|str_matches_array['.serialize($this->idpssoscope).']');
-               $this->form_validation->set_rules('f[scopes][aa]',  lang('rr_scope').' (AA)', 'trim|xss_clean|valid_scopes|max_length[255]|str_matches_array['.serialize($this->aascope).']');
+               $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope').' (IDPSSO)', 'trim|xss_clean|valid_scopes|max_length[2500]|str_matches_array['.serialize($this->idpssoscope).']');
+               $this->form_validation->set_rules('f[scopes][aa]',  lang('rr_scope').' (AA)', 'trim|xss_clean|valid_scopes|max_length[2500]|str_matches_array['.serialize($this->aascope).']');
             }
             else
             {
-               $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
-               $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[255]');
+               $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[2500]');
+               $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[2500]');
             }
             
 
@@ -592,6 +585,14 @@ class Entityedit extends MY_Controller {
         {
            $data['srv']['SPArtifactResolutionService'] = array();
         }
+        if(isset($data['srv']['IDPAttributeService']))
+        {
+           $data['srv']['IDPAttributeService'] = array_filter($data['srv']['IDPAttributeService']);
+        }
+        else
+        {
+           $data['srv']['IDPAttributeService'] = array();
+        }
         if(isset($data['srv']['DiscoveryResponse']))
         {
            $data['srv']['DiscoveryResponse'] = array_filter($data['srv']['DiscoveryResponse']);
@@ -649,11 +650,6 @@ class Entityedit extends MY_Controller {
         }
     }
 
-    public function jupdate($id)
-    {
-        
-
-    }
 
     public function show($id)
     {
@@ -662,6 +658,10 @@ class Entityedit extends MY_Controller {
         {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
+        } 
+        else
+        {
+           $this->load->library('zacl');
         }
  
         $ent = $this->tmp_providers->getOneById($id);

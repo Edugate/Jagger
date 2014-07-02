@@ -1611,19 +1611,14 @@ class Form_element
             $ni = 0;
             foreach ($aabinds as $k3 => $v3)
             {
-                $row = '<div>';
-                $row .= form_label($v3, 'f[srv][IDPAttributeService][n' . $ni . '][url]');
+                $row = '<div class="srvgroup"><div class="small-12 columns">';
                 $row .= form_input(array(
                     'name' => 'f[srv][IDPAttributeService][n' . $ni . '][bind]',
                     'id' => 'f[srv][IDPAttributeService][n' . $ni . '][bind]',
                     'type' => 'hidden',
                     'value' => $v3,));
-                $row .= form_input(array(
-                            'name' => 'f[srv][IDPAttributeService][n' . $ni . '][url]',
-                            'id' => 'f[srv][IDPAttributeService][n' . $ni . '][url]',
-                            'value' => set_value('f[srv][IDPAttributeService][n' . $ni . '][url]'),
-                        )) . '';
-                $row .= '</div>';
+                $row .= $this->_generateLabelInput($v3,'f[srv][IDPAttributeService][n' .$ni  . '][url]',set_value('f[srv][IDPAttributeService][n' . $ni . '][url]'),TRUE,NULL);
+                $row .= '</div></div>';
                 $aalo[] = $row;
                 ++$ni;
             }
