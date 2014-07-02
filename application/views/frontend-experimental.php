@@ -231,7 +231,7 @@ $this->load->view('toppanel',$args);
             <div id="inpre_footer"></div>
         </div>
 
-            <div id="footer" class="row>
+            <div id="footer">
 
                 <footer class="row">
                   <div class="large-12 columns text-center">
