@@ -391,9 +391,9 @@ class Entityedit extends MY_Controller {
 
                     foreach ($y['f']['srv']['DiscoveryResponse'] as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][url]', 'DiscoveryResponse URL', 'trim|max_length[254]|valid_url');
-                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][bind]', 'DiscoveryResponse Binding protocol', 'trim|xss_clean');
-                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][order]', 'DiscoveryResponse Index', 'trim|xss_clean');
+                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][url]', 'DiscoveryResponse URL', 'trim|required|max_length[254]|valid_url');
+                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][bind]', 'DiscoveryResponse Binding protocol', 'trim|required|xss_clean');
+                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][order]', 'DiscoveryResponse Index', 'trim|required|numeric|xss_clean');
 
                         $tmpurl = trim($y['f']['srv']['DiscoveryResponse']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['DiscoveryResponse']['' . $k . '']['order']);

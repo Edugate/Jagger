@@ -1476,9 +1476,7 @@ class Provider {
         $this->setScope('aa',$provider->getScope('aa'));
         $this->setEntityId($provider->getEntityId());
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
-        //$regdate = $provider->getRegistrationDate();
         $this->setRegistrationDate($provider->getRegistrationDate());
-        //$this->setRegistrationPolicyFromArray($provider->getRegistrationPolicy(), TRUE);
 
         $this->overwriteWithNameid($provider);
         log_message('debug','GG :'.serialize($this->getNameIds())); 
@@ -3137,6 +3135,7 @@ class Provider {
 
         /* DiscoveryResponse */
         
+        $discrespindex = array(); 
         foreach ($services as $t)
         {
             $loc_type = $t->getType();
@@ -3152,7 +3151,17 @@ class Provider {
                 $disc_node = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol', 'idpdisc:DiscoveryResponse');
                 $disc_node->setAttribute('Binding', $t->getBindingName());
                 $disc_node->setAttribute('Location', $t->getUrl());
-                $disc_node->setAttribute('index', $t->getOrder());
+                $discorder = $t->getOrder();
+                if(is_null($discorder) || in_array($discorder,$discrespindex))
+                {
+                   $discorder = max($discrespindex)+1;
+                   $discrespindex[] = $discorder;
+                }
+                else
+                {
+                   $discrespindex[] = $discorder;           
+                }
+                $disc_node->setAttribute('index', $discorder);
                 $Extensions_Node->appendChild($disc_node);
             }
         }
