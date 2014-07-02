@@ -46,6 +46,24 @@ var GINIT = {
 
 //$("#providerlogtab").on("toggled", function (event, tab){
 //});
+
+    $("input#advanced").click(function(){
+         var thisCheck = $(this);
+         if(thisCheck.is(':checked'))
+         {
+    $("button.simplemode").hide();
+    $("button.advancedmode").show();
+   
+         }
+         else
+         {
+    $("button.simplemode").show();
+    $("button.advancedmode").hide();
+
+
+         } 
+
+    });
     $("a.bookentity").click(function() {
         var link = $(this), url = link.attr("href");
 
@@ -63,7 +81,7 @@ var GINIT = {
         return false;
     });
 
-
+ 
   $('#providerlogtab').on('toggled', function (event, tab) {
           var domElement = tab;//.get(0);
           var oko = domElement.find("[data-reveal-ajax-tab]");
@@ -1544,6 +1562,19 @@ $(function() {
     });
 
 });
+
+if($('input#advanced').attr('checked'))
+{
+    $("button.simplemode").hide();
+    $("button.advancedmode").show();
+}
+else
+{
+    $("button.simplemode").show();
+    $("button.advancedmode").hide();
+
+}
+
 if ($('#usepredefined').attr('checked')) {
     $("fieldset#stadefext").hide();
 }
@@ -1671,8 +1702,11 @@ $("a.pCookieAccept").click(function() {
     return false;
 });
 $("[id='f[entityid]']").change(function() {
-    var entalert = $("div#entitychangealert").text();
-    alert(entalert);
+    if($(this).hasClass("alertonchange"))
+    {
+       var entalert = $("div#entitychangealert").text();
+       alert(entalert);
+    }
 });
 
 // When DOM is ready
@@ -3030,5 +3064,12 @@ $("div#loginform form").submit(function(){
      return false;
 
 });
+$("button.advancedmode").click(function(){
+   var thisB = $(this);
+   var postUrl = thisB.val();
+   var csrfname = $("[name='csrfname']").val();
+   var csrfhash = $("[name='csrfhash']").val();
+   $(this).closest("form").attr("action",postUrl);
 
+});
 

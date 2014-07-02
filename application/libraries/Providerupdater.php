@@ -1736,7 +1736,7 @@ class Providerupdater {
         {        
            $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(),serialize($m),FALSE);
         }
-        return TRUE;
+        return $ent;
     }
    
 

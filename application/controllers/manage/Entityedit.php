@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,7 +17,8 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Entityedit extends MY_Controller {
+class Entityedit extends MY_Controller
+{
 
     protected $current_site;
     protected $tmp_providers;
@@ -38,50 +38,63 @@ class Entityedit extends MY_Controller {
         $this->tmp_error = '';
         $this->type = null;
         $entpartschangesdisallowed = $this->config->item('entpartschangesdisallowed');
-        if(!empty($entpartschangesdisallowed) && is_array($entpartschangesdisallowed))
+        if (!empty($entpartschangesdisallowed) && is_array($entpartschangesdisallowed))
         {
-           $this->disallowedparts = $this->config->item('entpartschangesdisallowed');
+            $this->disallowedparts = $this->config->item('entpartschangesdisallowed');
         }
     }
 
     private function _submit_validate($id)
     {
+        $register = false;
+        if (strcmp($id, 'idp') == 0 || strcmp($id, 'sp') == 0)
+        {
+            $register = true;
+        }
         $result = false;
         $y = $this->input->post();
+        
         $staticisdefault = FALSE;
-
+     //   echo '<pre>';
+    //    print_r($y);
+    //    echo '</pre>';
         if (isset($y['f']))
         {
+            $this->_save_draft($id, $y['f']);
 
-            $this->form_validation->set_rules('f[usestatic]', 'use metadata',"valid_static[".base64_encode($this->input->post('f[static]')).":::".$this->input->post('f[entityid]')." ]");
+            $this->form_validation->set_rules('f[usestatic]', 'use metadata', "valid_static[" . base64_encode($this->input->post('f[static]')) . ":::" . $this->input->post('f[entityid]') . " ]");
 
 
-         // required if not static is set
-            if(isset($y['f']['usestatic']) && $y['f']['usestatic'] === 'accept')
+            // required if not static is set
+            if (isset($y['f']['usestatic']) && $y['f']['usestatic'] === 'accept')
             {
-               $staticisdefault = TRUE;
-            
+                $staticisdefault = TRUE;
             }
-            if(in_array('entityid',$this->disallowedparts))
+            if (!$register)
             {
-                $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|matches_value['.$this->entityid.']');
-                
+                if (in_array('entityid', $this->disallowedparts))
+                {
+                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|matches_value[' . $this->entityid . ']');
+                }
+                else
+                {
+                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entityid_unique_update[' . $id . ']');
+                }
+                if (in_array('scope', $this->disallowedparts))
+                {
+                    $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope') . ' (IDPSSO)', 'trim|xss_clean|valid_scopes|max_length[2500]|str_matches_array[' . serialize($this->idpssoscope) . ']');
+                    $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope') . ' (AA)', 'trim|xss_clean|valid_scopes|max_length[2500]|str_matches_array[' . serialize($this->aascope) . ']');
+                }
+                else
+                {
+                    $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[2500]');
+                    $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[2500]');
+                }
             }
             else
             {
-                $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entityid_unique_update[' . $id . ']');
+                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entity_unique');
             }
-            if(in_array('scope',$this->disallowedparts))
-            {
-               $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope').' (IDPSSO)', 'trim|xss_clean|valid_scopes|max_length[2500]|str_matches_array['.serialize($this->idpssoscope).']');
-               $this->form_validation->set_rules('f[scopes][aa]',  lang('rr_scope').' (AA)', 'trim|xss_clean|valid_scopes|max_length[2500]|str_matches_array['.serialize($this->aascope).']');
-            }
-            else
-            {
-               $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[2500]');
-               $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[2500]');
-            }
-            
 
 
 
@@ -94,42 +107,42 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['lname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[lname][' . $k . ']', lang('localizednamein').' ' . $k, 'xss_clean|trim');
+                    $this->form_validation->set_rules('f[lname][' . $k . ']', lang('localizednamein') . ' ' . $k, 'xss_clean|trim');
                 }
             }
             if (isset($y['f']['uii']['idpsso']['displayname']) && is_array($y['f']['uii']['idpsso']['displayname']))
             {
                 foreach ($y['f']['uii']['idpsso']['displayname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'),  $k) . '', 'trim|min_length[5]|max_length[255]|xss_clean');
+                    $this->form_validation->set_rules('f[uii][idpsso][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'), $k) . '', 'trim|min_length[5]|max_length[255]|xss_clean');
                 }
             }
             if (isset($y['f']['uii']['idpsso']['desc']) && is_array($y['f']['uii']['idpsso']['desc']))
             {
                 foreach ($y['f']['uii']['idpsso']['desc'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' '.lang('in') .' ' . $k . '', 'trim|min_length[5]|max_length[500]|xss_clean');
+                    $this->form_validation->set_rules('f[uii][idpsso][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[5]|max_length[500]|xss_clean');
                 }
             }
             if (isset($y['f']['uii']['idpsso']['helpdesk']) && is_array($y['f']['uii']['idpsso']['helpdesk']))
             {
                 foreach ($y['f']['uii']['idpsso']['helpdesk'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][helpdesk][' . $k . ']', 'UUI ' . lang('rr_helpdeskurl') . ' '.lang('in').' ' . $k . '', 'trim|valid_url|min_length[5]|max_length[500]|xss_clean');
+                    $this->form_validation->set_rules('f[uii][idpsso][helpdesk][' . $k . ']', 'UUI ' . lang('rr_helpdeskurl') . ' ' . lang('in') . ' ' . $k . '', 'trim|valid_url|min_length[5]|max_length[500]|xss_clean');
                 }
             }
             if (array_key_exists('ldisplayname', $y['f']))
             {
                 foreach ($y['f']['ldisplayname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[ldisplayname][' . $k . ']', lang('localizeddisplaynamein').' ' . $k, 'xss_clean|trim');
+                    $this->form_validation->set_rules('f[ldisplayname][' . $k . ']', lang('localizeddisplaynamein') . ' ' . $k, 'xss_clean|trim');
                 }
             }
             if (array_key_exists('lhelpdesk', $y['f']))
             {
                 foreach ($y['f']['lhelpdesk'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', lang('localizedhelpdeskin').' ' . $k, 'trim|valid_url');
+                    $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', lang('localizedhelpdeskin') . ' ' . $k, 'trim|valid_url');
                 }
             }
 
@@ -138,10 +151,10 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['contact'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[contact][' . $k . '][email]', ''.lang('rr_contactemail').'', 'trim|valid_email');
-                    $this->form_validation->set_rules('f[contact][' . $k . '][type]', ''.lang('rr_contacttype').'', 'trim|valid_contact_type');
-                    $this->form_validation->set_rules('f[contact][' . $k . '][fname]', ''.lang('rr_contactfirstname').'', 'trim|xss_clean');
-                    $this->form_validation->set_rules('f[contact][' . $k . '][sname]', ''.lang('rr_contactlastname').'', 'trim|xss_clean');
+                    $this->form_validation->set_rules('f[contact][' . $k . '][email]', '' . lang('rr_contactemail') . '', 'trim|valid_email');
+                    $this->form_validation->set_rules('f[contact][' . $k . '][type]', '' . lang('rr_contacttype') . '', 'trim|valid_contact_type');
+                    $this->form_validation->set_rules('f[contact][' . $k . '][fname]', '' . lang('rr_contactfirstname') . '', 'trim|xss_clean');
+                    $this->form_validation->set_rules('f[contact][' . $k . '][sname]', '' . lang('rr_contactlastname') . '', 'trim|xss_clean');
                 }
             }
             if (array_key_exists('prot', $y['f']))
@@ -163,45 +176,45 @@ class Entityedit extends MY_Controller {
                 {
                     foreach ($y['f']['crt']['spsso'] as $k => $v)
                     {
-                        if(is_numeric($k))
+                        if (is_numeric($k))
                         {
-                           $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert_nokeysize');
+                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert_nokeysize');
                         }
                         else
                         {
-                           $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert');
+                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert');
                         }
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required|xss_clean');
+                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'trim|required|xss_clean');
                     }
                 }
                 if (array_key_exists('idpsso', $y['f']['crt']))
                 {
                     foreach ($y['f']['crt']['idpsso'] as $k => $v)
                     {
-                        if(is_numeric($k))
+                        if (is_numeric($k))
                         {
-                           $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert_nokeysize');
+                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert_nokeysize');
                         }
                         else
                         {
-                           $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
+                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
                         }
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required|xss_clean');
+                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'trim|required|xss_clean');
                     }
                 }
                 if (array_key_exists('aa', $y['f']['crt']))
                 {
                     foreach ($y['f']['crt']['aa'] as $k => $v)
                     {
-                        if(is_numeric($k))
+                        if (is_numeric($k))
                         {
-                           $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert_nokeysize');
+                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert_nokeysize');
                         }
                         else
                         {
-                           $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
+                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
                         }
-                        $this->form_validation->set_rules('f[crt][aa][' . $k . '][usage]', ''.lang('rr_certificateuse').'', 'trim|required|xss_clean');
+                        $this->form_validation->set_rules('f[crt][aa][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'trim|required|xss_clean');
                     }
                 }
             }
@@ -214,7 +227,7 @@ class Entityedit extends MY_Controller {
             $noidpslo = array();
             if (array_key_exists('srv', $y['f']))
             {
-                if(!array_key_exists('SingleSignOnService', $y['f']['srv']) )
+                if (!array_key_exists('SingleSignOnService', $y['f']['srv']))
                 {
                     $y['f']['srv']['SingleSignOnService'] = array();
                 }
@@ -246,9 +259,9 @@ class Entityedit extends MY_Controller {
                         $this->form_validation->set_rules('f[srv][SPSingleLogoutService][' . $k . '][bind]', 'SP SingleLogoutService Binding protocol', 'required');
                     }
                 }
-                if(!array_key_exists('AssertionConsumerService', $y['f']['srv']) && ($this->type === 'SP' or $this->type === 'BOTH') )
+                if (!array_key_exists('AssertionConsumerService', $y['f']['srv']) && ($this->type === 'SP' or $this->type === 'BOTH'))
                 {
-                      $y['f']['srv']['AssertionConsumerService'] = array();
+                    $y['f']['srv']['AssertionConsumerService'] = array();
                 }
                 if (array_key_exists('AssertionConsumerService', $y['f']['srv']))
                 {
@@ -311,8 +324,8 @@ class Entityedit extends MY_Controller {
                     $sparturls = array();
                     foreach ($y['f']['srv']['SPArtifactResolutionService'] as $k => $v)
                     {
-                        $this->form_validation->set_rules('f[srv][SPArtifactResolutionService][' . $k . '][url]', 'SP '.lang('ArtifactResolutionService').' URL', 'trim|max_length[254]|valid_url');
-                        $this->form_validation->set_rules('f[srv][SPArtifactResolutionService][' . $k . '][bind]', 'SP '.lang('ArtifactResolutionService').' Binding protocol', 'trim|xss_clean');
+                        $this->form_validation->set_rules('f[srv][SPArtifactResolutionService][' . $k . '][url]', 'SP ' . lang('ArtifactResolutionService') . ' URL', 'trim|max_length[254]|valid_url');
+                        $this->form_validation->set_rules('f[srv][SPArtifactResolutionService][' . $k . '][bind]', 'SP ' . lang('ArtifactResolutionService') . ' Binding protocol', 'trim|xss_clean');
 
                         $tmpurl = trim($y['f']['srv']['SPArtifactResolutionService']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['SPArtifactResolutionService']['' . $k . '']['order']);
@@ -453,80 +466,80 @@ class Entityedit extends MY_Controller {
 
     private function _save_draft($id, $data)
     {
-        if(isset($data['lname']))
+        if (isset($data['lname']))
         {
-           $data['lname']=array_filter($data['lname']);
+            $data['lname'] = array_filter($data['lname']);
         }
         else
         {
-            $data['lname']= array();
+            $data['lname'] = array();
         }
-        if(isset($data['ldisplayname']))
+        if (isset($data['ldisplayname']))
         {
-           $data['ldisplayname']=array_filter($data['ldisplayname']);
+            $data['ldisplayname'] = array_filter($data['ldisplayname']);
         }
         else
         {
             $data['ldisplayname'] = array();
         }
-        if(isset($data['lhelpdesk']))
+        if (isset($data['lhelpdesk']))
         {
-           $data['lhelpdesk'] = array_filter($data['lhelpdesk']);
+            $data['lhelpdesk'] = array_filter($data['lhelpdesk']);
         }
         else
         {
-           $data['lhelpdesk'] = array();
+            $data['lhelpdesk'] = array();
         }
-        if(isset($data['crt']['idpsso']))
+        if (isset($data['crt']['idpsso']))
         {
-           $data['crt']['idpsso']=array_filter($data['crt']['idpsso']);
+            $data['crt']['idpsso'] = array_filter($data['crt']['idpsso']);
         }
         else
         {
-           $data['crt']['idpsso'] = array();
+            $data['crt']['idpsso'] = array();
         }
-        if(isset($data['crt']['aa']))
+        if (isset($data['crt']['aa']))
         {
-           $data['crt']['aa']=array_filter($data['crt']['aa']);
+            $data['crt']['aa'] = array_filter($data['crt']['aa']);
         }
         else
         {
-           $data['crt']['aa'] = array();
+            $data['crt']['aa'] = array();
         }
-        if(isset($data['crt']['spsso']))
+        if (isset($data['crt']['spsso']))
         {
-           $data['crt']['spsso']=array_filter($data['crt']['spsso']);
+            $data['crt']['spsso'] = array_filter($data['crt']['spsso']);
         }
         else
         {
-           $data['crt']['spsso'] = array();
+            $data['crt']['spsso'] = array();
         }
-       
-        if(isset($data['uii']['idpsso']['desc']))
+
+        if (isset($data['uii']['idpsso']['desc']))
         {
             $data['uii']['idpsso']['desc'] = array_filter($data['uii']['idpsso']['desc']);
         }
         else
         {
-           $data['uii']['idpsso']['desc'] = array();
+            $data['uii']['idpsso']['desc'] = array();
         }
-        if(isset($data['uii']['idpsso']['helpdesk']))
+        if (isset($data['uii']['idpsso']['helpdesk']))
         {
             $data['uii']['idpsso']['helpdesk'] = array_filter($data['uii']['idpsso']['helpdesk']);
         }
         else
         {
-           $data['uii']['idpsso']['helpdesk'] = array();
+            $data['uii']['idpsso']['helpdesk'] = array();
         }
-        if(isset($data['uii']['idpsso']['displayname']))
+        if (isset($data['uii']['idpsso']['displayname']))
         {
             $data['uii']['idpsso']['displayname'] = array_filter($data['uii']['idpsso']['displayname']);
         }
         else
         {
-           $data['uii']['idpsso']['displayname'] = array();
+            $data['uii']['idpsso']['displayname'] = array();
         }
-        if(isset($data['prvurl']['idpsso']))
+        if (isset($data['prvurl']['idpsso']))
         {
             $data['prvurl']['idpsso'] = array_filter($data['prvurl']['idpsso']);
         }
@@ -534,7 +547,7 @@ class Entityedit extends MY_Controller {
         {
             $data['prvurl']['idpsso'] = array();
         }
-        if(isset($data['regpol']))
+        if (isset($data['regpol']))
         {
             $data['regpol'] = array_filter($data['regpol']);
         }
@@ -543,7 +556,7 @@ class Entityedit extends MY_Controller {
             $data['regpol'] = array();
         }
 
-        if(isset($data['coc']))
+        if (isset($data['coc']))
         {
             $data['coc'] = array_filter($data['coc']);
         }
@@ -551,7 +564,7 @@ class Entityedit extends MY_Controller {
         {
             $data['coc'] = array();
         }
-        if(isset($data['prvurl']['spsso']))
+        if (isset($data['prvurl']['spsso']))
         {
             $data['prvurl']['spsso'] = array_filter($data['prvurl']['spsso']);
         }
@@ -559,64 +572,91 @@ class Entityedit extends MY_Controller {
         {
             $data['prvurl']['spsso'] = array();
         }
-        if(isset($data['srv']['AssertionConsumerService']))
+        if (isset($data['srv']['AssertionConsumerService']))
         {
-           $data['srv']['AssertionConsumerService'] = array_filter($data['srv']['AssertionConsumerService']);
+            $data['srv']['AssertionConsumerService'] = array_filter($data['srv']['AssertionConsumerService']);
         }
         else
         {
-           $data['srv']['AssertionConsumerService'] = array();
+            $data['srv']['AssertionConsumerService'] = array();
         }
 
 
-        if(isset($data['srv']['RequestInitiator']))
+        if (isset($data['srv']['RequestInitiator']))
         {
-           $data['srv']['RequestInitiator'] = array_filter($data['srv']['RequestInitiator']);
+            $data['srv']['RequestInitiator'] = array_filter($data['srv']['RequestInitiator']);
         }
         else
         {
-           $data['srv']['RequestInitiator'] = array();
+            $data['srv']['RequestInitiator'] = array();
         }
-        if(isset($data['srv']['SPArtifactResolutionService']))
+        
+        if (isset($data['srv']['SPArtifactResolutionService']))
         {
-           $data['srv']['SPArtifactResolutionService'] = array_filter($data['srv']['SPArtifactResolutionService']);
+            $data['srv']['SPArtifactResolutionService'] = array_filter($data['srv']['SPArtifactResolutionService']);
         }
         else
         {
-           $data['srv']['SPArtifactResolutionService'] = array();
+            $data['srv']['SPArtifactResolutionService'] = array();
         }
-        if(isset($data['srv']['IDPAttributeService']))
+        if (isset($data['srv']['IDPArtifactResolutionService']))
         {
-           $data['srv']['IDPAttributeService'] = array_filter($data['srv']['IDPAttributeService']);
+            $data['srv']['IDPArtifactResolutionService'] = array_filter($data['srv']['IDPArtifactResolutionService']);
         }
         else
         {
-           $data['srv']['IDPAttributeService'] = array();
+            $data['srv']['IDPArtifactResolutionService'] = array();
         }
-        if(isset($data['srv']['DiscoveryResponse']))
+        if (isset($data['srv']['IDPAttributeService']))
         {
-           $data['srv']['DiscoveryResponse'] = array_filter($data['srv']['DiscoveryResponse']);
+            $data['srv']['IDPAttributeService'] = array_filter($data['srv']['IDPAttributeService']);
         }
         else
         {
-           $data['srv']['DiscoveryResponse'] = array();
+            $data['srv']['IDPAttributeService'] = array();
         }
-        if(isset($data['prot']['spsso']))
+        if (isset($data['srv']['DiscoveryResponse']))
+        {
+            $data['srv']['DiscoveryResponse'] = array_filter($data['srv']['DiscoveryResponse']);
+        }
+        else
+        {
+            $data['srv']['DiscoveryResponse'] = array();
+        }
+        if (isset($data['srv']['SingleSignOnService']))
+        {
+            
+            $data['srv']['SingleSignOnService'] = array_filter($data['srv']['SingleSignOnService']);
+        }
+        else
+        {
+            $data['srv']['SingleSignOnService'] = array();
+        }
+         if (isset($data['srv']['IDPSingleLogoutService']))
+        {
+            
+            $data['srv']['IDPSingleLogoutService'] = array_filter($data['srv']['IDPSingleLogoutService']);
+        }
+        else
+        {
+            $data['srv']['IDPSingleLogoutService'] = array();
+        }
+        if (isset($data['prot']['spsso']))
         {
             $data['prot']['spsso'] = array_filter($data['prot']['spsso']);
         }
         else
         {
-             $data['prot']['spsso'] = array();
+            $data['prot']['spsso'] = array();
         }
-        if(isset($data['contact']))
+        if (isset($data['contact']))
         {
-            foreach($data['contact'] as $k=>$v)
+            foreach ($data['contact'] as $k => $v)
             {
-                   if(empty($v['email']))
-                   {
-                       unset($data['contact'][''.$k.'']) ;
-                   }
+                if (empty($v['email']))
+                {
+                    unset($data['contact']['' . $k . '']);
+                }
             }
         }
         else
@@ -650,7 +690,6 @@ class Entityedit extends MY_Controller {
         }
     }
 
-
     public function show($id)
     {
         $loggedin = $this->j_auth->logged_in();
@@ -658,12 +697,12 @@ class Entityedit extends MY_Controller {
         {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
-        } 
+        }
         else
         {
-           $this->load->library('zacl');
+            $this->load->library('zacl');
         }
- 
+
         $ent = $this->tmp_providers->getOneById($id);
         if (empty($ent))
         {
@@ -671,20 +710,20 @@ class Entityedit extends MY_Controller {
         }
         $locked = $ent->getLocked();
         $is_local = $ent->getLocal();
-        if(!$is_local) 
+        if (!$is_local)
         {
-             show_error('Access Denied. Identity/Service Provider is not localy managed.',403);
+            show_error('Access Denied. Identity/Service Provider is not localy managed.', 403);
         }
-        if($locked)
+        if ($locked)
         {
-             show_error('Access Denied. Identity/Service Provider is locked and cannod be modified.', 403);
+            show_error('Access Denied. Identity/Service Provider is locked and cannod be modified.', 403);
         }
-        $this->entityid = $ent->getEntityId(); 
+        $this->entityid = $ent->getEntityId();
         $this->idpssoscope = $ent->getScope('idpsso');
         $this->aascope = $ent->getScope('aa');
         $this->type = $ent->getType();
         $this->_check_perms($id);
-        $n = 'entform' . $id;
+
 
         if ($this->input->post('discard'))
         {
@@ -719,15 +758,15 @@ class Entityedit extends MY_Controller {
             }
         }
         $entsession = $this->_get_draft($id);
-        if(!empty($entsession))
+        if (!empty($entsession))
         {
-          $data['sessform'] = true;
+            $data['sessform'] = true;
         }
 
         $data['y'] = $entsession;
         $lang = MY_Controller::getLang();
-  
-        $titlename = $ent->getNameToWebInLang($lang,$ent->getType());
+
+        $titlename = $ent->getNameToWebInLang($lang, $ent->getType());
         $this->title = $titlename . ' :: ' . lang('title_provideredit');
 
         /**
@@ -749,22 +788,155 @@ class Entityedit extends MY_Controller {
         $data['error_messages2'] = $this->tmp_error;
         $this->session->set_flashdata('entformerror', '');
 
-        $menutabs[] = array('id' => 'organization', 'value' => ''.lang('taborganization').'', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
-        $menutabs[] = array('id' => 'contacts', 'value' => ''.lang('tabcnts').'', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
-        $menutabs[] = array('id' => 'uii', 'value' => ''.lang('tabuii').'', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
-        $menutabs[] = array('id' => 'tabsaml', 'value' => ''.lang('tabsaml').'', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
-        $menutabs[] = array('id' => 'certificates', 'value' => ''.lang('tabcerts').'', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
-        $menutabs[] = array('id' => 'entcategories', 'value' => ''.lang('tabentcategories').'', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
-        $menutabs[] = array('id' => 'staticmetadata', 'value' => ''.lang('tabstaticmeta').'', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
-        $menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
+        $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
+        $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
+        $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
+        $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
+        $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
+        $menutabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
+        $menutabs[] = array('id' => 'staticmetadata', 'value' => '' . lang('tabstaticmeta') . '', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
+        $menutabs[] = array('id' => 'other', 'value' => '' . lang('tabotherforms') . '', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
 
         $data['menutabs'] = $menutabs;
-        $data['titlepage'] = '<a href="'.base_url() . 'providers/detail/show/'.$data['entdetail']['id'].'">'.$data['entdetail']['displayname'].'</a>';
+        $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['entdetail']['id'] . '">' . $data['entdetail']['displayname'] . '</a>';
         $data['content_view'] = 'manage/entityedit_view.php';
         $this->load->view('page', $data);
     }
 
+    private function _isfromsimplereg()
+    {
+        //$mbody = $this->input->post('metadatabody');
+        $fromSimpleMode = $this->input->post('advanced');
+        if (!empty($fromSimpleMode) && strcmp($fromSimpleMode, 'advanced') == 0)
+        {
+            return true;
+        }
 
+        return false;
+    }
 
+    public function register($t = null)
+    {
+        $t = trim($t);
+        if (empty($t) || !(strcmp($t, 'idp') == 0 || strcmp($t, 'sp') == 0))
+        {
+            show_error('Not found', 404);
+            return;
+        }
+        $ent = new models\Provider;
+        $ent->setLocal(TRUE);
+        if (strcmp($t, 'idp') == 0)
+        {
+            $ent->setType('IDP');
+        }
+        else
+        {
+            $ent->setType('SP');
+        }
+
+        /**
+         * check if submit from simpleform
+         */
+        if ($this->_isfromsimplereg())
+        {
+            $metadatabody = trim($this->input->post('metadatabody'));
+            if (!empty($metadatabody))
+            {
+                $this->load->library('xmlvalidator');
+                libxml_use_internal_errors(true);
+                $metadataDOM = new \DOMDocument();
+                $metadataDOM->strictErrorChecking = FALSE;
+                $metadataDOM->WarningChecking = FALSE;
+                $metadataDOM->loadXML($metadatabody);
+                $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
+                if (!$isValid)
+                {
+                    log_message('debug', 'GKSS invalid meta');
+                }
+                else
+                {
+                    log_message('debug', 'GKSS valid');
+                    $this->load->library('metadata2array');
+                    $xpath = new DomXPath($metadataDOM);
+                    $namespaces = h_metadataNamespaces();
+                    foreach ($namespaces as $key => $value)
+                    {
+                        $xpath->registerNamespace($key, $value);
+                    }
+                    $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
+                    log_message('debug', 'GKS found ents by name:' . count($domlist));
+                    // $domlist = $metadataDOM->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:metadata','EntityDescriptor');
+                    // log_message('debug','GKS found ents by ns name:'. count($domlist));
+                    if (count($domlist) == 1)
+                    {
+                        $d = array();
+                        foreach ($domlist as $l)
+                        {
+                            $entarray = $this->metadata2array->entityDOMToArray($l, TRUE);
+                        }
+                        $ent->setProviderFromArray(current($entarray));
+                    }
+                }
+            }
+        }
+        elseif ($this->input->post('discard'))
+        {
+            $this->_discard_draft($t);
+            redirect(base_url() . 'providers/idp_registration', 'location');
+        }
+        elseif ($this->_submit_validate($t) === TRUE)
+        {
+
+            $y = $this->input->post('f');
+            $submittype = $this->input->post('modify');
+            //$this->_save_draft($t, $y);
+            if ($submittype === 'modify')
+            {
+                $this->load->library('providerupdater');
+                $c = $this->_get_draft($t);
+                if (!empty($c) && is_array($c))
+                {
+
+                    $updateresult = $this->providerupdater->updateProvider($ent, $c);
+                    if ($updateresult)
+                    {
+                     //   echo '<pre>';
+                     //   echo $ent->getProviderToXML()->saveHTML();
+                     //   echo '</pre>';
+                        //$this->em->persist($ent);
+                        //$this->em->flush();
+                        //$this->_discard_draft($id);
+                        $showsuccess = TRUE;
+                    }
+                }
+            }
+           
+        }
+        ////////////////////////////////
+        $entsession = $this->_get_draft($t);
+     //   echo '<pre>';
+      //  print_r($entsession);
+       // echo '</pre>';
+        if (!empty($entsession))
+        {
+            $data['sessform'] = true;
+        }
+        $data['error_messages'] = validation_errors('<p>', '</p>');
+        $data['error_messages2'] = $this->tmp_error;
+        $this->session->set_flashdata('entformerror', '');
+        $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
+        $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
+        $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
+        $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
+        $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
+        //$menutabs[] = array('id' => 'entcategories', 'value' => ''.lang('tabentcategories').'', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
+        //$menutabs[] = array('id' => 'staticmetadata', 'value' => ''.lang('tabstaticmeta').'', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
+        //$menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
+
+        $data['menutabs'] = $menutabs;
+        $data['titlepage'] = 'Registration form ';
+        $data['content_view'] = 'manage/entityedit_view.php';
+        $this->load->view('page', $data);
+    }
 
 }
