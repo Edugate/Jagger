@@ -383,11 +383,58 @@ class J_queue
 
     function displayRegisterProvider(models\Queue $q)
     {
+        $showXML = FALSE;
         $objData = null;
         $data = $q->getData();
         $objType = $q->getObjType();
-        $objData = new models\Provider;
-        $objData->importFromArray($data);
+        if(!isset($data['metadata']))
+        {
+           $objData = new models\Provider;
+           $objData->importFromArray($data);
+        }
+        else
+        {
+           $objData = new models\Provider;
+           $metadataXml = base64_decode($data['metadata']);
+           $this->ci->load->library('xmlvalidator');
+           libxml_use_internal_errors(true);
+           $metadataDOM = new \DOMDocument();
+           $metadataDOM->strictErrorChecking = FALSE;
+           $metadataDOM->WarningChecking = FALSE;
+           $metadataDOM->loadXML($metadataXml);
+           $isValid = $this->ci->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
+           if (!$isValid)
+           {
+               log_message('error',__METHOD__.' invalid metadata in the queue ');
+           }
+           else
+           {
+              $this->ci->load->library('metadata2array');
+              $xpath = new DomXPath($metadataDOM);
+              $namespaces = h_metadataNamespaces();
+              foreach ($namespaces as $key => $value)
+              {   
+                 $xpath->registerNamespace($key, $value);
+              }
+              $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
+              if (count($domlist) == 1)
+              {   
+                  $d = array();
+                  foreach ($domlist as $l)
+                  {   
+                      $entarray = $this->ci->metadata2array->entityDOMToArray($l, TRUE);
+                  }
+                  $objData = new models\Provider;
+                  $objData->setProviderFromArray(current($entarray),TRUE);
+                  $y = $objData->getProviderToXML();
+                  $y->formatOutput = true;
+                  $metadataXML = $y->saveXML();
+                  $showXML = TRUE;
+              }
+
+           }
+
+        }
         $i = 0;
         $provider[$i++]['header'] = lang('rr_basicinformation');
         $provider[$i]['name'] = lang('rr_homeorganisationname');
@@ -451,6 +498,20 @@ class J_queue
             $provider[$i]['name'] = lang('rr_contact') . ' (' . $contact->getType() . ')';
             $provider[$i]['value'] = $contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt;";
             $i++;
+        }
+        if($showXML)
+        {
+             $params = array(
+            'enable_classes' => true,
+        );
+
+           $provider[$i]['name'] = 'XML';
+           $this->ci->load->library('geshilib');
+           $provider[$i]['value'] = ''.$this->ci->geshilib->highlight($metadataXML, 'xml', $params).'';
+//           $metadataDOM->formatOutput = true;
+
+  //         $provider[$i]['value'] = ''.$this->ci->geshilib->highlight($metadataDOM->saveXML(), 'xml', $params).'';
+           $i++;
         }
         return $provider;
     }

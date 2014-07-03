@@ -24,7 +24,9 @@ foreach ($provider as $row)
 }
 if (!empty($error_message))
 {
-    echo '<div class="prepend-6 span-12"><div class="error">' . $error_message . '</div></div>';
+    echo '<div data-alert class="alert-box alert">' . $error_message . '</div>';
 }
+echo '<div class="small-12 columns"> ';
 echo $this->table->generate();
+echo '</div>';
 $this->table->clear();

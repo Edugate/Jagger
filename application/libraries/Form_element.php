@@ -418,7 +418,14 @@ class Form_element
          */
         $result[] = '';
         $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
-        $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
+        if(!empty($ent->getId()))
+        {
+           $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
+        }
+        else
+        {
+           $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol','is_enabled'=>TRUE));
+        }
         $entRegPoliciesArray = array();
         foreach ($entRegPolicies as $v)
         {
@@ -430,7 +437,7 @@ class Form_element
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
         }
-        elseif (!$isAdmin)
+        elseif (!$isAdmin && !empty($ent->getId()))
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }

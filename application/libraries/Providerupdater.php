@@ -364,6 +364,7 @@ class Providerupdater {
 
         if (array_key_exists('regpol', $ch))
         {
+            log_message('debug','GKS '.__METHOD__.' '.serialize($ch['regpol']).'');
             $currentRegPol = &$currentCocs;
             foreach($currentRegPol as $k => $v)
             {
@@ -385,9 +386,10 @@ class Providerupdater {
                     $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$v,'type'=>'regpol'));
                     if(!empty($c) && !$currentRegPol->contains($c))
                     {
-                       if($isAdmin)
+                       if($isAdmin || empty($ent->getId()))
                        {
                           $ent->setCoc($c);
+                          log_message('debug','GKS setting coc');
                        }
                        else
                        {
@@ -1719,10 +1721,6 @@ class Providerupdater {
                   }
 
             }
-            
-            
-       
-
         }
 
         if(array_key_exists('use_static',$ch) && $ch['usestatic'] === 'accept')
@@ -1732,7 +1730,7 @@ class Providerupdater {
 
         }
         
-        if(count($m)>0)
+        if(count($m)>0 && !empty($ent->getId()))
         {        
            $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(),serialize($m),FALSE);
         }

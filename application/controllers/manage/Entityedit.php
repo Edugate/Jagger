@@ -855,6 +855,7 @@ class Entityedit extends MY_Controller
                 }
                 else
                 {
+                    $this->_discard_draft($t);
                     log_message('debug', 'GKSS valid');
                     $this->load->library('metadata2array');
                     $xpath = new DomXPath($metadataDOM);
@@ -864,9 +865,6 @@ class Entityedit extends MY_Controller
                         $xpath->registerNamespace($key, $value);
                     }
                     $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
-                    log_message('debug', 'GKS found ents by name:' . count($domlist));
-                    // $domlist = $metadataDOM->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:metadata','EntityDescriptor');
-                    // log_message('debug','GKS found ents by ns name:'. count($domlist));
                     if (count($domlist) == 1)
                     {
                         $d = array();
@@ -897,9 +895,59 @@ class Entityedit extends MY_Controller
                 if (!empty($c) && is_array($c))
                 {
 
-                    $updateresult = $this->providerupdater->updateProvider($ent, $c);
-                    if ($updateresult)
+                    $ent = $this->providerupdater->updateProvider($ent, $c);
+
+                    if ($ent)
                     {
+                        $registrationAutority = $this->config->item('registrationAutority');
+                        if(!empty($registrationAutority))
+                        {
+                          $ent->setRegistrationAuthority(trim($registrationAutority));
+                        }
+                        $ent->setActive(TRUE);
+                        /// create queue
+                        $q = new models\Queue;
+                        $loggedin_user = $this->session->userdata('username');
+                        if(!empty($_SESSION['username']))
+                        {
+                          $loggedin_user = $_SESSION['username'];
+                        }
+                        else {
+                         $loggedin_user = null;
+                        }
+                        if (!empty($loggedin_user)) {
+                          $creator = $this->em->getRepository("models\User")->findOneBy(array('username' => $loggedin_user));
+                          $q->setCreator($creator);
+                       }
+                       $q->setAction("Create");
+                       $q->setName($ent->getName());
+                       $ttype = $ent->getType();
+                       log_message('debug','GKS entutttt: '.$ttype);
+                       $mm = $ent->getCoc();
+                       log_message('debug','GKS numbe coc set: '.$mm->count());
+                       if(strcmp($ttype,'IDP') == 0)
+                       {
+                         $q->addIDP($ent->convertToArray(TRUE));
+                       }
+                       else
+                       {
+                         $q->addSP($ent->convertToArray(TRUE));
+
+                       }
+                       $contactMail =  $this->input->post('contact_mail');
+                       if(empty($contactMail))
+                       {
+                          $contactMail = 'example@example.com';
+                       }
+                       $q->setEmail($contactMail);
+                     
+                       $q->setToken();
+                       $this->em->persist($q);
+                       $this->em->detach($ent);
+                       //$ent = null;
+                       $this->em->flush();
+
+                        /// end create queue
                      //   echo '<pre>';
                      //   echo $ent->getProviderToXML()->saveHTML();
                      //   echo '</pre>';

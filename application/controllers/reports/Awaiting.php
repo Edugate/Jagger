@@ -555,8 +555,64 @@ class Awaiting extends MY_Controller {
                     $approve_allowed = $this->zacl->check_acl('idp', 'create', 'entity', '');
                     if ($approve_allowed)
                     {
-                        $idp = new models\Provider;
-                        $idp->importFromArray($queueObj->getData());
+                        $d = $queueObj->getData();
+                        if(!isset($d['metadata']))
+                        {
+                           $idp = new models\Provider;
+                           $idp->importFromArray($queueObj->getData());
+                        }
+                        else
+                        {
+                             $this->load->library('xmlvalidator');
+                             libxml_use_internal_errors(true);
+                             $metadataDOM = new \DOMDocument(); 
+                             $metadataDOM->strictErrorChecking = FALSE;
+                             $metadataDOM->WarningChecking = FALSE;
+                             $metadataDOM->loadXML(base64_decode($d['metadata']));
+                             $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
+                             if (!$isValid)
+                             {
+                                $this->error_message = 'Invalid metadata';
+                                return $this->detail($queueObj->getToken());
+                             }
+                             else
+                             {
+                                 $this->load->library('metadata2array');
+                                 $xpath = new DomXPath($metadataDOM);
+                                 $namespaces = h_metadataNamespaces();
+                                foreach ($namespaces as $key => $value)
+                                 {
+                                      $xpath->registerNamespace($key, $value);
+                                 }
+                                 $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
+                                 if (count($domlist) == 1)
+                                 {
+                                    foreach ($domlist as $l)
+                                    {
+                                          $entarray = $this->metadata2array->entityDOMToArray($l, TRUE);
+                                    }
+                                    $idp = new models\Provider;
+                                    $idp->setProviderFromArray(current($entarray),TRUE);
+                                    $ptype = $idp->getType();
+                                    if(strcmp($ptype,'IDP')!=0)
+                                    {
+                                       $this->error_message = 'Invalid entity type: '.$idp->getType();
+                                       return $this->detail($queueObj->getToken());
+                                    }
+                                    $idp->setActive(TRUE);
+                                    $idp->setStatic(FALSE);
+                                 }
+                                 else
+                                 {
+                                     $this->error_message = 'Invalid metadata. None or more than one EntityDescriptor found in the raw xml';
+                                     return $this->detail($queueObj->getToken());
+
+                                 }
+ 
+
+                             }
+
+                        }
 
                         //echo $idp->getName();
 
@@ -567,7 +623,6 @@ class Awaiting extends MY_Controller {
                             return $this->detail($queueObj->getToken());
                         } else
                         {
-                            $idp->setNameId();
                             $idp->setAsLocal();
                             $fed = $idp->getFederations()->get(0);
                             if (!empty($fed))
