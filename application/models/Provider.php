@@ -137,7 +137,7 @@ class Provider {
     protected $lprivacyurl;
 
     /**
-     * @ManyToMany(targetEntity="Coc",inversedBy="provider", cascade={"all"})
+     * @ManyToMany(targetEntity="Coc",inversedBy="provider", cascade={"persist","detach"})
      * @JoinTable(name="Provider_Coc",
      *      joinColumns={@JoinColumn(name="provider_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="coc_id", referencedColumnName="id")}
@@ -250,7 +250,7 @@ class Provider {
     //protected $federations;
 
     /**
-     * @OneToMany(targetEntity="FederationMembers", mappedBy="provider", cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="FederationMembers", mappedBy="provider", cascade={"persist", "remove","detach"})
      */
     protected $membership;
 
@@ -293,7 +293,7 @@ class Provider {
     protected $attributeRequirement;
 
     /**
-     * @OneToOne(targetEntity="StaticMetadata", mappedBy="provider",cascade={"persist", "remove"})
+     * @OneToOne(targetEntity="StaticMetadata", mappedBy="provider",cascade={"all"})
      */
     protected $metadata;
 
