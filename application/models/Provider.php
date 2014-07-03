@@ -2648,6 +2648,7 @@ class Provider {
         $membership = $this->getMembership();
         if (!empty($membership) && $membership->count()>0)
         {
+           \log_message('debug','GKS found membership');
             foreach ($membership as $f)
             {
                 $state = $f->getJoinState();

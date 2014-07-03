@@ -30,6 +30,12 @@ if(!empty($sessform))
     <ul class="tabs" data-tab>
         <?php
         $active = false;
+        if(!empty($registerForm))
+        {
+           echo '<li class="tab-title active"><a href="#general">General</a></li>';
+           $active = true;
+
+        }
         foreach ($menutabs as $m)
         {
             if(!$active && $m['id'] === 'organization')
@@ -51,6 +57,25 @@ if(!empty($sessform))
 
 
     $active=false;
+    if(!empty($registerForm))
+    {
+        echo '<div id="general" class="content tabgroup active">';
+        $active = true;
+
+        /**
+         * general info input like federation, contact
+         */
+        if(!empty($federations) && is_array($federations))
+        {
+          echo '<div class="small-12 columns">';
+          echo '<div class="small-3 columns">'.jform_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'f[federation]').'</div>';
+          echo '<div class="small-6 large-7 columns end">'.form_dropdown('f[federation]', $federations,set_value('f[federation]')).'</div>';
+          echo '</div>';
+        }
+        
+        echo '</div>';
+
+    }
     foreach ($menutabs as $m)
     {
         if(!$active && $m['id'] === 'organization')
@@ -99,11 +124,25 @@ if(!empty($sessform))
         echo '</div>';
     }
     echo '</div>';
+   if(empty($registerForm))
+   {
     echo '<div class="buttons">
         <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('discardall').'</button>
         <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
         <button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnupdate').'
       </button></div>';
+   }
+   else
+   {
+    echo '<div class="buttons">
+        <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('btnstartagain').'</button>
+        <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
+        <button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnregister').'
+      </button></div>';
+
+
+
+   }
     ?>
 
 

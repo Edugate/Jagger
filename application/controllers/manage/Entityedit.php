@@ -50,6 +50,7 @@ class Entityedit extends MY_Controller
         if (strcmp($id, 'idp') == 0 || strcmp($id, 'sp') == 0)
         {
             $register = true;
+            $this->type = strtoupper($id);
         }
         $result = false;
         $y = $this->input->post();
@@ -817,6 +818,7 @@ class Entityedit extends MY_Controller
 
     public function register($t = null)
     {
+        $data['registerForm'] = TRUE;
         $t = trim($t);
         if (empty($t) || !(strcmp($t, 'idp') == 0 || strcmp($t, 'sp') == 0))
         {
@@ -833,6 +835,21 @@ class Entityedit extends MY_Controller
         {
             $ent->setType('SP');
         }
+
+        $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active'=>TRUE));
+        if(count($fedCollection)>0)
+        {
+           $data['federations'] = array();
+           /**
+            *  generate dropdown list of public federations
+            */
+           $data['federations']['none'] = lang('noneatthemoment');
+           foreach ($fedCollection as $key)
+           {
+              $data['federations'][$key->getName()] = $key->getName();
+           }
+        }
+
 
         /**
          * check if submit from simpleform
@@ -925,6 +942,46 @@ class Entityedit extends MY_Controller
                        log_message('debug','GKS entutttt: '.$ttype);
                        $mm = $ent->getCoc();
                        log_message('debug','GKS numbe coc set: '.$mm->count());
+
+
+
+
+           if(!empty($y['federation']))
+           {  
+              try{
+                  $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => ''.$y['federation'].''));
+              }
+              catch(Exception $e)
+              {  
+                 log_message('error',__METHOD__.' '.$e);
+                 show_error('Internal Server Error',500);
+                 return;
+              }
+           }
+           if (!empty($federation)) {
+                $ispublic = $federation->getPublic();
+                $isactive = $federation->getActive();
+                if ($ispublic && $isactive) {
+                    $membership = new models\FederationMembers;
+                    $membership->setJoinState('1');
+                    $membership->setProvider($ent);
+                    $membership->setFederation($federation);
+                    $ent->getMembership()->add($membership);
+
+                }
+                else {
+                    log_message('warning', 'Federation is not public, cannot register sp with join fed with name ' . $federation->getName());
+                }
+            }
+
+
+
+                    
+
+
+
+
+
                        if(strcmp($ttype,'IDP') == 0)
                        {
                          $q->addIDP($ent->convertToArray(TRUE));

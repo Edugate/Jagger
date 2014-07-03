@@ -387,14 +387,13 @@ class J_queue
         $objData = null;
         $data = $q->getData();
         $objType = $q->getObjType();
+        $objData = new models\Provider;
         if(!isset($data['metadata']))
         {
-           $objData = new models\Provider;
            $objData->importFromArray($data);
         }
         else
         {
-           $objData = new models\Provider;
            $metadataXml = base64_decode($data['metadata']);
            $this->ci->load->library('xmlvalidator');
            libxml_use_internal_errors(true);
@@ -459,10 +458,29 @@ class J_queue
         $provider[$i]['name'] = lang('rr_helpdeskurl');
         $provider[$i++]['value'] = $objData->getHelpdeskUrl();
 
-        foreach ($objData->getFederations() as $fed) {
-            $provider[$i]['name'] = lang('rr_federation');
-            $provider[$i]['value'] = $fed->getName();
-            $i++;
+        $feds = $objData->getFederations();
+
+        if($feds->count() > 0)
+        {
+            foreach ($objData->getFederations() as $fed) {
+               $provider[$i]['name'] = lang('rr_federation');
+               $provider[$i]['value'] = $fed->getName();
+               $i++;
+            }
+        }
+        elseif(isset($data['federations']))
+        {
+           foreach($data['federations'] as $f)
+           {
+              $p = $this->em->getRepository("models\Federation")->findOneBy(array('sysname'=>$f['sysname']));
+              if(!empty($p))
+              {
+                 $provider[$i]['name'] = lang('rr_federation');
+                 $provider[$i]['value'] = $p->getName();
+                $i++;
+              }
+           }
+
         }
         $provider[$i++]['header'] = lang('rr_servicelocations');
         foreach ($objData->getServiceLocations() as $service) {

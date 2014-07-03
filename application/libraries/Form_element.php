@@ -345,7 +345,7 @@ class Form_element
         $result[] = $this->_generateLangAddButton('lhelpdeskadd', 'lhelpdesklangcode', $btnlangs, 'addlhelpdesk', '' . lang('rr_helpdeskurl') . '');
         $result[] = '';
 
-        if ($isAdmin)
+        if ($isAdmin && !empty($ent->getId()))
         {
             /**
              * end organizatiourl/helpdesk

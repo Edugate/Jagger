@@ -50,7 +50,7 @@ class ExtendMetadata {
     protected $etype;
 
     /**
-     * @ManyToOne(targetEntity="Provider",inversedBy="extend")
+     * @ManyToOne(targetEntity="Provider",inversedBy="extend",cascade={"persist"})
      * @JoinColumn(name="provider_id", referencedColumnName="id")
      */
     protected $provider;

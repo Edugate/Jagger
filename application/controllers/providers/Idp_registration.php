@@ -183,11 +183,6 @@ class Idp_registration extends MY_Controller {
                }
                $idp->setNameIds('idpsso',array_values($nameidsArray));
             }
-            $privurl = $this->input->post('privacyurl');
-            if(!empty($privurl))
-            {
-               $idp->setPrivacyUrl(trim($privurl));
-            }
             
 
             /* create queue object */

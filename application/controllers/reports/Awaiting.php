@@ -580,7 +580,7 @@ class Awaiting extends MY_Controller {
                                  $this->load->library('metadata2array');
                                  $xpath = new DomXPath($metadataDOM);
                                  $namespaces = h_metadataNamespaces();
-                                foreach ($namespaces as $key => $value)
+                                 foreach ($namespaces as $key => $value)
                                  {
                                       $xpath->registerNamespace($key, $value);
                                  }
@@ -601,6 +601,33 @@ class Awaiting extends MY_Controller {
                                     }
                                     $idp->setActive(TRUE);
                                     $idp->setStatic(FALSE);
+                                    if(isset($d['federations']))
+                                    {
+                                       $fe = $idp->getFederations();
+                                       if($fe->count()==0)
+                                       {
+                                           foreach($d['federations'] as $g)
+                                           {
+                                              $gg = $this->em->getRepository("models\Federation")->findOneBy(array('sysname'=>$g['sysname']));
+                                              if(!empty($gg))
+                                              {
+                                                  $ispublic = $gg->getPublic();
+                                                  $isactive = $gg->getActive();
+                                                  if ($ispublic && $isactive)
+                                                  {
+                                                     $membership = new models\FederationMembers;
+                                                     $membership->setJoinState('1');
+                                                     $membership->setProvider($idp);
+                                                     $membership->setFederation($gg);
+                                                     $idp->getMembership()->add($membership);
+                                                  }
+
+                                              }
+                                           }
+ 
+                                       }
+
+                                    }
                                  }
                                  else
                                  {

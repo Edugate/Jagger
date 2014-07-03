@@ -96,7 +96,7 @@ class Providerupdater {
              * set scopes
              */
             
-            if(array_key_exists('scopes', $ch) && !in_array('scope',$dissalowedparts))
+            if(array_key_exists('scopes', $ch) && (!in_array('scope',$dissalowedparts) || empty($ent->getId())))
             {
                $origscopesso = implode(',',$ent->getScope('idpsso'));
                $origscopeaa = implode(',',$ent->getScope('aa'));
@@ -119,6 +119,7 @@ class Providerupdater {
                }
                if(array_key_exists('aa',$ch['scopes']) && !empty($ch['scopes']['aa']))
                {
+                      log_message('debug','GKS SCOPE AA yes');
                        
                        $aascopes = array_filter(explode(',',$ch['scopes']['aa']));
                        $ent->setScope('aa',array_unique($aascopes));
@@ -130,6 +131,7 @@ class Providerupdater {
                }
                else
                {
+                      log_message('debug','GKS SCOPE AA no');
                       $ent->setScope('aa', array());
                       if(!empty($origscopeaa))
                       {
