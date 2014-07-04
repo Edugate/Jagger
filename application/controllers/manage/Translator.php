@@ -47,7 +47,7 @@ class Translator extends MY_Controller
     {
        $this->lang->load('rr', 'english');
        $original = $this->lang->language;
-       $allowedlangs = array('pt','pl','it','es','lt','fr','de','ar','cs','fr-ca');
+       $allowedlangs = array('pt','pl','it','es','lt','fr','de','ar','cs','fr-ca','sr','ga');
        if(in_array($l,$allowedlangs))
        {
           $langto = $l;
