@@ -258,11 +258,11 @@ class Email_sender {
       }
       if(!empty($merged['requestersourceip']))
       {
-        $b .= 'Request has been sent from: '.$sourceIP . PHP_EOL;
+        $b .= 'Request has been sent from: '.$merged['requestersourceip'] . PHP_EOL;
       }
       if(!empty($merged['token']))
       {
-         $b .= 'If you have sufficient permissions you can approve/reject it on '.base_url().'reports/awaiting/detail/'.$qu->getToken().PHP_EOL;
+         $b .= 'If you have sufficient permissions you can approve/reject it on '.base_url().'reports/awaiting/detail/'.$merged['token'].PHP_EOL;
       }
       else
       {
