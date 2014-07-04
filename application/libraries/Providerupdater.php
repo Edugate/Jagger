@@ -40,6 +40,7 @@ class Providerupdater {
     public function updateProvider(models\Provider $ent, array $ch)
     {
         // $m - array for modifications
+        $entid = $ent->getId();
         $m  = array();
         $type = $ent->getType();
         $langCodes = languagesCodes();
@@ -96,7 +97,7 @@ class Providerupdater {
              * set scopes
              */
             
-            if(array_key_exists('scopes', $ch) && (!in_array('scope',$dissalowedparts) || empty($ent->getId())))
+            if(array_key_exists('scopes', $ch) && (!in_array('scope',$dissalowedparts) || empty($entid)))
             {
                $origscopesso = implode(',',$ent->getScope('idpsso'));
                $origscopeaa = implode(',',$ent->getScope('aa'));
@@ -388,7 +389,7 @@ class Providerupdater {
                     $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$v,'type'=>'regpol'));
                     if(!empty($c) && !$currentRegPol->contains($c))
                     {
-                       if($isAdmin || empty($ent->getId()))
+                       if($isAdmin || empty($entid))
                        {
                           $ent->setCoc($c);
                           log_message('debug','GKS setting coc');
@@ -1732,7 +1733,7 @@ class Providerupdater {
 
         }
         
-        if(count($m)>0 && !empty($ent->getId()))
+        if(count($m)>0 && !empty($entid))
         {        
            $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(),serialize($m),FALSE);
         }
