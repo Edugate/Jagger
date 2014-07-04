@@ -224,7 +224,7 @@ class Email_sender {
          'requestersourceip'=>'',
          'serviceentityid'=>'',
          'servicename'=>'', 
-         'orgname'=>'';
+         'orgname'=>'',
          'token'=>'',
       );
         
