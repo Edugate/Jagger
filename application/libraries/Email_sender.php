@@ -189,7 +189,8 @@ class Email_sender {
       {
          $list = $to;
       }
-      $generatedAt = (new \DateTime())->format('Y-m-d H:i:s');
+      //$generatedAt = (new \DateTime())->format('Y-m-d H:i:s');
+      $generatedAt = '';
       foreach($list as $k)
       {
           $this->ci->email->clear();
