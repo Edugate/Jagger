@@ -18,6 +18,7 @@ $langs = array(
     'lt' => array('path'=>'lt','val'=>'lietuvos'),
      'pl' => array('path'=>'pl','val'=>'polski'),
     'pt' => array('path'=>'pt','val'=>'português'),
+    'sr'=>array('path'=>'sr','val'=>'srpski'),
   );
 
 
