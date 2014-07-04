@@ -94,6 +94,7 @@ class Form_element
      */
     public function NgenerateEntityGeneral(models\Provider $ent, $ses = null)
     {
+        $entid = $ent->getId();
 
         $isAdmin = $this->ci->j_auth->isAdministrator();
         $sessform = FALSE;
@@ -345,7 +346,7 @@ class Form_element
         $result[] = $this->_generateLangAddButton('lhelpdeskadd', 'lhelpdesklangcode', $btnlangs, 'addlhelpdesk', '' . lang('rr_helpdeskurl') . '');
         $result[] = '';
 
-        if ($isAdmin && !empty($ent->getId()))
+        if ($isAdmin && !empty($entid))
         {
             /**
              * end organizatiourl/helpdesk
@@ -418,7 +419,7 @@ class Form_element
          */
         $result[] = '';
         $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
-        if(!empty($ent->getId()))
+        if(!empty($entid))
         {
            $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
         }
@@ -437,7 +438,7 @@ class Form_element
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
         }
-        elseif (!$isAdmin && !empty($ent->getId()))
+        elseif (!$isAdmin && !empty($entid))
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
@@ -1166,6 +1167,7 @@ class Form_element
 
     public function NgenerateSAMLTab(models\Provider $ent, $ses = null)
     {
+        $entid = $ent->getId();
         $sessform = FALSE;
         $allowednameids = getAllowedNameId();
         $class_ent = '';
@@ -1188,11 +1190,11 @@ class Form_element
         $result = array();
         $result[] = '';
         $addargs = array();
-        if (in_array('entityid', $this->disallowedparts) && !empty($ent->getId()) )
+        if (in_array('entityid', $this->disallowedparts) && !empty($entid) )
         {
             $addargs = array('readonly' => 'readonly');
         }
-        elseif(!empty($ent->getId()))
+        elseif(!empty($entid))
         {
             $class_ent .=' alertonchange ';
         }
