@@ -200,7 +200,8 @@ class Idp_registration extends MY_Controller {
                 $qu->setCreator($creator);
             }
             $qu->setAction("Create");
-            $qu->setName($this->input->post('homeorg'));
+            $servicename = $this->input->post('homeorg');
+            $qu->setName($servicename);
             $qu->addIDP($idp->convertToArray());
             $contactMail =  $this->input->post('contact_mail');
             $qu->setEmail($contactMail);
@@ -210,16 +211,25 @@ class Idp_registration extends MY_Controller {
             /**
              * send email
              */
-            $sbj = 'IDP registration request';
-            $body = 'Dear user,'.PHP_EOL;
-            $body .= 'You have received this mail because your email address is on the notification list'.PHP_EOL;
-            $body .= ''.$qu->getEmail().' completed a new Identity Provider Registration'.PHP_EOL;
             if(!empty($sourceIP))
             {
-               $body .= 'Request sent from: '.$sourceIP . PHP_EOL; 
+               $sourceIP =''; 
             }
-            $body .='You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$qu->getToken().PHP_EOL;
-            $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq'),null,$sbj,$body,array(),FALSE);
+
+            $messageTemplateParams = array(
+                 'requestermail' => $qu->getEmail(),
+                 'token' => $qu->getToken(),
+                 'requestersourceip'=>$sourceIP,
+                 'orgname'=>$servicename,
+                 'serviceentityid'=>$idp->getEntityId(),
+            
+            );
+            $messageTemplate = $this->email_sender->providerRegRequest('idp',$messageTemplateParams,NULL);
+
+            if(!empty($messageTemplate))
+            {
+               $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq'),null,$messageTemplate['subject'],$messageTemplate['body'],array(),FALSE);
+            }
 
             $body2 = 'Dear user'.PHP_EOL;
             $body2 .= 'You have received this mail as your email ('.$contactMail.') was provided during IdentityProvider Registration request on site '.base_url().PHP_EOL;

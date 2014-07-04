@@ -212,5 +212,77 @@ class Email_sender {
       return true;
    } 
 
+
+   /**
+    *  TEMPLATES
+    */
+
+   function providerRegRequest($type,$args,$lang=null)
+   {
+      $params = array(
+         'requestermail'=>'',
+         'requestersourceip'=>'',
+         'serviceentityid'=>'',
+         'servicename'=>'', 
+         'orgname'=>'';
+         'token'=>'',
+      );
+        
+      $merged = array_merge($params,$args);
+      $isidp = false;
+      $issp = false;
+      if(strcasecmp($type,'idp') == 0)
+      { 
+         $r['subject']  = 'IDP registration request';
+         $isidp = true;
+      }
+      elseif(strcasecmp($type,'sp')==0)
+      {
+         $r['subject']  = 'SP registration request';
+         $issp = true;
+      }
+      else
+      {
+         return null;
+      }
+    
+      $b = 'Dear user,'.PHP_EOL.'You have received this mail because your email address is on the notification list'.PHP_EOL;
+      if($isidp)
+      {
+        $b .= $merged['requestermail'].' completed a new Identity Provider Registration'.PHP_EOL;
+      }
+      else
+      {
+        $b .= $merged['requestermail'].' completed a new Service Provider Registration'.PHP_EOL;
+
+      }
+      if(!empty($merged['requestersourceip']))
+      {
+        $b .= 'Request has been sent from: '.$sourceIP . PHP_EOL;
+      }
+      if(!empty($merged['token']))
+      {
+         $b .= 'If you have sufficient permissions you can approve/reject it on '.base_url().'reports/awaiting/detail/'.$qu->getToken().PHP_EOL;
+      }
+      else
+      {
+         $b .= 'If you have sufficient permissions you can approve/reject it on '. base_url().''.PHP_EOL;
+      }
+
+      $r['body'] = $b;
+      return $r;
+
+
+   }
+
+
+
+
+
+
+
+
+
+
 }
 

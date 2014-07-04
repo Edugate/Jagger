@@ -837,6 +837,11 @@ class Entityedit extends MY_Controller
             $ent->setType('SP');
             $data['titlepage'] = lang('rr_sp_register_title');
         }
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin)  
+        {
+
+        }
 
         $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active'=>TRUE));
         if(count($fedCollection)>0)
@@ -941,9 +946,7 @@ class Entityedit extends MY_Controller
                        $q->setAction("Create");
                        $q->setName($ent->getName());
                        $ttype = $ent->getType();
-                       log_message('debug','GKS entutttt: '.$ttype);
                        $mm = $ent->getCoc();
-                       log_message('debug','GKS numbe coc set: '.$mm->count());
 
 
 
@@ -1023,9 +1026,6 @@ class Entityedit extends MY_Controller
         }
         ////////////////////////////////
         $entsession = $this->_get_draft($t);
-     //   echo '<pre>';
-      //  print_r($entsession);
-       // echo '</pre>';
         if (!empty($entsession))
         {
             $data['sessform'] = true;
