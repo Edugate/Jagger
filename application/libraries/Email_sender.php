@@ -189,6 +189,7 @@ class Email_sender {
       {
          $list = $to;
       }
+      $generatedAt = (new \DateTime())->format('Y-m-d H:i:s');
       foreach($list as $k)
       {
           $this->ci->email->clear();
@@ -196,7 +197,8 @@ class Email_sender {
           $this->ci->email->to($k, '');
           $this->ci->email->subject($full_subject);
           $footer = $this->ci->config->item('mail_footer');
-          $message = $body . $footer;
+          
+          $message = $body .PHP_EOL.'Message was generated at '.$generatedAt.PHP_EOL. $footer;
           $this->ci->email->message($message);
           if($this->ci->email->send())
           {
