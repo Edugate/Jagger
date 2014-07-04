@@ -941,6 +941,7 @@ class Entityedit extends MY_Controller
                         }
                         if (!empty($loggedin_user)) {
                           $creator = $this->em->getRepository("models\User")->findOneBy(array('username' => $loggedin_user));
+                          $contactMail = $creator->getEmail();
                           $q->setCreator($creator);
                        }
                        $q->setAction("Create");
@@ -996,7 +997,6 @@ class Entityedit extends MY_Controller
                          $q->addSP($ent->convertToArray(TRUE));
 
                        }
-                       $contactMail =  $this->input->post('contact_mail');
                        if(empty($contactMail))
                        {
                           $contactMail = 'example@example.com';
@@ -1004,6 +1004,22 @@ class Entityedit extends MY_Controller
                        $q->setEmail($contactMail);
                      
                        $q->setToken();
+                       $sourceIP = $this->input->ip_address(); 
+                       $messageTemplateParams = array(
+                           'requestermail' => $contactMail,
+                           'token' => $q->getToken(),
+                           'requestersourceip'=>$sourceIP,
+                           'orgname'=>$ent->getName(),
+                           'serviceentityid'=>$ent->getEntityId(),
+                       );
+  
+                       $messageTemplate = $this->email_sender->providerRegRequest($ttype,$messageTemplateParams,NULL);
+                       if(!empty($messageTemplate))
+                       {
+                          $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq'),null,$messageTemplate['subject'],$messageTemplate['body'],array(),FALSE);
+                       }
+
+
                        $this->em->persist($q);
                        $this->em->detach($ent);
                        try {
