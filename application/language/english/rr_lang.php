@@ -709,6 +709,7 @@ $lang['rr_fed_cntidps_list']        = 'Contact list of idp members';
 $lang['rr_fed_cntisps_list']        = 'Contact list of sp members';
 $lang['rr_fed_cnt_list']            = 'Contact list of all federation members';
 $lang['rr_fed_req_sent']            = 'Request has been sent to approval';
+$lang['rr_req_sent']            = 'Request has been sent to approval';
 $lang['rr_downcontactsintxt']       = 'Download contacts list in txt format';
 $lang['rr_timeline']                = 'Timeline';
 $lang['rr_fedmembersadded']         = 'New members have been added to federation';

@@ -1001,17 +1001,19 @@ class Entityedit extends MY_Controller
                        $q->setToken();
                        $this->em->persist($q);
                        $this->em->detach($ent);
-                       //$ent = null;
-                       $this->em->flush();
+                       try {
+                          $this->em->flush();
+                          $redirect_to = current_url();
+                         redirect(base_url().'manage/entityedit/registersuccess');
 
-                        /// end create queue
-                     //   echo '<pre>';
-                     //   echo $ent->getProviderToXML()->saveHTML();
-                     //   echo '</pre>';
-                        //$this->em->persist($ent);
-                        //$this->em->flush();
-                        //$this->_discard_draft($id);
-                        $showsuccess = TRUE;
+                       }
+                       catch (Exception $e)
+                       {
+                           log_message('error',__METHOD__.' '.$e);
+                           show_error('Internal Server Error',500);
+                           return;
+                        }
+
                     }
                 }
             }
@@ -1044,4 +1046,11 @@ class Entityedit extends MY_Controller
         $this->load->view('page', $data);
     }
 
+
+     function registersuccess()
+     {
+
+         $data['content_view'] = 'register_success';
+         $this->load->view('page',$data);
+     }
 }

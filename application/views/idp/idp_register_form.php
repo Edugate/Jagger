@@ -41,7 +41,7 @@ echo '<div class="small-3 columns">'.jform_label('Advanced mode','advanced').'</
 echo '<div class="small-6 large-7 end columns text-left"><input type="checkbox" name="advanced" id="advanced" value="advanced"/></div>';
 echo '</div>'; 
 echo '<button type="button" name="next" class="simplemode next savebutton button">'. lang('nextstep').'</button>';
-echo '<button type="submit" name="next" class="advancedmode button" value="'.base_url().'manage/entityedit/register/idp">Go to advnaced mode</button>';
+echo '<button type="submit" name="next" class="advancedmode button" value="'.base_url().'providers/idp_registration/advanced">Go to advnaced mode</button>';
 echo form_fieldset_close();
 ?>
 <!-- step2 -->
