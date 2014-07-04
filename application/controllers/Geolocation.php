@@ -99,7 +99,8 @@ class Geolocation extends MY_Controller {
             $s_geoloc = $this->input->post('geoloc');
             $e_value = '' . $s_latinput . ',' . $s_lnginput . '';
             if (!empty($s_action) && !empty($s_idpid) && !empty($s_latinput) && !empty($s_lnginput)) {
-                if ($s_idpid == $provider->getId()) {
+                $pid = $provider->getId();
+                if ($s_idpid == $pid) {
                     $newgeo = new models\ExtendMetadata;
                     $ex = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('provider' => $s_idpid, 'namespace' => 'mdui','etype'=>$type, 'parent' => null, 'element' => 'DiscoHints'));
                     if (empty($ex)) {
