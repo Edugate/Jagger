@@ -830,10 +830,12 @@ class Entityedit extends MY_Controller
         if (strcmp($t, 'idp') == 0)
         {
             $ent->setType('IDP');
+            $data['titlepage'] = lang('rr_idp_register_title');
         }
         else
         {
             $ent->setType('SP');
+            $data['titlepage'] = lang('rr_sp_register_title');
         }
 
         $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active'=>TRUE));
@@ -1028,7 +1030,8 @@ class Entityedit extends MY_Controller
         {
             $data['sessform'] = true;
         }
-        $data['error_messages'] = validation_errors('<p>', '</p>');
+        $data['titlepage'] .= '  - '.lang('subtl_advancedmode').'';
+        $data['error_messages'] = validation_errors('<div>', '</div>');
         $data['error_messages2'] = $this->tmp_error;
         $this->session->set_flashdata('entformerror', '');
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
@@ -1041,7 +1044,6 @@ class Entityedit extends MY_Controller
         //$menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
 
         $data['menutabs'] = $menutabs;
-        $data['titlepage'] = 'Registration form ';
         $data['content_view'] = 'manage/entityedit_view.php';
         $this->load->view('page', $data);
     }

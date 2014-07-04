@@ -2111,13 +2111,13 @@ class Form_element
             if (!$sessform && array_key_exists('RequestInitiator', $g))
             {
                 $tmpid = 100;
-                $tid = $v3->getId();
-                if (empty($tid))
-                {
-                    $tid = 'x' . $tmpid++;
-                }
                 foreach ($g['RequestInitiator'] as $k3 => $v3)
                 {
+                    $tid = $v3->getId();
+                    if (empty($tid))
+                    {
+                       $tid = 'x' . $tmpid++;
+                    }
                     $turl = $v3->getUrl();
                     if ($sessform && isset($ses['srv']['RequestInitiator']['' . $tid . '']))
                     {

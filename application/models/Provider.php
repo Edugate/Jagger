@@ -3145,7 +3145,7 @@ class Provider {
 
         /* DiscoveryResponse */
         
-        $discrespindex = array(); 
+        $discrespindex = array('-1'); 
         foreach ($services as $t)
         {
             $loc_type = $t->getType();
