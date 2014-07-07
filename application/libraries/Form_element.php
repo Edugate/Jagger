@@ -155,12 +155,11 @@ class Form_element
         $slname = array();
         $origlname = array();
         $lnamelangs = languagesCodes();
-       
+
         if ($sessform && array_key_exists('lname', $ses) && is_array($ses['lname']))
         {
-            
+
             $slname = $ses['lname'];
-           
         }
         if (is_array($lnames))
         {
@@ -419,13 +418,13 @@ class Form_element
          */
         $result[] = '';
         $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
-        if(!empty($entid))
+        if (!empty($entid))
         {
-           $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
+            $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
         }
         else
         {
-           $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol','is_enabled'=>TRUE));
+            $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol', 'is_enabled' => TRUE));
         }
         $entRegPoliciesArray = array();
         foreach ($entRegPolicies as $v)
@@ -1168,33 +1167,47 @@ class Form_element
     public function NgenerateSAMLTab(models\Provider $ent, $ses = null)
     {
         $entid = $ent->getId();
+        $enttype = $ent->getType();
+        $idppart = FALSE;
+        $sppart = FALSE;
+        if (strcasecmp($enttype, 'BOTH') == 0)
+        {
+            $idppart = TRUE;
+            $sppart = TRUE;
+        }
+        elseif (strcasecmp($enttype, 'IDP') == 0)
+        {
+            $idppart = TRUE;
+        }
+        else
+        {
+            $sppart = TRUE;
+        }
         $sessform = FALSE;
-        $allowednameids = getAllowedNameId();
-        $class_ent = '';
         if (!empty($ses) && is_array($ses))
         {
             $sessform = TRUE;
         }
+        $allowednameids = getAllowedNameId();
+        $class_ent = '';
+
         $t1 = set_value('f[entityid]', $ent->getEntityId());
         if ($sessform)
         {
-            if (array_key_exists('entityid', $ses))
+            if (array_key_exists('entityid', $ses) && (strcmp($ses['entityid'], $t1) != 0))
             {
-                if ($t1 != $ses['entityid'])
-                {
-                    $class_ent = 'notice';
-                    $t1 = $ses['entityid'];
-                }
+                $class_ent = 'notice';
+                $t1 = $ses['entityid'];
             }
         }
         $result = array();
         $result[] = '';
         $addargs = array();
-        if (in_array('entityid', $this->disallowedparts) && !empty($entid) )
+        if (in_array('entityid', $this->disallowedparts) && !empty($entid))
         {
             $addargs = array('readonly' => 'readonly');
         }
-        elseif(!empty($entid))
+        elseif (!empty($entid))
         {
             $class_ent .=' alertonchange ';
         }
@@ -1219,7 +1232,6 @@ class Form_element
 
         $slotmpl = getBindSingleLogout();
 
-        $enttype = $ent->getType();
 
         $srvs = $ent->getServiceLocations();
         $g = array();
@@ -1231,19 +1243,14 @@ class Form_element
         {
             $g[$s->getType()][] = $s;
         }
-        $sessform = FALSE;
-        if (!empty($ses) && is_array($ses))
-        {
-            $sessform = TRUE;
-        }
         $sso = array();
 
 
-        if (strcasecmp($enttype, 'SP') != 0 )
+        if ($idppart)
         {
-            if(strcasecmp($enttype,'BOTH') == 0)
+            if ($sppart)
             {
-               $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
+                $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
             }
             /**
              * generate SSO part
@@ -1376,10 +1383,10 @@ class Form_element
             }
             elseif (isset($ses['srv']['IDPSingleLogoutService']))
             {
-                
+
                 foreach ($ses['srv']['IDPSingleLogoutService'] as $k => $v)
                 {
-                    log_message('debug', 'GKS IDPSingleLogoutService: '.$k.' : '.$v['bind']);
+                    log_message('debug', 'GKS IDPSingleLogoutService: ' . $k . ' : ' . $v['bind']);
                     $row = '<div class="small-12 columns">';
                     $row .= form_input(array(
                         'name' => 'f[srv][IDPSingleLogoutService][' . $k . '][bind]',
@@ -1389,11 +1396,11 @@ class Form_element
                     ));
                     $row .= $this->_generateLabelInput($v['bind'], 'f[srv][IDPSingleLogoutService][' . $k . '][url]', $v['url'], '', FALSE, NULL);
                     $row .= '</div>';
-                    $idpslo[] = $row;                  
+                    $idpslo[] = $row;
                     unset($slotmpl[array_search($v['bind'], $slotmpl)]);
                 }
             }
-            
+
             $ni = 0;
             foreach ($slotmpl as $k3 => $v3)
             {
@@ -1480,7 +1487,7 @@ class Form_element
                     $acs[] = $r;
                 }
             }
-            if ($sessform && isset($ses['srv']['IDPArtifactResolutionService']) && is_array($ses['srv']['IDPArtifactResolutionService']))
+            elseif ($sessform && isset($ses['srv']['IDPArtifactResolutionService']) && is_array($ses['srv']['IDPArtifactResolutionService']))
             {
                 foreach ($ses['srv']['IDPArtifactResolutionService'] as $k4 => $v4)
                 {
@@ -1843,9 +1850,9 @@ class Form_element
             }
             $result[] = '';
         }
-        if (strcasecmp($enttype, 'IDP') != 0)
+        if ($sppart)
         {
-            if (strcasecmp($enttype, 'BOTH') == 0)
+            if ($idppart)
             {
                 $result[] = '<div class="section">' . lang('serviceprovider') . '</div>';
             }
@@ -2013,7 +2020,7 @@ class Form_element
                     $r = '<div class="srvgroup">';
                     ////
                     $r .= '<div class="small-12 columns">';
-                    $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $tid . '][bind]', $artifacts_binding, $fbind, '', 'f[srv][SPArtifactResolutionService][' . $v3->getId() . '][order]', $forder, NULL);
+                    $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $tid . '][bind]', $artifacts_binding, $fbind, '', 'f[srv][SPArtifactResolutionService][' . $tid . '][order]', $forder, NULL);
                     $r .= '</div>';
                     ////
 
@@ -2118,7 +2125,7 @@ class Form_element
                     $tid = $v3->getId();
                     if (empty($tid))
                     {
-                       $tid = 'x' . $tmpid++;
+                        $tid = 'x' . $tmpid++;
                     }
                     $turl = $v3->getUrl();
                     if ($sessform && isset($ses['srv']['RequestInitiator']['' . $tid . '']))
@@ -2199,7 +2206,7 @@ class Form_element
                     $r = '<div class="srvgroup">';
 
                     $r .= '<div class="small-12 columns">';
-                    $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][DiscoveryResponse][' . $tid . '][bind]', array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'), $fbind, '', 'f[srv][DiscoveryResponse][' . $v3->getId() . '][order]', $forder, NULL);
+                    $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][DiscoveryResponse][' . $tid . '][bind]', array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'), $fbind, '', 'f[srv][DiscoveryResponse][' . $tid . '][order]', $forder, NULL);
                     $r .='</div>';
 
                     $r .= '<div class="small-12 columns">';
@@ -2409,9 +2416,9 @@ class Form_element
              * start display
              */
             $result[] = '';
-            if(strcasecmp($type,'BOTH')==0)
+            if (strcasecmp($type, 'BOTH') == 0)
             {
-               $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
+                $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
             }
             $result[] = '<div class="langgroup">' . lang('e_idpservicename') . '</div>';
             $r = '';
@@ -2706,7 +2713,7 @@ class Form_element
                  * start display
                  */
                 $result[] = '';
-                if (strcasecmp($type , 'BOTH') == 0 )
+                if (strcasecmp($type, 'BOTH') == 0)
                 {
                     $result[] = '<div class="section label small-12">' . lang('serviceprovider') . '</div>';
                 }

@@ -112,7 +112,6 @@ class Entityedit extends MY_Controller
                 {
                     $this->form_validation->set_rules('f[lname][' . $k . ']', lang('localizednamein') . ' ' . $k, 'trim|required|xss_clean');
                 }
-                echo count($y['f']['lname']);
                 if(count($y['f']['lname']) == 0)
                 {
                      $this->tmp_error = lang('errnoorgnames');
@@ -916,12 +915,12 @@ class Entityedit extends MY_Controller
                 $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
                 if (!$isValid)
                 {
-                    log_message('debug', 'GKSS invalid meta');
+                    log_message('warning', __METHOD__.' invalida metadata had been pasted in registration form');
+                    $this->tmp_error = lang('err_pastedtxtnotvalidmeta');
                 }
                 else
                 {
                     $this->_discard_draft($t);
-                    log_message('debug', 'GKSS valid');
                     $this->load->library('metadata2array');
                     $xpath = new DomXPath($metadataDOM);
                     $namespaces = h_metadataNamespaces();
@@ -937,7 +936,16 @@ class Entityedit extends MY_Controller
                         {
                             $entarray = $this->metadata2array->entityDOMToArray($l, TRUE);
                         }
-                        $ent->setProviderFromArray(current($entarray));
+                        $o = current($entarray);
+                        if(isset($o['type']) && strcasecmp($o['type'],$t) == 0)
+                        {
+                            $ent->setProviderFromArray(current($entarray));
+                        }
+                        else
+                        {
+                           $this->tmp_error = lang('regcantimporttype'); 
+   
+                        }
                     }
                 }
             }
@@ -945,7 +953,7 @@ class Entityedit extends MY_Controller
         elseif ($this->input->post('discard'))
         {
             $this->_discard_draft($t);
-            redirect(base_url() . 'providers/idp_registration', 'location');
+            redirect(base_url() . 'providers/'.strtolower($t).'_registration', 'location');
         }
         elseif ($this->_submit_validate($t) === TRUE)
         {

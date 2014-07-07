@@ -3800,7 +3800,7 @@ class Provider {
                 foreach ($ext['idpdisc'] as $idpdiscs)
                 {
                     $disc = new ServiceLocation;
-                    $disc->setDiscoveryResponse($idpdiscs['url'], @$idpdiscs['index)']);
+                    $disc->setDiscoveryResponse($idpdiscs['url'], @$idpdiscs['order']);
                     $disc->setProvider($this);
                     $this->setServiceLocation($disc);
                 }
