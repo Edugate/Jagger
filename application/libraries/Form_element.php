@@ -1239,10 +1239,12 @@ class Form_element
         $sso = array();
 
 
-        if ($enttype != 'SP')
+        if (strcasecmp($enttype, 'SP') != 0 )
         {
-
-            $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
+            if(strcasecmp($enttype,'BOTH') == 0)
+            {
+               $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
+            }
             /**
              * generate SSO part
              */
@@ -1841,9 +1843,9 @@ class Form_element
             }
             $result[] = '';
         }
-        if ($enttype !== 'IDP')
+        if (strcasecmp($enttype, 'IDP') != 0)
         {
-            if ($enttype === 'BOTH')
+            if (strcasecmp($enttype, 'BOTH') == 0)
             {
                 $result[] = '<div class="section">' . lang('serviceprovider') . '</div>';
             }
@@ -2407,7 +2409,10 @@ class Form_element
              * start display
              */
             $result[] = '';
-            $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
+            if(strcasecmp($type,'BOTH')==0)
+            {
+               $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
+            }
             $result[] = '<div class="langgroup">' . lang('e_idpservicename') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
@@ -2701,7 +2706,7 @@ class Form_element
                  * start display
                  */
                 $result[] = '';
-                if ($type === 'BOTH')
+                if (strcasecmp($type , 'BOTH') == 0 )
                 {
                     $result[] = '<div class="section label small-12">' . lang('serviceprovider') . '</div>';
                 }

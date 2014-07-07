@@ -56,11 +56,9 @@ class Entityedit extends MY_Controller
         $y = $this->input->post();
         
         $staticisdefault = FALSE;
-     //   echo '<pre>';
-    //    print_r($y);
-    //    echo '</pre>';
         if (isset($y['f']))
         {
+            $loggedin = $this->j_auth->logged_in();
             $this->_save_draft($id, $y['f']);
 
             $this->form_validation->set_rules('f[usestatic]', 'use metadata', "valid_static[" . base64_encode($this->input->post('f[static]')) . ":::" . $this->input->post('f[entityid]') . " ]");
@@ -95,6 +93,10 @@ class Entityedit extends MY_Controller
             else
             {
                     $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entity_unique');
+                    if(!$loggedin)
+                    {
+                        $this->form_validation->set_rules('f[primarycnt][mail]',lang('rr_youcntmail'),'trim|required|valid_email|xss_clean');
+                    }
             }
 
 
@@ -108,8 +110,20 @@ class Entityedit extends MY_Controller
             {
                 foreach ($y['f']['lname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[lname][' . $k . ']', lang('localizednamein') . ' ' . $k, 'xss_clean|trim');
+                    $this->form_validation->set_rules('f[lname][' . $k . ']', lang('localizednamein') . ' ' . $k, 'trim|required|xss_clean');
                 }
+                echo count($y['f']['lname']);
+                if(count($y['f']['lname']) == 0)
+                {
+                     $this->tmp_error = lang('errnoorgnames');
+                     return false;
+
+                }
+            }
+            else
+            {
+                     $this->tmp_error = lang('errnoorgnames');
+                     return false;
             }
             if (isset($y['f']['uii']['idpsso']['displayname']) && is_array($y['f']['uii']['idpsso']['displayname']))
             {
@@ -136,15 +150,29 @@ class Entityedit extends MY_Controller
             {
                 foreach ($y['f']['ldisplayname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[ldisplayname][' . $k . ']', lang('localizeddisplaynamein') . ' ' . $k, 'xss_clean|trim');
+                    $this->form_validation->set_rules('f[ldisplayname][' . $k . ']', lang('localizeddisplaynamein') . ' ' . $k, 'trim|required|xss_clean');
                 }
+            }
+            else
+            {
+                $this->tmp_error = lang('errnoorgdisnames');
+                return false;
+
+
             }
             if (array_key_exists('lhelpdesk', $y['f']))
             {
                 foreach ($y['f']['lhelpdesk'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', lang('localizedhelpdeskin') . ' ' . $k, 'trim|valid_url');
+                    $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', lang('localizedhelpdeskin') . ' ' . $k, 'trim|required|valid_url');
                 }
+            }
+            else
+            {
+                $this->tmp_error = lang('errnoorgurls');
+                return false;
+
+
             }
 
 
@@ -840,7 +868,20 @@ class Entityedit extends MY_Controller
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)  
         {
+           $data['anonymous'] = TRUE;
+        }
+        else
+        {
+           $data['anonymous'] = FALSE;
+           $currentusername = $this->j_auth->current_user();
+           $u = $this->em->getRepository("models\User")->findOneBy(array('username'=>''.$currentusername.''));
 
+           $data['loggeduser'] = array(
+              'username'=>''.$currentusername.'',
+              'fullname'=>''.$u->getFullname().'',
+              'email'=>''.$u->getEmail().'',
+     
+           );
         }
 
         $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active'=>TRUE));
@@ -911,7 +952,6 @@ class Entityedit extends MY_Controller
 
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
-            //$this->_save_draft($t, $y);
             if ($submittype === 'modify')
             {
                 $this->load->library('providerupdater');
@@ -931,23 +971,22 @@ class Entityedit extends MY_Controller
                         $ent->setActive(TRUE);
                         /// create queue
                         $q = new models\Queue;
-                        $loggedin_user = $this->session->userdata('username');
-                        if(!empty($_SESSION['username']))
+                        if (!empty($u)) {
+                          $contactMail = $u->getEmail();
+                          $q->setCreator($u);
+                        }
+                        $q->setAction("Create");
+                        $lnames = $ent->getMergedLocalName();
+                        if(is_array($lnames) and count($lnames)>0)
                         {
-                          $loggedin_user = $_SESSION['username'];
+                            $q->setName(current($lnames));
                         }
-                        else {
-                         $loggedin_user = null;
+                        else
+                        {
+                            $q->setName('unknown');
                         }
-                        if (!empty($loggedin_user)) {
-                          $creator = $this->em->getRepository("models\User")->findOneBy(array('username' => $loggedin_user));
-                          $contactMail = $creator->getEmail();
-                          $q->setCreator($creator);
-                       }
-                       $q->setAction("Create");
-                       $q->setName($ent->getName());
-                       $ttype = $ent->getType();
-                       $mm = $ent->getCoc();
+                        $ttype = $ent->getType();
+                        $mm = $ent->getCoc();
 
 
 
@@ -999,7 +1038,7 @@ class Entityedit extends MY_Controller
                        }
                        if(empty($contactMail))
                        {
-                          $contactMail = 'example@example.com';
+                          $contactMail = $this->input->post('f[primarycnt][mail]');
                        }
                        $q->setEmail($contactMail);
                      
