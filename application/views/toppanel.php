@@ -19,7 +19,7 @@
                 <?php
                 if ($loggedin)
                 {
-                    echo '<li><a href="'.$base_url.'reports/awaiting">Q<sup><span id="qcounter" class="label alert tiny round"></span></sup></a></li>';
+                    echo '<li><a href="'.$base_url.'reports/awaiting"><sup id="qcounter" class="label alert tiny round" style="box-shadow: 0px 1px 5px #0a0a0a, inset 0px 1px 2px #bdbdbd;"></sup></a></li>';
                     
                     ?>
                     <li class="has-dropdown">
