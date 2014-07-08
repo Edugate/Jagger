@@ -36,9 +36,12 @@ echo '<div class="small-6 large-7 columns">'.form_textarea(array(
 )).'</div>';
 echo '<div class="small-3 large-2 columns"><button  type="button" name="parsemetadataidp" id="parsemetadataidp" value="parsemetadataidp" class="savebutton button tiny">'.lang('btnparsemeta').'</button></div>';
 echo '</div>';
-?>
-<button type="button" name="next" class="next savebutton button"><?php echo lang('nextstep'); ?></button>
-<?php
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">'.jform_label(lang('advancedmode'),'advanced').'</div>';
+echo '<div class="small-6 large-7 end columns text-left"><input type="checkbox" name="advanced" id="advanced" value="advanced"/></div>';
+echo '</div>'; 
+echo '<button type="button" name="next" class="simplemode next savebutton button">'. lang('nextstep').'</button>';
+echo '<button type="submit" name="next" class="advancedmode button" value="'.base_url().'providers/idp_registration/advanced">'.lang('btngoadvancedmode').'</button>';
 echo form_fieldset_close();
 ?>
 <!-- step2 -->

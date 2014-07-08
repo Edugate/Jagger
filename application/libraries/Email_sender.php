@@ -189,6 +189,8 @@ class Email_sender {
       {
          $list = $to;
       }
+      //$generatedAt = (new \DateTime())->format('Y-m-d H:i:s');
+      $generatedAt = '';
       foreach($list as $k)
       {
           $this->ci->email->clear();
@@ -196,7 +198,8 @@ class Email_sender {
           $this->ci->email->to($k, '');
           $this->ci->email->subject($full_subject);
           $footer = $this->ci->config->item('mail_footer');
-          $message = $body . $footer;
+          
+          $message = $body .PHP_EOL.'Message was generated at '.$generatedAt.PHP_EOL. $footer;
           $this->ci->email->message($message);
           if($this->ci->email->send())
           {
@@ -211,6 +214,78 @@ class Email_sender {
       } 
       return true;
    } 
+
+
+   /**
+    *  TEMPLATES
+    */
+
+   function providerRegRequest($type,$args,$lang=null)
+   {
+      $params = array(
+         'requestermail'=>'',
+         'requestersourceip'=>'',
+         'serviceentityid'=>'',
+         'servicename'=>'', 
+         'orgname'=>'',
+         'token'=>'',
+      );
+        
+      $merged = array_merge($params,$args);
+      $isidp = false;
+      $issp = false;
+      if(strcasecmp($type,'idp') == 0)
+      { 
+         $r['subject']  = 'IDP registration request';
+         $isidp = true;
+      }
+      elseif(strcasecmp($type,'sp')==0)
+      {
+         $r['subject']  = 'SP registration request';
+         $issp = true;
+      }
+      else
+      {
+         return null;
+      }
+    
+      $b = 'Dear user,'.PHP_EOL.'You have received this mail because your email address is on the notification list'.PHP_EOL;
+      if($isidp)
+      {
+        $b .= $merged['requestermail'].' completed a new Identity Provider Registration'.PHP_EOL;
+      }
+      else
+      {
+        $b .= $merged['requestermail'].' completed a new Service Provider Registration'.PHP_EOL;
+
+      }
+      if(!empty($merged['requestersourceip']))
+      {
+        $b .= 'Request has been sent from: '.$merged['requestersourceip'] . PHP_EOL;
+      }
+      if(!empty($merged['token']))
+      {
+         $b .= 'If you have sufficient permissions you can approve/reject it on '.base_url().'reports/awaiting/detail/'.$merged['token'].PHP_EOL;
+      }
+      else
+      {
+         $b .= 'If you have sufficient permissions you can approve/reject it on '. base_url().''.PHP_EOL;
+      }
+
+      $r['body'] = $b;
+      return $r;
+
+
+   }
+
+
+
+
+
+
+
+
+
 
 }
 

@@ -48,6 +48,9 @@ $route['manage/attribute_requirement/sp'] = 'manage/attribute_requirement/sp';
 $route['manage/attribute_requirement/sp/(:any)'] = 'manage/attribute_requirement/sp/$1';
 $route['metadata/federatation/(:any)/metadata.xml'] = 'federations/manage/show/$1';
 $route['reports/awaiting'] = 'reports/awaiting/alist';
+// for advanced sp/idp registration form
+$route['providers/idp_registration/advanced'] = 'manage/entityedit/register/idp';
+$route['providers/sp_registration/advanced'] = 'manage/entityedit/register/sp';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

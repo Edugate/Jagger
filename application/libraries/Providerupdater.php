@@ -40,6 +40,7 @@ class Providerupdater {
     public function updateProvider(models\Provider $ent, array $ch)
     {
         // $m - array for modifications
+        $entid = $ent->getId();
         $m  = array();
         $type = $ent->getType();
         $langCodes = languagesCodes();
@@ -96,7 +97,7 @@ class Providerupdater {
              * set scopes
              */
             
-            if(array_key_exists('scopes', $ch) && !in_array('scope',$dissalowedparts))
+            if(array_key_exists('scopes', $ch) && (!in_array('scope',$dissalowedparts) || empty($entid)))
             {
                $origscopesso = implode(',',$ent->getScope('idpsso'));
                $origscopeaa = implode(',',$ent->getScope('aa'));
@@ -119,6 +120,7 @@ class Providerupdater {
                }
                if(array_key_exists('aa',$ch['scopes']) && !empty($ch['scopes']['aa']))
                {
+                      log_message('debug','GKS SCOPE AA yes');
                        
                        $aascopes = array_filter(explode(',',$ch['scopes']['aa']));
                        $ent->setScope('aa',array_unique($aascopes));
@@ -130,6 +132,7 @@ class Providerupdater {
                }
                else
                {
+                      log_message('debug','GKS SCOPE AA no');
                       $ent->setScope('aa', array());
                       if(!empty($origscopeaa))
                       {
@@ -364,6 +367,7 @@ class Providerupdater {
 
         if (array_key_exists('regpol', $ch))
         {
+            log_message('debug','GKS '.__METHOD__.' '.serialize($ch['regpol']).'');
             $currentRegPol = &$currentCocs;
             foreach($currentRegPol as $k => $v)
             {
@@ -385,9 +389,10 @@ class Providerupdater {
                     $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$v,'type'=>'regpol'));
                     if(!empty($c) && !$currentRegPol->contains($c))
                     {
-                       if($isAdmin)
+                       if($isAdmin || empty($entid))
                        {
                           $ent->setCoc($c);
+                          log_message('debug','GKS setting coc');
                        }
                        else
                        {
@@ -1719,10 +1724,6 @@ class Providerupdater {
                   }
 
             }
-            
-            
-       
-
         }
 
         if(array_key_exists('use_static',$ch) && $ch['usestatic'] === 'accept')
@@ -1732,11 +1733,11 @@ class Providerupdater {
 
         }
         
-        if(count($m)>0)
+        if(count($m)>0 && !empty($entid))
         {        
            $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(),serialize($m),FALSE);
         }
-        return TRUE;
+        return $ent;
     }
    
 

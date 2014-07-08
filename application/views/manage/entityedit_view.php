@@ -30,6 +30,12 @@ if(!empty($sessform))
     <ul class="tabs" data-tab>
         <?php
         $active = false;
+        if(!empty($registerForm))
+        {
+           echo '<li class="tab-title active"><a href="#general">'.lang('tabgeneral').'</a></li>';
+           $active = true;
+
+        }
         foreach ($menutabs as $m)
         {
             if(!$active && $m['id'] === 'organization')
@@ -51,6 +57,67 @@ if(!empty($sessform))
 
 
     $active=false;
+    if(!empty($registerForm))
+    {
+        echo '<div id="general" class="content tabgroup active">';
+        $active = true;
+
+        /**
+         * general info input like federation, contact
+         */
+        if(!empty($federations) && is_array($federations))
+        {
+          echo '<div class="small-12 columns">';
+          echo '<div class="small-3 columns">'.jform_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'f[federation]').'</div>';
+          echo '<div class="small-6 large-7 columns end">'.form_dropdown('f[federation]', $federations,set_value('f[federation]')).'</div>';
+          echo '</div>';
+        }
+
+        /**
+         * BEGIN display contact form if anonymous
+         */
+
+         if(!empty($anonymous))
+         {
+            echo '<div class="small-12 columns"><div class="section">'.lang('yourcontactdetails').'</div></div>';
+            echo '<div class="small-12 columns">';
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactname'),'f[primarycnt][fname]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][fname]','name'=>'f[primarycnt][fname]','value'=>set_value('f[primarycnt][fname]'))).'</div>'; 
+            echo '</div>';
+            echo '<div class="small-12 columns">';
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactemail'),'f[primarycnt][mail]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][mail]','name'=>'f[primarycnt][mail]','value'=>set_value('f[primarycnt][mail]'))).'</div>'; 
+            echo '</div>';
+            echo '<div class="small-12 columns">';
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactphone'),'f[primarycnt][phone]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][phone]','name'=>'f[primarycnt][phone]','value'=>set_value('f[primarycnt][phone]'))).'</div>'; 
+            echo '</div>';
+         }
+         else
+         {
+            echo '<div class="small-12 columns"><div class="section">'.lang('yourcontactdetails').'</div></div>';
+            echo '<div class="small-12 columns">';
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_username'),'f[primarycnt][username]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][username]','name'=>'f[primarycnt][username]','disabled'=>'disabled','readonly'=>'readonly','value'=>''.$loggeduser['username'].'')).'</div>'; 
+            echo '</div>';
+            echo '<div class="small-12 columns">';
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactname'),'f[primarycnt][fname]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][fname]','name'=>'f[primarycnt][fname]','disabled'=>'disabled','readonly'=>'readonly','value'=>''.$loggeduser['fullname'].'')).'</div>'; 
+            echo '</div>';
+            echo '<div class="small-12 columns">';
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactemail'),'f[primarycnt][mail]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][mail]','name'=>'f[primarycnt][mail]','disabled'=>'disabled','readonly'=>'readonly','value'=>''.$loggeduser['email'].'')).'</div>'; 
+            echo '</div>';
+            
+
+         }
+        /**
+         * END display contact form if anonymous
+         */
+        
+        echo '</div>';
+
+    }
     foreach ($menutabs as $m)
     {
         if(!$active && $m['id'] === 'organization')
@@ -99,11 +166,25 @@ if(!empty($sessform))
         echo '</div>';
     }
     echo '</div>';
+   if(empty($registerForm))
+   {
     echo '<div class="buttons">
         <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('discardall').'</button>
         <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
         <button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnupdate').'
       </button></div>';
+   }
+   else
+   {
+    echo '<div class="buttons">
+        <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('btnstartagain').'</button>
+        <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
+        <button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnregister').'
+      </button></div>';
+
+
+
+   }
     ?>
 
 

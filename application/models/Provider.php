@@ -137,7 +137,7 @@ class Provider {
     protected $lprivacyurl;
 
     /**
-     * @ManyToMany(targetEntity="Coc",inversedBy="provider")
+     * @ManyToMany(targetEntity="Coc",inversedBy="provider", cascade={"persist","detach"})
      * @JoinTable(name="Provider_Coc",
      *      joinColumns={@JoinColumn(name="provider_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="coc_id", referencedColumnName="id")}
@@ -250,7 +250,7 @@ class Provider {
     //protected $federations;
 
     /**
-     * @OneToMany(targetEntity="FederationMembers", mappedBy="provider", cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="FederationMembers", mappedBy="provider", cascade={"persist", "remove","detach"})
      */
     protected $membership;
 
@@ -260,14 +260,14 @@ class Provider {
     protected $notifications;
 
     /**
-     * @OneToMany(targetEntity="Contact", mappedBy="provider", cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="Contact", mappedBy="provider", cascade={"all"})
      */
     protected $contacts;
 
     /**
      * it can be member of many federations
      *
-     * @OneToMany(targetEntity="Certificate", mappedBy="provider", cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="Certificate", mappedBy="provider", cascade={"all"})
      */
     protected $certificates;
 
@@ -278,7 +278,7 @@ class Provider {
     protected $owner;
 
     /**
-     * @OneToMany(targetEntity="ServiceLocation", mappedBy="provider", cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="ServiceLocation", mappedBy="provider", cascade={"all"})
      */
     protected $serviceLocations;
 
@@ -293,12 +293,12 @@ class Provider {
     protected $attributeRequirement;
 
     /**
-     * @OneToOne(targetEntity="StaticMetadata", mappedBy="provider",cascade={"persist", "remove"})
+     * @OneToOne(targetEntity="StaticMetadata", mappedBy="provider",cascade={"all"})
      */
     protected $metadata;
 
     /**
-     * @OneToMany(targetEntity="ExtendMetadata", mappedBy="provider",cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="ExtendMetadata", mappedBy="provider",cascade={"all"})
      */
     protected $extend;
 
@@ -2573,10 +2573,19 @@ class Provider {
   
     }
 
-    public function convertToArray()
+    public function convertToArray($addmeta = FALSE)
     {
         $r = array();
         $r['id'] = $this->getId();
+        if($addmeta === TRUE)
+        {
+           $m = $this->getProviderToXML()->saveXML();
+           if(!empty($m))
+           {
+             $r['metadata'] = base64_encode($m); 
+           }
+
+        }
         $r['name'] = $this->getName();
         $r['displayname'] = $this->getDisplayname();
         $r['entityid'] = $this->getEntityid();
@@ -2639,6 +2648,7 @@ class Provider {
         $membership = $this->getMembership();
         if (!empty($membership) && $membership->count()>0)
         {
+           \log_message('debug','GKS found membership');
             foreach ($membership as $f)
             {
                 $state = $f->getJoinState();
@@ -3135,7 +3145,7 @@ class Provider {
 
         /* DiscoveryResponse */
         
-        $discrespindex = array(); 
+        $discrespindex = array('-1'); 
         foreach ($services as $t)
         {
             $loc_type = $t->getType();
@@ -3505,6 +3515,7 @@ class Provider {
         $ci = & get_instance();
         if (!empty($this->registrar))
         {
+            \log_message('debug','GKS not empty registrar'); 
             $EntExtension_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:Extensions');
             $EntityDesc_Node->appendChild($EntExtension_Node);
             $RegistrationInfo_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:rpi', 'mdrpi:RegistrationInfo');
@@ -3540,6 +3551,7 @@ class Provider {
         $registrationPolicies = array();
         foreach($cocs as $k=>$v)
         {
+           \log_message('debug','GKS provider model coc');
            $cocsenabled = $v->getAvailable();
            $cocstype = $v->getType();
            if($cocsenabled === TRUE)
@@ -3551,6 +3563,7 @@ class Provider {
              elseif($cocstype === 'regpol')
              {
                $registrationPolicies[] = $v;
+                \log_message('debug','GKS provider model entcat: '.$v->getUrl());
              }
            }
         }
@@ -3558,8 +3571,10 @@ class Provider {
         if(!empty($RegistrationInfo_Node))
         {
           // $regpolicies = $this->getRegistrationPolicy();
+             
            if(count($registrationPolicies)>0)
            {
+              \log_message('debug','GKS provider generating XML for entcat');
               $langsset = array();
               foreach($registrationPolicies as $v)
               {
@@ -3573,6 +3588,7 @@ class Provider {
                   $RegPolicyNode = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:rpi', 'mdrpi:RegistrationPolicy');
                   $RegPolicyNode->setAttribute('xml:lang',$v->getLang());
                   $RegPolicyNode->appendChild($RegistrationInfo_Node->ownerDocument->createTextNode($v->getUrl()));
+                  \log_message('debug','GKS .. add entvcat to xml: '.$v->getLang().': '.$v->getUrl());
                   $RegistrationInfo_Node->appendChild($RegPolicyNode);
               }
               unset($langsset);
@@ -3784,7 +3800,7 @@ class Provider {
                 foreach ($ext['idpdisc'] as $idpdiscs)
                 {
                     $disc = new ServiceLocation;
-                    $disc->setDiscoveryResponse($idpdiscs['url'], @$idpdiscs['index)']);
+                    $disc->setDiscoveryResponse($idpdiscs['url'], @$idpdiscs['order']);
                     $disc->setProvider($this);
                     $this->setServiceLocation($disc);
                 }
@@ -4056,7 +4072,7 @@ class Provider {
         return $this;
     }
 
-    public function setProviderFromArray($a)
+    public function setProviderFromArray($a,$full=FALSE)
     {
         if (!is_array($a))
         {
@@ -4084,6 +4100,19 @@ class Provider {
                 $ptime = str_replace('Z', '', $p['1']);
                 $this->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $p[0] . ' ' . $ptime));
             }
+        }
+        if($full & !empty($a['regpol']))
+        {
+            foreach($a['regpol'] as $v)
+            {
+               \log_message('debug','GKS SS regpollll');
+               $b = $this->em->getRepository("models\Coc")->findOneBy(array('type'=>'regpol','is_enabled'=>true,'lang'=>$v['lang'],'url'=>$v['url']));
+               if(!empty($b))
+               {
+                 $this->setCoc($b);
+               }
+            }
+
         }
         if (!empty($a['metadata']))
         {

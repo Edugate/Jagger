@@ -44,7 +44,7 @@ class MY_Controller extends CI_Controller {
         $this->em = $this->doctrine->em;
         $this->title = "";
         $this->lang->load('rr_lang', 'english');
-        $langs = array('pl','pt','it','lt','es','cs','fr-ca','english');
+        $langs = array('pl','pt','it','lt','es','cs','fr-ca','english','ga','sr');
         $cookie_lang = $this->input->cookie('rrlang', TRUE);
         $cookdefaultlang = $this->config->item('rr_lang');
         if(empty($cookdefaultlang))

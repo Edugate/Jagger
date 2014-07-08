@@ -33,12 +33,17 @@ echo form_textarea(array(
 ));
 echo '</div>';
 
-echo '<div class="small-3 large-2 columns"><button  type="button" name="parsemetadatasp" id="parsemetadatasp" value="parsemetadatasp" class="savebutton">Parse</button>';
+echo '<div class="small-3 large-2 columns"><button  type="button" name="parsemetadatasp" id="parsemetadatasp" value="parsemetadatasp" class="savebutton">'.lang('btnparsemeta').'</button>';
 echo '</div>';
 echo '</div>';
-?>
-<button type="button" name="next" class="next savebutton button"><?php echo lang('nextstep'); ?></button>
-<?php
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">'.jform_label(lang('advancedmode'),'advanced').'</div>';
+echo '<div class="small-6 large-7 end columns text-left"><input type="checkbox" name="advanced" id="advanced" value="advanced"/></div>';
+echo '</div>'; 
+
+echo '<button type="button" name="next" class="simplemode next savebutton button">'. lang('nextstep').'</button>';
+echo '<button type="submit" name="next" class="advancedmode button" value="'.base_url().'providers/sp_registration/advanced">'.lang('btngoadvancedmode').'</button>';
+
 echo form_fieldset_close();
 ?>
 <!-- step2 -->

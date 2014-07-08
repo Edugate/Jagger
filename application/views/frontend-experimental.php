@@ -13,10 +13,12 @@ $langs = array(
    'cs' => array('path'=>'cs','val'=>'čeština'),
    'es' => array('path'=>'es','val'=>'español'),
    'fr-ca' => array('path'=>'fr-ca','val'=>'français'),
+   'ga' => array('path'=>'ga','val'=>'gaeilge'),
   'it' => array('path'=>'it','val'=>'italiano'),
     'lt' => array('path'=>'lt','val'=>'lietuvos'),
      'pl' => array('path'=>'pl','val'=>'polski'),
     'pt' => array('path'=>'pt','val'=>'português'),
+    'sr'=>array('path'=>'sr','val'=>'srpski'),
   );
 
 
@@ -131,7 +133,10 @@ $this->load->view('toppanel',$args);
           echo '<dt></dt>';
           foreach($submenupage as $v)
           {
-             echo '<dd><a href="'.$v['url'].'">'.$v['name'].'</a></dd>';
+             if(isset($v['url']))
+             {
+                echo '<dd><a href="'.$v['url'].'">'.$v['name'].'</a></dd>';
+             }
           }
           echo '</dl>';
           echo '</div>';

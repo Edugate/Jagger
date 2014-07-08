@@ -1,6 +1,6 @@
 <?php
 
-$tmpl = array('table_open' => '<table  id="details" class="zebra">');
+$tmpl = array('table_open' => '<table  id="details" class="zebra responsive">');
 $this->table->set_template($tmpl);
 
 $this->table->set_caption(lang('rr_requestawaiting'));
@@ -24,7 +24,9 @@ foreach ($provider as $row)
 }
 if (!empty($error_message))
 {
-    echo '<div class="prepend-6 span-12"><div class="error">' . $error_message . '</div></div>';
+    echo '<div data-alert class="alert-box alert">' . $error_message . '</div>';
 }
+echo '<div class="row">';
 echo $this->table->generate();
+echo '</div>';
 $this->table->clear();

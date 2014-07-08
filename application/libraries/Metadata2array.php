@@ -60,18 +60,6 @@ class Metadata2array {
            $this->doc = $xml;
            $this->xpath = new \DomXPath($this->doc);
         }
-       /*
-        $lxpath = new \DomXPath($this->doc);
-        foreach($lxpath->query('namespace::*', $doc) as $pnode ) 
-        {
-           $prefix = $pnode->prefix;
-           $val = $pnode->nodeValue;
-           if(!empty($prefix) && (strcmp($prefix,'xml') != 0))
-           {
-               $this->newNameSpaces[''.$prefix.''] = $val;
-           } 
-        }
-        */
         $namespaces = h_metadataNamespaces();
         foreach ($namespaces as $key => $value)
         {
@@ -171,6 +159,19 @@ class Metadata2array {
                 return;
             }
         }
+    }
+
+    public function entityDOMToArray(\DOMElement $node, $full = false)
+    {
+           /**
+            * @todo fi ix
+            */
+           $this->doc = new \DOMDocument();
+ 
+
+         $this->entityConvert($node, $full);
+         return $this->metaArray;
+ 
     }
 
     private function entityConvert(\DOMElement $node, $full = false)
@@ -323,8 +324,14 @@ class Metadata2array {
 
         }
 
-        $entity['metadata'] = $this->doc->saveXML($node);
-
+        try
+        {
+            $entity['metadata'] = $this->doc->saveXML($node);
+        }
+        catch(Exception $e)
+        {
+             log_message('warning','Couldn store xml');
+        }
         $this->metaArray[$entity['entityid']] = $entity;
     }
 
