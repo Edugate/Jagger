@@ -32,11 +32,57 @@ jQuery.fn.toggleOption = function( show ) {
     }
 };
 
+var BINIT = {
+    
+    initFvalidators: function(){
+       
+$("ul.janusz button").on('click',function(e){
+     var link = $(this).attr("value");
+     $.ajax({
+       type: "GET",
+       url: link,
+       timeout: 2500,
+       cache: true,
+       success: function(json){
+                $('#spinner').hide();
+                var data = $.parseJSON(json);
+               if(data)
+               {
+                    var vfedid = data.fedid;
+                    var fvalidid = data.id;
+                    var fvalidname = data.name;
+                    var fvaliddesc = data.desc;
+                   $('#fvform input[name="fedid"]').val(vfedid);
+                    $('#fvform input[name="fvid"]').val(fvalidid);
+                    $("div#fvalidesc").replaceWith('<div id="fvalidesc"><b>' + fvalidname + '</b><p>' + fvaliddesc + '</p></div>');
+                    $('#fvform').show();
+ 
+               } 
+
+       },
+            beforeSend: function() {
+                $("#fvresult").hide();
+                $('#spinner').show();
+             
+            },
+            error: function() {
+                $('#spinner').hide();
+                $('#fvform').hide();
+                $('#fvresult').hide();
+            }
+       
+ 
+
+     });
+});
+
+    }
+};
 
 var GINIT = {
+
+    
     initialize: function() {
-//$(document).foundation();
-//$(document).foundationAlerts();
 
     var baseurl = $("[name='baseurl']").val();
     if (baseurl === undefined)
@@ -1268,17 +1314,17 @@ $(function() {
             success: function(json)
             {
                 $('#spinner').hide();
-                var data = $.parseJSON(json);
-                if (!data)
-                {
-                    alert('no data');
-                }
-                else
-                {
-                    $("div#statisticdiag").replaceWith('<div id="statisticdiag"></div>');
-                    $.each(data, function(i, v) {
+			var data = $.parseJSON(json);
+			if (!data)
+			{
+			    alert('no data');
+			}
+			else
+			{
+			    $("div#statisticdiag").replaceWith('<div id="statisticdiag"></div>');
+			    $.each(data, function(i, v) {
 
-                        i = new Image();
+				i = new Image();
                         i.src = v.url;
                         $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append(i);
 
@@ -2740,6 +2786,7 @@ $(".submit").click(function() {
 })
 
 $('#joinfed select#fedid').on('change', function() {
+    $("ul.janusz").replaceWith('<ul class="button-group janusz"></ul>');
     var csrfname = $("[name='csrfname']").val();
     var csrfhash = $("[name='csrfhash']").val();
     if (csrfname === undefined)
@@ -2769,15 +2816,18 @@ $('#joinfed select#fedid').on('change', function() {
                 var data = $.parseJSON(json);
                 if (data)
                 {
-                    var vfedid = data.fedid;
-                    var fvalidid = data.id;
-                    var fvalidname = data.name;
-                    var fvaliddesc = data.desc;
-                    $('#fvform input[name="fedid"]').val(vfedid);
-                    $('#fvform input[name="fvid"]').val(fvalidid);
-                    $("div#fvalidesc").replaceWith('<div id="fvalidesc"><b>' + fvalidname + '</b><p>' + fvaliddesc + '</p></div>');
-                    $('#fvform').show();
-                    // GINIT.initialize();
+                    $.each(data, function(i, v) {
+                        $("ul.janusz").append('<li><button  value="'+jsurl+'/'+v.fedid+'/'+v.id+'" class="small button">'+v.name+'</button></li>');
+                    })
+
+//                    var vfedid = data.fedid;
+//                    var fvalidid = data.id;
+//                    var fvalidname = data.name;
+//                    var fvaliddesc = data.desc;
+//                    $('#fvform input[name="fedid"]').val(vfedid);
+//                    $('#fvform input[name="fvid"]').val(fvalidid);
+//                    $("div#fvalidesc").replaceWith('<div id="fvalidesc"><b>' + fvalidname + '</b><p>' + fvaliddesc + '</p></div>');
+//                    $('#fvform').show();
                 }
             },
             beforeSend: function() {
@@ -2789,11 +2839,10 @@ $('#joinfed select#fedid').on('change', function() {
                 $('#fvresult').hide();
             }
         }).done(function() {
+                BINIT.initFvalidators();
         })
     }
 });
-
-
 
 
 // experimental: forcing scroll to top page # urls

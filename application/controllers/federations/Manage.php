@@ -491,25 +491,30 @@ class Manage extends MY_Controller
             $data['result']['fvalidators'][] = array('data' => array('data' => $addbtn, 'class' => 'text-right', 'colspan' => 2));
         }
         if ($fvalidators->count() > 0) {
-
+            
             if ($has_write_access) {
+                $fvdata = '<dl class="accordion" data-accordion>';
                 foreach ($fvalidators as $f) {
+                    $d['fvalidators'] = array();
+                    $fvdata .=' <dd class="accordion-navigation">';
+                    $fvdata .='<a href="#fvdata'.$f->getId().'">'.$f->getName().'</a>';
+                    $fvdata .= '<div id="fvdata'.$f->getId().'" class="content">';
                     $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
 
-                    $data['result']['fvalidators'][] = array('data' => array('data' => $f->getName() . ' ' . $editbtn, 'class' => '', 'colspan' => 2));
+                    $d['fvalidators'][] = array('data' => array('data' =>  ' ' . $editbtn, 'class' => '', 'colspan' => 2));
                     $isenabled = $f->getEnabled();
                     $method = $f->getMethod();
                     if ($isenabled) {
-                        $data['result']['fvalidators'][] = array('data' => array('data' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')), 'colspan' => 2));
+                        $d['fvalidators'][] = array('data' => array('data' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')), 'colspan' => 2));
                     }
                     else {
-                        $data['result']['fvalidators'][] = array('data' => array('data' => makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled')), 'colspan' => 2));
+                        $d['fvalidators'][] = array('data' => array('data' => makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled')), 'colspan' => 2));
                     }
-                    $data['result']['fvalidators'][] = array('data' => lang('Description'), 'value' => $f->getDescription());
-                    $data['result']['fvalidators'][] = array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType());
-                    $data['result']['fvalidators'][] = array('data' => lang('fvalid_url'), 'value' => $f->getUrl());
-                    $data['result']['fvalidators'][] = array('data' => lang('rr_httpmethod'), 'value' => $method);
-                    $data['result']['fvalidators'][] = array('data' => lang('fvalid_entparam'), 'value' => $f->getEntityParam());
+                    $d['fvalidators'][] = array('data' => lang('Description'), 'value' => $f->getDescription());
+                    $d['fvalidators'][] = array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType());
+                    $d['fvalidators'][] = array('data' => lang('fvalid_url'), 'value' => $f->getUrl());
+                    $d['fvalidators'][] = array('data' => lang('rr_httpmethod'), 'value' => $method);
+                    $d['fvalidators'][] = array('data' => lang('fvalid_entparam'), 'value' => $f->getEntityParam());
                     $optargs1 = $f->getOptargs();
                     $optargsStr = array();
                     foreach($optargs1 as $k=>$v)
@@ -523,13 +528,13 @@ class Manage extends MY_Controller
                               $optargsStr[] = $k.'='.$v;
                            }
                     }
-                    $data['result']['fvalidators'][] = array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $optargsStr));
+                    $d['fvalidators'][] = array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $optargsStr));
                     if (strcmp($method, 'GET') == 0) {
-                        $data['result']['fvalidators'][] = array('data' => lang('rr_argsep'), 'value' => $f->getSeparator());
+                        $d['fvalidators'][] = array('data' => lang('rr_argsep'), 'value' => $f->getSeparator());
                     }
                     else {
                     }
-                    $data['result']['fvalidators'][] = array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement()));
+                    $d['fvalidators'][] = array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement()));
 
                     $retvalues = $f->getReturnCodeValues();
                     $retvaluesToHtml = '';
@@ -541,9 +546,15 @@ class Manage extends MY_Controller
                             }
                         }
                     }
-                    $data['result']['fvalidators'][] = array('data' => lang('fvalid_retelements'), 'value' => $retvaluesToHtml);
-                    $data['result']['fvalidators'][] = array('data' => lang('fvalid_msgelements'), 'value' => implode('<br />', $f->getMessageCodeElements()));
+                    $d['fvalidators'][] = array('data' => lang('fvalid_retelements'), 'value' => $retvaluesToHtml);
+                    $d['fvalidators'][] = array('data' => lang('fvalid_msgelements'), 'value' => implode('<br />', $f->getMessageCodeElements()));
+                    $fvdata .= $this->table->generate($d['fvalidators']);
+                    $fvdata .='</div>';
+                    $fvdata .= '</dd>';
+                   
                 }
+                $fvdata .='</dl>';
+                $data['result']['fvalidators'][] = array('data'=>array('data'=>$fvdata,'colspan'=>2,'class'=>''));
             }
             else {
                 $data['result']['fvalidators'][] = array('data' => array('data' => '<div class="alert">' . lang('rr_noperm') . '</div>', 'colspan' => 2));

@@ -54,7 +54,7 @@ class Entityedit extends MY_Controller
         }
         $result = false;
         $y = $this->input->post();
-        
+
         $staticisdefault = FALSE;
         if (isset($y['f']))
         {
@@ -92,11 +92,11 @@ class Entityedit extends MY_Controller
             }
             else
             {
-                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entity_unique');
-                    if(!$loggedin)
-                    {
-                        $this->form_validation->set_rules('f[primarycnt][mail]',lang('rr_youcntmail'),'trim|required|valid_email|xss_clean');
-                    }
+                $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entity_unique');
+                if (!$loggedin)
+                {
+                    $this->form_validation->set_rules('f[primarycnt][mail]', lang('rr_youcntmail'), 'trim|required|valid_email|xss_clean');
+                }
             }
 
 
@@ -112,17 +112,16 @@ class Entityedit extends MY_Controller
                 {
                     $this->form_validation->set_rules('f[lname][' . $k . ']', lang('localizednamein') . ' ' . $k, 'trim|required|xss_clean');
                 }
-                if(count($y['f']['lname']) == 0)
+                if (count($y['f']['lname']) == 0)
                 {
-                     $this->tmp_error = lang('errnoorgnames');
-                     return false;
-
+                    $this->tmp_error = lang('errnoorgnames');
+                    return false;
                 }
             }
             else
             {
-                     $this->tmp_error = lang('errnoorgnames');
-                     return false;
+                $this->tmp_error = lang('errnoorgnames');
+                return false;
             }
             if (isset($y['f']['uii']['idpsso']['displayname']) && is_array($y['f']['uii']['idpsso']['displayname']))
             {
@@ -156,8 +155,6 @@ class Entityedit extends MY_Controller
             {
                 $this->tmp_error = lang('errnoorgdisnames');
                 return false;
-
-
             }
             if (array_key_exists('lhelpdesk', $y['f']))
             {
@@ -170,8 +167,6 @@ class Entityedit extends MY_Controller
             {
                 $this->tmp_error = lang('errnoorgurls');
                 return false;
-
-
             }
 
 
@@ -618,7 +613,7 @@ class Entityedit extends MY_Controller
         {
             $data['srv']['RequestInitiator'] = array();
         }
-        
+
         if (isset($data['srv']['SPArtifactResolutionService']))
         {
             $data['srv']['SPArtifactResolutionService'] = array_filter($data['srv']['SPArtifactResolutionService']);
@@ -653,16 +648,16 @@ class Entityedit extends MY_Controller
         }
         if (isset($data['srv']['SingleSignOnService']))
         {
-            
+
             $data['srv']['SingleSignOnService'] = array_filter($data['srv']['SingleSignOnService']);
         }
         else
         {
             $data['srv']['SingleSignOnService'] = array();
         }
-         if (isset($data['srv']['IDPSingleLogoutService']))
+        if (isset($data['srv']['IDPSingleLogoutService']))
         {
-            
+
             $data['srv']['IDPSingleLogoutService'] = array_filter($data['srv']['IDPSingleLogoutService']);
         }
         else
@@ -865,36 +860,35 @@ class Entityedit extends MY_Controller
             $data['titlepage'] = lang('rr_sp_register_title');
         }
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)  
+        if (!$loggedin)
         {
-           $data['anonymous'] = TRUE;
+            $data['anonymous'] = TRUE;
         }
         else
         {
-           $data['anonymous'] = FALSE;
-           $currentusername = $this->j_auth->current_user();
-           $u = $this->em->getRepository("models\User")->findOneBy(array('username'=>''.$currentusername.''));
+            $data['anonymous'] = FALSE;
+            $currentusername = $this->j_auth->current_user();
+            $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $currentusername . ''));
 
-           $data['loggeduser'] = array(
-              'username'=>''.$currentusername.'',
-              'fullname'=>''.$u->getFullname().'',
-              'email'=>''.$u->getEmail().'',
-     
-           );
+            $data['loggeduser'] = array(
+                'username' => '' . $currentusername . '',
+                'fullname' => '' . $u->getFullname() . '',
+                'email' => '' . $u->getEmail() . '',
+            );
         }
 
-        $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active'=>TRUE));
-        if(count($fedCollection)>0)
+        $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active' => TRUE));
+        if (count($fedCollection) > 0)
         {
-           $data['federations'] = array();
-           /**
-            *  generate dropdown list of public federations
-            */
-           $data['federations']['none'] = lang('noneatthemoment');
-           foreach ($fedCollection as $key)
-           {
-              $data['federations'][$key->getName()] = $key->getName();
-           }
+            $data['federations'] = array();
+            /**
+             *  generate dropdown list of public federations
+             */
+            $data['federations']['none'] = lang('noneatthemoment');
+            foreach ($fedCollection as $key)
+            {
+                $data['federations'][$key->getName()] = $key->getName();
+            }
         }
 
 
@@ -915,7 +909,7 @@ class Entityedit extends MY_Controller
                 $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
                 if (!$isValid)
                 {
-                    log_message('warning', __METHOD__.' invalida metadata had been pasted in registration form');
+                    log_message('warning', __METHOD__ . ' invalid metadata had been pasted in registration form');
                     $this->tmp_error = lang('err_pastedtxtnotvalidmeta');
                 }
                 else
@@ -937,14 +931,13 @@ class Entityedit extends MY_Controller
                             $entarray = $this->metadata2array->entityDOMToArray($l, TRUE);
                         }
                         $o = current($entarray);
-                        if(isset($o['type']) && strcasecmp($o['type'],$t) == 0)
+                        if (isset($o['type']) && strcasecmp($o['type'], $t) == 0)
                         {
                             $ent->setProviderFromArray(current($entarray));
                         }
                         else
                         {
-                           $this->tmp_error = lang('regcantimporttype'); 
-   
+                            $this->tmp_error = lang('regcantimporttype');
                         }
                     }
                 }
@@ -953,39 +946,44 @@ class Entityedit extends MY_Controller
         elseif ($this->input->post('discard'))
         {
             $this->_discard_draft($t);
-            redirect(base_url() . 'providers/'.strtolower($t).'_registration', 'location');
+            redirect(base_url() . 'providers/' . strtolower($t) . '_registration', 'location');
         }
         elseif ($this->_submit_validate($t) === TRUE)
         {
 
+            log_message('debug', __METHOD__ . ' line ' . __LINE__ . ' GKS  _submit_validate');
             $y = $this->input->post('f');
+            log_message('debug', __METHOD__ . ' line ' . __LINE__ . ' GGKS ' . serialize($y));
             $submittype = $this->input->post('modify');
             if ($submittype === 'modify')
             {
+                \log_message('debug', __METHOD__ . 'GKS submittype=modify');
                 $this->load->library('providerupdater');
                 $c = $this->_get_draft($t);
                 if (!empty($c) && is_array($c))
                 {
 
+                    \log_message('debug', __METHOD__ . 'GKS data from draft: '.  serialize($c));
                     $ent = $this->providerupdater->updateProvider($ent, $c);
 
                     if ($ent)
                     {
                         $registrationAutority = $this->config->item('registrationAutority');
-                        if(!empty($registrationAutority))
+                        if (!empty($registrationAutority))
                         {
-                          $ent->setRegistrationAuthority(trim($registrationAutority));
+                            $ent->setRegistrationAuthority(trim($registrationAutority));
                         }
                         $ent->setActive(TRUE);
                         /// create queue
                         $q = new models\Queue;
-                        if (!empty($u)) {
-                          $contactMail = $u->getEmail();
-                          $q->setCreator($u);
+                        if (!empty($u))
+                        {
+                            $contactMail = $u->getEmail();
+                            $q->setCreator($u);
                         }
                         $q->setAction("Create");
                         $lnames = $ent->getMergedLocalName();
-                        if(is_array($lnames) and count($lnames)>0)
+                        if (is_array($lnames) and count($lnames) > 0)
                         {
                             $q->setName(current($lnames));
                         }
@@ -999,93 +997,93 @@ class Entityedit extends MY_Controller
 
 
 
-           if(!empty($y['federation']))
-           {  
-              try{
-                  $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => ''.$y['federation'].''));
-              }
-              catch(Exception $e)
-              {  
-                 log_message('error',__METHOD__.' '.$e);
-                 show_error('Internal Server Error',500);
-                 return;
-              }
-           }
-           if (!empty($federation)) {
-                $ispublic = $federation->getPublic();
-                $isactive = $federation->getActive();
-                if ($ispublic && $isactive) {
-                    $membership = new models\FederationMembers;
-                    $membership->setJoinState('1');
-                    $membership->setProvider($ent);
-                    $membership->setFederation($federation);
-                    $ent->getMembership()->add($membership);
-
-                }
-                else {
-                    log_message('warning', 'Federation is not public, cannot register sp with join fed with name ' . $federation->getName());
-                }
-            }
-
-
-
-                    
-
-
-
-
-
-                       if(strcmp($ttype,'IDP') == 0)
-                       {
-                         $q->addIDP($ent->convertToArray(TRUE));
-                       }
-                       else
-                       {
-                         $q->addSP($ent->convertToArray(TRUE));
-
-                       }
-                       if(empty($contactMail))
-                       {
-                          $contactMail = $this->input->post('f[primarycnt][mail]');
-                       }
-                       $q->setEmail($contactMail);
-                     
-                       $q->setToken();
-                       $sourceIP = $this->input->ip_address(); 
-                       $messageTemplateParams = array(
-                           'requestermail' => $contactMail,
-                           'token' => $q->getToken(),
-                           'requestersourceip'=>$sourceIP,
-                           'orgname'=>$ent->getName(),
-                           'serviceentityid'=>$ent->getEntityId(),
-                       );
-  
-                       $messageTemplate = $this->email_sender->providerRegRequest($ttype,$messageTemplateParams,NULL);
-                       if(!empty($messageTemplate))
-                       {
-                          $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq'),null,$messageTemplate['subject'],$messageTemplate['body'],array(),FALSE);
-                       }
-
-
-                       $this->em->persist($q);
-                       $this->em->detach($ent);
-                       try {
-                          $this->em->flush();
-                          $redirect_to = current_url();
-                         redirect(base_url().'manage/entityedit/registersuccess');
-
-                       }
-                       catch (Exception $e)
-                       {
-                           log_message('error',__METHOD__.' '.$e);
-                           show_error('Internal Server Error',500);
-                           return;
+                        if (!empty($y['federation']))
+                        {
+                            try
+                            {
+                                $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => '' . $y['federation'] . ''));
+                            }
+                            catch (Exception $e)
+                            {
+                                log_message('error', __METHOD__ . ' ' . $e);
+                                show_error('Internal Server Error', 500);
+                                return;
+                            }
+                        }
+                        if (!empty($federation))
+                        {
+                            $ispublic = $federation->getPublic();
+                            $isactive = $federation->getActive();
+                            if ($ispublic && $isactive)
+                            {
+                                $membership = new models\FederationMembers;
+                                $membership->setJoinState('1');
+                                $membership->setProvider($ent);
+                                $membership->setFederation($federation);
+                                $ent->getMembership()->add($membership);
+                            }
+                            else
+                            {
+                                log_message('warning', 'Federation is not public, cannot register sp with join fed with name ' . $federation->getName());
+                            }
                         }
 
+
+
+
+
+
+
+
+
+                        if (strcmp($ttype, 'IDP') == 0)
+                        {
+                            $q->addIDP($ent->convertToArray(TRUE));
+                        }
+                        else
+                        {
+                            $q->addSP($ent->convertToArray(TRUE));
+                        }
+                        if (empty($contactMail))
+                        {
+                            $contactMail = $this->input->post('f[primarycnt][mail]');
+                        }
+                        $q->setEmail($contactMail);
+
+                        $q->setToken();
+                        $sourceIP = $this->input->ip_address();
+                        $messageTemplateParams = array(
+                            'requestermail' => $contactMail,
+                            'token' => $q->getToken(),
+                            'requestersourceip' => $sourceIP,
+                            'orgname' => $ent->getName(),
+                            'serviceentityid' => $ent->getEntityId(),
+                        );
+
+                        $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams, NULL);
+                        if (!empty($messageTemplate))
+                        {
+                            $this->email_sender->addToMailQueue(array('greqisterreq', 'gidpregisterreq'), null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
+                        }
+
+
+                        $this->em->persist($q);
+                        $this->em->detach($ent);
+                        try
+                        {
+                            $this->em->flush();
+                            $redirect_to = current_url();
+                            redirect(base_url() . 'manage/entityedit/registersuccess');
+                        }
+                        catch (Exception $e)
+                        {
+                            log_message('error', __METHOD__ . ' ' . $e);
+                            show_error('Internal Server Error', 500);
+                            return;
+                        }
                     }
                 }
             }
-           
         }
         ////////////////////////////////
         $entsession = $this->_get_draft($t);
@@ -1093,7 +1091,7 @@ class Entityedit extends MY_Controller
         {
             $data['sessform'] = true;
         }
-        $data['titlepage'] .= '  - '.lang('subtl_advancedmode').'';
+        $data['titlepage'] .= '  - ' . lang('subtl_advancedmode') . '';
         $data['error_messages'] = validation_errors('<div>', '</div>');
         $data['error_messages2'] = $this->tmp_error;
         $this->session->set_flashdata('entformerror', '');
@@ -1111,11 +1109,11 @@ class Entityedit extends MY_Controller
         $this->load->view('page', $data);
     }
 
+    function registersuccess()
+    {
 
-     function registersuccess()
-     {
+        $data['content_view'] = 'register_success';
+        $this->load->view('page', $data);
+    }
 
-         $data['content_view'] = 'register_success';
-         $this->load->view('page',$data);
-     }
 }
