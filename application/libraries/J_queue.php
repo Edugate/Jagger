@@ -615,7 +615,10 @@ class J_queue
         {
             $nname = '';
         }
-        $cell = array(lang('rr_federation'), $federation->getName() . ' '.$nname);
+        /**
+         * @todo  display option to validate entity before approval
+         */ 
+        $cell = array(lang('rr_federation'), $federation->getName() . ' ');
         $this->ci->table->add_row($cell);
         $data = $queue->getData();
         $cell = array(lang('rr_provider'), $data['name']);
