@@ -11,8 +11,8 @@ if(!empty($error_message))
     echo '<div  data-alert class="alert-box alert">'.$error_message.'</div>';
 
 }
-
-echo '<div class="button-bar"><ul class="button-group janusz"></ul></div>';
+echo '<div data-alert class="alert-box warning validaronotice" style="display:none">'.lang('fvalidatorjoinfed').'</div>';
+echo '<div class="button-bar"><ul class="button-group validatorbuttons"></ul></div>';
 $attrs = array('id'=>'fvform','style'=>'display:none;','class'=>'columns alert-box secondary');
 $hidden = array('fedid'=>'','provid'=>''.$providerid.'','fvid'=>'');
 echo '<div class="small-12 medium-10  columns">'.form_open(base_url().'federations/fvalidator/validate',$attrs,$hidden);

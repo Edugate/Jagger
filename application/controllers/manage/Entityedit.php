@@ -953,7 +953,7 @@ class Entityedit extends MY_Controller
 
             log_message('debug', __METHOD__ . ' line ' . __LINE__ . ' GKS  _submit_validate');
             $y = $this->input->post('f');
-            log_message('debug', __METHOD__ . ' line ' . __LINE__ . ' GGKS ' . serialize($y));
+            log_message('debug', __METHOD__ . ' line ' . __LINE__ . ' GKS ' . serialize($y));
             $submittype = $this->input->post('modify');
             if ($submittype === 'modify')
             {

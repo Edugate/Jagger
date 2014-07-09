@@ -36,7 +36,7 @@ var BINIT = {
     
     initFvalidators: function(){
        
-$("ul.janusz button").on('click',function(e){
+$("ul.validatorbuttons button").on('click',function(e){
      var link = $(this).attr("value");
      $.ajax({
        type: "GET",
@@ -2786,7 +2786,8 @@ $(".submit").click(function() {
 })
 
 $('#joinfed select#fedid').on('change', function() {
-    $("ul.janusz").replaceWith('<ul class="button-group janusz"></ul>');
+    $("div.validaronotice").hide();
+    $("ul.validatorbuttons").replaceWith('<ul class="button-group validatorbuttons"></ul>');
     var csrfname = $("[name='csrfname']").val();
     var csrfhash = $("[name='csrfhash']").val();
     if (csrfname === undefined)
@@ -2817,17 +2818,9 @@ $('#joinfed select#fedid').on('change', function() {
                 if (data)
                 {
                     $.each(data, function(i, v) {
-                        $("ul.janusz").append('<li><button  value="'+jsurl+'/'+v.fedid+'/'+v.id+'" class="small button">'+v.name+'</button></li>');
+                        $("ul.validatorbuttons").append('<li><button  value="'+jsurl+'/'+v.fedid+'/'+v.id+'" class="small button">'+v.name+'</button></li>');
                     })
-
-//                    var vfedid = data.fedid;
-//                    var fvalidid = data.id;
-//                    var fvalidname = data.name;
-//                    var fvaliddesc = data.desc;
-//                    $('#fvform input[name="fedid"]').val(vfedid);
-//                    $('#fvform input[name="fvid"]').val(fvalidid);
-//                    $("div#fvalidesc").replaceWith('<div id="fvalidesc"><b>' + fvalidname + '</b><p>' + fvaliddesc + '</p></div>');
-//                    $('#fvform').show();
+                    $("div.validaronotice").show();
                 }
             },
             beforeSend: function() {
