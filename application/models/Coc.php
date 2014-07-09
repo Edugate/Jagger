@@ -98,7 +98,7 @@ class Coc {
      
     public function getUrl()
     {
-        return $this->url;
+        return trim($this->url);
     }
     public function getAvailable()
     {
@@ -121,7 +121,7 @@ class Coc {
     
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name = trim($name);
         return $this;
     }
 
@@ -136,7 +136,7 @@ class Coc {
    
     public function setUrl($url)
     {
-        $this->url = $url;
+        $this->url = trim($url);
         return $this;
     }
     public function setDescription($desc)
