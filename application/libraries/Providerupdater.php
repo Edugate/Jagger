@@ -151,13 +151,21 @@ class Providerupdater {
             $ent->setExtendMetadata($spMDUIparent);
             $this->em->persist($spMDUIparent);
         }
-        if (array_key_exists('entityid', $ch) && !empty($ch['entityid']))
+        if ( array_key_exists('entityid', $ch) && !empty($ch['entityid']))
         {
-            if(strcmp($ent->getEntityId(), $ch['entityid'])!=0 && !in_array('entityid',$dissalowedparts))
+            if(!empty($entid))
             {
-               $m['EntityID'] = array('before'=>$ent->getEntityId(),'after'=>$ch['entityid']);
-               $this->ci->tracker->renameProviderResourcename($ent->getEntityId(),$ch['entityid']); 
-               $ent->setEntityId($ch['entityid']);
+               if(strcmp($ent->getEntityId(), $ch['entityid'])!=0 && !in_array('entityid',$dissalowedparts))
+               {
+                  $m['EntityID'] = array('before'=>$ent->getEntityId(),'after'=>$ch['entityid']);
+                  $this->ci->tracker->renameProviderResourcename($ent->getEntityId(),$ch['entityid']); 
+                  $ent->setEntityId($ch['entityid']);
+               }
+            }
+            else
+            {
+                  $ent->setEntityId($ch['entityid']);
+                
             }
         }
         if (array_key_exists('lname', $ch) && is_array($ch['lname']))

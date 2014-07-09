@@ -2588,7 +2588,7 @@ class Provider {
         }
         $r['name'] = $this->getName();
         $r['displayname'] = $this->getDisplayname();
-        $r['entityid'] = $this->getEntityid();
+        $r['entityid'] = $this->getEntityId();
         
         $r['nameid'] = array();
         $nameids = $this->getNameIds();
