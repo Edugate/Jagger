@@ -963,7 +963,7 @@ class Entityedit extends MY_Controller
                 if (!empty($c) && is_array($c))
                 {
 
-                    \log_message('debug', __METHOD__ . 'GKS data from draft: '.  serialize($c));
+                    \log_message('debug', __METHOD__ . ' GKS data from draft: '.  serialize($c));
                     $ent = $this->providerupdater->updateProvider($ent, $c);
 
                     if ($ent)
@@ -1035,14 +1035,18 @@ class Entityedit extends MY_Controller
 
 
 
+                        log_message('debug','GKS before convert: entitid: '.$ent->getEntityId());
+                        $convertedToArray = $ent->convertToArray(True);
+                       
+                        log_message('debug','GKS convertedToArray: '.serialize($convertedToArray));
 
                         if (strcmp($ttype, 'IDP') == 0)
                         {
-                            $q->addIDP($ent->convertToArray(TRUE));
+                            $q->addIDP($convertedToArray);
                         }
                         else
                         {
-                            $q->addSP($ent->convertToArray(TRUE));
+                            $q->addSP($convertedToArray);
                         }
                         if (empty($contactMail))
                         {
