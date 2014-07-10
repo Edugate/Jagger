@@ -1774,7 +1774,12 @@ $(document).ready(function() {
         $('#login_form').modal();
     });
     if ($("#eds2").is('*')) {
-        $("#idpSelect").modal();
+        $("#idpSelect").modal(
+{
+Height: '500px',
+            minHeight: '500px',
+}
+        );
     }
     $("button#vormversion").click(function() {
         $.ajax({
