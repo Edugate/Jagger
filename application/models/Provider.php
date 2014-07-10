@@ -1516,6 +1516,17 @@ class Provider {
         {
             $this->setCertificate($r);
         }
+ 
+        foreach ($this->getContacts() as $cn)
+        {
+            $this->removeContact($cn);
+        }
+        foreach ($provider->getContacts() as $cn2)
+        {
+             $this->setContact($cn2);
+
+        }
+
         foreach ($this->getExtendMetadata() as $f)
         {
             if (!empty($f))
