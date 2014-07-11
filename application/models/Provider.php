@@ -1888,10 +1888,13 @@ class Provider {
                 }
            }
         }
-        
+        if(empty($result))
+        {
+           $result =  $this->entityid;
+        }
       
 
-        return $result;
+        return trim($result);
 
     }
 

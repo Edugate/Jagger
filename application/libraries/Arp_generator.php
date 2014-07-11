@@ -811,6 +811,9 @@ class Arp_generator {
             $release[$m_entityid]['entityid'] = $m_entityid;
             //$release[$m_entityid]['name'] = $m->getName();
             $release[$m_entityid]['name'] = $m->getNameToWebInLang($lang,'sp');
+
+           
+
             $release[$m_entityid]['attributes'] = $supported_attrs;
             $release[$m_entityid]['spid'] = $m->getId();
             $release[$m_entityid]['req'] = array();

@@ -198,7 +198,7 @@ class Detail extends MY_Controller {
         $sppart = FALSE;
         $idppart = FALSE;
         $type = strtolower($ent->getType());
-        $data['type'] = $type;
+        $data['type'] = &$type;
         $group = 'entity';
         $entstatus = '';
         $edit_attributes = '';
@@ -323,10 +323,6 @@ class Detail extends MY_Controller {
         $data['entid'] = $ent->getId();
         $lang = MY_Controller::getLang();
         $data['name'] = $ent->getNameToWebInLang($lang,$type);
-        if (empty($data['name']))
-        {
-            $data['name'] = $ent->getEntityId();
-        }
         $this->title = lang('rr_providerdetails') . ' :: ' . $data['name'];
         $b = $this->session->userdata('board');
         if (!empty($b) && is_array($b))
@@ -347,7 +343,7 @@ class Detail extends MY_Controller {
          */
         $d = array();
         $i = 0;
-        $d[++$i]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation');
+        //$d[++$i]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation');
         $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
 
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
@@ -466,11 +462,14 @@ class Detail extends MY_Controller {
         }
         $d[++$i]['name'] = lang('rr_regpolicy');
         $d[$i]['value'] = $regpolicy_value;
-   //     $d[++$i]['name'] = lang('rr_description'). ' <div class="dhelp">'.lang('defaultdesc').'</div>';
-   //     $d[$i]['value'] = $ent->getDescription();
 
-        $d[++$i]['name'] = lang('rr_defaultprivacyurl');
-        $d[$i]['value'] = $ent->getPrivacyUrl();
+        $defaultprivacyurl = $ent->getPrivacyUrl();
+        if(!empty($defaultprivacyurl))
+        {
+           $d[++$i]['name'] = lang('rr_defaultprivacyurl');
+           $d[$i]['value'] = $ent->getPrivacyUrl();
+        }
+
         $d[++$i]['name'] = lang('rr_entcats');
         $coc = $ent->getCoc();
         if($coc->count()>0)
@@ -481,7 +480,7 @@ class Detail extends MY_Controller {
               $coctype = $v->getType();
               if($coctype  === 'entcat')
               {
-                 $cocvalue = $v->getName() . '<br />' . anchor($v->getUrl());
+                 $cocvalue =  anchor($v->getUrl(),$v->getName());
                  if (!$v->getAvailable())
                  {
                     $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
