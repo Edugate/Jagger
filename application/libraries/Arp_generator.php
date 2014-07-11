@@ -555,11 +555,14 @@ class Arp_generator {
     public function arpToArrayByInherit($provider)
     {
         $lang = 'en';
-        $langMethodExist = method_exists('MY_Controller','getLang');
-        if($langMethodExist)
-        {
-           $lang = MY_Controller::getLang();
-        }
+        /**
+         * disabled for the moment
+         *     $langMethodExist = method_exists('MY_Controller','getLang');
+         *     if($langMethodExist)
+         *     {
+         *         $lang = MY_Controller::getLang();
+         *     }
+         */
         $idp = null;
         $release = array();
       
