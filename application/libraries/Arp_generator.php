@@ -554,6 +554,12 @@ class Arp_generator {
 
     public function arpToArrayByInherit($provider)
     {
+        $lang = 'en';
+        $langMethodExist = method_exists('MY_Controller','getLang');
+        if($langMethodExist)
+        {
+           $lang = MY_Controller::getLang();
+        }
         $idp = null;
         $release = array();
       
@@ -800,7 +806,8 @@ class Arp_generator {
             $release[$m_entityid]['attributes'] = array();
             $release[$m_entityid]['custom'] = array();
             $release[$m_entityid]['entityid'] = $m_entityid;
-            $release[$m_entityid]['name'] = $m->getName();
+            //$release[$m_entityid]['name'] = $m->getName();
+            $release[$m_entityid]['name'] = $m->getNameToWebInLang($lang,'sp');
             $release[$m_entityid]['attributes'] = $supported_attrs;
             $release[$m_entityid]['spid'] = $m->getId();
             $release[$m_entityid]['req'] = array();
