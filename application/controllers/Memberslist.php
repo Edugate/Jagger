@@ -82,7 +82,7 @@ class Memberslist extends MY_Controller {
                 $group = 'others';
             }
             $type = strtolower($p->getType());
-            $pelement = array('name' => $p->getName(), 'entityid' => $p->getEntityId(), 'url' => $p->getHelpdeskUrl(), 'desc' => htmlspecialchars($p->getDescription()));
+            $pelement = array('name' => $p->getNameToWebInLang('en'), 'entityid' => $p->getEntityId(), 'url' => $p->getHelpdeskUrl(), 'desc' => htmlspecialchars($p->getDescription()));
             $providers[$type][$group][] = $pelement;
         }
 
