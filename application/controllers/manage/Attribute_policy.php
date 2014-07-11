@@ -317,10 +317,6 @@ class Attribute_policy extends MY_Controller {
         }
         $lang = MY_Controller::getLang();
         $displayname = $idp->getNameToWebInLang($lang,'idp');
-        if(empty($displayname))
-        {
-               $displayname = $idp->getEntityId();
-        }
 
 
         $data['titlepage'] = lang('identityprovider').': '.'<a href="'.base_url().'providers/detail/show/'.$idp_id.'">'.$displayname.'</a>';

@@ -90,10 +90,6 @@ class Leavefed extends MY_Controller {
         $enttype = $provider->getType();
         
         $data['name'] = $provider->getNameToWebInLang($lang,$enttype);
-        if(empty($data['name']))
-        {
-           $data['name'] = $provider->getEntityId();
-        }
         $data['titlepage'] = anchor(base_url().'providers/detail/show/'.$provider->getId().'',$data['name']);
         $data['subtitlepage']=lang('leavefederation');
 
