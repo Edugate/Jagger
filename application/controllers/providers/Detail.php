@@ -696,7 +696,8 @@ class Detail extends MY_Controller {
 
                 $d[++$i]['2cols'] = '<code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
-            $result[] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
+            $subresult[] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
+          
 
         }
         $d = array();
@@ -773,7 +774,7 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = trim($nameids);
         }
 
-        $result[] = array('section' => 'protocols', 'title' => '' . lang('tabprotonameid') . '', 'data' => $d);
+        $subresult[] = array('section' => 'protocols', 'title' => '' . lang('tabprotonameid') . '', 'data' => $d);
 
 
         /**
@@ -910,7 +911,7 @@ class Detail extends MY_Controller {
 
             }
         }
-        $result[] = array('section' => 'services', 'title' => '' . lang('tabsrvs') . '', 'data' => $d);
+        $subresult[] = array('section' => 'services', 'title' => '' . lang('tabsrvs') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $tcerts = $ent->getCertificates();
@@ -1135,7 +1136,7 @@ class Detail extends MY_Controller {
         /**
          * end certs
          */
-        $result[] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+        $subresult[] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $d[++$i]['header'] = lang("rr_contacts");
@@ -1152,7 +1153,7 @@ class Detail extends MY_Controller {
             $d[++$i]['name'] = $contactsTypeToTranslate[''.strtolower($c->getType()).''];
             $d[$i]['value'] = $c->getFullName() . " " . safe_mailto($c->getEmail());
         }
-        $result[] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
+        $subresult[] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
         $d = array();
         $i = 0;
         if ($idppart)
@@ -1251,7 +1252,7 @@ class Detail extends MY_Controller {
                 }
             }
         }
-        $result[] = array('section' => 'attrs', 'title' => '' . lang('tabAttrs') . '', 'data' => $d);
+        $subresult[] = array('section' => 'attrs', 'title' => '' . lang('tabAttrs') . '', 'data' => $d);
         $d = array();
         $i = 0;
 
@@ -1467,7 +1468,7 @@ class Detail extends MY_Controller {
             }
         }
 
-        $result[] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
+        $subresult[] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $d[++$i]['header'] = lang('rr_management');
@@ -1507,6 +1508,7 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
+        $result[] = array('section' => 'samlmetadata', 'title' => 'Metadata', 'subtab' => $subresult);
         $result[] = array('section' => 'mngt', 'title' => '' . lang('tabMngt') . '', 'data' => $d);
         $d = array();
         $i = 0;
