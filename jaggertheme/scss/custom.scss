@@ -484,6 +484,47 @@ div.alert {
   background-color: transparent;
   border: 0px !important;
 }
+
+ul.tabs {
+  margin-bottom: 0px;
+
+}
+
+
+.tabs-content > .content {
+   padding: 0px;
+   margin-top: 10px;
+}
+.tabs-content > .content.subtab {
+   margin-top: 0px;
+}
+
+ul.subtab > .tab-title{
+  
+  a {
+
+  background-color: lighten($tabs-navigation-bg-color,10%) !important ;
+  padding:rem-calc(7);
+
+  }
+  a:hover {
+    background-color: red;
+  }
+  
+}
+ul.subtab > .tab-title:hover{
+  
+    background-color: red;
+  
+}
+ul.subtab > .tab-title.active{
+  a {
+  background-color: lighten($tabs-navigation-active-bg-color,5%) !important ;
+
+  }
+  
+}
+
 pre.xml {
 
   
