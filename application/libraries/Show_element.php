@@ -545,8 +545,8 @@ class Show_element {
             return null;
         }
         $no_results = count($tracks);
-
-        $result = '<ul>';
+        $mcounter = 0;
+        $result = '<dl class="accordion" data-accordion="requestsList">';
         foreach ($tracks as $t)
         {
             $det = $t->getDetail();
@@ -558,10 +558,13 @@ class Show_element {
             {
                 $user = lang('unknown');
             }
-            $result .= '<li><span class="accordionButton"><b>' . date('Y-m-d H:i:s',$t->getCreated()->format('U')+j_auth::$timeOffset) . '</b> '.lang('made_by').' <b>' . $user . '</b> '.lang('from').' <b>' . $t->getIp() . '</b><br/>'.lang('rr_details').'</span><span class="accordionContent"><br />' . $y . '</span></li>';
+            $result .='<dd class="accordion-navigation">';
+            $result .= '<a href="#rmod'.$mcounter.'">'.date('Y-m-d H:i:s',$t->getCreated()->format('U')+j_auth::$timeOffset) .' ' .lang('made_by').' <b>' . $user . '</b> '.lang('from').' ' . $t->getIp() .'</a><div id="rmod'.$mcounter.'" class="content">' . $y . '</div>';
+            $result .='</dd>';
+            $mcounter++;
             $this->ci->table->clear();
         }
-        $result .= '</ul>';
+        $result .= '</dl>';
         return $result;
     }
 
@@ -580,7 +583,9 @@ class Show_element {
         }
         $no_results = count($tracks);
 
-        $result = '<ul>';
+        //$result = '<ul>';
+        $result = '<dl class="accordion" data-accordion="modificationsList">';
+        $mcounter = 0;
         foreach ($tracks as $t)
         {
             $modArray = unserialize($t->getDetail());
@@ -601,9 +606,12 @@ class Show_element {
             {
                 $user = lang('unknown');
             }
-            $result .= '<li><span class="accordionButton"><b>' . date('Y-m-d H:i:s',$t->getCreated()->format('U')+j_auth::$timeOffset) . '</b> '.lang('chng_made_by').' <b>' . $user . '</b> '.lang('from').' <b>' . $t->getIp() . '</b><br/>'.lang('rr_details').'</span><span class="accordionContent"><br />' . $y . '</span></li>';
+            $result .='<dd class="accordion-navigation">';
+            $result .= '<a href="#mod'.$mcounter.'">'.date('Y-m-d H:i:s',$t->getCreated()->format('U')+j_auth::$timeOffset) .' ' .lang('chng_made_by').' <b>' . $user . '</b> '.lang('from').' ' . $t->getIp() .'</a><div id="mod'.$mcounter.'" class="content">' . $y . '</div>';
+            $result .='</dd>';
+            $mcounter++;
         }
-        $result .= '</ul>';
+        $result .= '</dl>';
         return $result;
     }
 

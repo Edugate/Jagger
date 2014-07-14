@@ -1025,7 +1025,7 @@ class Detail extends MY_Controller {
                         {
                             $cString .='<b>' . lang('rr_fingerprint') . ' (sha1):</b> <span>' . $c_fingerprint_sha1 . '</span><br />';
                         }
-                        $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
+                        $cString .= '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c'.$v->getId().'">' . lang('rr_certbody') . '</a><code id="c'.$v->getId().'" class="content">' . trim($c_certData) . '</code></dd></dl>';
                     }
                     $cString .= '<br />';
                     $d[++$i]['name'] = $langcertusage;
@@ -1094,7 +1094,7 @@ class Detail extends MY_Controller {
                         {
                             $cString .='<b>' . lang('rr_fingerprint') . ' (md5):</b> <span>' . $c_fingerprint_md5 . '</span><br />';
                         }
-                        $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
+                        $cString .= '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c'.$v->getId().'">' . lang('rr_certbody') . '</a><code id="c'.$v->getId().'" class="content">' . trim($c_certData) . '</code></dd></dl>';
                     }
                     $cString .= '<br />';
                    $d[++$i]['name'] = $langcertusage ;
@@ -1166,7 +1166,7 @@ class Detail extends MY_Controller {
                         {
                             $cString .='<b>' . lang('rr_fingerprint') . ' (md5):</b> <span>' . $c_fingerprint_md5 . '</span><br />';
                         }
-                        $cString .= '<span class="accordionButton"><b>' . lang('rr_certbody') . '</b><br /></span><code class="accordionContent">' . trim($c_certData) . '</code>';
+                        $cString .= '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c'.$v->getId().'">' . lang('rr_certbody') . '</a><code id="c'.$v->getId().'" class="content">' . trim($c_certData) . '</code></dd></dl>';
                     }
                     $cString .= '<br />';
                     $d[++$i]['name'] = $langcertusage;
