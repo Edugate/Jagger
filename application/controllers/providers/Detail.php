@@ -523,6 +523,61 @@ class Detail extends MY_Controller {
         $result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
 
 
+        /**
+         * ORG tab
+         */
+         $d = array();
+         $i = 0;
+         $d[++$i]['name'] = lang('e_orgname');
+         $lname = $ent->getMergedLocalName();
+         $lvalues = '';
+         if (count($lname)>0)
+         {
+            foreach ($lname as $k => $v)
+            {
+                $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
+            }
+            $d[$i]['value'] = $lvalues;
+         }
+         else
+         {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">'.lang('rr_notset').'</div>';
+         }
+        $d[++$i]['name'] = lang('e_orgdisplayname');
+        $ldisplayname =  $ent->getMergedLocalDisplayName();
+        $lvalues = '';
+        if (count($ldisplayname)>0)
+        {
+            foreach ($ldisplayname as $k => $v)
+            {
+                $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
+            }
+            $d[$i]['value'] = '<div id="selectme">'.$lvalues.'</div>';
+        }
+        else
+        {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">'.lang('rr_notset').'</div>';
+        }
+        $d[++$i]['name'] = lang('e_orgurl');
+        $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
+        if(is_array($localizedHelpdesk) && count($localizedHelpdesk)>0)
+        {
+           $lvalues = '';
+           foreach($localizedHelpdesk as $k=>$v)
+           {
+                $lvalues .= '<div><b>' . $k . ':</b> ' . $v . '</div>';
+              
+           }
+           $d[$i]['value'] = $lvalues;
+        }
+        else
+        {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">'.lang('rr_notset').'</div>';
+        }
+          
+
+         $subresult[1] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $d); 
+
 
 
         /**
@@ -696,89 +751,15 @@ class Detail extends MY_Controller {
 
                 $d[++$i]['2cols'] = '<code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
-            $subresult[] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
+            $subresult[20] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
           
 
         }
-        $d = array();
-        $i = 0;
 
-      //  $d[++$i]['header'] = '<span id="technical"></span>' . lang('rr_technicalinformation');
-        if ($idppart)
-        {
-            $d[++$i]['header'] = '<span id="idpssoproto"></span>IDPSSODescriptor'; 
-            $d[++$i]['name'] = lang('rr_supportedprotocols')  ;
-            $v = implode('<br />', $ent->getProtocolSupport('idpsso'));
-            $d[$i]['value'] = $v;
-            $d[++$i]['name'] = lang('rr_domainscope');
-            $scopes = $ent->getScope('idpsso');
-            $scopeString = '<ul class="no-bullet">';
-            foreach ($scopes as $key => $value)
-            {
-                $scopeString .= '<li>' . $value . '</li>';
-            }
-            $scopeString .= '</ul>';
-            $d[$i]['value'] = $scopeString;
-            $d[++$i]['name'] = lang('rr_supportednameids') ;
-            $nameids = '<ul class="no-bullet">';
-            foreach ($ent->getNameIds('idpsso') as $r)
-            {
-                $nameids .= '<li>' . $r . '</li>';
-            }
-            $nameids .='</ul>';
-            $d[$i]['value'] = trim($nameids);
-        
-            // AttributeAuthorityDescriptor
-            $d[++$i]['header'] = '<span id="idpaaproto"></span>AttributeAuthorityDescriptor';
-            $d[++$i]['name'] = lang('rr_supportedprotocols') . '';
-            $v = implode('<br />', $ent->getProtocolSupport('aa'));
-            $d[$i]['value'] = $v;
-            $d[++$i]['name'] = lang('rr_domainscope') . '';
-            $scopes = $ent->getScope('aa');
-            $scopeString = '<ul class="no-bullet">';
-            foreach ($scopes as $key => $value)
-            {
-                $scopeString .= '<li>' . $value . '</li>';
-            }
-            $scopeString .= '</ul>';
-            $d[$i]['value'] = $scopeString;
-            $aanameids = $ent->getNameIds('aa');
-            $aanameid = '';
-            if (count($aanameids) > 0)
-            {
-                $d[++$i]['name'] = lang('rr_supportednameids') ;
-                foreach ($aanameids as $r)
-                {
-                    $aanameid .= '<li>' . $r . '</li>';
-                }
-                $aanameid .= '</ul>';
-                $d[$i]['value'] = trim($aanameid);
-            }
-
-        }
-
-
-        if($sppart)
-        {
-            $d[++$i]['header'] = 'SPSSODescriptor';
-            $d[++$i]['name'] = lang('rr_supportedprotocols') ;
-            $v = implode('<br />', $ent->getProtocolSupport('spsso'));
-            $d[$i]['value'] = $v;
-            $nameids = '';
-            $d[++$i]['name'] = lang('rr_supportednameids');
-            foreach ($ent->getNameIds('spsso') as $r)
-            {
-                $nameids .= '<li>' . $r . '</li>';
-            }
-            $nameids .='</ul>';
-            $d[$i]['value'] = trim($nameids);
-        }
-
-        $subresult[] = array('section' => 'protocols', 'title' => '' . lang('tabprotonameid') . '', 'data' => $d);
 
 
         /**
-         * ServiceLocations
+         * SAMLTAB
          */
         $d = array();
         $i = 0;
@@ -795,6 +776,30 @@ class Detail extends MY_Controller {
         if ($idppart)
         {
             $d[++$i]['header'] = 'IDPSSODescriptor';
+
+            // protocols enumerations
+            $d[++$i]['name'] = lang('rr_supportedprotocols');
+            $v = implode('<br />', $ent->getProtocolSupport('idpsso'));
+            $d[$i]['value'] = $v;
+            $d[++$i]['name'] = lang('rr_domainscope');
+            $scopes = $ent->getScope('idpsso');
+            $scopeString = '<ul class="no-bullet">';
+            foreach ($scopes as $key => $value)
+            {
+                $scopeString .= '<li>' . $value . '</li>';
+            }
+            $scopeString .= '</ul>';
+            $d[$i]['value'] = $scopeString;
+
+            $d[++$i]['name'] = lang('rr_supportednameids') ;
+            $nameids = '<ul class="no-bullet">';
+            foreach ($ent->getNameIds('idpsso') as $r)
+            {
+                $nameids .= '<li>' . $r . '</li>';
+            }
+            $nameids .='</ul>';
+            $d[$i]['value'] = trim($nameids);
+
             if (array_key_exists('SingleSignOnService', $services))
             {
                 $ssovalues = '';
@@ -830,9 +835,34 @@ class Detail extends MY_Controller {
                 }
                 $d[$i]['value'] = $slvalues;
             }
+            $d[++$i]['header'] = 'AttributeAuthorityDescriptor';
+            $d[++$i]['name'] = lang('rr_supportedprotocols') . '';
+            $v = implode('<br />', $ent->getProtocolSupport('aa'));
+            $d[$i]['value'] = $v;
+            $d[++$i]['name'] = lang('rr_domainscope') . '';
+            $scopes = $ent->getScope('aa');
+            $scopeString = '<ul class="no-bullet">';
+            foreach ($scopes as $key => $value)
+            {
+                $scopeString .= '<li>' . $value . '</li>';
+            }
+            $scopeString .= '</ul>';
+            $d[$i]['value'] = $scopeString;
+            $aanameids = $ent->getNameIds('aa');
+            $aanameid = '';
+            if (count($aanameids) > 0)
+            {
+                $d[++$i]['name'] = lang('rr_supportednameids') ;
+                foreach ($aanameids as $r)
+                {
+                    $aanameid .= '<li>' . $r . '</li>';
+                }
+                $aanameid .= '</ul>';
+                $d[$i]['value'] = trim($aanameid);
+            }
+
             if (array_key_exists('IDPAttributeService', $services))
             {
-                $d[++$i]['header'] = 'AttributeAuthorityDescriptor';
                 $d[++$i]['name'] = 'AttributeService';
                 $slvalues = '';
                 foreach ($services['IDPAttributeService'] as $s)
@@ -845,6 +875,17 @@ class Detail extends MY_Controller {
         if ($sppart)
         {
             $d[++$i]['header'] = 'SPSSODescriptor';
+            $d[++$i]['name'] = lang('rr_supportedprotocols') ;
+            $v = implode('<br />', $ent->getProtocolSupport('spsso'));
+            $d[$i]['value'] = $v;
+            $nameids = '';
+            $d[++$i]['name'] = lang('rr_supportednameids');
+            foreach ($ent->getNameIds('spsso') as $r)
+            {
+                $nameids .= '<li>' . $r . '</li>';
+            }
+            $nameids .='</ul>';
+            $d[$i]['value'] = trim($nameids);
             if (array_key_exists('AssertionConsumerService', $services))
             {
                 $acsvalues = '';
@@ -911,7 +952,7 @@ class Detail extends MY_Controller {
 
             }
         }
-        $subresult[] = array('section' => 'services', 'title' => '' . lang('tabsrvs') . '', 'data' => $d);
+        $subresult[3] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $tcerts = $ent->getCertificates();
@@ -1136,10 +1177,9 @@ class Detail extends MY_Controller {
         /**
          * end certs
          */
-        $subresult[] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+        $subresult[12] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
         $d = array();
         $i = 0;
-        $d[++$i]['header'] = lang("rr_contacts");
         $contacts = $ent->getContacts();
         $contactsTypeToTranslate = array(
              'technical' => lang('rr_cnt_type_tech'),
@@ -1147,13 +1187,20 @@ class Detail extends MY_Controller {
              'support' => lang('rr_cnt_type_support'),
              'billing' => lang('rr_cnt_type_bill'),
              'other' => lang('rr_cnt_type_other')
-         );
-        foreach ($contacts as $c)
+        );
+        if(count($contacts) == 0)
         {
-            $d[++$i]['name'] = $contactsTypeToTranslate[''.strtolower($c->getType()).''];
-            $d[$i]['value'] = $c->getFullName() . " " . safe_mailto($c->getEmail());
+             foreach ($contacts as $c)
+             {
+                $d[++$i]['name'] = $contactsTypeToTranslate[''.strtolower($c->getType()).''];
+                $d[$i]['value'] = $c->getFullName() . " " . safe_mailto($c->getEmail());
+             }
         }
-        $subresult[] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
+        else
+        {
+             $d[++$i]['2cols'] = '<div data-alert class="alert-box warning">'.lang('rr_notset').'</div>';
+        }
+        $subresult[2] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
         $d = array();
         $i = 0;
         if ($idppart)
@@ -1252,7 +1299,7 @@ class Detail extends MY_Controller {
                 }
             }
         }
-        $subresult[] = array('section' => 'attrs', 'title' => '' . lang('tabAttrs') . '', 'data' => $d);
+        $subresult[13] = array('section' => 'attrs', 'title' => '' . lang('tabAttrs') . '', 'data' => $d);
         $d = array();
         $i = 0;
 
@@ -1468,7 +1515,7 @@ class Detail extends MY_Controller {
             }
         }
 
-        $subresult[] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
+        $subresult[16] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $d[++$i]['header'] = lang('rr_management');
@@ -1508,12 +1555,16 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
-        $result[] = array('section' => 'samlmetadata', 'title' => 'Metadata', 'subtab' => $subresult);
+
+        ksort($subresult);
+        
+        $finalsubtab = &$subresult;
+        $result[] = array('section' => 'samlmetadata', 'title' => 'Metadata', 'subtab' => $finalsubtab);
         $result[] = array('section' => 'mngt', 'title' => '' . lang('tabMngt') . '', 'data' => $d);
         $d = array();
         $i = 0;
 
-
+        
 
         $data['tabs'] = $result;
         /**
