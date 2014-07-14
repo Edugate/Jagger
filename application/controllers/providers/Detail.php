@@ -1188,7 +1188,7 @@ class Detail extends MY_Controller {
              'billing' => lang('rr_cnt_type_bill'),
              'other' => lang('rr_cnt_type_other')
         );
-        if(count($contacts) == 0)
+        if(count($contacts) > 0)
         {
              foreach ($contacts as $c)
              {
