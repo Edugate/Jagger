@@ -614,7 +614,7 @@ class Detail extends MY_Controller {
         if ($is_local && $has_write_access && !empty($gearman_enabled))
         {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
-            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner"/><button type="button" class="savebutton staricon button small">' . lang('btn_signmetadata') . '</button></a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button tiny">' . lang('btn_signmetadata') . '</a>';
         }
         if ($sppart)
         {
