@@ -665,7 +665,7 @@ var GINIT = {
                 url: url,
                 cache: false,
                 data: str,
-                timeout: 10000,
+                timeout: 120000,
                 success: function(json) {
                     $('#spinner').hide();
                     var data = $.parseJSON(json);
