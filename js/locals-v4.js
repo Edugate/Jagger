@@ -684,8 +684,10 @@ var GINIT = {
                         {
                             var msgdata;
                             $.each(data.message, function(i, v) {
-                                msgdata = '<div>' + i + ': ' + v + '</div>';
-                                $("div#fvmessages").append(msgdata);
+                                $.each(v, function(j, m) {
+                                        msgdata = '<div>' + i + ': ' + m + '</div>';
+                                        $("div#fvmessages").append(msgdata);
+                                });
                             });
 
                         }
