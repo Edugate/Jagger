@@ -665,7 +665,7 @@ var GINIT = {
                 url: url,
                 cache: false,
                 data: str,
-                timeout: 10000,
+                timeout: 120000,
                 success: function(json) {
                     $('#spinner').hide();
                     var data = $.parseJSON(json);
@@ -684,8 +684,10 @@ var GINIT = {
                         {
                             var msgdata;
                             $.each(data.message, function(i, v) {
-                                msgdata = '<div>' + i + ': ' + v + '</div>';
-                                $("div#fvmessages").append(msgdata);
+                                $.each(v, function(j, m) {
+                                        msgdata = '<div>' + i + ': ' + m + '</div>';
+                                        $("div#fvmessages").append(msgdata);
+                                });
                             });
 
                         }

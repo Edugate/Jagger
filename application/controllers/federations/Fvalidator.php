@@ -250,7 +250,7 @@ class Fvalidator extends MY_Controller
                     log_message('debug', __METHOD__ . ' value for ' . $v . ' element: ' . $g);
                     if (!empty($g))
                     {
-                        $result['message'][$v] = htmlspecialchars($g);
+                        $result['message'][$v][] = htmlspecialchars($g);
                     }
                 }
             }
