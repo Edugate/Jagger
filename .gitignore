@@ -18,6 +18,7 @@ application/config/config.php
 application/config/config_rr.php
 application/config/database.php
 application/config/email.php
+application/config/memcached.php
 logos/*
 vendor/*
 !index.html
