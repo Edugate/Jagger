@@ -246,11 +246,14 @@ class Fvalidator extends MY_Controller
                 $o = $docxml->getElementsByTagName($v);
                 if ($o->length > 0)
                 {
-                    $g = trim($o->item(0)->nodeValue);
-                    log_message('debug', __METHOD__ . ' value for ' . $v . ' element: ' . $g);
-                    if (!empty($g))
-                    {
-                        $result['message'][$v][] = htmlspecialchars($g);
+                    $result['message'][$v] = array();
+                    for ($i = 0; $i < $o->length; $i++) {
+                        $g = trim($o->item($i)->nodeValue);
+                        log_message('debug', __METHOD__ . ' value for ' . $v . ' element: ' . $g);
+                        if (!empty($g))
+                        {
+                            $result['message'][$v][] = htmlspecialchars($g);
+                        }
                     }
                 }
             }
