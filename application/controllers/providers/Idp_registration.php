@@ -231,6 +231,7 @@ class Idp_registration extends MY_Controller {
                $this->email_sender->addToMailQueue(array('greqisterreq','gidpregisterreq'),null,$messageTemplate['subject'],$messageTemplate['body'],array(),FALSE);
             }
 
+            $sbj = 'IDP registration request';
             $body2 = 'Dear user'.PHP_EOL;
             $body2 .= 'You have received this mail as your email ('.$contactMail.') was provided during IdentityProvider Registration request on site '.base_url().PHP_EOL;
             $body2 .= 'You request has been sent for approval. It might take a while so please be patient';
