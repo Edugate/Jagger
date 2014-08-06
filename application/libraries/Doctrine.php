@@ -48,7 +48,7 @@ class Doctrine {
         $symfonyClassLoader->register();
 
         // Choose caching method based on application mode
-        if (ENVIRONMENT === 'production') {
+        if (ENVIRONMENT === 'production' && extension_loaded('apc') && ini_get('apc.enabled')) {
             $cache = new \Doctrine\Common\Cache\ApcCache;
             //	$memcache = new \Memcache();
             //	$memcache->connect('127.0.0.1', 11211);
