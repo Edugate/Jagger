@@ -330,7 +330,7 @@ class Attribute_requirement extends MY_Controller {
         } elseif ($attr && $status && $action == 'Modify') {
             log_message('debug', $this->log_prefix . 'for spid:' . $spid . ' and attr:' . $attr . ' submited for modification');
             $attr_req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('sp_id' => $spid, 'attribute_id' => $attr));
-            if(count($attr_req)>1)
+            if(count($attr_req)>0)
             {
                $tomodify = true;
                foreach($attr_req as $v)
