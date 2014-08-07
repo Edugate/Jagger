@@ -20,15 +20,9 @@
                 if ($loggedin)
                 {
                     echo '<li><a href="'.$base_url.'reports/awaiting"><sup id="qcounter" class="label alert tiny round" style="box-shadow: 0px 1px 5px #0a0a0a, inset 0px 1px 2px #bdbdbd;"></sup></a></li>';
+                    echo '<li class="show-for-small-only"><a href="'.$base_url.'auth/logout" class="button alert logoutbutton tiny" id="logout">'.lang('btnlogout').'</a></li>';
                     
                     ?>
-                    <li class="has-dropdown">
-                        <a href="#"><?php echo htmlentities($user); ?></a>
-                        <ul class="dropdown">
-                            <li><a href="<?php echo $base_url . 'manage/users/show/' . base64url_encode($user) . ''; ?>"><?php echo lang('myprofile'); ?></a></li>
-                            <li><a href="<?php echo $base_url . 'notifications/subscriber/mysubscriptions/' . base64url_encode($user) . ''; ?>"><?php echo lang('rrmynotifications'); ?></a></li>
-                        </ul>
-                    </li>
                     <?php
                 }
                 ?>
@@ -36,7 +30,6 @@
 
                     <?php
                     $k = MY_Controller::getLang();
-//                    echo '<a href="#" class="button full"  data-reveal-id="languageset">' . $langs['' . $k . '']['val'] . '</a>';
                     echo '<a href="#" class="button full"  data-reveal-id="languageset">' .  strtoupper($k)  . '</a>';
                     ?>
 
@@ -45,21 +38,35 @@
                 <?php
                 if ($loggedin)
                 {
-                    ?>
-                    <li class="has-form">
-                        <a href="<?php echo $base_url; ?>auth/logout" class="button alert logoutbutton" id="logout"><?php echo lang('btnlogout'); ?></a>
+                ?>
+                    <li class="has-dropdown">
+                        <a href="#">
+                            <?php 
+                           //echo htmlentities($user); 
+                            echo '<img src="'.base_url().'images/jicons/male80.svg" class="jicon" style="height: 20px" title="'.htmlentities($user).'"/>';
+                            ?></a>
+                        <ul class="dropdown">
+                            <li><a href="<?php echo $base_url . 'manage/users/show/' . base64url_encode($user) . ''; ?>"><?php echo lang('myprofile'); ?></a></li>
+                            <li><a href="<?php echo $base_url . 'notifications/subscriber/mysubscriptions/' . base64url_encode($user) . ''; ?>"><?php echo lang('rrmynotifications'); ?></a></li>
+                            <li class="show-for-medium-up"><a href="<?php echo $base_url; ?>auth/logout" class="alert" id="logout"><?php echo lang('btnlogout'); ?></a></li>
+                        </ul>
                     </li>
-                    <?php
+
+
+
+
+                <?php
                 }
                 else
                 {
-                    ?>
+                ?>
                     <li class="has-form">
                         <a href="<?php echo $base_url; ?>auth/" class="button alert logibutton"  data-reveal-id="loginform"><?php echo lang('toploginbtn'); ?></a>
                     </li>
 
                     <?php
                 }
+                
                 ?>
             </ul>
 
