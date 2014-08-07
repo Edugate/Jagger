@@ -1239,6 +1239,20 @@ $(function() {
         return false;
          
     });
+
+    $('select.nuseraccesstype').on('change',function(){
+       var access = $(this).find("option:selected");
+       var accessselected = access.val();
+       if(accessselected === 'fed')
+       {
+          $('div.passwordrow').hide();
+       }
+       else
+       {
+         $('div.passwordrow').show();
+
+       }
+    });
     $("button#idpadduiiprvurl").click(function() {
         var nf = $("span.idpuiiprvurladd option:selected").val();
         var nfv = $("span.idpuiiprvurladd option:selected").text();

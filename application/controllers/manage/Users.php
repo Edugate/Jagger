@@ -43,11 +43,15 @@ class Users extends MY_Controller {
         log_message('debug',  '(add user) validating form initialized');
         $this->form_validation->set_rules('username', ''.lang('rr_username').'', 'required|min_length[5]|max_length[128]|user_username_unique[username]|xss_clean');
         $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|valid_email|user_mail_unique[email]|xss_clean');
-        $this->form_validation->set_rules('password', 'Password', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
-        $this->form_validation->set_rules('passwordconf', 'Password Confirmation', 'required|min_length[5]|max_length[23]');
+        $this->form_validation->set_rules('access', 'Access type', 'required|xss_clean');
+        $accesstype = trim($this->input->post('access'));
+        if(!strcasecmp($accesstype,'fed')==0)
+        {
+           $this->form_validation->set_rules('password', 'Password', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
+           $this->form_validation->set_rules('passwordconf', 'Password Confirmation', 'required|min_length[5]|max_length[23]');
+        }
         $this->form_validation->set_rules('fname', 'First name', 'required|min_length[3]|max_length[255]|xss_clean');
         $this->form_validation->set_rules('sname', 'Surname', 'required|min_length[3]|max_length[255]|xss_clean');
-        $this->form_validation->set_rules('access', 'Access type', 'required|xss_clean');
         return $this->form_validation->run();
     }
 
@@ -72,11 +76,11 @@ class Users extends MY_Controller {
                 $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_uemail').'', 'email').'</div>';
                 $form .= '<div class="small-6 large-7 columns end">'.form_input('email',set_value('email')).'</div>';
                 $form .= '</div>';
-                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-12 columns passwordrow">';
                 $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_password').'', 'password').'</div>';
                 $form .= '<div class="small-6 large-7 columns end">'.form_password('password').'</div>';
                 $form .= '</div>';
-                $form .= '<div class="small-12 columns">';
+                $form .= '<div class="small-12 columns passwordrow">';
                 $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_passwordconf').'', 'passwordconf').'</div>';
                 $form .= '<div class="small-6 large-7 columns end">'.form_password('passwordconf').'</div>';
                 $form .= '</div>';
@@ -91,7 +95,7 @@ class Users extends MY_Controller {
                 $form .= '<div class="small-12 columns">';
                 $form .= '<div class="small-3 columns">'.jform_label(''.lang('rr_typeaccess').'', 'access').'</div>';
                 $access_type = array('' => ''.lang('rr_select').'', 'local' => ''.lang('rr_onlylocalauthn').'', 'fed' => ''.lang('rr_onlyfedauth').'', 'both' => ''.lang('rr_bothauth').'');
-                $form .= '<div class="small-6 large-7 columns end">'.form_dropdown('access', $access_type,set_value('access')).'</div>';
+                $form .= '<div class="small-6 large-7 columns end">'.form_dropdown('access', $access_type,set_value('access'),'class="nuseraccesstype"').'</div>';
                 $form .= '</div>';
                 $form .= '<div class="small-12 columns">';
                 $form .= '<div class="small-9 large-10 text-right columns"><button type="submit"  name="submit" value="submit" class="addbutton addicon">'.lang('adduser_btn').'</button></div>';
@@ -103,11 +107,18 @@ class Users extends MY_Controller {
                 $this->load->view('page', $data);
             } else {
                 $username = $this->input->post('username');
-                $password = $this->input->post('password');
                 $email = $this->input->post('email');
                 $fname = $this->input->post('fname');
                 $sname = $this->input->post('sname');
                 $access = $this->input->post('access');
+                if(!strcasecmp($access,'fed')==0)
+                {
+                    $password = $this->input->post('password');
+                }
+                else
+                {
+                    $password = str_generator();
+                }
                 $user = new models\User;
                 $user->setSalt();
                 $user->setUsername($username);
