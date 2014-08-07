@@ -41,7 +41,8 @@ class Users extends MY_Controller {
     }
     private function _add_submit_validate() {
         log_message('debug',  '(add user) validating form initialized');
-        $this->form_validation->set_rules('username', ''.lang('rr_username').'', 'required|min_length[5]|max_length[128]|user_username_unique[username]|xss_clean');
+        $usernameMinLength = $this->config->item('username_min_length') ?: 5;
+        $this->form_validation->set_rules('username', ''.lang('rr_username').'', 'required|min_length['.$usernameMinLength.']|max_length[128]|user_username_unique[username]|xss_clean');
         $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|valid_email|user_mail_unique[email]|xss_clean');
         $this->form_validation->set_rules('access', 'Access type', 'required|xss_clean');
         $accesstype = trim($this->input->post('access'));
