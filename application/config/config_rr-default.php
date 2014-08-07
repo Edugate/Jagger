@@ -70,6 +70,10 @@ $config['autoregister_federated'] = false;
  * Member has read access to most pages
  */
 $config['register_defaultrole'] = 'Guest';
+/**
+ * Defines the minimum allowed length of a username
+ */
+$config['username_min_length'] = 5;
 /** 
  * make sure that all Shib_required are mapped
  * 
