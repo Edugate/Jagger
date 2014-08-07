@@ -378,7 +378,8 @@ class Users extends MY_Controller {
 
     private function _remove_submit_validate() {
         log_message('debug', '(remove user) validating form initialized');
-        $this->form_validation->set_rules('username', 'Username', 'required|min_length[5]|max_length[128]|user_username_exists[username]');
+        $usernameMinLength = $this->config->item('username_min_length') ?: 5;
+        $this->form_validation->set_rules('username', 'Username', 'required|min_length['.$usernameMinLength.']|max_length[128]|user_username_exists[username]');
         return $this->form_validation->run();
     }
     
