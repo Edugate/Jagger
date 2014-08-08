@@ -717,7 +717,7 @@ class Form_element
             $row .= '<div class="small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="contactrm button tiny alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
             //  $row .= '</ol>' . form_fieldset_close();
             $result[] = '';
-            $result[] = $row;
+            $result[] = form_fieldset(lang('rr_contact')).'<div>'.$row.'</div>'.form_fieldset_close();
             $result[] = '';
             if ($r)
             {
@@ -728,7 +728,7 @@ class Form_element
         {
             foreach ($ses['contact'] as $k => $v)
             {
-                $n = '<fieldset class="newcontact"><legend>' . lang('rr_newcontact') . '</legend><div>';
+                $n = '<fieldset class="newcontact"><legend>' . lang('rr_contact') . '</legend><div>';
 
                 $n .= '<div class="small-12 columns">';
                 $n .= $this->_generateLabelSelect(lang('rr_contacttype'), 'f[contact][' . $k . '][type]', $formtypes, set_value('f[contact][' . $k . '][type]', $v['type']), '', FALSE);
@@ -745,12 +745,14 @@ class Form_element
                 $n .= '<div class="small-12 columns">';
                 $n .= $this->_generateLabelInput(lang('rr_contactemail'), 'f[contact][' . $k . '][email]', set_value('f[contact][' . $k . '][email]', $v['email']), '', FALSE);
                 $n .= '</div>';
-                $n .= '<div class="rmelbtn fromprevtoright small-12 columns"><div class="small-3 columns"></div><div class="small-6 large-7 columns inline right"><button type="button" class="btn contactrm button alert tiny" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
+                $n .= '<div class="rmelbtn fromprevtoright small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm button alert tiny inline right" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
                 $n .= '</div>' . form_fieldset_close();
+                $result[] ='';
                 $result[] = $n;
+                $result[] ='';
             }
         }
-        $n = '<button class="editbutton addicon smallerbtn button tiny" type="button" id="ncontactbtn" value="' . lang('btn_removecontact') . '|' . lang('rr_contacttype') . '|' . lang('rr_contactfirstname') . '|' . lang('rr_contactlastname') . '|' . lang('rr_contactemail') . '">' . lang('rr_addnewcoontact') . '</button>';
+        $n = '<button class="editbutton addicon smallerbtn button tiny" type="button" id="ncontactbtn" value="' . lang('btn_removecontact') . '|' . lang('rr_contacttype') . '|' . lang('rr_contactfirstname') . '|' . lang('rr_contactlastname') . '|' . lang('rr_contactemail') . '|'.lang('rr_contact').'">' . lang('rr_addnewcoontact') . '</button>';
         $result[] = '';
         $result[] = $n;
         $result[] = '';

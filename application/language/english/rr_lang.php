@@ -13,6 +13,7 @@ $lang['if']                         = 'if';
 $lang['write']                      = 'write';
 $lang['rrmatrix']                   = 'Matrix';
 $lang['rrshowmatrix']               = 'Show matrix';
+$lang['menu']                       = 'Menu';
 
 $lang['title_spreg']                = 'Service Provider Registration';
 $lang['title_idpreg']               = 'Identity Provider Registration';
@@ -500,7 +501,7 @@ $lang['rr_yesremoveit']             = 'Yes, remove it';
 $lang['rr_servicelocations']        = 'Service Locations'; 
 $lang['rr_contacts']                = 'Contacts';
 $lang['rr_contact']                 = 'Contact';
-$lang['rr_contacttype']             = 'Contact type';
+$lang['rr_contacttype']             = 'Type';
 $lang['rr_contactdetails']          = 'Contact details';
 $lang['rr_contactfirstname']        = 'Given name';
 $lang['rr_contactlastname']         = 'Surname';
