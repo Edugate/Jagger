@@ -952,7 +952,7 @@ class Detail extends MY_Controller {
 
             }
         }
-        $subresult[3] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
+        $subresult[4] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $tcerts = $ent->getCertificates();
@@ -1310,7 +1310,6 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
 
-        $d[++$i]['header'] = lang('rr_uii');
 
         if ($idppart)
         {
@@ -1522,7 +1521,7 @@ class Detail extends MY_Controller {
             }
         }
 
-        $subresult[16] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
+        $subresult[3] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $d[++$i]['header'] = lang('rr_management');
