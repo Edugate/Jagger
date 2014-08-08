@@ -1192,8 +1192,15 @@ class Detail extends MY_Controller {
         {
              foreach ($contacts as $c)
              {
-                $d[++$i]['name'] = $contactsTypeToTranslate[''.strtolower($c->getType()).''];
-                $d[$i]['value'] = $c->getFullName() . " " . safe_mailto($c->getEmail());
+                $d[++$i]['header'] = lang('rr_contact');
+                $d[++$i]['name'] = lang('type');
+                $d[$i]['value'] = $contactsTypeToTranslate[''.strtolower($c->getType()).''];
+                $d[++$i]['name'] = lang('rr_contactfirstname');
+                $d[$i]['value'] = $c->getGivenname();
+                $d[++$i]['name'] = lang('rr_contactlastname');
+                $d[$i]['value'] = $c->getSurname();
+                $d[++$i]['name'] = lang('rr_contactemail');
+                $d[$i]['value'] = $c->getEmail();
              }
         }
         else
