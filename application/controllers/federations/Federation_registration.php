@@ -38,11 +38,12 @@ class Federation_registration extends MY_Controller
         $this->title = lang('rr_federation_regform_title');
         $this->load->library('approval');
         $this->load->library('zacl');
+        MY_Controller::$menuactive = 'reg';
     }
 
     function index()
     {
-        
+                
         $access = $this->zacl->check_acl('federation','read','','');
         if($access)
         {

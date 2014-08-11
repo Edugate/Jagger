@@ -42,6 +42,7 @@ class Idp_list extends MY_Controller {
 
     function show($limit=null)
     {
+        MY_Controller::$menuactive = 'idps';
         $this->title = lang('title_idplist');
         $this->load->helper('iconhelp');
         $lockicon =  '<span class="lbl lbl-locked">'.lang('rr_locked').'</span>';

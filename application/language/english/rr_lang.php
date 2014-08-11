@@ -87,6 +87,7 @@ $lang['btnparsemeta']               = 'Parse metadata';
 $lang['btnaddinlang']               = 'Add in new language';
 $lang['regpol_language'] =            'Language';
 
+$lang['rr_administration'] =        'Administration';
 $lang['advancedmode']              = 'Advanced mode';
 $lang['btnlogout']                 = 'Sign out';
 $lang['rr_search']                 = 'Search';

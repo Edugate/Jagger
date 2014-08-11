@@ -25,6 +25,7 @@ class Fvalidatoredit extends MY_Controller {
         parent::__construct();
         $this->load->helper('form');
         $this->load->library('form_validation');
+        MY_Controller::$menuactive = 'fed';
     }
 
     /**

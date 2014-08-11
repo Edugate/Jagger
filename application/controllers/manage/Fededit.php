@@ -35,6 +35,7 @@ class Fededit extends MY_Controller {
         $this->load->library('zacl');
         $this->title = lang('title_fededit');
         $this->fedid =null;
+        MY_Controller::$menuactive = 'fed';
     }
 
     private function _submit_validate()

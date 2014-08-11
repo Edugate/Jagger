@@ -71,18 +71,50 @@
             </ul>
 
             <!-- Left Nav Section -->
+
+            <?php
+               $activemenu = MY_Controller::$menuactive;
+               $factive = '';
+               $idpsactive = '';
+               $spsactive = '';
+               $adminsactive = '';
+               $regactive = '';
+               if($activemenu ==='fed')
+               {
+                   $factive = 'active';
+               }
+               elseif($activemenu === 'idps')
+               {
+                   $idpsactive ='active';
+               }
+               elseif($activemenu === 'sps')
+               {
+                   $spsactive = 'active';
+               }
+               elseif($activemenu === 'admins')
+               {
+                  $adminsactive = 'active';
+               }
+               elseif($activemenu === 'reg')
+               {
+                  $regactive = 'active';
+               }
+
+
+               $divider = '<li class="divider"></li>';
+            ?>
             <ul class="left">
                 <?php
                 if ($loggedin)
                 {
+                    echo '<li class="'.$factive.'"><a href="'.$base_url.'federations/manage">'.lang('federations').'</a></li>';
+                    echo $divider;
+                    echo '<li class="'.$idpsactive.'"><a href="'.$base_url.'providers/idp_list/show">'.lang('identityproviders').'</a></li>';
+                    echo $divider;
+                    echo '<li class="'.$spsactive.'"><a href="'.$base_url.'providers/sp_list/show">'.lang('serviceproviders').'</a></li>';
+                    echo $divider;
+                    echo '<li class="'.$regactive.' has-dropdown">';
                     ?>
-                    <li><a href="<?php echo $base_url; ?>federations/manage"><?php echo lang('federations'); ?></a></li>
-                    <li class="divider"></li>
-                    <li><a href="<?php echo $base_url; ?>providers/idp_list/show"><?php echo lang('identityproviders'); ?></a></li>
-                    <li class="divider"></li>
-                    <li><a href="<?php echo $base_url; ?>providers/sp_list/show"><?php echo lang('serviceproviders'); ?></a></li>
-                    <li class="divider"></li>
-                    <li class="has-dropdown">
                         <a href="<?php echo $base_url; ?>"><?php echo lang('register'); ?></a>
                         <ul class="dropdown">
                             <li><a href="<?php echo $base_url; ?>providers/idp_registration"><?php echo lang('identityprovider'); ?></a></li>
@@ -98,7 +130,7 @@
                         </ul>
                     </li>
                     <li class="divider"></li>
-                    <li class="has-dropdown"><a href="<?php echo $base_url; ?>"><?php echo lang('general'); ?></a>
+                    <li class="has-dropdown"><a href="<?php echo $base_url; ?>"><?php echo lang('rr_administration'); ?></a>
                         <ul class="dropdown">
                             <?php
                             if ($isAdministrator)

@@ -35,7 +35,7 @@ class Manage extends MY_Controller
          * @todo add check loggedin
          */
         $this->tmp_providers = new models\Providers;
-        MY_Controller::$menuactive = 'f';
+        MY_Controller::$menuactive = 'fed';
     }
 
     function index()

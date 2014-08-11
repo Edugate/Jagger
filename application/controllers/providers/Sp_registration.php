@@ -35,6 +35,7 @@ class Sp_registration extends MY_Controller
 
     public function index()
     {
+        MY_Controller::$menuactive = 'reg';
         $data['titlepage'] = lang('rr_sp_register_title');
         if ($this->_submit_validate() === TRUE) {
 

@@ -31,6 +31,7 @@ class Fedcategory extends MY_Controller {
         $this->load->library('form_element');
         $this->load->library('zacl');
         $this->title = lang('title_fedcategory');
+        MY_Controller::$menuactive = 'fed';
     }
 
     private function _submit_validate($id=null)

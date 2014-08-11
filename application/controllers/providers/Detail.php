@@ -207,11 +207,13 @@ class Detail extends MY_Controller {
 
         if ($type === 'idp')
         {
+            MY_Controller::$menuactive = 'idps';
             $idppart = TRUE;
             $data['presubtitle'] = lang('identityprovider');
         }
         elseif ($type === 'sp')
         {
+            MY_Controller::$menuactive = 'sps';
             $sppart = TRUE;
             $data['presubtitle'] = lang('serviceprovider');
         }
