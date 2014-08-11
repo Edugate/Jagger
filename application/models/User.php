@@ -488,6 +488,16 @@ class User {
         return $fullname;
     }
 
+    public function getGivenname()
+    {
+       return $this->givenname;
+    }
+
+    public function getSurname()
+    {
+        return $this->surname;
+    }
+
     public function getEmail()
     {
         return $this->email;

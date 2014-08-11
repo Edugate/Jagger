@@ -873,6 +873,8 @@ class Entityedit extends MY_Controller
             $data['loggeduser'] = array(
                 'username' => '' . $currentusername . '',
                 'fullname' => '' . $u->getFullname() . '',
+                'fname' => '' . $u->getGivenname().'',
+                'lname' => '' . $u->getSurname() .'', 
                 'email' => '' . $u->getEmail() . '',
             );
         }
