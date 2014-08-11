@@ -27,6 +27,7 @@ class Reports extends MY_Controller {
     {
         parent::__construct();
         $this->load->library('j_auth');
+         MY_Controller::$menuactive = 'admins';
     }
 
     public function  index(){

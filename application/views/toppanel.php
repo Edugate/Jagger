@@ -130,7 +130,9 @@
                         </ul>
                     </li>
                     <li class="divider"></li>
-                    <li class="has-dropdown"><a href="<?php echo $base_url; ?>"><?php echo lang('rr_administration'); ?></a>
+                    <?php
+                    echo '<li class="'.$adminsactive.' has-dropdown"><a href="'.$base_url.'">'.lang('rr_administration').'</a>';
+                    ?>
                         <ul class="dropdown">
                             <?php
                             if ($isAdministrator)
