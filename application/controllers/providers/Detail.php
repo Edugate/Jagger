@@ -594,26 +594,33 @@ class Detail extends MY_Controller {
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
         $gearman_enabled = $this->config->item('gearman');
 
-        if (!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
+        $circlemetaFeature = $this->config->item('featdisable');
+        $circleEnabled = !(is_array($circlemetaFeature) && isset($circlemetaFeature['circlemeta']) && $circlemetaFeature['circlemeta'] === TRUE);
+      
+        if($circleEnabled)
         {
-            $d[++$i]['name'] = lang('rr_circleoftrust');
-            $d[$i]['value'] = lang('disableexternalcirclemeta');
-            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-            $d[$i]['value'] = lang('disableexternalcirclemeta');
-        }
-        else
-        {
-            $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-            $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-            $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','');
 
-            $d[++$i]['name'] = lang('rr_circleoftrust');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"');
-            $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            if (!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
+            {
+               $d[++$i]['name'] = lang('rr_circleoftrust');
+               $d[$i]['value'] = lang('disableexternalcirclemeta');
+               $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+               $d[$i]['value'] = lang('disableexternalcirclemeta');
+            }
+            else
+            {
+               $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+               $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+               $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
+               $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','');
+
+               $d[++$i]['name'] = lang('rr_circleoftrust');
+               $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"');
+               $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+               $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . '</span><span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+           }
         }
-        if ($is_local && $has_write_access && !empty($gearman_enabled))
+        if ($is_local && $has_write_access && !empty($gearman_enabled) && $circleEnabled)
         {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
             $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button tiny">' . lang('btn_signmetadata') . '</a>';
