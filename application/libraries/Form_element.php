@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,8 +19,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Form_element
-{
+class Form_element {
 
     protected $ci;
     protected $em;
@@ -41,8 +41,7 @@ class Form_element
         if ($isAdmin)
         {
             $disallowedparts = array();
-        }
-        else
+        } else
         {
             $disallowedparts = $this->ci->config->item('entpartschangesdisallowed');
             if (empty($disallowedparts) || !is_array($disallowedparts))
@@ -65,13 +64,11 @@ class Form_element
             $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', '' . lang('rr_geolocation') . ' (' . lang('identityprovider') . ')');
             $l[] = anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('identityprovider') . ')');
             $l[] = anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('serviceprovider') . ')');
-        }
-        elseif ($t === 'IDP')
+        } elseif ($t === 'IDP')
         {
             $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', '' . lang('rr_geolocation') . '');
             $l[] = anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . '');
-        }
-        else
+        } else
         {
             $l[] = anchor($base . 'geolocation/show/' . $id . '/sp', '' . lang('rr_geolocation') . '');
             $l[] = anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . '');
@@ -130,24 +127,24 @@ class Form_element
         if ($f_regauthority != $ent->getRegistrationAuthority())
         {
             $regauthority_notice = 'notice';
-        }
-        else
+        } else
         {
             $regauthority_notice = '';
         }
         if ($f_regdate != $origregdate)
         {
             $regdate_notice = 'notice';
-        }
-        else
+        } else
         {
             $regdate_notice = '';
         }
         $result = array();
 
+
+        $tmprows = '';
         // providername group 
         $result[] = '';
-        $result[] = '<div class="langgroup">' . lang('e_orgname') . '</div>';
+        $tmprows .= '<fieldset><legend>' . lang('e_orgname') . '</legend>';
         /**
          * start lname
          */
@@ -176,13 +173,12 @@ class Form_element
                 {
                     $lnamenotice = 'notice';
                 }
-            }
-            else
+            } else
             {
                 $lnamenotice = 'notice';
             }
 
-            $result[] = $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, '' . $lnamenotice . '');
+            $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, '' . $lnamenotice . '') . '</div>';
             unset($origlname['' . $key . '']);
             unset($lnamelangs['' . $key . '']);
             unset($btnlangs['' . $key . '']);
@@ -201,15 +197,17 @@ class Form_element
                 {
                     $lnamenotice = 'notice';
                 }
-                //$result[] = form_label( $lnamelangs['' . $key . ''] , 'f[lname][' . $key . ']') . form_input(
 
-                $result[] = $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, $lnamenotice);
+                $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, $lnamenotice) . '</div>';
                 unset($lnamelangs['' . $key . '']);
                 unset($btnlangs['' . $key . '']);
             }
         }
 
-        $result[] = $this->_generateLangAddButton('lnameadd', 'lnamelangcode', $btnlangs, 'addlname', '' . lang('e_orgname') . '');
+        $tmprows .= '<div class="small-12 columns">' . $this->_generateLangAddButton('lnameadd', 'lnamelangcode', $btnlangs, 'addlname', '' . lang('e_orgname') . '') . '</div>';
+
+        $tmprows .= '</fieldset>';
+        $result[] = $tmprows;
 
         $result[] = '';
         /**
@@ -219,7 +217,9 @@ class Form_element
         /**
          * start ldisplayname
          */
-        $result[] = '<div class="langgroup">' . lang('e_orgdisplayname') . '</div>';
+        $tmprows = '';
+        $tmprows .= '<fieldset><legend>' . lang('e_orgdisplayname') . '</legend>';
+        // $result[] = '<div class="langgroup">' . lang('e_orgdisplayname') . '</div>';
         $origldisplayname = $ent->getMergedLocalDisplayName();
         $sldisplayname = array();
         $ldisplaynamelangs = languagesCodes();
@@ -243,15 +243,14 @@ class Form_element
                 {
                     $ldisplaynamenotice = 'notice';
                 }
-            }
-            else
+            } else
             {
                 $ldisplaynamenotice = 'notice';
             }
             if (isset($ldisplaynamelangs['' . $key . '']))
             {
 
-                $result[] = $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, $ldisplaynamenotice);
+                $tmprows .='<div class="small-12 columns">' . $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, $ldisplaynamenotice) . '</div>';
                 unset($origldisplayname['' . $key . '']);
                 unset($ldisplaynamelangs['' . $key . '']);
                 unset($btnlangs['' . $key . '']);
@@ -267,14 +266,17 @@ class Form_element
                 {
                     $ldisplaynamenotice = 'notice';
                 }
-                $result[] = $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, $ldisplaynamenotice);
+                $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, $ldisplaynamenotice) . '</div>';
                 unset($ldisplaynamelangs['' . $key . '']);
                 unset($btnlangs['' . $key . '']);
             }
         }
 
-        $result[] = $this->_generateLangAddButton('ldisplaynameadd', 'ldisplaynamelangcode', $btnlangs, 'addldisplayname', '' . lang('rr_displayname') . '');
+        $tmprows .= '<div class="small-12 columns">' . $this->_generateLangAddButton('ldisplaynameadd', 'ldisplaynamelangcode', $btnlangs, 'addldisplayname', '' . lang('rr_displayname') . '') . '</div>';
 
+
+        $tmprows .='</fieldset>';
+        $result[] = $tmprows;
         /**
          * end ldisplayname
          */
@@ -289,7 +291,8 @@ class Form_element
         /**
          * start lhelpdesk
          */
-        $result[] = '<div class="langgroup">' . lang('e_orgurl') . '</div>';
+        $tmprows = '';
+        $tmprows .= '<fieldset><legend>' . lang('e_orgurl') . '</legend>';
         $lhelpdesk = $ent->getHelpdeskUrlLocalized();
         $slhelpdesk = array();
         $origlhelpdesk = array();
@@ -317,12 +320,11 @@ class Form_element
                 {
                     $lhelpdesknotice = 'notice';
                 }
-            }
-            else
+            } else
             {
                 $lhelpdesknotice = 'notice';
             }
-            $result[] = $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, $lhelpdesknotice);
+            $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, $lhelpdesknotice) . '</div>';
             unset($origlhelpdesk['' . $key . '']);
             unset($lhelpdesklangs['' . $key . '']);
             unset($btnlangs['' . $key . '']);
@@ -337,12 +339,13 @@ class Form_element
                 {
                     $lhelpdesknotice = 'notice';
                 }
-                $result[] = $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, $lhelpdesknotice);
+                $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, $lhelpdesknotice) . '</div>';
                 unset($lhelpdesklangs['' . $key . '']);
                 unset($btnlangs['' . $key . '']);
             }
         }
-        $result[] = $this->_generateLangAddButton('lhelpdeskadd', 'lhelpdesklangcode', $btnlangs, 'addlhelpdesk', '' . lang('rr_helpdeskurl') . '');
+        $tmprows .= '<div class="small-12 columns">' . $this->_generateLangAddButton('lhelpdeskadd', 'lhelpdesklangcode', $btnlangs, 'addlhelpdesk', '' . lang('rr_helpdeskurl') . '') . '</div>';
+        $result[] = $tmprows;
         $result[] = '';
 
         if ($isAdmin && !empty($entid))
@@ -359,61 +362,6 @@ class Form_element
         }
 
         /**
-         * start regpolicy 
-         */
-        /**
-          $result[] = '';
-          $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
-          $regpolicies = $ent->getRegistrationPolicy();
-          $sregpolicies = array();
-          $origrepolicies = array();
-          $regpolicylangs = languagesCodes();
-          if ($sessform && array_key_exists('regpolicy', $ses) && is_array($ses['regpolicy']))
-          {
-          $sregpolicies = $ses['regpolicy'];
-          }
-          $origregpolicies = $regpolicies;
-          foreach ($sregpolicies as $key => $value)
-          {
-          $regpolicynotice = '';
-          $lvalue = set_value('f[regpolicy][' . $key . ']', $value);
-          if (array_key_exists($key, $origregpolicies))
-          {
-          if ($origregpolicies['' . $key . ''] != $value)
-          {
-          $regpolicynotice = 'notice';
-          }
-          }
-          else
-          {
-          $regpolicynotice = 'notice';
-          }
-          $result[] = $this->_generateLangInputWithRemove($regpolicylangs['' . $key . ''], 'f[regpolicy][' . $key . ']', 'regpolicy', $key, $lvalue, $regpolicynotice);
-          unset($origregpolicies['' . $key . '']);
-          unset($regpolicylangs['' . $key . '']);
-          }
-          if (!$sessform)
-          {
-          foreach ($origregpolicies as $key => $value)
-          {
-          $regpolicynotice = '';
-          $lvalue = set_value('f[regpolicy][' . $key . ']', $value);
-          if ($lvalue != $value)
-          {
-          $regpolicynotice = 'notice';
-          }
-          $result[] = $this->_generateLangInputWithRemove($regpolicylangs['' . $key . ''], 'f[regpolicy][' . $key . ']', 'regpolicy', $key, $lvalue, $regpolicynotice);
-          unset($regpolicylangs['' . $key . '']);
-          }
-          }
-          $result[] = $this->_generateLangAddButton('regpolicyadd', 'regpolicylangcode', MY_Controller::$langselect, 'addregpolicy', '' . lang('rr_regpolicy') . '');
-
-          $result[] = '';
-         */
-        /**
-         * end regpolicy
-         */
-        /**
          * new regpolicy start
          */
         $result[] = '';
@@ -421,8 +369,7 @@ class Form_element
         if (!empty($entid))
         {
             $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
-        }
-        else
+        } else
         {
             $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol', 'is_enabled' => TRUE));
         }
@@ -436,8 +383,7 @@ class Form_element
         if (count($entRegPolicies) == 0)
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
-        }
-        elseif (!$isAdmin && !empty($entid))
+        } elseif (!$isAdmin && !empty($entid))
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
@@ -452,8 +398,7 @@ class Form_element
                     $entRegPoliciesArray['' . $v . '']['sel'] = TRUE;
                 }
             }
-        }
-        else
+        } else
         {
             foreach ($assignedRegPolicies as $k => $v)
             {
@@ -470,16 +415,14 @@ class Form_element
             if (isset($v['sel']))
             {
                 $is = true;
-            }
-            else
+            } else
             {
                 $is = false;
             }
             if (empty($v['enabled']))
             {
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-            }
-            else
+            } else
             {
                 $lbl = '';
             }
@@ -564,8 +507,7 @@ class Form_element
                     $entCategoriesArray['' . $v . '']['sel'] = TRUE;
                 }
             }
-        }
-        else
+        } else
         {
             foreach ($assignedEntCategories as $k => $v)
             {
@@ -588,16 +530,14 @@ class Form_element
             if (isset($v['sel']))
             {
                 $is = true;
-            }
-            else
+            } else
             {
                 $is = false;
             }
             if (empty($v['enabled']))
             {
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-            }
-            else
+            } else
             {
                 $lbl = '<span class="label">' . lang('rr_enabled') . '</span>';
             }
@@ -647,13 +587,11 @@ class Form_element
                     $t2 = $ses['contact'][$tid]['fname'];
                     $t3 = $ses['contact'][$tid]['sname'];
                     $t4 = $ses['contact'][$tid]['email'];
-                }
-                else
+                } else
                 {
                     continue;
                 }
-            }
-            else
+            } else
             {
                 $t1 = $cnt->getType();
                 $t2 = $cnt->getGivenname();
@@ -717,7 +655,7 @@ class Form_element
             $row .= '<div class="small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="contactrm button tiny alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
             //  $row .= '</ol>' . form_fieldset_close();
             $result[] = '';
-            $result[] = form_fieldset(lang('rr_contact')).'<div>'.$row.'</div>'.form_fieldset_close();
+            $result[] = form_fieldset(lang('rr_contact')) . '<div>' . $row . '</div>' . form_fieldset_close();
             $result[] = '';
             if ($r)
             {
@@ -747,12 +685,12 @@ class Form_element
                 $n .= '</div>';
                 $n .= '<div class="rmelbtn fromprevtoright small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm button alert tiny inline right" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
                 $n .= '</div>' . form_fieldset_close();
-                $result[] ='';
+                $result[] = '';
                 $result[] = $n;
-                $result[] ='';
+                $result[] = '';
             }
         }
-        $n = '<button class="editbutton addicon smallerbtn button tiny" type="button" id="ncontactbtn" value="' . lang('btn_removecontact') . '|' . lang('rr_contacttype') . '|' . lang('rr_contactfirstname') . '|' . lang('rr_contactlastname') . '|' . lang('rr_contactemail') . '|'.lang('rr_contact').'">' . lang('rr_addnewcoontact') . '</button>';
+        $n = '<button class="editbutton addicon smallerbtn button tiny" type="button" id="ncontactbtn" value="' . lang('btn_removecontact') . '|' . lang('rr_contacttype') . '|' . lang('rr_contactfirstname') . '|' . lang('rr_contactlastname') . '|' . lang('rr_contactemail') . '|' . lang('rr_contact') . '">' . lang('rr_addnewcoontact') . '</button>';
         $result[] = '';
         $result[] = $n;
         $result[] = '';
@@ -790,8 +728,7 @@ class Form_element
                         $idpssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][idpsso]", 'idpsso', TRUE);
                     }
                 }
-            }
-            else
+            } else
             {
                 if (isset($origcerts['idpsso']))
                 {
@@ -819,8 +756,7 @@ class Form_element
                         $aacerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][aa]", 'aa', TRUE);
                     }
                 }
-            }
-            else
+            } else
             {
                 if (isset($origcerts['aa']))
                 {
@@ -851,8 +787,7 @@ class Form_element
                         $spssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][spsso]", 'spsso', TRUE);
                     }
                 }
-            }
-            else
+            } else
             {
                 if (isset($origcerts['spsso']))
                 {
@@ -874,7 +809,7 @@ class Form_element
 
     private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonname, $buttonvalue)
     {
-        $r = '<span class="' . $spanclass . '"><div class="small-3 columns">' . form_dropdown('' . $dropname . '', $langs, $this->defaultlangselect) . '</div><div class="small-5 large-2 columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div><div class="large-7 small-4 columns"></div></span>';
+        $r = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('' . $dropname . '', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div></span>';
         return $r;
     }
 
@@ -886,8 +821,7 @@ class Form_element
                     form_dropdown($name, $dropdowns, $value)
                     . '</div>';
             $result .='<div class="small-3 large-2 columns"><button type="button" class="inline left button tiny" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
-        }
-        else
+        } else
         {
             $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-8 large-7 columns inline ">' .
                     form_dropdown($name, $dropdowns, $value)
@@ -919,8 +853,7 @@ class Form_element
                             $arg
                     ) . '</div>';
             $result .='<div class="small-3 large-2 columns"><button type="button" class="inline left button tiny alert rmfield" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
-        }
-        else
+        } else
         {
             $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-8 large-7 columns">' . form_input(
                             $arg
@@ -1122,8 +1055,7 @@ class Form_element
             if (array_key_exists('static', $entsession))
             {
                 $svalue = $entsession['static'];
-            }
-            else
+            } else
             {
                 $svalue = $static_metadata;
             }
@@ -1131,13 +1063,11 @@ class Form_element
             if (array_key_exists('usestatic', $entsession) && $entsession['usestatic'] === 'accept')
             {
                 $susestatic = TRUE;
-            }
-            else
+            } else
             {
                 $susestatic = $is_static;
             }
-        }
-        else
+        } else
         {
             $susestatic = $is_static;
 
@@ -1176,12 +1106,10 @@ class Form_element
         {
             $idppart = TRUE;
             $sppart = TRUE;
-        }
-        elseif (strcasecmp($enttype, 'IDP') == 0)
+        } elseif (strcasecmp($enttype, 'IDP') == 0)
         {
             $idppart = TRUE;
-        }
-        else
+        } else
         {
             $sppart = TRUE;
         }
@@ -1208,8 +1136,7 @@ class Form_element
         if (in_array('entityid', $this->disallowedparts) && !empty($entid))
         {
             $addargs = array('readonly' => 'readonly');
-        }
-        elseif (!empty($entid))
+        } elseif (!empty($entid))
         {
             $class_ent .=' alertonchange ';
         }
@@ -1273,8 +1200,7 @@ class Form_element
                     if ($sessform && isset($ses['srv']['SingleSignOnService']['' . $tid . '']['url']))
                     {
                         $t1 = $ses['srv']['SingleSignOnService']['' . $tid . '']['url'];
-                    }
-                    else
+                    } else
                     {
                         $t1 = $v1->getUrl();
                     }
@@ -1296,8 +1222,7 @@ class Form_element
                     $sso[] = $row;
                     unset($ssotmpl[$v1->getBindingName()]);
                 }
-            }
-            elseif (isset($ses['srv']['SingleSignOnService']))
+            } elseif (isset($ses['srv']['SingleSignOnService']))
             {
                 foreach ($ses['srv']['SingleSignOnService'] as $k => $v)
                 {
@@ -1364,8 +1289,7 @@ class Form_element
                     if ($sessform && isset($ses['srv']['IDPSingleLogoutService']['' . $tid . '']['url']))
                     {
                         $t1 = $ses['srv']['IDPSingleLogoutService']['' . $tid . '']['url'];
-                    }
-                    else
+                    } else
                     {
                         $t1 = $v2->getUrl();
                     }
@@ -1382,8 +1306,7 @@ class Form_element
                     unset($slotmpl[array_search($v2->getBindingName(), $slotmpl)]);
                     $idpslo[] = $row;
                 }
-            }
-            elseif (isset($ses['srv']['IDPSingleLogoutService']))
+            } elseif (isset($ses['srv']['IDPSingleLogoutService']))
             {
 
                 foreach ($ses['srv']['IDPSingleLogoutService'] as $k => $v)
@@ -1488,8 +1411,7 @@ class Form_element
                     $r .= '</div>';
                     $acs[] = $r;
                 }
-            }
-            elseif ($sessform && isset($ses['srv']['IDPArtifactResolutionService']) && is_array($ses['srv']['IDPArtifactResolutionService']))
+            } elseif ($sessform && isset($ses['srv']['IDPArtifactResolutionService']) && is_array($ses['srv']['IDPArtifactResolutionService']))
             {
                 foreach ($ses['srv']['IDPArtifactResolutionService'] as $k4 => $v4)
                 {
@@ -1533,8 +1455,8 @@ class Form_element
             $newelement = '<div><button class="editbutton addicon small" type="button" id="nidpartifactbtn">' . lang('rr_addnewidpartifactres') . '</button></div>';
             $ACSPart .= $newelement . '';
             $result[] = '';
-            $result[] = '<div class="langgroup">' . lang('rr_srvartresends') . '</div>';
-            $result[] = $ACSPart;
+            //$result[] = '<div class="langgroup">' . lang('rr_srvartresends') . '</div>';
+            $result[] = '<fieldset><legend>'. lang('rr_srvartresends').'</legend>'.$ACSPart.'</fieldset>';
             $result[] = '';
 
             /**
@@ -1560,8 +1482,7 @@ class Form_element
                 {
                     $selected_options[$v] = $v;
                 }
-            }
-            else
+            } else
             {
                 foreach ($idpssoprotocols as $p)
                 {
@@ -1606,8 +1527,7 @@ class Form_element
                         $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $pv, 'checked' => TRUE);
                     }
                 }
-            }
-            else
+            } else
             {
                 foreach ($idpssonameids as $v)
                 {
@@ -1650,8 +1570,7 @@ class Form_element
             if ($sessform && isset($ses['scopes']['idpsso']))
             {
                 $sesscope['idpsso'] = $ses['scopes']['idpsso'];
-            }
-            else
+            } else
             {
                 $sesscope['idpsso'] = implode(',', $scopes['idpsso']);
             }
@@ -1665,8 +1584,7 @@ class Form_element
             if (in_array('scope', $this->disallowedparts))
             {
                 $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, $scopeidpssonotice, FALSE, array('readonly' => 'readonly'));
-            }
-            else
+            } else
             {
                 $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, $scopeidpssonotice, FALSE, NULL);
             }
@@ -1723,8 +1641,8 @@ class Form_element
             }
 
             $result[] = '';
-            $result[] = '<div class="langgroup">' . lang('atributeauthoritydescriptor') . '</div>';
-            $result[] = implode('', $aalo);
+            //$result[] = '<div class="langgroup">' . lang('atributeauthoritydescriptor') . '</div>';
+            $result[] = '<fieldset><legend>'.lang('atributeauthoritydescriptor').'</legend>'.implode('', $aalo).'</fieldset>';
             $result[] = '';
             /**
              * end AttributeAuthorityDescriptor Location
@@ -1742,8 +1660,7 @@ class Form_element
                 {
                     $selected_options[$v] = $v;
                 }
-            }
-            else
+            } else
             {
                 foreach ($aaprotocols as $p)
                 {
@@ -1789,8 +1706,7 @@ class Form_element
                         $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $pv, 'checked' => TRUE);
                     }
                 }
-            }
-            else
+            } else
             {
                 foreach ($idpaanameids as $v)
                 {
@@ -1831,8 +1747,7 @@ class Form_element
             if ($sessform && isset($ses['scopes']['aa']))
             {
                 $sesscope['aa'] = $ses['scopes']['aa'];
-            }
-            else
+            } else
             {
                 $sesscope['aa'] = implode(',', $scopes['aa']);
             }
@@ -1845,8 +1760,7 @@ class Form_element
             if (in_array('scope', $this->disallowedparts))
             {
                 $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, $scopeaanotice, FALSE, array('readonly' => 'readonly'));
-            }
-            else
+            } else
             {
                 $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, $scopeaanotice, FALSE, NULL);
             }
@@ -1905,8 +1819,7 @@ class Form_element
                         {
                             $ischecked = TRUE;
                         }
-                    }
-                    else
+                    } else
                     {
                         if ($v3->getDefault())
                         {
@@ -2273,8 +2186,7 @@ class Form_element
                 {
                     $selected_options[$v] = $v;
                 }
-            }
-            else
+            } else
             {
                 foreach ($spssoprotocols as $p)
                 {
@@ -2321,8 +2233,7 @@ class Form_element
                         $chp[] = array('name' => 'f[nameids][spsso][]', 'id' => 'f[nameids][spsso][]', 'value' => $pv, 'checked' => TRUE);
                     }
                 }
-            }
-            else
+            } else
             {
                 foreach ($spssonameids as $v)
                 {
@@ -2422,7 +2333,7 @@ class Form_element
             {
                 $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
             }
-            $result[] = '<div class="langgroup">' . lang('e_idpservicename') . '</div>';
+            //$result[] = '<div class="langgroup">' . lang('e_idpservicename') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['idp']['mdui']['DisplayName']))
@@ -2437,14 +2348,12 @@ class Form_element
                         {
                             log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                             $langtxt = $lang;
-                        }
-                        else
+                        } else
                         {
                             $langtxt = $langs['' . $lang . ''];
                             unset($langsdisplaynames['' . $lang . '']);
                         }
-                    }
-                    else
+                    } else
                     {
                         log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
                         continue;
@@ -2476,8 +2385,7 @@ class Form_element
                     {
                         log_message('error', 'Language code ' . $key . ' is not allowed for row (extendmetadaa)');
                         $langtxt = $key;
-                    }
-                    else
+                    } else
                     {
                         $langtxt = $langs['' . $key . ''];
                     }
@@ -2492,7 +2400,7 @@ class Form_element
             $r.= $this->_generateLangAddButton('idpuiidisplayadd', 'idpuiidisplaylangcode', MY_Controller::$langselect, 'idpadduiidisplay', 'idpadduiidisplay');
             $r .='</div>';
             //  $r .= form_fieldset_close();
-            $result[] = $r;
+            $result[] = '<fieldset><legend>' . lang('e_idpservicename') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
 
             /**
@@ -2503,7 +2411,7 @@ class Form_element
              */
             $result[] = '';
             //$r = form_fieldset('' . lang('e_idpserviceinfourl') . '');
-            $result[] = '<div class="langgroup">' . lang('e_idpserviceinfourl') . '</div>';
+            //$result[] = '<div class="langgroup">' . lang('e_idpserviceinfourl') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['idp']['mdui']['InformationURL']))
@@ -2518,14 +2426,12 @@ class Form_element
                         {
                             log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                             $langtxt = $lang;
-                        }
-                        else
+                        } else
                         {
                             $langtxt = $langs['' . $lang . ''];
                             unset($langsdisplaynames['' . $lang . '']);
                         }
-                    }
-                    else
+                    } else
                     {
                         log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
                         continue;
@@ -2556,8 +2462,7 @@ class Form_element
                     {
                         log_message('error', 'Language code ' . $key . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                         $langtxt = $key;
-                    }
-                    else
+                    } else
                     {
                         $langtxt = $langs['' . $key . ''];
                     }
@@ -2570,8 +2475,7 @@ class Form_element
             $r .= '<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('idpuiihelpdeskadd', 'idpuiihelpdesklangcode', MY_Controller::$langselect, 'idpadduiihelpdesk', 'idpadduiihelpdesk');
             $r .= '</div>';
-            //   $r .= form_fieldset_close();
-            $result[] = $r;
+            $result[] = '<fieldset><legend>' . lang('e_idpserviceinfourl') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
 
             /**
@@ -2583,7 +2487,7 @@ class Form_element
             $result[] = '';
             //$r = form_fieldset('' . lang('e_idpservicedesc') . '');
             $r = '';
-            $result[] = '<div class="langgroup">' . lang('e_idpservicedesc') . '</div>';
+            //$result[] = '<div class="langgroup">' . lang('e_idpservicedesc') . '</div>';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['idp']['mdui']['Description']))
             {
@@ -2597,14 +2501,12 @@ class Form_element
                         {
                             log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                             $langtxt = $lang;
-                        }
-                        else
+                        } else
                         {
                             $langtxt = $langs['' . $lang . ''];
                             unset($langsdisplaynames['' . $lang . '']);
                         }
-                    }
-                    else
+                    } else
                     {
                         log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
                         continue;
@@ -2641,7 +2543,7 @@ class Form_element
             $r .= $this->_generateLangAddButton('idpuiidescadd', 'idpuiidesclangcode', MY_Controller::$langselect, 'idpadduiidesc', '' . lang('rr_description') . '');
             $r .='</div>';
             //$r .= form_fieldset_close();
-            $result[] = $r;
+            $result[] = '<fieldset><legend>' . lang('e_idpservicedesc') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
             /**
              * end description 
@@ -2651,7 +2553,7 @@ class Form_element
              */
             $result[] = '';
             $r = '';
-            $result[] = '<div class="langgroup">' . lang('e_idpserviceprivacyurl') . ' </div>';
+            //$result[] = '<div class="langgroup">' . lang('e_idpserviceprivacyurl') . ' </div>';
             $origs = array();
             $sorig = array();
             $langsdisplaynames = $langs;
@@ -2678,13 +2580,11 @@ class Form_element
                     if ($origs['' . $k3 . '']['url'] === $v3['url'])
                     {
                         $sorig['' . $k3 . '']['notice'] = '';
-                    }
-                    else
+                    } else
                     {
                         $sorig['' . $k3 . '']['notice'] = 'notice';
                     }
-                }
-                else
+                } else
                 {
                     $sorig['' . $k3 . '']['notice'] = 'notice';
                 }
@@ -2700,7 +2600,7 @@ class Form_element
             $r .= $this->_generateLangAddButton('addlprivacyurlidpsso localized', 'langcode', MY_Controller::$langselect, 'addlprivacyurlidpsso', 'addlprivacyurlidpsso');
             $r .= '</div>';
 
-            $result[] = $r;
+            $result[] = '<fieldset><legend>' . lang('e_idpserviceprivacyurl') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
 
             /**
@@ -2708,300 +2608,289 @@ class Form_element
              */
         }
         if ($type != 'IDP')
-        { {
+        {
 
 
-                /**
-                 * start display
-                 */
-                $result[] = '';
-                if (strcasecmp($type, 'BOTH') == 0)
+            /**
+             * start display
+             */
+            $result[] = '';
+            if (strcasecmp($type, 'BOTH') == 0)
+            {
+                $result[] = '<div class="section label small-12">' . lang('serviceprovider') . '</div>';
+            }
+            //$result[] = '<div class="langgroup">' . lang('e_spservicename') . '</div>';
+            $r = '';
+            $langsdisplaynames = $langs;
+            if (!$sessform && isset($ext['sp']['mdui']['DisplayName']))
+            {
+                foreach ($ext['sp']['mdui']['DisplayName'] as $v1)
                 {
-                    $result[] = '<div class="section label small-12">' . lang('serviceprovider') . '</div>';
-                }
-                $result[] = '<div class="langgroup">' . lang('e_spservicename') . '</div>';
-                $r = '';
-                $langsdisplaynames = $langs;
-                if (!$sessform && isset($ext['sp']['mdui']['DisplayName']))
-                {
-                    foreach ($ext['sp']['mdui']['DisplayName'] as $v1)
+                    $l = $v1->getAttributes();
+                    if (isset($l['xml:lang']))
                     {
-                        $l = $v1->getAttributes();
-                        if (isset($l['xml:lang']))
+                        $lang = $l['xml:lang'];
+                        if (!array_key_exists($lang, $langs))
                         {
-                            $lang = $l['xml:lang'];
-                            if (!array_key_exists($lang, $langs))
-                            {
-                                log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                                $langtxt = $lang;
-                            }
-                            else
-                            {
-                                $langtxt = $langs['' . $lang . ''];
-                                unset($langsdisplaynames['' . $lang . '']);
-                            }
-                        }
-                        else
+                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $lang;
+                        } else
                         {
-                            log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
-                            continue;
+                            $langtxt = $langs['' . $lang . ''];
+                            unset($langsdisplaynames['' . $lang . '']);
                         }
-                        $origval = $v1->getEvalue();
-                        $nval = $origval;
-                        if ($sessform && isset($ses['uii']['spsso']['displayname']['' . $lang . '']))
-                        {
-                            $nval = $ses['uii']['spsso']['displayname']['' . $lang . ''];
-                            unset($ses['uii']['spsso']['displayname']['' . $lang . '']);
-                        }
-                        $currval = set_value('f[uii][spsso][displayname][' . $lang . ']', $nval);
-                        $displaynotice = '';
-                        if ($currval != $origval)
-                        {
-                            $displaynotice = 'notice';
-                        }
-                        $r .= '<div class="small-12 columns">';
-                        $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][displayname][' . $lang . ']', 'uiispssodisplayname', $lang, $currval, $displaynotice);
-                        $r .= '</div>';
-                    }
-                }
-                if ($sessform && isset($ses['uii']['spsso']['displayname']) && is_array($ses['uii']['spsso']['displayname']))
-                {
-                    foreach ($ses['uii']['spsso']['displayname'] as $key => $value)
+                    } else
                     {
-                        $r .= '<div class="small-12 columns">';
-                        if (isset($langs['' . $key . '']))
-                        {
-                            $langtxt = $langs['' . $key . ''];
-                        }
-                        else
-                        {
-                            $langtxt = $key;
-                        }
-                        $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][displayname][' . $key . ']', 'uiispssodisplayname', $key, set_value('f[uii][spsso][displayname][' . $key . ']', $value), 'notice');
-                        $r .= '</div>';
-                        unset($langsdisplaynames['' . $key . '']);
+                        log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
+                        continue;
                     }
+                    $origval = $v1->getEvalue();
+                    $nval = $origval;
+                    if ($sessform && isset($ses['uii']['spsso']['displayname']['' . $lang . '']))
+                    {
+                        $nval = $ses['uii']['spsso']['displayname']['' . $lang . ''];
+                        unset($ses['uii']['spsso']['displayname']['' . $lang . '']);
+                    }
+                    $currval = set_value('f[uii][spsso][displayname][' . $lang . ']', $nval);
+                    $displaynotice = '';
+                    if ($currval != $origval)
+                    {
+                        $displaynotice = 'notice';
+                    }
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][displayname][' . $lang . ']', 'uiispssodisplayname', $lang, $currval, $displaynotice);
+                    $r .= '</div>';
                 }
+            }
+            if ($sessform && isset($ses['uii']['spsso']['displayname']) && is_array($ses['uii']['spsso']['displayname']))
+            {
+                foreach ($ses['uii']['spsso']['displayname'] as $key => $value)
+                {
+                    $r .= '<div class="small-12 columns">';
+                    if (isset($langs['' . $key . '']))
+                    {
+                        $langtxt = $langs['' . $key . ''];
+                    } else
+                    {
+                        $langtxt = $key;
+                    }
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][displayname][' . $key . ']', 'uiispssodisplayname', $key, set_value('f[uii][spsso][displayname][' . $key . ']', $value), 'notice');
+                    $r .= '</div>';
+                    unset($langsdisplaynames['' . $key . '']);
+                }
+            }
 
-                $r .= '<div class="small-12 columns">';
-                $r .= $this->_generateLangAddButton('spuiidisplayadd', 'spuiidisplaylangcode', MY_Controller::$langselect, 'spadduiidisplay', 'spadduiidisplay');
-                $r .= '</div>';
-                $result[] = $r;
-                $result[] = '';
+            $r .= '<div class="small-12 columns">';
+            $r .= $this->_generateLangAddButton('spuiidisplayadd', 'spuiidisplaylangcode', MY_Controller::$langselect, 'spadduiidisplay', 'spadduiidisplay');
+            $r .= '</div>';
+            $result[] = '<fieldset><legend>'.lang('e_spservicename').'</legend>'.$r.'</fieldset>';
+            $result[] = '';
 
-                /**
-                 * end display
-                 */
-                /**
-                 * start helpdesk 
-                 */
-                $result[] = '';
-                //$r = form_fieldset('' . lang('e_spserviceinfourl') . '');
-                $result[] = '<div class="langgroup">' . lang('e_spserviceinfourl') . '</div>';
-                $r = '';
-                $langsdisplaynames = $langs;
-                if (!$sessform && isset($ext['sp']['mdui']['InformationURL']))
+            /**
+             * end display
+             */
+            /**
+             * start helpdesk 
+             */
+            $result[] = '';
+            //$r = form_fieldset('' . lang('e_spserviceinfourl') . '');
+            //$result[] = '<div class="langgroup">' . lang('e_spserviceinfourl') . '</div>';
+            $r = '';
+            $langsdisplaynames = $langs;
+            if (!$sessform && isset($ext['sp']['mdui']['InformationURL']))
+            {
+                foreach ($ext['sp']['mdui']['InformationURL'] as $v1)
                 {
-                    foreach ($ext['sp']['mdui']['InformationURL'] as $v1)
+                    $l = $v1->getAttributes();
+                    if (isset($l['xml:lang']))
                     {
-                        $l = $v1->getAttributes();
-                        if (isset($l['xml:lang']))
+                        $lang = $l['xml:lang'];
+                        if (!array_key_exists($lang, $langs))
                         {
-                            $lang = $l['xml:lang'];
-                            if (!array_key_exists($lang, $langs))
-                            {
-                                log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                                $langtxt = $lang;
-                            }
-                            else
-                            {
-                                $langtxt = $langs['' . $lang . ''];
-                                unset($langsdisplaynames['' . $lang . '']);
-                            }
-                        }
-                        else
+                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $lang;
+                        } else
                         {
-                            log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
-                            continue;
+                            $langtxt = $langs['' . $lang . ''];
+                            unset($langsdisplaynames['' . $lang . '']);
                         }
-                        $origval = $v1->getEvalue();
-                        $nval = $origval;
-                        if ($sessform && isset($ses['uii']['spsso']['helpdesk']['' . $lang . '']))
-                        {
-                            $nval = $ses['uii']['spsso']['helpdesk']['' . $lang . ''];
-                            unset($ses['uii']['spsso']['helpdesk']['' . $lang . '']);
-                        }
-                        $currval = set_value('f[uii][spsso][helpdesk][' . $lang . ']', $nval);
-                        $displaynotice = '';
-                        if ($currval != $origval)
-                        {
-                            $displaynotice = 'notice';
-                        }
-                        $r .= '<div class="small-12 columns">';
-                        $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][helpdesk][' . $lang . ']', 'uiispssohelpdesk', $lang, $currval, $displaynotice);
-                        $r .= '</div>';
+                    } else
+                    {
+                        log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
+                        continue;
                     }
+                    $origval = $v1->getEvalue();
+                    $nval = $origval;
+                    if ($sessform && isset($ses['uii']['spsso']['helpdesk']['' . $lang . '']))
+                    {
+                        $nval = $ses['uii']['spsso']['helpdesk']['' . $lang . ''];
+                        unset($ses['uii']['spsso']['helpdesk']['' . $lang . '']);
+                    }
+                    $currval = set_value('f[uii][spsso][helpdesk][' . $lang . ']', $nval);
+                    $displaynotice = '';
+                    if ($currval != $origval)
+                    {
+                        $displaynotice = 'notice';
+                    }
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][helpdesk][' . $lang . ']', 'uiispssohelpdesk', $lang, $currval, $displaynotice);
+                    $r .= '</div>';
                 }
-                if ($sessform && isset($ses['uii']['spsso']['helpdesk']) && is_array($ses['uii']['spsso']['helpdesk']))
+            }
+            if ($sessform && isset($ses['uii']['spsso']['helpdesk']) && is_array($ses['uii']['spsso']['helpdesk']))
+            {
+                foreach ($ses['uii']['spsso']['helpdesk'] as $key => $value)
                 {
-                    foreach ($ses['uii']['spsso']['helpdesk'] as $key => $value)
+                    $r .= '<div class="small-12 columns">';
+                    if (isset($langs['' . $key . '']))
                     {
-                        $r .= '<div class="small-12 columns">';
-                        if (isset($langs['' . $key . '']))
-                        {
-                            $langtxt = $langs['' . $key . ''];
-                        }
-                        else
-                        {
-                            $langtxt = $key;
-                        }
-                        $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][helpdesk][' . $key . ']', 'uiispssohelpdesk', $key, set_value('f[uii][spsso][helpdesk][' . $key . ']', $value), 'notice');
-                        $r .= '</div>';
-                        unset($langsdisplaynames['' . $key . '']);
+                        $langtxt = $langs['' . $key . ''];
+                    } else
+                    {
+                        $langtxt = $key;
                     }
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][helpdesk][' . $key . ']', 'uiispssohelpdesk', $key, set_value('f[uii][spsso][helpdesk][' . $key . ']', $value), 'notice');
+                    $r .= '</div>';
+                    unset($langsdisplaynames['' . $key . '']);
                 }
-                $r .='<div class="small-12 columns">';
-                $r .= $this->_generateLangAddButton('spuiihelpdeskadd', 'spuiihelpdesklangcode', MY_Controller::$langselect, 'spadduiihelpdesk', 'spadduiihelpdesk');
-                $r .='</div>';
+            }
+            $r .='<div class="small-12 columns">';
+            $r .= $this->_generateLangAddButton('spuiihelpdeskadd', 'spuiihelpdesklangcode', MY_Controller::$langselect, 'spadduiihelpdesk', 'spadduiihelpdesk');
+            $r .='</div>';
 
-                //$r .= form_fieldset_close();
-                $result[] = $r;
-                $result[] = '';
-                /**
-                 * end helpdesk
-                 */
-                /**
-                 * start description
-                 */
-                $result[] = '';
-                //$r = form_fieldset('' . lang('e_spservicedesc') . '');
-                $result[] = '<div class="langgroup">' . lang('e_spservicedesc') . '</div>';
-                $r = '';
-                $langsdisplaynames = $langs;
-                if (!$sessform && isset($ext['sp']['mdui']['Description']))
+            //$r .= form_fieldset_close();
+            $result[] = '<fieldset><legend>'. lang('e_spserviceinfourl') .'</legend>'.$r.'</fieldset>';
+            $result[] = '';
+            /**
+             * end helpdesk
+             */
+            /**
+             * start description
+             */
+            $result[] = '';
+            //$r = form_fieldset('' . lang('e_spservicedesc') . '');
+            //$result[] = '<div class="langgroup">' . lang('e_spservicedesc') . '</div>';
+            $r = '';
+            $langsdisplaynames = $langs;
+            if (!$sessform && isset($ext['sp']['mdui']['Description']))
+            {
+                foreach ($ext['sp']['mdui']['Description'] as $v1)
                 {
-                    foreach ($ext['sp']['mdui']['Description'] as $v1)
+                    $l = $v1->getAttributes();
+                    if (isset($l['xml:lang']))
                     {
-                        $l = $v1->getAttributes();
-                        if (isset($l['xml:lang']))
+                        $lang = $l['xml:lang'];
+                        if (!array_key_exists($lang, $langs))
                         {
-                            $lang = $l['xml:lang'];
-                            if (!array_key_exists($lang, $langs))
-                            {
-                                log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                                $langtxt = $lang;
-                            }
-                            else
-                            {
-                                $langtxt = $langs['' . $lang . ''];
-                                unset($langsdisplaynames['' . $lang . '']);
-                            }
-                        }
-                        else
+                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $lang;
+                        } else
                         {
-                            log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
-                            continue;
+                            $langtxt = $langs['' . $lang . ''];
+                            unset($langsdisplaynames['' . $lang . '']);
                         }
-                        $origval = $v1->getEvalue();
-                        $nval = $origval;
-                        if ($sessform && isset($ses['uii']['spsso']['desc']['' . $lang . '']))
-                        {
-                            $nval = $ses['uii']['spsso']['desc']['' . $lang . ''];
-                            unset($ses['uii']['spsso']['desc']['' . $lang . '']);
-                        }
-                        $currval = set_value('f[uii][spsso][desc][' . $lang . ']', $nval);
-                        $displaynotice = '';
-                        if ($currval != $origval)
-                        {
-                            $displaynotice = 'notice';
-                        }
-                        $r .= '<div class="small-12 columns">';
-                        $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][spsso][desc][' . $lang . ']', 'uiispssodesc', $lang, $currval, $displaynotice);
-                        $r .= '</div>';
+                    } else
+                    {
+                        log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
+                        continue;
                     }
+                    $origval = $v1->getEvalue();
+                    $nval = $origval;
+                    if ($sessform && isset($ses['uii']['spsso']['desc']['' . $lang . '']))
+                    {
+                        $nval = $ses['uii']['spsso']['desc']['' . $lang . ''];
+                        unset($ses['uii']['spsso']['desc']['' . $lang . '']);
+                    }
+                    $currval = set_value('f[uii][spsso][desc][' . $lang . ']', $nval);
+                    $displaynotice = '';
+                    if ($currval != $origval)
+                    {
+                        $displaynotice = 'notice';
+                    }
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][spsso][desc][' . $lang . ']', 'uiispssodesc', $lang, $currval, $displaynotice);
+                    $r .= '</div>';
                 }
-                if ($sessform && isset($ses['uii']['spsso']['desc']) && is_array($ses['uii']['spsso']['desc']))
+            }
+            if ($sessform && isset($ses['uii']['spsso']['desc']) && is_array($ses['uii']['spsso']['desc']))
+            {
+                foreach ($ses['uii']['spsso']['desc'] as $key => $value)
                 {
-                    foreach ($ses['uii']['spsso']['desc'] as $key => $value)
-                    {
-                        $r .= '<div class="small-12 columns">';
-                        $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][spsso][desc][' . $key . ']', 'uiispssodesc', $key, set_value('f[uii][spsso][desc][' . $key . ']', $value), 'notice');
-                        $r .= '</div>';
-                        unset($langsdisplaynames['' . $key . '']);
-                    }
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][spsso][desc][' . $key . ']', 'uiispssodesc', $key, set_value('f[uii][spsso][desc][' . $key . ']', $value), 'notice');
+                    $r .= '</div>';
+                    unset($langsdisplaynames['' . $key . '']);
                 }
-                $r .= '<div class="small-12 columns">';
-                $r .= $this->_generateLangAddButton('spuiidescadd', 'spuiidesclangcode', MY_Controller::$langselect, 'spadduiidesc', 'spadduiidesc');
-                $r .= '</div>';
-                //$r .= form_fieldset_close();
-                $result[] = $r;
-                $result[] = '';
-                /**
-                 * end description 
-                 */
-                /**
-                 * start privacy url
-                 */
-                $result[] = '';
-                $r = '';
-                $result[] = '<div class="langgroup">' . lang('e_spserviceprivacyurl') . ' </div>';
-                $origs = array();
-                $sorig = array();
-                $langsdisplaynames = $langs;
-                if (!$sessform && isset($ext['sp']['mdui']['PrivacyStatementURL']))
+            }
+            $r .= '<div class="small-12 columns">';
+            $r .= $this->_generateLangAddButton('spuiidescadd', 'spuiidesclangcode', MY_Controller::$langselect, 'spadduiidesc', 'spadduiidesc');
+            $r .= '</div>';
+            //$r .= form_fieldset_close();
+            $result[] = '<fieldset><legend>'. lang('e_spservicedesc').'</legend>'.$r.'</fieldset>';
+            $result[] = '';
+            /**
+             * end description 
+             */
+            /**
+             * start privacy url
+             */
+            $result[] = '';
+            $r = '';
+            //$result[] = '<div class="langgroup">' . lang('e_spserviceprivacyurl') . ' </div>';
+            $origs = array();
+            $sorig = array();
+            $langsdisplaynames = $langs;
+            if (!$sessform && isset($ext['sp']['mdui']['PrivacyStatementURL']))
+            {
+                foreach ($ext['sp']['mdui']['PrivacyStatementURL'] as $value)
                 {
-                    foreach ($ext['sp']['mdui']['PrivacyStatementURL'] as $value)
-                    {
-                        $l = $value->getAttributes();
-                        $origs['' . $l['xml:lang'] . ''] = array('url' => $value->getEvalue());
-                    }
-                    $sorig = $origs;
+                    $l = $value->getAttributes();
+                    $origs['' . $l['xml:lang'] . ''] = array('url' => $value->getEvalue());
                 }
-                if ($sessform && isset($ses['prvurl']['spsso']))
+                $sorig = $origs;
+            }
+            if ($sessform && isset($ses['prvurl']['spsso']))
+            {
+                foreach ($ses['prvurl']['spsso'] as $k2 => $v2)
                 {
-                    foreach ($ses['prvurl']['spsso'] as $k2 => $v2)
-                    {
-                        $sorig['' . $k2 . ''] = array('url' => $v2);
-                    }
+                    $sorig['' . $k2 . ''] = array('url' => $v2);
                 }
-                foreach ($sorig as $k3 => $v3)
+            }
+            foreach ($sorig as $k3 => $v3)
+            {
+                if (array_key_exists($k3, $origs))
                 {
-                    if (array_key_exists($k3, $origs))
+                    if ($origs['' . $k3 . '']['url'] === $v3['url'])
                     {
-                        if ($origs['' . $k3 . '']['url'] === $v3['url'])
-                        {
-                            $sorig['' . $k3 . '']['notice'] = '';
-                        }
-                        else
-                        {
-                            $sorig['' . $k3 . '']['notice'] = 'notice';
-                        }
-                    }
-                    else
+                        $sorig['' . $k3 . '']['notice'] = '';
+                    } else
                     {
                         $sorig['' . $k3 . '']['notice'] = 'notice';
                     }
-                }
-                foreach ($sorig as $k4 => $v4)
+                } else
                 {
-                    $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangInputWithRemove($langsdisplaynames['' . $k4 . ''], 'f[prvurl][spsso][' . $k4 . ']', 'prvurlspsso', $k4, $v4['url'], '');
-                    $r .= '</div>';
+                    $sorig['' . $k3 . '']['notice'] = 'notice';
                 }
-                $idpssolangcodes = array_diff_key($langsdisplaynames, $sorig);
-                $r .= '<div class="small-12 columns">';
-
-
-                $r .= $this->_generateLangAddButton('addlprivacyurlspsso localized', 'langcode', MY_Controller::$langselect, 'addlprivacyurlspsso', 'addlprivacyurlspsso');
-                $r .= '</div>';
-
-                $result[] = $r;
-                $result[] = '';
-
-                /**
-                 * end privacy url
-                 */
             }
+            foreach ($sorig as $k4 => $v4)
+            {
+                $r .= '<div class="small-12 columns">';
+                $r .= $this->_generateLangInputWithRemove($langsdisplaynames['' . $k4 . ''], 'f[prvurl][spsso][' . $k4 . ']', 'prvurlspsso', $k4, $v4['url'], '');
+                $r .= '</div>';
+            }
+            $idpssolangcodes = array_diff_key($langsdisplaynames, $sorig);
+            $r .= '<div class="small-12 columns">';
+
+
+            $r .= $this->_generateLangAddButton('addlprivacyurlspsso localized', 'langcode', MY_Controller::$langselect, 'addlprivacyurlspsso', 'addlprivacyurlspsso');
+            $r .= '</div>';
+
+            $result[] = '<fieldset><legend>'. lang('e_spserviceprivacyurl').'</legend>'.$r.'</fieldset>';
+            $result[] = '';
+
+            /**
+             * end privacy url
+             */
         }
         return $result;
     }
@@ -3033,8 +2922,7 @@ class Form_element
                 }
                 $result[$key->getName()] = $key->getName() . " " . $value;
             }
-        }
-        else
+        } else
         {
             $result[''] = lang('rr_nofedfound');
             ;
@@ -3201,7 +3089,8 @@ class Form_element
         $tmp_providers = new models\Providers();
         $excluded = $idp->getExcarps();
         $members = $tmp_providers->getCircleMembersSP($idp);
-        if (is_array($excluded)) $rows = array();
+        if (is_array($excluded))
+            $rows = array();
         foreach ($excluded as $v)
         {
             $members->remove($v);
@@ -3250,8 +3139,7 @@ class Form_element
             {
                 $f = form_checkbox('attr[' . $value['attrid'] . ']', '1', true);
                 $result_top .= '<tr><td>' . $value['name'] . '</td><td>' . $f . '</td></tr>';
-            }
-            else
+            } else
             {
                 $f = form_checkbox('attr[' . $value['attrid'] . ']', '1', false);
                 $result_bottom .='<tr><td>' . $value['name'] . '</td><td>' . $f . '</td></tr>';
@@ -3290,8 +3178,7 @@ class Form_element
         {
             $result .= '<button name="submit" type="submit" value="cancel" class="resetbutton reseticon">' . lang('rr_cancel') . '</button>';
             $result .= '<button name="submit" type="submit" value="create" class="savebutton saveicon">' . lang('rr_create') . '</button>';
-        }
-        else
+        } else
         {
             $result .= '<button name="submit" type="submit" value="delete" class="resetbutton reseticon">' . lang('rr_remove') . '</button>';
             $result .= '<button name="submit" type="submit" value="modify" class="savebutton saveicon">' . lang('rr_modify') . '</button>';
