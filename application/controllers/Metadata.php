@@ -337,6 +337,14 @@ class Metadata extends MY_Controller
 
     public function circle($entityId = NULL, $m = NULL)
     {
+        $circlemetaFeature = $this->config->item('featdisable');
+        $circleEnabled = !(is_array($circlemetaFeature) && isset($circlemetaFeature['circlemeta']) && $circlemetaFeature['circlemeta'] === TRUE);
+        if(!$circleEnabled)
+        {
+            show_error('Circle of trust  metadata : Feature is disabled',404);
+
+        }
+
         if(empty($entityId) || empty($m) || strcmp($m,'metadata.xml')!=0)
         {
             show_error('Request not allowed', 403);
