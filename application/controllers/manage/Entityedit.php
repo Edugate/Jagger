@@ -201,11 +201,11 @@ class Entityedit extends MY_Controller
                     {
                         if (is_numeric($k))
                         {
-                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert_nokeysize');
+                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|verify_cert_nokeysize');
                         }
                         else
                         {
-                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|xss_clean|verify_cert');
+                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|verify_cert');
                         }
                         $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'trim|required|xss_clean');
                     }
@@ -216,11 +216,11 @@ class Entityedit extends MY_Controller
                     {
                         if (is_numeric($k))
                         {
-                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert_nokeysize');
+                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|verify_cert_nokeysize');
                         }
                         else
                         {
-                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
+                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|verify_cert');
                         }
                         $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'trim|required|xss_clean');
                     }
@@ -231,11 +231,11 @@ class Entityedit extends MY_Controller
                     {
                         if (is_numeric($k))
                         {
-                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert_nokeysize');
+                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|verify_cert_nokeysize');
                         }
                         else
                         {
-                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|xss_clean|verify_cert');
+                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|verify_cert');
                         }
                         $this->form_validation->set_rules('f[crt][aa][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'trim|required|xss_clean');
                     }
