@@ -70,7 +70,7 @@ if($fedenabled)
    echo '<div class="'.$column_class.' columns">';
    echo '<h4 class="loginheader small-12 columns end text-center">'.$fedloginbtn.'</h4>';
    echo '<br /><br />';
-   echo '<div class="small-12 columns end text-center"><a href="'.$shib_url.'" class="button small">'.lang('loginsubmit').'</a></div>';
+   echo '<div class="small-12 columns end text-center"><a href="'.$shib_url.'" id="fedlogin" class="button small">'.lang('loginsubmit').'</a></div>';
    
    echo '</div>';
 

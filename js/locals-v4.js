@@ -1786,9 +1786,9 @@ $(document).ready(function() {
     img2.src = baseurl + 'images/ajax-loader.gif';
 
 // Launch MODAL BOX if the Login Link is clicked
-    $("#login_link").click(function() {
-        $('#login_form').modal();
-    });
+//    $("#login_link").click(function() {
+//        $('#login_form').modal();
+//    });
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal(
 {
@@ -1881,6 +1881,7 @@ Height: '500px',
         });
         return false;
     });
+
 
 // When the form is submitted
     $("#status form").submit(function() {
@@ -3095,6 +3096,10 @@ $("div#loginform form").submit(function(){
      //e.preventDefault;
      var link = $("div#loginform form").attr('action');
      var str = $(this).serializeArray();
+     var browsertime = new Date();
+     var browsertimezone = -browsertime.getTimezoneOffset();
+     str.push({name: 'browsertimeoffset', value: '' + browsertimezone + ''});
+
      $.ajax({
         type: "POST",
         cache: false,
