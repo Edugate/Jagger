@@ -34,25 +34,26 @@ class Users extends MY_Controller {
     }
 
     private function _modify_submit_validate() {
-        $this->form_validation->set_rules('oldpassword', 'Old password', 'min_length[5]|max_length[50]');
-        $this->form_validation->set_rules('password', 'Password', 'required|min_length[5]|max_length[50]|matches[passwordconf]');
-        $this->form_validation->set_rules('passwordconf', 'Password Confirmation', 'required|min_length[5]|max_length[50]');
+        $this->form_validation->set_rules('oldpassword', ''.lang('rr_oldpassword').'', 'min_length[5]|max_length[50]');
+        $this->form_validation->set_rules('password', ''.lang('rr_password').'', 'required|min_length[5]|max_length[50]|matches[passwordconf]');
+        $this->form_validation->set_rules('passwordconf', ''.lang('rr_passwordconf').'', 'required|min_length[5]|max_length[50]');
         return $this->form_validation->run();
     }
     private function _add_submit_validate() {
         log_message('debug',  '(add user) validating form initialized');
         $usernameMinLength = $this->config->item('username_min_length') ?: 5;
         $this->form_validation->set_rules('username', ''.lang('rr_username').'', 'required|min_length['.$usernameMinLength.']|max_length[128]|user_username_unique[username]|xss_clean');
-        $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|valid_email|user_mail_unique[email]|xss_clean');
+        //$this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|valid_email|user_mail_unique[email]|xss_clean');
+        $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|valid_email');
         $this->form_validation->set_rules('access', 'Access type', 'required|xss_clean');
         $accesstype = trim($this->input->post('access'));
         if(!strcasecmp($accesstype,'fed')==0)
         {
-           $this->form_validation->set_rules('password', 'Password', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
-           $this->form_validation->set_rules('passwordconf', 'Password Confirmation', 'required|min_length[5]|max_length[23]');
+           $this->form_validation->set_rules('password', ''.lang('rr_password').'', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
+           $this->form_validation->set_rules('passwordconf', ''.lang('rr_passwordconf').'', 'required|min_length[5]|max_length[23]');
         }
-        $this->form_validation->set_rules('fname', 'First name', 'required|min_length[3]|max_length[255]|xss_clean');
-        $this->form_validation->set_rules('sname', 'Surname', 'required|min_length[3]|max_length[255]|xss_clean');
+        $this->form_validation->set_rules('fname', ''.lang('rr_fname').'', 'required|min_length[3]|max_length[255]|xss_clean');
+        $this->form_validation->set_rules('sname', ''.lang('rr_surname').'', 'required|min_length[3]|max_length[255]|xss_clean');
         return $this->form_validation->run();
     }
 
@@ -518,18 +519,18 @@ class Users extends MY_Controller {
               
             }
             $form .= '<div class="small-12 columns">';
-            $form .= '<div class="small-3 columns">'.jform_label('New password', 'password').'</div>';
+            $form .= '<div class="small-3 columns">'.jform_label(lang('rr_npassword'), 'password').'</div>';
             $form .= '<div class="small-6 large-6 columns end">'.form_password('password').'</div>';
             $form .= '</div>';
             $form .= '<div class="small-12 columns">';
-            $form .= '<div class="small-3 columns">'.jform_label('New password confirmation', 'passwordconf').'</div>';
+            $form .= '<div class="small-3 columns">'.jform_label(lang('rr_npasswordconf'), 'passwordconf').'</div>';
             $form .= '<div class="small-6 large-6 columns end">'.form_password('passwordconf').'</div>';
             $form .="</div>";
             $form .= '<div class="buttons small-12 columns text-right">';
             $form .= '<div class="small-9 columns "><button type="submit"  name="submit", value="submit" class="button savebutton saveicon">'.lang('rr_changepass').'</button></div>';
             $form .='</div>';
             $form .= form_close();
-            $data['message'] = $form;
+            $data['form'] = $form;
             $data['titlepage'] = lang('rr_changepass').': '. htmlentities($user->getUsername());
             $data['content_view'] = 'manage/password_change_view';
             $this->load->view('page', $data);

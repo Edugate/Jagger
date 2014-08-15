@@ -3,9 +3,13 @@
     if (!empty($errors_v)) {
         echo '<div data-alert class="small-12 medium-10 large-8 small-centered columns alert-box alert">';
         echo $errors_v;
-        echo "</div>";
+        echo '</div>';
     }
 if(!empty($message))
 {
-   echo '<p><div data-alert class="small-12 medium-10 large-8 small-centered columns alert-box success">'.$message.'</div></p>';
+   echo '<div data-alert class="small-12 medium-10 large-8 small-centered columns alert-box success">'.$message.'</div>';
+}
+if(!empty($form))
+{
+   echo $form;
 }

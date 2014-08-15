@@ -107,13 +107,13 @@ class Auth extends MY_Controller {
            echo lang('err_userexist');
            return;
         }
-        $checkuser = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
-        if(!empty($checkuser))
-        { 
-           set_status_header(403);
-           echo lang('err_mailexist');
-           return;
-        }
+//        $checkuser = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
+//        if(!empty($checkuser))
+//        { 
+//           set_status_header(403);
+//           echo lang('err_mailexist');
+//           return;
+//        }
         $inqueue = $this->em->getRepository("models\Queue")->findOneBy(array('name'=>$username,'action'=>'Create'));
         if(!empty($inqueue))
         {
@@ -486,12 +486,12 @@ class Auth extends MY_Controller {
 
         
      
-        $checkIfExist = $this->em->getRepository("models\User")->findOneBy(array('email' => $mail));
-        if (!empty($checkIfExist))
-        {
-            log_message('warning', 'Cannot register new user, provided mail already exists in db');
-            return false;
-        }
+   //     $checkIfExist = $this->em->getRepository("models\User")->findOneBy(array('email' => $mail));
+   //     if (!empty($checkIfExist))
+   //     {
+   //         log_message('warning', 'Cannot register new user, provided mail already exists in db');
+   //         return false;
+   //     }
 
         $user = new models\User;
         $this->load->helper('random_generator');
@@ -623,11 +623,8 @@ class Auth extends MY_Controller {
             if (!$can_autoregister)
             {
                 log_message('error', 'User authorization failed: ' . $user_var . ' doesnt exist in RR');
-                //show_error(' ' . htmlentities($user_var) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $user_var . '">' . lang('rrhere') . '</a>', 403);
               
                 $fedidentity = array('fedusername'=>$user_var,'fedfname'=>$this->get_shib_fname(),'fedsname'=>$this->get_shib_sname(),'fedemail'=>$this->get_shib_mail());
-              //  $this->session->sess_destroy();
-              //  $this->session->sess_regenerate(TRUE);
                 $this->session->set_userdata(array('fedidentity'=>$fedidentity));
                 $data['content_view'] = 'feduserregister_view';
                 log_message('debug','GKS SESS:'.serialize($this->session->all_userdata()));
