@@ -783,7 +783,8 @@ class Entityedit extends MY_Controller
         if ($this->input->post('discard'))
         {
             $this->_discard_draft($id);
-            redirect(base_url() . 'manage/entityedit/show/' . $id, 'location');
+            //redirect(base_url() . 'manage/entityedit/show/' . $id, 'location');
+            redirect(base_url() . 'providers/detail/show/' . $id, 'location');
         }
         elseif ($this->_submit_validate($id) === TRUE)
         {
