@@ -2,6 +2,20 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
+
+if(file_exists(APPPATH."../vendor/autoload.php"))
+{
+   require_once APPPATH."../vendor/autoload.php";
+   define('NOTVENDOR',FALSE);
+}
+else
+{
+
+   define('NOTVENDOR',TRUE);
+
+}
+
+
 use Doctrine\ORM\EntityManager,
     Doctrine\ORM\Configuration;
 
@@ -32,11 +46,15 @@ class Doctrine {
         // load database configuration and custom config from CodeIgniter
         require APPPATH . 'config/database.php';
 
+        if(NOTVENDOR)
+        {
         // Set up class loading.
-        require_once APPPATH . 'libraries/Doctrine/Common/ClassLoader.php';
-
-        $doctrineClassLoader = new \Doctrine\Common\ClassLoader('Doctrine', APPPATH . 'libraries');
-        $doctrineClassLoader->register();
+           require_once APPPATH . 'libraries/Doctrine/Common/ClassLoader.php';
+           $doctrineClassLoader = new \Doctrine\Common\ClassLoader('Doctrine', APPPATH . 'libraries');
+           $doctrineClassLoader->register();
+           $symfonyClassLoader = new \Doctrine\Common\ClassLoader('Symfony', APPPATH . 'libraries/Doctrine');
+           $symfonyClassLoader->register();
+        }
 
         $entitiesClassLoader = new \Doctrine\Common\ClassLoader('models', rtrim(APPPATH, '/'));
         $entitiesClassLoader->register();
@@ -44,33 +62,13 @@ class Doctrine {
         $proxiesClassLoader = new \Doctrine\Common\ClassLoader('Proxies', APPPATH . 'models');
         $proxiesClassLoader->register();
 
-        $symfonyClassLoader = new \Doctrine\Common\ClassLoader('Symfony', APPPATH . 'libraries/Doctrine');
-        $symfonyClassLoader->register();
 
         // Choose caching method based on application mode
         if (ENVIRONMENT === 'production' && extension_loaded('apc') && ini_get('apc.enabled')) {
             $cache = new \Doctrine\Common\Cache\ApcCache;
-            //	$memcache = new \Memcache();
-            //	$memcache->connect('127.0.0.1', 11211);
-            //	$cache = new \Doctrine\Common\Cache\MemcacheCache();
-            //	$cache->setMemcache($memcache);
-            //	$cache->save('cache_id', 'my_data');
         } else {
             $cache = new \Doctrine\Common\Cache\ArrayCache;
         }
-        /**
-         * @todo fix memcache
-         */
-        //	$memcache = new Memcache();
-        //	$memcache->connect('127.0.0.1',11211);
-        //	$cache = new \Doctrine\Common\Cache\MemcacheCache();
-        //	$cache->setMemcache($memcache);
-        //	$cache->save('cache_id','my_data');
-
-        /**
-         * end test
-         */
-        // Set some configuration options
         $config = new Configuration;
 
         // Metadata driver
