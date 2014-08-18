@@ -570,6 +570,38 @@ class Entityedit extends MY_Controller
         {
             $data['prvurl']['idpsso'] = array();
         }
+        if (isset($data['uii']['spsso']['desc']))
+        {
+            $data['uii']['spsso']['desc'] = array_filter($data['uii']['spsso']['desc']);
+        }
+        else
+        {
+            $data['uii']['spsso']['desc'] = array();
+        }
+        if (isset($data['uii']['spsso']['helpdesk']))
+        {
+            $data['uii']['spsso']['helpdesk'] = array_filter($data['uii']['spsso']['helpdesk']);
+        }
+        else
+        {
+            $data['uii']['spsso']['helpdesk'] = array();
+        }
+        if (isset($data['uii']['spsso']['displayname']))
+        {
+            $data['uii']['spsso']['displayname'] = array_filter($data['uii']['spsso']['displayname']);
+        }
+        else
+        {
+            $data['uii']['spsso']['displayname'] = array();
+        }
+        if (isset($data['prvurl']['idpsso']))
+        {
+            $data['prvurl']['idpsso'] = array_filter($data['prvurl']['idpsso']);
+        }
+        else
+        {
+            $data['prvurl']['idpsso'] = array();
+        }
         if (isset($data['regpol']))
         {
             $data['regpol'] = array_filter($data['regpol']);

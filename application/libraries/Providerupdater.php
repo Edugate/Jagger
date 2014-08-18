@@ -1043,7 +1043,6 @@ class Providerupdater {
                     elseif ($srvtype === 'RequestInitiator')
                     {
                         log_message('debug', 'GG:RequestInitiator type found');
-                        log_message('debug', 'DUPA:RequestInitiator: '.serialize($srvs['' . $srvtype . '']));
                         if ($type === 'IDP')
                         {
                             log_message('debug', 'GG:RequestInitiator entity recognized as IDP removin service');
@@ -1671,6 +1670,22 @@ class Providerupdater {
             {
                 if (isset($ch['uii']['spsso']['' . $elkey . '']) && is_array($ch['uii']['spsso']['' . $elkey . '']))
                 {
+                    $doFilter = array(''.$elvalue.'');
+                    $collection = $ent->getExtendMetadata()->filter(
+                               function($entry) use ($doFilter) {
+                        return ($entry->getType() === 'sp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
+                    });
+                    foreach($collection as $c)
+                    {
+                         $attrs = $c->getAttributes();
+                         $lang = $attrs['xml:lang'];
+                         if(!isset($ch['uii']['spsso']['' . $elkey . ''][''.$lang.'']))
+                         {
+                             $ent->getExtendMetadata()->removeElement($c);
+                             $this->em->remove($c);
+                             
+                         }
+                    }
                     foreach ($ch['uii']['spsso']['' . $elkey . ''] as $key3 => $value3)
                     {
 

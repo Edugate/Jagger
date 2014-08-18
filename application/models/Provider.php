@@ -2344,7 +2344,7 @@ class Provider {
         /**
          * leave only elements matching criteria
          */
-        $extarray = array();
+        $extarray = array('DisplayName'=>array(),'Description'=>array(),'Logo'=>array(),'InformationURL'=>array(),'PrivacyStatementURL'=>array());
         foreach ($ext as $v)
         {
             if ((strcasecmp($v->getType(), $type) == 0) && ($v->getNamespace() === 'mdui'))
@@ -2388,6 +2388,22 @@ class Provider {
                         $e->appendChild($dnode);
                     }
                 }
+                if ($en_displayname !== TRUE)
+                {
+                   $gd = $this->getDisplayName();
+                   if (empty($gd))
+                   {
+                     $gd = $this->getName();
+                   }
+                   if (empty($gd))
+                   {
+                     $gd = $this->getEntityId();
+                   }
+                   $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:DisplayName');
+                   $dnode->setAttribute('xml:lang', 'en');
+                   $dnode->appendChild($e->ownerDocument->createTextNode($gd));
+                   $e->appendChild($dnode);
+              }
             }
             elseif ($key === 'Description')
             {
@@ -2420,6 +2436,17 @@ class Provider {
                         $e->appendChild($dnode);
                     }
                 }
+                if ($en_privacyurl !== TRUE)
+                {
+                   $gd = $this->getPrivacyUrl();
+                   if (!empty($gd))
+                   {
+                       $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:PrivacyStatementURL');
+                       $dnode->setAttribute('xml:lang', 'en');
+                       $dnode->appendChild($e->ownerDocument->createTextNode($gd));
+                       $e->appendChild($dnode);
+                  }
+               }
             }
             elseif ($key === 'InformationURL')
             {
@@ -2438,6 +2465,17 @@ class Provider {
                         $e->appendChild($dnode);
                     }
                 }
+                if ($en_informationurl !== TRUE)
+                {
+                   $gd = $this->getHelpdeskURL();
+                   if (!empty($gd))
+                   {
+                      $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:InformationURL');
+                      $dnode->setAttribute('xml:lang', 'en');
+                      $dnode->appendChild($e->ownerDocument->createTextNode($gd));
+                      $e->appendChild($dnode);
+                   }
+               }
             }
             elseif ($key === 'Logo')
             {
@@ -2471,44 +2509,6 @@ class Provider {
             }
         }
 
-        if ($en_displayname !== TRUE)
-        {
-            $gd = $this->getDisplayName();
-            if (empty($gd))
-            {
-                $gd = $this->getName();
-            }
-            if (empty($gd))
-            {
-                $gd = $this->getEntityId();
-            }
-            $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:DisplayName');
-            $dnode->setAttribute('xml:lang', 'en');
-            $dnode->appendChild($e->ownerDocument->createTextNode($gd));
-            $e->appendChild($dnode);
-        }
-        if ($en_informationurl !== TRUE)
-        {
-            $gd = $this->getHelpdeskURL();
-            if (!empty($gd))
-            {
-                $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:InformationURL');
-                $dnode->setAttribute('xml:lang', 'en');
-                $dnode->appendChild($e->ownerDocument->createTextNode($gd));
-                $e->appendChild($dnode);
-            }
-        }
-        if ($en_privacyurl !== TRUE)
-        {
-            $gd = $this->getPrivacyUrl();
-            if (!empty($gd))
-            {
-                $dnode = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:ui', 'mdui:PrivacyStatementURL');
-                $dnode->setAttribute('xml:lang', 'en');
-                $dnode->appendChild($e->ownerDocument->createTextNode($gd));
-                $e->appendChild($dnode);
-            }
-        }
 
         return $e;
     }

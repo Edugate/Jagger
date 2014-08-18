@@ -1,12 +1,12 @@
 jQuery.fn.autoWidth = function(options) 
 { 
   var settings = { 
-        limitWidth   : false 
-  } 
+        limitWidth   : false
+  }; 
 
   if(options) { 
-        jQuery.extend(settings, options); 
-    }; 
+        jQuery.extend(settings, options);
+    }
 
     var maxWidth = 0; 
 
@@ -21,7 +21,7 @@ jQuery.fn.autoWidth = function(options)
   });   
 
   this.width(maxWidth); 
-}
+};
 jQuery.fn.toggleOption = function( show ) {
     jQuery( this ).toggle( show );
     if( show ) {
@@ -149,7 +149,7 @@ var GINIT = {
                       
                 } 
                 
-             })
+             });
           }
 
           
@@ -548,6 +548,7 @@ var GINIT = {
 
     }));
     $("button.updatenotifactionstatus").click(function(ev) {
+        var related;
         var notid = $(this).attr('value');
         var ctbl = $(this).closest("tbody");
         var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
@@ -568,16 +569,16 @@ var GINIT = {
                         $.each(data, function(i, v) {
                             if (v.federationid)
                             {
-                                var related = v.langfederation + ': ' + v.federationname;
+                                related = v.langfederation + ': ' + v.federationname;
                             }
                             else if (v.providerid)
                             {
-                                var related = v.langprovider + ': ' + v.providername;
+                                related = v.langprovider + ': ' + v.providername;
 
                             }
                             else
                             {
-                                var related = v.langany;
+                                related = v.langany;
                             }
                             trdata = '<tr><td>' + number + '</td><td>' + v.langtype + '</td><td>' + related + '</td><td>' + v.delivery + '</td><td>' + v.rcptto + '</td><td>' + v.langstatus + '</td><td>' + v.updated + '</td><td><button class="updatenotifactionstatus editbuttoni tiny" type="button" value="' + v.id + '">update</button></td></tr>';
                             ctbl.append(trdata);
@@ -719,7 +720,7 @@ var GINIT = {
 
             var link = $(this), url = link.attr("href");
             var row = $(this).parent().parent();
-            if ($(row).hasClass('opened') == true)
+            if ($(row).hasClass('opened') === true)
             {
                 $(row).next().remove();
                 $(row).removeClass('opened').removeClass('highlight');
@@ -735,6 +736,9 @@ var GINIT = {
                     success: function(json) {
                         $('#spinner').hide();
                         var data = $.parseJSON(json);
+                        var stitle;
+                        var nlist;
+                        var div_data;
                         $(row).addClass('opened').addClass('highlight');
                         if (!data)
                         {
@@ -744,17 +748,17 @@ var GINIT = {
                         {
                             if (!data.idp && !data.sp && !data.both)
                             {
-                                var div_data = '<li> no members</li>';
+                                div_data = '<li> no members</li>';
                                 value.append(div_data);
                             }
                             else
                             {
                                 if (data.idp)
                                 {
-                                    var stitle = $('<li>Identity Providers</li>');
-                                    var nlist = $('<ol/>');
+                                    stitle = $('<li>Identity Providers</li>');
+                                    nlist = $('<ol/>');
                                     $.each(data.idp, function(i, v) {
-                                        var div_data = '<li class="homeorg"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="homeorg"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -762,10 +766,10 @@ var GINIT = {
                                 }
                                 if (data.sp)
                                 {
-                                    var stitle = $('<li>Service Providers</li>');
-                                    var nlist = $('<ol/>');
+                                    stitle = $('<li>Service Providers</li>');
+                                    nlist = $('<ol/>');
                                     $.each(data.sp, function(i, v) {
-                                        var div_data = '<li class="resource"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="resource"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -773,10 +777,10 @@ var GINIT = {
                                 }
                                 if (data.both)
                                 {
-                                    var stitle = $('<li>Services are both IdP and SP</li>');
-                                    var nlist = $('<ol/>');
+                                    stitle = $('<li>Services are both IdP and SP</li>');
+                                    nlist = $('<ol/>');
                                     $.each(data.both, function(i, v) {
-                                        var div_data = '<li class="both"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="both"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -798,7 +802,7 @@ var GINIT = {
                     var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">' + value.html() + '</ul></td></tr>';
                     $(nextrow).insertAfter(row);
                 }
-                )
+                );
             }
 
             return false;
@@ -883,7 +887,7 @@ var GINIT = {
             $('.accordionContent').slideUp('fast');
 
             //IF THE NEXT SLIDE WASN'T OPEN THEN OPEN IT
-            if ($(this).next().is(':hidden') == true) {
+            if ($(this).next().is(':hidden') === true) {
 
                 //ADD THE ON CLASS TO THE BUTTON
                 $(this).addClass('on');
@@ -918,7 +922,7 @@ $(document).ready(function() {
     {
         if(helpactivity.hasClass('helpactive'))
         {
-           $(".dhelp").show()
+           $(".dhelp").show();
         } 
         else
         {
@@ -959,7 +963,7 @@ $(document).ready(function() {
             },
             themeName: 'all-yellow',
             themePath: bubbletheme
-        }, false).FreezeBubblePopup()
+        }, false).FreezeBubblePopup();
 
     });
     if ($('#fedcategories dd.active').length) {
@@ -989,8 +993,7 @@ $(document).ready(function() {
                 GINIT.initialize();
             },
         });
-    }
-    ;
+    } 
 
 
     $(".fedcategory").on('click', '', function(event) {
@@ -1154,24 +1157,24 @@ $(function() {
     $('div.floating-menu').addClass('mobilehidden');
     $('table.idplist tr td:first-child').addClass('homeorg');
     $('table.idplist tr td:first-child span.alert').removeClass('alert').parent().addClass('alert');
-    var theTable1 = $('table.filterlist')
+    var theTable1 = $('table.filterlist');
     theTable1.find("tbody > tr").find("td:eq(1)").mousedown(function() {
     });
     $("#filter").keyup(function() {
         $.uiTableFilter(theTable1, this.value);
-    })
+    });
     $('#filter-form').submit(function() {
         theTable1.find("tbody > tr:visible > td:eq(1)").mousedown();
         return false;
     }).focus();
 
     $('table.splist tr td:first-child span.alert').removeClass('alert').parent().addClass('alert');
-    var theTable2 = $('table.splist')
+    var theTable2 = $('table.splist');
     theTable2.find("tbody > tr").find("td:eq(1)").mousedown(function() {
     });
     $("#filter").keyup(function() {
         $.uiTableFilter(theTable2, this.value);
-    })
+    });
     $('#filter-form').submit(function() {
         theTable2.find("tbody > tr:visible > td:eq(1)").mousedown();
         return false;
@@ -1205,13 +1208,13 @@ $(function() {
     {
         baseurl = '';
     }
-
+    var refreshId;
     $("#responsecontainer").load(baseurl+"reports/awaiting/ajaxrefresh");
-    var refreshId = setInterval(function() {
+    refreshId = setInterval(function() {
         $("#responsecontainer").load(baseurl+'reports/awaiting/ajaxrefresh');
     }, 172000);
     $("#dashresponsecontainer").load(baseurl+"reports/awaiting/dashajaxrefresh");
-    var refreshId = setInterval(function() {
+    refreshId = setInterval(function() {
         $("#dashresponsecontainer").load(baseurl+'reports/awaiting/dashajaxrefresh');
     }, 172000);
     
@@ -1220,7 +1223,7 @@ $(function() {
         cache: false
     });
     $("#qcounter").load(baseurl+'reports/awaiting/counterqueue');
-    var refreshId = setInterval(function() {
+      refreshId = setInterval(function() {
             $("#qcounter").load(baseurl+'reports/awaiting/counterqueue');
      }, 86000);
     
@@ -1472,7 +1475,7 @@ $(function() {
         $('.accordionContent1').slideUp('fast');
 
         //IF THE NEXT SLIDE WASN'T OPEN THEN OPEN IT
-        if ($(this).next().is(':hidden') == true) {
+        if ($(this).next().is(':hidden') === true) {
 
             //ADD THE ON CLASS TO THE BUTTON
             $(this).addClass('on');
