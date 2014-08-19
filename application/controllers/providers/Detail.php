@@ -345,7 +345,6 @@ class Detail extends MY_Controller {
          */
         $d = array();
         $i = 0;
-        //$d[++$i]['header'] = '<span id="basic"></span>' . lang('rr_basicinformation');
         $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
 
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
@@ -784,7 +783,7 @@ class Detail extends MY_Controller {
         }
         if ($idppart)
         {
-            $d[++$i]['header'] = 'IDPSSODescriptor';
+            $d[++$i]['msection'] = 'IDPSSODescriptor';
 
             // protocols enumerations
             $d[++$i]['name'] = lang('rr_supportedprotocols');
@@ -844,7 +843,7 @@ class Detail extends MY_Controller {
                 }
                 $d[$i]['value'] = $slvalues;
             }
-            $d[++$i]['header'] = 'AttributeAuthorityDescriptor';
+            $d[++$i]['msection'] = 'AttributeAuthorityDescriptor';
             $d[++$i]['name'] = lang('rr_supportedprotocols') . '';
             $v = implode('<br />', $ent->getProtocolSupport('aa'));
             $d[$i]['value'] = $v;
@@ -858,10 +857,10 @@ class Detail extends MY_Controller {
             $scopeString .= '</ul>';
             $d[$i]['value'] = $scopeString;
             $aanameids = $ent->getNameIds('aa');
-            $aanameid = '';
             if (count($aanameids) > 0)
             {
                 $d[++$i]['name'] = lang('rr_supportednameids') ;
+                $aanameid = '<ul class="no-bullet">';
                 foreach ($aanameids as $r)
                 {
                     $aanameid .= '<li>' . $r . '</li>';
@@ -883,11 +882,11 @@ class Detail extends MY_Controller {
         }
         if ($sppart)
         {
-            $d[++$i]['header'] = 'SPSSODescriptor';
+            $d[++$i]['msection'] = 'SPSSODescriptor';
             $d[++$i]['name'] = lang('rr_supportedprotocols') ;
             $v = implode('<br />', $ent->getProtocolSupport('spsso'));
             $d[$i]['value'] = $v;
-            $nameids = '';
+            $nameids = '<ul class="no-bullet">';
             $d[++$i]['name'] = lang('rr_supportednameids');
             foreach ($ent->getNameIds('spsso') as $r)
             {
@@ -972,214 +971,45 @@ class Detail extends MY_Controller {
         }
         if ($idppart)
         {
-            $d[++$i]['header'] = 'IDPSSODescriptor';
-            $cString = '';
+            $d[]['msection'] = 'IDPSSODescriptor';
             if (array_key_exists('idpsso', $certs))
             {
                 foreach ($certs['idpsso'] as $v)
                 {
-                    $cString = '';
-                    $certusage = $v->getCertuse();
-                    $langcertusage = '';
-                    if (empty($certusage))
-                    {
-                        $langcertusage = lang('certsign') . '/' . lang('certenc');
-                    }
-                    elseif ($certusage === 'signing')
-                    {
-                        $langcertusage = lang('certsign');
-                    }
-                    elseif ($certusage === 'encryption')
-                    {
-                        $langcertusage =  lang('certenc');
-                    }
-                    $kname = $v->getKeyname();
-                    $c_certData = $v->getCertData();
-                    if (!empty($kname))
-                    {
-                        $cString .='<b>' . lang('rr_keyname') . ':</b><br /> ' . str_replace(',', '<br />', $kname) . '<br />';
-                    }
-                    if (!empty($c_certData))
-                    {
-                        $c_certtype = $v->getCertType();
-                        if ($c_certtype == 'X509Certificate')
-                        {
-                            $c_fingerprint_md5 = generateFingerprint($c_certData,'md5');
-                            $c_fingerprint_sha1 = generateFingerprint($c_certData,'sha1');
-                            $c_certValid = validateX509($c_certData);
-                            if (!$c_certValid)
-                            {
-                                $cString .='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
-                            }
-                            else
-                            {
-                                $pemdata = $v->getPEM($v->getCertData());
-                                $keysize = getKeysize($pemdata);
-                                if(!empty($keysize))
-                                {
-                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . $keysize . '</span><br />';
-                                }
-                                else
-                                {
-                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . lang('unknownkeysize') . '</span><br />';
-                                }
-                                 
-                            }
-                        }
-                        if (!empty($c_fingerprint_md5))
-                        {
-                            $cString .='<b>' . lang('rr_fingerprint') . ' (md5):</b> <span>' . $c_fingerprint_md5 . '</span><br />';
-                        }
-                        if (!empty($c_fingerprint_sha1))
-                        {
-                            $cString .='<b>' . lang('rr_fingerprint') . ' (sha1):</b> <span>' . $c_fingerprint_sha1 . '</span><br />';
-                        }
-                        $cString .= '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c'.$v->getId().'">' . lang('rr_certbody') . '</a><code id="c'.$v->getId().'" class="content">' . trim($c_certData) . '</code></dd></dl>';
-                    }
-                    $cString .= '<br />';
-                    $d[++$i]['name'] = $langcertusage;
-                    $d[$i]['value'] = $cString;
+                  $c = $this->_genCertView($v);
+                  foreach($c as $v)
+                  {
+                    $d[] = $v;
+                  }
                 }
             }
             // AA
             if (array_key_exists('aa', $certs))
             {
-                $d[++$i]['header'] = 'AttributeAuthorityDescriptor';
+                $d[]['msection'] = 'AttributeAuthorityDescriptor';
                 foreach ($certs['aa'] as $v)
                 {
-                    $cString = '';
-                    $langcertusage = '';
-                    $certusage = $v->getCertuse();
-                    if (empty($certusage))
+                    $c = $this->_genCertView($v);
+                    foreach($c as $v)
                     {
-                        $langcertusage = lang('certsign') . '/' . lang('certenc');
+                       $d[] = $v;
                     }
-                    elseif ($certusage === 'signing')
-                    {
-                        $langcertusage = lang('certsign');
-                    }
-                    elseif ($certusage === 'encryption')
-                    {
-                        $langcertusage = lang('certenc');
-                    }
-                    $kname = $v->getKeyname();
-                    $c_certData = $v->getCertData();
-                    if (!empty($kname))
-                    {
-                        $cString .='<b>' . lang('rr_keyname') . ':</b><br /> ' . str_replace(',', '<br />', $kname) . '<br />';
-                    }
-                    if (!empty($c_certData))
-                    {
-                        $c_certtype = $v->getCertType();
-                        if ($c_certtype === 'X509Certificate')
-                        {
-                            $c_fingerprint_sha1 = generateFingerprint($c_certData,'sha1');
-                            $c_fingerprint_md5 = generateFingerprint($c_certData,'md5');
-                            $c_certValid = validateX509($c_certData);
-                            if (!$c_certValid)
-                            {
-                                $cString .='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
-                            }
-                            else
-                            {
-                                $pemdata = $v->getPEM($v->getCertData());
-                                $keysize = getKeysize($pemdata);
-                                if(!empty($keysize))
-                                {
-                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . $keysize . '</span><br />';
-                                }
-                                else
-                                {
-                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . lang('unknownkeysize') . '</span><br />';
-                                }
-
-                            }
-                        }
-                        if (!empty($c_fingerprint_sha1))
-                        {
-                            $cString .='<b>' . lang('rr_fingerprint') . ' (sha1):</b> <span>' . $c_fingerprint_sha1 . '</span><br />';
-                        }
-                        if (!empty($c_fingerprint_md5))
-                        {
-                            $cString .='<b>' . lang('rr_fingerprint') . ' (md5):</b> <span>' . $c_fingerprint_md5 . '</span><br />';
-                        }
-                        $cString .= '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c'.$v->getId().'">' . lang('rr_certbody') . '</a><code id="c'.$v->getId().'" class="content">' . trim($c_certData) . '</code></dd></dl>';
-                    }
-                    $cString .= '<br />';
-                   $d[++$i]['name'] = $langcertusage ;
-                   $d[$i]['value'] = $cString;
+                   
                 }
             }
         }
         if ($sppart)
         {
-            $d[++$i]['header'] = 'SPSSODescriptor';
+            $d[]['msection'] = 'SPSSODescriptor';
             if (array_key_exists('spsso', $certs))
             {
                 foreach ($certs['spsso'] as $v)
                 {
-                    $cString = '';
-                    $langcertusage ='';
-                    $certusage = $v->getCertuse();
-                    if (empty($certusage))
+                    $c = $this->_genCertView($v);
+                    foreach($c as $v)
                     {
-                        $langcertusage = lang('certsign') . '/' . lang('certenc');
+                       $d[] = $v;
                     }
-                    elseif ($certusage === 'signing')
-                    {
-                        $langcertusage =  lang('certsign');
-                    }
-                    elseif ($certusage === 'encryption')
-                    {
-                        $langcertusage =  lang('certenc');
-                    }
-                    $kname = $v->getKeyname();
-                    $c_certData = $v->getCertData();
-                    if (!empty($kname))
-                    {
-                        $cString .='<b>' . lang('rr_keyname') . ':</b><br /> ' . str_replace(',', '<br />', $kname) . '<br />';
-                    }
-                    if (!empty($c_certData))
-                    {
-                        $c_certtype = $v->getCertType();
-                        if ($c_certtype == 'X509Certificate')
-                        {
-                            $c_fingerprint_sha1 = generateFingerprint($c_certData,'sha1');
-                            $c_fingerprint_md5 = generateFingerprint($c_certData,'md5');
-                            $c_certValid = validateX509($c_certData);
-                            if (!$c_certValid)
-                            {
-                                $cString .='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
-                                $alerts[] = lang('rr_certificatenotvalid');
-                            }
-                            else
-                            {
-                                $pemdata = $v->getPEM($v->getCertData());
-                                $keysize = getKeysize($pemdata);
-                                if(!empty($keysize))
-                                {
-                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . $keysize . '</span><br />';
-                                }
-                                else
-                                {
-                                     $cString .='<b>' . lang('rr_keysize') . ':</b> <span>' . lang('unknownkeysize') . '</span><br />';
-                                }
-
-                            }
-                        }
-                        if (!empty($c_fingerprint_sha1))
-                        {
-                            $cString .='<b>' . lang('rr_fingerprint') . ' (sha1):</b> <span>' . $c_fingerprint_sha1 . '</span><br />';
-                        }
-                        if (!empty($c_fingerprint_md5))
-                        {
-                            $cString .='<b>' . lang('rr_fingerprint') . ' (md5):</b> <span>' . $c_fingerprint_md5 . '</span><br />';
-                        }
-                        $cString .= '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c'.$v->getId().'">' . lang('rr_certbody') . '</a><code id="c'.$v->getId().'" class="content">' . trim($c_certData) . '</code></dd></dl>';
-                    }
-                    $cString .= '<br />';
-                    $d[++$i]['name'] = $langcertusage;
-                    $d[$i]['value'] = $cString;
                 }
             }
         }
@@ -1322,7 +1152,7 @@ class Detail extends MY_Controller {
         if ($idppart)
         {
             $uiiarray = array();
-            $d[++$i]['2cols'] = lang('rr_uii') . ' '.lang('forIDPpart');
+            $d[++$i]['msection'] = lang('identityprovider') ;
             foreach ($extend as $e)
             {
                 if ($e->getNamespace() == 'mdui' && $e->getType() == 'idp')
@@ -1431,7 +1261,7 @@ class Detail extends MY_Controller {
         if ($sppart)
         {
             $uiiarray = array();
-            $d[++$i]['2cols'] = lang('rr_uii') . ' ' . lang('forSPpart');
+            $d[++$i]['msection'] = lang('serviceprovider');
             foreach ($extend as $e)
             {
                 if ($e->getNamespace() == 'mdui' && $e->getType() == 'sp')
@@ -1592,6 +1422,62 @@ class Detail extends MY_Controller {
         $data['titlepage'] = $data['presubtitle'] . ': ' . $data['name']; 
         $data['content_view'] = 'providers/detail_view.php';
         $this->load->view('page', $data);
+    }
+ 
+    private function _genCertView($cert)
+    {
+        $certusage = $cert->getCertuse();
+        if ($certusage === 'signing')
+        {
+          $langcertusage = lang('certsign');
+        }
+        elseif ($certusage === 'encryption')
+        {
+          $langcertusage =  lang('certenc');
+        }
+        else
+        {
+          $langcertusage = lang('certsign') . '/' . lang('certenc');
+        }
+        $d = array();
+        $d[] = array('header'=>lang('rr_certificate'));
+        $d[] = array( 'name'=>lang('rr_certusage'), 'value'=>$langcertusage );
+        if(!empty($cert->getKeyname()))
+        {
+           $d[] = array('name'=> lang('rr_keyname'), 'value'=>$kname);
+        } 
+        $certData = $cert->getCertData();
+        if(!empty($certData))
+        {
+            $certtype = $cert->getCertType();
+            if($certtype === 'X509Certificate')
+            {
+                $fingerprint_md5 = generateFingerprint($certData,'md5');
+                $fingerprint_sha1 = generateFingerprint($certData,'sha1');
+                $certValid = validateX509($certData);
+                if (!$certValid)
+                {
+                   $cString ='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
+                }
+                else
+                {
+                   $pemdata = $cert->getPEM($cert->getCertData());
+
+                   $d[] = array('name'=>lang('rr_keysize'),'value'=>''.getKeysize($pemdata).'');
+                   $d[] = array('name'=>lang('rr_fingerprint') . ' (md5)','value'=> ''.generateFingerprint($certData,'md5').''); 
+                   $d[] = array('name'=>lang('rr_fingerprint') . ' (sha1)','value'=>''.generateFingerprint($certData,'sha1').'');
+                   $d[] = array(
+                     'name'=>'',
+                     'value'=>'<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c'.$cert->getId().'">' . lang('rr_certbody') . '</a><code id="c'.$cert->getId().'" class="content">' . trim($certData) . '</code></dd></dl>'
+                   );
+                }
+
+            }
+
+        }
+       return $d;
+         
+
     }
 
     function showmembers($providerid)
