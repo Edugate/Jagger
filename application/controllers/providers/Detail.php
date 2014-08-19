@@ -1442,7 +1442,8 @@ class Detail extends MY_Controller {
         $d = array();
         $d[] = array('header'=>lang('rr_certificate'));
         $d[] = array( 'name'=>lang('rr_certusage'), 'value'=>$langcertusage );
-        if(!empty($cert->getKeyname()))
+        $keyname = $cert->getKeyname();
+        if(!empty($keyname))
         {
            $d[] = array('name'=> lang('rr_keyname'), 'value'=>$kname);
         } 
