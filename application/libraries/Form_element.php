@@ -999,7 +999,7 @@ class Form_element {
         }
         $row = '<div class="certgroup small-12 columns">';
 
-        $row .= '<div class="small-12 columns">';
+        $row .= '<div class="small-12 columns hidden">';
         $row .= $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($sessionCert['type']), '', FALSE);
         $row .= '</div>';
 
@@ -1008,8 +1008,16 @@ class Form_element {
         $row .= $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE);
         $row .= '</div>';
 
+        
 
-        $row .= '<div class="small-12 columns">';
+        if(empty($sessionCert['keyname']))
+        {
+          $row .= '<div class="small-12 columns hidden">';
+        }
+        else
+        {
+          $row .= '<div class="small-12 columns">';
+        }
         $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $sessionCert['keyname'], '', FALSE, NULL);
         $row .= '</div>';
         $row .= '<div class="small-12 columns">';
@@ -1072,7 +1080,7 @@ class Form_element {
         }
         $row = '<div class="certgroup small-12 columns">';
 
-        $row .= '<div class="small-12 columns">';
+        $row .= '<div class="small-12 columns hidden">';
         $row .= $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($cert->getType()), '', FALSE);
         $row .= '</div>';
 
@@ -1081,8 +1089,16 @@ class Form_element {
         $row .= $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE);
         $row .= '</div>';
 
+        $tmpkeyname = $cert->getKeyname();
 
-        $row .= '<div class="small-12 columns">';
+        if(empty($tmpkeyname))
+        {
+          $row .= '<div class="small-12 columns hidden">';
+        }
+        else
+        {
+          $row .= '<div class="small-12 columns">';
+        }
         $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $cert->getKeyname(), '', FALSE, NULL);
         $row .= '</div>';
 
