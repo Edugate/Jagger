@@ -103,6 +103,12 @@ if (!empty($alerts) && is_array($alerts) and count($alerts) > 0)
                             $cell = array('data' => $row['header'], 'class' => 'highlight', 'colspan' => 2);
                             $this->table->add_row($cell);
                         }
+                        elseif(array_key_exists('msection', $row))
+                        {
+                            $cell = array('data' => $row['msection'], 'class' => 'highlight', 'colspan' => 2);
+                            $this->table->add_row($cell);
+ 
+                        }
                         elseif (array_key_exists('2cols', $row))
                         {
                             $cell = array('data' => $row['2cols'], 'colspan' => 2);
@@ -175,6 +181,12 @@ if (!empty($alerts) && is_array($alerts) and count($alerts) > 0)
                         {
                             $cell = array('data' => $row['header'], 'class' => 'highlight', 'colspan' => 2);
                             $this->table->add_row($cell);
+                        }
+                        elseif(array_key_exists('msection', $row))
+                        {   
+                            $cell = array('data' => $row['msection'], 'class' => 'section', 'colspan' => 2);
+                            $this->table->add_row($cell);
+                        
                         }
                         elseif (array_key_exists('2cols', $row))
                         {

@@ -439,6 +439,89 @@ class Form_element {
         return $result;
     }
 
+    public function NgenerateRegPolicies(models\Provider $ent, $ses = null)
+    {
+        /**
+         * new regpolicy start
+         */
+        $result[] = '';
+        $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
+        if (!empty($entid))
+        {
+            $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
+        } else
+        {
+            $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol', 'is_enabled' => TRUE));
+        }
+        $entRegPoliciesArray = array();
+        foreach ($entRegPolicies as $v)
+        {
+            $entRegPoliciesArray['' . $v->getId() . ''] = array('name' => $v->getName(), 'enabled' => $v->getAvailable(), 'lang' => $v->getLang(), 'link' => $v->getUrl(), 'desc' => $v->getDescription());
+        }
+        $isAdmin = $this->ci->j_auth->isAdministrator();
+
+        if (count($entRegPolicies) == 0)
+        {
+            $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
+        } elseif (!$isAdmin && !empty($entid))
+        {
+            $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
+        }
+        $assignedRegPolicies = $ent->getCoc();
+        $assignedRegPoliciesArray = array();
+        if ($sessform && isset($ses['regpol']))
+        {
+            foreach ($ses['regpol'] as $k => $v)
+            {
+                if (isset($entRegPoliciesArray['' . $v . '']))
+                {
+                    $entRegPoliciesArray['' . $v . '']['sel'] = TRUE;
+                }
+            }
+        } else
+        {
+            foreach ($assignedRegPolicies as $k => $v)
+            {
+                $vtype = $v->getType();
+                if (strcmp($vtype, 'regpol') == 0)
+                {
+                    $entRegPoliciesArray['' . $v->getId() . '']['sel'] = true;
+                }
+            }
+        }
+        $r = '<div class="small-12 large-8 small-offset-0 large-offset-3 end columns"><div class="checkboxlist">';
+        foreach ($entRegPoliciesArray as $k => $v)
+        {
+            if (isset($v['sel']))
+            {
+                $is = true;
+            } else
+            {
+                $is = false;
+            }
+            if (empty($v['enabled']))
+            {
+                $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
+            } else
+            {
+                $lbl = '';
+            }
+            $r .= '<div>' . form_checkbox(array('name' => 'f[regpol][]', 'id' => 'f[regpol][]', 'value' => $k, 'checked' => $is)) . '<span class="label secondary"><b>' . $v['lang'] . '</b></span>  <span data-tooltip class="has-tip" title="' . $v['desc'] . '">' . $v['link'] . '</span> ' . $lbl . '</div>';
+        }
+        $r .= '</div></div>';
+
+        $result[] = $r;
+        $result[] = '';
+
+        /**
+         * new regpolicy end
+         */
+        return $result;
+
+
+
+    }
+
     public function NgeneratePrivacy(models\Provider $ent, $ses = null)
     {
         $result = array();

@@ -177,7 +177,7 @@ if(!empty($sessform))
    if(empty($registerForm))
    {
     echo '<div class="buttons">
-        <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('discardall').'</button>
+        <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('rr_cancel').'</button>
         <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
         <button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnupdate').'
       </button></div>';
