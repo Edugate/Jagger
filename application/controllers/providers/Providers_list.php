@@ -79,6 +79,15 @@ class Providers_list extends MY_Controller {
        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
 
        $cachedid = $type.'_l_'.$lang;
+       $result['data'] = array();
+
+       $result['columns'] = array(
+         'nameandentityid'=>array('colname'=>'Provider name','status'=>1, 'cols'=>array('pname','pentityid')),
+         'pregdate'=>array('colname'=>'Registration date','status'=>1,'cols'=>array('pregdate')),
+        // 'url'=>array('colname'=>'Url','status'=>1,'cols'=>array('phelpurl')),
+          
+
+       );
 
        $cachedResult = $this->cache->get($cachedid);
        if(empty($cachedResult))
@@ -93,7 +102,6 @@ class Providers_list extends MY_Controller {
           {
              $list = $tmpprovs->getSpsLight();
           }
-          $result = array();
           $i = 0;
           foreach($list as $v)
           {
@@ -106,31 +114,33 @@ class Providers_list extends MY_Controller {
              {
                 $regdate = '';
              }
-             $result['"'.$i++.'"'] = array(
-               'id'=>$v->getId(),
-               'locked'=>(int)$v->getLocked(),
-               'active'=>(int)$v->getActive(),
-               'local'=>(int)$v->getLocal(),
-               'static'=>(int)$v->getStatic(),
+             $data['"'.$i++.'"'] = array(
+               'pid'=>$v->getId(),
+               'plocked'=>(int)$v->getLocked(),
+               'pactive'=>(int)$v->getActive(),
+               'plocal'=>(int)$v->getLocal(),
+               'pstatic'=>(int)$v->getStatic(),
                'pvisible'=>(int)$v->getPublicVisible(),
-               'available'=>(int)$v->getAvailable(),
-               'entityid'=>$v->getEntityId(),
-               'dname'=>$v->getNameToWebInLang($lang,$type),
-               'regdate'=>$regdate,
-               'helpurl'=>$v->getHelpdeskUrl(),
+               'pavailable'=>(int)$v->getAvailable(),
+               'pentityid'=>$v->getEntityId(),
+               'pname'=>$v->getNameToWebInLang($lang,$type),
+               'pregdate'=>$regdate,
+               'phelpurl'=>$v->getHelpdeskUrl(),
              );
 
           }
-          if(count($result)>0)
+          if(count($data)>0)
           {
-             $this->cache->save($cachedid, $result, 180);
+             $this->cache->save($cachedid, $data, 180);
           }
+          $result['data'] = &$data;
           return $result;
     
        }
        else
        {
-         return $cachedResult;
+         $result['data'] = &$cachedResult;
+         return $result;
        }
 
     }

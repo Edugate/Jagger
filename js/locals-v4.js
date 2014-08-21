@@ -3144,3 +3144,71 @@ $("button.advancedmode").click(function(){
 
 });
 
+
+// get list providers with dynamic list columns: in progress
+$("button#getlistproviders").click(function(){
+
+      var url = $(this).attr("value");
+      $.ajax({
+        type: "GET",
+        url: url,
+        timeout: 2500,
+        cache: false,
+        success:function(json){
+          $('#spinner').hide();
+          var result = $.parseJSON(json);
+          if(result)
+          {
+             var table = $('<table/>');
+             var thead = $('<thead/>');
+             table.append(thead);
+             var theadtr = $('<tr/>');
+             thead.append(theadtr);
+
+             var Columns = new Array();
+             var tmpcolumns = result.columns;
+             var colstatus;
+             $.each(tmpcolumns,function(i,v){
+                 colstatus = v.status;
+                 if(colstatus)
+                 {
+                   nar = new Array();
+                   $.each(v.cols,function(l,n){
+                      nar.push(n);  
+                   });
+                   Columns.push(nar);
+                   theadtr.append('<td>'+v.colname+'</td>');
+                 }
+             });
+
+             var tbody = $('<tbody/>');
+             table.append(tbody);
+             var data = result.data;
+             $.each(data,function(j,w){
+               var tr = $('<tr/>');
+               tbody.append(tr);
+               $.each(Columns, function(p,z){
+                     var cell='';
+                  $.each(z, function(r,s){
+                      var $o = s;
+                      cell = cell + '  '+w[$o];
+                  });
+
+                  tr.append('<td>'+cell+'</td>');
+                  
+               })               
+
+             });
+
+
+             $('div#testlist').empty().append(table);
+             
+          }
+
+        }
+
+     }); 
+   
+
+
+});
