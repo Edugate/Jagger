@@ -81,8 +81,8 @@ $("ul.validatorbuttons button").on('click',function(e){
 
 var GINIT = {
 
-    
     initialize: function() {
+    $("table.sortable").tablesorter();
 
     var baseurl = $("[name='baseurl']").val();
     if (baseurl === undefined)
@@ -90,8 +90,6 @@ var GINIT = {
         baseurl = '';
     }
 
-//$("#providerlogtab").on("toggled", function (event, tab){
-//});
 
     $("input#advanced").click(function(){
          var thisCheck = $(this);
@@ -248,7 +246,7 @@ var GINIT = {
            $(this).val("");
         });
         lrow.remove();
-        GINIT.initialize();
+        GINIT.    initialize();
        
     });
     $("button.contactrm").click(function(){
@@ -1519,8 +1517,7 @@ $(document).ready(function() {
         if ($(this).next().length > 0) {
             $(this).addClass("parent");
         }
-        ;
-    })
+    });
 
     $(".toggleMenu").click(function(e) {
         e.preventDefault();
@@ -1528,7 +1525,7 @@ $(document).ready(function() {
         $(".nav").toggle();
     });
 //    adjustMenu();
-})
+});
 
 $(window).bind('resize orientationchange', function() {
     ww = document.body.clientWidth;
@@ -1561,7 +1558,7 @@ var adjustMenu = function() {
             $(this).toggleClass('hover');
         });
     }
-}
+};
 
 
 
@@ -2021,7 +2018,6 @@ Height: '500px',
                             tbody_data.append(trdata);
                         });
                         var tbl = $('<table/>').css({'font-size': 'smaller'}).css({'border': '1px solid'}).addClass('detailsnosort').addClass('small-12').addClass('columns');
-                        ;
                         var pl = $('<div/>');
                         tbl.append(thdata);
                         tbl.append(tbody_data);
@@ -2067,7 +2063,6 @@ Height: '500px',
             }
             );
         }
-        ;
         ev.preventDefault();
     });
 
@@ -2462,7 +2457,7 @@ $("button#parsemetadataidp").click(function(){
          $contacttype = $contact.attr("contactType");
          if($contacttype === "administrative")
          {
-            return false
+            return false;
          }
     });
     if($contact != null)
@@ -3147,7 +3142,6 @@ $("button.advancedmode").click(function(){
 
 // get list providers with dynamic list columns: in progress
 $("button#getlistproviders").click(function(){
-
       var url = $(this).attr("value");
       $.ajax({
         type: "GET",
@@ -3160,6 +3154,7 @@ $("button#getlistproviders").click(function(){
           if(result)
           {
              var table = $('<table/>');
+             table.attr('id', 'details');
              var thead = $('<thead/>');
              table.append(thead);
              var theadtr = $('<tr/>');
@@ -3177,10 +3172,9 @@ $("button#getlistproviders").click(function(){
                       nar.push(n);  
                    });
                    Columns.push(nar);
-                   theadtr.append('<td>'+v.colname+'</td>');
+                   theadtr.append('<th>'+v.colname+'</th>');
                  }
              });
-
              var tbody = $('<tbody/>');
              table.append(tbody);
              var data = result.data;
@@ -3189,26 +3183,44 @@ $("button#getlistproviders").click(function(){
                tbody.append(tr);
                $.each(Columns, function(p,z){
                      var cell='';
-                  $.each(z, function(r,s){
-                      var $o = s;
-                      cell = cell + '  '+w[$o];
-                  });
-
-                  tr.append('<td>'+cell+'</td>');
-                  
+                     $.each(z, function(r,s){
+                        if(s === 'pname' && w[s] != null)
+                        {
+                           cell = cell + '<a href="'+result.baseurl+'providers/detail/show/'+w.pid+'">'+w[s]+'</a><br />';
+ 
+                        }
+                        else if(w[s] != null && s === 'phelpurl')
+                        {
+                            cell = cell +'<a href="'+w.phelpurl+'">'+w.phelpurl+'</a>';
+                        }
+                        else if(w[s] != null && (s === 'plocked' || s ==='pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable') )
+                        {
+                            if(result['statedefs'][s][w[s]] != undefined)
+                            {
+                              cell = cell +' <span class="lbl">'+result['statedefs'][s][w[s]]+'</span>';
+                            }
+                            else
+                            {}
+                        }
+                        else if(w[s] != null)
+                        {
+                           cell = cell + '  '+w[s];
+                        }
+                     });
+                     tr.append('<td>'+cell+'</td>');
                })               
-
              });
 
-
-             $('div#testlist').empty().append(table);
-             
+             $('div#testlist').append(table);
+              table.tablesorter(); 
+             // GINIT.initialize();
           }
+        },
+        beforeSend: function(){
+
+             $('div#testlist').empty();
+             $('#spinner').show(); 
 
         }
-
      }); 
-   
-
-
 });

@@ -80,11 +80,22 @@ class Providers_list extends MY_Controller {
 
        $cachedid = $type.'_l_'.$lang;
        $result['data'] = array();
+       $result['baseurl'] = base_url();
+       $result['statedefs'] = array(
+         'plocked'=>array('0'=>'unlocked','1'=>'locked'),
+         'pactive'=>array('0'=>'disabled','1'=>'enabled'),
+         'plocal'=>array('0'=>'external','1'=>'local'),
+         'pstatic'=>array('1'=>'static'),
+         'pvisible'=>array('0'=>'hidden','1'=>'visible'),
+         'pavailable'=>array('0'=>'unavailable','1'=>'available'),    
+
+       );
 
        $result['columns'] = array(
-         'nameandentityid'=>array('colname'=>'Provider name','status'=>1, 'cols'=>array('pname','pentityid')),
-         'pregdate'=>array('colname'=>'Registration date','status'=>1,'cols'=>array('pregdate')),
-        // 'url'=>array('colname'=>'Url','status'=>1,'cols'=>array('phelpurl')),
+         'nameandentityid'=>array('colname'=>''.lang('e_orgname').'','status'=>1, 'cols'=>array('pname','pentityid')),
+         'url'=>array('colname'=>''.lang('tbl_title_helpurl').'','status'=>1,'cols'=>array('phelpurl')),
+         'pregdate'=>array('colname'=>''.lang('tbl_title_regdate').'','status'=>1,'cols'=>array('pregdate')),
+         'entstatus'=>array('colname'=>'status','status'=>1,'cols'=>array('plocked','pactive','pvisible','pstatic','plocal'))
           
 
        );
