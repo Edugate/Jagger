@@ -81,8 +81,8 @@ $("ul.validatorbuttons button").on('click',function(e){
 
 var GINIT = {
 
-    
     initialize: function() {
+    $("table.sortable").tablesorter();
 
     var baseurl = $("[name='baseurl']").val();
     if (baseurl === undefined)
@@ -90,8 +90,6 @@ var GINIT = {
         baseurl = '';
     }
 
-//$("#providerlogtab").on("toggled", function (event, tab){
-//});
 
     $("input#advanced").click(function(){
          var thisCheck = $(this);
@@ -248,7 +246,7 @@ var GINIT = {
            $(this).val("");
         });
         lrow.remove();
-        GINIT.initialize();
+        GINIT.    initialize();
        
     });
     $("button.contactrm").click(function(){
@@ -1519,8 +1517,7 @@ $(document).ready(function() {
         if ($(this).next().length > 0) {
             $(this).addClass("parent");
         }
-        ;
-    })
+    });
 
     $(".toggleMenu").click(function(e) {
         e.preventDefault();
@@ -1528,7 +1525,7 @@ $(document).ready(function() {
         $(".nav").toggle();
     });
 //    adjustMenu();
-})
+});
 
 $(window).bind('resize orientationchange', function() {
     ww = document.body.clientWidth;
@@ -1561,7 +1558,7 @@ var adjustMenu = function() {
             $(this).toggleClass('hover');
         });
     }
-}
+};
 
 
 
@@ -2021,7 +2018,6 @@ Height: '500px',
                             tbody_data.append(trdata);
                         });
                         var tbl = $('<table/>').css({'font-size': 'smaller'}).css({'border': '1px solid'}).addClass('detailsnosort').addClass('small-12').addClass('columns');
-                        ;
                         var pl = $('<div/>');
                         tbl.append(thdata);
                         tbl.append(tbody_data);
@@ -2067,7 +2063,6 @@ Height: '500px',
             }
             );
         }
-        ;
         ev.preventDefault();
     });
 
@@ -2462,7 +2457,7 @@ $("button#parsemetadataidp").click(function(){
          $contacttype = $contact.attr("contactType");
          if($contacttype === "administrative")
          {
-            return false
+            return false;
          }
     });
     if($contact != null)
@@ -3144,3 +3139,141 @@ $("button.advancedmode").click(function(){
 
 });
 
+
+// get list providers with dynamic list columns: in progress
+$("a.afilter").click(function(){
+      var url = $(this).attr("href");
+      $('a.initiated').removeClass('initiatied');
+      var filter;
+      if($(this).hasClass('filterext'))
+      {
+         filter = 1;
+      }
+      else if($(this).hasClass('filterlocal'))
+      {
+         filter = 2;   
+      }
+      else
+      {
+         filter = 0;
+      }
+      $.ajax({
+        type: "GET",
+        url: url,
+        timeout: 5500,
+        cache: true,
+        success:function(json){
+          $('#spinner').hide();
+          if(filter == 1)
+          {
+             $('dd.filterext').addClass('active');
+
+          }
+          else if (filter == 2)
+          {
+             $('dd.filterlocal').addClass('active');
+
+          }
+          else
+          {
+             $('dd.filterall').addClass('active');
+ 
+            
+          }
+         
+          var result = $.parseJSON(json);
+          if(result)
+          {
+             var table = $('<table/>');
+             table.attr('id', 'details');
+             table.addClass('filterlist');
+             var thead = $('<thead/>');
+             table.append(thead);
+             var theadtr = $('<tr/>');
+             thead.append(theadtr);
+
+             var Columns = new Array();
+             var tmpcolumns = result.columns;
+             var colstatus;
+             var counter = 0;
+             $.each(tmpcolumns,function(i,v){
+                 colstatus = v.status;
+                 if(colstatus)
+                 {
+                   nar = new Array();
+                   $.each(v.cols,function(l,n){
+                      nar.push(n);  
+                   });
+                   Columns.push(nar);
+                   theadtr.append('<th>'+v.colname+'</th>');
+                 }
+             });
+             var tbody = $('<tbody/>');
+             table.append(tbody);
+             var data = result.data;
+             $.each(data,function(j,w){
+               if((w.plocal == 1 && (filter == 2 || filter == 0)) || (w.plocal == 0 && filter<2))
+               {
+                  var tr = $('<tr/>');
+                  tbody.append(tr);
+                  $.each(Columns, function(p,z){
+                     var cell='';
+                     $.each(z, function(r,s){
+                        if(s === 'pname' && w[s] != null)
+                        {
+                           cell = cell + '<a href="'+result.baseurl+'providers/detail/show/'+w.pid+'">'+w[s]+'</a><br />';
+ 
+                        }
+                        else if(w[s] != null && s === 'phelpurl')
+                        {
+                            cell = cell +'<a href="'+w.phelpurl+'">'+w.phelpurl+'</a>';
+                        }
+                        else if(w[s] != null && (s === 'plocked' || s ==='pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable') )
+                        {
+                            if(result['statedefs'][s][w[s]] != undefined)
+                            {
+                              cell = cell +' <span class="lbl lbl-'+s+'-'+w[s]+'">'+result['statedefs'][s][w[s]]+'</span>';
+                            }
+                            else
+                            {}
+                        }
+                        else if(w[s] != null)
+                        {
+                           cell = cell + '  '+w[s];
+                        }
+                     });
+                     tr.append('<td>'+cell+'</td>');
+                   })               
+                   counter = counter + 1;
+               } //end filter condtion 
+                 });
+                var prefix = $('div.subtitleprefix').text();
+                $('div.subtitle').append(prefix +': '+ counter);
+                $('div#providerslistresult').append(table);
+                 table.tablesorter({sortList: [[0,0]]}); 
+                 $("#filter").keyup(function() {
+                     $.uiTableFilter(table, this.value);
+                  });
+                 $('#filter-form').submit(function() {
+                     table.find("tbody > tr:visible > td:eq(1)").mousedown();
+                     return false;
+                }).focus();
+             }
+        },
+        beforeSend: function(){
+             $('div.subtitle').empty();
+             $('dd.afilter').removeClass('active');
+             $('div#providerslistresult').empty();
+             $('div.alert-box').empty().hide();
+             $('#spinner').show(); 
+        },
+        error: function(xhr, status, error){
+            $('#spinner').hide();
+            $('div.alert-box').append(error).show();
+
+        }
+     }); 
+     return false;
+});
+
+$('a.initiated').trigger('click');

@@ -109,9 +109,9 @@
                 {
                     echo '<li class="'.$factive.'"><a href="'.$base_url.'federations/manage">'.lang('federations').'</a></li>';
                     echo $divider;
-                    echo '<li class="'.$idpsactive.'"><a href="'.$base_url.'providers/idp_list/show">'.lang('identityproviders').'</a></li>';
+                    echo '<li class="'.$idpsactive.'"><a href="'.$base_url.'providers/idp_list/showlist">'.lang('identityproviders').'</a></li>';
                     echo $divider;
-                    echo '<li class="'.$spsactive.'"><a href="'.$base_url.'providers/sp_list/show">'.lang('serviceproviders').'</a></li>';
+                    echo '<li class="'.$spsactive.'"><a href="'.$base_url.'providers/sp_list/showlist">'.lang('serviceproviders').'</a></li>';
                     echo $divider;
                     echo '<li class="'.$regactive.' has-dropdown">';
                     ?>

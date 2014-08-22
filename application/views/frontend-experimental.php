@@ -315,7 +315,7 @@ $this->load->view('toppanel',$args);
         <script src="<?php echo $base_url;?>js/foundation.reveal.js"></script>
 <?php
         echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.simplemodal.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v4.js"></script>';
+        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v5.js"></script>';
 ?>
     <script>
       $(document).foundation();

@@ -54,7 +54,15 @@ class Providers_list extends MY_Controller {
            return;
         }
         $this->load->library('zacl');
-        $resource = 'idp_list';
+        if(strcmp($type,'idp')==0)
+        {
+          $resource = 'idp_list';
+        }
+        else
+        {
+          $resource = 'sp_list';
+        }
+
         $action = 'read';
         $group = 'default';
         $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
@@ -72,16 +80,45 @@ class Providers_list extends MY_Controller {
     }
 
 
-    private function getList($type)
+    private function getList($type,$fresh=null)
     {
        $lang = MY_Controller::getLang();
        $keyprefix = getCachePrefix();
        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
 
        $cachedid = $type.'_l_'.$lang;
+       $result['data'] = array();
+       $result['baseurl'] = base_url();
+       $result['statedefs'] = array(
+         'plocked'=>array('1'=>''.lang('rr_locked').''),
+         'pactive'=>array('0'=>''.lang('rr_disabled').''),
+         'plocal'=>array('0'=>''.lang('rr_external').''),
+         'pstatic'=>array('1'=>''.lang('rr_static').''),
+         'pvisible'=>array('0'=>''.lang('lbl_publichidden').''),
+         'pavailable'=>array('0'=>'unavailable'),    
+
+       );
+
+        if(strcmp($type,'idp')==0)
+        {
+            $lnamcol = lang('e_idpservicename');
+        }
+        else
+        {
+            $lnamcol = lang('e_spservicename');
+        }
+
+       $result['columns'] = array(
+         'nameandentityid'=>array('colname'=>''.$lnamcol.'','status'=>1, 'cols'=>array('pname','pentityid')),
+         'url'=>array('colname'=>''.lang('tbl_title_helpurl').'','status'=>1,'cols'=>array('phelpurl')),
+         'pregdate'=>array('colname'=>''.lang('tbl_title_regdate').'','status'=>1,'cols'=>array('pregdate')),
+         'entstatus'=>array('colname'=>'status','status'=>1,'cols'=>array('plocked','pactive','pvisible','pstatic','plocal'))
+          
+
+       );
 
        $cachedResult = $this->cache->get($cachedid);
-       if(empty($cachedResult))
+       if(empty($cachedResult) || !empty($fresh))
        {
           log_message('debug','list of '.$type.'(s) for lang ('.$lang.') not found in cache ... retriving from db');
           $tmpprovs = new models\Providers();
@@ -93,7 +130,6 @@ class Providers_list extends MY_Controller {
           {
              $list = $tmpprovs->getSpsLight();
           }
-          $result = array();
           $i = 0;
           foreach($list as $v)
           {
@@ -106,31 +142,33 @@ class Providers_list extends MY_Controller {
              {
                 $regdate = '';
              }
-             $result['"'.$i++.'"'] = array(
-               'id'=>$v->getId(),
-               'locked'=>(int)$v->getLocked(),
-               'active'=>(int)$v->getActive(),
-               'local'=>(int)$v->getLocal(),
-               'static'=>(int)$v->getStatic(),
+             $data['"'.$i++.'"'] = array(
+               'pid'=>$v->getId(),
+               'plocked'=>(int)$v->getLocked(),
+               'pactive'=>(int)$v->getActive(),
+               'plocal'=>(int)$v->getLocal(),
+               'pstatic'=>(int)$v->getStatic(),
                'pvisible'=>(int)$v->getPublicVisible(),
-               'available'=>(int)$v->getAvailable(),
-               'entityid'=>$v->getEntityId(),
-               'dname'=>$v->getNameToWebInLang($lang,$type),
-               'regdate'=>$regdate,
-               'helpurl'=>$v->getHelpdeskUrl(),
+               'pavailable'=>(int)$v->getAvailable(),
+               'pentityid'=>$v->getEntityId(),
+               'pname'=>$v->getNameToWebInLang($lang,$type),
+               'pregdate'=>$regdate,
+               'phelpurl'=>$v->getHelpdeskUrl(),
              );
 
           }
-          if(count($result)>0)
+          if(count($data)>0)
           {
-             $this->cache->save($cachedid, $result, 180);
+             $this->cache->save($cachedid, $data, 180);
           }
+          $result['data'] = &$data;
           return $result;
     
        }
        else
        {
-         return $cachedResult;
+         $result['data'] = &$cachedResult;
+         return $result;
        }
 
     }

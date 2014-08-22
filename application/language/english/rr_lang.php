@@ -350,6 +350,7 @@ $lang['adminofprov']                = 'Admin of provider';
 $lang['askedyourfed']               = 'asked your federation';
 $lang['invyourprov']                = 'invited your Provider';
 
+
 $lang['e_orgname']                  = 'Name of organization';
 $lang['e_orgdisplayname']           = 'Displayname of organization';
 $lang['e_orgurl']                   = 'URL to information about organization';

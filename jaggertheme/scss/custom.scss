@@ -156,10 +156,10 @@ a.bookentity {
 @include label();
 }
 
-.lbl-disabled {
+.lbl-disabled, .lbl-pactive-0 {
   background-color: $alert-background;
 }
-.lbl-locked, .lbl-static {
+.lbl-locked, .lbl-static, .lbl-plocked-1, .lbl-pstatic-1 {
    background-color: $warning-background;
 
 }
@@ -429,8 +429,6 @@ span.alert{
 td.highlight {
 
         background-color: darken($body-bg,10%);
-   //     color: white;
-
         font-weight: bolder;
         text-align: left;
 
