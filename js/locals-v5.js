@@ -3248,7 +3248,7 @@ $("a.afilter").click(function(){
                } //end filter condtion 
                  });
                 var prefix = $('div.subtitleprefix').text();
-                $('div.subtitle').append(prefix +': '+ counter);
+                $('div.subtitle').empty().append(prefix +': '+ counter);
                 $('div#providerslistresult').append(table);
                  table.tablesorter({sortList: [[0,0]]}); 
                  $("#filter").keyup(function() {
@@ -3261,7 +3261,6 @@ $("a.afilter").click(function(){
              }
         },
         beforeSend: function(){
-             $('div.subtitle').empty();
              $('dd.afilter').removeClass('active');
              $('div#providerslistresult').empty();
              $('div.alert-box').empty().hide();
@@ -3269,6 +3268,7 @@ $("a.afilter").click(function(){
         },
         error: function(xhr, status, error){
             $('#spinner').hide();
+            $('div.subtitle').empty();
             $('div.alert-box').append(error).show();
 
         }
