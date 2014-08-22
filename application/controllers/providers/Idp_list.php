@@ -40,7 +40,8 @@ class Idp_list extends MY_Controller {
         $this->load->library('zacl');
     }
 
-    function show($limit=null)
+    // deprecated to be removed soon
+    private function show($limit=null)
     {
         MY_Controller::$menuactive = 'idps';
         $this->title = lang('title_idplist');
@@ -162,6 +163,33 @@ class Idp_list extends MY_Controller {
         $data['idprows'] = $idprows;
         $data['content_view'] = 'providers/idp_list_view';
         $this->load->view('page', $data);
+    }
+
+    function showlist()
+    {
+
+        MY_Controller::$menuactive = 'idps';
+        $this->title = lang('title_idplist');
+        $this->load->helper('iconhelp');
+        $resource = 'idp_list';
+        $action = 'read';
+        $group = 'default';
+        $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
+        if (!$has_read_access)
+        {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = lang('rerror_nopermtolistidps');
+            $this->load->view('page', $data);
+            return;
+        }
+
+        $data['entitytype'] = 'idp';
+        $data['titlepage'] = lang('rr_tbltitle_listidps');
+        $data['subtitlepage'] = ' ';
+
+        $data['content_view'] = 'providers/providers_list_view';
+        $this->load->view('page',$data);
+
     }
 
 }

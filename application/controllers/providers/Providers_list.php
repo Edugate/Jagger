@@ -54,7 +54,15 @@ class Providers_list extends MY_Controller {
            return;
         }
         $this->load->library('zacl');
-        $resource = 'idp_list';
+        if(strcmp($type,'idp')==0)
+        {
+          $resource = 'idp_list';
+        }
+        else
+        {
+          $resource = 'sp_list';
+        }
+
         $action = 'read';
         $group = 'default';
         $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
@@ -72,7 +80,7 @@ class Providers_list extends MY_Controller {
     }
 
 
-    private function getList($type)
+    private function getList($type,$fresh=null)
     {
        $lang = MY_Controller::getLang();
        $keyprefix = getCachePrefix();
@@ -82,17 +90,26 @@ class Providers_list extends MY_Controller {
        $result['data'] = array();
        $result['baseurl'] = base_url();
        $result['statedefs'] = array(
-         'plocked'=>array('0'=>'unlocked','1'=>'locked'),
-         'pactive'=>array('0'=>'disabled','1'=>'enabled'),
-         'plocal'=>array('0'=>'external','1'=>'local'),
-         'pstatic'=>array('1'=>'static'),
-         'pvisible'=>array('0'=>'hidden','1'=>'visible'),
-         'pavailable'=>array('0'=>'unavailable','1'=>'available'),    
+         'plocked'=>array('1'=>''.lang('rr_locked').''),
+         'pactive'=>array('0'=>''.lang('rr_disabled').''),
+         'plocal'=>array('0'=>''.lang('rr_external').''),
+         'pstatic'=>array('1'=>''.lang('rr_static').''),
+         'pvisible'=>array('0'=>''.lang('lbl_publichidden').''),
+         'pavailable'=>array('0'=>'unavailable'),    
 
        );
 
+        if(strcmp($type,'idp')==0)
+        {
+            $lnamcol = lang('e_idpservicename');
+        }
+        else
+        {
+            $lnamcol = lang('e_spservicename');
+        }
+
        $result['columns'] = array(
-         'nameandentityid'=>array('colname'=>''.lang('e_orgname').'','status'=>1, 'cols'=>array('pname','pentityid')),
+         'nameandentityid'=>array('colname'=>''.$lnamcol.'','status'=>1, 'cols'=>array('pname','pentityid')),
          'url'=>array('colname'=>''.lang('tbl_title_helpurl').'','status'=>1,'cols'=>array('phelpurl')),
          'pregdate'=>array('colname'=>''.lang('tbl_title_regdate').'','status'=>1,'cols'=>array('pregdate')),
          'entstatus'=>array('colname'=>'status','status'=>1,'cols'=>array('plocked','pactive','pvisible','pstatic','plocal'))
@@ -101,7 +118,7 @@ class Providers_list extends MY_Controller {
        );
 
        $cachedResult = $this->cache->get($cachedid);
-       if(empty($cachedResult))
+       if(empty($cachedResult) || !empty($fresh))
        {
           log_message('debug','list of '.$type.'(s) for lang ('.$lang.') not found in cache ... retriving from db');
           $tmpprovs = new models\Providers();

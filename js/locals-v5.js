@@ -3141,20 +3141,52 @@ $("button.advancedmode").click(function(){
 
 
 // get list providers with dynamic list columns: in progress
-$("button#getlistproviders").click(function(){
-      var url = $(this).attr("value");
+$("a.afilter").click(function(){
+      var url = $(this).attr("href");
+      $('a.initiated').removeClass('initiatied');
+      var filter;
+      if($(this).hasClass('filterext'))
+      {
+         filter = 1;
+      }
+      else if($(this).hasClass('filterlocal'))
+      {
+         filter = 2;   
+      }
+      else
+      {
+         filter = 0;
+      }
       $.ajax({
         type: "GET",
         url: url,
-        timeout: 2500,
-        cache: false,
+        timeout: 5500,
+        cache: true,
         success:function(json){
           $('#spinner').hide();
+          if(filter == 1)
+          {
+             $('dd.filterext').addClass('active');
+
+          }
+          else if (filter == 2)
+          {
+             $('dd.filterlocal').addClass('active');
+
+          }
+          else
+          {
+             $('dd.filterall').addClass('active');
+ 
+            
+          }
+         
           var result = $.parseJSON(json);
           if(result)
           {
              var table = $('<table/>');
              table.attr('id', 'details');
+             table.addClass('filterlist');
              var thead = $('<thead/>');
              table.append(thead);
              var theadtr = $('<tr/>');
@@ -3163,6 +3195,7 @@ $("button#getlistproviders").click(function(){
              var Columns = new Array();
              var tmpcolumns = result.columns;
              var colstatus;
+             var counter = 0;
              $.each(tmpcolumns,function(i,v){
                  colstatus = v.status;
                  if(colstatus)
@@ -3179,9 +3212,11 @@ $("button#getlistproviders").click(function(){
              table.append(tbody);
              var data = result.data;
              $.each(data,function(j,w){
-               var tr = $('<tr/>');
-               tbody.append(tr);
-               $.each(Columns, function(p,z){
+               if((w.plocal == 1 && (filter == 2 || filter == 0)) || (w.plocal == 0 && filter<2))
+               {
+                  var tr = $('<tr/>');
+                  tbody.append(tr);
+                  $.each(Columns, function(p,z){
                      var cell='';
                      $.each(z, function(r,s){
                         if(s === 'pname' && w[s] != null)
@@ -3197,7 +3232,7 @@ $("button#getlistproviders").click(function(){
                         {
                             if(result['statedefs'][s][w[s]] != undefined)
                             {
-                              cell = cell +' <span class="lbl">'+result['statedefs'][s][w[s]]+'</span>';
+                              cell = cell +' <span class="lbl lbl-'+s+'-'+w[s]+'">'+result['statedefs'][s][w[s]]+'</span>';
                             }
                             else
                             {}
@@ -3208,19 +3243,37 @@ $("button#getlistproviders").click(function(){
                         }
                      });
                      tr.append('<td>'+cell+'</td>');
-               })               
-             });
-
-             $('div#testlist').append(table);
-              table.tablesorter(); 
-             // GINIT.initialize();
-          }
+                   })               
+                   counter = counter + 1;
+               } //end filter condtion 
+                 });
+                var prefix = $('div.subtitleprefix').text();
+                $('div.subtitle').append(prefix +': '+ counter);
+                $('div#providerslistresult').append(table);
+                 table.tablesorter({sortList: [[0,0]]}); 
+                 $("#filter").keyup(function() {
+                     $.uiTableFilter(table, this.value);
+                  });
+                 $('#filter-form').submit(function() {
+                     table.find("tbody > tr:visible > td:eq(1)").mousedown();
+                     return false;
+                }).focus();
+             }
         },
         beforeSend: function(){
-
-             $('div#testlist').empty();
+             $('div.subtitle').empty();
+             $('dd.afilter').removeClass('active');
+             $('div#providerslistresult').empty();
+             $('div.alert-box').empty().hide();
              $('#spinner').show(); 
+        },
+        error: function(xhr, status, error){
+            $('#spinner').hide();
+            $('div.alert-box').append(error).show();
 
         }
      }); 
+     return false;
 });
+
+$('a.initiated').trigger('click');
