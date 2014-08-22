@@ -7,7 +7,7 @@
  
     <div class="small-12 columns" data-equalizer>
     <div id="idps" class="box small-12 medium-6 columns" data-equalizer-watch>
-        <div class="box-header"><h4><?php echo '<a href="'.base_url().'providers/idp_list/show">'.lang('identityproviders').'</a>'; ?></h4></div>
+        <div class="box-header"><h4><?php echo '<a href="'.base_url().'providers/idp_list/showlist">'.lang('identityproviders').'</a>'; ?></h4></div>
         <div class="box-content">
         <?php
         echo '<ul class="no-bullet">';
@@ -21,7 +21,7 @@
     </div>
 
     <div id="sps" class="box large-6  small-12 medium-6 columns end" data-equalizer-watch>
-        <div class="box-header"><h4><?php echo '<a href="'.base_url().'providers/sp_list/show">'.lang('serviceproviders').'</a>'; ?></h4></div>
+        <div class="box-header"><h4><?php echo '<a href="'.base_url().'providers/sp_list/showlist">'.lang('serviceproviders').'</a>'; ?></h4></div>
         <div class="box-content">
         <?php
         echo '<ul class="no-bullet">';
