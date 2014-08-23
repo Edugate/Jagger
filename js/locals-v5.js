@@ -3253,7 +3253,7 @@ $("a.afilter").click(function(){
                 tbody.append(tbodyToInsert.join(''));
                 var endTime = new Date();
                 var durationTime = endTime - startTime;
-                console.log('DUPA: '+durationTime);
+                console.log('Providerlist table gen time: '+durationTime);
                 var prefix = $('div.subtitleprefix').text();
                 $('div.subtitle').empty().append(prefix +': '+ counter);
                 $('div#providerslistresult').append(table);
