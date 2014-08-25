@@ -138,6 +138,76 @@ class Manage extends MY_Controller
 
     }
 
+    private function _get_members($federation, $lang)
+    {
+        $keyprefix = getCachePrefix();
+        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
+        $cachedid = 'fedmbrs_'.$federation->getId().'_'.$lang;
+        $cachedResult = $this->cache->get($cachedid);
+
+        if(!empty($cachedResult))
+        {
+           log_message('debug',__METHOD__.' retrieved fedmembers (lang:'.$lang.') from cache');
+           return $cachedResult;
+
+        }
+        else
+        {
+           log_message('debug',__METHOD__.' no data in cache for id: '.$cachedid);
+        }
+        $fmembers = $federation->getActiveMembers();
+        if (empty($fmembers)) {
+            return array();
+        }
+
+        $membership = $federation->getMembership();
+        $membersInArray = array();
+        $membersInArray['definitions'] = array(
+           'idps'=>lang('identityproviders'),
+           'sps'=>lang('serviceproviders'),
+           'both'=>lang('identityserviceproviders'),
+           'preurl'=> base_url() . 'providers/detail/show/',
+           'nomembers'=>lang('rr_nomembers'),
+
+        );
+            foreach($membership as $m)
+            {
+                $joinstate = $m->getJoinState();
+                if($joinstate == 2)
+                {
+                   continue;
+                }
+                $p = $m->getProvider();
+                $ptype = strtolower($p->getType());
+                if($ptype === 'idp')
+                {
+                   $name = $p->getNameToWebInLang($lang,'idp');
+                }
+                else
+                {
+                   $name = $p->getNameToWebInLang($lang,'sp');
+                }
+                if(empty($name))
+                {
+                   $name = $p->getEntityId();
+                }
+                $membersInArray[''.$ptype.''][] = array(
+                   'pid'=>$p->getId(),
+                   'mdisabled'=>(int) $m->getIsDisabled(),
+                   'mbanned' => (int) $m->getIsBanned(),
+                   'entityid'=>$p->getEntityId(),
+                   'pname'=>$name,
+                   'penabled'=>$p->getAvailable(),
+                );
+            }
+        if( $this->cache->save($cachedid, $membersInArray, 180))
+        {
+            log_message('debug',__METHOD__.' cacheid stored '.$cachedid);
+        }
+        return $membersInArray;
+
+    }
+
     function showmembers($fedid)
     {
         if (!$this->input->is_ajax_request()) {
@@ -150,6 +220,7 @@ class Manage extends MY_Controller
             echo 'access denied. invalid session';
             return;
         }
+        $lang = MY_Controller::getLang();
 
         $this->load->library('zacl');
 
@@ -159,37 +230,10 @@ class Manage extends MY_Controller
             echo 'Federarion not found';
             return;
         }
-        $fmembers = $federation->getActiveMembers();
-        if (empty($fmembers)) {
-            set_status_header(404);
-            echo lang('error_nomembersforfed');
-            return;
-        }
-        $preurl = base_url() . 'providers/detail/show/';
-        $members = array();
-        $lang = MY_Controller::getLang();
-        foreach ($fmembers as $m) {
-            $type = strtolower($m->getType());
-            //$name = $m->getName();
-            $name= $m->getNameToWebInLang($lang,''.$type.'');
-            if (empty($name)) {
-                $name = $m->getEntityId();
-            }
-            $members['' . $type . ''][] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId());
-        }
-        /**
-        foreach($members as $k => $v)
-        {
-           foreach($v as $key => $p)
-           {
-                $namerow[$key]  = $p['name'];
-                $entityidrow[$key] = $p['entityid'];
-           }
-           array_multisort($namerow, SORT_ASC, $entityidrow, SORT_ASC, $members[$v]);
 
-        }
-        */
-        echo json_encode($members);
+        $result = $this->_get_members($federation, $lang);
+        echo json_encode($result);
+
     }
 
     function showcontactlist($fed_name, $type = NULL)
@@ -307,7 +351,6 @@ class Manage extends MY_Controller
 
         $data['federation_is_active'] = $federation->getActive();
         $federation_members = $federation->getMembers();
-        $membership = $federation->getMembership();
         $required_attributes = $federation->getAttributesRequirement()->getValues();
 
 
@@ -423,42 +466,17 @@ class Manage extends MY_Controller
             $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span> ' . anchor($data['meta_link_signed']));
         }
         else {
+           
 
-            $membersInArray = array('IDP'=>array(),'SP'=>array(),'BOTH'=>array());
+            $membersInArray = array('idp'=>array(),'sp'=>array(),'both'=>array());
             $lang = MY_Controller::getLang();
-            foreach($membership as $m)
-            {
-                $joinstate = $m->getJoinState();
-                if($joinstate == 2)
-                {
-                   continue;
-                }
-                $p = $m->getProvider();
-                $ptype = $p->getType();
-                if($ptype === 'IDP')
-                {
-                   $name = $p->getNameToWebInLang($lang,'idp');
-                }
-                else
-                {
-                   $name = $p->getNameToWebInLang($lang,'sp');
-                }
-                if(empty($name))
-                {
-                   $name = $p->getEntityId();
-                }
-                $membersInArray[''.$ptype.''][] = array(
-                   'pid'=>$p->getId(),
-                   'mdisabled'=>(int) $m->getIsDisabled(),
-                   'mbanned' => (int) $m->getIsBanned(),
-                   'entityid'=>$p->getEntityId(),
-                   'pname'=>$name,
-                   'penabled'=>$p->getAvailable(),
-                );
-            }
-            $IDPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['IDP']);
-            $SPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['SP']);
-            $BOTHmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['BOTH']);
+          
+            $membersInArray2 = $this->_get_members($federation, $lang); 
+            $membersInArray = array_merge($membersInArray,$membersInArray2);
+
+            $IDPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['idp']);
+            $SPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['sp']);
+            $BOTHmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['both']);
             $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"'));
 
             $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));

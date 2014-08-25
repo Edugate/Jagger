@@ -746,17 +746,18 @@ var GINIT = {
                         {
                             if (!data.idp && !data.sp && !data.both)
                             {
-                                div_data = '<li> no members</li>';
+                                div_data = '<div>'+data.definitions.nomembers+'</div>';
                                 value.append(div_data);
                             }
                             else
                             {
+                                var preurl = data.definitions.preurl;
                                 if (data.idp)
                                 {
-                                    stitle = $('<li>Identity Providers</li>');
+                                    stitle = $('<div>'+data.definitions.idps+'</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.idp, function(i, v) {
-                                        div_data = '<li class="homeorg"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="homeorg"><a href="' + preurl + v.pid +'">' + v.pname + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -764,10 +765,10 @@ var GINIT = {
                                 }
                                 if (data.sp)
                                 {
-                                    stitle = $('<li>Service Providers</li>');
+                                    stitle = $('<div>'+data.definitions.sps+'</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.sp, function(i, v) {
-                                        div_data = '<li class="resource"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="resource"><a href="' + preurl + v.pid + '">' + v.pname + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -775,10 +776,10 @@ var GINIT = {
                                 }
                                 if (data.both)
                                 {
-                                    stitle = $('<li>Services are both IdP and SP</li>');
+                                    stitle = $('<div>'+data.definitions.both+'</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.both, function(i, v) {
-                                        div_data = '<li class="both"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="both"><a href="' + preurl + v.pid+ '">' + v.pname + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);

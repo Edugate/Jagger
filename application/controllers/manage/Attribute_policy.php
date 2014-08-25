@@ -366,7 +366,7 @@ class Attribute_policy extends MY_Controller {
         //$sps = $this->tmp_providers->getCircleMembersSP($idp);
         $sps = $this->tmp_providers->getCircleMembersLight($idp);
         foreach ($sps as $key) {
-            $data['formdown'][$key->getId()] = $key->getName() . ' (' . $key->getEntityId() . ')';
+            $data['formdown'][$key->getId()] = $key->getNameToWebInLang($lang,'sp') . ' (' . $key->getEntityId() . ')';
         }
 
         $data['idpid'] = $search_idp;
