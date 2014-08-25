@@ -746,17 +746,18 @@ var GINIT = {
                         {
                             if (!data.idp && !data.sp && !data.both)
                             {
-                                div_data = '<li> no members</li>';
+                                div_data = '<div>'+data.definitions.nomembers+'</div>';
                                 value.append(div_data);
                             }
                             else
                             {
+                                var preurl = data.definitions.preurl;
                                 if (data.idp)
                                 {
-                                    stitle = $('<li>Identity Providers</li>');
+                                    stitle = $('<div>'+data.definitions.idps+'</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.idp, function(i, v) {
-                                        div_data = '<li class="homeorg"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="homeorg"><a href="' + preurl + v.pid +'">' + v.pname + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -764,10 +765,10 @@ var GINIT = {
                                 }
                                 if (data.sp)
                                 {
-                                    stitle = $('<li>Service Providers</li>');
+                                    stitle = $('<div>'+data.definitions.sps+'</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.sp, function(i, v) {
-                                        div_data = '<li class="resource"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="resource"><a href="' + preurl + v.pid + '">' + v.pname + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -775,10 +776,10 @@ var GINIT = {
                                 }
                                 if (data.both)
                                 {
-                                    stitle = $('<li>Services are both IdP and SP</li>');
+                                    stitle = $('<div>'+data.definitions.both+'</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.both, function(i, v) {
-                                        div_data = '<li class="both"><a href="' + v.url + '">' + v.name + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="both"><a href="' + preurl + v.pid+ '">' + v.pname + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -3211,11 +3212,13 @@ $("a.afilter").click(function(){
              var tbody = $('<tbody/>');
              table.append(tbody);
              var data = result.data;
+             var startTime = new Date();
+             var tbodyToInsert = [];
+             var a = 0;
              $.each(data,function(j,w){
                if((w.plocal == 1 && (filter == 2 || filter == 0)) || (w.plocal == 0 && filter<2))
                {
-                  var tr = $('<tr/>');
-                  tbody.append(tr);
+                  tbodyToInsert[a++] = '<tr>';
                   $.each(Columns, function(p,z){
                      var cell='';
                      $.each(z, function(r,s){
@@ -3234,22 +3237,29 @@ $("a.afilter").click(function(){
                             {
                               cell = cell +' <span class="lbl lbl-'+s+'-'+w[s]+'">'+result['statedefs'][s][w[s]]+'</span>';
                             }
-                            else
-                            {}
                         }
                         else if(w[s] != null)
                         {
                            cell = cell + '  '+w[s];
                         }
                      });
-                     tr.append('<td>'+cell+'</td>');
+                      tbodyToInsert[a++] = '<td>'+cell+'</td>';
+
                    })               
-                   counter = counter + 1;
+                   counter++;
+                   tbodyToInsert[a++] = '</tr>';
+
                } //end filter condtion 
                  });
+                tbody.append(tbodyToInsert.join(''));
+                var endTime = new Date();
+                var durationTime = endTime - startTime;
+                console.log('Providerlist table gen time: '+durationTime);
                 var prefix = $('div.subtitleprefix').text();
                 $('div.subtitle').empty().append(prefix +': '+ counter);
                 $('div#providerslistresult').append(table);
+                if(counter > 1)
+                {
                  table.tablesorter({sortList: [[0,0]]}); 
                  $("#filter").keyup(function() {
                      $.uiTableFilter(table, this.value);
@@ -3258,6 +3268,7 @@ $("a.afilter").click(function(){
                      table.find("tbody > tr:visible > td:eq(1)").mousedown();
                      return false;
                 }).focus();
+                }
              }
         },
         beforeSend: function(){
