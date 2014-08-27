@@ -63,6 +63,10 @@ if(!isset($venabled))
 {
  $venabled = false;
 }
+if(!isset($vmandatory))
+{
+ $vmandatory = false;
+}
 
 echo form_open();
 echo '<fieldset><legend>'.lang('general').'</legend>';
@@ -80,6 +84,14 @@ echo '</div><div class="small-6 large-7 columns end">';
 
 ?>
 <input type="checkbox" name="venabled" id="venabled" value="yes" <?php echo set_checkbox('venabled', 'yes',$venabled); ?> style="margin:10px" />
+<?php
+echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">';
+echo '<label for="vmandatory" class="right inline">'.lang('rr_mandatory').'</label>';
+echo '</div><div class="small-6 large-7 columns end">';
+?>
+<input type="checkbox" name="vmandatory" id="vmandatory" value="yes" <?php echo set_checkbox('vmandatory', 'yes', $vmandatory); ?> style="margin:10px" />
 <?php
 echo '</div></div>';
 echo '<div class="small-12 columns">';

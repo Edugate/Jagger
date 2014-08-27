@@ -58,6 +58,11 @@ class FederationValidator {
     protected $isEnabled;
 
     /**
+     * @Column(name="is_mandatory",type="boolean",nullable=false)
+     */
+    protected $isMandatory;
+
+    /**
      * @Column(type="string",length=256, nullable=false)
      */
     protected $url;
@@ -128,6 +133,7 @@ class FederationValidator {
     public function __construct()
     {
         $this->isEnabled = false;
+        $this->isMandatory = false;
         $this->documentType = 'xml';
     }
 
@@ -147,6 +153,10 @@ class FederationValidator {
     public function getEnabled()
     {
        return  $this->isEnabled;
+    }
+    public function getMandatory()
+    {
+        return $this->isMandatory;
     }
     public function getMethod()
     {
@@ -242,6 +252,11 @@ class FederationValidator {
     public function setEnabled($arg)
     {
         $this->isEnabled = $arg;
+        return $this;
+    }
+    public function setMandatory($arg)
+    {
+        $this->isMandatory = $arg;
         return $this;
     }
     public function setUrl($url)

@@ -154,6 +154,15 @@ class Fvalidatoredit extends MY_Controller {
                 $fvalidator->setEnabled(FALSE);
             }
 
+            $mandatory = $this->input->post('vmandatory');
+            if (!empty($mandatory) && strcmp($mandatory, 'yes') == 0)
+            {
+                $fvalidator->setMandatory(TRUE);
+            } else
+            {
+                $fvalidator->setMandatory(FALSE);
+            }
+
             $argseparator = $this->input->post('vargsep');
             $fvalidator->setSeparator($argseparator);
 
@@ -286,6 +295,7 @@ class Fvalidatoredit extends MY_Controller {
                 }
                 $data['vmsgelements'] = implode(' ', $fvalidator->getMessageCodeElements());
                 $data['venabled'] = $fvalidator->getEnabled();
+                $data['vmandatory'] = $fvalidator->getMandatory();
             }
             $data['content_view'] = 'manage/fvalidator_edit_view';
             $data['titlepage'] = lang('rr_federation').': '.anchor($data['federationlink'],$data['federationname']);
