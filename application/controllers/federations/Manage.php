@@ -343,6 +343,23 @@ class Manage extends MY_Controller
         if (!empty($b) and is_array($b) and isset($b['fed'][$data['federation_id']])) {
             $bookmarked = true;
         }
+        $defaultDigest = $this->config->item('signdigest');
+        if(empty($defaultDigest))
+        {
+          $defaultDigest = 'SHA-1';
+        }
+
+        $digest = $federation->getDigest();
+        if(empty($digest))
+        {
+          $digest = $defaultDigest;
+        }
+        $digestExport = $federation->getDigestExport();
+        if(empty($digestExport))
+        {
+           $digestExport = $defaultDigest;
+        }
+        
         $data['bookmarked'] = $bookmarked;
         $data['federation_name'] = $federation->getName();
         $data['federation_sysname'] = $federation->getSysname();
@@ -479,17 +496,17 @@ class Manage extends MY_Controller
             $BOTHmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['both']);
             $data['result']['metadata'][] = array(lang('rr_fedmetaunsingedlink'), $data['meta_link'] . " " . anchor($data['meta_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"'));
 
-            $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink'), $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+            $data['result']['metadata'][] = array(lang('rr_fedmetasingedlink').' <span class="label">'.$digest.'</span>', $data['meta_link_signed'] . " " . anchor_popup($data['meta_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
 
             $lexportenabled = $federation->getLocalExport();
             if ($lexportenabled === TRUE) {
                 $data['result']['metadata'][] = array(lang('rr_fedmetaexportunsingedlink'), $data['metaexport_link'] . " " . anchor_popup($data['metaexport_link'], '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"'));
-                $data['result']['metadata'][] = array(lang('rr_fedmetaexportsingedlink'), $data['metaexport_link_signed'] . " " . anchor_popup($data['metaexport_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
+                $data['result']['metadata'][] = array(lang('rr_fedmetaexportsingedlink').' <span class="label">'.$digestExport.'</span>', $data['metaexport_link_signed'] . " " . anchor_popup($data['metaexport_link_signed'], '<img src="' . base_url() . 'images/icons/arrow.png"/>'));
             }
 
             $gearmanenabled = $this->config->item('gearman');
             if ($has_write_access && !empty($gearmanenabled)) {
-                $data['result']['metadata'][] = array('' . lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata')) . '', '<a href="' . base_url() . 'msigner/signer/federation/' . $federation->getId() . '" id="fedmetasigner"/><button type="button" class="savebutton staricon">' . lang('btn_signmetadata') . '</button></a>', '');
+                $data['result']['metadata'][] = array('' . lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata')) . '', '<a href="' . base_url() . 'msigner/signer/federation/' . $federation->getId() . '" id="fedmetasigner"/><button type="button" class="savebutton staricon tiny">' . lang('btn_signmetadata') . '</button></a>', '');
             }
 
             $data['result']['membership'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));

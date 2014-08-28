@@ -35,6 +35,12 @@ class Msigner extends MY_Controller {
        }
 
 
+       $digestmethod = $this->config->item('signdigest');
+       if(empty($digestmethod))
+       {
+          $digestmethod = 'SHA-1';
+       }
+
        $type =  $this->uri->segment(3);
        $id = $this->uri->segment(4);
        if(empty($type) || empty($id))
@@ -100,13 +106,24 @@ class Msigner extends MY_Controller {
                return;
            }
            //$encfedname = base64url_encode($fed->getName());
+           $digest1 = $fed->getDigest();
+           if(empty($digest1))
+           {
+              $digest1 = $digestmethod;
+           }
+           $digest2 = $fed->getDigestExport();
+           if(empty($digest2))
+           {
+              $digest2 = $digestmethod;
+           }
+            
            $encfedname = $fed->getSysname();
            $sourceurl = base_url().'metadata/federation/'.$encfedname.'/metadata.xml';
-           $options[] = array('src'=>''.$sourceurl.'','type'=>'federation','encname'=>''.$encfedname.'');
+           $options[] = array('src'=>''.$sourceurl.'','type'=>'federation','encname'=>''.$encfedname.'','digest'=>''.$digest1.'');
            $localexport = $fed->getLocalExport();
            if(!empty($localexport))
            {
-              $options[] = array('src'=>''.base_url().'metadata/federationexport/'.$encfedname.'/metadata.xml','type'=>'federationexport','encname'=>''.$encfedname.'');
+              $options[] = array('src'=>''.base_url().'metadata/federationexport/'.$encfedname.'/metadata.xml','type'=>'federationexport','encname'=>''.$encfedname.'','digest'=>''.$digest2.'');
            }
 
            foreach($options as $opt)
@@ -140,10 +157,15 @@ class Msigner extends MY_Controller {
               echo lang('error403');
               return;
           }
+          $digest1 = $provider->getDigest();
+          if(empty($digest1))
+          {
+             $digest1 = $digestmethod;
+          }
           $options = array();
           $encodedentity = base64url_encode($provider->getEntityId()); 
           $sourceurl = base_url().'metadata/circle/'.$encodedentity.'/metadata.xml';
-          $options[] = array('src'=>''.$sourceurl.'','type'=>'provider','encname'=>''.$encodedentity.'');
+          $options[] = array('src'=>''.$sourceurl.'','type'=>'provider','encname'=>''.$encodedentity.'','digest'=>''.$digest1.'');
           foreach($options as $opt)
           {
               try{

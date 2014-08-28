@@ -45,6 +45,7 @@ class Fededit extends MY_Controller {
         {
            $fedid = $this->fedid;
         }
+        $allowedDigests = array('SHA-1','SHA-256');
         $ar1 = array('attr'=>'name','fedid'=>''.$fedid.'');
         $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'trim|required|min_length[5]|max_length[128]|xss_clean|federation_updateunique['.serialize($ar1).']');
         $ar2 = array('attr'=>'urn','fedid'=>''.$fedid.'');
@@ -55,6 +56,9 @@ class Fededit extends MY_Controller {
         $this->form_validation->set_rules('ispublic',lang('rr_isfedpublic'),'trim|xss_clean|max_length[10]');
         $this->form_validation->set_rules('lexport',lang('rr_lexport_enabled'),'trim|xss_clean|max_length[10]');
         $this->form_validation->set_rules('publisher',lang('rr_fed_publisher'),'trim|xss_clean|max_length[500]');
+        $this->form_validation->set_rules('digestmethod',lang('digestmethodsign'),'trim|xss_clean|matches_inarray['.serialize($allowedDigests).']');
+        $this->form_validation->set_rules('digestmethodext',lang('digestmethodexportsign'),'trim|xss_clean|matches_inarray['.serialize($allowedDigests).']');
+
         return $this->form_validation->run();
     }
 
@@ -70,6 +74,7 @@ class Fededit extends MY_Controller {
         {
             show_error(lang('error_fednotfound'), 404);
         }
+        $allowedDigests = array('SHA-1','SHA-256');
         $this->load->library('form_element');
         $resource = $fed->getId();
         $this->fedid = $resource;
@@ -93,6 +98,8 @@ class Fededit extends MY_Controller {
             $lexport = $this->input->post('lexport');
             $ispublic = $this->input->post('ispublic');
             $publisher = $this->input->post('publisher');
+            $digest = $this->input->post('digestmethod');
+            $digestExport = $this->input->post('digestmethodext');
             if ($infedid != $fedid)
             {
                 show_error('Incorrect post', 403);
@@ -127,6 +134,8 @@ class Fededit extends MY_Controller {
             $fed->setPublisher($publisher);
             $fed->setDescription($indesc);
             $fed->setTou($intou);
+            $fed->setDigest($digest);
+            $fed->setDigestExport($digestExport);
             $this->em->persist($fed);
             try
             {

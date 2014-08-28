@@ -111,6 +111,11 @@ class Provider {
      */
     protected $scope;
 
+    /**
+     * @Column(type="string",length=10, nullable=true)
+     */
+    protected $digest;
+
 
     /**
      * helpdeskurl is used in metadata, it can be http(s) or mailto
@@ -841,6 +846,12 @@ class Provider {
         {
             return false;
         }
+    }
+
+    public function setDigest($a=null)
+    {
+       $this->digest = $a;
+       return $this;
     }
 
     public function setCountry($country = null)
@@ -2066,6 +2077,11 @@ class Provider {
         return $this->_em->createQuery('SELECT u FROM Models\Provider u WHERE name = "' . $name . '"')->getResult();
     }
 
+    public function getDigest()
+    {
+       return $this->digest;
+    }
+
     public function getValidTo()
     {
         return $this->validto;
@@ -2075,6 +2091,8 @@ class Provider {
     {
         return $this->validfrom;
     }
+
+   
 
     /**
      * return boolean if entity is between validfrom and validto dates

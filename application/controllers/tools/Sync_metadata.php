@@ -33,6 +33,11 @@ class Sync_metadata extends CI_Controller {
     {
         $this->output->set_content_type('text/plain');
         $baseurl = base_url();
+        $digestmethod = $this->config->item('signdigest');
+        if(empty($digestmethod))
+        {
+           $digestmethod = 'SHA-1';
+        }
         $result = array();
         if (empty($i))
         {
@@ -41,12 +46,22 @@ class Sync_metadata extends CI_Controller {
             {
                 foreach ($federations as $f)
                 {
+                    $digest = $f->getDigest();
+                    if(empty($digest))
+                    {
+                       $digest = $digestmethod;
+                    }
                     $url = $baseurl . 'metadata/federation/' . $f->getSysname() . '/metadata.xml';
-                    $result[] = array('group' => 'federation', 'name' => $f->getSysname(), 'url' => $url);
+                    $result[] = array('group' => 'federation', 'name' => $f->getSysname(), 'url' => $url,'digest'=>$digest);
                     if ($f->getLocalExport() === TRUE)
                     {
+                        $digestEx = $f->getDigestExport();
+                        if(empty($digestEx))
+                        {
+                          $digestEx = $digestmethod;
+                        }
                         $url = $baseurl . 'metadata/federationexport/' . $f->getSysname() . '/metadata.xml';
-                        $result[] = array('group' => 'federationexport', 'name' => $f->getSysname(), 'url' => $url);
+                        $result[] = array('group' => 'federationexport', 'name' => $f->getSysname(), 'url' => $url,'digest'=>$digestEx);
                     }
                 }
             }
@@ -66,14 +81,19 @@ class Sync_metadata extends CI_Controller {
         {
             foreach ($providers as $p)
             {
+                $digest = $p->getDigest();
+                if(empty($digest))
+                {
+                    $digest = $digestmethod;
+                }
                 $url = $baseurl . "metadata/circle/" . base64url_encode($p->getEntityId()) . "/metadata.xml";
-                $result[] = array('group' => 'provider', 'name' => base64url_encode($p->getEntityId()), 'url' => $url);
+                $result[] = array('group' => 'provider', 'name' => base64url_encode($p->getEntityId()), 'url' => $url,'digest'=>$digest);
             }
         }
         $out = "";
         foreach ($result as $r)
         {
-            $out .= $r['group'] . ";" . $r['name'] . ";" . $r['url'] . "\n";
+            $out .= $r['group'] . ";" . $r['name'] . ";" . $r['url'] . ";".$r['digest'].PHP_EOL;
         }
 
         $this->output->set_output($out);

@@ -87,7 +87,8 @@ $lang['btnparsemeta']               = 'Parse metadata';
 $lang['btnaddinlang']               = 'Add in new language';
 $lang['regpol_language'] =            'Language';
 $lang['rr_lang'] =                  'Language';
-
+$lang['digestmethodsign']          = 'Digest method for signing metadata';
+$lang['digestmethodexportsign']          = 'Digest method for signing exported metadata';
 $lang['rr_administration'] =        'Administration';
 $lang['advancedmode']              = 'Advanced mode';
 $lang['btnlogout']                 = 'Sign out';
