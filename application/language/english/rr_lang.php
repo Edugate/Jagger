@@ -86,6 +86,7 @@ $lang['btnupdate']                  = 'Update';
 $lang['btnparsemeta']               = 'Parse metadata';
 $lang['btnaddinlang']               = 'Add in new language';
 $lang['regpol_language'] =            'Language';
+$lang['rr_lang'] =                  'Language';
 
 $lang['rr_administration'] =        'Administration';
 $lang['advancedmode']              = 'Advanced mode';
@@ -403,6 +404,8 @@ $lang['rr_logoisunsigned']          = 'Logo has been detached from your provider
 $lang['rr_uploadlogo']              = 'Upload image';
 $lang['rr_logoexternal']            = 'Logo from external source';
 $lang['rr_extlogourl']              = 'External URL logo';
+$lang['rr_size'] =              'Size';
+$lang['rr_unspecified']         = 'unspecified';
 $lang['rr_errextlogourl']              = 'Incorrect external URL provided';
 $lang['rr_errextlogourlformat']              = 'URL does not contain valid image format';
 $lang['rr_logosonthestorage']       = 'Available logos on the local storage';
