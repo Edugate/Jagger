@@ -98,6 +98,18 @@ class Federation
      */
     protected $is_local;
 
+
+    /**
+     * @Column(name="digest", type="string",length=10, nullable=true)
+     */
+     protected $digest;
+
+    /**
+     * @Column(name="digestexport", type="string",length=10, nullable=true)
+     */
+     protected $digestexport;
+
+
      /**
       * add attribute requirements into generated metadata
       * @Column(name="attrreq_inmeta", type="boolean", nullable=false)
@@ -180,6 +192,18 @@ class Federation
        return $this;
    }
     
+
+   public function setDigest($a=null)
+   {
+      $this->digest = $a;
+      return $this;
+   }
+   public function setDigestExport($a=null)
+   {
+      $this->digestexport = $a;
+      return $this;
+   }
+
 
     public function setUrn($urn)
     {
@@ -514,6 +538,15 @@ class Federation
     public function getTou()
     {
         return $this->tou;
+    }
+
+    public function getDigest()
+    {
+        return $this->digest;
+    }
+    public function getDigestExport()
+    {
+        return $this->digestexport;
     }
 
     public function getOwner()

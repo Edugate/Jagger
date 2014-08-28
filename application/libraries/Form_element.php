@@ -2377,6 +2377,64 @@ class Form_element {
         return $result;
     }
 
+    public function NgenerateLogoForm(models\Provider $ent, $ses = null)
+    {
+       $langs = languagesCodes();
+       $type = $ent->getType();
+       $sessform = FALSE;
+       if(is_array($ses))
+       {
+          $sessform = TRUE;
+       }
+       
+       if(!$sessform)
+       {
+          $metaext = $ent->getExtendMetadata();
+          foreach($metaext as $v)
+          {
+             $velement = $v->getElement();
+             if(strcmp($velement,'Logo')!=0)
+             {
+                continue;
+             }
+             $attrs = $v->getAttributes();
+             if(isset($attrs['xml:lang']))
+             {
+               $lang = $attrs['lang'];
+             }
+             else
+             {
+               $lang = 0;
+             }
+             $logos[$v->getType()][''.$v->getId().''] = array(
+                'url'=>''.$v->getLogoValue().'',
+                'lang'=> ''.$lang.'',
+                'width'=>$attrs['width'],
+                'height'=>$attrs['height'],
+             );
+             
+
+          }
+       }
+       $result = array();
+
+       $result[] = '';
+       $p='<ul class="clearing-thumbs small-block-grid-4" data-clearing>';
+       foreach($logos['idp'] as $k=>$v)
+       {
+          //$result[] = '<img src="'.$v['url'].'"/>';
+          $p .= '<li><a href="'.$v['url'].'"><img data-caption="caption here..." src="'.$v['url'].'"></a></li>';
+       }
+       $p .= '</ul>';
+       $result[] =$p;
+       $result[] = '';
+
+     
+       return $result;
+       
+      
+    }
+
     public function NgenerateUiiForm(models\Provider $ent, $ses = null)
     {
 
@@ -2427,11 +2485,11 @@ class Form_element {
             /**
              * start display
              */
-            $result[] = '';
             if (strcasecmp($type, 'BOTH') == 0)
             {
                 $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
             }
+            $result[] = '';
             //$result[] = '<div class="langgroup">' . lang('e_idpservicename') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
@@ -2713,11 +2771,11 @@ class Form_element {
             /**
              * start display
              */
-            $result[] = '';
             if (strcasecmp($type, 'BOTH') == 0)
             {
-                $result[] = '<div class="section label small-12">' . lang('serviceprovider') . '</div>';
+                $result[] = '<div class="section">' . lang('serviceprovider') . '</div>';
             }
+            $result[] = '';
             //$result[] = '<div class="langgroup">' . lang('e_spservicename') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
@@ -3167,9 +3225,19 @@ class Form_element {
         $f .= '<div class="small-12 columns">';
         $f .= '<div class="small-3 columns">' . form_label(lang('rr_include_attr_in_meta'), 'incattrs') . '</div><div class="small-8 large-7 columns">' . form_checkbox('incattrs', 'accept', set_value('incattrs', $federation->getAttrsInmeta())) . '</div><div class="small-1 large-2 "></div></div>';
         $f .= '</div>';
+
         $f .= '<div class="small-12 columns">';
         $f .= '<div class="small-3 columns">' . form_label(lang('rr_lexport_enabled'), 'lexport') . '</div><div class="small-8 large-7 columns">' . form_checkbox('lexport', 'accept', set_value('lexport', $federation->getLocalExport())) . '</div><div class="small-1 large-2 "></div>';
         $f .= '</div>';
+
+        $f .= '<div class="small-12 columns">';
+        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodsign'), 'digestmethod') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethod', array('SHA-1'=>'SHA-1','SHA-256'=>'SHA-256'), set_value('digestmethod', $federation->getDigest())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '</div>';
+
+        $f .= '<div class="small-12 columns">';
+        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodexportsign'), 'digestmethodext') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethodext', array('SHA-1'=>'SHA-1','SHA-256'=>'SHA-256'), set_value('digestmethodext', $federation->getDigestExport())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '</div>';
+
         $f .= '<div class="small-12 columns">';
         $f .='<div class="small-3 columns">' . form_label(lang('rr_description'), 'description') . '</div>';
         $f .='<div class="small-8 large-7 columns">' . form_textarea('description', set_value('description', $federation->getDescription())) . '</div>';
