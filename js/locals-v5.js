@@ -1,658 +1,656 @@
-jQuery.fn.autoWidth = function(options) 
-{ 
-  var settings = { 
-        limitWidth   : false
-  }; 
+jQuery.fn.autoWidth = function(options)
+{
+    var settings = {
+        limitWidth: false
+    };
 
-  if(options) { 
+    if (options) {
         jQuery.extend(settings, options);
     }
 
-    var maxWidth = 0; 
+    var maxWidth = 0;
 
-  this.each(function(){ 
-        if ($(this).width() > maxWidth){ 
-          if(settings.limitWidth && maxWidth >= settings.limitWidth) { 
-            maxWidth = settings.limitWidth; 
-          } else { 
-            maxWidth = $(this).width(); 
-          } 
-        } 
-  });   
+    this.each(function() {
+        if ($(this).width() > maxWidth) {
+            if (settings.limitWidth && maxWidth >= settings.limitWidth) {
+                maxWidth = settings.limitWidth;
+            } else {
+                maxWidth = $(this).width();
+            }
+        }
+    });
 
-  this.width(maxWidth); 
+    this.width(maxWidth);
 };
-jQuery.fn.toggleOption = function( show ) {
-    jQuery( this ).toggle( show );
-    if( show ) {
-        while( jQuery( this ).parent( 'span.toggleOption' ).length )
-            jQuery( this ).unwrap( );
+jQuery.fn.toggleOption = function(show) {
+    jQuery(this).toggle(show);
+    if (show) {
+        while (jQuery(this).parent('span.toggleOption').length)
+            jQuery(this).unwrap( );
     } else {
-        jQuery( this ).wrap( '<span class="toggleOption" style="display: none;" />' );
+        jQuery(this).wrap('<span class="toggleOption" style="display: none;" />');
     }
 };
 
 var BINIT = {
-    
-    initFvalidators: function(){
-       
-$("ul.validatorbuttons button").on('click',function(e){
-     var link = $(this).attr("value");
-     $.ajax({
-       type: "GET",
-       url: link,
-       timeout: 2500,
-       cache: true,
-       success: function(json){
-                $('#spinner').hide();
-                var data = $.parseJSON(json);
-               if(data)
-               {
-                    var vfedid = data.fedid;
-                    var fvalidid = data.id;
-                    var fvalidname = data.name;
-                    var fvaliddesc = data.desc;
-                   $('#fvform input[name="fedid"]').val(vfedid);
-                    $('#fvform input[name="fvid"]').val(fvalidid);
-                    $("div#fvalidesc").replaceWith('<div id="fvalidesc"><b>' + fvalidname + '</b><p>' + fvaliddesc + '</p></div>');
-                    $('#fvform').show();
- 
-               } 
+    initFvalidators: function() {
 
-       },
-            beforeSend: function() {
-                $("#fvresult").hide();
-                $('#spinner').show();
-             
-            },
-            error: function() {
-                $('#spinner').hide();
-                $('#fvform').hide();
-                $('#fvresult').hide();
-            }
-       
- 
+        $("ul.validatorbuttons button").on('click', function(e) {
+            var link = $(this).attr("value");
+            $.ajax({
+                type: "GET",
+                url: link,
+                timeout: 2500,
+                cache: true,
+                success: function(json) {
+                    $('#spinner').hide();
+                    var data = $.parseJSON(json);
+                    if (data)
+                    {
+                        var vfedid = data.fedid;
+                        var fvalidid = data.id;
+                        var fvalidname = data.name;
+                        var fvaliddesc = data.desc;
+                        $('#fvform input[name="fedid"]').val(vfedid);
+                        $('#fvform input[name="fvid"]').val(fvalidid);
+                        $("div#fvalidesc").replaceWith('<div id="fvalidesc"><b>' + fvalidname + '</b><p>' + fvaliddesc + '</p></div>');
+                        $('#fvform').show();
 
-     });
-});
+                    }
+
+                },
+                beforeSend: function() {
+                    $("#fvresult").hide();
+                    $('#spinner').show();
+
+                },
+                error: function() {
+                    $('#spinner').hide();
+                    $('#fvform').hide();
+                    $('#fvresult').hide();
+                }
+
+
+
+            });
+        });
 
     }
 };
 
 var GINIT = {
-
     initialize: function() {
-    $("table.sortable").tablesorter();
+        $("table.sortable").tablesorter();
 
-    var baseurl = $("[name='baseurl']").val();
-    if (baseurl === undefined)
-    {
-        baseurl = '';
-    }
-
-
-    $("input#advanced").click(function(){
-         var thisCheck = $(this);
-         if(thisCheck.is(':checked'))
-         {
-    $("button.simplemode").hide();
-    $("button.advancedmode").show();
-   
-         }
-         else
-         {
-    $("button.simplemode").show();
-    $("button.advancedmode").hide();
+        var baseurl = $("[name='baseurl']").val();
+        if (baseurl === undefined)
+        {
+            baseurl = '';
+        }
 
 
-         } 
+        $("input#advanced").click(function() {
+            var thisCheck = $(this);
+            if (thisCheck.is(':checked'))
+            {
+                $("button.simplemode").hide();
+                $("button.advancedmode").show();
 
-    });
-    $("a.bookentity").click(function() {
-        var link = $(this), url = link.attr("href");
+            }
+            else
+            {
+                $("button.simplemode").show();
+                $("button.advancedmode").hide();
 
-        $.ajax({
-            type: "GET",
-            url: url,
-            timeout: 2500,
-            cache: false,
-            success:function(data){
-                $("a.bookentity").show();
-                $(this).hide();
-                GINIT.initialize(); 
-           }
+
+            }
+
         });
-        return false;
-    });
+        $("a.bookentity").click(function() {
+            var link = $(this), url = link.attr("href");
 
- 
-  $('#providerlogtab').on('toggled', function (event, tab) {
-          var domElement = tab;//.get(0);
-          var oko = domElement.find("[data-reveal-ajax-tab]");
-          var link = oko.attr("data-reveal-ajax-tab");
-          if(link !== undefined)
-          {
-             //$('#providerlogtab').empty();
-             $.ajax({
-                cache:true,
-                type: 'GET',
-                url: link,
-                success:function(data){
-                   $('#providerlogtab').empty().append(data);
-                  $(document).foundation('reflow');
-                  $('.accordionButton').unbind();
-                  $('#editprovider').unbind();
+            $.ajax({
+                type: "GET",
+                url: url,
+                timeout: 2500,
+                cache: false,
+                success: function(data) {
+                    $("a.bookentity").show();
+                    $(this).hide();
+                    GINIT.initialize();
+                }
+            });
+            return false;
+        });
 
-                   GINIT.initialize();
-                      
-                } 
-                
-             });
-          }
 
-          
-          
-  });
+        $('#providerlogtab').on('toggled', function(event, tab) {
+            var domElement = tab;//.get(0);
+            var oko = domElement.find("[data-reveal-ajax-tab]");
+            var link = oko.attr("data-reveal-ajax-tab");
+            if (link !== undefined)
+            {
+                //$('#providerlogtab').empty();
+                $.ajax({
+                    cache: true,
+                    type: 'GET',
+                    url: link,
+                    success: function(data) {
+                        $('#providerlogtab').empty().append(data);
+                        $(document).foundation('reflow');
+                        $('.accordionButton').unbind();
+                        $('#editprovider').unbind();
 
-      
+                        GINIT.initialize();
 
-    function notificationupdateOld(message, callback) {
-        $('#notificationupdateform').modal({
-            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-            position: ["20%", ],
-            overlayId: 'simpledialog-overlay',
-            minHeight: '200px',
-            containerId: 'simpledialog-container',
-            onShow: function(dialog) {
-                var modal = this;
-                $('.message', dialog.data[0]).append(message);
-                $('.yes', dialog.data[0]).click(function() {
-                    if ($.isFunction(callback)) {
-                        callback.apply();
                     }
-                    modal.close(); // or $.modal.close();
+
                 });
             }
+
+
+
         });
-    }
-    function notificationupdate(message, callback) {
-           $("#notificationupdatemodal").foundation('reveal','open',{});
-           $(document).on('opened', '#notificationupdatemodal', function () {
+
+
+
+        function notificationupdateOld(message, callback) {
+            $('#notificationupdateform').modal({
+                closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                position: ["20%", ],
+                overlayId: 'simpledialog-overlay',
+                minHeight: '200px',
+                containerId: 'simpledialog-container',
+                onShow: function(dialog) {
+                    var modal = this;
+                    $('.message', dialog.data[0]).append(message);
+                    $('.yes', dialog.data[0]).click(function() {
+                        if ($.isFunction(callback)) {
+                            callback.apply();
+                        }
+                        modal.close(); // or $.modal.close();
+                    });
+                }
+            });
+        }
+        function notificationupdate(message, callback) {
+            $("#notificationupdatemodal").foundation('reveal', 'open', {});
+            $(document).on('opened', '#notificationupdatemodal', function() {
                 var modal = this;
-                 $(".no").click(function(){
-                 $("#notificationupdatemodal").foundation('reveal', 'close');
-                 });
+                $(".no").click(function() {
+                    $("#notificationupdatemodal").foundation('reveal', 'close');
+                });
 
                 $('.message').append(message);
                 $('.yes').click(function() {
                     if ($.isFunction(callback)) {
                         callback.apply();
-                 $("#notificationupdatemodal").foundation('reveal', 'close');
+                        $("#notificationupdatemodal").foundation('reveal', 'close');
                     }
                 });
 
-           });
+            });
 
 
-    }
+        }
 
-    $(".langinputrm").addClass("alert");
-    $(".dhelp").click(function(){
-         var curSize= parseInt($(this).css('font-size'));
-         if(curSize<=10)
-         {
-             $(this).css('font-size', curSize+5).removeClass('zoomin').addClass('zoomout');
-         }
-         else
-         {
-             $(this).css('font-size', curSize-5).removeClass('zoomout').addClass('zoomin');
-         }
-    });
-    $("form#availablelogos input[name='filename']").click(function(){
-          $(this).after($("form#availablelogos div.buttons").show());
- 
-    });
-    $("button.langinputrm").click(function(){
-         var lrow = $(this).closest('div').parent();
-         var bval = $(this).attr('value');
-         var bname = $(this).attr('name');
-         lrow.find("input").each(function(){
-           $(this).attr('value','');
-        });
-        lrow.find("textarea").each(function(){
-           $(this).val("");
-        });
-        $(this).parent().parent().find("option[value="+bval+"]").each(
-                function(){
-                    $(this).toggleOption(true);
-                    $(this).attr('disabled',false);
-                
-                }
-                );
-        //$(this).parent().remove();
-        lrow.remove();
-        GINIT.initialize();
-
-       
-    });
-    $("button.rmfield").click(function(){
-         var lrow = $(this).closest('div.srvgroup');
-         var bval = $(this).attr('value');
-         var bname = $(this).attr('name');
-         lrow.find("input").each(function(){
-           $(this).attr('value','');
-        });
-        lrow.find("textarea").each(function(){
-           $(this).val("");
-        });
-        lrow.remove();
-        GINIT.    initialize();
-       
-    });
-    $("button.contactrm").click(function(){
-         var bval = $(this).attr('value');
-         var bname = $(this).attr('name');
-         var fieldset = $(this).closest('div.group');
-        fieldset.remove();
-        GINIT.initialize();
-    });
-    $("button.certificaterm").click(function(){
-         var bval = $(this).attr('value');
-         var bname = $(this).attr('name');
-         var fieldset = $(this).closest('div.certgroup');
-         fieldset.remove();
-         GINIT.initialize();
-    });
-
-    $('form#availablelogos').on('submit',function(e) {
-        e.preventDefault();
-        var result = $("div.uploadresult");
-        var assignedGrid = $("div.assignedlogosgrid").text();
-        $('#uploadlogo').unbind();
-        $.ajax({
-           type: 'POST',
-           url: $(this).attr('action'),
-           data: $("form#availablelogos").serializeArray(),
-           dataType: 'html',
-           cache:false,
-           beforeSend: function(){
-               $('form#availablelogos div.buttons').hide().appendTo('form#availablelogos');
-           },
-           success: function(data){
-                  
-             $('form#availablelogos #filename').prop('checked', false);
-             $.ajax({
-                type:'GET',
-                url: assignedGrid,
-                cache: false,
-                success: function(data){
-                     $('#uploadlogo').unbind();
-                     $("div#t1").empty();
-                     $("div#t1").append(data); 
-                     $("#assignedlogos").unbind();
-                     $("#availablelogos").unbind();
-                     GINIT.initialize();
-                },
-             }); 
-             $('#spinner').hide();
-             result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                   position: ["20%", ],
-                   overlayId: 'simpledialog-overlay',
-                   minHeight: '200px',
-                   containerId: 'simpledialog-container',
-                   onShow: function(dialog) {
-                        var modal = this;
-                   }
-
-             });
- 
-           },
-           error: function(qXHR, textStatus, errorThrown){
-              $('#spinner').hide();
-              result.css('color', 'red');
-                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                   position: ["20%", ],
-                   overlayId: 'simpledialog-overlay',
-                   minHeight: '200px',
-                   containerId: 'simpledialog-container',
-                   onShow: function(dialog) {
-                        var modal = this;
-                   }
-                });
-
-           } 
-
-        });
-
-    });
-    $('#uploadlogo').on('submit',(function(e) {
-        e.preventDefault();
-        var formData = new FormData(document.forms.namedItem("uploadlogo"));
-        var result = $("div.uploadresult");
-        var gridUrl = $("div.availablelogosgrid").text();
-        var gridUrl2 = $("div.assignedlogosgrid").text();
-        $.ajax({
-            type:'POST',
-            url: $(this).attr('action'),
-            data: formData,
-            dataType: 'html',
-            cache:false,
-            processData: false,
-            contentType: false,
-            beforeSend: function() {
-               result.html('');
-               result.css('color','black');
-               $("form#availablelogos div.buttons").hide().appendTo("form#availablelogos");
-               
-               $('#spinner').show();
-            },
-            success:function(data1){
-                $('#spinner').hide();
-                result.html(data1);
-                $("div.uploadresult").append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                   position: ["20%", ],
-                   overlayId: 'simpledialog-overlay',
-                   minHeight: '200px',
-                   containerId: 'simpledialog-container',
-                   onShow: function(dialog) {
-                        var modal = this;
-                   }
-
-
-           });
-                $.ajax({
-                  type:'GET',
-                  url: gridUrl2,
-                  cache:false,
-                  success: function(data3){
-                    $("form#assignedlogos").replaceWith(data3);
-                    $('#availablelogos').unbind();
-                    $('form#assignedlogos').unbind();
-                    $('#uploadlogo').unbind();
-                    $("table#details").unbind();
-                    $("form#availablelogos input[name='filename']").unbind("click");
-                    GINIT.initialize();
-                  },
-                  error: function(jqXHR, textStatus, errorThrown){
-                    $('#spinner').hide();
-                    $('#availablelogos').unbind();
-                    $('#assignedlogos').unbind();
-                    $('#uploadlogo').unbind();
-                    $("table#details").unbind();
-                    $("form#availablelogos input[name='filename']").unbind("click");
-                    GINIT.initialize();
-                 }
-
-                });
-                $.ajax({
-                  type:'GET',
-                  url: gridUrl,
-                  cache:false,
-                  success: function(data2){
-                    $("form#availablelogos").replaceWith(data2);
-                    $('form#availablelogos').unbind();
-                    $('form#assignedlogos').unbind();
-                    $('#uploadlogo').unbind();
-                    $("table#details").unbind();
-                    $("form#availablelogos input[name='filename']").unbind("click");
-                    GINIT.initialize();
-                  },
-                  error: function(jqXHR, textStatus, errorThrown){
-                    $('#spinner').hide();
-                    $('#availablelogos').unbind();
-                    $('#uploadlogo').unbind();
-                    $("table#details").unbind();
-                    $("form#availablelogos input[name='filename']").unbind("click");
-                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                   position: ["20%", ],
-                   overlayId: 'simpledialog-overlay',
-                   minHeight: '200px',
-                   containerId: 'simpledialog-container',
-                   onShow: function(dialog) {
-                        var modal = this;
-                   }
-                });
-                    GINIT.initialize();
-                 }
-                });
-
-            },
-            error: function(jqXHR, textStatus, errorThrown){
-                $('#spinner').hide();
-                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                   position: ["20%", ],
-                   overlayId: 'simpledialog-overlay',
-                   minHeight: '200px',
-                   containerId: 'simpledialog-container',
-                   onShow: function(dialog) {
-                        var modal = this;
-                   }
-                });
-                result.css('color', 'red');
+        $(".langinputrm").addClass("alert");
+        $(".dhelp").click(function() {
+            var curSize = parseInt($(this).css('font-size'));
+            if (curSize <= 10)
+            {
+                $(this).css('font-size', curSize + 5).removeClass('zoomin').addClass('zoomout');
             }
-        }).done(function(){
-           //  $('#availablelogos').unbind();
-           //  $("table#details").unbind();
-           //       $('#uploadlogo').unbind();
-           //  GINIT.initialize();
+            else
+            {
+                $(this).css('font-size', curSize - 5).removeClass('zoomout').addClass('zoomin');
+            }
+        });
+        $("form#availablelogos input[name='filename']").click(function() {
+            $(this).after($("form#availablelogos div.buttons").show());
 
         });
-    }));
+        $("button.langinputrm").click(function() {
+            var lrow = $(this).closest('div').parent();
+            var bval = $(this).attr('value');
+            var bname = $(this).attr('name');
+            lrow.find("input").each(function() {
+                $(this).attr('value', '');
+            });
+            lrow.find("textarea").each(function() {
+                $(this).val("");
+            });
+            $(this).parent().parent().find("option[value=" + bval + "]").each(
+                    function() {
+                        $(this).toggleOption(true);
+                        $(this).attr('disabled', false);
 
- //   $("fieldset#general label").autoWidth();
-    $("li.fromprevtoright").each(function(){
-         var prevli = $(this).prev();
-         var prevliOffset = prevli.offset().left;
-         var previnput = $(this).prev().find("input,textarea").last();
-         var previnputOffset = previnput.offset().left;
-         var previnputWidth = previnput.width();
-         var ln = (previnputOffset+previnputWidth)-prevliOffset;
-         $(this).css('text-align','right').width(ln);
-    });
+                    }
+            );
+            //$(this).parent().remove();
+            lrow.remove();
+            GINIT.initialize();
 
-    
-    
-
-    $("form#assignedlogos input[name='logoid']").click(function(){
-         $(this).after($("div#unsignlogosbtn").show());
-         
- 
-    });
-    $("form#applyforaccount").on('submit',function(e){
-        e.preventDefault();
-        var result = $("div.result");
-        var postdata = $("form#applyforaccount").serializeArray();
-        $.ajax({
-           type:'POST',
-           url: $(this).attr('action'),
-           data: postdata,
-           dataType: 'html',
-           cache:false,
-           beforeSend: function() {
-               result.html(''); 
-               $('#spinner').show();
-           },
-           success:function(data){
-               $('#spinner').hide();
-               result.html(data);
-               $("form#applyforaccount").remove();
-           },
-           error: function(jqXHR, textStatus, errorThrown){
-              $('#spinner').hide();
-               result.html(jqXHR.responseText);
-               result.css('color', 'red');
-               $("form#applyforaccount").remove();
-           }
 
         });
+        $("button.rmfield").click(function() {
+            var lrow = $(this).closest('div.srvgroup');
+            var bval = $(this).attr('value');
+            var bname = $(this).attr('name');
+            lrow.find("input").each(function() {
+                $(this).attr('value', '');
+            });
+            lrow.find("textarea").each(function() {
+                $(this).val("");
+            });
+            lrow.remove();
+            GINIT.initialize();
 
-      });
-    $("form#assignedlogos").on('submit',(function(e) {
-        e.preventDefault();
-        var result = $("div.uploadresult");
-        var postdata = $("form#assignedlogos").serializeArray();
-        var checkedObj = $('input[name=logoid]:radio:checked');
-        $.ajax({
-           type: 'POST',
-           url: $(this).attr('action'),
-           data: postdata,
-           dataType: 'html',
-           cache:false,
-           beforeSend: function() {
-             $("div#unsignlogosbtn").hide().appendTo("form#assignedlogos");
-             result.html('');
-             $('#spinner').show();
-           },
-           success:function(data){
-             $('#spinner').hide();
-             result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                   position: ["20%", ],
-                   overlayId: 'simpledialog-overlay',
-                   minHeight: '200px',
-                   containerId: 'simpledialog-container',
-                   onShow: function(dialog) {
-                        var modal = this;
-                   }
-             });
-             checkedObj.parent().remove();
-             
-           },
-           error: function(jqXHR, textStatus, errorThrown){
-             $('#spinner').hide();
-             result.css('color', 'red');
-                result.html( jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                   position: ["20%", ],
-                   overlayId: 'simpledialog-overlay',
-                   minHeight: '200px',
-                   containerId: 'simpledialog-container',
-                   onShow: function(dialog) {
-                        var modal = this;
-                   }
-                });
-           }
-        }).done(function(){
-            $("form#assignedlogos").unbind(); 
-            $("form#availablelogos").unbind(); 
-            $("#uploadlogo").unbind();
+        });
+        $("button.contactrm").click(function() {
+            var bval = $(this).attr('value');
+            var bname = $(this).attr('name');
+            var fieldset = $(this).closest('div.group');
+            fieldset.remove();
+            GINIT.initialize();
+        });
+        $("button.certificaterm").click(function() {
+            var bval = $(this).attr('value');
+            var bname = $(this).attr('name');
+            var fieldset = $(this).closest('div.certgroup');
+            fieldset.remove();
             GINIT.initialize();
         });
 
-    }));
-    $("button.updatenotifactionstatus").click(function(ev) {
-        var related;
-        var notid = $(this).attr('value');
-        var ctbl = $(this).closest("tbody");
-        var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
-        $("form#notificationupdateform").attr('action', posturl);
-        $("form#notificationupdateform #noteid").val(notid);
-        notificationupdate('', function(ev) {
-            var serializedData = $("form#notificationupdateform").serializeArray();
+        $('form#availablelogos').on('submit', function(e) {
+            e.preventDefault();
+            var result = $("div.uploadresult");
+            var assignedGrid = $("div.assignedlogosgrid").text();
+            $('#uploadlogo').unbind();
             $.ajax({
-                type: "POST",
-                url: posturl,
-                data: serializedData,
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: $("form#availablelogos").serializeArray(),
+                dataType: 'html',
+                cache: false,
+                beforeSend: function() {
+                    $('form#availablelogos div.buttons').hide().appendTo('form#availablelogos');
+                },
                 success: function(data) {
-                    if (data)
-                    {
-                        ctbl.html("");
-                        var trdata;
-                        var number = 1;
-                        $.each(data, function(i, v) {
-                            if (v.federationid)
-                            {
-                                related = v.langfederation + ': ' + v.federationname;
-                            }
-                            else if (v.providerid)
-                            {
-                                related = v.langprovider + ': ' + v.providername;
 
-                            }
-                            else
-                            {
-                                related = v.langany;
-                            }
-                            trdata = '<tr><td>' + number + '</td><td>' + v.langtype + '</td><td>' + related + '</td><td>' + v.delivery + '</td><td>' + v.rcptto + '</td><td>' + v.langstatus + '</td><td>' + v.updated + '</td><td><button class="updatenotifactionstatus editbuttoni tiny" type="button" value="' + v.id + '">update</button></td></tr>';
-                            ctbl.append(trdata);
-                            number = number + 1;
+                    $('form#availablelogos #filename').prop('checked', false);
+                    $.ajax({
+                        type: 'GET',
+                        url: assignedGrid,
+                        cache: false,
+                        success: function(data) {
+                            $('#uploadlogo').unbind();
+                            $("div#t1").empty();
+                            $("div#t1").append(data);
+                            $("#assignedlogos").unbind();
+                            $("#availablelogos").unbind();
+                            GINIT.initialize();
+                        },
+                    });
+                    $('#spinner').hide();
+                    result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                        position: ["20%", ],
+                        overlayId: 'simpledialog-overlay',
+                        minHeight: '200px',
+                        containerId: 'simpledialog-container',
+                        onShow: function(dialog) {
+                            var modal = this;
+                        }
 
-                        });
-                        GINIT.initialize(); 
-                    }
+                    });
+
+                },
+                error: function(qXHR, textStatus, errorThrown) {
+                    $('#spinner').hide();
+                    result.css('color', 'red');
+                    result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                        position: ["20%", ],
+                        overlayId: 'simpledialog-overlay',
+                        minHeight: '200px',
+                        containerId: 'simpledialog-container',
+                        onShow: function(dialog) {
+                            var modal = this;
+                        }
+                    });
+
+                }
+
+            });
+
+        });
+        $('#uploadlogo').on('submit', (function(e) {
+            e.preventDefault();
+            var formData = new FormData(document.forms.namedItem("uploadlogo"));
+            var result = $("div.uploadresult");
+            var gridUrl = $("div.availablelogosgrid").text();
+            var gridUrl2 = $("div.assignedlogosgrid").text();
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: formData,
+                dataType: 'html',
+                cache: false,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    result.html('');
+                    result.css('color', 'black');
+                    $("form#availablelogos div.buttons").hide().appendTo("form#availablelogos");
+
+                    $('#spinner').show();
+                },
+                success: function(data1) {
+                    $('#spinner').hide();
+                    result.html(data1);
+                    $("div.uploadresult").append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                        position: ["20%", ],
+                        overlayId: 'simpledialog-overlay',
+                        minHeight: '200px',
+                        containerId: 'simpledialog-container',
+                        onShow: function(dialog) {
+                            var modal = this;
+                        }
+
+
+                    });
+                    $.ajax({
+                        type: 'GET',
+                        url: gridUrl2,
+                        cache: false,
+                        success: function(data3) {
+                            $("form#assignedlogos").replaceWith(data3);
+                            $('#availablelogos').unbind();
+                            $('form#assignedlogos').unbind();
+                            $('#uploadlogo').unbind();
+                            $("table#details").unbind();
+                            $("form#availablelogos input[name='filename']").unbind("click");
+                            GINIT.initialize();
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            $('#spinner').hide();
+                            $('#availablelogos').unbind();
+                            $('#assignedlogos').unbind();
+                            $('#uploadlogo').unbind();
+                            $("table#details").unbind();
+                            $("form#availablelogos input[name='filename']").unbind("click");
+                            GINIT.initialize();
+                        }
+
+                    });
+                    $.ajax({
+                        type: 'GET',
+                        url: gridUrl,
+                        cache: false,
+                        success: function(data2) {
+                            $("form#availablelogos").replaceWith(data2);
+                            $('form#availablelogos').unbind();
+                            $('form#assignedlogos').unbind();
+                            $('#uploadlogo').unbind();
+                            $("table#details").unbind();
+                            $("form#availablelogos input[name='filename']").unbind("click");
+                            GINIT.initialize();
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            $('#spinner').hide();
+                            $('#availablelogos').unbind();
+                            $('#uploadlogo').unbind();
+                            $("table#details").unbind();
+                            $("form#availablelogos input[name='filename']").unbind("click");
+                            result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                                closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                                position: ["20%", ],
+                                overlayId: 'simpledialog-overlay',
+                                minHeight: '200px',
+                                containerId: 'simpledialog-container',
+                                onShow: function(dialog) {
+                                    var modal = this;
+                                }
+                            });
+                            GINIT.initialize();
+                        }
+                    });
+
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error occured: ' + errorThrown);
+                    $('#spinner').hide();
+                    result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                        position: ["20%", ],
+                        overlayId: 'simpledialog-overlay',
+                        minHeight: '200px',
+                        containerId: 'simpledialog-container',
+                        onShow: function(dialog) {
+                            var modal = this;
+                        }
+                    });
+                    result.css('color', 'red');
                 }
+            }).done(function() {
+                //  $('#availablelogos').unbind();
+                //  $("table#details").unbind();
+                //       $('#uploadlogo').unbind();
+                //  GINIT.initialize();
+
+            });
+        }));
+
+        //   $("fieldset#general label").autoWidth();
+        $("li.fromprevtoright").each(function() {
+            var prevli = $(this).prev();
+            var prevliOffset = prevli.offset().left;
+            var previnput = $(this).prev().find("input,textarea").last();
+            var previnputOffset = previnput.offset().left;
+            var previnputWidth = previnput.width();
+            var ln = (previnputOffset + previnputWidth) - prevliOffset;
+            $(this).css('text-align', 'right').width(ln);
+        });
+
+
+
+
+        $("form#assignedlogos input[name='logoid']").click(function() {
+            $(this).after($("div#unsignlogosbtn").show());
+
+
+        });
+        $("form#applyforaccount").on('submit', function(e) {
+            e.preventDefault();
+            var result = $("div.result");
+            var postdata = $("form#applyforaccount").serializeArray();
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: postdata,
+                dataType: 'html',
+                cache: false,
+                beforeSend: function() {
+                    result.html('');
+                    $('#spinner').show();
+                },
+                success: function(data) {
+                    $('#spinner').hide();
+                    result.html(data);
+                    $("form#applyforaccount").remove();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('#spinner').hide();
+                    result.html(jqXHR.responseText);
+                    result.css('color', 'red');
+                    $("form#applyforaccount").remove();
+                }
+
+            });
+
+        });
+        $("form#assignedlogos").on('submit', (function(e) {
+            e.preventDefault();
+            var result = $("div.uploadresult");
+            var postdata = $("form#assignedlogos").serializeArray();
+            var checkedObj = $('input[name=logoid]:radio:checked');
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: postdata,
+                dataType: 'html',
+                cache: false,
+                beforeSend: function() {
+                    $("div#unsignlogosbtn").hide().appendTo("form#assignedlogos");
+                    result.html('');
+                    $('#spinner').show();
+                },
+                success: function(data) {
+                    $('#spinner').hide();
+                    result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                        position: ["20%", ],
+                        overlayId: 'simpledialog-overlay',
+                        minHeight: '200px',
+                        containerId: 'simpledialog-container',
+                        onShow: function(dialog) {
+                            var modal = this;
+                        }
+                    });
+                    checkedObj.parent().remove();
+
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('#spinner').hide();
+                    result.css('color', 'red');
+                    result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                        position: ["20%", ],
+                        overlayId: 'simpledialog-overlay',
+                        minHeight: '200px',
+                        containerId: 'simpledialog-container',
+                        onShow: function(dialog) {
+                            var modal = this;
+                        }
+                    });
+                }
+            }).done(function() {
+                $("form#assignedlogos").unbind();
+                $("form#availablelogos").unbind();
+                $("#uploadlogo").unbind();
+                GINIT.initialize();
+            });
+
+        }));
+        $("button.updatenotifactionstatus").click(function(ev) {
+            var related;
+            var notid = $(this).attr('value');
+            var ctbl = $(this).closest("tbody");
+            var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
+            $("form#notificationupdateform").attr('action', posturl);
+            $("form#notificationupdateform #noteid").val(notid);
+            notificationupdate('', function(ev) {
+                var serializedData = $("form#notificationupdateform").serializeArray();
+                $.ajax({
+                    type: "POST",
+                    url: posturl,
+                    data: serializedData,
+                    success: function(data) {
+                        if (data)
+                        {
+                            ctbl.html("");
+                            var trdata;
+                            var number = 1;
+                            $.each(data, function(i, v) {
+                                if (v.federationid)
+                                {
+                                    related = v.langfederation + ': ' + v.federationname;
+                                }
+                                else if (v.providerid)
+                                {
+                                    related = v.langprovider + ': ' + v.providername;
+
+                                }
+                                else
+                                {
+                                    related = v.langany;
+                                }
+                                trdata = '<tr><td>' + number + '</td><td>' + v.langtype + '</td><td>' + related + '</td><td>' + v.delivery + '</td><td>' + v.rcptto + '</td><td>' + v.langstatus + '</td><td>' + v.updated + '</td><td><button class="updatenotifactionstatus editbuttoni tiny" type="button" value="' + v.id + '">update</button></td></tr>';
+                                ctbl.append(trdata);
+                                number = number + 1;
+
+                            });
+                            GINIT.initialize();
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error occured: ' + errorThrown);
+                    }
+                });
             });
         });
-    });
 
 
-    $('a.showmetadata').click(function(){
-       var result = $("div.metadataresult");
-       var url = $(this).attr('href');
-     //  var height = window.height();
-     //  var width = window.width();
-       $.ajax({
-          type: 'GET',
-          url: url,
-          dataType: 'xml',
-          cache: true,
-          timeout: 10000,
-          success: function(data) {
-                $('#spinner').hide();
-            var xmlstr = data.xml ? data.xml : (new XMLSerializer()).serializeToString(data);
-            result.text(xmlstr).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                  containerCss: {
-                      padding: 5,
-                     width: 800,
-                    }, 
-                   maxHeight: 800,
-                   closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                   position: ["10%", ],
-                   overlayId: 'simpledialog-overlay',
-                   minHeight: '500',
-                   minWidth: '500',
-                   containerId: 'simpledialog-container',
-                   onShow: function(dialog) {
-                        var modal = this;
-                   }
+        $('a.showmetadata').click(function() {
+            var result = $("div.metadataresult");
+            var url = $(this).attr('href');
+            //  var height = window.height();
+            //  var width = window.width();
+            $.ajax({
+                type: 'GET',
+                url: url,
+                dataType: 'xml',
+                cache: true,
+                timeout: 10000,
+                success: function(data) {
+                    $('#spinner').hide();
+                    var xmlstr = data.xml ? data.xml : (new XMLSerializer()).serializeToString(data);
+                    result.text(xmlstr).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
+                        containerCss: {
+                            padding: 5,
+                            width: 800,
+                        },
+                        maxHeight: 800,
+                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                        position: ["10%", ],
+                        overlayId: 'simpledialog-overlay',
+                        minHeight: '500',
+                        minWidth: '500',
+                        containerId: 'simpledialog-container',
+                        onShow: function(dialog) {
+                            var modal = this;
+                        }
 
-            }); 
-          },
-         beforeSend: function(){
-           result.text('');
-           $('#spinner').show();
-         },  
-         error: function(jqXHR, textStatus, errorThrown){
-           $('#spinner').hide();
-           alert(jqXHR.responseText);
-        },
-       });
-       return false;
-    });
-    $('a#editprovider').click(function(e){
-       //alert(window.location);
-       var curTabID = $('#providertabs .ui-tabs-panel[aria-hidden="false"]').prop('id');
-       var url = $(this).attr('href');
-       if(curTabID == "attributes" || curTabID == "attrs")
-       {
-           var nurl = $('a#editattributesbutton').attr('href');
-           $(this).attr("href",nurl); 
+                    });
+                },
+                beforeSend: function() {
+                    result.text('');
+                    $('#spinner').show();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('#spinner').hide();
+                    alert(jqXHR.responseText);
+                },
+            });
+            return false;
+        });
+        $('a#editprovider').click(function(e) {
+            //alert(window.location);
+            var curTabID = $('#providertabs .ui-tabs-panel[aria-hidden="false"]').prop('id');
+            var url = $(this).attr('href');
+            if (curTabID == "attributes" || curTabID == "attrs")
+            {
+                var nurl = $('a#editattributesbutton').attr('href');
+                $(this).attr("href", nurl);
 
-       }
-       else
-       {
-           $(this).attr("href", url+"#"+curTabID);
-       }    
+            }
+            else
+            {
+                $(this).attr("href", url + "#" + curTabID);
+            }
 
-     });
+        });
 
         $('form#fvform').submit(function(e) {
             e.preventDefault();
@@ -684,8 +682,8 @@ var GINIT = {
                             var msgdata;
                             $.each(data.message, function(i, v) {
                                 $.each(v, function(j, m) {
-                                        msgdata = '<div>' + i + ': ' + m + '</div>';
-                                        $("div#fvmessages").append(msgdata);
+                                    msgdata = '<div>' + i + ': ' + m + '</div>';
+                                    $("div#fvmessages").append(msgdata);
                                 });
                             });
 
@@ -746,7 +744,7 @@ var GINIT = {
                         {
                             if (!data.idp && !data.sp && !data.both)
                             {
-                                div_data = '<div>'+data.definitions.nomembers+'</div>';
+                                div_data = '<div>' + data.definitions.nomembers + '</div>';
                                 value.append(div_data);
                             }
                             else
@@ -754,10 +752,10 @@ var GINIT = {
                                 var preurl = data.definitions.preurl;
                                 if (data.idp)
                                 {
-                                    stitle = $('<div>'+data.definitions.idps+'</div>');
+                                    stitle = $('<div>' + data.definitions.idps + '</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.idp, function(i, v) {
-                                        div_data = '<li class="homeorg"><a href="' + preurl + v.pid +'">' + v.pname + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="homeorg"><a href="' + preurl + v.pid + '">' + v.pname + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -765,7 +763,7 @@ var GINIT = {
                                 }
                                 if (data.sp)
                                 {
-                                    stitle = $('<div>'+data.definitions.sps+'</div>');
+                                    stitle = $('<div>' + data.definitions.sps + '</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.sp, function(i, v) {
                                         div_data = '<li class="resource"><a href="' + preurl + v.pid + '">' + v.pname + '</a> (' + v.entityid + ') </li>';
@@ -776,10 +774,10 @@ var GINIT = {
                                 }
                                 if (data.both)
                                 {
-                                    stitle = $('<div>'+data.definitions.both+'</div>');
+                                    stitle = $('<div>' + data.definitions.both + '</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.both, function(i, v) {
-                                        div_data = '<li class="both"><a href="' + preurl + v.pid+ '">' + v.pname + '</a> (' + v.entityid + ') </li>';
+                                        div_data = '<li class="both"><a href="' + preurl + v.pid + '">' + v.pname + '</a> (' + v.entityid + ') </li>';
                                         nlist.append(div_data);
                                     });
                                     stitle.append(nlist);
@@ -814,7 +812,7 @@ var GINIT = {
         $("a#getmembers").click(function() {
             var link = $(this), url = link.attr("href");
             var value = $('<ul/>');
- 
+
             $.ajax({
                 url: url,
                 timeout: 2500,
@@ -830,20 +828,20 @@ var GINIT = {
                     {
                         var nlist = $('<div/>');
                         nlist.addClass('zebralist row');
-                        nlist.css("list-style-type","decimal");
+                        nlist.css("list-style-type", "decimal");
                         var div_data;
                         var n = 1;
                         var counter = 1;
                         $.each(data, function(i, v) {
                             var span_feds = $('<span/>');
-                            $.each(v.feds, function(x,z){
-                                var spanb = '<span class="label">'+z+'</span>&nbsp;';
+                            $.each(v.feds, function(x, z) {
+                                var spanb = '<span class="label">' + z + '</span>&nbsp;';
                                 span_feds.append(spanb);
                             });
-                            div_data = '<div class="large-12 columns" style="margin-top: 2px; margin-bottom: 2px"><div class="large-9 columns">'+counter+'. <a href="' + v.url + '">' + v.name + '</a> <i> (' + v.entityid + ') </i></div><div class="fedlbl large-3 end text-right columns">'+span_feds.html()+'</div></div>';
+                            div_data = '<div class="large-12 columns" style="margin-top: 2px; margin-bottom: 2px"><div class="large-9 columns">' + counter + '. <a href="' + v.url + '">' + v.name + '</a> <i> (' + v.entityid + ') </i></div><div class="fedlbl large-3 end text-right columns">' + span_feds.html() + '</div></div>';
                             nlist.append(div_data);
-                            n = n+1;
-                            counter = counter +1;
+                            n = n + 1;
+                            counter = counter + 1;
                         });
                         value.append(nlist);
 
@@ -917,18 +915,18 @@ $(document).ready(function() {
 
 
     var helpactivity = $("#showhelps");
-    if(helpactivity.length)
+    if (helpactivity.length)
     {
-        if(helpactivity.hasClass('helpactive'))
+        if (helpactivity.hasClass('helpactive'))
         {
-           $(".dhelp").show();
-        } 
+            $(".dhelp").show();
+        }
         else
         {
-           $(".dhelp").hide();
+            $(".dhelp").hide();
         }
     }
-    
+
 
     var fedloginurl = $('a#fedlogin').attr('href');
     var browsertime = new Date();
@@ -992,7 +990,7 @@ $(document).ready(function() {
                 GINIT.initialize();
             },
         });
-    } 
+    }
 
 
     $(".fedcategory").on('click', '', function(event) {
@@ -1104,12 +1102,12 @@ $(function() {
                     .addClass("ui-widget ui-widget-content ui-corner-left");
 
             input.data("uiAutocomplete")._renderItem = function(ul, item) {
-                 if (!_.include(self.idArr, item.id)) {
-                return $("<li></li>")
-                        .data("item.autocomplete", item)
-                        .append("<a>" + item.label + "</a>")
-                        .appendTo(ul);
-                  }
+                if (!_.include(self.idArr, item.id)) {
+                    return $("<li></li>")
+                            .data("item.autocomplete", item)
+                            .append("<a>" + item.label + "</a>")
+                            .appendTo(ul);
+                }
             };
 
             this.button = $("<button type='button'>&nbsp;</button>")
@@ -1208,28 +1206,28 @@ $(function() {
         baseurl = '';
     }
     var refreshId;
-    $("#responsecontainer").load(baseurl+"reports/awaiting/ajaxrefresh");
+    $("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
     refreshId = setInterval(function() {
-        $("#responsecontainer").load(baseurl+'reports/awaiting/ajaxrefresh');
+        $("#responsecontainer").load(baseurl + 'reports/awaiting/ajaxrefresh');
     }, 172000);
-    $("#dashresponsecontainer").load(baseurl+"reports/awaiting/dashajaxrefresh");
+    $("#dashresponsecontainer").load(baseurl + "reports/awaiting/dashajaxrefresh");
     refreshId = setInterval(function() {
-        $("#dashresponsecontainer").load(baseurl+'reports/awaiting/dashajaxrefresh');
+        $("#dashresponsecontainer").load(baseurl + 'reports/awaiting/dashajaxrefresh');
     }, 172000);
-    
+
 
     $.ajaxSetup({
         cache: false
     });
-    $("#qcounter").load(baseurl+'reports/awaiting/counterqueue');
-      refreshId = setInterval(function() {
-            $("#qcounter").load(baseurl+'reports/awaiting/counterqueue');
-     }, 86000);
-    
+    $("#qcounter").load(baseurl + 'reports/awaiting/counterqueue');
+    refreshId = setInterval(function() {
+        $("#qcounter").load(baseurl + 'reports/awaiting/counterqueue');
+    }, 86000);
+
 
     $('#languageset select').on('change', function() {
-         var link = $("div#languageset form").attr('action');
-         var url = link + this.value;
+        var link = $("div#languageset form").attr('action');
+        var url = link + this.value;
         $.ajax({
             url: url,
             timeout: 2500,
@@ -1239,21 +1237,21 @@ $(function() {
             setTimeout('go_to_private_page()', 1000);
         });
         return false;
-         
+
     });
 
-    $('select.nuseraccesstype').on('change',function(){
-       var access = $(this).find("option:selected");
-       var accessselected = access.val();
-       if(accessselected === 'fed')
-       {
-          $('div.passwordrow').hide();
-       }
-       else
-       {
-         $('div.passwordrow').show();
+    $('select.nuseraccesstype').on('change', function() {
+        var access = $(this).find("option:selected");
+        var accessselected = access.val();
+        if (accessselected === 'fed')
+        {
+            $('div.passwordrow').hide();
+        }
+        else
+        {
+            $('div.passwordrow').show();
 
-       }
+        }
     });
     $("button#idpadduiiprvurl").click(function() {
         var nf = $("span.idpuiiprvurladd option:selected").val();
@@ -1267,7 +1265,7 @@ $(function() {
         $("span.spuiiprvurladd option[value=" + nf + "]").remove();
         $(this).parent().prepend("<li class=\"localized\"><label for=\"f[[uii][spsso][prvurl][" + nf + "]\">" + nfv + "</label><input id=\"f[uii][spsso][prvurl][" + nf + "]\" name=\"f[uii][spsso][prvurl][" + nf + "]\" type=\"text\"/></li>");
     });
-    
+
     $("button#addlprivacyurl").click(function() {
         var nf = $("li.addlprivacyurl option:selected").val();
         var nfv = $("li.addlprivacyurl option:selected").text();
@@ -1332,17 +1330,17 @@ $(function() {
             success: function(json)
             {
                 $('#spinner').hide();
-			var data = $.parseJSON(json);
-			if (!data)
-			{
-			    alert('no data');
-			}
-			else
-			{
-			    $("div#statisticdiag").replaceWith('<div id="statisticdiag"></div>');
-			    $.each(data, function(i, v) {
+                var data = $.parseJSON(json);
+                if (!data)
+                {
+                    alert('no data');
+                }
+                else
+                {
+                    $("div#statisticdiag").replaceWith('<div id="statisticdiag"></div>');
+                    $.each(data, function(i, v) {
 
-				i = new Image();
+                        i = new Image();
                         i.src = v.url;
                         $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append(i);
 
@@ -1569,33 +1567,30 @@ $(function() {
     $("#options").tablesorter({sortList: [[0, 0]], headers: {3: {sorter: false}, 4: {sorter: false}}});
 
     $("#formtabs").tabs({
-       cache:false,
-       activate: function(event, ui){
-           GINIT.initialize(); 
-       },  
-
+        cache: false,
+        activate: function(event, ui) {
+            GINIT.initialize();
+        },
     });
 
     $(".mytabs").tabs({
-       cache:false,
-       activate: function(event, ui){
-           GINIT.initialize(); 
-       },  
-
-     });
+        cache: false,
+        activate: function(event, ui) {
+            GINIT.initialize();
+        },
+    });
 
 
     $("#providertabs").tabs({
         cache: true,
-     //   data-theme: "none",
+        //   data-theme: "none",
         load: function(event, ui) {
             $('.accordionButton').unbind();
             $('#editprovider').unbind();
-            
-           $(".ui-widget").removeClass("ui-widget");
+
+            $(".ui-widget").removeClass("ui-widget");
             GINIT.initialize();
         },
-
     });
     $("#fedtabs").tabs({
         cache: true,
@@ -1615,18 +1610,18 @@ $(function() {
 
     });
     $("#logotabs").tabs({
-          load: function(event, ui) {
-             $('#availablelogos').unbind();
-             $('#assignedlogos').unbind();
-             $('#uploadlogo').unbind();
-             $("table#details").unbind();
-             GINIT.initialize();
-          }
+        load: function(event, ui) {
+            $('#availablelogos').unbind();
+            $('#assignedlogos').unbind();
+            $('#uploadlogo').unbind();
+            $("table#details").unbind();
+            GINIT.initialize();
+        }
     });
 
 });
 
-if($('input#advanced').attr('checked'))
+if ($('input#advanced').attr('checked'))
 {
     $("button.simplemode").hide();
     $("button.advancedmode").show();
@@ -1670,7 +1665,7 @@ $("#nacsbtn").click(function() {
     var newelement = '<div class=\"srvgroup\"><div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for="f[srv][AssertionConsumerService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-5 columns inline\"><select name="f[srv][AssertionConsumerService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:PAOS">urn:oasis:names:tc:SAML:2.0:bindings:PAOS</option> <option value="urn:oasis:names:tc:SAML:2.0:profiles:browser-post">urn:oasis:names:tc:SAML:2.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:browser-post">urn:oasis:names:tc:SAML:1.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01">urn:oasis:names:tc:SAML:1.0:profiles:artifact-01</option> </select></div> <div class="small-4 columns"><div class="small-6 columns"><input type="text" name="f[srv][AssertionConsumerService][n_' + rname + '][order]" value="" id="f[srv][AssertionConsumerService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div><div class="small-6 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][default]">Is default</label><input type="radio" name="f[srv][AssertionConsumerService][n_' + rname + '][default]" value="1" id="f[srv][AssertionConsumerService][n_' + rname + '][default]" class="acsdefault"/></div></div> </div>          <div class="small-12 columns"><div class="small-3 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][url]" class=\"right inline\">URL</label></div><div class=\"small-8 large-7 columns inline\"><input name="f[srv][AssertionConsumerService][n_' + rname + '][url]" id="f[srv][AssertionConsumerService][n_' + rname + '][url]" type="text"></div><div class=\"small-3 large-2 columns\"><button class="inline left button tiny alert rmfield"  name="rmfield" type="button">Remove</button></div></div></div>';
     $(this).parent().before(newelement);
     GINIT.initialize();
- 
+
 
 });
 $("#nspartifactbtn").click(function() {
@@ -1682,7 +1677,7 @@ $("#nspartifactbtn").click(function() {
     var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-8 large-7 columns inline\"><select name="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select> </div> <div class=\"small-1  columns left\"><input type="text" name="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div>           <div class="small-12 columns"><div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" class="right inline">URL</label></div><div class=\"small-6 large-7 columns inline\"><input name="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" type="text"> </div><div class=\"small-3 large-2 columns\"><button class="inline left button tiny alert rmfield"  name="rmfield" type="button">Remove</button></div></div>';
     $(this).parent().before(newelement);
     GINIT.initialize();
- 
+
 });
 $("#nidpartifactbtn").click(function() {
     var rname = "";
@@ -1713,7 +1708,7 @@ $("#nribtn").click(function() {
 
     var newelement = '<div class="small-12 columns srvgroup"><div class="small-3 columns"><label for="f[srv][RequestInitiator][n_' + rname + '][url]" class="right inline">URL</label></div><div class="small-6 large-7 columns"><input name="f[srv][RequestInitiator][n_' + rname + '][url]" id="f[srv][RequestInitiator][n_' + rname + '][url]" type="text"></div><div class="small-3 large-2 columns"><button type="button" class="inline left button tiny alert rmfield" name="rmfield" value="">remove</button></div></div>';
     $(this).parent().before(newelement);
-     GINIT.initialize();
+    GINIT.initialize();
 
 
 });
@@ -1723,8 +1718,8 @@ $("#nidpssocert").click(function() {
     var possible = "abcdefghijklmnopqrstuvwyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    
-    rname = "newx"+rname;
+
+    rname = "newx" + rname;
     var newelement = '<div class="certgroup small-12 columns"><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][idpsso][' + rname + '][type]" class="inline right">Certificate type</label></div><div class="small-6 large-7 columns"><select name="f[crt][idpsso][' + rname + '][type]"> <option value="x509">x509</option> </select></div><div class="small-3 large-2 columns"></div><div class="small-3 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][idpsso][' + rname + '][usage]" class="inline right">Certificate use</label></div><div class="small-6 large-7 columns"><select name="f[crt][idpsso][' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </div><div class="small-3 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][idpsso][' + rname + '][keyname]" class="inline right">KeyName</label></div><div class="small-6 large-7 columns"><input type="text" name="f[crt][idpsso][' + rname + '][keyname]" value="" id="f[crt][idpsso][' + rname + '][keyname]" class=""  /> </div><div class="small-3 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][idpsso][' + rname + '][certdata]" class="inline right">Certificate</label></div><div class="small-6 large-7 columns"><textarea name="f[crt][idpsso][' + rname + '][certdata]" cols="65" rows="20" id="f[crt][idpsso][' + rname + '][certdata]" class="certdata notice" ></textarea></div><div class="small-3 large-2 columns"></div></div>';
     $(this).parent().before(newelement);
 
@@ -1735,7 +1730,7 @@ $("#naacert").click(function() {
     var possible = "abcdefghijklmnopqrstuvwyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    rname = "newx"+rname;
+    rname = "newx" + rname;
     var newelement = '<div class="certgroup small-12 columns"><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][aa][' + rname + '][type]" class="inline right">Certificate type</label></div><div class="small-6 large-7 columns"><select name="f[crt][aa][' + rname + '][type]"> <option value="x509">x509</option> </select> </div><div class="small-3 large-2 columns"></div><div class="small-3 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][aa][' + rname + '][usage]" class="inline right">Certificate use</label></div><div class="small-6 large-7 columns"><select name="f[crt][aa][' + rname + '][usage]"> <option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select> </div><div class="small-3 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][aa][' + rname + '][keyname]" class="inline right">KeyName</label></div><div class="small-6 large-7 columns"><input type="text" name="f[crt][aa][' + rname + '][keyname]" value="" id="f[crt][aa][' + rname + '][keyname]" class=""  /> </div><div class="small-3 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][aa][' + rname + '][certdata]" class="inline right">Certificate</label></div><div class="small-6 large-7 columns"><textarea name="f[crt][aa][' + rname + '][certdata]" cols="65" rows="20" id="f[crt][aa][' + rname + '][certdata]" class="certdata notice" ></textarea> </div><div class="small-3 large-2 columns"></div></div> ';
     $(this).parent().before(newelement);
 
@@ -1746,8 +1741,8 @@ $("#nspssocert").click(function() {
     var possible = "abcdefghijklmnopqrstuvwyz0123456789";
     for (var i = 0; i < 5; i++)
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    rname = "newx"+rname;
-    var newelement = '<div class="certgroup small-12 columns"><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][type]" class="right inline">Certificate type</label></div><div class="small-8 large-7 columns"><select name="f[crt][spsso][' + rname + '][type]"><option value="x509">x509</option></select> </div><div class="small-1 large-2 columns end"></div></div><div class="small-12  columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][usage]" class="right inline">Certificate use</label></div><div class="small-8 large-7 columns"><select name="f[crt][spsso][' + rname + '][usage]"><option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select></div><div class="small-1 large-2 columns end"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][keyname]" class="right inline">KeyName</label></div><div class="small-8 large-7 columns"><input type="text" name="f[crt][spsso][' + rname + '][keyname]" value="" id="f[crt][spsso][' + rname + '][keyname]" class=""  /></div><div class="small-1 large-2 columns end"></div> </div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][certdata]" class="right inline">Certificate</label></div><div class="small-8 large-7 columns"><textarea name="f[crt][spsso][' + rname + '][certdata]" cols="65" rows="20" id="f[crt][spsso][' + rname + '][certdata]" class="certdata" ></textarea></div><div class="small-1 large-2 columns end"></div></div><div class="small-12 columns"><div class="small-3 columns">&nbsp;</div><div class="small-6 large-7 columns"><button class="certificaterm button alert tiny right" value="'+rname+'" name="certificate" type="button">Remove certificate</button></div><div class="small-3 large-2 columns"></div></div></div>';
+    rname = "newx" + rname;
+    var newelement = '<div class="certgroup small-12 columns"><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][type]" class="right inline">Certificate type</label></div><div class="small-8 large-7 columns"><select name="f[crt][spsso][' + rname + '][type]"><option value="x509">x509</option></select> </div><div class="small-1 large-2 columns end"></div></div><div class="small-12  columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][usage]" class="right inline">Certificate use</label></div><div class="small-8 large-7 columns"><select name="f[crt][spsso][' + rname + '][usage]"><option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select></div><div class="small-1 large-2 columns end"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][keyname]" class="right inline">KeyName</label></div><div class="small-8 large-7 columns"><input type="text" name="f[crt][spsso][' + rname + '][keyname]" value="" id="f[crt][spsso][' + rname + '][keyname]" class=""  /></div><div class="small-1 large-2 columns end"></div> </div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][certdata]" class="right inline">Certificate</label></div><div class="small-8 large-7 columns"><textarea name="f[crt][spsso][' + rname + '][certdata]" cols="65" rows="20" id="f[crt][spsso][' + rname + '][certdata]" class="certdata" ></textarea></div><div class="small-1 large-2 columns end"></div></div><div class="small-12 columns"><div class="small-3 columns">&nbsp;</div><div class="small-6 large-7 columns"><button class="certificaterm button alert tiny right" value="' + rname + '" name="certificate" type="button">Remove certificate</button></div><div class="small-3 large-2 columns"></div></div></div>';
     $(this).parent().before(newelement);
     GINIT.initialize();
 
@@ -1765,10 +1760,10 @@ $("a.pCookieAccept").click(function() {
     return false;
 });
 $("[id='f[entityid]']").change(function() {
-    if($(this).hasClass("alertonchange"))
+    if ($(this).hasClass("alertonchange"))
     {
-       var entalert = $("div#entitychangealert").text();
-       alert(entalert);
+        var entalert = $("div#entitychangealert").text();
+        alert(entalert);
     }
 });
 
@@ -1792,10 +1787,10 @@ $(document).ready(function() {
 //    });
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal(
-{
-Height: '500px',
-            minHeight: '500px',
-}
+                {
+                    Height: '500px',
+                    minHeight: '500px',
+                }
         );
     }
     $("button#vormversion").click(function() {
@@ -1972,8 +1967,8 @@ Height: '500px',
                     $(".message").html(data);
                     if (data == 'OK')
                     {
-                       $(this).foundation('reveal', 'close'); 
-                       location.reload(); 
+                        $(this).foundation('reveal', 'close');
+                        location.reload();
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -2067,57 +2062,57 @@ Height: '500px',
         ev.preventDefault();
     });
 
-    $('button[name="fedstatus"]').click(function(ev){
-         var btnVal = $(this).attr('value');
-         var additionalMsg = $(this).attr('title');
-         if( additionalMsg === undefined)
-         {
-            additionalMsg ='';
-         }
-         var csrfname = $("[name='csrfname']").val();
-         var csrfhash = $("[name='csrfhash']").val();
-         var baseurl = $("[name='baseurl']").val();
-         var fedname = $("span#fednameencoded").text();
-         var url = baseurl+'federations/manage/changestatus';
-         var data = [{name: 'status', value: btnVal},{name: csrfname, value: csrfhash},{name: 'fedname', value: fedname }];
-         sconfirm(''+additionalMsg+'', function(ev) {
-         $.ajax({
-            type: "POST",
-            url: url,
-            data: data,
-            success: function(data){
-                if(data){
-                  if(data =='deactivated')
-                  {
-                      $('button[value="disablefed"]').hide();   
-                      $('button[value="enablefed"]').show();   
-                      $('button[value="delfed"]').show();   
-                      $('td.fedstatusinactive').show();
-                      $('show.fedstatusinactive').show();
-                  }
-                  else if(data =='activated')
-                  {
-                      $('button[value="disablefed"]').show();   
-                      $('button[value="enablefed"]').hide();   
-                      $('button[value="delfed"]').hide();   
-                      $('td.fedstatusinactive').hide();
-                      $('span.fedstatusinactive').hide();
-                  }
-                  else if(data =='todelete')
-                  {
-                      $('button[value="disablefed"]').hide();   
-                      $('button[value="enablefed"]').hide();   
-                      $('button[value="delfed"]').hide();   
-                  }
-                   
-                }
-             },
-             error: function(data) {
-                alert('Error  ocurred');
-             }
+    $('button[name="fedstatus"]').click(function(ev) {
+        var btnVal = $(this).attr('value');
+        var additionalMsg = $(this).attr('title');
+        if (additionalMsg === undefined)
+        {
+            additionalMsg = '';
+        }
+        var csrfname = $("[name='csrfname']").val();
+        var csrfhash = $("[name='csrfhash']").val();
+        var baseurl = $("[name='baseurl']").val();
+        var fedname = $("span#fednameencoded").text();
+        var url = baseurl + 'federations/manage/changestatus';
+        var data = [{name: 'status', value: btnVal}, {name: csrfname, value: csrfhash}, {name: 'fedname', value: fedname}];
+        sconfirm('' + additionalMsg + '', function(ev) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                success: function(data) {
+                    if (data) {
+                        if (data == 'deactivated')
+                        {
+                            $('button[value="disablefed"]').hide();
+                            $('button[value="enablefed"]').show();
+                            $('button[value="delfed"]').show();
+                            $('td.fedstatusinactive').show();
+                            $('show.fedstatusinactive').show();
+                        }
+                        else if (data == 'activated')
+                        {
+                            $('button[value="disablefed"]').show();
+                            $('button[value="enablefed"]').hide();
+                            $('button[value="delfed"]').hide();
+                            $('td.fedstatusinactive').hide();
+                            $('span.fedstatusinactive').hide();
+                        }
+                        else if (data == 'todelete')
+                        {
+                            $('button[value="disablefed"]').hide();
+                            $('button[value="enablefed"]').hide();
+                            $('button[value="delfed"]').hide();
+                        }
 
-         });
-         });
+                    }
+                },
+                error: function(data) {
+                    alert('Error  ocurred');
+                }
+
+            });
+        });
     });
     $("#rmstatdef button").click(function(ev) {
         var url = $("form#rmstatdef").attr('action');
@@ -2176,76 +2171,77 @@ Height: '500px',
     });
 
     function  notificationadd2(message, callback) {
-        $("#notificationaddmodal").foundation('reveal','open',{});
-        $(document).on('opened', '#notificationaddmodal', function () {
-           var modal = $(this);
-           $('select#sfederation').parent().hide();
-           $('select#sprovider').parent().hide();
-           $('select#type').change(function()
-           {
-               $('select#sfederation').parent().hide();
-               $('select#sprovider').parent().hide();
-               var optionSelected = $(this).find("option:selected");
-               var valueSelected = optionSelected.val();
-               var textSelected = optionSelected.text();
-               var selfed = $('#sfederation');
-               var selprovider = $('#sprovider');
-               selfed.find('option').remove();
-               selprovider.find('option').remove();
-               if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged")
-               {
-                   $.ajax({
-                      type: "GET",
-                      url: baseurl + 'ajax/getfeds',
-                      cache: true,
-                      success: function(json) {
-                         $.each(json, function(key, value) {
-                         $('<option>').val(value.id).text(value.name).appendTo(selfed);
-                         });
-                         $('select#sfederation').parent().show();
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                         $(".message").html(errorThrown);
-                      }
+        $("#notificationaddmodal").foundation('reveal', 'open', {});
+        $(document).on('opened', '#notificationaddmodal', function() {
+            var modal = $(this);
+            $('select#sfederation').parent().hide();
+            $('select#sprovider').parent().hide();
+            $('select#type').change(function()
+            {
+                $('select#sfederation').parent().hide();
+                $('select#sprovider').parent().hide();
+                var optionSelected = $(this).find("option:selected");
+                var valueSelected = optionSelected.val();
+                var textSelected = optionSelected.text();
+                var selfed = $('#sfederation');
+                var selprovider = $('#sprovider');
+                selfed.find('option').remove();
+                selprovider.find('option').remove();
+                if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged")
+                {
+                    $.ajax({
+                        type: "GET",
+                        url: baseurl + 'ajax/getfeds',
+                        cache: true,
+                        success: function(json) {
+                            $.each(json, function(key, value) {
+                                $('<option>').val(value.id).text(value.name).appendTo(selfed);
+                            });
+                            $('select#sfederation').parent().show();
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            $(".message").html(errorThrown);
+                        }
 
-                  });
-               }
-               else if(valueSelected === "requeststoproviders" )
-               {
-                   $.ajax({
-                      type: "GET",
-                      url: baseurl + 'ajax/getproviders',
-                      cache: false,
-                      //datatype: "json",
-                      success: function(json) {
-                          var data = $.parseJSON(json);
-                          $.each(data, function(key, value) {
-                               $('<option>').val(value.key).text(value.value).appendTo(selprovider);
-                           });
-                          $('select#sprovider').parent().show();
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                                $(".message").html(errorThrown);
-                      }
+                    });
+                }
+                else if (valueSelected === "requeststoproviders")
+                {
+                    $.ajax({
+                        type: "GET",
+                        url: baseurl + 'ajax/getproviders',
+                        cache: false,
+                        //datatype: "json",
+                        success: function(json) {
+                            var data = $.parseJSON(json);
+                            $.each(data, function(key, value) {
+                                $('<option>').val(value.key).text(value.value).appendTo(selprovider);
+                            });
+                            $('select#sprovider').parent().show();
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            $(".message").html(errorThrown);
+                        }
 
-                  });
-               }
+                    });
+                }
             });//end change
-            $(".no").click(function(){
-                 $("#notificationaddmodal").foundation('reveal', 'close');
+            $(".no").click(function() {
+                $("#notificationaddmodal").foundation('reveal', 'close');
             });
-                $('.yes').click(function() {
-                    if ($.isFunction(callback)) {
-                        callback.apply();
-                    }
+            $('.yes').click(function() {
+                if ($.isFunction(callback)) {
+                    callback.apply();
+                }
 
-                    //     modal.close(); // or $.modal.close();
-                });
+                //     modal.close(); // or $.modal.close();
+            });
 
-           
-         });
 
-   };
+        });
+
+    }
+    ;
 
     function notificationadd(message, callback) {
         $('#notificationaddform').modal({
@@ -2295,7 +2291,7 @@ Height: '500px',
 
                         });
                     }
-                    else if(valueSelected === "requeststoproviders" )
+                    else if (valueSelected === "requeststoproviders")
                     {
                         $.ajax({
                             type: "GET",
@@ -2316,7 +2312,7 @@ Height: '500px',
 
                         });
 
-                   }
+                    }
                 }); // end change  function
                 var modal = this;
                 $('.message', dialog.data[0]).append(message);
@@ -2362,13 +2358,13 @@ Height: '500px',
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%", ],
             minHeight: '300px',
-            minWidth: '300px', 
+            minWidth: '300px',
             overlayId: 'simpledialog-overlay',
             containerId: 'simpledialog-container',
             onShow: function(dialog) {
                 var modal = this;
 
-                $('.message', dialog.data[0]).append('<br />'+message);
+                $('.message', dialog.data[0]).append('<br />' + message);
 
                 // if the user clicks "yes"
                 $('.yes', dialog.data[0]).click(function() {
@@ -2393,7 +2389,7 @@ function go_to_private_page()
 }
 
 // parsemetadata
-$("button#parsemetadataidp").click(function(){
+$("button#parsemetadataidp").click(function() {
     var xmlsource = $('textarea#metadatabody').val();
     try {
         var xmlDoc = $.parseXML(xmlsource);
@@ -2407,8 +2403,8 @@ $("button#parsemetadataidp").click(function(){
     var xml = $(xmlDoc);
     $entity = null;
     $spssodescriptor = null;
-      
-   
+
+
     xml.find("md\\:IDPSSODescriptor,IDPSSODescriptor").each(function() {
         if ($(this).attr("protocolSupportEnumeration"))
         {
@@ -2425,103 +2421,103 @@ $("button#parsemetadataidp").click(function(){
     }
     $("#entityid").val($entity.attr("entityID"));
     $orgname = null;
-    $entity.find("md\\:OrganizationName,OrganizationName").each(function(){
-          $orgname = $(this);
-          $langname = $orgname.attr("xml:lang"); 
-          if($langname === "en")
-          {
-              return false;
-          }     
+    $entity.find("md\\:OrganizationName,OrganizationName").each(function() {
+        $orgname = $(this);
+        $langname = $orgname.attr("xml:lang");
+        if ($langname === "en")
+        {
+            return false;
+        }
     });
     $orgdisname = null;
-    $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName").each(function(){
-          $orgdisname = $(this);
-          $langname = $orgdisname.attr("xml:lang"); 
-          if($langname === "en")
-          {
-              return false;
-          }     
+    $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName").each(function() {
+        $orgdisname = $(this);
+        $langname = $orgdisname.attr("xml:lang");
+        if ($langname === "en")
+        {
+            return false;
+        }
 
     });
     $helpdeskurl = null;
-    $entity.find("md\\:OrganizationURL,OrganizationURL").each(function(){
-         $helpdeskurl = $(this);
-         $langname = $helpdeskurl.attr("xml:lang");
-         if($langname === "en")
-         {
+    $entity.find("md\\:OrganizationURL,OrganizationURL").each(function() {
+        $helpdeskurl = $(this);
+        $langname = $helpdeskurl.attr("xml:lang");
+        if ($langname === "en")
+        {
             return false;
-         }
+        }
     });
     $contact = null;
-    $entity.find("md\\:ContactPerson,ContactPerson").each(function(){
-         $contact = $(this); 
-         $contacttype = $contact.attr("contactType");
-         if($contacttype === "administrative")
-         {
+    $entity.find("md\\:ContactPerson,ContactPerson").each(function() {
+        $contact = $(this);
+        $contacttype = $contact.attr("contactType");
+        if ($contacttype === "administrative")
+        {
             return false;
-         }
+        }
     });
-    if($contact != null)
+    if ($contact != null)
     {
-       $contactname = '';
-       $contact.find("md\\:GivenName,GivenName").each(function(){
-          $contactname = $(this).text();
-       });
-       $contact.find("md\\:SurName,SurName").each(function(){
-          $contactname = $contactname +' '+ $(this).text();
-       });
-       $contactemail = '';
-       $contact.find("md\\:EmailAddress,EmailAddress").each(function(){
-          $contactemail = $(this).text();
-       });
-       $("#contact\_name").val($contactname);
-       $("#contact\_mail").val($contactemail);
+        $contactname = '';
+        $contact.find("md\\:GivenName,GivenName").each(function() {
+            $contactname = $(this).text();
+        });
+        $contact.find("md\\:SurName,SurName").each(function() {
+            $contactname = $contactname + ' ' + $(this).text();
+        });
+        $contactemail = '';
+        $contact.find("md\\:EmailAddress,EmailAddress").each(function() {
+            $contactemail = $(this).text();
+        });
+        $("#contact\_name").val($contactname);
+        $("#contact\_mail").val($contactemail);
     }
     $nameids = '';
-    $idpssodescriptor.find("md\\:NameIDFormat,NameIDFormat").each(function(){
-      $nameids = $nameids+' '+$(this).text();
-   });
+    $idpssodescriptor.find("md\\:NameIDFormat,NameIDFormat").each(function() {
+        $nameids = $nameids + ' ' + $(this).text();
+    });
     $scopes = '';
-    $idpssodescriptor.find("shibmd\\:Scope,Scope").each(function(){
-       if($(this).attr("regexp") && $(this).attr("regexp") === 'false')
-       {
-          if($scopes != '')
-          {
-             $scopes = $scopes+','+$(this).text();
-          }
-          else
-          {
-              $scopes = $(this).text() ;
-          }
-       }
+    $idpssodescriptor.find("shibmd\\:Scope,Scope").each(function() {
+        if ($(this).attr("regexp") && $(this).attr("regexp") === 'false')
+        {
+            if ($scopes != '')
+            {
+                $scopes = $scopes + ',' + $(this).text();
+            }
+            else
+            {
+                $scopes = $(this).text();
+            }
+        }
     });
     $("#idpssoscope").val($.trim($scopes));
 
-    $idpssodescriptor.find("md\\:SingleSignOnService,SingleSignOnService").each(function(){
-      $binprot = $(this).attr("Binding");
-      $ssourl = $(this).attr("Location");
-      if($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect")
-      {
+    $idpssodescriptor.find("md\\:SingleSignOnService,SingleSignOnService").each(function() {
+        $binprot = $(this).attr("Binding");
+        $ssourl = $(this).attr("Location");
+        if ($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect")
+        {
             $("#sso\\[saml2httpredirect\\]").val($.trim($ssourl));
-      }
-      else if($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
-      {
-           $("#sso\\[saml2httppost\\]").val($.trim($ssourl));
-      }
-      else if($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign")
-      {
+        }
+        else if ($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
+        {
+            $("#sso\\[saml2httppost\\]").val($.trim($ssourl));
+        }
+        else if ($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign")
+        {
             $("#sso\\[saml2httppostsimplesign\\]").val($.trim($ssourl));
 
-      }
-      else
-      {
-         $("#sso\\["+$binprot+"\\]").val($.trim($ssourl));
-      }
+        }
+        else
+        {
+            $("#sso\\[" + $binprot + "\\]").val($.trim($ssourl));
+        }
     });
 
     var certsign = false;
     var certenc = false;
-    $idpssodescriptor.find("md\\:KeyDescriptor, KeyDescriptor").each(function(){
+    $idpssodescriptor.find("md\\:KeyDescriptor, KeyDescriptor").each(function() {
         if (!certsign || !certenc)
         {
             if ($(this).attr("use") === "signing")
@@ -2562,32 +2558,32 @@ $("button#parsemetadataidp").click(function(){
         {
             return false;
         }
-         
+
     });
 
-    if($orgname === null)
+    if ($orgname === null)
     {
-       $("#homeorg").val("");
-    } 
+        $("#homeorg").val("");
+    }
     else
     {
-       $("#homeorg").val($orgname.text());
+        $("#homeorg").val($orgname.text());
     }
-    if($orgdisname === null)
+    if ($orgdisname === null)
     {
         $("#deschomeorg").val("");
     }
     else
     {
-       $("#deschomeorg").val($orgdisname.text());
+        $("#deschomeorg").val($orgdisname.text());
     }
-    if($helpdeskurl === null)
+    if ($helpdeskurl === null)
     {
-       $("#helpdeskurl").val("");
+        $("#helpdeskurl").val("");
     }
     else
     {
-       $("#helpdeskurl").val($helpdeskurl.text());
+        $("#helpdeskurl").val($helpdeskurl.text());
     }
 
     $("#nameids").val($.trim($nameids));
@@ -2635,8 +2631,8 @@ $("button#parsemetadatasp").click(function() {
     var rname = "";
     var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
     var defaultacs = false;
-    
-        $entity.find("md\\:AssertionConsumerService,AssertionConsumerService").each(function() {
+
+    $entity.find("md\\:AssertionConsumerService,AssertionConsumerService").each(function() {
         rname = "";
         for (var i = 0; i < 5; i++)
         {
@@ -2652,11 +2648,11 @@ $("button#parsemetadatasp").click(function() {
         else
         {
             var nelement = $("div.spregacs").first().clone().removeAttr("class").addClass("spregacsopt");
-            
-            $("#acs_url\\[0\\]",nelement).removeAttr("name").attr("name","acs_url\["+rname+"\]").attr("id","acs_url\["+rname+"\]").val($(this).attr("Location"));
-            $("#acs_order\\[0\\]",nelement).removeAttr("name").attr("name","acs_order\["+rname+"\]").attr("id","acs_order\["+rname+"\]").val($(this).attr("index"));
-            var acsbind = $("#acs_bind\\[0\\]",nelement).removeAttr("name").attr("name","acs_bind\["+rname+"\]").attr("id","acs_bind\["+rname+"\]");
-            $('option', acsbind).removeAttr('selected').filter('[value="'+$(this).attr('Binding')+'"]').attr('selected',true);
+
+            $("#acs_url\\[0\\]", nelement).removeAttr("name").attr("name", "acs_url\[" + rname + "\]").attr("id", "acs_url\[" + rname + "\]").val($(this).attr("Location"));
+            $("#acs_order\\[0\\]", nelement).removeAttr("name").attr("name", "acs_order\[" + rname + "\]").attr("id", "acs_order\[" + rname + "\]").val($(this).attr("index"));
+            var acsbind = $("#acs_bind\\[0\\]", nelement).removeAttr("name").attr("name", "acs_bind\[" + rname + "\]").attr("id", "acs_bind\[" + rname + "\]");
+            $('option', acsbind).removeAttr('selected').filter('[value="' + $(this).attr('Binding') + '"]').attr('selected', true);
             $("div.spregacs").after(nelement);
         }
     });
@@ -2711,9 +2707,9 @@ $("button#parsemetadatasp").click(function() {
             return false;
         }
     });
-        alert("Success");
-        GINIT.initialize();
-   
+    alert("Success");
+    GINIT.initialize();
+
 });
 
 //  spregister
@@ -2839,7 +2835,7 @@ $('#joinfed select#fedid').on('change', function() {
                 if (data)
                 {
                     $.each(data, function(i, v) {
-                        $("ul.validatorbuttons").append('<li><button  value="'+jsurl+'/'+v.fedid+'/'+v.id+'" class="small button">'+v.name+'</button></li>');
+                        $("ul.validatorbuttons").append('<li><button  value="' + jsurl + '/' + v.fedid + '/' + v.id + '" class="small button">' + v.name + '</button></li>');
                     })
                     $("div.validaronotice").show();
                 }
@@ -2853,7 +2849,7 @@ $('#joinfed select#fedid').on('change', function() {
                 $('#fvresult').hide();
             }
         }).done(function() {
-                BINIT.initFvalidators();
+            BINIT.initFvalidators();
         })
     }
 });
@@ -2861,45 +2857,46 @@ $('#joinfed select#fedid').on('change', function() {
 
 // experimental: forcing scroll to top page # urls
 
-$(document).ready(function(){
-var scrolled = false;
+$(document).ready(function() {
+    var scrolled = false;
 
-$(window).scroll(function(){
-  scrolled = true;
-});
+    $(window).scroll(function() {
+        scrolled = true;
+    });
 
-if ( window.location.hash  ) {
-  $(window).scrollTop( 0 );
-}
+    if (window.location.hash) {
+        $(window).scrollTop(0);
+    }
 
 
-$("button#addlhelpdesk").click(function() {
+    $("button#addlhelpdesk").click(function() {
         var selected = $("span.lhelpdeskadd option:selected").first();
         var nf = selected.val();
         var rmbtn = $("button#helperbutttonrm").html();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
             return false;
         }
         var nfv = selected.text();
         var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[lhelpdesk][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm ui-icon-trash button inline tiny left\" name=\"lhelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());;
-          GINIT.initialize();
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[lhelpdesk][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[lhelpdesk][" + nf + "]\" name=\"f[lhelpdesk][" + nf + "]\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm ui-icon-trash button inline tiny left\" name=\"lhelpdesk\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+        ;
+        GINIT.initialize();
     });
     $("button#addldisplayname").click(function() {
         var selected = $("span.ldisplaynameadd option:selected").first();
         var nf = selected.val();
         var rmbtn = $("button#helperbutttonrm").html();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
             return false;
         }
         var nfv = selected.text();
         var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[ldisplayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"ldisplayname\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
-         GINIT.initialize();
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[ldisplayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[ldisplayname][" + nf + "]\" name=\"f[ldisplayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"ldisplayname\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+        GINIT.initialize();
     });
 
 
@@ -2907,182 +2904,183 @@ $("button#addlhelpdesk").click(function() {
         var selected = $("span.idpuiidisplayadd option:selected").first();
         var nf = selected.val();
         var rmbtn = $("button#helperbutttonrm").html();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
-           return false;
+            return false;
         }
         var nfv = selected.text();
         var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][idpsso][displayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][idpsso][displayname][" + nf + "]\" name=\"f[uii][idpsso][displayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiidisplayname\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][idpsso][displayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][idpsso][displayname][" + nf + "]\" name=\"f[uii][idpsso][displayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiidisplayname\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#idpadduiihelpdesk").click(function() {
         var selected = $("span.idpuiihelpdeskadd option:selected").first();
         var nf = selected.val();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
-           return false;
+            return false;
         }
         var rmbtn = $("button#helperbutttonrm").html();
         var nfv = selected.text();
         var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][idpsso][helpdesk][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][idpsso][helpdesk][" + nf + "]\" name=\"f[uii][idpsso][helpdesk][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiihelpdesk\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][idpsso][helpdesk][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][idpsso][helpdesk][" + nf + "]\" name=\"f[uii][idpsso][helpdesk][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiihelpdesk\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#spadduiidisplay").click(function() {
         var selected = $("span.spuiidisplayadd option:selected").first();
         var nf = selected.val();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
-           return false;
+            return false;
         }
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm inline left tiny button alert\" name=\"uiispnamerm\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][displayname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][displayname][" + nf + "]\" name=\"f[uii][spsso][displayname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm inline left tiny button alert\" name=\"uiispnamerm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#spadduiihelpdesk").click(function() {
         var selected = $("span.spuiihelpdeskadd option:selected").first();
         var nf = selected.val();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
-           return false;
+            return false;
         }
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm inline tiny left button alert\" name=\"uiisphelpdeskrm\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[[uii][spsso][helpdesk][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><input id=\"f[uii][spsso][helpdesk][" + nf + "]\" name=\"f[uii][spsso][helpdesk][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm inline tiny left button alert\" name=\"uiisphelpdeskrm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#spadduiidesc").click(function() {
         var selected = $("span.spuiidescadd option:selected").first();
         var nf = selected.val();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
-           return false;
+            return false;
         }
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiispdescrm\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiispdescrm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
 
     $("button#addlname").click(function() {
         var selected = $("span.lnameadd option:selected").first();
         var nf = selected.val();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
             return false;
         }
         var rmbtn = $("button#helperbutttonrm").html();
         var nfv = selected.text();
         var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[lname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline alert\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
-          GINIT.initialize();
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[lname][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[lname][" + nf + "]\" name=\"f[lname][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline alert\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+        GINIT.initialize();
     });
     $("button#idpadduiidesc").click(function() {
-        var selected =  $("span.idpuiidescadd option:selected").first();
+        var selected = $("span.idpuiidescadd option:selected").first();
         var nf = selected.val();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
             return false;
         }
         var rmbtn = $("button#helperbutttonrm").html();
         var nfv = selected.text();
         var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"ldesc\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
-          GINIT.initialize();
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"ldesc\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+        GINIT.initialize();
     });
     $("button#addregpolicy").click(function() {
-        var selected =  $("span.regpolicyadd option:selected").first();
+        var selected = $("span.regpolicyadd option:selected").first();
         var nf = selected.val();
         var rmbtn = $("button#helperbutttonrm").html();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
             return false;
         }
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
         var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[regpolicy][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());;
-          GINIT.initialize();
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[regpolicy][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><input id=\"f[regpolicy][" + nf + "]\" name=\"f[regpolicy][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"regpolicy\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+        ;
+        GINIT.initialize();
     });
     $("button#addlprivacyurlidpsso").click(function() {
         var selected = $("span.addlprivacyurlidpsso option:selected").first();
         var nf = selected.val();
         var rmbtn = $("button#helperbutttonrm").html();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
             return false;
         }
         var nfv = selected.text();
         var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[prvurl][idpsso][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\">  <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[prvurl][idpsso][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[prvurl][idpsso][" + nf + "]\" name=\"f[prvurl][idpsso][" + nf + "]\" type=\"text\"/></div><div class=\"small-3 large-2 columns\">  <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"regpolicy\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
     $("button#addlprivacyurlspsso").click(function() {
         var selected = $("span.addlprivacyurlspsso option:selected").first();
         var nf = selected.val();
-        if(typeof nf === 'undefined')
+        if (typeof nf === 'undefined')
         {
             return false;
         }
         var nfv = selected.text();
         var rmbtn = $("button#helperbutttonrm").html();
         var inputname = $(this).attr('value');
-        selected.attr('disabled', true).attr('selected',false);
-        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[prvurl][spsso][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"regpolicy\" value=\""+nf+"\">"+rmbtn+"</button></div></div>").insertBefore($(this).closest('span').parent());
+        selected.attr('disabled', true).attr('selected', false);
+        $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[prvurl][spsso][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><input id=\"f[prvurl][spsso][" + nf + "]\" name=\"f[prvurl][spsso][" + nf + "]\" type=\"text\"/> </div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"regpolicy\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         GINIT.initialize();
     });
 
 
-$("#ncontactbtn").click(function() {
-    var rname = "";
-    var btnvalues = $(this).attr('value').split('|');
-    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i = 0; i < 5; i++)
-        rname += possible.charAt(Math.floor(Math.random() * possible.length));
+    $("#ncontactbtn").click(function() {
+        var rname = "";
+        var btnvalues = $(this).attr('value').split('|');
+        var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < 5; i++)
+            rname += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    var newelement = '<div class="group"><div class="small-12 columns"><fieldset><legend>'+btnvalues[5]+'</legend><div><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][type]" class="right inline">'+btnvalues[1]+'</label></div><div class="small-8 large-7 columns inline"><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][fname]" class="right inline">'+btnvalues[2]+'</label></div><div  class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div  class="small-3 columns"><label for="f[contact][n_' + rname + '][sname]" class="right inline">'+btnvalues[3]+'</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][email]" class="right inline ">'+btnvalues[4]+'</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="rmelbtn small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm tiny alert button inline right" name="contact" value="'+rname+'">'+btnvalues[0]+'</button></div><div class="small-3 large-2 columns"></div></div></div></fieldset></div></div>';
-    $(this).parent().before(newelement);
-          GINIT.initialize();
+        var newelement = '<div class="group"><div class="small-12 columns"><fieldset><legend>' + btnvalues[5] + '</legend><div><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][type]" class="right inline">' + btnvalues[1] + '</label></div><div class="small-8 large-7 columns inline"><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][fname]" class="right inline">' + btnvalues[2] + '</label></div><div  class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div  class="small-3 columns"><label for="f[contact][n_' + rname + '][sname]" class="right inline">' + btnvalues[3] + '</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][email]" class="right inline ">' + btnvalues[4] + '</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="rmelbtn small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm tiny alert button inline right" name="contact" value="' + rname + '">' + btnvalues[0] + '</button></div><div class="small-3 large-2 columns"></div></div></div></fieldset></div></div>';
+        $(this).parent().before(newelement);
+        GINIT.initialize();
 
-});
-
-});
-    $("#showhelps").click(function(e){
-        e.preventDefault();
-        var url =  $(this).attr('href');
-        var param = "n";
- 
-        if($("#showhelps").hasClass('helpactive'))
-        {
-             param = "n";
-        }
-        else
-        {
-            param = "y";
-        }
-
-        $.ajax({
-           type: 'GET',
-           url: url+'/'+param,
-           success:function(){
-             $("#showhelps").toggleClass('helpinactive').toggleClass('helpactive');
-             $(".dhelp").toggle();
-             $("img.iconhelpshow").toggle();
-             $("img.iconhelpcross").toggle();
-           } 
-        });
     });
+
+});
+$("#showhelps").click(function(e) {
+    e.preventDefault();
+    var url = $(this).attr('href');
+    var param = "n";
+
+    if ($("#showhelps").hasClass('helpactive'))
+    {
+        param = "n";
+    }
+    else
+    {
+        param = "y";
+    }
+
+    $.ajax({
+        type: 'GET',
+        url: url + '/' + param,
+        success: function() {
+            $("#showhelps").toggleClass('helpinactive').toggleClass('helpactive');
+            $(".dhelp").toggle();
+            $("img.iconhelpshow").toggle();
+            $("img.iconhelpcross").toggle();
+        }
+    });
+});
 
 $("div.section").parent().addClass("section");
 
@@ -3091,200 +3089,195 @@ $("div.section").parent().addClass("section");
 
 
 
-$("div#loginform form").submit(function(){
-     //e.preventDefault;
-     var link = $("div#loginform form").attr('action');
-     var str = $(this).serializeArray();
-     var browsertime = new Date();
-     var browsertimezone = -browsertime.getTimezoneOffset();
-     str.push({name: 'browsertimeoffset', value: '' + browsertimezone + ''});
+$("div#loginform form").submit(function() {
+    //e.preventDefault;
+    var link = $("div#loginform form").attr('action');
+    var str = $(this).serializeArray();
+    var browsertime = new Date();
+    var browsertimezone = -browsertime.getTimezoneOffset();
+    str.push({name: 'browsertimeoffset', value: '' + browsertimezone + ''});
 
-     $.ajax({
+    $.ajax({
         type: "POST",
         cache: false,
         timeout: 2500,
         url: link, // Send the login info to this page
         data: str,
-        beforeSend: function(){
-              $("#loginresponse").html("").hide(); 
+        beforeSend: function() {
+            $("#loginresponse").html("").hide();
 
         },
-        success: function(data){
-            if(data == 'OK')
+        success: function(data) {
+            if (data == 'OK')
             {
-               $('#loginform').foundation('reveal', 'close');               
-               setTimeout('go_to_private_page()', 1000); 
+                $('#loginform').foundation('reveal', 'close');
+                setTimeout('go_to_private_page()', 1000);
             }
             else
             {
-              $("#loginresponse").html(data).show(); 
+                $("#loginresponse").html(data).show();
 
             }
-           
-        },
-        error: function(jqXHR, textStatus, errorThrown){
-             ("#loginresponse").html("Error").show();
 
         },
-     
-     });
-     return false;
+        error: function(jqXHR, textStatus, errorThrown) {
+            ("#loginresponse").html("Error").show();
+
+        },
+    });
+    return false;
 
 });
-$("button.advancedmode").click(function(){
-   var thisB = $(this);
-   var postUrl = thisB.val();
-   var csrfname = $("[name='csrfname']").val();
-   var csrfhash = $("[name='csrfhash']").val();
-   $(this).closest("form").attr("action",postUrl);
+$("button.advancedmode").click(function() {
+    var thisB = $(this);
+    var postUrl = thisB.val();
+    var csrfname = $("[name='csrfname']").val();
+    var csrfhash = $("[name='csrfhash']").val();
+    $(this).closest("form").attr("action", postUrl);
 
 });
 
 
 // get list providers with dynamic list columns: in progress
-$("a.afilter").click(function(){
-      var url = $(this).attr("href");
-      $('a.initiated').removeClass('initiatied');
-      var filter;
-      if($(this).hasClass('filterext'))
-      {
-         filter = 1;
-      }
-      else if($(this).hasClass('filterlocal'))
-      {
-         filter = 2;   
-      }
-      else
-      {
-         filter = 0;
-      }
-      $.ajax({
+$("a.afilter").click(function() {
+    var url = $(this).attr("href");
+    $('a.initiated').removeClass('initiatied');
+    var filter;
+    if ($(this).hasClass('filterext'))
+    {
+        filter = 1;
+    }
+    else if ($(this).hasClass('filterlocal'))
+    {
+        filter = 2;
+    }
+    else
+    {
+        filter = 0;
+    }
+    $.ajax({
         type: "GET",
         url: url,
         timeout: 5500,
         cache: true,
-        success:function(json){
-          $('#spinner').hide();
-          if(filter == 1)
-          {
-             $('dd.filterext').addClass('active');
+        dataType: "json",
+        success: function(json) {
+            $('#spinner').hide();
+            if (filter == 1)
+            {
+                $('dd.filterext').addClass('active');
+            }
+            else if (filter == 2)
+            {
+                $('dd.filterlocal').addClass('active');
+            }
+            else
+            {
+                $('dd.filterall').addClass('active');
+            }
+            var result = json;
+            if (result)
+            {
+                var table = $('<table/>');
+                table.attr('id', 'details');
+                table.addClass('filterlist');
+                var thead = $('<thead/>');
+                table.append(thead);
+                var theadtr = $('<tr/>');
+                thead.append(theadtr);
 
-          }
-          else if (filter == 2)
-          {
-             $('dd.filterlocal').addClass('active');
+                var Columns = new Array();
+                var tmpcolumns = result.columns;
+                var colstatus;
+                var counter = 0;
+                $.each(tmpcolumns, function(i, v) {
+                    colstatus = v.status;
+                    if (colstatus)
+                    {
+                        nar = new Array();
+                        $.each(v.cols, function(l, n) {
+                            nar.push(n);
+                        });
+                        Columns.push(nar);
+                        theadtr.append('<th>' + v.colname + '</th>');
+                    }
+                });
+                var tbody = $('<tbody/>');
+                table.append(tbody);
+                var data = result.data;
+                var startTime = new Date();
+                var tbodyToInsert = [];
+                var a = 0;
+                $.each(data, function(j, w) {
+                    if ((w.plocal == 1 && (filter == 2 || filter == 0)) || (w.plocal == 0 && filter < 2))
+                    {
+                        tbodyToInsert[a++] = '<tr>';
+                        $.each(Columns, function(p, z) {
+                            var cell = '';
+                            $.each(z, function(r, s) {
+                                if (s === 'pname' && w[s] != null)
+                                {
+                                    cell = cell + '<a href="' + result.baseurl + 'providers/detail/show/' + w.pid + '">' + w[s] + '</a><br />';
 
-          }
-          else
-          {
-             $('dd.filterall').addClass('active');
- 
-            
-          }
-         
-          var result = $.parseJSON(json);
-          if(result)
-          {
-             var table = $('<table/>');
-             table.attr('id', 'details');
-             table.addClass('filterlist');
-             var thead = $('<thead/>');
-             table.append(thead);
-             var theadtr = $('<tr/>');
-             thead.append(theadtr);
+                                }
+                                else if (w[s] != null && s === 'phelpurl')
+                                {
+                                    cell = cell + '<a href="' + w.phelpurl + '">' + w.phelpurl + '</a>';
+                                }
+                                else if (w[s] != null && (s === 'plocked' || s === 'pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable'))
+                                {
+                                    if (result['statedefs'][s][w[s]] != undefined)
+                                    {
+                                        cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
+                                    }
+                                }
+                                else if (w[s] != null)
+                                {
+                                    cell = cell + '  ' + w[s];
+                                }
+                            });
+                            tbodyToInsert[a++] = '<td>' + cell + '</td>';
 
-             var Columns = new Array();
-             var tmpcolumns = result.columns;
-             var colstatus;
-             var counter = 0;
-             $.each(tmpcolumns,function(i,v){
-                 colstatus = v.status;
-                 if(colstatus)
-                 {
-                   nar = new Array();
-                   $.each(v.cols,function(l,n){
-                      nar.push(n);  
-                   });
-                   Columns.push(nar);
-                   theadtr.append('<th>'+v.colname+'</th>');
-                 }
-             });
-             var tbody = $('<tbody/>');
-             table.append(tbody);
-             var data = result.data;
-             var startTime = new Date();
-             var tbodyToInsert = [];
-             var a = 0;
-             $.each(data,function(j,w){
-               if((w.plocal == 1 && (filter == 2 || filter == 0)) || (w.plocal == 0 && filter<2))
-               {
-                  tbodyToInsert[a++] = '<tr>';
-                  $.each(Columns, function(p,z){
-                     var cell='';
-                     $.each(z, function(r,s){
-                        if(s === 'pname' && w[s] != null)
-                        {
-                           cell = cell + '<a href="'+result.baseurl+'providers/detail/show/'+w.pid+'">'+w[s]+'</a><br />';
- 
-                        }
-                        else if(w[s] != null && s === 'phelpurl')
-                        {
-                            cell = cell +'<a href="'+w.phelpurl+'">'+w.phelpurl+'</a>';
-                        }
-                        else if(w[s] != null && (s === 'plocked' || s ==='pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable') )
-                        {
-                            if(result['statedefs'][s][w[s]] != undefined)
-                            {
-                              cell = cell +' <span class="lbl lbl-'+s+'-'+w[s]+'">'+result['statedefs'][s][w[s]]+'</span>';
-                            }
-                        }
-                        else if(w[s] != null)
-                        {
-                           cell = cell + '  '+w[s];
-                        }
-                     });
-                      tbodyToInsert[a++] = '<td>'+cell+'</td>';
+                        })
+                        counter++;
+                        tbodyToInsert[a++] = '</tr>';
 
-                   })               
-                   counter++;
-                   tbodyToInsert[a++] = '</tr>';
-
-               } //end filter condtion 
-                 });
+                    } //end filter condtion 
+                });
                 tbody.append(tbodyToInsert.join(''));
                 var endTime = new Date();
                 var durationTime = endTime - startTime;
-                console.log('Providerlist table gen time: '+durationTime);
+                console.log('Providerlist table gen time: ' + durationTime);
                 var prefix = $('div.subtitleprefix').text();
-                $('div.subtitle').empty().append(prefix +': '+ counter);
+                $('div.subtitle').empty().append(prefix + ': ' + counter);
                 $('div#providerslistresult').append(table);
-                if(counter > 1)
+                if (counter > 1)
                 {
-                 table.tablesorter({sortList: [[0,0]]}); 
-                 $("#filter").keyup(function() {
-                     $.uiTableFilter(table, this.value);
-                  });
-                 $('#filter-form').submit(function() {
-                     table.find("tbody > tr:visible > td:eq(1)").mousedown();
-                     return false;
-                }).focus();
+                    table.tablesorter({sortList: [[0, 0]]});
+                    $("#filter").keyup(function() {
+                        $.uiTableFilter(table, this.value);
+                    });
+                    $('#filter-form').submit(function() {
+                        table.find("tbody > tr:visible > td:eq(1)").mousedown();
+                        return false;
+                    }).focus();
                 }
-             }
+            }
         },
-        beforeSend: function(){
-             $('dd.afilter').removeClass('active');
-             $('div#providerslistresult').empty();
-             $('div.alert-box').empty().hide();
-             $('#spinner').show(); 
+        beforeSend: function() {
+            $('dd.afilter').removeClass('active');
+            $('div#providerslistresult').empty();
+            $('div.alert-box').empty().hide();
+            $('#spinner').show();
         },
-        error: function(xhr, status, error){
+        error: function(xhr, status, error) {
             $('#spinner').hide();
             $('div.subtitle').empty();
             $('div.alert-box').append(error).show();
 
         }
-     }); 
-     return false;
+    });
+    return false;
 });
 
 $('a.initiated').trigger('click');
