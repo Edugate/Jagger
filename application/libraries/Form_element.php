@@ -2376,64 +2376,104 @@ class Form_element {
 
         return $result;
     }
+	public function NgenerateLogoForm(models\Provider $ent, $ses = null)
+	{
+		$langs = languagesCodes();
+		$type = $ent->getType();
+		$sessform = FALSE;
+		if (is_array($ses)) {
+			$sessform = TRUE;
+		}
+		$logos = array();
+		if (!$sessform) {
+			$metaext = $ent->getExtendMetadata();
+			foreach ($metaext as $v) {
+				$velement = $v->getElement();
+				if (strcmp($velement, 'Logo') != 0) {
+					continue;
+				}
+				$attrs = $v->getAttributes();
+				if (isset($attrs['xml:lang'])) {
+					$lang = $attrs['xml:lang'];
+				} else {
+					$lang = 0;
+				}
+				$logos[$v->getType()]['' . $v->getId() . ''] = array(
+					'url' => '' . $v->getLogoValue() . '',
+					'lang' => '' . $lang . '',
+					'width' => $attrs['width'],
+					'height' => $attrs['height'],
+				);
 
-    public function NgenerateLogoForm(models\Provider $ent, $ses = null)
-    {
-       $langs = languagesCodes();
-       $type = $ent->getType();
-       $sessform = FALSE;
-       if(is_array($ses))
-       {
-          $sessform = TRUE;
-       }
-       
-       if(!$sessform)
-       {
-          $metaext = $ent->getExtendMetadata();
-          foreach($metaext as $v)
-          {
-             $velement = $v->getElement();
-             if(strcmp($velement,'Logo')!=0)
-             {
-                continue;
-             }
-             $attrs = $v->getAttributes();
-             if(isset($attrs['xml:lang']))
-             {
-               $lang = $attrs['lang'];
-             }
-             else
-             {
-               $lang = 0;
-             }
-             $logos[$v->getType()][''.$v->getId().''] = array(
-                'url'=>''.$v->getLogoValue().'',
-                'lang'=> ''.$lang.'',
-                'width'=>$attrs['width'],
-                'height'=>$attrs['height'],
-             );
-             
 
-          }
-       }
-       $result = array();
+			}
+		} elseif (isset($ses['uii']['idpsso']['logo'])) {
+			log_message('debug', 'POLO');
+			foreach ($ses['uii']['idpsso']['logo'] as $k => $v) {
+				$size = explode('x', $v['size']);
+				$logos['idp']['' . $k . ''] = array(
+					'url' => $v['url'],
+					'lang' => $v['lang'],
+					'width' => $size[0],
+					'height' => $size[1],
+				);
+			}
+		}
 
-       $result[] = '';
-       $p='<ul class="clearing-thumbs small-block-grid-4" data-clearing>';
-       foreach($logos['idp'] as $k=>$v)
-       {
-          //$result[] = '<img src="'.$v['url'].'"/>';
-          $p .= '<li><a href="'.$v['url'].'"><img data-caption="caption here..." src="'.$v['url'].'"></a></li>';
-       }
-       $p .= '</ul>';
-       $result[] =$p;
-       $result[] = '';
+		$result = array();
 
-     
-       return $result;
-       
-      
-    }
+
+		if (isset($logos['idp'])) {
+			$result[] = '';
+			$p = '<ul class="small-block-grid-1">';
+			foreach ($logos['idp'] as $k => $v) {
+
+
+				$p .= '<li class="small-12 columns">';
+				$p .= '<div class="medium-3 columns"><img src="' . $v['url'] . '" style="max-height: 100px;"/>';
+
+				$p .= form_input(array(
+					'id' => 'f[uii][idpsso][logo][' . $k . '][url]',
+					'name' => 'f[uii][idpsso][logo][' . $k . '][url]',
+					'value' => $v['url'],
+					'type' => 'hidden',
+				));
+				$p .= form_input(array(
+					'id' => 'f[uii][idpsso][logo][' . $k . '][lang]',
+					'name' => 'f[uii][idpsso][logo][' . $k . '][lang]',
+					'value' => $v['lang'],
+					'type' => 'hidden',
+				));
+				$p .= form_input(array(
+					'id' => 'f[uii][idpsso][logo][' . $k . '][size]',
+					'name' => 'f[uii][idpsso][logo][' . $k . '][size]',
+					'value' => $v['width'] . 'x' . $v['height'],
+					'type' => 'hidden',
+				));
+				$p .= '</div>';
+				$p .= '<div class="medium-6 columns">';
+				$p .= lang('rr_url') . ': ' . $v['url'] . '<br />';
+				if (empty($v['lang'])) {
+					$l = lang('rr_unspecified');
+				} else {
+					$l = $v['lang'];
+				}
+				$p .= lang('rr_lang') . ': ' . $l . '<br />';
+				$p .= lang('rr_size') . ': ' . $v['width'] . 'x' . $v['height'] . '';
+				$p .= '</div>';
+				$p .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button tiny alert">' . lang('rr_remove') . '</button></div>';
+				$p .= '</li>';
+			}
+			$p .= '</ul>';
+			$result[] = $p;
+			$result[] = '';
+		}
+
+		return $result;
+
+
+	}
+
 
     public function NgenerateUiiForm(models\Provider $ent, $ses = null)
     {
