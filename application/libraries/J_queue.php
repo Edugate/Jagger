@@ -618,6 +618,37 @@ class J_queue
         /**
          * @todo  display option to validate entity before approval
          */ 
+        /**
+         * show enabled mandatory/optional validators and run the validator by clicking on its name
+         */
+        $data = $queue->getData();
+        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $data['entityid']));
+        $validators = $federation->getValidators();
+        $valMandatory = null;
+        $valOptional = null;
+        $attrs = array('id' => 'fvform', 'style' => 'display: inline', 'class' => '');
+        foreach($validators as $v) {
+            if($v->getEnabled()) {
+                if($v->getMandatory()) {
+                    $hidden = array('fedid' => $federation->getId(), 'provid' => $provider->getId(), 'fvid' => $v->getId());
+                    $valMandatory .= form_open(base_url().'federations/fvalidator/validate', $attrs, $hidden);
+                    $valMandatory .= '<button>'.$v->getName().'</button> ';
+                    $valMandatory .= form_close();
+                } else {
+                    $hidden = array('fedid' => $federation->getId(), 'provid' => $provider->getId(), 'fvid' => $v->getId());
+                    $valOptional .= form_open(base_url().'federations/fvalidator/validate', $attrs, $hidden);
+                    $valOptional .= '<button>'.$v->getName().'</button> ';
+                    $valOptional .= form_close();
+                }
+            }
+        }
+        $cell = array(lang('tabFvalidators') . ' mandatory', $valMandatory);
+        $this->ci->table->add_row($cell);
+        $cell = array(lang('tabFvalidators') . ' optional', $valOptional);
+        $this->ci->table->add_row($cell);
+        /**
+         * end :)
+         */
         $cell = array(lang('rr_federation'), $federation->getName() . ' ');
         $this->ci->table->add_row($cell);
         $data = $queue->getData();
@@ -632,6 +663,12 @@ class J_queue
             $this->ci->table->add_row($cell);
         }
         $cell = array('data' => $this->displayFormsButtons($queue->getId()), 'colspan' => 2);
+        $this->ci->table->add_row($cell);
+        # show validator description
+        # show additional information returned by validator
+        $text = '<div id="fvresult" style="display:none;" data-alert class="alert-box info"><div><b>'.lang('fvalidcodereceived').'</b>: <span id="fvreturncode"></span></div><div><p><b>'.lang('fvalidmsgsreceived').'</b>:</p><div id="fvmessages"></div></div></div>';
+        $text .= '<div id="fvalidesc"></div>';
+        $cell = array('data' => $text, 'colspan' => 2);
         $this->ci->table->add_row($cell);
         $result = '';
         $result .= $this->ci->table->generate();
