@@ -1034,3 +1034,5 @@ $lang['entname_default_expl'] ="This is default value for OrganizationName.&lt;b
 $lang['entdisplname_default_expl'] ="This is default value for OrganizationDisplayName.&lt;br /&gt; If localized name is not set for English language then this value is used instead in generated SAML metadata: /EntityDescriptor/Organization/OrganizationDisplayName.&lt;br /&gt; Also is used as default English lang in metadata: /EntityDescriptor/[IDPSSODescriptor|SPSSODescriptor]/Extensions/UIInfo/DisplayName";
 $lang['entregpolicy_expl'] ="RegistrationPolicy is added to Metadata only if registrationAuthority is set.&lt;br /&gt; XPath in generated metadata: EntityDescriptor/Extensions/RegistrationInfo/RegistrationPolicy";
 $lang['fvalidatorjoinfed'] ="Your Entity should pass Federation Validator(s) otherwise your request may be rejected";
+$lang['manValidator'] ='Povinné validátory';
+$lang['optValidator'] ='Volitelné validátory';

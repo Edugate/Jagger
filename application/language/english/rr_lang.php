@@ -1085,3 +1085,5 @@ $lang['entdisplname_default_expl']              = 'This is default value for Org
 
 $lang['entregpolicy_expl']        = 'RegistrationPolicy is added to Metadata only if registrationAuthority is set.<br /> XPath in generated metadata: EntityDescriptor/Extensions/RegistrationInfo/RegistrationPolicy';
 $lang['fvalidatorjoinfed']        = 'Your Entity should pass Federation Validator(s) otherwise your request may be rejected';
+$lang['manValidator']             = 'Mandatory validator(s)';
+$lang['optValidator']             = 'Optional validator(s)';

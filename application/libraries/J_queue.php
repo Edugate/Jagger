@@ -642,9 +642,9 @@ class J_queue
                 }
             }
         }
-        $cell = array(lang('tabFvalidators') . ' mandatory', $valMandatory);
+        $cell = array(lang('manValidator'), $valMandatory);
         $this->ci->table->add_row($cell);
-        $cell = array(lang('tabFvalidators') . ' optional', $valOptional);
+        $cell = array(lang('optValidator'), $valOptional);
         $this->ci->table->add_row($cell);
         /**
          * end :)
