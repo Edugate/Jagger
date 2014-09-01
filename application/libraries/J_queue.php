@@ -615,12 +615,6 @@ class J_queue
         {
             $nname = '';
         }
-        /**
-         * @todo  display option to validate entity before approval
-         */ 
-        /**
-         * show enabled mandatory/optional validators and run the validator by clicking on its name
-         */
         $data = $queue->getData();
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $data['entityid']));
         $validators = $federation->getValidators();
@@ -646,9 +640,6 @@ class J_queue
         $this->ci->table->add_row($cell);
         $cell = array(lang('optValidator'), $valOptional);
         $this->ci->table->add_row($cell);
-        /**
-         * end :)
-         */
         $cell = array(lang('rr_federation'), $federation->getName() . ' ');
         $this->ci->table->add_row($cell);
         $data = $queue->getData();
@@ -664,7 +655,6 @@ class J_queue
         }
         $cell = array('data' => $this->displayFormsButtons($queue->getId()), 'colspan' => 2);
         $this->ci->table->add_row($cell);
-        # show validator description
         # show additional information returned by validator
         $text = '<div id="fvresult" style="display:none;" data-alert class="alert-box info"><div><b>'.lang('fvalidcodereceived').'</b>: <span id="fvreturncode"></span></div><div><p><b>'.lang('fvalidmsgsreceived').'</b>:</p><div id="fvmessages"></div></div></div>';
         $text .= '<div id="fvalidesc"></div>';
