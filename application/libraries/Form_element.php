@@ -517,9 +517,6 @@ class Form_element {
          * new regpolicy end
          */
         return $result;
-
-
-
     }
 
     public function NgeneratePrivacy(models\Provider $ent, $ses = null)
@@ -1008,15 +1005,14 @@ class Form_element {
         $row .= $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE);
         $row .= '</div>';
 
-        
 
-        if(empty($sessionCert['keyname']))
+
+        if (empty($sessionCert['keyname']))
         {
-          $row .= '<div class="small-12 columns hidden">';
-        }
-        else
+            $row .= '<div class="small-12 columns hidden">';
+        } else
         {
-          $row .= '<div class="small-12 columns">';
+            $row .= '<div class="small-12 columns">';
         }
         $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $sessionCert['keyname'], '', FALSE, NULL);
         $row .= '</div>';
@@ -1091,13 +1087,12 @@ class Form_element {
 
         $tmpkeyname = $cert->getKeyname();
 
-        if(empty($tmpkeyname))
+        if (empty($tmpkeyname))
         {
-          $row .= '<div class="small-12 columns hidden">';
-        }
-        else
+            $row .= '<div class="small-12 columns hidden">';
+        } else
         {
-          $row .= '<div class="small-12 columns">';
+            $row .= '<div class="small-12 columns">';
         }
         $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $cert->getKeyname(), '', FALSE, NULL);
         $row .= '</div>';
@@ -1555,7 +1550,7 @@ class Form_element {
             $ACSPart .= $newelement . '';
             $result[] = '';
             //$result[] = '<div class="langgroup">' . lang('rr_srvartresends') . '</div>';
-            $result[] = '<fieldset><legend>'. lang('rr_srvartresends').'</legend>'.$ACSPart.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('rr_srvartresends') . '</legend>' . $ACSPart . '</fieldset>';
             $result[] = '';
 
             /**
@@ -1741,7 +1736,7 @@ class Form_element {
 
             $result[] = '';
             //$result[] = '<div class="langgroup">' . lang('atributeauthoritydescriptor') . '</div>';
-            $result[] = '<fieldset><legend>'.lang('atributeauthoritydescriptor').'</legend>'.implode('', $aalo).'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('atributeauthoritydescriptor') . '</legend>' . implode('', $aalo) . '</fieldset>';
             $result[] = '';
             /**
              * end AttributeAuthorityDescriptor Location
@@ -2376,104 +2371,151 @@ class Form_element {
 
         return $result;
     }
-	public function NgenerateLogoForm(models\Provider $ent, $ses = null)
-	{
-		$langs = languagesCodes();
-		$type = $ent->getType();
-		$sessform = FALSE;
-		if (is_array($ses)) {
-			$sessform = TRUE;
-		}
-		$logos = array();
-		if (!$sessform) {
-			$metaext = $ent->getExtendMetadata();
-			foreach ($metaext as $v) {
-				$velement = $v->getElement();
-				if (strcmp($velement, 'Logo') != 0) {
-					continue;
-				}
-				$attrs = $v->getAttributes();
-				if (isset($attrs['xml:lang'])) {
-					$lang = $attrs['xml:lang'];
-				} else {
-					$lang = 0;
-				}
-				$logos[$v->getType()]['' . $v->getId() . ''] = array(
-					'url' => '' . $v->getLogoValue() . '',
-					'lang' => '' . $lang . '',
-					'width' => $attrs['width'],
-					'height' => $attrs['height'],
-				);
+
+    public function NgenerateLogoForm(models\Provider $ent, $ses = null)
+    {
+        $langs = languagesCodes();
+        $type = $ent->getType();
+        $sessform = FALSE;
+        if (is_array($ses))
+        {
+            $sessform = TRUE;
+        }
+        $logos = array();
+        if (!$sessform)
+        {
+            $metaext = $ent->getExtendMetadata();
+            foreach ($metaext as $v)
+            {
+                $velement = $v->getElement();
+                if (strcmp($velement, 'Logo') != 0)
+                {
+                    continue;
+                }
+                $attrs = $v->getAttributes();
+                if (isset($attrs['xml:lang']))
+                {
+                    $lang = $attrs['xml:lang'];
+                } else
+                {
+                    $lang = 0;
+                }
+                $logos[$v->getType()]['' . $v->getId() . ''] = array(
+                    'url' => '' . $v->getLogoValue() . '',
+                    'lang' => '' . $lang . '',
+                    'width' => $attrs['width'],
+                    'height' => $attrs['height'],
+                );
+            }
+        } else
+        {
+            if (strcasecmp('SP', $type) != 0 && isset($ses['uii']['idpsso']['logo']))
+            {
+                log_message('debug', 'IDP POLO');
+                foreach ($ses['uii']['idpsso']['logo'] as $k => $v)
+                {
+                    $size = explode('x', $v['size']);
+                    $logos['idp']['' . $k . ''] = array(
+                        'url' => $v['url'],
+                        'lang' => $v['lang'],
+                        'width' => $size[0],
+                        'height' => $size[1],
+                    );
+                }
+            }
+            if (strcasecmp('IDP', $type) != 0 && isset($ses['uii']['spsso']['logo']))
+            {
+                log_message('debug', 'SP POLO');
+                foreach ($ses['uii']['spsso']['logo'] as $k => $v)
+                {
+                    $size = explode('x', $v['size']);
+                    $logos['sp']['' . $k . ''] = array(
+                        'url' => $v['url'],
+                        'lang' => $v['lang'],
+                        'width' => $size[0],
+                        'height' => $size[1],
+                    );
+                }
+            }
+        }
+
+        $result = array();
 
 
-			}
-		} elseif (isset($ses['uii']['idpsso']['logo'])) {
-			log_message('debug', 'POLO');
-			foreach ($ses['uii']['idpsso']['logo'] as $k => $v) {
-				$size = explode('x', $v['size']);
-				$logos['idp']['' . $k . ''] = array(
-					'url' => $v['url'],
-					'lang' => $v['lang'],
-					'width' => $size[0],
-					'height' => $size[1],
-				);
-			}
-		}
+        foreach ($logos as $k1 => $v1)
+        {
+            $result[] = '';
+            if(strcmp($k1,'idp')==0)
+            {
+               $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
+               $t = 'idp';
+            }
+            elseif(strcmp($k1,'sp')==0)
+            {
+                $result[] = '<div class="section">' . lang('serviceprovider') . '</div>';
+                $t = 'sp';
+            }
+            $p = '<ul class="small-block-grid-1">';
+            foreach ($v1 as $k2 => $v2)
+            {
+                $p .= '<li class="small-12 columns">';
+                $p .= '<div class="medium-3 columns"><img src="' . $v2['url'] . '" style="max-height: 100px;"/>';
 
-		$result = array();
+                $p .= form_input(array(
+                    'id' => 'f[uii][idpsso][logo][' . $k2 . '][url]',
+                    'name' => 'f[uii][idpsso][logo][' . $k2 . '][url]',
+                    'value' => $v2['url'],
+                    'type' => 'hidden',
+                ));
+                $p .= form_input(array(
+                    'id' => 'f[uii][idpsso][logo][' . $k2 . '][lang]',
+                    'name' => 'f[uii][idpsso][logo][' . $k2 . '][lang]',
+                    'value' => $v2['lang'],
+                    'type' => 'hidden',
+                ));
+                $p .= form_input(array(
+                    'id' => 'f[uii][idpsso][logo][' . $k2 . '][size]',
+                    'name' => 'f[uii][idpsso][logo][' . $k2 . '][size]',
+                    'value' => $v2['width'] . 'x' . $v2['height'],
+                    'type' => 'hidden',
+                ));
+                $p .= '</div>';
+                $p .= '<div class="medium-6 columns">';
+                $p .= lang('rr_url') . ': ' . $v2['url'] . '<br />';
+                if (empty($v2['lang']))
+                {
+                    $l = lang('rr_unspecified');
+                } else
+                {
+                    $l = $v2['lang'];
+                }
+                $p .= lang('rr_lang') . ': ' . $l . '<br />';
+                $p .= lang('rr_size') . ': ' . $v2['width'] . 'x' . $v2['height'] . '';
+                $p .= '</div>';
+                $p .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button tiny alert">' . lang('rr_remove') . '</button></div>';
+                $p .= '</li>';
+            }
+            
+            $z='<li id="nlogoidprow" class="small-12 columns" style="display: none;">';
+            $z .= '<div class="medium-3 columns"><img src="" style="max-height: 100px;"/></div>';
+            $z .= '<div class="medium-6 columns"></div>';
+            $z .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button tiny alert">' . lang('rr_remove') . '</button></div>';
+            $z .= '</li>';
+            $p .= $z;
+            $p .= '</ul>';
+            $result[] = $p;
+            $inlabel = '<div class="small-12 column"><div class="small-3 columns"><label class="right inline" for="logoretrieve">new logo</label></div>';
+            $in = '<div class="small-6 columns">'.form_input(array('name'=>''.$t.'logoretrieve')).'<small class="'.$t.'logoretrieve error" style="display:none;"></small></div>';
+            $in2 ='<div class="small-3 columns"><button type="button" name="'.$t.'getlogo" class="button tiny getlogo" value="'.base_url().'ajax/checklogourl">get logo</button></div></div>';
+            $reviewlogo = '<div class="small-3 column"></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button tiny" type="button" name="addlogo">Add</button></div>';
+            $result[] = '<fieldset><legend>new logo</legend>'.$inlabel.$in.$in2.'<div id="'.$t.'reviewlogo" class="small-12 column" style="display: none">'.$reviewlogo.'</div></fieldset>';
+            
+            $result[] = '';
+        }
+    
 
-
-		if (isset($logos['idp'])) {
-			$result[] = '';
-			$p = '<ul class="small-block-grid-1">';
-			foreach ($logos['idp'] as $k => $v) {
-
-
-				$p .= '<li class="small-12 columns">';
-				$p .= '<div class="medium-3 columns"><img src="' . $v['url'] . '" style="max-height: 100px;"/>';
-
-				$p .= form_input(array(
-					'id' => 'f[uii][idpsso][logo][' . $k . '][url]',
-					'name' => 'f[uii][idpsso][logo][' . $k . '][url]',
-					'value' => $v['url'],
-					'type' => 'hidden',
-				));
-				$p .= form_input(array(
-					'id' => 'f[uii][idpsso][logo][' . $k . '][lang]',
-					'name' => 'f[uii][idpsso][logo][' . $k . '][lang]',
-					'value' => $v['lang'],
-					'type' => 'hidden',
-				));
-				$p .= form_input(array(
-					'id' => 'f[uii][idpsso][logo][' . $k . '][size]',
-					'name' => 'f[uii][idpsso][logo][' . $k . '][size]',
-					'value' => $v['width'] . 'x' . $v['height'],
-					'type' => 'hidden',
-				));
-				$p .= '</div>';
-				$p .= '<div class="medium-6 columns">';
-				$p .= lang('rr_url') . ': ' . $v['url'] . '<br />';
-				if (empty($v['lang'])) {
-					$l = lang('rr_unspecified');
-				} else {
-					$l = $v['lang'];
-				}
-				$p .= lang('rr_lang') . ': ' . $l . '<br />';
-				$p .= lang('rr_size') . ': ' . $v['width'] . 'x' . $v['height'] . '';
-				$p .= '</div>';
-				$p .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button tiny alert">' . lang('rr_remove') . '</button></div>';
-				$p .= '</li>';
-			}
-			$p .= '</ul>';
-			$result[] = $p;
-			$result[] = '';
-		}
-
-		return $result;
-
-
-	}
-
+        return $result;
+    }
 
     public function NgenerateUiiForm(models\Provider $ent, $ses = null)
     {
@@ -2880,7 +2922,7 @@ class Form_element {
             $r .= '<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('spuiidisplayadd', 'spuiidisplaylangcode', MY_Controller::$langselect, 'spadduiidisplay', 'spadduiidisplay');
             $r .= '</div>';
-            $result[] = '<fieldset><legend>'.lang('e_spservicename').'</legend>'.$r.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('e_spservicename') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
 
             /**
@@ -2956,7 +2998,7 @@ class Form_element {
             $r .='</div>';
 
             //$r .= form_fieldset_close();
-            $result[] = '<fieldset><legend>'. lang('e_spserviceinfourl') .'</legend>'.$r.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('e_spserviceinfourl') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
             /**
              * end helpdesk
@@ -3023,7 +3065,7 @@ class Form_element {
             $r .= $this->_generateLangAddButton('spuiidescadd', 'spuiidesclangcode', MY_Controller::$langselect, 'spadduiidesc', 'spadduiidesc');
             $r .= '</div>';
             //$r .= form_fieldset_close();
-            $result[] = '<fieldset><legend>'. lang('e_spservicedesc').'</legend>'.$r.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('e_spservicedesc') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
             /**
              * end description 
@@ -3082,7 +3124,7 @@ class Form_element {
             $r .= $this->_generateLangAddButton('addlprivacyurlspsso localized', 'langcode', MY_Controller::$langselect, 'addlprivacyurlspsso', 'addlprivacyurlspsso');
             $r .= '</div>';
 
-            $result[] = '<fieldset><legend>'. lang('e_spserviceprivacyurl').'</legend>'.$r.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('e_spserviceprivacyurl') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
 
             /**
@@ -3271,11 +3313,11 @@ class Form_element {
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodsign'), 'digestmethod') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethod', array('SHA-1'=>'SHA-1','SHA-256'=>'SHA-256'), set_value('digestmethod', $federation->getDigest())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodsign'), 'digestmethod') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethod', array('SHA-1' => 'SHA-1', 'SHA-256' => 'SHA-256'), set_value('digestmethod', $federation->getDigest())) . '</div><div class="small-1 large-2 "></div>';
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodexportsign'), 'digestmethodext') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethodext', array('SHA-1'=>'SHA-1','SHA-256'=>'SHA-256'), set_value('digestmethodext', $federation->getDigestExport())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodexportsign'), 'digestmethodext') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethodext', array('SHA-1' => 'SHA-1', 'SHA-256' => 'SHA-256'), set_value('digestmethodext', $federation->getDigestExport())) . '</div><div class="small-1 large-2 "></div>';
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';

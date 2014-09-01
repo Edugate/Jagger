@@ -5,7 +5,8 @@
  * and open the template in the editor.
  */
 
-class Ajax extends MY_Controller {
+class Ajax extends MY_Controller
+{
 
     public function __construct()
     {
@@ -27,7 +28,7 @@ class Ajax extends MY_Controller {
             return true;
         }
     }
-  
+
     public function getproviders()
     {
         if (!$this->input->is_ajax_request())
@@ -38,23 +39,96 @@ class Ajax extends MY_Controller {
         }
         $this->load->library('j_auth');
         $loggedin = $this->j_auth->logged_in();
-        if(!$loggedin)
+        if (!$loggedin)
         {
-           set_status_header(403);
-           echo 'denied';
-           return;
+            set_status_header(403);
+            echo 'denied';
+            return;
         }
 
         $p = new models\Providers();
         $providers = $p->getLocalIdsEntities();
         $this->output->set_content_type('application/json');
-        foreach($providers as $k)
+        foreach ($providers as $k)
         {
-          $result[] = array('key'=>$k['id'],'value'=> $k['entityid'],'label'=>$k['name']);
+            $result[] = array('key' => $k['id'], 'value' => $k['entityid'], 'label' => $k['name']);
         }
-         $y= json_encode($result);
-        
+        $y = json_encode($result);
+
         echo $y;
+    }
+
+    public function checklogourl()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            set_status_header(403);
+            echo 'denied';
+            return;
+        }
+        $this->load->library('j_auth');
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin)
+        {
+            set_status_header(403);
+            echo 'denied';
+            return;
+        }
+        $this->load->library('form_validation');
+        $result = array();
+
+        $this->form_validation->set_rules('logourl', 'URL Logo', 'trim|required|min_length[5]|max_length[500]|xss_clean|valid_url_ssl');
+        $isvalid = $this->form_validation->run();
+
+        if (!$isvalid)
+        {
+            $result['error'] = 'Invalid URL (only https)';
+            echo json_encode($result);
+            return;
+        }
+        $logourl = trim($this->input->post('logourl'));
+        $this->load->library('curl');
+        $image = $this->curl->simple_get('' . $logourl . '', array(), array(
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_BUFFERSIZE => 128,
+            CURLOPT_NOPROGRESS => FALSE,
+            CURLOPT_PROGRESSFUNCTION => function($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
+        return ($Downloaded > (1000 * 1024)) ? 1 : 0;
+    }
+        ));
+        
+        if(empty($image))
+        {
+            $result['error']=$this->curl->error_string;
+            echo json_encode($result);
+            return;
+        }
+        $img_mimes = array(
+            'image/jpeg',
+            'image/pjpeg',
+            'image/png',
+            'image/x-png',
+            'image/gif',
+        );
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($image);
+        if(!in_array($mimeType, $img_mimes))
+        {
+            $result['error']='Incorrect mime type '.$mimeType;
+            echo json_encode($result);
+            return;
+        }
+        $image_details = getimagesizefromstring($image);
+        $result['data'] = array(
+            'width'=>$image_details[0],
+            'height'=>$image_details[1],
+            'mime'=>$mimeType,
+            'url'=>$logourl,
+        );
+        echo json_encode($result);
+        
+        return;
+
 
     }
 
@@ -68,19 +142,17 @@ class Ajax extends MY_Controller {
         }
         $this->load->library('j_auth');
         $loggedin = $this->j_auth->logged_in();
-        if(!$loggedin)
+        if (!$loggedin)
         {
-           set_status_header(403);
-           echo 'denied';
-           return;
+            set_status_header(403);
+            echo 'denied';
+            return;
         }
         $p = new models\Federations();
         $feds = $p->getAllIdNames();
         $this->output->set_content_type('application/json');
         echo json_encode($feds);
-
     }
-   
 
     public function changelanguage($language)
     {
@@ -89,9 +161,9 @@ class Ajax extends MY_Controller {
         {
             log_message('debug', 'ajax');
             $language = substr($language, 0, 5);
-            if (in_array($language, array('pl', 'pt', 'it', 'lt', 'es','cs','fr-ca','ga','sr')))
+            if (in_array($language, array('pl', 'pt', 'it', 'lt', 'es', 'cs', 'fr-ca', 'ga', 'sr')))
             {
-                log_message('debug','GKS lang selected: '.$language);
+                log_message('debug', 'GKS lang selected: ' . $language);
                 $cookie_value = $language;
             }
             else
@@ -146,103 +218,101 @@ class Ajax extends MY_Controller {
         $imgtoggle = '<img class="toggle" src="' . base_url() . 'images/icons/control-270.png" />';
         foreach ($federations as $v)
         {
-            $lbs ='';
-            if($v->getPublic())
+            $lbs = '';
+            if ($v->getPublic())
             {
-                $lbs .=makeLabel('public', '', lang('rr_fed_public')).' ';
+                $lbs .=makeLabel('public', '', lang('rr_fed_public')) . ' ';
             }
             else
             {
-                $lbs .=makeLabel('notpublic', '', lang('rr_fed_notpublic')).' ';
+                $lbs .=makeLabel('notpublic', '', lang('rr_fed_notpublic')) . ' ';
             }
-            if($v->getActive())
+            if ($v->getActive())
             {
-                $lbs .=makeLabel('active', '', lang('rr_fed_active')).' ';
-            }
-            else
-            {
-                $lbs .=makeLabel('disabled', '', lang('rr_fed_inactive')).' ';
-            }
-            if($v->getLocal())
-            {
-                $lbs .=makeLabel('local', '', lang('rr_fed_local')).' ';
+                $lbs .=makeLabel('active', '', lang('rr_fed_active')) . ' ';
             }
             else
             {
-                $lbs .=makeLabel('external', '', lang('rr_fed_external')).' ';
+                $lbs .=makeLabel('disabled', '', lang('rr_fed_inactive')) . ' ';
+            }
+            if ($v->getLocal())
+            {
+                $lbs .=makeLabel('local', '', lang('rr_fed_local')) . ' ';
+            }
+            else
+            {
+                $lbs .=makeLabel('external', '', lang('rr_fed_external')) . ' ';
             }
             $members = ' <a href="' . base_url() . 'federations/manage/showmembers/' . $v->getId() . '" class="fmembers" id="' . $v->getId() . '">' . $imgtoggle . '</a>';
             $result[] = array(
-                'name'=>anchor(base_url() . "federations/manage/show/" . base64url_encode($v->getName()), $v->getName()),
-                
+                'name' => anchor(base_url() . "federations/manage/show/" . base64url_encode($v->getName()), $v->getName()),
                 'urn' => $v->getUrn(),
                 'desc' => $v->getDescription(),
                 'members' => $members,
-                'labels' =>$lbs,
+                'labels' => $lbs,
             );
         }
         echo json_encode($result);
     }
 
-    public function showhelpstatus($n=null)
+    public function showhelpstatus($n = null)
     {
-       if (!$this->input->is_ajax_request())
-       {
-           show_error('denied',403);
-       }
-       if(empty($n))
-       {
-          set_status_header(403);
-          echo 'empty param';
-          return;
-       }
-        
-       $char = substr($n, 0, 1);
-       if(!($char === 'y' || $char === 'n'))
-       {
-          set_status_header(403);
-          echo 'incorrect param';
-          return;
+        if (!$this->input->is_ajax_request())
+        {
+            show_error('denied', 403);
+        }
+        if (empty($n))
+        {
+            set_status_header(403);
+            echo 'empty param';
+            return;
+        }
 
-       }
-      
-       $this->load->library('j_auth');
-       $loggedin = $this->j_auth->logged_in();
-       if($loggedin)
-       {
-           $username = $this->j_auth->current_user();
-           $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-           if($char === 'y')
-           {
-             $u->setShowHelp(true);
-             $this->session->set_userdata('showhelp', TRUE);
-             echo "set showhelp to true";
-           }
-           else
-           {
-             $u->setShowHelp(false);
-             $this->session->set_userdata('showhelp' , FALSE);
-             echo "set showhelp to false";
-           }
-           $this->em->persist($u);
-           try
-           {
-              $this->em->flush();
-           }
-           catch(Exception $e)
-           {
-              log_message('error',__METHOD__.' '.$e);
-              set_status_header(500);
-              echo 'problem with saving in db';
-             return;
+        $char = substr($n, 0, 1);
+        if (!($char === 'y' || $char === 'n'))
+        {
+            set_status_header(403);
+            echo 'incorrect param';
+            return;
+        }
 
-           }
-           return "OK";
-       }
-       set_status_header(403);
-       echo "permission denied";
-       return;
+        $this->load->library('j_auth');
+        $loggedin = $this->j_auth->logged_in();
+        if ($loggedin)
+        {
+            $username = $this->j_auth->current_user();
+            $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+            if ($char === 'y')
+            {
+                $u->setShowHelp(true);
+                $this->session->set_userdata('showhelp', TRUE);
+                echo "set showhelp to true";
+            }
+            else
+            {
+                $u->setShowHelp(false);
+                $this->session->set_userdata('showhelp', FALSE);
+                echo "set showhelp to false";
+            }
+            $this->em->persist($u);
+            try
+            {
+                $this->em->flush();
+            }
+            catch (Exception $e)
+            {
+                log_message('error', __METHOD__ . ' ' . $e);
+                set_status_header(500);
+                echo 'problem with saving in db';
+                return;
+            }
+            return "OK";
+        }
+        set_status_header(403);
+        echo "permission denied";
+        return;
     }
+
     public function bookentity($id)
     {
         if ($this->input->is_ajax_request())
@@ -260,7 +330,7 @@ class Ajax extends MY_Controller {
                 if (!empty($u) && !empty($ent))
                 {
                     $enttype = $ent->getType();
-                    $entname = $ent->getNameToWebInLang($lang,$enttype);
+                    $entname = $ent->getNameToWebInLang($lang, $enttype);
                     $entid = $ent->getId();
                     $entityid = $ent->getEntityId();
                     $u->addEntityToBookmark($entid, $entname, $enttype, $entityid);

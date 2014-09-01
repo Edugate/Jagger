@@ -3281,3 +3281,66 @@ $("a.afilter").click(function() {
 });
 
 $('a.initiated').trigger('click');
+
+$('button.getlogo').click(function() {
+    var btnname = $(this).attr('name');
+
+    var link = $(this).attr("value");
+    if (btnname === 'idpgetlogo')
+    {
+        var logoreview = $('div#idpreviewlogo');
+        logoreview.hide();
+        var alertlogoretrieve = $("small.idplogoretrieve");
+        alertlogoretrieve.empty().hide();
+        var logourl = $("[name='idplogoretrieve']").val();
+        var imgdiv = $("div#idpreviewlogo div.imgsource");
+    }
+    else
+    {
+        var logoreview = $('div#spreviewlogo');
+        logoreview.hide();
+        var alertlogoretrieve = $("small.splogoretrieve");
+        alertlogoretrieve.empty().hide();
+        var logourl = $("[name='splogoretrieve']").val();
+        var imgdiv = $("div#spreviewlogo div.imgsource");
+
+    }
+
+    var csrfname = $("[name='csrfname']").val();
+    var csrfhash = $("[name='csrfhash']").val();
+    var data = [{name: csrfname, value: csrfhash}, {name: 'logourl', value: logourl}];
+    $.ajax({
+        type: "POST",
+        url: link,
+        cache: false,
+        data: data,
+        dataType: "json",
+        success: function(json) {
+            if (json)
+            {
+                if (json['error'])
+                {
+                    alertlogoretrieve.append(json['error']).show();
+                }
+                else if (json['data'])
+                {
+
+                    var img = new Image()
+                    img.onload = function() {
+
+                    };
+                    img.src = json.data.url;
+                    if (btnname === 'idpgetlogo') {
+                        $("div#idpreviewlogo div.imgsource").empty().append(img);
+                        logoreview.show();
+                    }
+                }
+
+            }
+        }
+
+    });
+
+
+
+});

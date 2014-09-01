@@ -615,6 +615,40 @@ class MY_form_validation extends CI_form_validation {
 		}
 
 	}
+         public function valid_url_ssl($str)
+        {
+                if (empty($str))
+                {
+                        return FALSE;
+                }
+                elseif (preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches))
+                {
+                        if (empty($matches[2]))
+                        {
+                                return FALSE;
+                        }
+                        elseif ( ! in_array($matches[1], array('https'), TRUE))
+                        {
+                                return FALSE;
+                        }
+
+                        $str = $matches[2];
+                }
+
+                $str = 'https://'.$str;
+
+                // There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
+                // underscore to be a valid hostname character instead of a dash.
+                // Reference: https://bugs.php.net/bug.php?id=51192
+                if (version_compare(PHP_VERSION, '5.2.13', '==') OR version_compare(PHP_VERSION, '5.3.2', '=='))
+                {
+                        sscanf($str, 'https://%[^/]', $host);
+                        $str = substr_replace($str, strtr($host, array('_' => '-', '-' => '_')), 7, strlen($host));
+                }
+
+                return (filter_var($str, FILTER_VALIDATE_URL) !== FALSE);
+        }
+
     function match_language($str)
     {
        $langs = languagesCodes();
