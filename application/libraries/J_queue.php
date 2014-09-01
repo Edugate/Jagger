@@ -632,12 +632,12 @@ class J_queue
                 if($v->getMandatory()) {
                     $hidden = array('fedid' => $federation->getId(), 'provid' => $provider->getId(), 'fvid' => $v->getId());
                     $valMandatory .= form_open(base_url().'federations/fvalidator/validate', $attrs, $hidden);
-                    $valMandatory .= '<button>'.$v->getName().'</button> ';
+                    $valMandatory .= '<button title="'.$v->getDescription().'">'.$v->getName().'</button> ';
                     $valMandatory .= form_close();
                 } else {
                     $hidden = array('fedid' => $federation->getId(), 'provid' => $provider->getId(), 'fvid' => $v->getId());
                     $valOptional .= form_open(base_url().'federations/fvalidator/validate', $attrs, $hidden);
-                    $valOptional .= '<button>'.$v->getName().'</button> ';
+                    $valOptional .= '<button title="'.$v->getDescription().'">'.$v->getName().'</button> ';
                     $valOptional .= form_close();
                 }
             }
