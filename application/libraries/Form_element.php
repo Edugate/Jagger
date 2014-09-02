@@ -2375,13 +2375,24 @@ class Form_element {
     public function NgenerateLogoForm(models\Provider $ent, $ses = null)
     {
         $langs = languagesCodes();
+        $btnlangs = MY_Controller::$langselect;
+        $btnlangs = array('0'=>lang('rr_unspecified'))+$btnlangs;
+       // $btnlangs[0] = lang('rr_unspecified');
         $type = $ent->getType();
         $sessform = FALSE;
         if (is_array($ses))
         {
             $sessform = TRUE;
         }
-        $logos = array();
+        
+        if($type === 'BOTH')
+        {
+            $logos = array('idp'=>array(),'sp'=>array());
+        }
+        else
+        {
+            $logos = array(''.strtolower($type).''=>array());
+        }
         if (!$sessform)
         {
             $metaext = $ent->getExtendMetadata();
@@ -2462,20 +2473,20 @@ class Form_element {
                 $p .= '<div class="medium-3 columns"><img src="' . $v2['url'] . '" style="max-height: 100px;"/>';
 
                 $p .= form_input(array(
-                    'id' => 'f[uii][idpsso][logo][' . $k2 . '][url]',
-                    'name' => 'f[uii][idpsso][logo][' . $k2 . '][url]',
+                    'id' => 'f[uii]['.$t.'sso][logo][' . $k2 . '][url]',
+                    'name' => 'f[uii]['.$t.'sso][logo][' . $k2 . '][url]',
                     'value' => $v2['url'],
                     'type' => 'hidden',
                 ));
                 $p .= form_input(array(
-                    'id' => 'f[uii][idpsso][logo][' . $k2 . '][lang]',
-                    'name' => 'f[uii][idpsso][logo][' . $k2 . '][lang]',
+                    'id' => 'f[uii]['.$t.'sso][logo][' . $k2 . '][lang]',
+                    'name' => 'f[uii]['.$t.'sso][logo][' . $k2 . '][lang]',
                     'value' => $v2['lang'],
                     'type' => 'hidden',
                 ));
                 $p .= form_input(array(
-                    'id' => 'f[uii][idpsso][logo][' . $k2 . '][size]',
-                    'name' => 'f[uii][idpsso][logo][' . $k2 . '][size]',
+                    'id' => 'f[uii]['.$t.'sso][logo][' . $k2 . '][size]',
+                    'name' => 'f[uii]['.$t.'sso][logo][' . $k2 . '][size]',
                     'value' => $v2['width'] . 'x' . $v2['height'],
                     'type' => 'hidden',
                 ));
@@ -2496,7 +2507,7 @@ class Form_element {
                 $p .= '</li>';
             }
             
-            $z='<li id="nlogoidprow" class="small-12 columns" style="display: none;">';
+            $z='<li id="nlogo'.$t.'row" class="small-12 columns" style="display: none;">';
             $z .= '<div class="medium-3 columns"><img src="" style="max-height: 100px;"/></div>';
             $z .= '<div class="medium-6 columns"></div>';
             $z .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button tiny alert">' . lang('rr_remove') . '</button></div>';
@@ -2504,11 +2515,13 @@ class Form_element {
             $p .= $z;
             $p .= '</ul>';
             $result[] = $p;
-            $inlabel = '<div class="small-12 column"><div class="small-3 columns"><label class="right inline" for="logoretrieve">new logo</label></div>';
+            $inlabel = '<div class="small-12 column"><div class="small-3 columns"><label class="right inline" for="logoretrieve">'.lang('rr_url').'</label></div>';
             $in = '<div class="small-6 columns">'.form_input(array('name'=>''.$t.'logoretrieve')).'<small class="'.$t.'logoretrieve error" style="display:none;"></small></div>';
-            $in2 ='<div class="small-3 columns"><button type="button" name="'.$t.'getlogo" class="button tiny getlogo" value="'.base_url().'ajax/checklogourl">get logo</button></div></div>';
-            $reviewlogo = '<div class="small-3 column"></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button tiny" type="button" name="addlogo">Add</button></div>';
-            $result[] = '<fieldset><legend>new logo</legend>'.$inlabel.$in.$in2.'<div id="'.$t.'reviewlogo" class="small-12 column" style="display: none">'.$reviewlogo.'</div></fieldset>';
+            $in2 ='<div class="small-3 columns"><button type="button" name="'.$t.'getlogo" class="button tiny getlogo" value="'.base_url().'ajax/checklogourl">'.lang('btngetlogo').'</button></div></div>';
+           
+            $langselection = form_dropdown($t.'logolang',$btnlangs);
+            $reviewlogo = '<div class="small-3 column"><div class="logolangselect">'.$langselection.'</div><div class="logosizeinfo"></div></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button tiny addnewlogo" type="button" name="addnewlogo">'.lang('rr_add').'</button></div>';
+            $result[] = '<fieldset><legend>'.lang('rr_newlogosection').'</legend>'.$inlabel.$in.$in2.'<div id="'.$t.'reviewlogo" class="small-12 column reviewlogo" style="display: none; max-height: 100px">'.$reviewlogo.'</div></fieldset>';
             
             $result[] = '';
         }

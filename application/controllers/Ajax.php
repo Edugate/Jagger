@@ -76,13 +76,14 @@ class Ajax extends MY_Controller
         }
         $this->load->library('form_validation');
         $result = array();
-
+     
+        
+        
         $this->form_validation->set_rules('logourl', 'URL Logo', 'trim|required|min_length[5]|max_length[500]|xss_clean|valid_url_ssl');
         $isvalid = $this->form_validation->run();
-
         if (!$isvalid)
         {
-            $result['error'] = 'Invalid URL (only https)';
+            $result['error'] = 'Invalid URL (only https), ';
             echo json_encode($result);
             return;
         }
