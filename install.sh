@@ -5,7 +5,7 @@ MKTEMPTOOL="mktemp"
 command -v ${MKTEMPTOOL} >/dev/null 2>&1 || { echo >&2 "${MKTEMPTOOL}  is required but it's not installed.  Some distributions have tempfile. If so pls edit this file and change line containing MKTEMPTOOL def. Aborting."; exit 1; }
 command -v tar >/dev/null 2>&1 || { echo >&2 "tar is required but it's not installed.  Aborting."; exit 1; }
 command -v wget >/dev/null 2>&1 || { echo >&2 "wget is required but it's not installed.  Aborting."; exit 1; }
-WELCOMEMSG="Script will create additional folders and downloads additional software"
+WELCOMEMSG="Script will create additional folders and downloads additional software. After script is finished please run composer (https://getcomposer.org/) on composer.json - it will install Doctrine 2.4.x"
 echo -e ${WELCOMEMSG}
 install(){
    TMPDIR=`${MKTEMPTOOL} -d`
@@ -17,19 +17,6 @@ install(){
      echo "done"
    fi
  
-   LIBRARYPATH="application/libraries"
-   DOCTRINE="Doctrine"
-   if [ ! -d "${LIBRARYPATH}/${DOCTRINE}" ]
-   then
-      echo "Doctrine is not installed"
-      echo "downloading...."
-      wget http://www.doctrine-project.org/downloads/DoctrineORM-2.3.3-full.tar.gz -O ${TMPDIR}/DoctrineORM-2.3.3-full.tar.gz
-      tar zxf ${TMPDIR}/DoctrineORM-2.3.3-full.tar.gz -C ${TMPDIR}/
-      cp -r ${TMPDIR}/DoctrineORM-2.3.3/Doctrine ${LIBRARYPATH}/ 
-      echo ${TMPDIR}
-   else
-      echo -e "${LIBRARYPATH}/${DOCTRINE} already exists"
-   fi
 
    ZENDACL="Zend"
    if [ ! -d "${LIBRARYPATH}/${ZENDACL}" ]
