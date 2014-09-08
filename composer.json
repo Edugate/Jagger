@@ -1,5 +1,6 @@
 {
     "require": {
-        "doctrine/orm": "*"
+        "doctrine/orm": "*",
+        "zendframework/zend-permissions-acl": "2.0.*"
     }
 }
