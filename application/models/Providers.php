@@ -55,7 +55,8 @@ class Providers
     public function getTrustedActiveFeds(Provider $provider)
     {
         $feds = new \Doctrine\Common\Collections\ArrayCollection();
-        $query = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = '".$provider->getId()."' AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
+        $provid = $provider->getId();
+        $query = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = '".$provid."' AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
         //$query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
         foreach($result as $r)

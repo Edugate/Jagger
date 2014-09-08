@@ -190,10 +190,6 @@ class User {
         {
             return FALSE;
         }
-        /**
-         * 
-         */
-        print_r($founduser);
     }
 
     /**

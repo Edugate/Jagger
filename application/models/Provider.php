@@ -2072,10 +2072,6 @@ class Provider {
 
     }
 
-    public function findOneSPbyName($name)
-    {
-        return $this->_em->createQuery('SELECT u FROM Models\Provider u WHERE name = "' . $name . '"')->getResult();
-    }
 
     public function getDigest()
     {

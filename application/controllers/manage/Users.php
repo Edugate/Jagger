@@ -457,7 +457,6 @@ class Users extends MY_Controller {
         if($this->_accessmodify_submit_validate() === TRUE)
         {
             $i = $this->input->post('authz');
-            print_r($i);
         }
         else
         {
