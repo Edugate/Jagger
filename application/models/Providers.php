@@ -80,9 +80,9 @@ class Providers
         }
         if (count($feds) == 0) {
            return array();
-        }
-        $fedin = implode(',', $feds);
-        $query = $this->em->createQuery("SELECT p,e,m,f FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f LEFT JOIN p.extend e WHERE m.federation IN (" . $fedin . ") AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != ?2 AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN ('SP','BOTH')");
+        }      
+        $query = $this->em->createQuery("SELECT p,e,m,f FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f LEFT JOIN p.extend e WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != ?2 AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN ('SP','BOTH')");
+        $query->setParameter('feds',$feds);
         $query->setParameter(2,$provider->getId());
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
