@@ -56,7 +56,8 @@ class Providerupdater {
         if ($isAdmin)
         {
             $dissalowedparts = array();
-        } else
+        }
+        else
         {
             $dissalowedparts = $this->ci->config->item('entpartschangesdisallowed');
             if (empty($dissalowedparts) || !is_array($dissalowedparts))
@@ -73,7 +74,8 @@ class Providerupdater {
                 if ($e->getType() === 'idp')
                 {
                     $idpMDUIparent = $e;
-                } elseif ($e->getType() === 'sp')
+                }
+                elseif ($e->getType() === 'sp')
                 {
                     $spMDUIparent = $e;
                 }
@@ -106,7 +108,8 @@ class Providerupdater {
                     {
                         $m['Scope IDPSSO'] = array('before' => $origscopesso, 'after' => implode(',', $idpssoscopes));
                     }
-                } else
+                }
+                else
                 {
                     $ent->setScope('idpsso', array());
                     if (!empty($origscopesso))
@@ -124,7 +127,8 @@ class Providerupdater {
                     {
                         $m['Scope AA'] = array('before' => $origscopeaa, 'after' => implode(',', $aascopes));
                     }
-                } else
+                }
+                else
                 {
                     log_message('debug', 'GKS SCOPE AA no');
                     $ent->setScope('aa', array());
@@ -155,7 +159,8 @@ class Providerupdater {
                     $this->ci->tracker->renameProviderResourcename($ent->getEntityId(), $ch['entityid']);
                     $ent->setEntityId($ch['entityid']);
                 }
-            } else
+            }
+            else
             {
                 $ent->setEntityId($ch['entityid']);
             }
@@ -178,7 +183,8 @@ class Providerupdater {
             if (count($diff1) > 0)
             {
                 $lnamediffs = TRUE;
-            } else
+            }
+            else
             {
                 $diff1 = array_diff_assoc($ch['lname'], $trackorigs);
                 if (count($diff1) > 0)
@@ -190,7 +196,8 @@ class Providerupdater {
             {
                 $ent->setName($ch['lname']['en']);
                 unset($ch['lname']['en']);
-            } else
+            }
+            else
             {
                 $ent->setName(null);
             }
@@ -218,7 +225,8 @@ class Providerupdater {
             if (count($diff1) > 0)
             {
                 $isDifferent = TRUE;
-            } else
+            }
+            else
             {
                 $diff1 = array_diff_assoc($ch['ldisplayname'], $origs);
                 if (count($diff1) > 0)
@@ -232,7 +240,8 @@ class Providerupdater {
                 {
                     $ent->setDisplayName($ch['ldisplayname']['en']);
                     unset($ch['ldisplayname']['en']);
-                } else
+                }
+                else
                 {
                     $ent->setDisplayName(null);
                 }
@@ -258,7 +267,8 @@ class Providerupdater {
                 if (isset($prevregdate))
                 {
                     $prevregdate = date('Y-m-d', $prevregdate->format('U') + j_auth::$timeOffset);
-                } else
+                }
+                else
                 {
                     $prevregdate = '';
                 }
@@ -268,7 +278,8 @@ class Providerupdater {
                     if (!empty($ch['registrationdate']))
                     {
                         $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['registrationdate'] . ' 00:00:00'));
-                    } else
+                    }
+                    else
                     {
                         $ent->setRegistrationDate(null);
                     }
@@ -292,7 +303,8 @@ class Providerupdater {
             if (count($diff1) > 0)
             {
                 $isDifferent = TRUE;
-            } else
+            }
+            else
             {
                 $diff1 = array_diff_assoc($ch['lhelpdesk'], $origs);
                 if (count($diff1) > 0)
@@ -306,7 +318,8 @@ class Providerupdater {
                 {
                     $ent->setHelpdeskUrl($ch['lhelpdesk']['en']);
                     unset($ch['lhelpdesk']['en']);
-                } else
+                }
+                else
                 {
                     $ent->setHelpdeskUrl(null);
                 }
@@ -347,7 +360,8 @@ class Providerupdater {
                         if ($isAdmin)
                         {
                             $ent->setCoc($c);
-                        } else
+                        }
+                        else
                         {
                             $this->ci->approval->applyForEntityCategory($c, $ent);
                         }
@@ -384,7 +398,8 @@ class Providerupdater {
                         {
                             $ent->setCoc($c);
                             log_message('debug', 'GKS setting coc');
-                        } else
+                        }
+                        else
                         {
                             $this->ci->approval->applyForRegistrationPolicy($c, $ent);
                         }
@@ -430,13 +445,15 @@ class Providerupdater {
                                 $ex->removeElement($value);
                                 $this->em->remove($value);
                                 unset($newex['' . $key . '']);
-                            } else
+                            }
+                            else
                             {
                                 $value->setValue($ch['prvurl']['spsso']['' . $key . '']);
                                 $this->em->persist($value);
                             }
                             unset($ch['prvurl']['spsso']['' . $key . '']);
-                        } else
+                        }
+                        else
                         {
                             $value->setProvider(NULL);
                             $ex->removeElement($value);
@@ -466,7 +483,8 @@ class Providerupdater {
                     if (count($diff1) > 0)
                     {
                         $prvurldiffs = TRUE;
-                    } else
+                    }
+                    else
                     {
                         $diff1 = array_diff_assoc($newex, $origs);
                         if (count($diff1) > 0)
@@ -507,13 +525,15 @@ class Providerupdater {
                                 $ex->removeElement($value);
                                 $this->em->remove($value);
                                 unset($newex['' . $key . '']);
-                            } else
+                            }
+                            else
                             {
                                 $value->setValue($ch['prvurl']['idpsso']['' . $key . '']);
                                 $this->em->persist($value);
                             }
                             unset($ch['prvurl']['idpsso']['' . $key . '']);
-                        } else
+                        }
+                        else
                         {
                             $value->setProvider(NULL);
                             $ex->removeElement($value);
@@ -543,7 +563,8 @@ class Providerupdater {
                     if (count($diff1) > 0)
                     {
                         $prvurldiffs = TRUE;
-                    } else
+                    }
+                    else
                     {
                         $diff1 = array_diff_assoc($newex, $origs);
                         if (count($diff1) > 0)
@@ -614,14 +635,16 @@ class Providerupdater {
             if (isset($ch['nameids']['idpsso']) && is_array($ch['nameids']['idpsso']))
             {
                 $ent->setNameIds('idpsso', $ch['nameids']['idpsso']);
-            } else
+            }
+            else
             {
                 $ent->setNameIds('idpsso', array());
             }
             if (isset($ch['nameids']['idpaa']) && is_array($ch['nameids']['idpaa']))
             {
                 $ent->setNameIds('aa', $ch['nameids']['idpaa']);
-            } else
+            }
+            else
             {
                 $ent->setNameIds('aa', array());
             }
@@ -631,7 +654,8 @@ class Providerupdater {
             if (isset($ch['nameids']['spsso']) && is_array($ch['nameids']['spsso']))
             {
                 $ent->setNameIds('spsso', $ch['nameids']['spsso']);
-            } else
+            }
+            else
             {
                 $ent->setNameIds('spsso', array());
             }
@@ -681,7 +705,8 @@ class Providerupdater {
                         if ($type === 'SP')
                         {
                             $ent->removeServiceLocation($v);
-                        } else
+                        }
+                        else
                         {
                             if (array_key_exists($v->getId(), $srvs[$srvtype]))
                             {
@@ -690,7 +715,8 @@ class Providerupdater {
                                     if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']))
                                     {
                                         $ent->removeServiceLocation($v);
-                                    } else
+                                    }
+                                    else
                                     {
                                         if (!in_array($v->getBindingName(), $ssobinds))
                                         {
@@ -698,7 +724,8 @@ class Providerupdater {
                                             $v->setUrl($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']);
                                             $this->em->persist($v);
                                             $ssobinds[] = $v->getBindingName();
-                                        } else
+                                        }
+                                        else
                                         {
                                             log_message('error', 'Found more than one SingSignOnService with the same binding protocol for entity:' . $ent->getEntityId());
                                             log_message('debug', 'Removing duplicate entry');
@@ -709,19 +736,22 @@ class Providerupdater {
                                 }
                             }
                         }
-                    } elseif ($srvtype === 'IDPSingleLogoutService')
+                    }
+                    elseif ($srvtype === 'IDPSingleLogoutService')
                     {
                         log_message('debug', 'GG:IDPSingleLogoutService type found');
                         if ($type === 'SP')
                         {
                             log_message('debug', 'GG:IDPSingleLogoutService entity SP removein service');
                             $ent->removeServiceLocation($v);
-                        } elseif (in_array($v->getBindingName(), $idpslobinds))
+                        }
+                        elseif (in_array($v->getBindingName(), $idpslobinds))
                         {
                             log_message('debug', 'GG: found bind:' . $v->getBindingName() . ' in array idpslobinds');
                             log_message('debug', 'GG current values in idpslobinds: ' . serialize($idpslobinds));
                             $ent->removeServiceLocation($v);
-                        } else
+                        }
+                        else
                         {
                             log_message('debug', 'GG: step 2');
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']))
@@ -733,7 +763,8 @@ class Providerupdater {
                                     if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']))
                                     {
                                         $ent->removeServiceLocation($v);
-                                    } else
+                                    }
+                                    else
                                     {
                                         $v->setUrl($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']);
                                         $this->em->persist($v);
@@ -742,19 +773,22 @@ class Providerupdater {
                                 }
                             }
                         }
-                    } elseif ($srvtype === 'SPSingleLogoutService')
+                    }
+                    elseif ($srvtype === 'SPSingleLogoutService')
                     {
                         log_message('debug', 'GG:SPSingleLogoutService type found');
                         if ($type == 'IDP')
                         {
                             log_message('debug', 'GG:SPSingleLogoutService entity SP removein service');
                             $ent->removeServiceLocation($v);
-                        } elseif (in_array($v->getBindingName(), $spslobinds))
+                        }
+                        elseif (in_array($v->getBindingName(), $spslobinds))
                         {
                             log_message('debug', 'GG: found bind:' . $v->getBindingName() . ' in array idpslobinds');
                             log_message('debug', 'GG current values in spslobinds: ' . serialize($spslobinds));
                             $ent->removeServiceLocation($v);
-                        } else
+                        }
+                        else
                         {
                             log_message('debug', 'GG: step 2');
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']))
@@ -766,7 +800,8 @@ class Providerupdater {
                                     if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']))
                                     {
                                         $ent->removeServiceLocation($v);
-                                    } else
+                                    }
+                                    else
                                     {
                                         $v->setUrl($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']);
                                         $this->em->persist($v);
@@ -775,19 +810,22 @@ class Providerupdater {
                                 }
                             }
                         }
-                    } elseif ($srvtype === 'IDPAttributeService')
+                    }
+                    elseif ($srvtype === 'IDPAttributeService')
                     {
                         log_message('debug', 'GG:IDPAttributeService type found');
                         if ($type == 'SP')
                         {
                             log_message('debug', 'GG:IDPAttributeService entity SP removein service');
                             $ent->removeServiceLocation($v);
-                        } elseif (in_array($v->getBindingName(), $idpaabinds) or ! in_array($v->getBindingName(), $allowedAABind))
+                        }
+                        elseif (in_array($v->getBindingName(), $idpaabinds) or ! in_array($v->getBindingName(), $allowedAABind))
                         {
                             log_message('debug', 'GG: found bind:' . $v->getBindingName() . ' in array idpslobinds');
                             log_message('debug', 'GG current values in spslobinds: ' . serialize($idpaabinds));
                             $ent->removeServiceLocation($v);
-                        } else
+                        }
+                        else
                         {
                             log_message('debug', 'GG: step 2');
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']))
@@ -799,7 +837,8 @@ class Providerupdater {
                                     if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']))
                                     {
                                         $ent->removeServiceLocation($v);
-                                    } else
+                                    }
+                                    else
                                     {
                                         $v->setUrl($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']);
                                         $this->em->persist($v);
@@ -808,7 +847,8 @@ class Providerupdater {
                                 }
                             }
                         }
-                    } elseif ($srvtype === 'IDPArtifactResolutionService')
+                    }
+                    elseif ($srvtype === 'IDPArtifactResolutionService')
                     {
                         log_message('debug', 'GG:IDPArtifactResolutionService type found');
                         if ($type === 'SP')
@@ -816,14 +856,16 @@ class Providerupdater {
                             log_message('debug', 'GG:IDPArtifactResolutionService entity recognized as SP removin service');
                             $ent->removeServiceLocation($v);
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
-                        } else
+                        }
+                        else
                         {
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']))
                             {
                                 if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind']))
                                 {
                                     $ent->removeServiceLocation($v);
-                                } else
+                                }
+                                else
                                 {
                                     $v->setDefault(FALSE);
                                     $v->setUrl($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']);
@@ -831,7 +873,8 @@ class Providerupdater {
                                     {
                                         $v->setOrder($srvs['' . $srvtype . '']['' . $v->getId() . '']['order']);
                                         $idpartidx[] = $srvs['' . $srvtype . '']['' . $v->getId() . '']['order'];
-                                    } else
+                                    }
+                                    else
                                     {
                                         $maxidpartindex = max($idpartidx) + 1;
                                         $v->setOrder($maxidpartindex);
@@ -840,13 +883,15 @@ class Providerupdater {
                                     $v->setBindingName($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind']);
                                     $this->em->persist($v);
                                 }
-                            } else
+                            }
+                            else
                             {
                                 $ent->removeServiceLocation($v);
                             }
                             unset($srvs[$srvtype][$v->getId()]);
                         }
-                    } elseif ($srvtype === 'AssertionConsumerService')
+                    }
+                    elseif ($srvtype === 'AssertionConsumerService')
                     {
                         log_message('debug', 'GG:AssertionConsumerService type found');
                         if ($type == 'IDP')
@@ -854,19 +899,22 @@ class Providerupdater {
                             log_message('debug', 'GG:AssertionConsumerService entity recognized as IDP removin service');
                             $ent->removeServiceLocation($v);
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
-                        } else
+                        }
+                        else
                         {
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']))
                             {
                                 if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind']))
                                 {
                                     $ent->removeServiceLocation($v);
-                                } else
+                                }
+                                else
                                 {
                                     if ($acsdefaultset or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['default']))
                                     {
                                         $v->setDefault(FALSE);
-                                    } else
+                                    }
+                                    else
                                     {
                                         $v->setDefault(TRUE);
                                         $acsdefaultset = TRUE;
@@ -876,7 +924,8 @@ class Providerupdater {
                                     {
                                         $v->setOrder($srvs['' . $srvtype . '']['' . $v->getId() . '']['order']);
                                         $acsidx[] = $srvs['' . $srvtype . '']['' . $v->getId() . '']['order'];
-                                    } else
+                                    }
+                                    else
                                     {
                                         $maxacsindex = max($acsidx) + 1;
                                         $v->setOrder($maxacsindex);
@@ -885,14 +934,16 @@ class Providerupdater {
                                     $v->setBindingName($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind']);
                                     $this->em->persist($v);
                                 }
-                            } else
+                            }
+                            else
                             {
 
                                 $ent->removeServiceLocation($v);
                             }
                             unset($srvs[$srvtype][$v->getId()]);
                         }
-                    } elseif ($srvtype === 'SPArtifactResolutionService')
+                    }
+                    elseif ($srvtype === 'SPArtifactResolutionService')
                     {
                         log_message('debug', 'GG:SPArtifactResolutionService type found');
                         if ($type === 'IDP')
@@ -900,14 +951,16 @@ class Providerupdater {
                             log_message('debug', 'GG:SPArtifactResolutionService entity recognized as IDP removin service');
                             $ent->removeServiceLocation($v);
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
-                        } else
+                        }
+                        else
                         {
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']))
                             {
                                 if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind']))
                                 {
                                     $ent->removeServiceLocation($v);
-                                } else
+                                }
+                                else
                                 {
                                     $v->setDefault(FALSE);
                                     $v->setUrl($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']);
@@ -915,7 +968,8 @@ class Providerupdater {
                                     {
                                         $v->setOrder($srvs['' . $srvtype . '']['' . $v->getId() . '']['order']);
                                         $spartidx[] = $srvs['' . $srvtype . '']['' . $v->getId() . '']['order'];
-                                    } else
+                                    }
+                                    else
                                     {
                                         $maxspartindex = max($spartidx) + 1;
                                         $v->setOrder($maxspartindex);
@@ -924,13 +978,15 @@ class Providerupdater {
                                     $v->setBindingName($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind']);
                                     $this->em->persist($v);
                                 }
-                            } else
+                            }
+                            else
                             {
                                 $ent->removeServiceLocation($v);
                             }
                             unset($srvs[$srvtype][$v->getId()]);
                         }
-                    } elseif ($srvtype === 'DiscoveryResponse')
+                    }
+                    elseif ($srvtype === 'DiscoveryResponse')
                     {
                         log_message('debug', 'GG:DiscoveryResponse type found');
                         if ($type === 'IDP')
@@ -938,14 +994,16 @@ class Providerupdater {
                             log_message('debug', 'GG:DiscoveryResponse entity recognized as IDP removin service');
                             $ent->removeServiceLocation($v);
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
-                        } else
+                        }
+                        else
                         {
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']))
                             {
                                 if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind']))
                                 {
                                     $ent->removeServiceLocation($v);
-                                } else
+                                }
+                                else
                                 {
                                     $v->setDefault(FALSE);
 
@@ -954,7 +1012,8 @@ class Providerupdater {
                                     {
                                         $v->setOrder($srvs['' . $srvtype . '']['' . $v->getId() . '']['order']);
                                         $dridx[] = $srvs['' . $srvtype . '']['' . $v->getId() . '']['order'];
-                                    } else
+                                    }
+                                    else
                                     {
                                         $maxdrindex = max($dridx) + 1;
                                         $v->setOrder($maxdrindex);
@@ -964,13 +1023,15 @@ class Providerupdater {
                                     $v->setBindingName('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol');
                                     $this->em->persist($v);
                                 }
-                            } else
+                            }
+                            else
                             {
                                 $ent->removeServiceLocation($v);
                             }
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
                         }
-                    } elseif ($srvtype === 'RequestInitiator')
+                    }
+                    elseif ($srvtype === 'RequestInitiator')
                     {
                         log_message('debug', 'GG:RequestInitiator type found');
                         if ($type === 'IDP')
@@ -978,7 +1039,8 @@ class Providerupdater {
                             log_message('debug', 'GG:RequestInitiator entity recognized as IDP removin service');
                             $ent->removeServiceLocation($v);
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
-                        } else
+                        }
+                        else
                         {
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . '']) && !empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']))
                             {
@@ -987,7 +1049,8 @@ class Providerupdater {
                                 $v->setOrderNull();
                                 $v->setBindingName('urn:oasis:names:tc:SAML:profiles:SSO:request-init');
                                 $this->em->persist($v);
-                            } else
+                            }
+                            else
                             {
                                 $ent->removeServiceLocation($v);
                                 $this->em->remove($v);
@@ -1020,13 +1083,15 @@ class Providerupdater {
                                 $ent->setServiceLocation($newservice);
                                 $this->em->persist($newservice);
                                 $ssobinds[] = $v1['bind'];
-                            } else
+                            }
+                            else
                             {
                                 log_message('error', 'SingSignOnService url already set for binding proto: ' . $v1['bind'] . ' for entity' . $ent->getEntityId());
                             }
                         }
                     }
-                } elseif ($k === 'IDPSingleLogoutService' && $type != 'SP')
+                }
+                elseif ($k === 'IDPSingleLogoutService' && $type != 'SP')
                 {
                     foreach ($srvs[$k] as $k1 => $v1)
                     {
@@ -1043,13 +1108,15 @@ class Providerupdater {
                                 $ent->setServiceLocation($newservice);
                                 $this->em->persist($newservice);
                                 $idpslobinds[] = $v1['bind'];
-                            } else
+                            }
+                            else
                             {
                                 log_message('error', 'IDP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity' . $ent->getEntityId());
                             }
                         }
                     }
-                } elseif ($k === 'IDPAttributeService' && $type != 'SP')
+                }
+                elseif ($k === 'IDPAttributeService' && $type != 'SP')
                 {
                     foreach ($srvs[$k] as $k1 => $v1)
                     {
@@ -1066,13 +1133,15 @@ class Providerupdater {
                                 $ent->setServiceLocation($newservice);
                                 $this->em->persist($newservice);
                                 $idpaabinds[] = $v1['bind'];
-                            } else
+                            }
+                            else
                             {
                                 log_message('error', 'IDP AttributeService url already set for binding proto: ' . $v1['bind'] . ' for entity' . $ent->getEntityId());
                             }
                         }
                     }
-                } elseif ($k === 'SPSingleLogoutService' && $type != 'IDP')
+                }
+                elseif ($k === 'SPSingleLogoutService' && $type != 'IDP')
                 {
                     foreach ($srvs[$k] as $k1 => $v1)
                     {
@@ -1089,13 +1158,15 @@ class Providerupdater {
                                 $ent->setServiceLocation($newservice);
                                 $this->em->persist($newservice);
                                 $spslobinds[] = $v1['bind'];
-                            } else
+                            }
+                            else
                             {
                                 log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity' . $ent->getEntityId());
                             }
                         }
                     }
-                } elseif ($k === 'AssertionConsumerService' && $type != 'IDP')
+                }
+                elseif ($k === 'AssertionConsumerService' && $type != 'IDP')
                 {
                     foreach ($srvs[$k] as $k1 => $v1)
                     {
@@ -1109,10 +1180,12 @@ class Providerupdater {
                             if ($acsdefaultset)
                             {
                                 $newservice->setDefault(FALSE);
-                            } elseif (isset($v1['default']) && $v1['default'] == 1)
+                            }
+                            elseif (isset($v1['default']) && $v1['default'] == 1)
                             {
                                 $newservice->setDefault(TRUE);
-                            } else
+                            }
+                            else
                             {
                                 $newservice->setDefault(FALSE);
                             }
@@ -1122,11 +1195,13 @@ class Providerupdater {
                                 {
                                     $maxacsindex = max($acsidx) + 1;
                                     $newservice->setOrder($maxacsindex);
-                                } else
+                                }
+                                else
                                 {
                                     $newservice->setOrder($v1['order']);
                                 }
-                            } else
+                            }
+                            else
                             {
                                 $maxacsindex = max($acsidx) + 1;
                                 $newservice->setOrder($maxacsindex);
@@ -1136,7 +1211,8 @@ class Providerupdater {
                             $this->em->persist($newservice);
                         }
                     }
-                } elseif ($k === 'IDPArtifactResolutionService' && $type != 'SP')
+                }
+                elseif ($k === 'IDPArtifactResolutionService' && $type != 'SP')
                 {
                     foreach ($srvs[$k] as $k1 => $v1)
                     {
@@ -1154,11 +1230,13 @@ class Providerupdater {
                                 {
                                     $maxidpartindex = max($idpartidx) + 1;
                                     $newservice->setOrder($maxidpartindex);
-                                } else
+                                }
+                                else
                                 {
                                     $newservice->setOrder($v1['order']);
                                 }
-                            } else
+                            }
+                            else
                             {
                                 $maxidpartindex = max($idpartidx) + 1;
                                 $newservice->setOrder($maxidpartindex);
@@ -1168,7 +1246,8 @@ class Providerupdater {
                             $this->em->persist($newservice);
                         }
                     }
-                } elseif ($k === 'SPArtifactResolutionService' && $type != 'IDP')
+                }
+                elseif ($k === 'SPArtifactResolutionService' && $type != 'IDP')
                 {
                     foreach ($srvs[$k] as $k1 => $v1)
                     {
@@ -1186,11 +1265,13 @@ class Providerupdater {
                                 {
                                     $maxspartindex = max($spartidx) + 1;
                                     $newservice->setOrder($maxspartindex);
-                                } else
+                                }
+                                else
                                 {
                                     $newservice->setOrder($v1['order']);
                                 }
-                            } else
+                            }
+                            else
                             {
                                 $maxspartindex = max($spartidx) + 1;
                                 $newservice->setOrder($maxspartindex);
@@ -1200,7 +1281,8 @@ class Providerupdater {
                             $this->em->persist($newservice);
                         }
                     }
-                } elseif ($k === 'DiscoveryResponse' && $type != 'IDP')
+                }
+                elseif ($k === 'DiscoveryResponse' && $type != 'IDP')
                 {
                     foreach ($srvs[$k] as $k1 => $v1)
                     {
@@ -1218,11 +1300,13 @@ class Providerupdater {
                                 {
                                     $maxdrindex = max($dridx) + 1;
                                     $newservice->setOrder($maxdrindex);
-                                } else
+                                }
+                                else
                                 {
                                     $newservice->setOrder($v1['order']);
                                 }
-                            } else
+                            }
+                            else
                             {
                                 $maxdrindex = max($dridx) + 1;
                                 $newservice->setOrder($maxdrindex);
@@ -1232,7 +1316,8 @@ class Providerupdater {
                             $this->em->persist($newservice);
                         }
                     }
-                } elseif ($k === 'RequestInitiator' && $type != 'IDP')
+                }
+                elseif ($k === 'RequestInitiator' && $type != 'IDP')
                 {
                     foreach ($srvs[$k] as $k1 => $v1)
                     {
@@ -1260,7 +1345,8 @@ class Providerupdater {
             if (empty($vid))
             {
                 $d = 'n' . $ii;
-            } else
+            }
+            else
             {
                 $d = $v->getId();
             }
@@ -1319,12 +1405,14 @@ class Providerupdater {
                     {
                         $ent->removeCertificate($v);
                         $this->em->remove($v);
-                    } else
+                    }
+                    else
                     {
                         $this->em->persist($v);
                     }
                     unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
-                } else
+                }
+                else
                 {
                     $ent->removeCertificate($v);
                     $this->em->remove($v);
@@ -1350,7 +1438,8 @@ class Providerupdater {
                         $ncert->setCertData($v2['certdata']);
                         $this->em->persist($ncert);
                     }
-                } elseif ($k1 === 'idpsso' && $type !== 'SP')
+                }
+                elseif ($k1 === 'idpsso' && $type !== 'SP')
                 {
                     foreach ($v1 as $k2 => $v2)
                     {
@@ -1365,7 +1454,8 @@ class Providerupdater {
                         $ncert->setCertData($v2['certdata']);
                         $this->em->persist($ncert);
                     }
-                } elseif ($k1 === 'aa' && $type !== 'SP')
+                }
+                elseif ($k1 === 'aa' && $type !== 'SP')
                 {
                     foreach ($v1 as $k2 => $v2)
                     {
@@ -1402,7 +1492,8 @@ class Providerupdater {
                     {
                         $ent->removeContact($v);
                         $this->em->remove($v);
-                    } else
+                    }
+                    else
                     {
                         $v->setType($ncnt['' . $i . '']['type']);
                         $v->setGivenname($ncnt['' . $i . '']['fname']);
@@ -1412,7 +1503,8 @@ class Providerupdater {
                         $newcntArray['' . $i . ''] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
                         unset($ncnt['' . $i . '']);
                     }
-                } else
+                }
+                else
                 {
                     $ent->removeContact($v);
                     $this->em->remove($v);
@@ -1480,7 +1572,8 @@ class Providerupdater {
                 if (isset($l['xml:lang']))
                 {
                     $exarray['' . $v->getElement() . '']['' . $l['xml:lang'] . ''] = $v;
-                } else
+                }
+                else
                 {
                     log_message('error', 'ExentedMetadata element with id:' . $v->getId() . ' doesnt contains xml:lang attr');
                 }
@@ -1523,14 +1616,16 @@ class Providerupdater {
                             $newelement->setAttributes(array('xml:lang' => $key3));
                             $ent->setExtendMetadata($newelement);
                             $this->em->persist($newelement);
-                        } elseif (isset($exarray['' . $elvalue . '']['' . $key3 . '']))
+                        }
+                        elseif (isset($exarray['' . $elvalue . '']['' . $key3 . '']))
                         {
                             if (empty($value3))
                             {
                                 $exarray['' . $elvalue . '']['' . $key3 . '']->setProvider(NULL);
                                 $ent->getExtendMetadata()->removeElement($exarray['' . $elvalue . '']['' . $key3 . '']);
                                 $this->em->remove($exarray['' . $elvalue . '']['' . $key3 . '']);
-                            } else
+                            }
+                            else
                             {
                                 $exarray['' . $elvalue . '']['' . $key3 . '']->setValue($value3);
                                 $this->em->persist($exarray['' . $elvalue . '']['' . $key3 . '']);
@@ -1596,9 +1691,9 @@ class Providerupdater {
                         $size = explode('x', $ve['size']);
                         if (count($size) == 2)
                         {
-                            foreach($size as $sv)
+                            foreach ($size as $sv)
                             {
-                                if(!is_numeric($sv))
+                                if (!is_numeric($sv))
                                 {
                                     $canAdd = false;
                                     break;
@@ -1612,17 +1707,19 @@ class Providerupdater {
                             $canAdd = false;
                         }
                         $nlogo->setAttributes($attrs);
-                        if($canAdd)
+                        if ($canAdd)
                         {
                             $ent->setExtendMetadata($nlogo);
                             $this->em->persist($nlogo);
                         }
-                    } else
+                    }
+                    else
                     {
                         log_message('warning', __METHOD__ . ' missing url/lang/size of new logo in form - not adding into db');
                     }
                 }
-            } else
+            }
+            else
             {
                 log_message('debug', 'PKS logo array not found in session');
             }
@@ -1648,7 +1745,8 @@ class Providerupdater {
                 if (isset($l['xml:lang']))
                 {
                     $exarray['' . $v->getElement() . '']['' . $l['xml:lang'] . ''] = $v;
-                } else
+                }
+                else
                 {
                     log_message('error', 'ExentedMetadata element with id:' . $v->getId() . ' doesnt contains xml:lang attr');
                 }
@@ -1688,14 +1786,16 @@ class Providerupdater {
                             $newelement->setAttributes(array('xml:lang' => $key3));
                             $ent->setExtendMetadata($newelement);
                             $this->em->persist($newelement);
-                        } elseif (isset($exarray['' . $elvalue . '']['' . $key3 . '']))
+                        }
+                        elseif (isset($exarray['' . $elvalue . '']['' . $key3 . '']))
                         {
                             if (empty($value3))
                             {
                                 $exarray['' . $elvalue . '']['' . $key3 . '']->setProvider(NULL);
                                 $ent->getExtendMetadata()->removeElement($exarray['' . $elvalue . '']['' . $key3 . '']);
                                 $this->em->remove($exarray['' . $elvalue . '']['' . $key3 . '']);
-                            } else
+                            }
+                            else
                             {
                                 $exarray['' . $elvalue . '']['' . $key3 . '']->setValue($value3);
                                 $this->em->persist($exarray['' . $elvalue . '']['' . $key3 . '']);
@@ -1704,10 +1804,10 @@ class Providerupdater {
                     }
                 }
             }
-             // logos not updatting value - just remove entry or add new one
+            // logos not updatting value - just remove entry or add new one
             if (isset($ch['uii']['spsso']['logo']) && is_array($ch['uii']['spsso']['logo']))
             {
-                
+
                 $doFilter = array('Logo');
                 $collection = $ent->getExtendMetadata()->filter(
                         function($entry) use ($doFilter)
@@ -1733,7 +1833,7 @@ class Providerupdater {
 
                     if (!isset($ch['uii']['spsso']['logo']['' . $logoid . '']))
                     {
-                        log_message('debug', __METHOD__. ' Logo with id:' . $logoid . ' is removed');
+                        log_message('debug', __METHOD__ . ' Logo with id:' . $logoid . ' is removed');
                         $ent->getExtendMetadata()->removeElement($c);
                         $this->em->remove($c);
                     }
@@ -1761,9 +1861,9 @@ class Providerupdater {
                         $size = explode('x', $ve['size']);
                         if (count($size) == 2)
                         {
-                            foreach($size as $sv)
+                            foreach ($size as $sv)
                             {
-                                if(!is_numeric($sv))
+                                if (!is_numeric($sv))
                                 {
                                     $canAdd = false;
                                     break;
@@ -1777,17 +1877,19 @@ class Providerupdater {
                             $canAdd = false;
                         }
                         $nlogo->setAttributes($attrs);
-                        if($canAdd)
+                        if ($canAdd)
                         {
                             $ent->setExtendMetadata($nlogo);
                             $this->em->persist($nlogo);
                         }
-                    } else
+                    }
+                    else
                     {
                         log_message('warning', __METHOD__ . ' missing url/lang/size of new logo in form - not adding into db');
                     }
                 }
-            } else
+            }
+            else
             {
                 log_message('debug', 'PKS logo array not found in session');
             }
