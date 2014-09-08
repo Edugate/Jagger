@@ -96,7 +96,7 @@ class Auth extends MY_Controller {
            }
            
         }  
-        $accesstype = 'federated';
+       
         $ip = $this->input->ip_address();      
         $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if(!empty($checkuser))
@@ -107,13 +107,6 @@ class Auth extends MY_Controller {
            echo lang('err_userexist');
            return;
         }
-//        $checkuser = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
-//        if(!empty($checkuser))
-//        { 
-//           set_status_header(403);
-//           echo lang('err_mailexist');
-//           return;
-//        }
         $inqueue = $this->em->getRepository("models\Queue")->findOneBy(array('name'=>$username,'action'=>'Create'));
         if(!empty($inqueue))
         {
@@ -484,14 +477,7 @@ class Auth extends MY_Controller {
         $fname = trim($attrs['fname']);
         $sname = trim($attrs['sname']);
 
-        
-     
-   //     $checkIfExist = $this->em->getRepository("models\User")->findOneBy(array('email' => $mail));
-   //     if (!empty($checkIfExist))
-   //     {
-   //         log_message('warning', 'Cannot register new user, provided mail already exists in db');
-   //         return false;
-   //     }
+
 
         $user = new models\User;
         $this->load->helper('random_generator');
