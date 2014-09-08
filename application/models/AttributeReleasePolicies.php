@@ -141,11 +141,12 @@ class AttributeReleasePolicies {
          log_message('debug','getSpecCustomArpsToRemove started for provider:'.$provider->getName());
          $idparps = array();
          $sparps = array();
-         if($provider->getType() == 'IDP' or $provider->getType() == 'BOTH')
+         $type = $provider->getType();
+         if(strcasecmp($type,'SP')!=0)
          {
              $idparps = $this->getSpecArpsToRemoveIDP($provider);
          }
-         if($provider->getType() == 'SP' or $provider->getType() == 'BOTH')
+         if(strcasecmp($type,'IDP')!=0)
          {
              $sparps = $this->getSpecArpsToRemoveSP($provider);
          }

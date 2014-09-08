@@ -488,7 +488,7 @@ class Provider {
 
         $ldisplayname_diff1 = array_diff_assoc($ldisplayname_before, $ldisplayname_after);
         $ldisplayname_diff2 = array_diff_assoc($ldisplayname_after, $ldisplayname_before);
-        if (count($ldisplayname_diff1) > 0 or count($ldisplayname_diff2) > 0)
+        if (count($ldisplayname_diff1) > 0 || count($ldisplayname_diff2) > 0)
         {
             $tmpstr = '';
             foreach ($ldisplayname_diff1 as $k => $v)
@@ -522,7 +522,7 @@ class Provider {
         }
         $lname_diff1 = array_diff_assoc($lname_before, $lname_after);
         $lname_diff2 = array_diff_assoc($lname_after, $lname_before);
-        if (count($lname_diff1) > 0 or count($lname_diff2) > 0)
+        if (count($lname_diff1) > 0 || count($lname_diff2) > 0)
         {
             $tmpstr = '';
             foreach ($lname_diff1 as $k => $v)
@@ -553,7 +553,7 @@ class Provider {
         }
         $lname_diff1 = array_diff_assoc($lname_before, $lname_after);
         $lname_diff2 = array_diff_assoc($lname_after, $lname_before);
-        if (count($lname_diff1) > 0 or count($lname_diff2) > 0)
+        if (count($lname_diff1) > 0 || count($lname_diff2) > 0)
         {
             $tmpstr = '';
             foreach ($lname_diff1 as $k => $v)
@@ -582,7 +582,7 @@ class Provider {
         }
         $lname_diff1 = array_diff_assoc($lname_before, $lname_after);
         $lname_diff2 = array_diff_assoc($lname_after, $lname_before);
-        if (count($lname_diff1) > 0 or count($lname_diff2) > 0)
+        if (count($lname_diff1) > 0 || count($lname_diff2) > 0)
         {
             $tmpstr = '';
             foreach ($lname_diff1 as $k => $v)
@@ -1958,7 +1958,7 @@ class Provider {
 
     public function getDisplayName($length = null)
     {
-        if (empty($length) or !is_integer($length) or strlen($this->displayname) <= $length)
+        if (empty($length) || !is_integer($length) || strlen($this->displayname) <= $length)
         {
             return $this->displayname;
         }

@@ -533,7 +533,7 @@ class Show_element {
 
     public function generateRequestsList(models\Provider $idp, $count = null)
     {
-        if (empty($count) or !is_numeric($count) or $count < 1)
+        if (empty($count) || !is_numeric($count) || $count < 1)
         {
             $count = 5;
         }
@@ -570,7 +570,7 @@ class Show_element {
 
     public function generateModificationsList(models\Provider $idp, $count = null)
     {
-        if (empty($count) or !is_numeric($count) or $count < 1)
+        if (empty($count) || !is_numeric($count) or $count < 1)
         {
             $count = 5;
         }

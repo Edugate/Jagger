@@ -304,7 +304,7 @@ class MY_form_validation extends CI_form_validation {
     function valid_contact_type($str)
     {
        $allowed = array('administrative','technical','support','billing','other');
-       if(empty($str) or !in_array($str,$allowed))
+       if(empty($str) || !in_array($str,$allowed))
        {
            $this->set_message('valid_contact_type','Invalid contact type');
            return FALSE;
@@ -571,7 +571,7 @@ class MY_form_validation extends CI_form_validation {
 
 				return FALSE;
 			}
-			elseif ( ! in_array($matches[1], array('http', 'https','ftp','ftps')) OR empty($matches[1]) )
+			elseif ( ! in_array($matches[1], array('http', 'https','ftp','ftps')) || empty($matches[1]) )
 			{
                                $this->set_message('valid_extendedurl', "incorrect protocol  \"%s\" ");
 				return FALSE;
@@ -601,7 +601,7 @@ class MY_form_validation extends CI_form_validation {
 
 				return FALSE;
 			}
-			elseif ( ! in_array($matches[1], array('http', 'https')) OR empty($matches[1]) )
+			elseif ( ! in_array($matches[1], array('http', 'https')) || empty($matches[1]) )
 			{
                                $this->set_message('valid_url', "incorrect protocol  \"%s\" ");
 				return FALSE;
@@ -640,7 +640,7 @@ class MY_form_validation extends CI_form_validation {
                 // There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
                 // underscore to be a valid hostname character instead of a dash.
                 // Reference: https://bugs.php.net/bug.php?id=51192
-                if (version_compare(PHP_VERSION, '5.2.13', '==') OR version_compare(PHP_VERSION, '5.3.2', '=='))
+                if (version_compare(PHP_VERSION, '5.2.13', '==') || version_compare(PHP_VERSION, '5.3.2', '=='))
                 {
                         sscanf($str, 'https://%[^/]', $host);
                         $str = substr_replace($str, strtr($host, array('_' => '-', '-' => '_')), 7, strlen($host));
@@ -678,7 +678,7 @@ class MY_form_validation extends CI_form_validation {
 
 				return FALSE;
 			}
-			elseif ( ! in_array($matches[1], array('http', 'https')) OR empty($matches[1]) )
+			elseif ( ! in_array($matches[1], array('http', 'https')) || empty($matches[1]) )
 			{
                                $this->set_message('valid_url_or_empty', "incorrect protocol  \"%s\" ");
 				return FALSE;

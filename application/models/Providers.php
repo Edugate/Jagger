@@ -280,7 +280,7 @@ class Providers {
                 {
                     $type = $y->get($key)->getType();
                     //  log_message('debug','TYPE::::: '.$type);
-                    if ($type == 'SP' OR $type == 'BOTH')
+                    if ($type == 'SP' || $type == 'BOTH')
                     {
                         $this->providers->set($key, $y->get($key));
                     }

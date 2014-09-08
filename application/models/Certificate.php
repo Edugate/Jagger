@@ -126,7 +126,7 @@ class Certificate
      */
     public function setCertUse($use = NULL)
     {
-        if (!empty($use) && ($use == 'signing' OR $use == 'encryption'))
+        if (!empty($use) && ($use === 'signing' || $use === 'encryption'))
         {
             $this->certusage = $use;
         } else
@@ -173,7 +173,7 @@ class Certificate
 */
     public function setCertType($type=null)
     {
-        if (empty($type) or $type === 'x509')
+        if (empty($type) || $type === 'x509')
         {
             $type = 'X509Certificate';
         }

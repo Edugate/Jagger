@@ -372,7 +372,7 @@ class User {
     public function delEntityFromBookmark($id)
     {
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
@@ -387,7 +387,7 @@ class User {
     public function delFedFromBookmark($id)
     {
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
@@ -401,7 +401,7 @@ class User {
     public function setShowHelp($b)
     {
        $pref = $this->getUserpref();
-       if (empty($pref) or !is_array($pref))
+       if (empty($pref) || !is_array($pref))
        {
           $pref = array();
        }
@@ -415,7 +415,7 @@ class User {
     {
         log_message('debug', 'addEntityToBookmark');
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
@@ -442,7 +442,7 @@ class User {
     {
         log_message('debug', 'addFedToBookmark');
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }

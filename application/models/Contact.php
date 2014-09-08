@@ -103,7 +103,7 @@ class Contact {
 
     public function setType($type)
     {
-        if (($type == 'technical') OR ($type == 'administrative') OR ($type == 'support') OR ($type == 'billing') OR ($type == 'other'))
+        if (($type == 'technical') || ($type == 'administrative') || ($type == 'support') || ($type == 'billing') || ($type == 'other'))
         {
             $this->type = $type;
             return $this;
