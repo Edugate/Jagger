@@ -57,7 +57,8 @@ class Providers {
     {
         $feds = new \Doctrine\Common\Collections\ArrayCollection();
         $provid = $provider->getId();
-        $query = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = '" . $provid . "' AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
+        $query = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
+        $query->setParameter(1, $provider->getId());
         //$query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
         foreach ($result as $r)
@@ -182,17 +183,17 @@ class Providers {
         $rtype = array();
         if ($type === 'IDP')
         {
-            $typeconds = "'SP','BOTH'";
+            
             $rtype = array('SP', 'BOTH');
         }
         elseif ($type === 'SP')
         {
-            $typeconds = "'IDP','BOTH'";
+           
             $rtype = array('IDP', 'BOTH');
         }
         else
         {
-            $typeconds = "'IDP','SP','BOTH'";
+          
             $rtype = array('IDP', 'SP', 'BOTH');
         }
         $feds = array();
@@ -212,8 +213,9 @@ class Providers {
         {
             return array();
         }
-        $query = $this->em->createQuery("SELECT p,m, f FROM models\Provider p JOIN p.membership m JOIN m.federation f  WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != 2? AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN (" . $typeconds . ")");
+        $query = $this->em->createQuery("SELECT p,m, f FROM models\Provider p JOIN p.membership m JOIN m.federation f  WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != 2? AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN (:types)");
         $query->setParameter('feds', $feds);
+        $query->setParameter('types', $rtype);
         $query->setParameter(2, $provider->getId());
         // $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
