@@ -213,10 +213,10 @@ class Providers {
         {
             return array();
         }
-        $query = $this->em->createQuery("SELECT p,m, f FROM models\Provider p JOIN p.membership m JOIN m.federation f  WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != 2? AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN (:types)");
+        $query = $this->em->createQuery("SELECT p,m, f FROM models\Provider p JOIN p.membership m JOIN m.federation f  WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != :provid AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN (:types)");
         $query->setParameter('feds', $feds);
         $query->setParameter('types', $rtype);
-        $query->setParameter(2, $provider->getId());
+        $query->setParameter('provid', $provider->getId());
         // $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
         return $result;
