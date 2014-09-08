@@ -282,7 +282,7 @@ class Entityedit extends MY_Controller {
                         $this->form_validation->set_rules('f[srv][SPSingleLogoutService][' . $k . '][bind]', 'SP SingleLogoutService Binding protocol', 'required');
                     }
                 }
-                if (!array_key_exists('AssertionConsumerService', $y['f']['srv']) && ($this->type === 'SP' or $this->type === 'BOTH'))
+                if (!array_key_exists('AssertionConsumerService', $y['f']['srv']) && ($this->type === 'SP' || $this->type === 'BOTH'))
                 {
                     $y['f']['srv']['AssertionConsumerService'] = array();
                 }
@@ -1036,7 +1036,7 @@ class Entityedit extends MY_Controller {
                         }
                         $q->setAction("Create");
                         $lnames = $ent->getMergedLocalName();
-                        if (is_array($lnames) and count($lnames) > 0)
+                        if (is_array($lnames) && count($lnames) > 0)
                         {
                             $q->setName(current($lnames));
                         }

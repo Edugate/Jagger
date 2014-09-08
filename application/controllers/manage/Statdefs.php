@@ -32,7 +32,7 @@ class Statdefs extends MY_Controller {
         {
            show_error('denied',403);
         }
-        if (empty($defid) or !is_numeric($defid))
+        if (empty($defid) || !is_numeric($defid))
         {
             show_error('not found', 404);
         }
@@ -145,7 +145,7 @@ class Statdefs extends MY_Controller {
 
     public function show($providerid = null, $defid = null)
     {
-        if (empty($providerid) or !is_numeric($providerid))
+        if (empty($providerid) || !is_numeric($providerid))
         {
             show_error('Page not found', 404);
             reurn;
@@ -214,7 +214,7 @@ class Statdefs extends MY_Controller {
                         if($is_sys === 'sys')
                         {
                             $sysmethod = $v->getSysDef();
-                            if(empty($sysmethod) or !array_key_exists($sysmethod,$predefinedstats))
+                            if(empty($sysmethod) || !array_key_exists($sysmethod,$predefinedstats))
                             {
                                 $alert = TRUE;
                             }
@@ -337,7 +337,7 @@ class Statdefs extends MY_Controller {
                      }
                     $statfiles = $statdef->getStatistics();
                     
-                    if(!empty($statfiles) and count($statfiles)>0)
+                    if(!empty($statfiles) && count($statfiles)>0)
                     {
                        $statv = '<ul>';
                        $downurl = base_url().'manage/statistics/show/';
@@ -558,7 +558,7 @@ class Statdefs extends MY_Controller {
     public function newStatDef($providerid = null)
     {
 
-        if (empty($providerid) or !is_numeric($providerid))
+        if (empty($providerid) || !is_numeric($providerid))
         {
             show_error('Page not found', 404);
         }

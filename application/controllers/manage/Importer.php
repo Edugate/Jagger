@@ -199,7 +199,7 @@ class Importer extends MY_Controller {
         {
             $full = false;
         }
-        if (!($arg['type'] == 'idp' OR $arg['type'] == 'sp' OR $arg['type'] == 'all'))
+        if (!($arg['type'] == 'idp' || $arg['type'] == 'sp' || $arg['type'] == 'all'))
         {
             log_message('error', 'Cannot import metadata because type of entities is not set correctly');
             return $this->index();

@@ -70,7 +70,7 @@ class Fvalidator extends MY_Controller
             }
         }
         $fedid = $this->input->post('fedid');
-        if (empty($fedid) or !is_numeric($fedid))
+        if (empty($fedid) || !is_numeric($fedid))
         {
 
             set_status_header(404);

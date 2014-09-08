@@ -56,6 +56,57 @@ class Entitystate extends MY_Controller {
         return $this->form_validation->run();
     }
 
+
+    private function _submit_regpol_validate()
+    {
+        return false;
+        /**
+         * @todo finish
+         */
+
+    }
+
+
+    public function regpolicies($id)
+    {
+        if (!is_numeric($id))
+        {
+            show_error('Incorrect entity id provided', 404);
+        }
+        else
+        {
+            $this->entity = $this->tmp_providers->getOneById($id);
+        }
+        if (!isset($this->entity))
+        {
+            show_error('Provider not found', 404);
+        }
+        $lang = MY_Controller::getLang();
+        $isLocked = $this->entity->getLocked();
+        $titlename = $this->entity->getNameToWebInLang($lang,$this->entity->getType());
+        $data['titlepage'] = lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$this->entity->getId().'">'.$titlename.'</a>';
+        $data['subtitlepage'] = lang('rr_status_mngmt');
+        $has_write_access = $this->zacl->check_acl($this->entity->getId(), 'write', 'entity', '');
+        if(!$has_write_access)
+        {
+           show_error('No sufficient permision to edit entity', 403);
+           return;
+        }
+        elseif($isLocked)
+        {
+           show_error('entity id locked', 403);
+           return;
+        }
+        if($this->_submit_regpol_validate !== TRUE)
+        {
+           $this->load->library('form_element');
+           $data['r'] = $this->form_element->NgenerateRegPolicies($this->entity,null);
+           $data['content_view'] = 'manage/entityedit_regpolicies';
+           $this->load->view('page',$data);
+        }
+
+    }
+
     public function modify($id)
     {
         if (!is_numeric($id))
@@ -197,7 +248,7 @@ class Entitystate extends MY_Controller {
                     $changed = true;
                 }
             }
-            if(!empty($validuntildate) and !empty($validuntiltime))
+            if(!empty($validuntildate) && !empty($validuntiltime))
             {
                 $validuntil = new DateTime($validuntildate.'T'.$validuntiltime);
                 $this->entity->setValidTo($validuntil);
@@ -207,7 +258,7 @@ class Entitystate extends MY_Controller {
                 $this->entity->setValidTo(null);
 
             }
-            if(!empty($validfromdate) and !empty($validfromtime))
+            if(!empty($validfromdate) && !empty($validfromtime))
             {
                 $validfrom = new DateTime($validfromdate.'T'.$validfromtime);
                 $this->entity->setValidFrom($validfrom);

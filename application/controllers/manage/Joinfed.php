@@ -48,7 +48,7 @@ class Joinfed extends MY_Controller {
    
     public function joinfederation($providerid=null)
     {
-        if(empty($providerid) or !is_numeric($providerid))
+        if(empty($providerid) || !is_numeric($providerid))
         {
              show_error(lang('error_incorrectprovid'),404);
              return;

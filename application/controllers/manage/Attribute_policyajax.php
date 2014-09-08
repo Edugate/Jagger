@@ -27,12 +27,12 @@ class Attribute_policyajax extends MY_Controller {
 
     public function retrieveattrpath($idpid=null)
     {
-        if(!$this->input->is_ajax_request() OR (empty($idpid) OR !is_numeric($idpid)))
+        if(!$this->input->is_ajax_request() || (empty($idpid) || !is_numeric($idpid)))
         {
             show_error('method not allowed',403);
         }
         $enabled = $this->config->item('arpbyinherit');
-        if(empty($enabled) or $enabled !== TRUE)
+        if(empty($enabled) || $enabled !== TRUE)
         {
            set_status_header(403);
            echo 'functionality disabled';
@@ -62,7 +62,7 @@ class Attribute_policyajax extends MY_Controller {
         $requester = $this->input->post('requester');
         $attrname = $this->input->post('attribute');
         
-        if(empty($requester) or empty($attrname))
+        if(empty($requester) || empty($attrname))
         {
            set_status_header(403);
            echo 'missing params';
@@ -189,7 +189,7 @@ class Attribute_policyajax extends MY_Controller {
             show_error('method not allowed',403);
         }
         $enabled = $this->config->item('arpbyinherit');
-        if(empty($enabled) or $enabled !== TRUE)
+        if(empty($enabled) || $enabled !== TRUE)
         {
            set_status_header(403);
            echo 'functionality disabled';
@@ -231,7 +231,7 @@ class Attribute_policyajax extends MY_Controller {
         }
         $tmp_a = $this->config->item('policy_dropdown');
         $idpid = $this->input->post('idpid');
-        if (empty($idpid) or !is_numeric($idpid)) {
+        if (empty($idpid) || !is_numeric($idpid)) {
             set_status_header(403);
             log_message('warning',  'idpid in post not provided or not numeric');
             echo lang('missedinfoinpost');
@@ -244,7 +244,7 @@ class Attribute_policyajax extends MY_Controller {
             return;
         }
         $policy = trim($this->input->post('policy'));
-        if (!isset($policy) or !is_numeric($policy)) {
+        if (!isset($policy) || !is_numeric($policy)) {
             log_message('error',  'policy in post not provided or not numeric:' . $policy);
             set_status_header(403);
             echo lang('wrongpolicyval');
@@ -268,7 +268,7 @@ class Attribute_policyajax extends MY_Controller {
            return;
         }
 
-        if (!($policy == 0 or $policy == 1 or $policy == 2 )) {
+        if (!($policy == 0 || $policy == 1 || $policy == 2 )) {
             log_message('error', 'wrong policy in post: ' . $policy);
             set_status_header(403);
             echo lang('wrongpolicyval');

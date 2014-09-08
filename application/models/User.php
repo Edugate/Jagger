@@ -182,15 +182,6 @@ class User {
         return $this;
     }
 
-    public function authenticateUser($user, $pass)
-    {
-        $encryted = self::encryptPassword($pass);
-        $founduser = self::findUser($user);
-        if (!$founduser)
-        {
-            return FALSE;
-        }
-    }
 
     /**
      * Encrypt a Password
@@ -246,23 +237,6 @@ class User {
         return $this;
     }
 
-    /**
-     * Find a User account by username or email
-     *
-     * @static
-     * @access	public
-     * @param	string	$identifier
-     * @return	User|FALSE
-     */
-    public static function findUser($identifier)
-    {
-        $CI = & get_instance();
-
-        $user = $this->CI->em->createQuery("SELECT u FROM models\User u WHERE u.username = '{$identifier}' OR u.email = '{$identifier}'")
-                ->getResult();
-
-        return $user ? $user[0] : FALSE;
-    }
 
     public function findUserMail($username, $email)
     {
@@ -372,7 +346,7 @@ class User {
     public function delEntityFromBookmark($id)
     {
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
@@ -387,7 +361,7 @@ class User {
     public function delFedFromBookmark($id)
     {
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
@@ -401,7 +375,7 @@ class User {
     public function setShowHelp($b)
     {
        $pref = $this->getUserpref();
-       if (empty($pref) or !is_array($pref))
+       if (empty($pref) || !is_array($pref))
        {
           $pref = array();
        }
@@ -415,7 +389,7 @@ class User {
     {
         log_message('debug', 'addEntityToBookmark');
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
@@ -442,7 +416,7 @@ class User {
     {
         log_message('debug', 'addFedToBookmark');
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }

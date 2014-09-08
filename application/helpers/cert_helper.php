@@ -29,7 +29,7 @@ function validateX509($cert, $args = NULL)
 	{
 		$cert = getPEM($cert);
         $cert_result = openssl_x509_parse($cert);
-        if (empty($cert_result) OR !is_array($cert_result))
+        if (empty($cert_result) || !is_array($cert_result))
         {
             return FALSE;
         }

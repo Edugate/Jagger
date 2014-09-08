@@ -31,7 +31,7 @@ class Statistics extends MY_Controller {
         {
             show_error('method denied',403);
         }
-        if (empty($id) or !is_numeric($id))
+        if (empty($id) || !is_numeric($id))
         {
             show_error('Not found');
         }
@@ -104,7 +104,7 @@ class Statistics extends MY_Controller {
     function show($id = null)
     {
 
-        if (empty($id) or !is_numeric($id))
+        if (empty($id) || !is_numeric($id))
         {
             show_error('Not found');
         }

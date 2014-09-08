@@ -83,7 +83,7 @@ class Fededit extends MY_Controller {
         $group = "federation";
         $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
         $has_manage_access = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
-        if (($has_write_access OR $has_manage_access) === FALSE)
+        if (($has_write_access || $has_manage_access) === FALSE)
         {
             show_error(lang('noperm_fededit'), 403);
         }

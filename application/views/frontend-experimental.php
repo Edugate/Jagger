@@ -85,7 +85,7 @@ $jquerybubblepopupthemes = $base_url.'styles/jquerybubblepopup-themes';
         {
             $this->load->helper('cookie');
             $cookieaccepted = get_cookie('cookieAccept');
-            if(empty($cookieaccepted) or $cookieaccepted != 'accepted')
+            if(empty($cookieaccepted) || $cookieaccepted != 'accepted')
             {
                 $this->load->view('cookiesconsent', $iscookieconsent);
             }

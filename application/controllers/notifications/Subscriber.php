@@ -381,7 +381,7 @@ class Subscriber extends MY_Controller {
 
     public function updatestatus($id=null)
     {
-        if (!$this->input->is_ajax_request() or empty($id) or !is_numeric($id) or $_SERVER['REQUEST_METHOD'] !== 'POST')
+        if (!$this->input->is_ajax_request() || empty($id) || !is_numeric($id) || $_SERVER['REQUEST_METHOD'] !== 'POST')
         {
            set_status_header(403);
            echo 'denied';
@@ -397,7 +397,7 @@ class Subscriber extends MY_Controller {
        
         $noteid = $this->input->post('noteid');
         $status = htmlentities($this->input->post('status'));
-        if(empty($noteid) or !is_numeric($noteid) or strcmp($noteid,$id) != 0)
+        if(empty($noteid) || !is_numeric($noteid) || strcmp($noteid,$id) != 0)
         {
            set_status_header(403);
            echo 'denied';
@@ -428,7 +428,7 @@ class Subscriber extends MY_Controller {
         $isAdministrator=$this->j_auth->isAdministrator();
         $notificationOwner = $notification->getSubscriber();
         $userMatchOwner = ($notificationOwner->getId() === $user->getId());
-        if(!(($userMatchOwner) or ($isAdministrator)))
+        if(!(($userMatchOwner) || ($isAdministrator)))
         {
            set_status_header(403);
            echo 'denied';

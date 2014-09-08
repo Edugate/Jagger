@@ -122,7 +122,7 @@ class Arp extends MY_Controller
                 $reqtype = $_SERVER['REQUEST_METHOD'];
             }
             $reftomatch = base_url() . 'reports/sp_matrix/show';
-            if ((!empty($reqtype) && $reqtype == 'GET') && ((!empty($ref) && stristr($ref, $reftomatch) === FALSE) or (empty($ref)))) {
+            if ((!empty($reqtype) && $reqtype == 'GET') && ((!empty($ref) && stristr($ref, $reftomatch) === FALSE) || (empty($ref)))) {
                 log_message('debug', 'Arp downloading set1');
                 $sync_with_db = true;
                 $resourcename = $idp->getEntityId();

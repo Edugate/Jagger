@@ -61,7 +61,7 @@ class Custom_policies extends MY_Controller {
     {
         $idp = $this->tmp_providers->getOneIdPById($idp_id);
         $sp = $this->tmp_providers->getOneSpById($sp_id);
-        if (empty($idp) or empty($sp))
+        if (empty($idp) || empty($sp))
         {
             show_error(''.lang('rerror_providernotexist').'', 404);
         }

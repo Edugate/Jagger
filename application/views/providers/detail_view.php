@@ -16,7 +16,7 @@ else
 ?>
 
 <?php
-if (!empty($alerts) && is_array($alerts) and count($alerts) > 0)
+if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
 {
     echo '<div  data-alert class="alert-box warning" >';
     //echo '<ul>';

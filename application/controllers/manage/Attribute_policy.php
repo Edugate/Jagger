@@ -76,10 +76,10 @@ class Attribute_policy extends MY_Controller {
         $policy = $this->input->post('policy');
         $action = $this->input->post('submit');
         $is_policy = false;
-        if (($policy == 0) or ($policy == 1) or ($policy == 2)) {
+        if (($policy == 0) || ($policy == 1) || ($policy == 2)) {
             $is_policy = true;
         }
-        if (empty($idpid) or !is_numeric($idpid)) {
+        if (empty($idpid) || !is_numeric($idpid)) {
             show_error(lang('unknownerror'), 503);
         }
         $idp = $this->tmp_providers->getOneIdpById($idpid);
@@ -116,9 +116,9 @@ class Attribute_policy extends MY_Controller {
         $attribute = $this->tmp_attrs->getAttributeById($attr);
         $attrPolicy = $this->tmp_arps->getOneGlobalPolicy($idpid, $attr);
         $changes = array();
-        if (empty($attrPolicy) && ($action === 'modify' or $action === 'Add default policy')) {
+        if (empty($attrPolicy) && ($action === 'modify' || $action === 'Add default policy')) {
             $attrPolicy = new models\AttributeReleasePolicy;
-            if (empty($idp) or empty($attribute)) {
+            if (empty($idp) || empty($attribute)) {
                 log_message('debug', 'Cannot create new policy for idpid = ' . $idpid . ' because idp attribute not found');
                 show_error( lang('unknownerror'), 503);
             }
@@ -138,7 +138,7 @@ class Attribute_policy extends MY_Controller {
 
 
 
-        if ($action === 'modify' or $action === 'Add default policy') {
+        if ($action === 'modify' || $action === 'Add default policy') {
             $this->em->persist($attrPolicy);
         } elseif ($action == 'delete' && !empty($attrPolicy)) {
             $changes['attr: ' .$attribute->getName().'']['before'] = $tmp_a[$attrPolicy->getPolicy()] . ' (default policy)';
@@ -171,11 +171,11 @@ class Attribute_policy extends MY_Controller {
         $data = array();
         $subtitle = "";
 
-        if (!is_numeric($idp_id) or !is_numeric($attr_id)) {
+        if (!is_numeric($idp_id) || !is_numeric($attr_id)) {
             log_message('error', "Idp id or attr id is set incorectly");
             show_error( lang('error404'), 404);
         }
-        if (!($type === 'global' or $type === 'fed' or $type === 'sp')) {
+        if (!($type === 'global' || $type === 'fed' || $type === 'sp')) {
             log_message('error',  "The type of policy is: " . $type . ". Should be one of: global,fed,sp");
             show_error( lang('error_wrongpolicytype'), 404);
         }
@@ -549,7 +549,7 @@ class Attribute_policy extends MY_Controller {
                             $attr_pol->setPolicy($value);
                             $this->em->persist($attr_pol);
                         } elseif (!empty($attr_pol)) {
-                            if ($value == '100' or $submit_action == 'delete all') {
+                            if ($value == '100' || $submit_action == 'delete all') {
                                 $this->em->remove($attr_pol);
                             } else {
                                 $attr_pol->setPolicy($value);
@@ -568,7 +568,7 @@ class Attribute_policy extends MY_Controller {
                         log_message('debug', 'Attribute policy not found with idp:' . $idp->getId() . ' fed:' . $fed->getId() . ' attr:' . $attribute);
                     } else {
                         log_message('debug',  'Found attribute policy idp:' . $idp->getId() . ' fed:' . $fed->getId() . ' attr:' . $attribute);
-                        if ($policy == '100' or $submit_action == 'delete') {
+                        if ($policy == '100' || $submit_action == 'delete') {
                             $this->em->remove($attr_pol);
                         } else {
                             $attr_pol->setPolicy($policy);
@@ -592,23 +592,23 @@ class Attribute_policy extends MY_Controller {
         $attributeid = $this->input->post('attribute');
         $policy = $this->input->post('policy');
         $action = $this->input->post('submit');
-        if (empty($spid) or !is_numeric($spid)) {
+        if (empty($spid) || !is_numeric($spid)) {
             log_message('error',  'spid in post not provided or not numeric');
             show_error( lang('missedinfoinpost'), 404);
         }
-        if (empty($idpid) or !is_numeric($idpid)) {
+        if (empty($idpid) || !is_numeric($idpid)) {
             log_message('error',  'idpid in post not provided or not numeric');
             show_error( lang('missedinfoinpost'), 404);
         }
-        if (empty($attributeid) or !is_numeric($attributeid)) {
+        if (empty($attributeid) || !is_numeric($attributeid)) {
             log_message('error', 'attributeid in post not provided or not numeric');
             show_error( lang('missedinfoinpost'), 404);
         }
-        if (!isset($policy) or !is_numeric($policy)) {
+        if (!isset($policy) || !is_numeric($policy)) {
             log_message('error',  'policy in post not provided or not numeric:' . $policy);
             show_error( lang('missedinfoinpost'), 404);
         }
-        if (!($policy == 0 or $policy == 1 or $policy == 2 or $policy == 100)) {
+        if (!($policy == 0 || $policy == 1 || $policy == 2 || $policy == 100)) {
             log_message('error', 'wrong policy in post: ' . $policy);
             show_error( lang('wrongpolicyval'), 404);
         }
@@ -692,7 +692,7 @@ class Attribute_policy extends MY_Controller {
         $changes = array();
         $tmp_a = $this->config->item('policy_dropdown');
         $submited_provider_id = $this->input->post('idpid');
-        if (empty($submited_provider_id) or ($idp_id != $submited_provider_id)) {
+        if (empty($submited_provider_id) || ($idp_id != $submited_provider_id)) {
             log_message('error',  'conflivt or empty');
             show_error( lang('unknownerror'), 403);
         } else {
@@ -703,7 +703,7 @@ class Attribute_policy extends MY_Controller {
         $idp = $this->tmp_providers->getOneIdpById($submited_provider_id);
         $sp = $this->tmp_providers->getOneSpById($submited_requester_id);
 
-        if (empty($idp) or empty($sp)) {
+        if (empty($idp) || empty($sp)) {
             log_message('error',  'IdP with id:' . $submited_provider_id . ' or SP with id:' . $submited_requester_id . ' not found');
             show_error( lang('rerror_idpnotfound'), 404);
         }
@@ -742,7 +742,7 @@ class Attribute_policy extends MY_Controller {
                 if (!empty($arp)) 
                 {
                     $old_policy = $arp->getPolicy();
-                    if ($value == 0 or $value == 1 or $value == 2)
+                    if ($value == 0 || $value == 1 || $value == 2)
                     {
                         if($old_policy != $value)
                         {
@@ -759,7 +759,7 @@ class Attribute_policy extends MY_Controller {
                     }
                 }
                 else {
-                    if($value == 0 or $value == 1 or $value == 2) 
+                    if($value == 0 || $value == 1 || $value == 2) 
                     {
                         log_message('debug',  'create new arp record for idp:' . $idp->getEntityId());
                         $new_arp = new models\AttributeReleasePolicy;
@@ -786,7 +786,7 @@ class Attribute_policy extends MY_Controller {
     }
 
     public function multi($idp_id, $type, $requester) {
-        if (!($type == 'sp' or $type == 'fed')) {
+        if (!($type == 'sp' || $type == 'fed')) {
             log_message('debug',  'wrong type:' . $type . ' (expected sp or fed)');
             show_error( 'wrong url request', 404);
         }

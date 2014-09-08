@@ -29,7 +29,7 @@ class View_attribute_matrix extends MY_Controller
       {
              if (
                 !preg_match('/^[ \(\)a-zA-Z0-9\.]+$/', $img)
-                or !preg_match('/^[a-fA-F0-9]+$/', $color)
+                || !preg_match('/^[a-fA-F0-9]+$/', $color)
                 ){
                 exit;
         }

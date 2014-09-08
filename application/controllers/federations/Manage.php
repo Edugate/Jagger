@@ -255,14 +255,16 @@ class Manage extends MY_Controller
         if (!empty($type)) {
             if ($type === 'idp') {
                 foreach ($fed_members as $m) {
-                    if ($m->getType() === 'IDP' or $m->getType() === 'BOTH') {
+                    $entype = $m->getType();
+                    if (strcasecmp($entype, 'SP')!=0) {
                         $members_ids[] = $m->getId();
                     }
                 }
             }
             elseif ($type === 'sp') {
                 foreach ($fed_members as $m) {
-                    if ($m->getType() === 'SP' or $m->getType() === 'BOTH') {
+                    $entype = $m->getType();
+                    if (strcasecmp($entype, 'IDP')!=0) {
                         $members_ids[] = $m->getId();
                     }
                 }
@@ -340,7 +342,7 @@ class Manage extends MY_Controller
         $data['federation_id'] = $federation->getId();
         $bookmarked = false;
         $b = $this->session->userdata('board');
-        if (!empty($b) and is_array($b) and isset($b['fed'][$data['federation_id']])) {
+        if (!empty($b) && is_array($b) && isset($b['fed'][$data['federation_id']])) {
             $bookmarked = true;
         }
         $defaultDigest = $this->config->item('signdigest');
@@ -991,7 +993,7 @@ class Manage extends MY_Controller
                     $this->em->persist($inv_member);
                     $this->em->flush();
                     $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($inv_member);
-                    if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) and count($spec_arps_to_remove) > 0) {
+                    if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0) {
                         foreach ($spec_arps_to_remove as $rp) {
                             $this->em->remove($rp);
                         }

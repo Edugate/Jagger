@@ -48,7 +48,7 @@ class Logo {
              if($file !== '.' && $file !== '..')
              {
                    $filetype = finfo_file($finfo,$this->logo_basepath . $file);
-                   if($filetype == 'image/jpeg' or $filetype == 'image/png')
+                   if($filetype == 'image/jpeg' || $filetype == 'image/png')
                    {
                        $size = getimagesize($this->logo_basepath . $file);
                        $imagestable[] = array(

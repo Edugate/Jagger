@@ -110,7 +110,7 @@ class MY_Log extends CI_Log {
 
 		file_exists($this->_log_path) OR mkdir($this->_log_path, DIR_WRITE_MODE, TRUE);
 
-		if ( ! is_dir($this->_log_path) OR ! is_really_writable($this->_log_path))
+		if ( ! is_dir($this->_log_path) || ! is_really_writable($this->_log_path))
 		{
 			$this->_enabled = FALSE;
 		}
@@ -152,7 +152,7 @@ class MY_Log extends CI_Log {
 
 		$level = strtoupper($level);
 
-		if (( ! isset($this->_levels[$level]) OR ($this->_levels[$level] > $this->_threshold))
+		if (( ! isset($this->_levels[$level]) || ($this->_levels[$level] > $this->_threshold))
 			&& ! isset($this->_threshold_array[$this->_levels[$level]]))
 		{
 			return FALSE;

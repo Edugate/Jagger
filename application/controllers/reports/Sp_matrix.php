@@ -39,7 +39,7 @@ class Sp_matrix extends MY_Controller
     }
     public function members_urls($spid)
     {
-	if(empty($spid) OR !is_numeric($spid))
+	if(empty($spid) || !is_numeric($spid))
         {
             show_error('Wrong or empty id', 404);
         }
@@ -127,7 +127,7 @@ class Sp_matrix extends MY_Controller
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
-	if(empty($spid) OR !is_numeric($spid))
+	if(empty($spid) || !is_numeric($spid))
         {
             show_error('Wrong or empty id', 404);
         }

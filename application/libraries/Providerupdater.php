@@ -819,7 +819,7 @@ class Providerupdater {
                             log_message('debug', 'GG:IDPAttributeService entity SP removein service');
                             $ent->removeServiceLocation($v);
                         }
-                        elseif (in_array($v->getBindingName(), $idpaabinds) or ! in_array($v->getBindingName(), $allowedAABind))
+                        elseif (in_array($v->getBindingName(), $idpaabinds) || ! in_array($v->getBindingName(), $allowedAABind))
                         {
                             log_message('debug', 'GG: found bind:' . $v->getBindingName() . ' in array idpslobinds');
                             log_message('debug', 'GG current values in spslobinds: ' . serialize($idpaabinds));
@@ -910,7 +910,7 @@ class Providerupdater {
                                 }
                                 else
                                 {
-                                    if ($acsdefaultset or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['default']))
+                                    if ($acsdefaultset || empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['default']))
                                     {
                                         $v->setDefault(FALSE);
                                     }

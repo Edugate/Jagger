@@ -663,7 +663,7 @@ class Awaiting extends MY_Controller {
                                 $o->setCertType('x509');
                             }
                             $creator = $queueObj->getCreator();
-                            if (!empty($fed2) and $fed instanceOf models\Federation)
+                            if (!empty($fed2) && $fed instanceOf models\Federation)
                             {
                                 $membership = new models\FederationMembers;
                                 $membership->setJoinState('1');

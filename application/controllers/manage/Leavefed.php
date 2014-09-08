@@ -47,7 +47,7 @@ class Leavefed extends MY_Controller {
    
     public function leavefederation($providerid=null)
     {
-        if(empty($providerid) or !is_numeric($providerid))
+        if(empty($providerid) || !is_numeric($providerid))
         {
              show_error('Incorrect provider id provided',404);
              return;
@@ -118,7 +118,7 @@ class Leavefed extends MY_Controller {
                    $rm_arp_msg .="It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
                 }
                 $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($provider);
-                if(!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) and count($spec_arps_to_remove) > 0)
+                if(!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0)
                 {
                    foreach($spec_arps_to_remove as $rp)
                    {

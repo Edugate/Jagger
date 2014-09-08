@@ -165,7 +165,7 @@ class Regpolicy extends MY_Controller
     {
        $this->title = lang('title_regpoledit');
       
-       if(empty($id) OR !is_numeric($id))
+       if(empty($id) || !is_numeric($id))
        {
           show_error('Not found',404);
           return;

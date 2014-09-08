@@ -282,7 +282,7 @@ class Attribute_requirement extends MY_Controller {
         $action = $this->input->post('submit');
         log_message('debug', 'KLS: action: '.$action.'; status: '.$status.'; reason: '.$reason);
         //$spid = $this->input->post('spid');
-        if (empty($spid) or !is_numeric($spid)) {
+        if (empty($spid) || !is_numeric($spid)) {
             show_error('Incorect sp id', 404);
         }
         $provider_tmp = new models\Providers();

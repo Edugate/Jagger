@@ -292,7 +292,8 @@ class Curl {
         echo "=============================================<br/>\n";
         echo "<h3>Info</h3>";
         echo "<pre>";
-        print_r($this->info);
+        $result2string = print_r($this->info,TRUE);
+        echo $result2string;
         echo "</pre>";
     }
 
