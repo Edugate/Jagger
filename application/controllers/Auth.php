@@ -190,7 +190,7 @@ class Auth extends MY_Controller {
             show_error('Server error', 500);
         }
         $mapped = $spsp['attributes'];
-        if (empty($mapped['username']) or empty($mapped['mail']))
+        if (empty($mapped['username']) || empty($mapped['mail']))
         {
             log_message('error', 'missing defined $[simplesamlphp][attributes][username] or/and $[simplesamlphp][attributes][mail] in config ');
             show_error('Server error', 500);

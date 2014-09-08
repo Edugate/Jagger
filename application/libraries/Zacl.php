@@ -41,10 +41,7 @@ class Zacl {
         $this->acl = new Zend_Acl();
         $this->acl->addRole(new Zend_Acl_Role('default_role'));
 
-        /**
-         * get  roles
-         */
-        //$defined_roles = $this->em->getRepository("models\AclRole")->findAll();
+       
 
 
         $defined_roles = $this->em->getRepository("models\AclRole")->findAll();
@@ -111,8 +108,7 @@ class Zacl {
             $this->acl->addRole('current_user', 'default_role');
         }
         $this->acl->addResource(new Zend_Acl_Resource('root_resource'));
-        //$this->acl->allow('Member', null, 'view');
-
+       
         $defined_resources = $this->em->getRepository("models\AclResource")->findAll();
         foreach ($defined_resources as $res)
         {

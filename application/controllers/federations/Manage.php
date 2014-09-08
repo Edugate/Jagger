@@ -255,14 +255,16 @@ class Manage extends MY_Controller
         if (!empty($type)) {
             if ($type === 'idp') {
                 foreach ($fed_members as $m) {
-                    if ($m->getType() === 'IDP' or $m->getType() === 'BOTH') {
+                    $entype = $m->getType();
+                    if (strcasecmp($entype, 'SP')!=0) {
                         $members_ids[] = $m->getId();
                     }
                 }
             }
             elseif ($type === 'sp') {
                 foreach ($fed_members as $m) {
-                    if ($m->getType() === 'SP' or $m->getType() === 'BOTH') {
+                    $entype = $m->getType();
+                    if (strcasecmp($entype, 'IDP')!=0) {
                         $members_ids[] = $m->getId();
                     }
                 }
@@ -340,7 +342,7 @@ class Manage extends MY_Controller
         $data['federation_id'] = $federation->getId();
         $bookmarked = false;
         $b = $this->session->userdata('board');
-        if (!empty($b) and is_array($b) and isset($b['fed'][$data['federation_id']])) {
+        if (!empty($b) && is_array($b) && isset($b['fed'][$data['federation_id']])) {
             $bookmarked = true;
         }
         $defaultDigest = $this->config->item('signdigest');
