@@ -448,7 +448,7 @@ class MY_form_validation extends CI_form_validation {
     }
     function valid_requirement_attr($req)
     {
-        if($req == 'required' or $req == 'desired')
+        if($req == 'required' || $req == 'desired')
         {
             return TRUE;
         }
@@ -702,7 +702,7 @@ class MY_form_validation extends CI_form_validation {
             $count = count($acs_index);
             foreach ($acs_index as $key => $value)
             {
-                if (($key != 'n' && !isset($value)) or $value < 0)
+                if (($key != 'n' && !isset($value)) || $value < 0)
                 {
                     $this->set_message('acs_index_check', "incorrect or no value in one of  \"%s\" " . $key . " " . $value);
                     return false;
