@@ -177,7 +177,7 @@ class Detail extends MY_Controller {
     function show($id)
     {
         
-        if (empty($id) or !ctype_digit($id))
+        if (empty($id) || !ctype_digit($id))
         {
             show_error(lang('error404'), 404);
             return;
@@ -329,11 +329,11 @@ class Detail extends MY_Controller {
         $b = $this->session->userdata('board');
         if (!empty($b) && is_array($b))
         {
-            if (($type == 'idp' or $type == 'both') && isset($b['idp'][$id]))
+            if (($type == 'idp' || $type == 'both') && isset($b['idp'][$id]))
             {
                 $data['bookmarked'] = true;
             }
-            elseif (($type == 'sp' or $type == 'both') && isset($b['sp'][$id]))
+            elseif (($type == 'sp' || $type == 'both') && isset($b['sp'][$id]))
             {
                 $data['bookmarked'] = true;
             }

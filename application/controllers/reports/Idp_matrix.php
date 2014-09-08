@@ -48,7 +48,7 @@ class Idp_matrix extends MY_Controller {
 
     public function show($idpid)
     {
-        if (empty($idpid) OR !is_numeric($idpid))
+        if (empty($idpid) || !is_numeric($idpid))
         {
             show_error('Wrong or empty id', 404);
         }

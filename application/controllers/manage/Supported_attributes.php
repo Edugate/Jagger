@@ -58,7 +58,7 @@ class Supported_attributes extends MY_Controller {
         }
 
         $new_attrs = $this->input->post('attr');
-        if (empty($new_attrs) OR !is_array($new_attrs)) {
+        if (empty($new_attrs) || !is_array($new_attrs)) {
             log_message('debug', 'No supported attrs are submited for idp: ' . $idp->getEntityId());
             $new_attrs = array();
         }
@@ -115,7 +115,7 @@ class Supported_attributes extends MY_Controller {
     }
 
     public function idp($idp_id = null) {
-        if (empty($idp_id) OR !is_numeric($idp_id)) {
+        if (empty($idp_id) || !is_numeric($idp_id)) {
             show_error(lang('rerror_idpnotfound'), 404);
         }
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idp_id, 'type' => array('IDP', 'BOTH')));

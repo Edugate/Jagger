@@ -377,7 +377,7 @@ class Arp_generator {
         {
             $global_policy[$g->getAttribute()->getName()] = $g->getPolicy();
         }
-        if (empty($s_attrs) or (is_array($s_attrs) && count($s_attrs) == 0))
+        if (empty($s_attrs) || (is_array($s_attrs) && count($s_attrs) == 0))
         {
             log_message('debug', 'Arp:  no supported attributes for idp: ' . $idp->getId());
             return null;

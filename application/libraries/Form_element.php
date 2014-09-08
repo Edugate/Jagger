@@ -1680,7 +1680,7 @@ class Form_element {
                     $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $v, 'checked' => FALSE);
                 }
             }
-            if (count(array_diff($supportednameids, $idpssonameids)) > 0 or count(array_diff($idpssonameids, $supportednameids)) > 0)
+            if (count(array_diff($supportednameids, $idpssonameids)) > 0 || count(array_diff($idpssonameids, $supportednameids)) > 0)
             {
                 $idpssonameidnotice = 'notice';
             }
@@ -1863,7 +1863,7 @@ class Form_element {
                     $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $v, 'checked' => FALSE);
                 }
             }
-            if (count(array_diff($supportednameids, $idpaanameids)) > 0 or count(array_diff($idpaanameids, $supportednameids)) > 0)
+            if (count(array_diff($supportednameids, $idpaanameids)) > 0 || count(array_diff($idpaanameids, $supportednameids)) > 0)
             {
                 $idpaanameidnotice = 'notice';
             }
@@ -2395,7 +2395,7 @@ class Form_element {
                     $chp[] = array('name' => 'f[nameids][spsso][]', 'id' => 'f[nameids][spsso][]', 'value' => $v, 'checked' => FALSE);
                 }
             }
-            if (count(array_diff($supportednameids, $spssonameids)) > 0 or count(array_diff($spssonameids, $supportednameids)) > 0)
+            if (count(array_diff($supportednameids, $spssonameids)) > 0 || count(array_diff($spssonameids, $supportednameids)) > 0)
             {
                 $spssonameidnotice = 'notice';
             }

@@ -27,7 +27,7 @@ class Attribute_policyajax extends MY_Controller {
 
     public function retrieveattrpath($idpid=null)
     {
-        if(!$this->input->is_ajax_request() || (empty($idpid) OR !is_numeric($idpid)))
+        if(!$this->input->is_ajax_request() || (empty($idpid) || !is_numeric($idpid)))
         {
             show_error('method not allowed',403);
         }
@@ -244,7 +244,7 @@ class Attribute_policyajax extends MY_Controller {
             return;
         }
         $policy = trim($this->input->post('policy'));
-        if (!isset($policy) or !is_numeric($policy)) {
+        if (!isset($policy) || !is_numeric($policy)) {
             log_message('error',  'policy in post not provided or not numeric:' . $policy);
             set_status_header(403);
             echo lang('wrongpolicyval');
@@ -268,7 +268,7 @@ class Attribute_policyajax extends MY_Controller {
            return;
         }
 
-        if (!($policy == 0 or $policy == 1 or $policy == 2 )) {
+        if (!($policy == 0 || $policy == 1 || $policy == 2 )) {
             log_message('error', 'wrong policy in post: ' . $policy);
             set_status_header(403);
             echo lang('wrongpolicyval');

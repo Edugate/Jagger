@@ -37,7 +37,7 @@ class Metadata extends MY_Controller
         $data = array();
         //$name = base64url_decode($federationName);
         $name = $federationName;
-        if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
+        if (!empty($t) && ((strcasecmp($t,'SP')==0) || (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);
         }
         else {
@@ -149,7 +149,7 @@ class Metadata extends MY_Controller
             }
             else {
                 foreach ($members as $key) {
-                    if ($key->getAvailable() && (($key->getType() === $type) or ($key->getType() === 'BOTH'))) {
+                    if ($key->getAvailable() && (($key->getType() === $type) || ($key->getType() === 'BOTH'))) {
                         $key->getProviderToXML($Entities_Node, $options);
                     }
                 }
@@ -172,7 +172,7 @@ class Metadata extends MY_Controller
         $data = array();
         //$name = base64url_decode($federationName);
         $name =$federationName;
-        if (!empty($t) AND ((strcasecmp($t,'SP')==0) OR (strcasecmp($t,'IDP')==0) )) {
+        if (!empty($t) && ((strcasecmp($t,'SP')==0) || (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);
         }
         else {
@@ -276,7 +276,7 @@ class Metadata extends MY_Controller
             }
             else {
                 foreach ($members as $key) {
-                    if ($key->getLocalAvailable() && (($key->getType() == $type) or ($key->getType() == 'BOTH'))) {
+                    if ($key->getLocalAvailable() && (($key->getType() == $type) || ($key->getType() == 'BOTH'))) {
                         $key->getProviderToXML($Entities_Node, $options);
                     }
                 }

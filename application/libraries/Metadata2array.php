@@ -125,7 +125,7 @@ class Metadata2array {
             {
                 $this->entityConvert($doc, $full);
             }
-            elseif ($doc->nodeName == "EntitiesDescriptor" OR $doc->nodeName == "md:EntitiesDescriptor")
+            elseif ($doc->nodeName === "EntitiesDescriptor" || $doc->nodeName === "md:EntitiesDescriptor")
             {
                 $lxpath = new \DomXPath($this->doc);
                 foreach($lxpath->query('namespace::*', $doc) as $pnode ) 

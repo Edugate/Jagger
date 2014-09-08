@@ -248,7 +248,7 @@ class Entitystate extends MY_Controller {
                     $changed = true;
                 }
             }
-            if(!empty($validuntildate) and !empty($validuntiltime))
+            if(!empty($validuntildate) && !empty($validuntiltime))
             {
                 $validuntil = new DateTime($validuntildate.'T'.$validuntiltime);
                 $this->entity->setValidTo($validuntil);
@@ -258,7 +258,7 @@ class Entitystate extends MY_Controller {
                 $this->entity->setValidTo(null);
 
             }
-            if(!empty($validfromdate) and !empty($validfromtime))
+            if(!empty($validfromdate) && !empty($validfromtime))
             {
                 $validfrom = new DateTime($validfromdate.'T'.$validfromtime);
                 $this->entity->setValidFrom($validfrom);

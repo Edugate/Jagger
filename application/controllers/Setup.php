@@ -204,7 +204,7 @@ class Setup extends MY_Controller {
                 $parents[$r['name']] = $res;
             }
             $this->em->persist($res);
-            if($r_name == 'dashboard' or $r_name == 'sp_list' or $r_name == 'idp_list' or $r_name == 'entity')
+            if($r_name == 'dashboard' || $r_name == 'sp_list' || $r_name == 'idp_list' || $r_name == 'entity')
             {
                 $acl = new models\Acl;
                 $acl->setResource($res);

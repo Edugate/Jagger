@@ -332,7 +332,7 @@ class Users extends MY_Controller {
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $dstr;
                 $det[$i++] = array('key' => $date, 'val' => $detail);
             }
-            elseif($subtype == 'create' or $subtype == 'remove')
+            elseif($subtype == 'create' || $subtype == 'remove')
             {
                 $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U')+ j_auth::$timeOffset);
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
