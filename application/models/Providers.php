@@ -79,7 +79,7 @@ class Providers
         }
         if (count($feds) == 0) {
            return array();
-       }
+        }
         $fedin = implode(',', $feds);
         $query = $this->em->createQuery("SELECT p,e,m,f FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f LEFT JOIN p.extend e WHERE m.federation IN (" . $fedin . ") AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != " . $provider->getId() . " AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN ('SP','BOTH')");
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
@@ -96,7 +96,9 @@ class Providers
 
     public function getIdPsForWayf(Provider $provider)
     {
-        $query1 = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = '".$provider->getId()."' AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
+        $rsm = new ResultSetMapping();
+        $query1 = $this->em->createNativeQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ? AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'",$rsm);
+        $query1->setParameter(1, $provider->getId());
         $query1->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result1 = $query1->getResult();
         $feds = array();
