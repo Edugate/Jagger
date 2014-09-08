@@ -41,7 +41,8 @@ class Form_element {
         if ($isAdmin)
         {
             $disallowedparts = array();
-        } else
+        }
+        else
         {
             $disallowedparts = $this->ci->config->item('entpartschangesdisallowed');
             if (empty($disallowedparts) || !is_array($disallowedparts))
@@ -64,11 +65,13 @@ class Form_element {
             $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', '' . lang('rr_geolocation') . ' (' . lang('identityprovider') . ')');
             $l[] = anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('identityprovider') . ')');
             $l[] = anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('serviceprovider') . ')');
-        } elseif ($t === 'IDP')
+        }
+        elseif ($t === 'IDP')
         {
             $l[] = anchor($base . 'geolocation/show/' . $id . '/idp', '' . lang('rr_geolocation') . '');
             $l[] = anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . '');
-        } else
+        }
+        else
         {
             $l[] = anchor($base . 'geolocation/show/' . $id . '/sp', '' . lang('rr_geolocation') . '');
             $l[] = anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . '');
@@ -127,14 +130,16 @@ class Form_element {
         if ($f_regauthority != $ent->getRegistrationAuthority())
         {
             $regauthority_notice = 'notice';
-        } else
+        }
+        else
         {
             $regauthority_notice = '';
         }
         if ($f_regdate != $origregdate)
         {
             $regdate_notice = 'notice';
-        } else
+        }
+        else
         {
             $regdate_notice = '';
         }
@@ -173,7 +178,8 @@ class Form_element {
                 {
                     $lnamenotice = 'notice';
                 }
-            } else
+            }
+            else
             {
                 $lnamenotice = 'notice';
             }
@@ -243,7 +249,8 @@ class Form_element {
                 {
                     $ldisplaynamenotice = 'notice';
                 }
-            } else
+            }
+            else
             {
                 $ldisplaynamenotice = 'notice';
             }
@@ -320,7 +327,8 @@ class Form_element {
                 {
                     $lhelpdesknotice = 'notice';
                 }
-            } else
+            }
+            else
             {
                 $lhelpdesknotice = 'notice';
             }
@@ -369,7 +377,8 @@ class Form_element {
         if (!empty($entid))
         {
             $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
-        } else
+        }
+        else
         {
             $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol', 'is_enabled' => TRUE));
         }
@@ -383,7 +392,8 @@ class Form_element {
         if (count($entRegPolicies) == 0)
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
-        } elseif (!$isAdmin && !empty($entid))
+        }
+        elseif (!$isAdmin && !empty($entid))
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
@@ -398,7 +408,8 @@ class Form_element {
                     $entRegPoliciesArray['' . $v . '']['sel'] = TRUE;
                 }
             }
-        } else
+        }
+        else
         {
             foreach ($assignedRegPolicies as $k => $v)
             {
@@ -415,14 +426,16 @@ class Form_element {
             if (isset($v['sel']))
             {
                 $is = true;
-            } else
+            }
+            else
             {
                 $is = false;
             }
             if (empty($v['enabled']))
             {
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-            } else
+            }
+            else
             {
                 $lbl = '';
             }
@@ -449,7 +462,8 @@ class Form_element {
         if (!empty($entid))
         {
             $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
-        } else
+        }
+        else
         {
             $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol', 'is_enabled' => TRUE));
         }
@@ -463,7 +477,8 @@ class Form_element {
         if (count($entRegPolicies) == 0)
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
-        } elseif (!$isAdmin && !empty($entid))
+        }
+        elseif (!$isAdmin && !empty($entid))
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
@@ -478,7 +493,8 @@ class Form_element {
                     $entRegPoliciesArray['' . $v . '']['sel'] = TRUE;
                 }
             }
-        } else
+        }
+        else
         {
             foreach ($assignedRegPolicies as $k => $v)
             {
@@ -495,14 +511,16 @@ class Form_element {
             if (isset($v['sel']))
             {
                 $is = true;
-            } else
+            }
+            else
             {
                 $is = false;
             }
             if (empty($v['enabled']))
             {
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-            } else
+            }
+            else
             {
                 $lbl = '';
             }
@@ -517,9 +535,6 @@ class Form_element {
          * new regpolicy end
          */
         return $result;
-
-
-
     }
 
     public function NgeneratePrivacy(models\Provider $ent, $ses = null)
@@ -590,7 +605,8 @@ class Form_element {
                     $entCategoriesArray['' . $v . '']['sel'] = TRUE;
                 }
             }
-        } else
+        }
+        else
         {
             foreach ($assignedEntCategories as $k => $v)
             {
@@ -613,14 +629,16 @@ class Form_element {
             if (isset($v['sel']))
             {
                 $is = true;
-            } else
+            }
+            else
             {
                 $is = false;
             }
             if (empty($v['enabled']))
             {
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-            } else
+            }
+            else
             {
                 $lbl = '<span class="label">' . lang('rr_enabled') . '</span>';
             }
@@ -670,11 +688,13 @@ class Form_element {
                     $t2 = $ses['contact'][$tid]['fname'];
                     $t3 = $ses['contact'][$tid]['sname'];
                     $t4 = $ses['contact'][$tid]['email'];
-                } else
+                }
+                else
                 {
                     continue;
                 }
-            } else
+            }
+            else
             {
                 $t1 = $cnt->getType();
                 $t2 = $cnt->getGivenname();
@@ -811,7 +831,8 @@ class Form_element {
                         $idpssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][idpsso]", 'idpsso', TRUE);
                     }
                 }
-            } else
+            }
+            else
             {
                 if (isset($origcerts['idpsso']))
                 {
@@ -839,7 +860,8 @@ class Form_element {
                         $aacerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][aa]", 'aa', TRUE);
                     }
                 }
-            } else
+            }
+            else
             {
                 if (isset($origcerts['aa']))
                 {
@@ -870,7 +892,8 @@ class Form_element {
                         $spssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][spsso]", 'spsso', TRUE);
                     }
                 }
-            } else
+            }
+            else
             {
                 if (isset($origcerts['spsso']))
                 {
@@ -904,7 +927,8 @@ class Form_element {
                     form_dropdown($name, $dropdowns, $value)
                     . '</div>';
             $result .='<div class="small-3 large-2 columns"><button type="button" class="inline left button tiny" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
-        } else
+        }
+        else
         {
             $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-8 large-7 columns inline ">' .
                     form_dropdown($name, $dropdowns, $value)
@@ -936,7 +960,8 @@ class Form_element {
                             $arg
                     ) . '</div>';
             $result .='<div class="small-3 large-2 columns"><button type="button" class="inline left button tiny alert rmfield" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
-        } else
+        }
+        else
         {
             $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-8 large-7 columns">' . form_input(
                             $arg
@@ -1008,15 +1033,15 @@ class Form_element {
         $row .= $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE);
         $row .= '</div>';
 
-        
 
-        if(empty($sessionCert['keyname']))
+
+        if (empty($sessionCert['keyname']))
         {
-          $row .= '<div class="small-12 columns hidden">';
+            $row .= '<div class="small-12 columns hidden">';
         }
         else
         {
-          $row .= '<div class="small-12 columns">';
+            $row .= '<div class="small-12 columns">';
         }
         $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $sessionCert['keyname'], '', FALSE, NULL);
         $row .= '</div>';
@@ -1091,13 +1116,13 @@ class Form_element {
 
         $tmpkeyname = $cert->getKeyname();
 
-        if(empty($tmpkeyname))
+        if (empty($tmpkeyname))
         {
-          $row .= '<div class="small-12 columns hidden">';
+            $row .= '<div class="small-12 columns hidden">';
         }
         else
         {
-          $row .= '<div class="small-12 columns">';
+            $row .= '<div class="small-12 columns">';
         }
         $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $cert->getKeyname(), '', FALSE, NULL);
         $row .= '</div>';
@@ -1154,7 +1179,8 @@ class Form_element {
             if (array_key_exists('static', $entsession))
             {
                 $svalue = $entsession['static'];
-            } else
+            }
+            else
             {
                 $svalue = $static_metadata;
             }
@@ -1162,11 +1188,13 @@ class Form_element {
             if (array_key_exists('usestatic', $entsession) && $entsession['usestatic'] === 'accept')
             {
                 $susestatic = TRUE;
-            } else
+            }
+            else
             {
                 $susestatic = $is_static;
             }
-        } else
+        }
+        else
         {
             $susestatic = $is_static;
 
@@ -1205,10 +1233,12 @@ class Form_element {
         {
             $idppart = TRUE;
             $sppart = TRUE;
-        } elseif (strcasecmp($enttype, 'IDP') == 0)
+        }
+        elseif (strcasecmp($enttype, 'IDP') == 0)
         {
             $idppart = TRUE;
-        } else
+        }
+        else
         {
             $sppart = TRUE;
         }
@@ -1235,7 +1265,8 @@ class Form_element {
         if (in_array('entityid', $this->disallowedparts) && !empty($entid))
         {
             $addargs = array('readonly' => 'readonly');
-        } elseif (!empty($entid))
+        }
+        elseif (!empty($entid))
         {
             $class_ent .=' alertonchange ';
         }
@@ -1299,7 +1330,8 @@ class Form_element {
                     if ($sessform && isset($ses['srv']['SingleSignOnService']['' . $tid . '']['url']))
                     {
                         $t1 = $ses['srv']['SingleSignOnService']['' . $tid . '']['url'];
-                    } else
+                    }
+                    else
                     {
                         $t1 = $v1->getUrl();
                     }
@@ -1321,7 +1353,8 @@ class Form_element {
                     $sso[] = $row;
                     unset($ssotmpl[$v1->getBindingName()]);
                 }
-            } elseif (isset($ses['srv']['SingleSignOnService']))
+            }
+            elseif (isset($ses['srv']['SingleSignOnService']))
             {
                 foreach ($ses['srv']['SingleSignOnService'] as $k => $v)
                 {
@@ -1388,7 +1421,8 @@ class Form_element {
                     if ($sessform && isset($ses['srv']['IDPSingleLogoutService']['' . $tid . '']['url']))
                     {
                         $t1 = $ses['srv']['IDPSingleLogoutService']['' . $tid . '']['url'];
-                    } else
+                    }
+                    else
                     {
                         $t1 = $v2->getUrl();
                     }
@@ -1405,7 +1439,8 @@ class Form_element {
                     unset($slotmpl[array_search($v2->getBindingName(), $slotmpl)]);
                     $idpslo[] = $row;
                 }
-            } elseif (isset($ses['srv']['IDPSingleLogoutService']))
+            }
+            elseif (isset($ses['srv']['IDPSingleLogoutService']))
             {
 
                 foreach ($ses['srv']['IDPSingleLogoutService'] as $k => $v)
@@ -1510,7 +1545,8 @@ class Form_element {
                     $r .= '</div>';
                     $acs[] = $r;
                 }
-            } elseif ($sessform && isset($ses['srv']['IDPArtifactResolutionService']) && is_array($ses['srv']['IDPArtifactResolutionService']))
+            }
+            elseif ($sessform && isset($ses['srv']['IDPArtifactResolutionService']) && is_array($ses['srv']['IDPArtifactResolutionService']))
             {
                 foreach ($ses['srv']['IDPArtifactResolutionService'] as $k4 => $v4)
                 {
@@ -1555,7 +1591,7 @@ class Form_element {
             $ACSPart .= $newelement . '';
             $result[] = '';
             //$result[] = '<div class="langgroup">' . lang('rr_srvartresends') . '</div>';
-            $result[] = '<fieldset><legend>'. lang('rr_srvartresends').'</legend>'.$ACSPart.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('rr_srvartresends') . '</legend>' . $ACSPart . '</fieldset>';
             $result[] = '';
 
             /**
@@ -1581,7 +1617,8 @@ class Form_element {
                 {
                     $selected_options[$v] = $v;
                 }
-            } else
+            }
+            else
             {
                 foreach ($idpssoprotocols as $p)
                 {
@@ -1626,7 +1663,8 @@ class Form_element {
                         $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $pv, 'checked' => TRUE);
                     }
                 }
-            } else
+            }
+            else
             {
                 foreach ($idpssonameids as $v)
                 {
@@ -1669,7 +1707,8 @@ class Form_element {
             if ($sessform && isset($ses['scopes']['idpsso']))
             {
                 $sesscope['idpsso'] = $ses['scopes']['idpsso'];
-            } else
+            }
+            else
             {
                 $sesscope['idpsso'] = implode(',', $scopes['idpsso']);
             }
@@ -1683,7 +1722,8 @@ class Form_element {
             if (in_array('scope', $this->disallowedparts))
             {
                 $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, $scopeidpssonotice, FALSE, array('readonly' => 'readonly'));
-            } else
+            }
+            else
             {
                 $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, $scopeidpssonotice, FALSE, NULL);
             }
@@ -1741,7 +1781,7 @@ class Form_element {
 
             $result[] = '';
             //$result[] = '<div class="langgroup">' . lang('atributeauthoritydescriptor') . '</div>';
-            $result[] = '<fieldset><legend>'.lang('atributeauthoritydescriptor').'</legend>'.implode('', $aalo).'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('atributeauthoritydescriptor') . '</legend>' . implode('', $aalo) . '</fieldset>';
             $result[] = '';
             /**
              * end AttributeAuthorityDescriptor Location
@@ -1759,7 +1799,8 @@ class Form_element {
                 {
                     $selected_options[$v] = $v;
                 }
-            } else
+            }
+            else
             {
                 foreach ($aaprotocols as $p)
                 {
@@ -1805,7 +1846,8 @@ class Form_element {
                         $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $pv, 'checked' => TRUE);
                     }
                 }
-            } else
+            }
+            else
             {
                 foreach ($idpaanameids as $v)
                 {
@@ -1846,7 +1888,8 @@ class Form_element {
             if ($sessform && isset($ses['scopes']['aa']))
             {
                 $sesscope['aa'] = $ses['scopes']['aa'];
-            } else
+            }
+            else
             {
                 $sesscope['aa'] = implode(',', $scopes['aa']);
             }
@@ -1859,7 +1902,8 @@ class Form_element {
             if (in_array('scope', $this->disallowedparts))
             {
                 $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, $scopeaanotice, FALSE, array('readonly' => 'readonly'));
-            } else
+            }
+            else
             {
                 $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, $scopeaanotice, FALSE, NULL);
             }
@@ -1918,7 +1962,8 @@ class Form_element {
                         {
                             $ischecked = TRUE;
                         }
-                    } else
+                    }
+                    else
                     {
                         if ($v3->getDefault())
                         {
@@ -2285,7 +2330,8 @@ class Form_element {
                 {
                     $selected_options[$v] = $v;
                 }
-            } else
+            }
+            else
             {
                 foreach ($spssoprotocols as $p)
                 {
@@ -2332,7 +2378,8 @@ class Form_element {
                         $chp[] = array('name' => 'f[nameids][spsso][]', 'id' => 'f[nameids][spsso][]', 'value' => $pv, 'checked' => TRUE);
                     }
                 }
-            } else
+            }
+            else
             {
                 foreach ($spssonameids as $v)
                 {
@@ -2377,66 +2424,170 @@ class Form_element {
         return $result;
     }
 
-    public function NgenerateLogoForm(models\Provider $ent, $ses = null)
+    private function NgenerateLogoForm(models\Provider $ent, $ses = null)
     {
-       $langs = languagesCodes();
-       $type = $ent->getType();
-       $sessform = FALSE;
-       if(is_array($ses))
-       {
-          $sessform = TRUE;
-       }
-       
-       if(!$sessform)
-       {
-          $metaext = $ent->getExtendMetadata();
-          foreach($metaext as $v)
-          {
-             $velement = $v->getElement();
-             if(strcmp($velement,'Logo')!=0)
-             {
-                continue;
-             }
-             $attrs = $v->getAttributes();
-             if(isset($attrs['xml:lang']))
-             {
-               $lang = $attrs['lang'];
-             }
-             else
-             {
-               $lang = 0;
-             }
-             $logos[$v->getType()][''.$v->getId().''] = array(
-                'url'=>''.$v->getLogoValue().'',
-                'lang'=> ''.$lang.'',
-                'width'=>$attrs['width'],
-                'height'=>$attrs['height'],
-             );
-             
+        $langs = languagesCodes();
+        $btnlangs = MY_Controller::$langselect;
+        $btnlangs = array('0' => lang('rr_unspecified')) + $btnlangs;
+        $type = $ent->getType();
+        $sessform = FALSE;
+        if (is_array($ses))
+        {
+            $sessform = TRUE;
+        }
 
-          }
-       }
-       $result = array();
+        if ($type === 'BOTH')
+        {
+            $logos = array('idp' => array(), 'sp' => array());
+        }
+        else
+        {
+            $logos = array('' . strtolower($type) . '' => array());
+        }
+        if (!$sessform)
+        {
+            $metaext = $ent->getExtendMetadata();
+            foreach ($metaext as $v)
+            {
+                $velement = $v->getElement();
+                if (strcmp($velement, 'Logo') != 0)
+                {
+                    continue;
+                }
+                $attrs = $v->getAttributes();
+                if (isset($attrs['xml:lang']))
+                {
+                    $lang = $attrs['xml:lang'];
+                }
+                else
+                {
+                    $lang = 0;
+                }
+                $logos[$v->getType()]['' . $v->getId() . ''] = array(
+                    'url' => '' . $v->getLogoValue() . '',
+                    'lang' => '' . $lang . '',
+                    'width' => $attrs['width'],
+                    'height' => $attrs['height'],
+                );
+            }
+        }
+        else
+        {
+            if (strcasecmp('SP', $type) != 0 && isset($ses['uii']['idpsso']['logo']))
+            {
+                log_message('debug', 'IDP POLO');
+                foreach ($ses['uii']['idpsso']['logo'] as $k => $v)
+                {
+                    $size = explode('x', $v['size']);
+                    $logos['idp']['' . $k . ''] = array(
+                        'url' => $v['url'],
+                        'lang' => $v['lang'],
+                        'width' => $size[0],
+                        'height' => $size[1],
+                    );
+                }
+            }
+            if (strcasecmp('IDP', $type) != 0 && isset($ses['uii']['spsso']['logo']))
+            {
+                log_message('debug', 'SP POLO');
+                foreach ($ses['uii']['spsso']['logo'] as $k => $v)
+                {
+                    $size = explode('x', $v['size']);
+                    $logos['sp']['' . $k . ''] = array(
+                        'url' => $v['url'],
+                        'lang' => $v['lang'],
+                        'width' => $size[0],
+                        'height' => $size[1],
+                    );
+                }
+            }
+        }
 
-       $result[] = '';
-       $p='<ul class="clearing-thumbs small-block-grid-4" data-clearing>';
-       foreach($logos['idp'] as $k=>$v)
-       {
-          //$result[] = '<img src="'.$v['url'].'"/>';
-          $p .= '<li><a href="'.$v['url'].'"><img data-caption="caption here..." src="'.$v['url'].'"></a></li>';
-       }
-       $p .= '</ul>';
-       $result[] =$p;
-       $result[] = '';
+        $result = array();
 
-     
-       return $result;
-       
-      
+
+        foreach ($logos as $k1 => $v1)
+        {
+            $result[$k1][] = '';
+            if (strcmp($k1, 'idp') == 0)
+            {
+
+                $t = 'idp';
+            }
+            elseif (strcmp($k1, 'sp') == 0)
+            {
+
+                $t = 'sp';
+            }
+            $p = '<ul class="small-block-grid-1">';
+            foreach ($v1 as $k2 => $v2)
+            {
+                $p .= '<li class="small-12 columns">';
+                $p .= '<div class="medium-3 columns"><img src="' . $v2['url'] . '" style="max-height: 100px;"/>';
+
+                $p .= form_input(array(
+                    'id' => 'f[uii][' . $t . 'sso][logo][' . $k2 . '][url]',
+                    'name' => 'f[uii][' . $t . 'sso][logo][' . $k2 . '][url]',
+                    'value' => $v2['url'],
+                    'type' => 'hidden',
+                ));
+                $p .= form_input(array(
+                    'id' => 'f[uii][' . $t . 'sso][logo][' . $k2 . '][lang]',
+                    'name' => 'f[uii][' . $t . 'sso][logo][' . $k2 . '][lang]',
+                    'value' => $v2['lang'],
+                    'type' => 'hidden',
+                ));
+                $p .= form_input(array(
+                    'id' => 'f[uii][' . $t . 'sso][logo][' . $k2 . '][size]',
+                    'name' => 'f[uii][' . $t . 'sso][logo][' . $k2 . '][size]',
+                    'value' => $v2['width'] . 'x' . $v2['height'],
+                    'type' => 'hidden',
+                ));
+                $p .= '</div>';
+                $p .= '<div class="medium-6 columns">';
+                $p .= lang('rr_url') . ': ' . $v2['url'] . '<br />';
+                if (empty($v2['lang']))
+                {
+                    $l = lang('rr_unspecified');
+                }
+                else
+                {
+                    $l = $v2['lang'];
+                }
+                $p .= lang('rr_lang') . ': ' . $l . '<br />';
+                $p .= lang('rr_size') . ': ' . $v2['width'] . 'x' . $v2['height'] . '';
+                $p .= '</div>';
+                $p .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button tiny alert">' . lang('rr_remove') . '</button></div>';
+                $p .= '</li>';
+            }
+
+            $z = '<li id="nlogo' . $t . 'row" class="small-12 columns" style="display: none;">';
+            $z .= '<div class="medium-3 columns"><img src="" style="max-height: 100px;"/></div>';
+            $z .= '<div class="medium-6 columns logoinfo"></div>';
+            $z .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button tiny alert">' . lang('rr_remove') . '</button></div>';
+            $z .= '</li>';
+            $p .= $z;
+            $p .= '</ul>';
+            //$result[$k1][] = $p;
+            $inlabel = '<div class="small-12 column"><div class="small-3 columns"><label class="right inline" for="logoretrieve">' . lang('rr_url') . '</label></div>';
+            $in = '<div class="small-6 columns">' . form_input(array('name' => '' . $t . 'logoretrieve')) . '<small class="' . $t . 'logoretrieve error" style="display:none;"></small></div>';
+            $in2 = '<div class="small-3 columns"><button type="button" name="' . $t . 'getlogo" class="button tiny getlogo" value="' . base_url() . 'ajax/checklogourl">' . lang('btngetlogo') . '</button></div></div>';
+
+            $langselection = form_dropdown($t . 'logolang', $btnlangs);
+            $reviewlogo = '<div class="small-3 column"><div class="logolangselect">' . $langselection . '</div><div class="logosizeinfo"></div></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button tiny addnewlogo" type="button" name="addnewlogo">' . lang('rr_add') . '</button></div>';
+            $dupa = '<fieldset><legend>' . lang('rr_newlogosection') . '</legend>' . $inlabel . $in . $in2 . '<div id="' . $t . 'reviewlogo" class="small-12 column reviewlogo" style="display: none; max-height: 100px">' . $reviewlogo . '</div></fieldset>';
+
+            $result[$k1][] = '<fieldset><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $dupa . '</fieldset>';
+            $result[$k1][] = '';
+        }
+
+
+        return $result;
     }
 
     public function NgenerateUiiForm(models\Provider $ent, $ses = null)
     {
+        $logopart = $this->NgenerateLogoForm($ent, $ses);
 
         $langs = languagesCodes();
         $type = $ent->getType();
@@ -2505,12 +2656,14 @@ class Form_element {
                         {
                             log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                             $langtxt = $lang;
-                        } else
+                        }
+                        else
                         {
                             $langtxt = $langs['' . $lang . ''];
                             unset($langsdisplaynames['' . $lang . '']);
                         }
-                    } else
+                    }
+                    else
                     {
                         log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
                         continue;
@@ -2542,7 +2695,8 @@ class Form_element {
                     {
                         log_message('error', 'Language code ' . $key . ' is not allowed for row (extendmetadaa)');
                         $langtxt = $key;
-                    } else
+                    }
+                    else
                     {
                         $langtxt = $langs['' . $key . ''];
                     }
@@ -2583,12 +2737,14 @@ class Form_element {
                         {
                             log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                             $langtxt = $lang;
-                        } else
+                        }
+                        else
                         {
                             $langtxt = $langs['' . $lang . ''];
                             unset($langsdisplaynames['' . $lang . '']);
                         }
-                    } else
+                    }
+                    else
                     {
                         log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
                         continue;
@@ -2619,7 +2775,8 @@ class Form_element {
                     {
                         log_message('error', 'Language code ' . $key . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                         $langtxt = $key;
-                    } else
+                    }
+                    else
                     {
                         $langtxt = $langs['' . $key . ''];
                     }
@@ -2658,12 +2815,14 @@ class Form_element {
                         {
                             log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                             $langtxt = $lang;
-                        } else
+                        }
+                        else
                         {
                             $langtxt = $langs['' . $lang . ''];
                             unset($langsdisplaynames['' . $lang . '']);
                         }
-                    } else
+                    }
+                    else
                     {
                         log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
                         continue;
@@ -2737,11 +2896,13 @@ class Form_element {
                     if ($origs['' . $k3 . '']['url'] === $v3['url'])
                     {
                         $sorig['' . $k3 . '']['notice'] = '';
-                    } else
+                    }
+                    else
                     {
                         $sorig['' . $k3 . '']['notice'] = 'notice';
                     }
-                } else
+                }
+                else
                 {
                     $sorig['' . $k3 . '']['notice'] = 'notice';
                 }
@@ -2763,6 +2924,10 @@ class Form_element {
             /**
              * end privacy url
              */
+            foreach ($logopart['idp'] as $v)
+            {
+                $result[] = $v;
+            }
         }
         if ($type != 'IDP')
         {
@@ -2791,12 +2956,14 @@ class Form_element {
                         {
                             log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                             $langtxt = $lang;
-                        } else
+                        }
+                        else
                         {
                             $langtxt = $langs['' . $lang . ''];
                             unset($langsdisplaynames['' . $lang . '']);
                         }
-                    } else
+                    }
+                    else
                     {
                         log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
                         continue;
@@ -2827,7 +2994,8 @@ class Form_element {
                     if (isset($langs['' . $key . '']))
                     {
                         $langtxt = $langs['' . $key . ''];
-                    } else
+                    }
+                    else
                     {
                         $langtxt = $key;
                     }
@@ -2840,7 +3008,7 @@ class Form_element {
             $r .= '<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('spuiidisplayadd', 'spuiidisplaylangcode', MY_Controller::$langselect, 'spadduiidisplay', 'spadduiidisplay');
             $r .= '</div>';
-            $result[] = '<fieldset><legend>'.lang('e_spservicename').'</legend>'.$r.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('e_spservicename') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
 
             /**
@@ -2866,12 +3034,14 @@ class Form_element {
                         {
                             log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                             $langtxt = $lang;
-                        } else
+                        }
+                        else
                         {
                             $langtxt = $langs['' . $lang . ''];
                             unset($langsdisplaynames['' . $lang . '']);
                         }
-                    } else
+                    }
+                    else
                     {
                         log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
                         continue;
@@ -2902,7 +3072,8 @@ class Form_element {
                     if (isset($langs['' . $key . '']))
                     {
                         $langtxt = $langs['' . $key . ''];
-                    } else
+                    }
+                    else
                     {
                         $langtxt = $key;
                     }
@@ -2916,7 +3087,7 @@ class Form_element {
             $r .='</div>';
 
             //$r .= form_fieldset_close();
-            $result[] = '<fieldset><legend>'. lang('e_spserviceinfourl') .'</legend>'.$r.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('e_spserviceinfourl') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
             /**
              * end helpdesk
@@ -2941,12 +3112,14 @@ class Form_element {
                         {
                             log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
                             $langtxt = $lang;
-                        } else
+                        }
+                        else
                         {
                             $langtxt = $langs['' . $lang . ''];
                             unset($langsdisplaynames['' . $lang . '']);
                         }
-                    } else
+                    }
+                    else
                     {
                         log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
                         continue;
@@ -2983,7 +3156,7 @@ class Form_element {
             $r .= $this->_generateLangAddButton('spuiidescadd', 'spuiidesclangcode', MY_Controller::$langselect, 'spadduiidesc', 'spadduiidesc');
             $r .= '</div>';
             //$r .= form_fieldset_close();
-            $result[] = '<fieldset><legend>'. lang('e_spservicedesc').'</legend>'.$r.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('e_spservicedesc') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
             /**
              * end description 
@@ -3020,11 +3193,13 @@ class Form_element {
                     if ($origs['' . $k3 . '']['url'] === $v3['url'])
                     {
                         $sorig['' . $k3 . '']['notice'] = '';
-                    } else
+                    }
+                    else
                     {
                         $sorig['' . $k3 . '']['notice'] = 'notice';
                     }
-                } else
+                }
+                else
                 {
                     $sorig['' . $k3 . '']['notice'] = 'notice';
                 }
@@ -3042,12 +3217,16 @@ class Form_element {
             $r .= $this->_generateLangAddButton('addlprivacyurlspsso localized', 'langcode', MY_Controller::$langselect, 'addlprivacyurlspsso', 'addlprivacyurlspsso');
             $r .= '</div>';
 
-            $result[] = '<fieldset><legend>'. lang('e_spserviceprivacyurl').'</legend>'.$r.'</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('e_spserviceprivacyurl') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
 
             /**
              * end privacy url
              */
+            foreach ($logopart['sp'] as $v)
+            {
+                $result[] = $v;
+            }
         }
         return $result;
     }
@@ -3079,7 +3258,8 @@ class Form_element {
                 }
                 $result[$key->getName()] = $key->getName() . " " . $value;
             }
-        } else
+        }
+        else
         {
             $result[''] = lang('rr_nofedfound');
             ;
@@ -3231,11 +3411,11 @@ class Form_element {
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodsign'), 'digestmethod') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethod', array('SHA-1'=>'SHA-1','SHA-256'=>'SHA-256'), set_value('digestmethod', $federation->getDigest())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodsign'), 'digestmethod') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethod', array('SHA-1' => 'SHA-1', 'SHA-256' => 'SHA-256'), set_value('digestmethod', $federation->getDigest())) . '</div><div class="small-1 large-2 "></div>';
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodexportsign'), 'digestmethodext') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethodext', array('SHA-1'=>'SHA-1','SHA-256'=>'SHA-256'), set_value('digestmethodext', $federation->getDigestExport())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodexportsign'), 'digestmethodext') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethodext', array('SHA-1' => 'SHA-1', 'SHA-256' => 'SHA-256'), set_value('digestmethodext', $federation->getDigestExport())) . '</div><div class="small-1 large-2 "></div>';
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
@@ -3306,7 +3486,8 @@ class Form_element {
             {
                 $f = form_checkbox('attr[' . $value['attrid'] . ']', '1', true);
                 $result_top .= '<tr><td>' . $value['name'] . '</td><td>' . $f . '</td></tr>';
-            } else
+            }
+            else
             {
                 $f = form_checkbox('attr[' . $value['attrid'] . ']', '1', false);
                 $result_bottom .='<tr><td>' . $value['name'] . '</td><td>' . $f . '</td></tr>';
@@ -3345,7 +3526,8 @@ class Form_element {
         {
             $result .= '<button name="submit" type="submit" value="cancel" class="resetbutton reseticon">' . lang('rr_cancel') . '</button>';
             $result .= '<button name="submit" type="submit" value="create" class="savebutton saveicon">' . lang('rr_create') . '</button>';
-        } else
+        }
+        else
         {
             $result .= '<button name="submit" type="submit" value="delete" class="resetbutton reseticon">' . lang('rr_remove') . '</button>';
             $result .= '<button name="submit" type="submit" value="modify" class="savebutton saveicon">' . lang('rr_modify') . '</button>';

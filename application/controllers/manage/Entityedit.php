@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -17,8 +18,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Entityedit extends MY_Controller
-{
+class Entityedit extends MY_Controller {
 
     protected $current_site;
     protected $tmp_providers;
@@ -127,14 +127,14 @@ class Entityedit extends MY_Controller
             {
                 foreach ($y['f']['uii']['idpsso']['displayname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'), $k) . '', 'trim|min_length[5]|max_length[255]|xss_clean');
+                    $this->form_validation->set_rules('f[uii][idpsso][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'), $k) . '', 'trim|min_length[3]|max_length[255]|xss_clean');
                 }
             }
             if (isset($y['f']['uii']['idpsso']['desc']) && is_array($y['f']['uii']['idpsso']['desc']))
             {
                 foreach ($y['f']['uii']['idpsso']['desc'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[5]|max_length[500]|xss_clean');
+                    $this->form_validation->set_rules('f[uii][idpsso][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[3]|max_length[500]|xss_clean');
                 }
             }
             if (isset($y['f']['uii']['idpsso']['helpdesk']) && is_array($y['f']['uii']['idpsso']['helpdesk']))
@@ -546,6 +546,15 @@ class Entityedit extends MY_Controller
         {
             $data['uii']['idpsso']['desc'] = array();
         }
+        if (isset($data['uii']['idpsso']['logo']))
+        {
+            $data['uii']['idpsso']['logo'] = array_filter($data['uii']['idpsso']['logo']);
+        }
+        else
+        {
+            $data['uii']['idpsso']['logo'] = array();
+        }
+
         if (isset($data['uii']['idpsso']['helpdesk']))
         {
             $data['uii']['idpsso']['helpdesk'] = array_filter($data['uii']['idpsso']['helpdesk']);
@@ -593,6 +602,14 @@ class Entityedit extends MY_Controller
         else
         {
             $data['uii']['spsso']['displayname'] = array();
+        }
+        if (isset($data['uii']['spsso']['logo']))
+        {
+            $data['uii']['spsso']['logo'] = array_filter($data['uii']['spsso']['logo']);
+        }
+        else
+        {
+            $data['uii']['spsso']['logo'] = array();
         }
         if (isset($data['prvurl']['idpsso']))
         {
@@ -847,6 +864,7 @@ class Entityedit extends MY_Controller
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
+        //    $menutabs[] = array('id' => 'logo', 'value' => 'Logotab', 'form' => $this->form_element->NgenerateLogoForm($ent, $entsession));
         $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
         $menutabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
@@ -906,8 +924,8 @@ class Entityedit extends MY_Controller
             $data['loggeduser'] = array(
                 'username' => '' . $currentusername . '',
                 'fullname' => '' . $u->getFullname() . '',
-                'fname' => '' . $u->getGivenname().'',
-                'lname' => '' . $u->getSurname() .'', 
+                'fname' => '' . $u->getGivenname() . '',
+                'lname' => '' . $u->getSurname() . '',
                 'email' => '' . $u->getEmail() . '',
             );
         }
@@ -998,7 +1016,7 @@ class Entityedit extends MY_Controller
                 if (!empty($c) && is_array($c))
                 {
 
-                    \log_message('debug', __METHOD__ . ' GKS data from draft: '.  serialize($c));
+                    \log_message('debug', __METHOD__ . ' GKS data from draft: ' . serialize($c));
                     $ent = $this->providerupdater->updateProvider($ent, $c);
 
                     if ($ent)
@@ -1070,10 +1088,10 @@ class Entityedit extends MY_Controller
 
 
 
-                        log_message('debug','GKS before convert: entitid: '.$ent->getEntityId());
+                        log_message('debug', 'GKS before convert: entitid: ' . $ent->getEntityId());
                         $convertedToArray = $ent->convertToArray(True);
-                       
-                        log_message('debug','GKS convertedToArray: '.serialize($convertedToArray));
+
+                        log_message('debug', 'GKS convertedToArray: ' . serialize($convertedToArray));
 
                         if (strcmp($ttype, 'IDP') == 0)
                         {

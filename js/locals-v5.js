@@ -3281,3 +3281,131 @@ $("a.afilter").click(function() {
 });
 
 $('a.initiated').trigger('click');
+
+$('button.addnewlogo').click(function(){
+    var f = $(this).closest('div.reviewlogo');
+    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    var ftype = f.attr('id');
+    var type ;
+    var rname ='';
+    if(ftype === 'idpreviewlogo')
+    {
+        type = 'idp';
+    }
+    else
+    {
+        type = 'sp';
+    }
+    for (var i = 0; i < 5; i++)
+            rname += possible.charAt(Math.floor(Math.random() * possible.length));
+    
+    var logourl = f.find("input[name='"+type+"inputurl']").attr('value');
+    var logosize = f.find("input[name='"+type+"inputsize']").attr('value');
+    var logolang = f.find("select[name='"+type+"logolang']").val();
+    if(logolang==='0')
+    {
+        var logolangtxt = 'unspec';
+    }
+    else
+    {
+        var logolangtxt = logolang;
+    }
+    
+  
+    var hiddeninputurl = '<input type="hidden" name="f[uii]['+type+'sso][logo][n'+rname+'][url]" value="' + logourl + '">';
+    var hiddeninputsize = '<input type="hidden" name="f[uii]['+type+'sso][logo][n'+rname+'][size]" value="' + logosize + '">';
+    var hiddeninputlang = '<input type="hidden" name="f[uii]['+type+'sso][logo][n'+rname+'][lang]" value="' + logolang + '">';
+    var origblock = $('li#nlogo'+type+'row');
+    var newblock = origblock.clone(true);
+    newblock.removeAttr('id');
+    newblock.find('img').first().attr('src',logourl).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
+    newblock.find('div.logoinfo').first().append(''+logolangtxt+'<br />').append(logourl+'<br />').append(logosize+'<br />');
+    
+    newblock.insertBefore(origblock).show();
+    
+    
+});
+
+$('button.getlogo').click(function() {
+    var btnname = $(this).attr('name');
+    var logourl, logoreview;
+    var link = $(this).attr("value");
+    if (btnname === 'idpgetlogo')
+    {
+        logoreview = $('div#idpreviewlogo');
+        logoreview.hide();
+        var alertlogoretrieve = $("small.idplogoretrieve");
+        alertlogoretrieve.empty().hide();
+        logourl = $("[name='idplogoretrieve']").val();
+        var imgdiv = $("div#idpreviewlogo div.imgsource");
+    }
+    else
+    {
+        logoreview = $('div#spreviewlogo');
+        logoreview.hide();
+        var alertlogoretrieve = $("small.splogoretrieve");
+        alertlogoretrieve.empty().hide();
+        logourl = $("[name='splogoretrieve']").val();
+        var imgdiv = $("div#spreviewlogo div.imgsource");
+
+    }
+
+    var csrfname = $("[name='csrfname']").val();
+    var csrfhash = $("[name='csrfhash']").val();
+    var data = [{name: csrfname, value: csrfhash}, {name: 'logourl', value: logourl}];
+    $.ajax({
+        type: "POST",
+        url: link,
+        cache: false,
+        data: data,
+        dataType: "json",
+        success: function(json) {
+            if (json)
+            {
+                if (json['error'])
+                {
+                    alertlogoretrieve.append(json['error']).show();
+                }
+                else if (json['data'])
+                {
+
+                    var img = new Image()
+                    img.onload = function() {
+
+                    };
+                    img.src = json.data.url;
+                    var sizeinfo = json.data.width + 'x' + json.data.height;
+                    var hiddeninputurl, hiddeninputsize, hiddeninputtype;
+                    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+                    var rname = '';
+                    for (var i = 0; i < 5; i++)
+                        rname += possible.charAt(Math.floor(Math.random() * possible.length));
+
+                    if (btnname === 'idpgetlogo') {
+                        hiddeninputtype = '<input type="hidden" name="logotype" value="idp">';
+                        hiddeninputurl = '<input type="hidden" name="idpinputurl" value="' + json.data.url + '">';
+                        hiddeninputsize = '<input type="hidden" name="idpinputsize" value="' + sizeinfo + '">';
+
+                        $("div#idpreviewlogo div.imgsource").empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
+                        $("div#idpreviewlogo div.logoinfo").empty().append(sizeinfo);
+                        logoreview.show();
+                    }
+                    else if (btnname === 'spgetlogo') {
+                        hiddeninputtype = '<input type="hidden" name="logotype" value="idp">';
+                        hiddeninputurl = '<input type="hidden" name="spinputurl" value="' + json.data.url + '">';
+                        hiddeninputsize = '<input type="hidden" name="spinputsize" value="' + sizeinfo + '">';
+                        $("div#spreviewlogo div.imgsource").empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
+                        $("div#spreviewlogo div.logoinfo").empty().append(sizeinfo);
+                        
+                        logoreview.show();
+                    }
+                }
+
+            }
+        }
+
+    });
+
+
+
+});

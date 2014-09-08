@@ -28,7 +28,7 @@ class Providerupdater {
     {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
-       
+
         $this->ci->load->library('tracker');
     }
 
@@ -41,7 +41,7 @@ class Providerupdater {
     {
         // $m - array for modifications
         $entid = $ent->getId();
-        $m  = array();
+        $m = array();
         $type = $ent->getType();
         $langCodes = languagesCodes();
         $ex = $ent->getExtendMetadata();
@@ -53,19 +53,19 @@ class Providerupdater {
         $idpartidx = array('-1');
         $acsidx = array();
         $isAdmin = $this->ci->j_auth->isAdministrator();
-        if($isAdmin)
+        if ($isAdmin)
         {
             $dissalowedparts = array();
-        } 
+        }
         else
         {
             $dissalowedparts = $this->ci->config->item('entpartschangesdisallowed');
-            if(empty($dissalowedparts) || !is_array($dissalowedparts))
+            if (empty($dissalowedparts) || !is_array($dissalowedparts))
             {
                 $dissalowedparts = array();
-            } 
+            }
         }
-        log_message('debug','disallowedpart: '.serialize($dissalowedparts));
+        log_message('debug', 'disallowedpart: ' . serialize($dissalowedparts));
         foreach ($ex as $e)
         {
             $extend['' . $e->getType() . '']['' . $e->getNamespace() . '']['' . $e->getElement() . ''][] = $e;
@@ -96,50 +96,48 @@ class Providerupdater {
             /**
              * set scopes
              */
-            
-            if(array_key_exists('scopes', $ch) && (!in_array('scope',$dissalowedparts) || empty($entid)))
+            if (array_key_exists('scopes', $ch) && (!in_array('scope', $dissalowedparts) || empty($entid)))
             {
-               $origscopesso = implode(',',$ent->getScope('idpsso'));
-               $origscopeaa = implode(',',$ent->getScope('aa'));
-               if(array_key_exists('idpsso',$ch['scopes']) && !empty($ch['scopes']['idpsso']))
-               {
-                     $idpssoscopes=array_filter(explode(',',$ch['scopes']['idpsso']));
-                     $ent->setScope('idpsso', array_unique($idpssoscopes));
-                     if($origscopesso != implode(',',$idpssoscopes))
-                     {
-                        $m['Scope IDPSSO'] = array('before'=>$origscopesso,'after'=>implode(',',$idpssoscopes));
-                     } 
-               }
-               else
-               {
-                       $ent->setScope('idpsso', array());
-                       if(!empty($origscopesso))
-                       {
-                          $m['Scope IDPSSO'] = array('before'=>$origscopesso,'after'=>'');
-                       }
-               }
-               if(array_key_exists('aa',$ch['scopes']) && !empty($ch['scopes']['aa']))
-               {
-                      log_message('debug','GKS SCOPE AA yes');
-                       
-                       $aascopes = array_filter(explode(',',$ch['scopes']['aa']));
-                       $ent->setScope('aa',array_unique($aascopes));
-                       if($origscopeaa != implode(',',$aascopes))
-                       {
-                          $m['Scope AA'] = array('before'=>$origscopeaa,'after'=>implode(',',$aascopes));
-                       } 
-                      
-               }
-               else
-               {
-                      log_message('debug','GKS SCOPE AA no');
-                      $ent->setScope('aa', array());
-                      if(!empty($origscopeaa))
-                      {
-                         $m['Scope AA'] = array('before'=>$origscopeaa,'after'=>'');
-                      }
-               }
-               $origscopesso = null;
+                $origscopesso = implode(',', $ent->getScope('idpsso'));
+                $origscopeaa = implode(',', $ent->getScope('aa'));
+                if (array_key_exists('idpsso', $ch['scopes']) && !empty($ch['scopes']['idpsso']))
+                {
+                    $idpssoscopes = array_filter(explode(',', $ch['scopes']['idpsso']));
+                    $ent->setScope('idpsso', array_unique($idpssoscopes));
+                    if ($origscopesso != implode(',', $idpssoscopes))
+                    {
+                        $m['Scope IDPSSO'] = array('before' => $origscopesso, 'after' => implode(',', $idpssoscopes));
+                    }
+                }
+                else
+                {
+                    $ent->setScope('idpsso', array());
+                    if (!empty($origscopesso))
+                    {
+                        $m['Scope IDPSSO'] = array('before' => $origscopesso, 'after' => '');
+                    }
+                }
+                if (array_key_exists('aa', $ch['scopes']) && !empty($ch['scopes']['aa']))
+                {
+                    log_message('debug', 'GKS SCOPE AA yes');
+
+                    $aascopes = array_filter(explode(',', $ch['scopes']['aa']));
+                    $ent->setScope('aa', array_unique($aascopes));
+                    if ($origscopeaa != implode(',', $aascopes))
+                    {
+                        $m['Scope AA'] = array('before' => $origscopeaa, 'after' => implode(',', $aascopes));
+                    }
+                }
+                else
+                {
+                    log_message('debug', 'GKS SCOPE AA no');
+                    $ent->setScope('aa', array());
+                    if (!empty($origscopeaa))
+                    {
+                        $m['Scope AA'] = array('before' => $origscopeaa, 'after' => '');
+                    }
+                }
+                $origscopesso = null;
             }
         }
         if ($type !== 'IDP')
@@ -151,21 +149,20 @@ class Providerupdater {
             $ent->setExtendMetadata($spMDUIparent);
             $this->em->persist($spMDUIparent);
         }
-        if ( array_key_exists('entityid', $ch) && !empty($ch['entityid']))
+        if (array_key_exists('entityid', $ch) && !empty($ch['entityid']))
         {
-            if(!empty($entid))
+            if (!empty($entid))
             {
-               if(strcmp($ent->getEntityId(), $ch['entityid'])!=0 && !in_array('entityid',$dissalowedparts))
-               {
-                  $m['EntityID'] = array('before'=>$ent->getEntityId(),'after'=>$ch['entityid']);
-                  $this->ci->tracker->renameProviderResourcename($ent->getEntityId(),$ch['entityid']); 
-                  $ent->setEntityId($ch['entityid']);
-               }
+                if (strcmp($ent->getEntityId(), $ch['entityid']) != 0 && !in_array('entityid', $dissalowedparts))
+                {
+                    $m['EntityID'] = array('before' => $ent->getEntityId(), 'after' => $ch['entityid']);
+                    $this->ci->tracker->renameProviderResourcename($ent->getEntityId(), $ch['entityid']);
+                    $ent->setEntityId($ch['entityid']);
+                }
             }
             else
             {
-                  $ent->setEntityId($ch['entityid']);
-                
+                $ent->setEntityId($ch['entityid']);
             }
         }
         if (array_key_exists('lname', $ch) && is_array($ch['lname']))
@@ -177,37 +174,37 @@ class Providerupdater {
             {
                 if (!in_array($key, $langs))
                 {
-                    unset($ch['lname'][''.$key.'']);
-                    log_message('warning',__METHOD__.' lang code '.$key.' (localized name) not found in allowed langs');
+                    unset($ch['lname']['' . $key . '']);
+                    log_message('warning', __METHOD__ . ' lang code ' . $key . ' (localized name) not found in allowed langs');
                 }
             }
             $lnamediffs = FALSE;
-            $diff1 = array_diff_assoc($trackorigs,$ch['lname']);
-            if(count($diff1)>0)
+            $diff1 = array_diff_assoc($trackorigs, $ch['lname']);
+            if (count($diff1) > 0)
             {
-               $lnamediffs = TRUE;
-            } 
+                $lnamediffs = TRUE;
+            }
             else
             {
-               $diff1 = array_diff_assoc($ch['lname'],$trackorigs);
-               if(count($diff1)>0)
-               {
+                $diff1 = array_diff_assoc($ch['lname'], $trackorigs);
+                if (count($diff1) > 0)
+                {
                     $lnamediffs = TRUE;
-               }
+                }
             }
-            if(isset($ch['lname']['en']))
+            if (isset($ch['lname']['en']))
             {
-               $ent->setName($ch['lname']['en']);
-               unset($ch['lname']['en']);
+                $ent->setName($ch['lname']['en']);
+                unset($ch['lname']['en']);
             }
             else
             {
-               $ent->setName(null);
+                $ent->setName(null);
             }
             $ent->setLocalName($ch['lname']);
-            if($lnamediffs === TRUE)
+            if ($lnamediffs === TRUE)
             {
-                $m['Localized name'] = array('before'=>arrayWithKeysToHtml($trackorigs),'after'=>arrayWithKeysToHtml($ch['lname']));
+                $m['Localized name'] = array('before' => arrayWithKeysToHtml($trackorigs), 'after' => arrayWithKeysToHtml($ch['lname']));
             }
         }
 
@@ -219,75 +216,75 @@ class Providerupdater {
             {
                 if (!in_array($key, $langs))
                 {
-                    unset($ch['ldisplayname'][''.$key.'']);
-                    log_message('warning',__METHOD__.' lang code '.$key.' (localized displayname) not found in allowed langs');
+                    unset($ch['ldisplayname']['' . $key . '']);
+                    log_message('warning', __METHOD__ . ' lang code ' . $key . ' (localized displayname) not found in allowed langs');
                 }
             }
             $isDifferent = FALSE;
-            $diff1 = array_diff_assoc($origs,$ch['ldisplayname']);
-            if(count($diff1)>0)
+            $diff1 = array_diff_assoc($origs, $ch['ldisplayname']);
+            if (count($diff1) > 0)
             {
-               $isDifferent = TRUE;
-            } 
+                $isDifferent = TRUE;
+            }
             else
             {
-               $diff1 = array_diff_assoc($ch['ldisplayname'],$origs);
-               if(count($diff1)>0)
-               {
+                $diff1 = array_diff_assoc($ch['ldisplayname'], $origs);
+                if (count($diff1) > 0)
+                {
                     $isDifferent = TRUE;
-               }
+                }
             }
-            if($isDifferent)
+            if ($isDifferent)
             {
-               if(isset($ch['ldisplayname']['en']))
-               {
-                  $ent->setDisplayName($ch['ldisplayname']['en']);
-                  unset($ch['ldisplayname']['en']);
-               }
-               else
-               {
-                  $ent->setDisplayName(null);
-               }
-               $ent->setLocalDisplayName($ch['ldisplayname']);
-               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
-               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['ldisplayname']));
-               $m['Localized DisplayName'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
+                if (isset($ch['ldisplayname']['en']))
+                {
+                    $ent->setDisplayName($ch['ldisplayname']['en']);
+                    unset($ch['ldisplayname']['en']);
+                }
+                else
+                {
+                    $ent->setDisplayName(null);
+                }
+                $ent->setLocalDisplayName($ch['ldisplayname']);
+                $tmpbefore = str_replace(array("{", "}", ":", "\/"), array("", "", ":", "/"), json_encode($origs));
+                $tmpafter = str_replace(array("{", "}", ":", "\/"), array("", "", ":", "/"), json_encode($ch['ldisplayname']));
+                $m['Localized DisplayName'] = array('before' => $tmpbefore, 'after' => $tmpafter);
             }
         }
-        if($isAdmin)
+        if ($isAdmin)
         {
-        if (array_key_exists('regauthority', $ch))
-        {
-            if($ent->getRegistrationAuthority() !== $ch['regauthority'])
+            if (array_key_exists('regauthority', $ch))
             {
-                $m['RegistrationAuthority'] = array('before'=>$ent->getRegistrationAuthority(),'after'=> $ch['regauthority']);
+                if ($ent->getRegistrationAuthority() !== $ch['regauthority'])
+                {
+                    $m['RegistrationAuthority'] = array('before' => $ent->getRegistrationAuthority(), 'after' => $ch['regauthority']);
+                }
+                $ent->setRegistrationAuthority($ch['regauthority']);
             }
-            $ent->setRegistrationAuthority($ch['regauthority']);
-        }
-        if (array_key_exists('registrationdate', $ch))
-        {
-            $prevregdate = $ent->getRegistrationDate();
-            if(isset($prevregdate))
+            if (array_key_exists('registrationdate', $ch))
             {
-               $prevregdate = date('Y-m-d',$prevregdate->format('U')+j_auth::$timeOffset);
+                $prevregdate = $ent->getRegistrationDate();
+                if (isset($prevregdate))
+                {
+                    $prevregdate = date('Y-m-d', $prevregdate->format('U') + j_auth::$timeOffset);
+                }
+                else
+                {
+                    $prevregdate = '';
+                }
+                if ($prevregdate !== $ch['registrationdate'])
+                {
+                    $m['RegistrationDate'] = array('before' => $prevregdate, 'after' => $ch['registrationdate']);
+                    if (!empty($ch['registrationdate']))
+                    {
+                        $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['registrationdate'] . ' 00:00:00'));
+                    }
+                    else
+                    {
+                        $ent->setRegistrationDate(null);
+                    }
+                }
             }
-            else
-            {
-               $prevregdate = '';
-            }
-            if($prevregdate !== $ch['registrationdate'])
-            {
-               $m['RegistrationDate'] = array('before'=>$prevregdate,'after'=>$ch['registrationdate']);
-               if (!empty($ch['registrationdate']))
-               {
-                   $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['registrationdate'] . ' 00:00:00'));
-               }
-               else
-               {
-                   $ent->setRegistrationDate(null);
-               }
-            }
-        }
         }
         if (array_key_exists('lhelpdesk', $ch) && is_array($ch['lhelpdesk']))
         {
@@ -297,39 +294,39 @@ class Providerupdater {
             {
                 if (!in_array($key, $langs))
                 {
-                    unset($ch['lhelpdesk'][''.$key.'']);
-                    log_message('warning',__METHOD__.' lang code '.$key.' (localized helpdeskurl) not found in allowed langs');
+                    unset($ch['lhelpdesk']['' . $key . '']);
+                    log_message('warning', __METHOD__ . ' lang code ' . $key . ' (localized helpdeskurl) not found in allowed langs');
                 }
             }
             $isDifferent = FALSE;
-            $diff1 = array_diff_assoc($origs,$ch['lhelpdesk']);
-            if(count($diff1)>0)
+            $diff1 = array_diff_assoc($origs, $ch['lhelpdesk']);
+            if (count($diff1) > 0)
             {
-               $isDifferent = TRUE;
-            } 
+                $isDifferent = TRUE;
+            }
             else
             {
-               $diff1 = array_diff_assoc($ch['lhelpdesk'],$origs);
-               if(count($diff1)>0)
-               {
+                $diff1 = array_diff_assoc($ch['lhelpdesk'], $origs);
+                if (count($diff1) > 0)
+                {
                     $isDifferent = TRUE;
-               }
+                }
             }
-            if($isDifferent)
+            if ($isDifferent)
             {
-               if(isset($ch['lhelpdesk']['en']))
-               {
+                if (isset($ch['lhelpdesk']['en']))
+                {
                     $ent->setHelpdeskUrl($ch['lhelpdesk']['en']);
                     unset($ch['lhelpdesk']['en']);
-               }
-               else
-               {
+                }
+                else
+                {
                     $ent->setHelpdeskUrl(null);
-               }
-               $ent->setLocalHelpdeskUrl($ch['lhelpdesk']);
-               $tmpbefore =  str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($origs));
-               $tmpafter = str_replace(array("{","}",":","\/"), array("","",":","/"), json_encode($ch['lhelpdesk']));
-               $m['Localized HelpdeskURL'] = array('before'=>$tmpbefore,'after'=>$tmpafter);
+                }
+                $ent->setLocalHelpdeskUrl($ch['lhelpdesk']);
+                $tmpbefore = str_replace(array("{", "}", ":", "\/"), array("", "", ":", "/"), json_encode($origs));
+                $tmpafter = str_replace(array("{", "}", ":", "\/"), array("", "", ":", "/"), json_encode($ch['lhelpdesk']));
+                $m['Localized HelpdeskURL'] = array('before' => $tmpbefore, 'after' => $tmpafter);
             }
         }
 
@@ -340,34 +337,34 @@ class Providerupdater {
         if (array_key_exists('coc', $ch))
         {
             $currentEntCat = &$currentCocs;
-            foreach($currentEntCat as $k => $v)
+            foreach ($currentEntCat as $k => $v)
             {
                 $cid = $v->getId();
                 $ctype = $v->getType();
-                if($ctype === 'entcat')
+                if ($ctype === 'entcat')
                 {
-                   $foundkey = array_search($cid,$ch['coc']);
-                   if($foundkey === null || $foundkey === false)
-                   {
-                      $ent->removeCoc($v);
-                   }
+                    $foundkey = array_search($cid, $ch['coc']);
+                    if ($foundkey === null || $foundkey === false)
+                    {
+                        $ent->removeCoc($v);
+                    }
                 }
             }
-            foreach($ch['coc'] as $k=>$v)
+            foreach ($ch['coc'] as $k => $v)
             {
-                if(!empty($v) && is_numeric($v))
+                if (!empty($v) && is_numeric($v))
                 {
-                    $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$v,'type'=>'entcat'));
-                    if(!empty($c) && !$currentEntCat->contains($c))
+                    $c = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $v, 'type' => 'entcat'));
+                    if (!empty($c) && !$currentEntCat->contains($c))
                     {
-                       if($isAdmin)
-                       {
-                          $ent->setCoc($c);
-                       }
-                       else
-                       {
-                          $this->ci->approval->applyForEntityCategory($c, $ent);
-                       }
+                        if ($isAdmin)
+                        {
+                            $ent->setCoc($c);
+                        }
+                        else
+                        {
+                            $this->ci->approval->applyForEntityCategory($c, $ent);
+                        }
                     }
                 }
             }
@@ -375,47 +372,47 @@ class Providerupdater {
 
         if (array_key_exists('regpol', $ch))
         {
-            log_message('debug','GKS '.__METHOD__.' '.serialize($ch['regpol']).'');
+            log_message('debug', 'GKS ' . __METHOD__ . ' ' . serialize($ch['regpol']) . '');
             $currentRegPol = &$currentCocs;
-            foreach($currentRegPol as $k => $v)
+            foreach ($currentRegPol as $k => $v)
             {
                 $cid = $v->getId();
                 $ctype = $v->getType();
-                if($ctype === 'regpol')
+                if ($ctype === 'regpol')
                 {
-                   $foundkey = array_search($cid,$ch['regpol']);
-                   if($foundkey === null || $foundkey === false)
-                   {
-                      $ent->removeCoc($v);
-                   }
+                    $foundkey = array_search($cid, $ch['regpol']);
+                    if ($foundkey === null || $foundkey === false)
+                    {
+                        $ent->removeCoc($v);
+                    }
                 }
             }
-            foreach($ch['regpol'] as $k=>$v)
+            foreach ($ch['regpol'] as $k => $v)
             {
-                if(!empty($v) && is_numeric($v))
+                if (!empty($v) && is_numeric($v))
                 {
-                    $c = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$v,'type'=>'regpol'));
-                    if(!empty($c) && !$currentRegPol->contains($c))
+                    $c = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $v, 'type' => 'regpol'));
+                    if (!empty($c) && !$currentRegPol->contains($c))
                     {
-                       if($isAdmin || empty($entid))
-                       {
-                          $ent->setCoc($c);
-                          log_message('debug','GKS setting coc');
-                       }
-                       else
-                       {
-                          $this->ci->approval->applyForRegistrationPolicy($c, $ent);
-                       }
+                        if ($isAdmin || empty($entid))
+                        {
+                            $ent->setCoc($c);
+                            log_message('debug', 'GKS setting coc');
+                        }
+                        else
+                        {
+                            $this->ci->approval->applyForRegistrationPolicy($c, $ent);
+                        }
                     }
                 }
             }
         }
-        
+
         if (array_key_exists('privacyurl', $ch))
         {
-            if($ent->getPrivacyURL() !== $ch['privacyurl'])
+            if ($ent->getPrivacyURL() !== $ch['privacyurl'])
             {
-               $m['PrivacyURL general'] = array('before'=>$ent->getPrivacyURL(),'after'=>$ch['privacyurl']);
+                $m['PrivacyURL general'] = array('before' => $ent->getPrivacyURL(), 'after' => $ch['privacyurl']);
             }
             $ent->setPrivacyUrl($ch['privacyurl']);
         }
@@ -431,7 +428,7 @@ class Providerupdater {
                     {
                         $l = $v->getAttributes();
                         $origex['' . $l['xml:lang'] . ''] = $v;
-                        $origs[''.$l['xml:lang'] .''] = $v->getElementValue();
+                        $origs['' . $l['xml:lang'] . ''] = $v->getElementValue();
                     }
                 }
                 $newex = array();
@@ -447,7 +444,7 @@ class Providerupdater {
                                 $value->setProvider(NULL);
                                 $ex->removeElement($value);
                                 $this->em->remove($value);
-                                unset($newex[''.$key.'']);
+                                unset($newex['' . $key . '']);
                             }
                             else
                             {
@@ -458,12 +455,11 @@ class Providerupdater {
                         }
                         else
                         {
-                                $value->setProvider(NULL);
-                                $ex->removeElement($value);
-                                $this->em->remove($value);
-                                unset($newex[''.$key.'']);
-                                unset($ch['prvurl']['spsso']['' . $key . '']);
-
+                            $value->setProvider(NULL);
+                            $ex->removeElement($value);
+                            $this->em->remove($value);
+                            unset($newex['' . $key . '']);
+                            unset($ch['prvurl']['spsso']['' . $key . '']);
                         }
                     }
 
@@ -483,23 +479,23 @@ class Providerupdater {
                         }
                     }
                     $prvurldiffs = FALSE;
-                    $diff1 = array_diff_assoc($origs,$newex);
-                    if(count($diff1)>0)
+                    $diff1 = array_diff_assoc($origs, $newex);
+                    if (count($diff1) > 0)
                     {
                         $prvurldiffs = TRUE;
-                    } 
+                    }
                     else
                     {
-                       $diff1 = array_diff_assoc($newex,$origs);
-                       if(count($diff1)>0)
-                       {
-                          $prvurldiffs = TRUE;
-                       }
-                   }
-                   if($prvurldiffs === TRUE)
-                   {
-                        $m['Privacy Statement URLs (SP)'] = array('before'=>arrayWithKeysToHtml($origs),'after'=>arrayWithKeysToHtml($newex));
-                   }
+                        $diff1 = array_diff_assoc($newex, $origs);
+                        if (count($diff1) > 0)
+                        {
+                            $prvurldiffs = TRUE;
+                        }
+                    }
+                    if ($prvurldiffs === TRUE)
+                    {
+                        $m['Privacy Statement URLs (SP)'] = array('before' => arrayWithKeysToHtml($origs), 'after' => arrayWithKeysToHtml($newex));
+                    }
                 }
             }
             if ($type !== 'SP')
@@ -512,7 +508,7 @@ class Providerupdater {
                     {
                         $l = $v->getAttributes();
                         $origex['' . $l['xml:lang'] . ''] = $v;
-                        $origs[''.$l['xml:lang'] .''] = $v->getElementValue();
+                        $origs['' . $l['xml:lang'] . ''] = $v->getElementValue();
                     }
                 }
                 $newex = array();
@@ -528,7 +524,7 @@ class Providerupdater {
                                 $value->setProvider(NULL);
                                 $ex->removeElement($value);
                                 $this->em->remove($value);
-                                unset($newex[''.$key.'']);
+                                unset($newex['' . $key . '']);
                             }
                             else
                             {
@@ -539,12 +535,11 @@ class Providerupdater {
                         }
                         else
                         {
-                                $value->setProvider(NULL);
-                                $ex->removeElement($value);
-                                $this->em->remove($value);
-                                unset($newex[''.$key.'']);
-                                unset($ch['prvurl']['idpsso']['' . $key . '']);
-
+                            $value->setProvider(NULL);
+                            $ex->removeElement($value);
+                            $this->em->remove($value);
+                            unset($newex['' . $key . '']);
+                            unset($ch['prvurl']['idpsso']['' . $key . '']);
                         }
                     }
 
@@ -564,24 +559,23 @@ class Providerupdater {
                         }
                     }
                     $prvurldiffs = FALSE;
-                    $diff1 = array_diff_assoc($origs,$newex);
-                    if(count($diff1)>0)
+                    $diff1 = array_diff_assoc($origs, $newex);
+                    if (count($diff1) > 0)
                     {
                         $prvurldiffs = TRUE;
-                    } 
+                    }
                     else
                     {
-                       $diff1 = array_diff_assoc($newex,$origs);
-                       if(count($diff1)>0)
-                       {
-                          $prvurldiffs = TRUE;
-                       }
-                   }
-                   if($prvurldiffs === TRUE)
-                   {
-                        $m['Privacy Statement URLs (IdP)'] = array('before'=>arrayWithKeysToHtml($origs),'after'=>arrayWithKeysToHtml($newex));
-                   }
-
+                        $diff1 = array_diff_assoc($newex, $origs);
+                        if (count($diff1) > 0)
+                        {
+                            $prvurldiffs = TRUE;
+                        }
+                    }
+                    if ($prvurldiffs === TRUE)
+                    {
+                        $m['Privacy Statement URLs (IdP)'] = array('before' => arrayWithKeysToHtml($origs), 'after' => arrayWithKeysToHtml($newex));
+                    }
                 }
             }
         }
@@ -609,15 +603,13 @@ class Providerupdater {
             $newProtocolSupport['idpsso'] = $ent->getProtocolSupport('idpsso');
             $newProtocolSupport['spsso'] = $ent->getProtocolSupport('spsso');
             $newProtocolSupport['aa'] = $ent->getProtocolSupport('aa');
-            foreach($newProtocolSupport as $k=>$v)
+            foreach ($newProtocolSupport as $k => $v)
             {
-                if(count(array_diff_assoc($newProtocolSupport[''.$k.''],$protocolSupport[''.$k.'']))>0 || count(array_diff_assoc($protocolSupport[''.$k.''],$newProtocolSupport[''.$k.'']))>0)
+                if (count(array_diff_assoc($newProtocolSupport['' . $k . ''], $protocolSupport['' . $k . ''])) > 0 || count(array_diff_assoc($protocolSupport['' . $k . ''], $newProtocolSupport['' . $k . ''])) > 0)
                 {
-                     $m['ProtocolEnumeration '.$k.''] = array('before'=>arrayWithKeysToHtml($protocolSupport[''.$k.'']),'after'=>arrayWithKeysToHtml($newProtocolSupport[''.$k.'']));
-                    
+                    $m['ProtocolEnumeration ' . $k . ''] = array('before' => arrayWithKeysToHtml($protocolSupport['' . $k . '']), 'after' => arrayWithKeysToHtml($newProtocolSupport['' . $k . '']));
                 }
             }
-            
         }
 
         /**
@@ -671,17 +663,17 @@ class Providerupdater {
         $newNameIds['idpsso'] = $ent->getNameIds('idpsso');
         $newNameIds['spsso'] = $ent->getNameIds('spsso');
         $newNameIds['aa'] = $ent->getNameIds('aa');
-        if(count(array_diff_assoc($newNameIds['idpsso'],$origNameIds['idpsso'])) > 0 || count(array_diff_assoc($origNameIds['idpsso'],$newNameIds['idpsso'])) > 0) 
+        if (count(array_diff_assoc($newNameIds['idpsso'], $origNameIds['idpsso'])) > 0 || count(array_diff_assoc($origNameIds['idpsso'], $newNameIds['idpsso'])) > 0)
         {
-            $m['NameID: idpsso'] = array('before'=>arrayWithKeysToHtml($origNameIds['idpsso']),'after'=>arrayWithKeysToHtml($newNameIds['idpsso']));
+            $m['NameID: idpsso'] = array('before' => arrayWithKeysToHtml($origNameIds['idpsso']), 'after' => arrayWithKeysToHtml($newNameIds['idpsso']));
         }
-        if(count(array_diff_assoc($newNameIds['aa'],$origNameIds['aa'])) > 0 || count(array_diff_assoc($origNameIds['aa'],$newNameIds['aa'])) > 0) 
+        if (count(array_diff_assoc($newNameIds['aa'], $origNameIds['aa'])) > 0 || count(array_diff_assoc($origNameIds['aa'], $newNameIds['aa'])) > 0)
         {
-            $m['NameID: idpaa'] = array('before'=>arrayWithKeysToHtml($origNameIds['aa']),'after'=>arrayWithKeysToHtml($newNameIds['aa']));
+            $m['NameID: idpaa'] = array('before' => arrayWithKeysToHtml($origNameIds['aa']), 'after' => arrayWithKeysToHtml($newNameIds['aa']));
         }
-        if(count(array_diff_assoc($newNameIds['spsso'],$origNameIds['spsso'])) > 0 || count(array_diff_assoc($origNameIds['spsso'],$newNameIds['spsso'])) > 0) 
+        if (count(array_diff_assoc($newNameIds['spsso'], $origNameIds['spsso'])) > 0 || count(array_diff_assoc($origNameIds['spsso'], $newNameIds['spsso'])) > 0)
         {
-            $m['NameID: spsso'] = array('before'=>arrayWithKeysToHtml($origNameIds['spsso']),'after'=>arrayWithKeysToHtml($newNameIds['spsso']));
+            $m['NameID: spsso'] = array('before' => arrayWithKeysToHtml($origNameIds['spsso']), 'after' => arrayWithKeysToHtml($newNameIds['spsso']));
         }
 
 
@@ -701,10 +693,10 @@ class Providerupdater {
         {
             $srvs = $ch['srv'];
             $orgsrvs = $ent->getServiceLocations();
-            $origServicesInArray=array();
+            $origServicesInArray = array();
             foreach ($orgsrvs as $v)
             {
-                $origServicesInArray[''.$v->getId().''] = ''.$v->getType().' ::: '.$v->getBindingName().' ::: '.$v->getUrl().' ::: '.$v->getOrder().' ::: '.(int) $v->getDefault().''; 
+                $origServicesInArray['' . $v->getId() . ''] = '' . $v->getType() . ' ::: ' . $v->getBindingName() . ' ::: ' . $v->getUrl() . ' ::: ' . $v->getOrder() . ' ::: ' . (int) $v->getDefault() . '';
                 $srvtype = $v->getType();
                 if (array_key_exists($srvtype, $srvs))
                 {
@@ -728,7 +720,7 @@ class Providerupdater {
                                     {
                                         if (!in_array($v->getBindingName(), $ssobinds))
                                         {
-                                            
+
                                             $v->setUrl($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']);
                                             $this->em->persist($v);
                                             $ssobinds[] = $v->getBindingName();
@@ -827,7 +819,7 @@ class Providerupdater {
                             log_message('debug', 'GG:IDPAttributeService entity SP removein service');
                             $ent->removeServiceLocation($v);
                         }
-                        elseif (in_array($v->getBindingName(), $idpaabinds) or !in_array($v->getBindingName(), $allowedAABind))
+                        elseif (in_array($v->getBindingName(), $idpaabinds) or ! in_array($v->getBindingName(), $allowedAABind))
                         {
                             log_message('debug', 'GG: found bind:' . $v->getBindingName() . ' in array idpslobinds');
                             log_message('debug', 'GG current values in spslobinds: ' . serialize($idpaabinds));
@@ -946,7 +938,7 @@ class Providerupdater {
                             else
                             {
 
-                               $ent->removeServiceLocation($v);
+                                $ent->removeServiceLocation($v);
                             }
                             unset($srvs[$srvtype][$v->getId()]);
                         }
@@ -989,8 +981,7 @@ class Providerupdater {
                             }
                             else
                             {
-                                    $ent->removeServiceLocation($v);
-
+                                $ent->removeServiceLocation($v);
                             }
                             unset($srvs[$srvtype][$v->getId()]);
                         }
@@ -1035,7 +1026,7 @@ class Providerupdater {
                             }
                             else
                             {
-                                 $ent->removeServiceLocation($v);
+                                $ent->removeServiceLocation($v);
                             }
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
                         }
@@ -1061,15 +1052,15 @@ class Providerupdater {
                             }
                             else
                             {
-                               $ent->removeServiceLocation($v);
-                               $this->em->remove($v); 
+                                $ent->removeServiceLocation($v);
+                                $this->em->remove($v);
                             }
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
                         }
                     }
                 }
             }
-            
+
             /**
              * adding new service locations from form
              */
@@ -1345,28 +1336,28 @@ class Providerupdater {
             }
         }
 
-        $newsrvs=$ent->getServiceLocations();
-        $newServicesInArray=array();
+        $newsrvs = $ent->getServiceLocations();
+        $newServicesInArray = array();
         $ii = 0;
-        foreach($newsrvs as $v)
+        foreach ($newsrvs as $v)
         {
-             $vid = $v->getId();
-             if(empty($vid))
-             {
-                $d = 'n'.$ii;
-             }
-             else
-             {
-                $d=$v->getId();
-             }
-             $newServicesInArray[$d] = ''.$v->getType().' ::: '.$v->getBindingName().' ::: '.$v->getUrl().' ::: '.$v->getOrder().' ::: '.(int) $v->getDefault().''; 
-             $ii++;
+            $vid = $v->getId();
+            if (empty($vid))
+            {
+                $d = 'n' . $ii;
+            }
+            else
+            {
+                $d = $v->getId();
+            }
+            $newServicesInArray[$d] = '' . $v->getType() . ' ::: ' . $v->getBindingName() . ' ::: ' . $v->getUrl() . ' ::: ' . $v->getOrder() . ' ::: ' . (int) $v->getDefault() . '';
+            $ii++;
         }
-        $diff1 = array_diff_assoc($newServicesInArray,$origServicesInArray);
-        $diff2 = array_diff_assoc($origServicesInArray,$newServicesInArray);
-        if(count($diff1) > 0 || count($diff2) > 0) 
+        $diff1 = array_diff_assoc($newServicesInArray, $origServicesInArray);
+        $diff2 = array_diff_assoc($origServicesInArray, $newServicesInArray);
+        if (count($diff1) > 0 || count($diff2) > 0)
         {
-            $m['ServiceLocations'] = array('before'=>arrayWithKeysToHtml($diff2),'after'=>arrayWithKeysToHtml($diff1));
+            $m['ServiceLocations'] = array('before' => arrayWithKeysToHtml($diff2), 'after' => arrayWithKeysToHtml($diff1));
         }
         /**
          * END update service locations
@@ -1374,9 +1365,9 @@ class Providerupdater {
         /**
          * BEGIN update certs
          */
-         /**
+        /**
           @todo add track
-          */
+         */
         if (array_key_exists('crt', $ch) && !empty($ch['crt']) && is_array($ch['crt']))
         {
             $crts = $ch['crt'];
@@ -1396,28 +1387,28 @@ class Providerupdater {
                     }
                     if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']))
                     {
-                        if(!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']))
+                        if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']))
                         {
-                           $tkeyname = true;
+                            $tkeyname = true;
                         }
                         $v->setKeyname($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']);
                     }
                     if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']))
                     {
-                        if(!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']))
+                        if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']))
                         {
-                           $tdata = true;      
+                            $tdata = true;
                         }
                         $v->setCertData($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']);
                     }
-                    if($tdata === false && $tkeyname === false)
+                    if ($tdata === false && $tkeyname === false)
                     {
-                       $ent->removeCertificate($v);
-                       $this->em->remove($v);
+                        $ent->removeCertificate($v);
+                        $this->em->remove($v);
                     }
                     else
                     {
-                       $this->em->persist($v);
+                        $this->em->persist($v);
                     }
                     unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
                 }
@@ -1489,12 +1480,12 @@ class Providerupdater {
         {
             $ncnt = $ch['contact'];
             $orgcnt = $ent->getContacts();
-            $origcntArray=array();
-            $newcntArray= array();
+            $origcntArray = array();
+            $newcntArray = array();
             foreach ($orgcnt as $v)
             {
                 $i = $v->getId();
-                $origcntArray[$i]=''.$v->getType(). ' : ('.$v->getGivenname().' '.$v->getSurname().') '.$v->getEmail();
+                $origcntArray[$i] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
                 if (array_key_exists($i, $ncnt))
                 {
                     if (!isset($ncnt['' . $i . '']) || empty($ncnt['' . $i . '']['email']))
@@ -1509,14 +1500,14 @@ class Providerupdater {
                         $v->setSurname($ncnt['' . $i . '']['sname']);
                         $v->setEmail($ncnt['' . $i . '']['email']);
                         $this->em->persist($v);
-                        $newcntArray[''.$i.''] = ''.$v->getType(). ' : ('.$v->getGivenname().' '.$v->getSurname().') '.$v->getEmail();
+                        $newcntArray['' . $i . ''] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
                         unset($ncnt['' . $i . '']);
                     }
                 }
                 else
                 {
-                        $ent->removeContact($v);
-                        $this->em->remove($v);
+                    $ent->removeContact($v);
+                    $this->em->remove($v);
                 }
             }
             foreach ($ncnt as $cc)
@@ -1531,26 +1522,25 @@ class Providerupdater {
                     $ent->setContact($ncontact);
                     $ncontact->setProvider($ent);
                     $this->em->persist($ncontact);
-                    
                 }
             }
             $newcnts = $ent->getContacts();
-            $ii=0;
-            foreach($newcnts as $v)
+            $ii = 0;
+            foreach ($newcnts as $v)
             {
-               $ii++;
-               $idc = $v->getId();
-               if(empty($idc))
-               {
-                 $idc = 'n'.$ii;
-               }
-               $newcntArray[$idc] = ''.$v->getType(). ' : ('.$v->getGivenname().' '.$v->getSurname().') '.$v->getEmail(); 
+                $ii++;
+                $idc = $v->getId();
+                if (empty($idc))
+                {
+                    $idc = 'n' . $ii;
+                }
+                $newcntArray[$idc] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
             }
-            $diff1 = array_diff_assoc($newcntArray,$origcntArray);
-            $diff2 = array_diff_assoc($origcntArray,$newcntArray);
-            if(count($diff1) > 0 || count($diff2) > 0) 
+            $diff1 = array_diff_assoc($newcntArray, $origcntArray);
+            $diff2 = array_diff_assoc($origcntArray, $newcntArray);
+            if (count($diff1) > 0 || count($diff2) > 0)
             {
-               $m['Contacts'] = array('before'=>arrayWithKeysToHtml($origcntArray),'after'=>arrayWithKeysToHtml($newcntArray));
+                $m['Contacts'] = array('before' => arrayWithKeysToHtml($origcntArray), 'after' => arrayWithKeysToHtml($newcntArray));
             }
         }
 
@@ -1561,18 +1551,20 @@ class Providerupdater {
         {
             $typeFilter = array('idp');
             $idpextend = $ent->getExtendMetadata()->filter(
-                    function($entry) use ($typeFilter) {
-                        return in_array($entry->getType(), $typeFilter);
-                    });
+                    function($entry) use ($typeFilter)
+            {
+                return in_array($entry->getType(), $typeFilter);
+            });
 
 
 
 
             $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
-                    function($entry) use ($doFilter) {
-                        return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
-                    });
+                    function($entry) use ($doFilter)
+            {
+                return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
+            });
             $exarray = array();
             foreach ($e as $v)
             {
@@ -1591,21 +1583,24 @@ class Providerupdater {
             {
                 if (isset($ch['uii']['idpsso']['' . $elkey . '']) && is_array($ch['uii']['idpsso']['' . $elkey . '']))
                 {
-                    $doFilter = array(''.$elvalue.'');
+                    log_message('debug', 'PKS ' . $elkey);
+                    $doFilter = array('' . $elvalue . '');
                     $collection = $ent->getExtendMetadata()->filter(
-                               function($entry) use ($doFilter) {
+                            function($entry) use ($doFilter)
+                    {
                         return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                     });
-                    foreach($collection as $c)
+                    foreach ($collection as $c)
                     {
-                         $attrs = $c->getAttributes();
-                         $lang = $attrs['xml:lang'];
-                         if(!isset($ch['uii']['idpsso']['' . $elkey . ''][''.$lang.'']))
-                         {
-                             $ent->getExtendMetadata()->removeElement($c);
-                             $this->em->remove($c);
-                             
-                         }
+                        $attrs = $c->getAttributes();
+                        $lang = $attrs['xml:lang'];
+                        log_message('debug', 'PKS check uii:idpsso:' . $elkey . ':' . $lang);
+                        if (!isset($ch['uii']['idpsso']['' . $elkey . '']['' . $lang . '']))
+                        {
+                            log_message('debug', 'PKS !isset uii:idpsso:' . $elkey . ':' . $lang);
+                            $ent->getExtendMetadata()->removeElement($c);
+                            $this->em->remove($c);
+                        }
                     }
                     foreach ($ch['uii']['idpsso']['' . $elkey . ''] as $key3 => $value3)
                     {
@@ -1639,19 +1634,110 @@ class Providerupdater {
                     }
                 }
             }
+            // logos not updatting value - just remove entry or add new one
+            if (isset($ch['uii']['idpsso']['logo']) && is_array($ch['uii']['idpsso']['logo']))
+            {
+                log_message('debug', 'PKS LOOOO');
+                $doFilter = array('Logo');
+                $collection = $ent->getExtendMetadata()->filter(
+                        function($entry) use ($doFilter)
+                {
+                    return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
+                });
+
+                foreach ($collection as $c)
+                {
+                    log_message('debug', 'PKS collection');
+                    $attrs = $c->getAttributes();
+                    $lang = @$attrs['xml:lang'];
+                    $url = $c->getEvalue();
+
+                    $width = $attrs['width'];
+                    $height = $attrs['height'];
+                    $size = $width . 'x' . $height;
+                    $logoid = $c->getId();
+                    if (empty($lang))
+                    {
+                        $lang = 0;
+                    }
+
+                    if (!isset($ch['uii']['idpsso']['logo']['' . $logoid . '']))
+                    {
+                        log_message('debug', 'PKS logo with id:' . $logoid . ' is removed');
+                        $ent->getExtendMetadata()->removeElement($c);
+                        $this->em->remove($c);
+                    }
+                    else
+                    {
+                        unset($ch['uii']['idpsso']['logo']['' . $logoid . '']);
+                    }
+                }
+                foreach ($ch['uii']['idpsso']['logo'] as $ke => $ve)
+                {
+                    if (isset($ve['url']) && isset($ve['lang']) && isset($ve['size']))
+                    {
+                        $canAdd = true;
+                        $nlogo = new models\ExtendMetadata;
+                        $nlogo->setParent($idpMDUIparent);
+                        $nlogo->setType('idp');
+                        $nlogo->setNamespace('mdui');
+                        $nlogo->setValue($ve['url']);
+                        $nlogo->setElement('Logo');
+                        $attrs = array();
+                        if (strcasecmp($ve['lang'], '0') != 0)
+                        {
+                            $attrs['xml:lang'] = $ve['lang'];
+                        }
+                        $size = explode('x', $ve['size']);
+                        if (count($size) == 2)
+                        {
+                            foreach ($size as $sv)
+                            {
+                                if (!is_numeric($sv))
+                                {
+                                    $canAdd = false;
+                                    break;
+                                }
+                            }
+                            $attrs['width'] = $size[0];
+                            $attrs['height'] = $size[1];
+                        }
+                        else
+                        {
+                            $canAdd = false;
+                        }
+                        $nlogo->setAttributes($attrs);
+                        if ($canAdd)
+                        {
+                            $ent->setExtendMetadata($nlogo);
+                            $this->em->persist($nlogo);
+                        }
+                    }
+                    else
+                    {
+                        log_message('warning', __METHOD__ . ' missing url/lang/size of new logo in form - not adding into db');
+                    }
+                }
+            }
+            else
+            {
+                log_message('debug', 'PKS logo array not found in session');
+            }
         }
         if ($type !== 'IDP')
         {
             $typeFilter = array('sp');
             $spextend = $ent->getExtendMetadata()->filter(
-                    function($entry) use ($typeFilter) {
-                        return in_array($entry->getType(), $typeFilter);
-                    });
+                    function($entry) use ($typeFilter)
+            {
+                return in_array($entry->getType(), $typeFilter);
+            });
             $doFilter = array('t' => array('sp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
-                    function($entry) use ($doFilter) {
-                        return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
-                    });
+                    function($entry) use ($doFilter)
+            {
+                return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
+            });
             $exarray = array();
             foreach ($e as $v)
             {
@@ -1670,21 +1756,21 @@ class Providerupdater {
             {
                 if (isset($ch['uii']['spsso']['' . $elkey . '']) && is_array($ch['uii']['spsso']['' . $elkey . '']))
                 {
-                    $doFilter = array(''.$elvalue.'');
+                    $doFilter = array('' . $elvalue . '');
                     $collection = $ent->getExtendMetadata()->filter(
-                               function($entry) use ($doFilter) {
+                            function($entry) use ($doFilter)
+                    {
                         return ($entry->getType() === 'sp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                     });
-                    foreach($collection as $c)
+                    foreach ($collection as $c)
                     {
-                         $attrs = $c->getAttributes();
-                         $lang = $attrs['xml:lang'];
-                         if(!isset($ch['uii']['spsso']['' . $elkey . ''][''.$lang.'']))
-                         {
-                             $ent->getExtendMetadata()->removeElement($c);
-                             $this->em->remove($c);
-                             
-                         }
+                        $attrs = $c->getAttributes();
+                        $lang = $attrs['xml:lang'];
+                        if (!isset($ch['uii']['spsso']['' . $elkey . '']['' . $lang . '']))
+                        {
+                            $ent->getExtendMetadata()->removeElement($c);
+                            $this->em->remove($c);
+                        }
                     }
                     foreach ($ch['uii']['spsso']['' . $elkey . ''] as $key3 => $value3)
                     {
@@ -1718,20 +1804,109 @@ class Providerupdater {
                     }
                 }
             }
+            // logos not updatting value - just remove entry or add new one
+            if (isset($ch['uii']['spsso']['logo']) && is_array($ch['uii']['spsso']['logo']))
+            {
+
+                $doFilter = array('Logo');
+                $collection = $ent->getExtendMetadata()->filter(
+                        function($entry) use ($doFilter)
+                {
+                    return ($entry->getType() === 'sp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
+                });
+
+                foreach ($collection as $c)
+                {
+                    log_message('debug', 'PKS collection');
+                    $attrs = $c->getAttributes();
+                    $lang = @$attrs['xml:lang'];
+                    $url = $c->getEvalue();
+
+                    $width = $attrs['width'];
+                    $height = $attrs['height'];
+                    $size = $width . 'x' . $height;
+                    $logoid = $c->getId();
+                    if (empty($lang))
+                    {
+                        $lang = 0;
+                    }
+
+                    if (!isset($ch['uii']['spsso']['logo']['' . $logoid . '']))
+                    {
+                        log_message('debug', __METHOD__ . ' Logo with id:' . $logoid . ' is removed');
+                        $ent->getExtendMetadata()->removeElement($c);
+                        $this->em->remove($c);
+                    }
+                    else
+                    {
+                        unset($ch['uii']['spsso']['logo']['' . $logoid . '']);
+                    }
+                }
+                foreach ($ch['uii']['spsso']['logo'] as $ke => $ve)
+                {
+                    if (isset($ve['url']) && isset($ve['lang']) && isset($ve['size']))
+                    {
+                        $canAdd = true;
+                        $nlogo = new models\ExtendMetadata;
+                        $nlogo->setParent($idpMDUIparent);
+                        $nlogo->setType('sp');
+                        $nlogo->setNamespace('mdui');
+                        $nlogo->setValue($ve['url']);
+                        $nlogo->setElement('Logo');
+                        $attrs = array();
+                        if (strcasecmp($ve['lang'], '0') != 0)
+                        {
+                            $attrs['xml:lang'] = $ve['lang'];
+                        }
+                        $size = explode('x', $ve['size']);
+                        if (count($size) == 2)
+                        {
+                            foreach ($size as $sv)
+                            {
+                                if (!is_numeric($sv))
+                                {
+                                    $canAdd = false;
+                                    break;
+                                }
+                            }
+                            $attrs['width'] = $size[0];
+                            $attrs['height'] = $size[1];
+                        }
+                        else
+                        {
+                            $canAdd = false;
+                        }
+                        $nlogo->setAttributes($attrs);
+                        if ($canAdd)
+                        {
+                            $ent->setExtendMetadata($nlogo);
+                            $this->em->persist($nlogo);
+                        }
+                    }
+                    else
+                    {
+                        log_message('warning', __METHOD__ . ' missing url/lang/size of new logo in form - not adding into db');
+                    }
+                }
+            }
+            else
+            {
+                log_message('debug', 'PKS logo array not found in session');
+            }
         }
         /**
          * end update UII
          */
-        if(!array_key_exists('usestatic',$ch))
+        if (!array_key_exists('usestatic', $ch))
         {
             $ent->setStatic(false);
         }
-        if(array_key_exists('static',$ch))
+        if (array_key_exists('static', $ch))
         {
             $exmeta = $ent->getStaticMetadata();
-            if(empty($exmeta))
+            if (empty($exmeta))
             {
-               $exmeta = new models\StaticMetadata;
+                $exmeta = new models\StaticMetadata;
             }
             $exmeta->setMetadata($ch['static']);
             $exmeta->setProvider($ent);
@@ -1739,29 +1914,25 @@ class Providerupdater {
             $this->em->persist($exmeta);
 
             $exmetaAfter = $ent->getStaticMetadata();
-            if(!empty($exmetaAfter))
+            if (!empty($exmetaAfter))
             {
-                  if(array_key_exists('usestatic',$ch) && ($ch['usestatic'] === 'accept'))
-                  {
-                       $ent->setStatic(true);
-                  }
-
+                if (array_key_exists('usestatic', $ch) && ($ch['usestatic'] === 'accept'))
+                {
+                    $ent->setStatic(true);
+                }
             }
         }
 
-        if(array_key_exists('use_static',$ch) && $ch['usestatic'] === 'accept')
+        if (array_key_exists('use_static', $ch) && $ch['usestatic'] === 'accept')
         {
-         
-
-
+            
         }
-        
-        if(count($m)>0 && !empty($entid))
-        {        
-           $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(),serialize($m),FALSE);
+
+        if (count($m) > 0 && !empty($entid))
+        {
+            $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($m), FALSE);
         }
         return $ent;
     }
-   
 
 }

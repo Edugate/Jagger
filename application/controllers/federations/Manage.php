@@ -538,12 +538,19 @@ class Manage extends MY_Controller
 
                     $d['fvalidators'][] = array('data' => array('data' =>  ' ' . $editbtn, 'class' => '', 'colspan' => 2));
                     $isenabled = $f->getEnabled();
+                    $ismandatory = $f->getMandatory();
                     $method = $f->getMethod();
                     if ($isenabled) {
                         $d['fvalidators'][] = array('data' => array('data' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')), 'colspan' => 2));
                     }
                     else {
                         $d['fvalidators'][] = array('data' => array('data' => makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled')), 'colspan' => 2));
+                    }
+                    if ($ismandatory) {
+                        $d['fvalidators'][] = array('data' => array('data' => makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory')), 'colspan' => 2));
+                    }
+                    else {
+                        $d['fvalidators'][] = array('data' => array('data' => makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional')), 'colspan' => 2));
                     }
                     $d['fvalidators'][] = array('data' => lang('Description'), 'value' => $f->getDescription());
                     $d['fvalidators'][] = array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType());
