@@ -993,7 +993,7 @@ class Manage extends MY_Controller
                     $this->em->persist($inv_member);
                     $this->em->flush();
                     $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($inv_member);
-                    if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) and count($spec_arps_to_remove) > 0) {
+                    if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0) {
                         foreach ($spec_arps_to_remove as $rp) {
                             $this->em->remove($rp);
                         }

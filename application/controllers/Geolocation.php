@@ -43,10 +43,10 @@ class Geolocation extends MY_Controller {
     public function show($entity = null, $type = null) {
         $this->load->library('tracker');
         $data = array();
-        if (empty($entity) or !is_numeric($entity) or empty($type)) {
+        if (empty($entity) || !is_numeric($entity) || empty($type)) {
             show_error(lang('rerror_providernotexist'), 404);
         }
-        if (!($type === 'idp' or $type === 'sp')) {
+        if (!($type === 'idp' || $type === 'sp')) {
             show_error(lang('rerror_incorrectenttype'), 404);
         }
 
@@ -56,7 +56,7 @@ class Geolocation extends MY_Controller {
             show_error(lang('rerror_providernotexist'), 404);
         }
         $provider_type = strtolower($provider->getType());
-        if (!($provider_type == $type or $provider_type == 'both')) {
+        if (!($provider_type == $type || $provider_type == 'both')) {
             show_error(lang('rerror_incorrectenttype'), 404);
         }
         $locked = $provider->getLocked();
