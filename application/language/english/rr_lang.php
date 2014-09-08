@@ -399,6 +399,7 @@ $lang['rr_homeorganisation']        = 'Home Organization' ;
 $lang['rr_homeorganisationdisplay'] = 'HomeOrg Descriptive Name' ;
 $lang['rr_technicalinformation']    = 'Technical Information';
 $lang['rr_logos']                   = 'Logos';
+$lang['rr_logoofservice']           = 'Logo of Service';
 $lang['rr_newlogosection']          = 'Assign new logo';
 $lang['rr_assignedlogostab']        = 'Assigned Logos';
 $lang['rr_availablelogostab']        = 'Available Logos';

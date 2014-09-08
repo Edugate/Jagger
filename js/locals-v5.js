@@ -3302,6 +3302,14 @@ $('button.addnewlogo').click(function(){
     var logourl = f.find("input[name='"+type+"inputurl']").attr('value');
     var logosize = f.find("input[name='"+type+"inputsize']").attr('value');
     var logolang = f.find("select[name='"+type+"logolang']").val();
+    if(logolang==='0')
+    {
+        var logolangtxt = 'unspec';
+    }
+    else
+    {
+        var logolangtxt = logolang;
+    }
     
   
     var hiddeninputurl = '<input type="hidden" name="f[uii]['+type+'sso][logo][n'+rname+'][url]" value="' + logourl + '">';
@@ -3311,6 +3319,7 @@ $('button.addnewlogo').click(function(){
     var newblock = origblock.clone(true);
     newblock.removeAttr('id');
     newblock.find('img').first().attr('src',logourl).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
+    newblock.find('div.logoinfo').first().append(''+logolangtxt+'<br />').append(logourl+'<br />').append(logosize+'<br />');
     
     newblock.insertBefore(origblock).show();
     
@@ -3378,7 +3387,7 @@ $('button.getlogo').click(function() {
                         hiddeninputsize = '<input type="hidden" name="idpinputsize" value="' + sizeinfo + '">';
 
                         $("div#idpreviewlogo div.imgsource").empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
-                        $("div#idpreviewlogo div.logosizeinfo").empty().append(sizeinfo);
+                        $("div#idpreviewlogo div.logoinfo").empty().append(sizeinfo);
                         logoreview.show();
                     }
                     else if (btnname === 'spgetlogo') {
@@ -3386,7 +3395,8 @@ $('button.getlogo').click(function() {
                         hiddeninputurl = '<input type="hidden" name="spinputurl" value="' + json.data.url + '">';
                         hiddeninputsize = '<input type="hidden" name="spinputsize" value="' + sizeinfo + '">';
                         $("div#spreviewlogo div.imgsource").empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
-                        $("div#spreviewlogo div.logosizeinfo").empty().append(sizeinfo);
+                        $("div#spreviewlogo div.logoinfo").empty().append(sizeinfo);
+                        
                         logoreview.show();
                     }
                 }
