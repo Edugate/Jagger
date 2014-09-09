@@ -800,7 +800,6 @@ class Entityedit extends MY_Controller {
         if ($this->input->post('discard'))
         {
             $this->_discard_draft($id);
-            //redirect(base_url() . 'manage/entityedit/show/' . $id, 'location');
             redirect(base_url() . 'providers/detail/show/' . $id, 'location');
         }
         elseif ($this->_submit_validate($id) === TRUE)
@@ -864,7 +863,6 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
-        //    $menutabs[] = array('id' => 'logo', 'value' => 'Logotab', 'form' => $this->form_element->NgenerateLogoForm($ent, $entsession));
         $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
         $menutabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
@@ -879,7 +877,6 @@ class Entityedit extends MY_Controller {
 
     private function _isfromsimplereg()
     {
-        //$mbody = $this->input->post('metadatabody');
         $fromSimpleMode = $this->input->post('advanced');
         if (!empty($fromSimpleMode) && strcmp($fromSimpleMode, 'advanced') == 0)
         {
@@ -1157,10 +1154,6 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
         $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
-        //$menutabs[] = array('id' => 'entcategories', 'value' => ''.lang('tabentcategories').'', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
-        //$menutabs[] = array('id' => 'staticmetadata', 'value' => ''.lang('tabstaticmeta').'', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
-        //$menutabs[] = array('id' => 'other', 'value' => ''.lang('tabotherforms').'', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
-
         $data['menutabs'] = $menutabs;
         $data['content_view'] = 'manage/entityedit_view.php';
         $this->load->view('page', $data);

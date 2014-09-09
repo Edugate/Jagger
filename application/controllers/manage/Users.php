@@ -30,7 +30,6 @@ class Users extends MY_Controller {
         }
         $this->load->helper(array('cert', 'form'));
         $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'table', 'zacl'));
-        // show_error('functionality not ready yet', 503);
     }
 
     private function _modify_submit_validate() {
@@ -43,7 +42,6 @@ class Users extends MY_Controller {
         log_message('debug',  '(add user) validating form initialized');
         $usernameMinLength = $this->config->item('username_min_length') ?: 5;
         $this->form_validation->set_rules('username', ''.lang('rr_username').'', 'required|min_length['.$usernameMinLength.']|max_length[128]|user_username_unique[username]|xss_clean');
-        //$this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|valid_email|user_mail_unique[email]|xss_clean');
         $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|valid_email');
         $this->form_validation->set_rules('access', 'Access type', 'required|xss_clean');
         $accesstype = trim($this->input->post('access'));

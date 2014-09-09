@@ -431,15 +431,10 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = null;
         }
-        //$regpolicy = $ent->getRegistrationPolicy();
         $regpolicy = $ent->getCoc();
         $regpolicy_value = '';
         if (count($regpolicy) > 0)
         {
-            foreach ($regpolicy as $rkey => $rvalue)
-            {
-              //  $regpolicy_value .= '<b>' . $rkey . ':</b> ' . $rvalue . '<br />';
-            }
             foreach($regpolicy as $v)
             {
                 $vtype = $v->getType();
@@ -654,7 +649,6 @@ class Detail extends MY_Controller {
         /**
          * Federation
          */
-      //  $d[++$i]['header'] = '<span id="federation"></span>' . lang('rr_federation');
         $d[++$i]['name'] = lang('rr_memberof');
         $federationsString = "";
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
@@ -713,7 +707,6 @@ class Detail extends MY_Controller {
             {
                 if (!$locked)
                 {
-                   // $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . anchor(base_url() . 'manage/joinfed/joinfederation/' . $ent->getId(), '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '<br />';
                     $manage_membership .= '<div><a href="'.base_url().'manage/joinfed/joinfederation/'.$ent->getId().'" class="button tiny">'.lang('rr_federationjoin').'</a></div>';
                     $entmenu[10] = array('name'=>lang('rr_federationjoin'),'link'=>''.base_url() . 'manage/joinfed/joinfederation/' . $ent->getId().'','class'=>'');
                 }
@@ -1094,9 +1087,7 @@ class Detail extends MY_Controller {
             {
                 $entmenu[20] = array('label'=>''.lang('rr_attributes').'');
                 $entmenu[22] = array('name'=>''.lang('rr_supportedattributes').'','link'=>'' . base_url() . 'manage/supported_attributes/idp/' . $id . '','class'=>'');
-              //  $edit_attributes = '<span style="float: right;"><a href="' . base_url() . 'manage/supported_attributes/idp/' . $id . ' " class="editbutton editicon">'.  lang('rr_edit') . '</a></span>';
                 $entmenu[23] = array('name'=>''.lang('rr_attributepolicy').'','link'=>'' . base_url() . 'manage/attribute_policy/globals/' . $id . '','class'=>'');
-               // $edit_policy = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_policy/globals/' . $id . ' " id="editattributesbutton" class="editbutton editicon">' .  lang('rr_edit') . '</a></span>';
             }
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;

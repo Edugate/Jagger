@@ -190,9 +190,7 @@ class Attribute_requirement extends MY_Controller {
                 $already_in_attr[$a->getAttribute()->getId()]['reason'] = $a->getReason();
             }
         }
-        //print_r($already_in_attr);
         $add_attr_final = array_diff_key($add_attr, $already_in_attr);
-        //	$add_attr_final = $add_attr;
         $data['already_in_attr'] = $already_in_attr;
         $data['add_attr_final'] = $add_attr_final;
         $data['spid'] = $sp->getId();
@@ -281,7 +279,6 @@ class Attribute_requirement extends MY_Controller {
         $reason = $this->input->post('reason');
         $action = $this->input->post('submit');
         log_message('debug', 'KLS: action: '.$action.'; status: '.$status.'; reason: '.$reason);
-        //$spid = $this->input->post('spid');
         if (empty($spid) || !is_numeric($spid)) {
             show_error('Incorect sp id', 404);
         }
@@ -389,7 +386,6 @@ class Attribute_requirement extends MY_Controller {
 
         if (!$has_write_access)
         {
-           //show_error('Internal Server Error',500);
            $data['content_view'] = 'nopermission';
            $data['error'] = lang('rr_noperm_mngtattrforfed').': '.$f->getName() ;
            $this->load->view('page', $data);

@@ -104,8 +104,6 @@ class Disco extends MY_Controller {
                    if($allowed)
                    {
                       $output[$oi]['entityID'] = $key2->getEntityId();
-                      //        $output[$oi]['country'] = 'IE';
-                      //$entityname = $key2->getName();
                       $entityname = $key2->getNameToWebInLang('en');
                       $output[$oi]['title'] = $entityname ;
                       $extend = $key2->getExtendMetadata();
@@ -142,7 +140,6 @@ class Disco extends MY_Controller {
                                            $ElementValue = $ex->getEvalue();
                                    }
 
-                                    //$ElementValue = $ex->getEvalue();
                                     $output[$oi]['icon'] = $ElementValue;
                                     $logo_set = true;
                                 }

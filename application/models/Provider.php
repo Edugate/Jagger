@@ -320,7 +320,6 @@ class Provider {
 
     public function __construct()
     {
-
         $this->contacts = new \Doctrine\Common\Collections\ArrayCollection();
         $this->certificates = new \Doctrine\Common\Collections\ArrayCollection();
         $this->serviceLocations = new \Doctrine\Common\Collections\ArrayCollection();
@@ -335,7 +334,6 @@ class Provider {
         $this->is_approved = TRUE;
         $this->hidepublic = FALSE;
         $this->is_locked = FALSE;
-
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
     }
@@ -463,7 +461,6 @@ class Provider {
         {
             $differ['ValidFrom']['before'] = $validfrom_before;
             $differ['ValidFrom']['after'] = $validfrom_after;
-            ;
         }
         if ($provider->getType() != $this->getType())
         {
@@ -880,7 +877,6 @@ class Provider {
         {
             $nameid = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient";
         }
-        //$this->nameidformat = $nameid;
         if (empty($this->nameidformat))
         {
             $this->nameidformat = new \Doctrine\Common\Collections\ArrayCollection();
@@ -942,7 +938,6 @@ class Provider {
         {
             $this->protocol = new \Doctrine\Common\Collections\ArrayCollection();
         }
-        //$this->getProtocol()->add($protocol);
         $this->protocol->add($protocol);
         return $this;
     }
@@ -1082,7 +1077,6 @@ class Provider {
         }
         else
         {
-            // $date->setTime(23, 59, 59);
             $this->validto = $date->setTimezone(new \DateTimeZone('UTC'));
         }
         return $this;
@@ -1096,7 +1090,6 @@ class Provider {
         }
         else
         {
-            //$date->setTime(00, 01, 00);
             $this->validfrom = $date->setTimezone(new \DateTimeZone('UTC'));
         }
         return $this;
@@ -1501,7 +1494,6 @@ class Provider {
         $this->setHelpdeskUrl($provider->getHelpdeskUrl());
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
-        //$this->setDescription($provider->getDescription());
         $smetadata = $provider->getStaticMetadata();
         if (!empty($smetadata))
         {
@@ -2060,7 +2052,6 @@ class Provider {
              }
              elseif($name === 'Description')
              {
-                //$desc = $this->getDescription();
                 if(!empty($desc))
                 {
                    $result['en'] = 'no description';
@@ -2637,7 +2628,6 @@ class Provider {
         $r['privacyurl'] = $this->getPrivacyUrl();
         $r['validfrom'] = $this->getValidFrom();
         $r['validto'] = $this->getValidTo();
-        //$r['description'] = $this->getDescription();
         $r['is_approved'] = $this->getApproved();
         $r['is_active'] = $this->getActive();
         $r['is_locked'] = $this->getLocked();
@@ -2719,7 +2709,6 @@ class Provider {
             }
         }
 
-        // $this->setProtocol($r['protocol']);
         $this->setType($r['type']);
         $this->setScope('idpsso',$r['scope']);
         $this->setScope('aa',$r['aascope']);
@@ -2727,10 +2716,8 @@ class Provider {
         $this->setPrivacyUrl($r['privacyurl']);
         $this->setValidFrom($r['validfrom']);
         $this->setValidTo($r['validto']);
-       // $this->setDescription($r['description']);
         $this->setApproved($r['is_approved']);
         $this->setActive($r['is_active']);
-        //$this->setLocked($r['is_locked']);
         $this->setStatic($r['is_static']);
         $this->setLocal($r['is_local']);
         if (count($r['contacts']) > 0)
@@ -2797,7 +2784,6 @@ class Provider {
                 $m->setFederation($c);
                 $m->setProvider($this);
                 $this->addMembership($m);
-              //  $this->setFederation($c);
             }
         }
     }
@@ -2930,23 +2916,6 @@ class Provider {
                 }
             }
         }
-        /**
-         * @todo finish for rollover
-         */
-        /**
-          if(array_key_exists('all', $tmp_certs) && count($tmp_certs) == 1)
-          {
-          if(count($tmp_certs['all']) == 1)
-          {
-          $KeyDescriptor_Node = $cert->getCertificateToXML($e);
-          $e->appendChild($KeyDescriptor_Node);
-          }
-          else
-          {
-
-          }
-          }
-         */
         foreach ($services as $srv)
         {
            $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AttributeService');
@@ -3069,24 +3038,6 @@ class Provider {
                return NULL;
             }
         }
-        /**
-         * @todo finish for rollover
-         */
-        /**
-          if(array_key_exists('all', $tmp_certs) && count($tmp_certs) == 1)
-          {
-          if(count($tmp_certs['all']) == 1)
-          {
-          $KeyDescriptor_Node = $cert->getCertificateToXML($e);
-          $e->appendChild($KeyDescriptor_Node);
-          }
-          else
-          {
-
-          }
-          }
-         */
-
         $tmpserorder = array('logout'=>array(),'sso'=>array(),'artifact'=>array());
 
 
@@ -3216,10 +3167,6 @@ class Provider {
         }
 
 
-        /**
-         * @todo check if certificates as rtquired fo SP 
-         */
-       // $certs = $this->getCertificates();
 
         foreach ($this->getCertificates() as $cert)
         {
@@ -3233,8 +3180,6 @@ class Provider {
                 }
             }
         }
-
-        // $services = $this->getServiceLocations();
 
         $tmpserorder = array('logout'=>array(),'assert'=>array(),'art'=>array());
         foreach ($services as $srv)
@@ -3428,16 +3373,6 @@ class Provider {
             }
         }
 
-        /**
-         * do not return if active required and entity disabled
-         */
-      //  $p_active = $this->getAvailable();
-
-      //  if ($only_allowed && empty($p_active))
-      //  {
-      //      log_message('debug', "skip gen xml for inactive provider with id:" . $this->id);
-      //      return \NULL;
-      //  }
 
   
         $s_metadata = null;
@@ -3598,8 +3533,6 @@ class Provider {
 
         if(!empty($RegistrationInfo_Node))
         {
-          // $regpolicies = $this->getRegistrationPolicy();
-             
            if(count($registrationPolicies)>0)
            {
               \log_message('debug','GKS provider generating XML for entcat');

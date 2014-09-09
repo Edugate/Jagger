@@ -102,7 +102,6 @@ class Translator extends MY_Controller
                 $y .= '$lang[\''.$k.'\'] ="'. htmlspecialchars($v)."\";\n";
              }
              $pathfile = APPPATH.'language/'.$langto.'/rr_lang.php';
-             //echo $pathfile;
              if ( ! write_file($pathfile, $y))
              {
                  echo 'Unable to write the file';

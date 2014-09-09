@@ -105,7 +105,6 @@ class Msigner extends MY_Controller {
                echo lang('error403');
                return;
            }
-           //$encfedname = base64url_encode($fed->getName());
            $digest1 = $fed->getDigest();
            if(empty($digest1))
            {

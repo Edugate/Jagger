@@ -261,11 +261,9 @@ class Geolocation extends MY_Controller {
        }
 
 
-        //$content = '<div class="mapform">' . $formulars .  '</div><div class="span-11 map">' . $content . '</div>';
         $data['formulars'] = $formulars;
         $data['mapdiv']= $content;
         $data['loadGoogleMap'] = true;
-        //$data['mapa'] = $content;
 
         $data['provider_id'] = $provider->getId();
         $data['type'] = $type;

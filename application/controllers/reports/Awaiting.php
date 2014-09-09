@@ -641,7 +641,6 @@ class Awaiting extends MY_Controller {
 
                         }
 
-                        //echo $idp->getName();
 
                         $idp_check = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $idp->getEntityId()));
                         if (!empty($idp_check))
@@ -678,14 +677,6 @@ class Awaiting extends MY_Controller {
                             $requester_recipient = null;
                             if (!empty($creator) && ($creator instanceOf models\User))
                             {
-                                /*
-                                  $a_res = $idp->getId();
-                                  $a_resource_type = "entity";
-                                  $a_group = strtolower($idp->getType());
-                                  $this->zacl->add_access_toUser($a_res, 'manage', $creator, $a_group, $a_resource_type);
-                                  $this->zacl->add_access_toUser($a_res, 'write', $creator, $a_group, $a_resource_type);
-                                  $this->zacl->add_access_toUser($a_res, 'read', $creator, $a_group, $a_resource_type);
-                                 */
                                 $requester_recipient = $creator->getEmail();
                             }
                             if (empty($requester_recipient))
@@ -842,14 +833,6 @@ class Awaiting extends MY_Controller {
                             $requester_recipient = '';
                             if (!empty($creator) && ($creator instanceOf models\User))
                             {
-                                /*
-                                  $a_res = $sp->getId();
-                                  $a_resource_type = "entity";
-                                  $a_group = strtolower($sp->getType());
-                                  $this->zacl->add_access_toUser($a_res, 'manage', $creator, $a_group, $a_resource_type);
-                                  $this->zacl->add_access_toUser($a_res, 'write', $creator, $a_group, $a_resource_type);
-                                  $this->zacl->add_access_toUser($a_res, 'read', $creator, $a_group, $a_resource_type);
-                                 */
                                 $requester_reciepient = $creator->getEmail();
                             }
                             if (empty($requester_recipient))
@@ -987,7 +970,8 @@ class Awaiting extends MY_Controller {
                 }
                 /**
                  *          JOIN - accept request (by provider) sent by federation to provider
-                 */ elseif (($queueAction === 'Join'))
+                 */ 
+                elseif (($queueAction === 'Join'))
                 {
                     $recipient = $queueObj->getRecipient();
                     $recipienttype = $queueObj->getRecipientType();

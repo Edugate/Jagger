@@ -35,7 +35,6 @@ class Metadata extends MY_Controller
             show_error('Not found',404);
         }
         $data = array();
-        //$name = base64url_decode($federationName);
         $name = $federationName;
         if (!empty($t) && ((strcasecmp($t,'SP')==0) || (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);
@@ -90,7 +89,6 @@ class Metadata extends MY_Controller
             $members_keys = $members->getKeys();
             log_message('debug', 'no federation members: ' . $members_count);
 
-            //$count_members = count($members);
             $docXML = new \DOMDocument();
             $docXML->encoding = 'UTF-8';
             $docXML->formatOutput = true;
@@ -204,8 +202,6 @@ class Metadata extends MY_Controller
                 show_error('federation is not active', 404);
             }
 
-            //$tmp_cnt = new models\Contacts;
-            //$contacts = $tmp_cnt->getContacts();
 
             /**
              * check if required attribute must be added to federated metadata 
@@ -227,7 +223,6 @@ class Metadata extends MY_Controller
             $members_keys = $members->getKeys();
             log_message('debug', 'no federation members: ' . $members_count);
 
-            //$count_members = count($members);
             $docXML = new \DOMDocument();
             $docXML->encoding = 'UTF-8';
             $docXML->formatOutput = true;
@@ -297,22 +292,10 @@ class Metadata extends MY_Controller
             show_error('Page not found', 404);
         }
       
-/**
- * @todo consider if service metadata should have ability to limit access, sideefect - defined fedValidators might not work
- */
-/*
-        $permitPull = $this->_checkAccess();
-        if($permitPull !== TRUE)
-        {
-           log_message('error', __METHOD__.' access denied from ip: '.$this->input->ip_address());
-           show_error('Access denied', 403);
-        }
-*/
 
         $data = array();
 
         $name = base64url_decode($entityId);
-       // $options = array();
         $options['attrs'] = 1;
         $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
         if (!empty($entity)) {

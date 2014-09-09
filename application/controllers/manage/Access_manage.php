@@ -348,13 +348,6 @@ class Access_manage extends MY_Controller
                 $is_me = '<span class="alert">'.lang('rr_you').'</span>';
                 $isitme = true;
            }
-           /*
-           if(!$isitowner && $owner == $key)
-           {
-                $is_owner = "<span class=\"alert\">Owner".showBubbleHelp('Owner has always read/write permissions, no matter what ACLs are. Manage permision depends on ACL')."</span>";
-                $isitowner = true;
-           }
-           */
            $u = $admins->contains($users_objects[$key]);
            if($u)
            {
