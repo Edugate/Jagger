@@ -1073,7 +1073,7 @@ class Form_element {
         return $row;
     }
 
-    private function _genCertFieldFromObj($cert, $name, $showremove = FALSE)
+    private function _genCertFieldFromObj(models\Certificate $cert, $name, $showremove = FALSE)
     {
         $certuse = $cert->getCertUse();
         if (empty($certuse))
@@ -1157,7 +1157,7 @@ class Form_element {
 
 //    public function NgenerateProtocols($ent, $entsession)
 
-    public function NgenerateStaticMetadataForm($ent, $entsession = null)
+    public function NgenerateStaticMetadataForm(models\Provider $ent, $entsession = null)
     {
         $sessform = FALSE;
         if (!empty($entsession) && is_array($entsession))

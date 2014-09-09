@@ -1808,9 +1808,9 @@ class Provider {
         $feders = array();
         foreach ($this->membership as $entry)
         {
-            $feder[] = $entry->getFederation();
+            $feders[] = $entry->getFederation();
         }
-        return $feder;
+        return $feders;
     }
 
     public function getName()
@@ -1860,7 +1860,7 @@ class Provider {
               if(strcmp($k,'DisplayName') == 0 && strcasecmp($t,$type) == 0)
               {                 
                   
-                  if(isset($a['xml:lang']) && strcasecmp($a['xml:lang'],$lang) == 0)
+                  if(isset($a['xml:lang']))
                   {
                      if(strcasecmp($a['xml:lang'],$lang) == 0)
                      {
@@ -2577,13 +2577,6 @@ class Provider {
         }
     }
 
-    public function replaceContactCollection(Provider $provider)
-    {
-        $existingContacts = $this->getContacts();
-        $no_existingContacts = count($existing_Contacts);
-        $newContacts = $provider->getContacts();
-        $no_newContacts = count($newContacts);
-    }
 
     public function overwriteWithNameid(Provider $provider)
     {
