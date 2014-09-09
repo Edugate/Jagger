@@ -133,12 +133,6 @@ class Sync_metadata extends CI_Controller {
             'mailreport'=>false,
             'email'=>null,
         );
-//		$cli = $this->input->is_cli_request();
-//		if(empty($cli))
-//		{
-//			show_error('Access Denied',403);
-//			return;
-//		}
         $conditions_in_array = array();
         if (!empty($conditions_to_set))
         {
@@ -146,7 +140,6 @@ class Sync_metadata extends CI_Controller {
         }
         $conditions = array_merge($conditions_default, $conditions_in_array);
 
-        //print_r($conditions);
 
         $url = base64url_decode($encoded_url);
         $federationurn = base64url_decode($encoded_federationurn);

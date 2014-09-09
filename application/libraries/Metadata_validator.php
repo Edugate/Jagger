@@ -22,17 +22,7 @@ class Metadata_validator {
         $doc->strictErrorChecking = FALSE;
         $doc->strictWarningChecking = FALSE;
         $doc->loadXML($metadata);
-        /*
-          foreach(libxml_get_errors() as $er)
-          {
-          echo "DD<pre>";
-          print_r($er);
-          echo "</pre>FF";
-
-          }
-         */
-libxml_use_internal_errors(true);
-        //$doc->schemaValidate('library.xsd'); 
+        libxml_use_internal_errors(true);
         $result = $doc->schemaValidate('schemas/saml-schema-metadata-2.0.xsd');
         $errors = libxml_get_errors();
         if ($result === TRUE) {

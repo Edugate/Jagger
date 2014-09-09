@@ -133,7 +133,6 @@ class Arp_generator {
                 foreach ($value['attributes'] as $attr_name => $attr_value)
                 {
                     log_message('debug', 'generating arpXML attr: ' . $attr_name . ' for:' . $key);
-                    //log_message('debug', 'keys are:' . implode(";", array_keys($value)) . ' for:' . $key);
                     if (array_key_exists($attr_name, $value['custom']) && $attr_value == 1)
                     {
                         log_message('debug', 'found custom for attr: ' . $attr_name . ' for:' . $key);
@@ -347,7 +346,6 @@ class Arp_generator {
         {
             foreach ($spec_attrs as $skey => $svalue)
             {
-                //$ent = $t_sp->getOneById($svalue->getRequester());
                 if (isset($members_byid[$svalue->getRequester()]))
                 {
                     $ent = $members_byid[$svalue->getRequester()];
@@ -798,7 +796,6 @@ class Arp_generator {
         {          
             if (array_key_exists($pkey, $attrs))
             {
-                //$attrs[$pkey] = array_replace($attrs[$pkey], $pvalue);             
                 $attrs[$pkey] = array_merge($attrs[$pkey], array_intersect_key($pvalue, $attrs[$pkey]));
             }
         }
@@ -809,7 +806,6 @@ class Arp_generator {
             $release[$m_entityid]['attributes'] = array();
             $release[$m_entityid]['custom'] = array();
             $release[$m_entityid]['entityid'] = $m_entityid;
-            //$release[$m_entityid]['name'] = $m->getName();
             $release[$m_entityid]['name'] = $m->getNameToWebInLang($lang,'sp');
 
            

@@ -76,7 +76,6 @@ $target = current_url();
                         echo '<div><b>"' . $a['fullname'] . '":</b> ' . $a['description'] . '<br />
 			<b>SAML1:</b> ' . $a['urn'] . '<br />
 			<b>SAML2:</b> ' . $a['oid'] . '</div>';
-                      //  echo '<div class="small-12 columns">';
                         echo '<div class="small-3 columns">';
                         echo '<label for="requirement" class="inline right">'.lang('rr_reqattr_currenttype').'</label>';
                         echo '</div>';
@@ -90,7 +89,6 @@ $target = current_url();
                         echo '<div class="small-6 columns end">';
                         echo form_textarea(array('name' => 'reason', 'cols' => 30, 'rows' => 5, 'value' => $a['reason']));
                         echo '</div><div>';
-                       // echo '</div>';
                         echo form_fieldset_close();
                         $tf = '';
                         $tf .='<div class="buttons">';

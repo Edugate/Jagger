@@ -86,7 +86,6 @@ function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1
      ));
      $r .='</div>';
 
- //   $r .= '</div>';
 
   $r .= '</div>'; // end input+check
   return $r;

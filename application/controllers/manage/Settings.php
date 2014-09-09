@@ -134,7 +134,6 @@ class Settings extends MY_Controller
                 foreach ($idplist as $s)
                 {
                     $idplist_dropdown[$s->getId()] = $s->getDisplayName();
-                    //$splist_dropdown[$s->getId()] = $s->getDisplayName()." (".$s->getEntityId().")";
                 }
                 if (count($idplist_dropdown) < 1)
                 {

@@ -178,7 +178,6 @@ $this->load->view('toppanel',$args);
                         <!-- menu -->
                         <!-- end menu -->
                         <?php
-                        //$this->load->view('topbar',$args);
                     }
                     ?>
                 </header>

@@ -363,7 +363,6 @@ class Attribute_policy extends MY_Controller {
         $data['spid'] = null;
 
         $data['formdown'][''] = lang('selectone').'...';
-        //$sps = $this->tmp_providers->getCircleMembersSP($idp);
         $sps = $this->tmp_providers->getCircleMembersLight($idp);
         foreach ($sps as $key) {
             $data['formdown'][$key->getId()] = $key->getNameToWebInLang($lang,'sp') . ' (' . $key->getEntityId() . ')';

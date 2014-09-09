@@ -104,7 +104,6 @@ class J_auth {
     public function logout() {
         $identity = $this->ci->config->item('identity', 'j_auth');
         $this->ci->session->sess_destroy();
-        //session_start();
         $this->ci->session->sess_regenerate(TRUE);
         $this->set_message('logout_successful');
         return TRUE;

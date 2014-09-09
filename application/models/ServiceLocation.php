@@ -87,7 +87,6 @@ class ServiceLocation {
         {
             $p->updated();
         }
-        //    $this->updatedAt = new \DateTime("now");
     }
 
     public function getProvider()

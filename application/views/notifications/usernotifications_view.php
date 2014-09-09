@@ -68,7 +68,6 @@ if(!empty($warnmessage))
        $typedropdown[''] = lang('rr_pleaseselect');
        foreach($codes as $k=>$v)
        {
-         //$typedropdown[''.$k.''] = lang(''.$v['desclang'].'');
          $typedropdown[''.$v['group'].''][$k] = lang(''.$v['desclang'].'');
        }
        echo form_fieldset();

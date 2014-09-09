@@ -1740,29 +1740,6 @@ var map$_key = null;\n\n";
             $_script .= 'function onLoad' . $this->map_id . '() {' . "\n";
         }
 
-        if (!empty($this->browser_alert)) {
-            //TODO:Update with new browser catch - GBrowserIsCompatible is deprecated
-            //$_output .= 'if (GBrowserIsCompatible()) {' . "\n";
-        }
-
-        /*
-         * TODO:Update with local search bar once implemented in V3 api 
-          $strMapOptions = "";
-          if($this->local_search){
-          $_output .= "
-          mapOptions.googleBarOptions= {
-          style : 'new'
-          ".(($this->local_search_ads)?",
-          adsOptions: {
-          client: '".$this->ads_pub_id."',
-          channel: '".$this->ads_channel."',
-          language: 'en'
-          ":"")."
-          };
-          ";
-          $strMapOptions .= ", mapOptions";
-          }
-         */
 
         if ($this->display_map) {
             $_script .= sprintf('var mapObj%s = document.getElementById("%s");', $_key, $this->map_id) . "\n";
@@ -1935,12 +1912,6 @@ google.maps.event.addListener(map'.$_key.',\'click\',function(zdarzenie)
             $_script .= '}' . "\n";
         }//end if $this->display_map==true
 
-        if (!empty($this->browser_alert)) {
-            //TODO:Update with new browser catch SEE ABOVE
-            // $_output .= '} else {' . "\n";
-            // $_output .= 'alert("' . str_replace('"','\"',$this->browser_alert) . '");' . "\n";
-            // $_output .= '}' . "\n";
-        }
 
         if ($this->onload) {
             $_script .= '}' . "\n";
@@ -2321,18 +2292,11 @@ google.maps.event.addListener(map'.$_key.',\'click\',function(zdarzenie)
      */
     function getMap() {
         $_output = '<script type="text/javascript" charset="utf-8">' . "\n" . '//<![CDATA[' . "\n";
-        //$_output .= 'if (GBrowserIsCompatible()) {' . "\n";
         if (strlen($this->width) > 0 && strlen($this->height) > 0) {
             $_output .= sprintf('document.write(\'<div id="%s"><\/div>\');', $this->map_id, $this->width, $this->height) . "\n";
         } else {
             $_output .= sprintf('document.write(\'<div id="%s" style="position:relative;"><\/div>\');', $this->map_id) . "\n";
         }
-        //$_output .= '}';
-        //if(!empty($this->js_alert)) {
-        //    $_output .= ' else {' . "\n";
-        //    $_output .= sprintf('document.write(\'%s\');', str_replace('/','\/',$this->js_alert)) . "\n";
-        //    $_output .= '}' . "\n";
-        //}
 
         $_output .= '//]]>' . "\n" . '</script>' . "\n";
 

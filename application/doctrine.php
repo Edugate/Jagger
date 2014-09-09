@@ -8,12 +8,6 @@ chdir(APPPATH);
 
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 
-//$classLoader = new \Doctrine\Common\ClassLoader('Doctrine', 'libraries');
-//$classLoader->register();
-
-//$classLoader = new \Doctrine\Common\ClassLoader('Symfony', 'libraries/Doctrine');
-//$classLoader->register();
-
 $configFile = getcwd() . '/libraries/Doctrine.php';
 
 $helperSet = null;

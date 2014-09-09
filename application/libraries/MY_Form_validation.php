@@ -30,19 +30,6 @@ class MY_form_validation extends CI_form_validation {
         $this->CI->load->helper('metadata_elements');
     }
 
-    /*
-      function is_unique($attribute_name, $model, array $condition) {
-      $cond = array_keys($condition);
-
-      $ent = $this->em->getRepository("$model")->findOneBy($condition);
-      if (!empty($ent)) {
-      $this->set_message($attribute_name, "The %s : \"" . $condition[$cond[0]] . "\" does already exist in the system.");
-      return FALSE;
-      } else {
-      return TRUE;
-      }
-      }
-     */
 
 
     function str_matches_array( $str, $ar)
@@ -797,8 +784,6 @@ class MY_form_validation extends CI_form_validation {
          $namespases =  h_metadataNamespaces();
          if(!empty($xmls))
          {
-		//$docxml = new \DomDocument();
-                //$docxml->loadXML($metadata);
                	$docxml = new \DomDocument();
 		$docxml->loadXML($metadata);
 		$xpath = new \DomXPath($docxml);
@@ -811,7 +796,6 @@ class MY_form_validation extends CI_form_validation {
                 if(empty($first_attempt))
                 {
 			$tmp_metadata = $docxml->saveXML();
-                        //log_message('debug',$tmp_metadata);
                         $second_attempt = $this->CI->metadata_validator->validateWithSchema($tmp_metadata);
                         if($second_attempt === TRUE)
                         {
@@ -859,8 +843,6 @@ class MY_form_validation extends CI_form_validation {
                
                 }
          }
-      //  $this->CI->load->library('metadata_validator');
-      //  $result = $this->CI->metadata_validator->validateWithSchema($metadata);
 
         if ($result === FALSE)
         {

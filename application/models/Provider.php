@@ -3380,7 +3380,6 @@ class Provider {
         $p_validUntil = $this->getValidTo();
         if (!empty($p_validUntil))
         {
-            //$valid_until = $p_validUntil->format('Y-m-d') . "T00:00:00Z";
             $valid_until = $p_validUntil->format('Y-m-d\TH:i:s\Z');
         }
 

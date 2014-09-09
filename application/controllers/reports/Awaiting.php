@@ -806,7 +806,6 @@ class Awaiting extends MY_Controller {
                             return $this->detail($queueObj->getToken());
                         } else
                         {
-                            //$sp->setNameId();
                             $sp->setAsLocal();
                             $tfeds = $sp->getFederations();
                             if (!empty($tfeds) && $tfeds->count() > 0)
@@ -1164,7 +1163,6 @@ class Awaiting extends MY_Controller {
         }
 
 
-        // $message = 'ID: ' . $p . ' has been added';
         log_message('debug', $message);
         $this->session->set_flashdata('message', $message);
         $this->session->set_flashdata('error_message', $error_message);

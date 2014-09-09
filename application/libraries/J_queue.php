@@ -157,7 +157,6 @@ class J_queue
          $reciepient[] = $u->getEmail();
          $this->ci->email_sender->addToMailQueue(array(), null, $m_subj, $m_body, $reciepient, $sync = false);
          return true;
-      // $this->em->flush();
 
          
 
@@ -526,9 +525,6 @@ class J_queue
            $provider[$i]['name'] = 'XML';
            $this->ci->load->library('geshilib');
            $provider[$i]['value'] = ''.$this->ci->geshilib->highlight($metadataXML, 'xml', $params).'';
-//           $metadataDOM->formatOutput = true;
-
-  //         $provider[$i]['value'] = ''.$this->ci->geshilib->highlight($metadataDOM->saveXML(), 'xml', $params).'';
            $i++;
         }
         return $provider;

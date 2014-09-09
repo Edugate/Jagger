@@ -1,8 +1,4 @@
 <?php
-//echo '<pre>';
-//print_r($tabs);
-//echo '</pre>';
-
 if (empty($bookmarked))
 {
     echo '<a href="' . base_url() . 'ajax/bookentity/' . $entid . '" class="bookentity notbooked"><img src="' . base_url() . 'images/icons/star--plus.png" style="float:right"/></a>';

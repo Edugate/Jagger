@@ -59,7 +59,6 @@ class Providers {
         $provid = $provider->getId();
         $query = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
         $query->setParameter(1, $provider->getId());
-        //$query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
         foreach ($result as $r)
         {
@@ -217,7 +216,6 @@ class Providers {
         $query->setParameter('feds', $feds);
         $query->setParameter('types', $rtype);
         $query->setParameter('provid', $provider->getId());
-        // $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
         return $result;
     }
@@ -279,7 +277,6 @@ class Providers {
                 foreach ($y->getKeys() as $key)
                 {
                     $type = $y->get($key)->getType();
-                    //  log_message('debug','TYPE::::: '.$type);
                     if ($type == 'SP' || $type == 'BOTH')
                     {
                         $this->providers->set($key, $y->get($key));
@@ -314,11 +311,7 @@ class Providers {
                 );
                 foreach ($y->getKeys() as $key)
                 {
-                    //  $type = $y->get($key)->getType();
-                    //  if (strcmp($type,'SP')!=0)
-                    //  {
                     $this->providers->set($key, $y->get($key));
-                    //  }
                 }
             }
         }

@@ -485,7 +485,6 @@ class Show_element {
         $meminactive = makeLabel('disabled',lang('membership_inactive'),lang('membership_inactive'));
         $membanned = makeLabel('disabled',lang('membership_banned'),lang('membership_banned'));
         $providerdisabled = makeLabel('disabled',lang('rr_inactive'),lang('rr_inactive'));
-     //   $result = '<ol class="zebramembers">';
         
         $result = '<div  class="zebramembers">';
         $pname = array();
@@ -525,7 +524,6 @@ class Show_element {
            }
            $result .= '<div class="small-12 columns '.$rowclass.'"><div class="large-5 columns">'.$nr++.'. <a href="'.$urlprefix.$m['pid'].'">'.$m['pname'].'</a></div><div class="large-5 columns">'.$m['entityid'].'</div><div class="large-2 columns text-right">'.$t1.' '.$t2.' '.$t3.'</div></div>';
         }
-      //  $result .='</ol>';
         $result .='</div>';
 
         return $result;
@@ -583,7 +581,6 @@ class Show_element {
         }
         $no_results = count($tracks);
 
-        //$result = '<ul>';
         $result = '<dl class="accordion" data-accordion="modificationsList">';
         $mcounter = 0;
         foreach ($tracks as $t)

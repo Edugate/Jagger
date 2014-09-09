@@ -98,7 +98,6 @@ class Certificate
     public function setCertdata($certdata = null)
     {
         
-        //      $certdata = preg_replace(array('/\s{2,}/', '/[\t\n]/'), '', $certdata);
         $this->certdata = trim($certdata);
         return $this;
     }
@@ -311,7 +310,6 @@ class Certificate
         if ($this->getCertType() == 'X509Certificate')
         {
             $parsed = openssl_x509_parse($cert);
-            //$validFrom = date('Y-m-d H:i:s', $parsed['validFrom_time_t']);
             $validTo = date('Y-m-d H:i:s', $parsed['validTo_time_t']);
             return $validTo;
         } else
@@ -420,10 +418,6 @@ class Certificate
     public function getCertificateToXML(\DOMElement $parent)
     {
         $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:KeyDescriptor');
-        /**
-         * usage null/singing/encrypting
-         */
-        //$use = $this->getCertUse();
 
         $certbody = $this->getCertDataNoHeaders();
          

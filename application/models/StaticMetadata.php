@@ -96,7 +96,6 @@ class StaticMetadata
 			$mresult = $top . $mresult .$down;
 
 		}
-		//return htmlspecialchars_decode($mresult);
 		return $mresult;
     }
 

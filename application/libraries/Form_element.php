@@ -225,7 +225,6 @@ class Form_element {
          */
         $tmprows = '';
         $tmprows .= '<fieldset><legend>' . lang('e_orgdisplayname') . '</legend>';
-        // $result[] = '<div class="langgroup">' . lang('e_orgdisplayname') . '</div>';
         $origldisplayname = $ent->getMergedLocalDisplayName();
         $sldisplayname = array();
         $ldisplaynamelangs = languagesCodes();
@@ -674,7 +673,6 @@ class Form_element {
             {
                 $tid = 'x' . $tmpid++;
             }
-            //$row = form_fieldset() . '<ol>';
             $row = '';
             $class_cnt1 = '';
             $class_cnt2 = '';
@@ -756,7 +754,6 @@ class Form_element {
             $row .= $this->_generateLabelInput(lang('rr_contactemail'), 'f[contact][' . $tid . '][email]', $t4, $class_cnt4, FALSE);
             $row .= '</div>';
             $row .= '<div class="small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="contactrm button tiny alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
-            //  $row .= '</ol>' . form_fieldset_close();
             $result[] = '';
             $result[] = form_fieldset(lang('rr_contact')) . '<div>' . $row . '</div>' . form_fieldset_close();
             $result[] = '';
@@ -1393,14 +1390,10 @@ class Form_element {
                 $sso[] = $r;
                 ++$i;
             }
-            // $result = array_merge($result,$sso);
             $SSOPart .= implode('', $sso);
             $result[] = '';
-            //$result[] = '<div class="langgroup">' . lang('rr_srvssoends') . '</div>';
             $result[] = '<fieldset><legend>' . lang('rr_srvssoends') . '</legend>' . $SSOPart . '</fieldset>';
-            //  $result[] = $SSOPart;
             $result[] = '';
-            // $slotmpl
             /**
              * IDP SingleLogoutService
              */
@@ -1477,7 +1470,6 @@ class Form_element {
             }
             $IDPSLOPart .= implode('', $idpslo);
             $result[] = '';
-            // $result[] = '<div class="langgroup">' . lang('rr_srvsloends') . '</div>';
             $result[] = '<fieldset><legend>' . lang('rr_srvsloends') . '</legend>' . $IDPSLOPart . '</fieldset>';
             $result[] = '';
 
@@ -1590,7 +1582,6 @@ class Form_element {
             $newelement = '<div><button class="editbutton addicon small" type="button" id="nidpartifactbtn">' . lang('rr_addnewidpartifactres') . '</button></div>';
             $ACSPart .= $newelement . '';
             $result[] = '';
-            //$result[] = '<div class="langgroup">' . lang('rr_srvartresends') . '</div>';
             $result[] = '<fieldset><legend>' . lang('rr_srvartresends') . '</legend>' . $ACSPart . '</fieldset>';
             $result[] = '';
 
@@ -1780,7 +1771,6 @@ class Form_element {
             }
 
             $result[] = '';
-            //$result[] = '<div class="langgroup">' . lang('atributeauthoritydescriptor') . '</div>';
             $result[] = '<fieldset><legend>' . lang('atributeauthoritydescriptor') . '</legend>' . implode('', $aalo) . '</fieldset>';
             $result[] = '';
             /**
@@ -1915,7 +1905,6 @@ class Form_element {
             {
                 $result[] = '<div class="section">' . lang('serviceprovider') . '</div>';
             }
-            // return $result;
 
             /**
              * generate ACS part
@@ -2568,7 +2557,6 @@ class Form_element {
             $z .= '</li>';
             $p .= $z;
             $p .= '</ul>';
-            //$result[$k1][] = $p;
             $inlabel = '<div class="small-12 column"><div class="small-3 columns"><label class="right inline" for="logoretrieve">' . lang('rr_url') . '</label></div>';
             $in = '<div class="small-6 columns">' . form_input(array('name' => '' . $t . 'logoretrieve')) . '<small class="' . $t . 'logoretrieve error" style="display:none;"></small></div>';
             $in2 = '<div class="small-3 columns"><button type="button" name="' . $t . 'getlogo" class="button tiny getlogo" value="' . base_url() . 'ajax/checklogourl">' . lang('btngetlogo') . '</button></div></div>';
@@ -2641,7 +2629,6 @@ class Form_element {
                 $result[] = '<div class="section">' . lang('identityprovider') . '</div>';
             }
             $result[] = '';
-            //$result[] = '<div class="langgroup">' . lang('e_idpservicename') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['idp']['mdui']['DisplayName']))
@@ -2710,7 +2697,6 @@ class Form_element {
             $r .= '<div class="small-12 columns">';
             $r.= $this->_generateLangAddButton('idpuiidisplayadd', 'idpuiidisplaylangcode', MY_Controller::$langselect, 'idpadduiidisplay', 'idpadduiidisplay');
             $r .='</div>';
-            //  $r .= form_fieldset_close();
             $result[] = '<fieldset><legend>' . lang('e_idpservicename') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
 
@@ -2721,8 +2707,6 @@ class Form_element {
              * start helpdesk 
              */
             $result[] = '';
-            //$r = form_fieldset('' . lang('e_idpserviceinfourl') . '');
-            //$result[] = '<div class="langgroup">' . lang('e_idpserviceinfourl') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['idp']['mdui']['InformationURL']))
@@ -2799,9 +2783,7 @@ class Form_element {
              * start description
              */
             $result[] = '';
-            //$r = form_fieldset('' . lang('e_idpservicedesc') . '');
             $r = '';
-            //$result[] = '<div class="langgroup">' . lang('e_idpservicedesc') . '</div>';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['idp']['mdui']['Description']))
             {
@@ -2858,7 +2840,6 @@ class Form_element {
             $r .='<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('idpuiidescadd', 'idpuiidesclangcode', MY_Controller::$langselect, 'idpadduiidesc', '' . lang('rr_description') . '');
             $r .='</div>';
-            //$r .= form_fieldset_close();
             $result[] = '<fieldset><legend>' . lang('e_idpservicedesc') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
             /**
@@ -2869,7 +2850,6 @@ class Form_element {
              */
             $result[] = '';
             $r = '';
-            //$result[] = '<div class="langgroup">' . lang('e_idpserviceprivacyurl') . ' </div>';
             $origs = array();
             $sorig = array();
             $langsdisplaynames = $langs;
@@ -2941,7 +2921,6 @@ class Form_element {
                 $result[] = '<div class="section">' . lang('serviceprovider') . '</div>';
             }
             $result[] = '';
-            //$result[] = '<div class="langgroup">' . lang('e_spservicename') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['sp']['mdui']['DisplayName']))
@@ -3018,8 +2997,6 @@ class Form_element {
              * start helpdesk 
              */
             $result[] = '';
-            //$r = form_fieldset('' . lang('e_spserviceinfourl') . '');
-            //$result[] = '<div class="langgroup">' . lang('e_spserviceinfourl') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['sp']['mdui']['InformationURL']))
@@ -3086,7 +3063,6 @@ class Form_element {
             $r .= $this->_generateLangAddButton('spuiihelpdeskadd', 'spuiihelpdesklangcode', MY_Controller::$langselect, 'spadduiihelpdesk', 'spadduiihelpdesk');
             $r .='</div>';
 
-            //$r .= form_fieldset_close();
             $result[] = '<fieldset><legend>' . lang('e_spserviceinfourl') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
             /**
@@ -3096,8 +3072,6 @@ class Form_element {
              * start description
              */
             $result[] = '';
-            //$r = form_fieldset('' . lang('e_spservicedesc') . '');
-            //$result[] = '<div class="langgroup">' . lang('e_spservicedesc') . '</div>';
             $r = '';
             $langsdisplaynames = $langs;
             if (!$sessform && isset($ext['sp']['mdui']['Description']))
@@ -3155,7 +3129,6 @@ class Form_element {
             $r .= '<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('spuiidescadd', 'spuiidesclangcode', MY_Controller::$langselect, 'spadduiidesc', 'spadduiidesc');
             $r .= '</div>';
-            //$r .= form_fieldset_close();
             $result[] = '<fieldset><legend>' . lang('e_spservicedesc') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
             /**
@@ -3166,7 +3139,6 @@ class Form_element {
              */
             $result[] = '';
             $r = '';
-            //$result[] = '<div class="langgroup">' . lang('e_spserviceprivacyurl') . ' </div>';
             $origs = array();
             $sorig = array();
             $langsdisplaynames = $langs;
@@ -3262,7 +3234,6 @@ class Form_element {
         else
         {
             $result[''] = lang('rr_nofedfound');
-            ;
         }
         return $result;
     }

@@ -273,7 +273,6 @@ class AttributeReleasePolicies {
             'idp' => $idpid,
             'type' => 'sp'));
         $y = count($policies);
-        //$result = array();
         return $policies;
     }
 

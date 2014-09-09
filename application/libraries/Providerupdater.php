@@ -1019,7 +1019,6 @@ class Providerupdater {
                                         $v->setOrder($maxdrindex);
                                         $dridx[] = $maxdrindex;
                                     }
-                                    //$v->setBindingName($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind']);
                                     $v->setBindingName('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol');
                                     $this->em->persist($v);
                                 }

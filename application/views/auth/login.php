@@ -51,7 +51,6 @@ else
         <div id="login_response"><!-- spanner --></div>
 
         <?php
-//echo form_open("auth/login", $attributes); 
         
         if ($fedenabled === TRUE)
         {

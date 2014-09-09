@@ -42,7 +42,6 @@
                     <li class="has-dropdown">
                         <a href="#">
                             <?php 
-                           //echo htmlentities($user); 
                             echo '<img src="'.base_url().'images/jicons/male80.svg" class="jicon" style="height: 20px" title="'.htmlentities($user).'"/>';
                             ?></a>
                         <ul class="dropdown">

@@ -37,7 +37,3 @@ echo $formulars;
 echo '</div>';
 echo '</div>';
 
-if(!empty($mapa))
-{
-      //  echo $mapa;
-}

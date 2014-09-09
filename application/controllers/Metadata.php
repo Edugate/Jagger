@@ -168,7 +168,6 @@ class Metadata extends MY_Controller
            show_error('Not found', 404);
         }
         $data = array();
-        //$name = base64url_decode($federationName);
         $name =$federationName;
         if (!empty($t) && ((strcasecmp($t,'SP')==0) || (strcasecmp($t,'IDP')==0) )) {
             $type = strtoupper($t);

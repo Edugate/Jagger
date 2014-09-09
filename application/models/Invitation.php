@@ -97,8 +97,6 @@ class Invitation
     public function __construct()
     {
 	log_message('debug','Invitation model initiated');
-    //    $this->in_queue = new \Doctrine\Common\Collections\ArrayCollection();
-    //  $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     private function makeToken()

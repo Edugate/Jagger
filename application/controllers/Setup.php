@@ -65,7 +65,6 @@ class Setup extends MY_Controller {
 
         $f .= form_close();
 
-       // $f .= anchor(current_url() . '/exampleusers', 'Only populate example users');
         $data['content_view'] = 'setup_view';
         $data['f'] = $f;
         $this->load->view('page',$data);

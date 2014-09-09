@@ -223,10 +223,8 @@ class Idp_matrix extends MY_Controller {
             }
             array_unshift($mrows[$key], $t);
         }
-        //$thead = array_keys($attrmatrix_template);
         foreach ($attrmatrix_template as $k => $v)
         {
-            //  $thead[] = '<span style="-moz-transform: rotate(-90deg)">'.$k.'</span>';
             $thead[] = '
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="190">
                   <text id="thetext" transform="rotate(270, 9, 0) translate(-180,3)">' . htmlentities($k) . '</text>

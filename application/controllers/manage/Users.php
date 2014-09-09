@@ -386,7 +386,6 @@ class Users extends MY_Controller {
         log_message('debug', '(modify authz type) validating form initialized');
         $this->form_validation->set_rules('authz','Access','xss');
         return $this->form_validation->run();
-        //return TRUE;
     }
 
     public function remove() {

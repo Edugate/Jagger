@@ -340,7 +340,6 @@ class User {
     {
         log_message('debug', 'setUserpref');
         $this->userpref = serialize($pref);
-        //      return $this;
     }
 
     public function delEntityFromBookmark($id)

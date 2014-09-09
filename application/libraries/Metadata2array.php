@@ -190,7 +190,6 @@ class Metadata2array {
         $is_sp = false;
         $entity['details']['org'] = array('OrganizationName'=>array(), 'OrganizationDisplayName'=>array(), 'OrganizationURL'=>array());
         $entity['details']['contacts'] = array();
-        //$entity['details']['regpolicy'] = array();
         $entity['details']['reqattrs'] = array();
         foreach ($node->childNodes as $gnode)
         {
@@ -270,7 +269,6 @@ class Metadata2array {
                         }
                     }
                 }
-                //      $entity['details']['extensions'] = $this->ExtensionsToArray($gnode);
             }
             elseif ($gnode->nodeName === 'md:ContactPerson' || $gnode->nodeName === 'ContactPerson' )
             {
@@ -648,7 +646,6 @@ class Metadata2array {
                 $cnt['email'] = $cnode->nodeValue;
             }
 
-//			$cnt[$cnode->nodeName] = $cnode->nodeValue;
         }
         return $cnt;
     }
