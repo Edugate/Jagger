@@ -2890,7 +2890,6 @@ class Provider {
                 $type = $cert->getType();
                 if ($type === 'aa')
                 {
-                    $certusage = $cert->getCertUse();
                     $KeyDescriptor_Node = $cert->getCertificateToXML($e);
                     if($KeyDescriptor_Node !== NULL)
                     {
@@ -2997,7 +2996,6 @@ class Provider {
                 $type = $cert->getType();
                 if ($type === 'idpsso')
                 {
-                    $certusage = $cert->getCertUse();
                     $KeyDescriptor_Node = $cert->getCertificateToXML($e);
                     if($KeyDescriptor_Node !== NULL)
                     {
@@ -3333,19 +3331,6 @@ class Provider {
          */
         $attrs_in_sp = FALSE;
         $type = $this->type;
-        /**
-         * condition when XML may be returned
-         */
-        if (!empty($options) && is_array($options) && count($options) > 0)
-        {
-
-            if (array_key_exists('attr_inc', $options))
-            {
-                $attrs_in_sp = $options['attr_inc'];
-            }
-        }
-
-
   
         $s_metadata = null;
         $valid_until = null;
