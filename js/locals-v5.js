@@ -656,6 +656,7 @@ var GINIT = {
             e.preventDefault();
             var str = $(this).serializeArray();
             var url = $("form#fvform").attr('action');
+            var fvid = $(this).find("button:focus").attr('id');
 
             $.ajax({
                 type: "POST",
@@ -676,6 +677,16 @@ var GINIT = {
                         {
                             $("span#fvreturncode").append(data.returncode);
                             $("div#fvresult").show();
+                        }
+                        if (data.returncode == "success")
+                        {
+                            document.getElementById(fvid).style.backgroundColor = "#00aa00";
+                            document.getElementById(fvid).style.borderColor     = "#00aa00";
+                            document.getElementById(fvid).disabled              = true;
+                        } else if (data.returncode == "error")
+                        {
+                            document.getElementById(fvid).style.backgroundColor = "#aa0000";
+                            document.getElementById(fvid).style.borderColor     = "#aa0000";
                         }
                         if (data.message)
                         {
