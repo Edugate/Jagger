@@ -1131,8 +1131,7 @@ class Provider {
             $origType = $e->getType();
             $origNameSpace = $e->getNameSpace();
             if ($origElementName === $elementName && $origType === $type && $origNameSpace === 'mdui')
-            {
-                $value = $e->getElementValue();
+            {            
                 $t = $e->getAttributes();
                 $lvalue = $t['xml:lang'];
                 if (array_key_exists($lvalue, $descriptions))
@@ -1857,11 +1856,11 @@ class Provider {
            {
               $k = $p->getElement();
               $t = $p->getType();
+              $a = $p->getAttributes();
               if(strcmp($k,'DisplayName') == 0 && strcasecmp($t,$type) == 0)
-              {
-                  $n = $p->getNameSpace(); 
-                  $a = $p->getAttributes();
-                  if(isset($a['xml:lang']))
+              {                 
+                  
+                  if(isset($a['xml:lang']) && strcasecmp($a['xml:lang'],$lang) == 0)
                   {
                      if(strcasecmp($a['xml:lang'],$lang) == 0)
                      {
