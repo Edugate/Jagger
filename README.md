@@ -1,5 +1,6 @@
 Jagger
 ===
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/6f544b2d-b12e-4617-952b-6852b90745ee/big.png)](https://insight.sensiolabs.com/projects/6f544b2d-b12e-4617-952b-6852b90745ee)
 
 Jagger (http://jagger.heanet.ie) is developed by HEAnet to manage the Edugate multiparty SAML federation. Other organisations use Jagger to manage their federations but it can be used to manage the web-of-trust for a single entity. It can also be used a a GUI for the Shibboleth SAML Identity Provider (www.shibboleth.net)
 
