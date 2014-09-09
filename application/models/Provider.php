@@ -2826,7 +2826,7 @@ class Provider {
 
         return $e;
     }
-    public function getIDPAADescriptorToXML(\DOMElement $parent, $options = null)
+    private function getIDPAADescriptorToXML(\DOMElement $parent)
     {
         $this->ci = & get_instance();
         $doFilter = array('IDPAttributeService');
@@ -2885,21 +2885,12 @@ class Provider {
         }
         else
         {
-            $tmp_certs = array();
             foreach ($certs as $cert)
             {
                 $type = $cert->getType();
                 if ($type === 'aa')
                 {
                     $certusage = $cert->getCertUse();
-                    if (empty($certusage))
-                    {
-                        $tmp_certs['all'][] = $cert;
-                    }
-                    else
-                    {
-                        $tmp_certs[$certusage] = $cert;
-                    }
                     $KeyDescriptor_Node = $cert->getCertificateToXML($e);
                     if($KeyDescriptor_Node !== NULL)
                     {
@@ -2928,7 +2919,7 @@ class Provider {
         return $e;
     }
 
-    public function getIDPSSODescriptorToXML(\DOMElement $parent, $options = null)
+    private function getIDPSSODescriptorToXML(\DOMElement $parent)
     {
         $services = $this->getServiceLocations();
         if ($services->count() == 0)
@@ -2998,7 +2989,6 @@ class Provider {
             return NULL;
         }
 
-        $tmp_certs = array();
         if ($ncerts > 0)
         {
             $idpssocerts = 0;
@@ -3008,14 +2998,6 @@ class Provider {
                 if ($type === 'idpsso')
                 {
                     $certusage = $cert->getCertUse();
-                    if (empty($certusage))
-                    {
-                        $tmp_certs['all'][] = $cert;
-                    }
-                    else
-                    {
-                        $tmp_certs[$certusage] = $cert;
-                    }
                     $KeyDescriptor_Node = $cert->getCertificateToXML($e);
                     if($KeyDescriptor_Node !== NULL)
                     {
@@ -3345,13 +3327,11 @@ class Provider {
     {
         log_message('debug', __METHOD__. ' start:  ' . $this->entityid);
         $comment = "\"" . $this->getEntityId() . "\" \n";
-        $l = 1;
 
         /**
          * defauls values
          */
         $attrs_in_sp = FALSE;
-        $only_allowed = FALSE;
         $type = $this->type;
         /**
          * condition when XML may be returned
