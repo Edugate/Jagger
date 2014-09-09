@@ -1821,7 +1821,6 @@ google.maps.event.addListener(map'.$_key.',\'click\',function(zdarzenie)
             }
 
             //TODO:add support for Google Earth Overlay once integrated with V3
-            //$_output .= "map.addMapType(G_SATELLITE_3D_MAP);\n";
             // zoom so that all markers are in the viewport
             if ($this->zoom_encompass && (count($this->_markers) > 1 || count($this->_polylines) >= 1 || count($this->_overlays) >= 1)) {
                 // increase bounds by fudge factor to keep

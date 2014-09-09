@@ -62,6 +62,7 @@ class Statistics extends MY_Controller {
         if (!$hasAccess)
         {
             show_error(lang('rr_noperm'), 403);
+            return;
         }
         $s=null;
         $stats = $this->em->getRepository("models\ProviderStatsCollection")->findBy(array('provider'=>$p->getId(),'statdefinition'=>$def->getId()), array('id'=>'DESC'));
@@ -72,32 +73,13 @@ class Statistics extends MY_Controller {
         else
         {
             show_error('not found', 404);
+            return;
         }
 
         $r=array();
         $r[]=  array('url'=>base_url().'manage/statistics/show/'.$s->getId().'/'.md5(uniqid(rand(), true)).'','title'=>$def->getTitle(), 'subtitle'=>'created: '.$s->getCreatedAt()->format('Y-m-d H:i:s').'');
         echo json_encode($r);
         return;
-        
-        $statstorage = $datastorage . 'stats/';
-        if (!is_dir($statstorage))
-        {
-            log_message('debug', 'directory ' . $statstorage . 'not exist');
-            show_error('dddd', 404);
-        }
-        $filename = $s->getFilename();
-        $fullpath = $statstorage . $filename;
-        if (!is_file($fullpath))
-        {
-            log_message('error', 'Stat record id:' . $s->getId() . ' : file doesnt exist in datastorage');
-            show_error('not found', 404);
-        }
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $fileContents = file_get_contents($fullpath);
-        $mimeType = $finfo->buffer($fileContents);
-        $this->output
-                ->set_content_type($mimeType)
-                ->set_output($fileContents);
     }
     
 

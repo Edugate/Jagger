@@ -15,12 +15,10 @@ else
 if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
 {
     echo '<div  data-alert class="alert-box warning" >';
-    //echo '<ul>';
     foreach ($alerts as $v)
     {
         echo '<div>' . $v . '</div>';
     }
-    //echo '</ul>';
     echo '</div>';
 }
 ?>
@@ -170,7 +168,6 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
                     $tact = true;
                     foreach ($d as $v)
                     {
-                        //$row = $v['data'];
                         foreach($v['data'] as $row)
                         {
                         if (array_key_exists('header', $row))

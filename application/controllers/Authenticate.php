@@ -86,7 +86,7 @@ class Authenticate extends MY_Controller {
         }
         else
         {
-             return set_status_header(401);
+             set_status_header(401);
              $auth_error = '<div id="notification_error">not ajax</div>';
         }
         echo $auth_error;
