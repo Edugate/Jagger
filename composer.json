@@ -1,5 +1,5 @@
 {
-    "name": "Edugate/ResourceRegistry",
+    "name": "edugate/resourceregistry",
     "description": "Federation(s) (SAML)  management",
     "license": "MIT",
     "require": {

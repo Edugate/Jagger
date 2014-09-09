@@ -340,7 +340,7 @@ class Provider {
         $this->em = $this->ci->doctrine->em;
     }
 
-    public function diffProviderToArray($provider)
+    public function diffProviderToArray(Provider $provider)
     {
         $differ = array();
         if ($provider->getName() != $this->getName())
@@ -828,7 +828,7 @@ class Provider {
         return $this;
     }
 
-    public function overwriteScope($n, $provider)
+    public function overwriteScope($n, Provider $provider)
     {
         $this->setScope($n, $provider->getScope($n));
         return $this;
@@ -912,7 +912,7 @@ class Provider {
          return $this->membership;
     }
 
-    public function addMembership($membership)
+    public function addMembership(FederationMembers $membership)
     {
         if (!$this->membership->contains($membership)) {
             $this->membership->add($membership);
@@ -1058,7 +1058,7 @@ class Provider {
         return $this;
     }
 
-    public function setRegistrationDate($date = null)
+    public function setRegistrationDate(\DateTime $date = null)
     {
         if(empty($date))
         {
@@ -1074,7 +1074,7 @@ class Provider {
     /**
      * set time entity is valid to, if null then current time
      */
-    public function setValidTo($date = NULL)
+    public function setValidTo(\DateTime $date = NULL)
     {
         if (empty($date))
         {
@@ -1088,7 +1088,7 @@ class Provider {
         return $this;
     }
 
-    public function setValidFrom($date = NULL)
+    public function setValidFrom(\DateTime $date = NULL)
     {
         if (empty($date))
         {
