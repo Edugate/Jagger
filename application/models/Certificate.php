@@ -331,9 +331,6 @@ class Certificate
         if ($this->getCertType() == 'X509Certificate')
         {
             $parsed = openssl_x509_parse($cert);
-            $validFrom = date('Y-m-d H:i:s', $parsed['validFrom_time_t']);
-            $validTo = date('Y-m-d H:i:s', $parsed['validTo_time_t']);
-            $now = date('Y-m-d H:i:s', time());
             $period = $parsed['validTo_time_t'] - time();
             $days = (int) $period / 60 / 60 / 24;
 

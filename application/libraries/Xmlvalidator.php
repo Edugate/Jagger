@@ -7,7 +7,6 @@ class Xmlvalidator {
     
     private $xmlDOM;
     private $pubKey;
-    private $errors = array();
 
     function __construct()
     {

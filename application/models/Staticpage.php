@@ -112,6 +112,15 @@ class Staticpage {
     {
        return $this->ispublic;
     }
+    public function getUpdated()
+    {
+       return $this->updatedAt;
+    }
+    public function getCreated()
+    {
+       return $this->createdAt;
+    }
+  
 
     /**
      * @prePersist 
