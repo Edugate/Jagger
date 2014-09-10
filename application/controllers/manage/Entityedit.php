@@ -275,6 +275,7 @@ class Entityedit extends MY_Controller {
                 }
                 if (array_key_exists('SPSingleLogoutService', $y['f']['srv']))
                 {
+                   
                     foreach ($y['f']['srv']['SPSingleLogoutService'] as $k => $v)
                     {
                         $nospslo[] = $y['f']['srv']['SPSingleLogoutService']['' . $k . '']['bind'];
@@ -712,6 +713,15 @@ class Entityedit extends MY_Controller {
         else
         {
             $data['srv']['IDPSingleLogoutService'] = array();
+        }
+        if (isset($data['srv']['SPSingleLogoutService']))
+        {
+
+            $data['srv']['SPSingleLogoutService'] = array_filter($data['srv']['SPSingleLogoutService']);
+        }
+        else
+        {
+            $data['srv']['SPSingleLogoutService'] = array();
         }
         if (isset($data['prot']['spsso']))
         {
