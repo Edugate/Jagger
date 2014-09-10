@@ -36,8 +36,7 @@ class Zacl {
         // Set the include path and require the needed files
         set_include_path(get_include_path() . PATH_SEPARATOR . FCPATH . "application/libraries");
         require_once(APPPATH . '/libraries/Zend/Acl.php');
-     //   require_once(APPPATH . '/libraries/Zend/Acl/Role.php');
-     //   require_once(APPPATH . '/libraries/Zend/Acl/Resource.php');
+     
         $this->acl = new Zend_Acl();
         $this->acl->addRole(new Zend_Acl_Role('default_role'));
 

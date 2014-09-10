@@ -26,6 +26,7 @@ class J_auth {
     protected $messages;
     protected $errors = array();
     public static $timeOffset = 0;
+    protected static $isAdmin;
 
     public function __construct() {
         $this->ci = & get_instance();
@@ -167,9 +168,19 @@ class J_auth {
     }
     public function isAdministrator()
     {
+        if(self::$isAdmin === true)
+        {
+            return TRUE;
+        }
+        elseif(self::$isAdmin === false)
+        {
+            return FALSE;
+        }
+        
         $username = $this->current_user();
         if(empty($username))
         {
+           self::$isAdmin = false;
            return FALSE;
         }
         $u = $this->em->getRepository("models\User")->findOneBy(array('username'=>''.$username.''));
@@ -177,12 +188,14 @@ class J_auth {
         {
             log_message('error', 'isAdministrator: Browser client session from IP:'.$_SERVER['REMOTE_ADDR'] .' references to nonexist user: '.$username);
             $this->ci->session->sess_destroy();
-            show_error('Access denied', 403);
+            return FALSE;
         }
         $adminRole = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>'Administrator','type'=>'system'));
         if(empty($adminRole))
         {
             log_message('error', 'isAdministrator: Administrator Role is missing in DB AclRoles tbl');
+            
+            return FALSE;
         }
         else
         {
@@ -190,14 +203,16 @@ class J_auth {
              if($userRoles->contains($adminRole))
              {
                 log_message('debug','isAdministrator: user '.$u->getUsername().' found in Administrator group'); 
+                self::$isAdmin = true;
                 return TRUE;
              }   
              else
              {
                 log_message('debug','isAdministrator: user '.$u->getUsername().' not found in Administrator group'); 
-
+                self::$isAdmin = false;
+                return FALSE;
              }
-        }
+        }     
         return FALSE;
       
         
