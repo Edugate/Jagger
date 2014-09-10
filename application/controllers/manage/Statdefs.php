@@ -68,20 +68,22 @@ class Statdefs extends MY_Controller {
         {
             show_error('denied', 403);
         }
-        $params['defid'] = $def->getId();
-        $params['entityid'] = $provider->getEntityId();
-        $params['url'] = $def->getSourceUrl();
-        $params['type'] = $def->getType();
-        $params['sysdef'] = $def->getSysDef();
-        $params['title'] = $def->getTitle();
-        $params['httpmethod'] = $def->getHttpMethod();
-        $params['format'] = $def->getFormatType();
-        $params['accesstype'] = $def->getAccessType();
-        $params['authuser'] = $def->getAuthUser();
-        $params['authpass'] = $def->getAuthPass();
-        $params['postoptions'] = $def->getPostOptions();
-        $params['displayoptions'] = $def->getDisplayOptions();
-        $params['overwrite'] = $def->getOverwrite();
+        $params = array(
+             'defid'=>$def->getId(),
+             'entityid'=>$provider->getEntityId(),
+             'url'=>$def->getSourceUrl(),
+             'type'=>$def->getType(),
+             'sysdef'=>$def->getSysDef(),
+             'title'=>$def->getTitle(),
+             'httpmethod'=>$def->getHttpMethod(),
+             'format'=>$def->getFormatType(),
+             'accesstype'=>$def->getAccessType(),
+             'authuser'=>$def->getAuthUser(),
+             'authpass'=>$def->getAuthPass(),
+             'postoptions'=>$def->getPostOptions(),
+             'displayoptions'=>$def->getDisplayOptions(),
+             'overwrite'=>$def->getOverwrite()
+         );
 
         $gmclient = new GearmanClient();
         $jobservers = array();
@@ -163,10 +165,18 @@ class Statdefs extends MY_Controller {
         }
         else
         {
+            $lang = MY_Controller::getLang();
+
             $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => '' . $providerid . ''));
             if (empty($provider))
             {
                 show_error('Provider not found', 404);
+            }
+            $t = $provider->getType();
+            $t = strtolower($t);
+            if(strcasecmp($t,'both'))
+            {
+               $t = 'idp';
             }
             $islocal = $provider->getLocal();
             if(!$islocal)
@@ -181,17 +191,15 @@ class Statdefs extends MY_Controller {
             {
                 show_error(lang('rr_noperm'), 403);
             }
-            $data['providerid'] = $provider->getId();
-            $data['providerentity'] = $provider->getEntityId();
-            $data['providername'] = $provider->getName();
             $ed = $this->getExistingStatsDefs($provider->getId());
-            if (empty($data['providername']))
-            {
-                $data['providername'] = $data['providerentity'];
-            }
-            $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$data['providerid'].'">'.$data['providername'].'</a>';
-            $data['subtitlepage'] = lang('statsmngmt');
-            
+            $langname = $provider->getNameToWebInLang($lang,$t);
+            $data = array(
+                'providerid'=>$provider->getId(),
+                'providerentity'=> $provider->getEntityId(),
+                'providername'=>$langname,
+                'titlepage'=>'<a href="'.base_url().'providers/detail/show/'.$provider->getId().'">'.$langname.'</a>',
+                'subtitlepage'=>lang('statsmngmt'),
+            );
             if (empty($defid))
             {
                 $this->title = lang('title_statdefs');
