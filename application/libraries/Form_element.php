@@ -2118,7 +2118,7 @@ class Form_element {
             $SPSLOPart = '<fieldset><legend>' . lang('singlelogoutservice') . ' <small><i>' . lang('serviceprovider') . '</i></small></legend><div>';
             $spslotmpl = getBindSingleLogout();
             $spslo = array();
-            if (array_key_exists('SPSingleLogoutService', $g))
+            if (!$sessform && array_key_exists('SPSingleLogoutService', $g))
             {
                 $tmpid = 100;
                 foreach ($g['SPSingleLogoutService'] as $k2 => $v2)
@@ -2128,6 +2128,15 @@ class Form_element {
                     {
                         $tid = 'x' . $tmpid++;
                     }
+                    if ($sessform && isset($ses['srv']['SPSingleLogoutService']['' . $tid . '']['url']))
+                    {
+                        $t1 = $ses['srv']['SPSingleLogoutService']['' . $tid . '']['url'];
+                    }
+                    else
+                    {
+                        $t1 = $v2->getUrl();
+                    }
+                    $t1 = set_value('f[srv][SPSingleLogoutService][' . $tid . '][url]', $t1);
                     $row = '<div class="small-12 columns">';
                     $row .= form_input(array(
                         'name' => 'f[srv][SPSingleLogoutService][' . $tid . '][bind]',
@@ -2135,10 +2144,27 @@ class Form_element {
                         'type' => 'hidden',
                         'value' => set_value('f[srv][SPSingleLogoutService][' . $tid . '][bind]', $v2->getBindingName()),
                     ));
-                    $row .= $this->_generateLabelInput($v2->getBindingName(), 'f[srv][SPSingleLogoutService][' . $tid . '][url]', set_value('f[srv][SPSingleLogoutService][' . $v2->getId() . '][url]', $v2->getUrl()), '', FALSE, NULL);
+                    $row .= $this->_generateLabelInput($v2->getBindingName(), 'f[srv][SPSingleLogoutService][' . $tid . '][url]', set_value('f[srv][SPSingleLogoutService][' . $v2->getId() . '][url]', $t1), '', FALSE, NULL);
                     $row .= '</div>';
                     unset($spslotmpl[array_search($v2->getBindingName(), $spslotmpl)]);
                     $spslo[] = $row;
+                }
+            }
+            if ($sessform && isset($ses['srv']['SPSingleLogoutService']))
+            {
+                foreach ($ses['srv']['SPSingleLogoutService'] as $k => $v)
+                {
+                    $row = '<div class="small-12 columns">';
+                    $row .= form_input(array(
+                        'name' => 'f[srv][SPSingleLogoutService][' . $k . '][bind]',
+                        'id' => 'f[srv][SPSingleLogoutService][' . $k . '][bind]',
+                        'type' => 'hidden',
+                        'value' => set_value('f[srv][SPSingleLogoutService][' . $k . '][bind]', $v['bind']),
+                    ));
+                    $row .= $this->_generateLabelInput($v['bind'], 'f[srv][SPSingleLogoutService][' . $k . '][url]', $v['url'], '', FALSE, NULL);
+                    $row .= '</div>';
+                    $spslo[] = $row;
+                    unset($spslotmpl[array_search($v['bind'], $slotmpl)]);
                 }
             }
             $ni = 0;
