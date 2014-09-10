@@ -38,12 +38,12 @@ class Msigner extends MY_Controller {
        $digestmethod = $this->config->item('signdigest');
        if(empty($digestmethod))
        {
-          log_message('debug',__METHOD__.' signdigest empty or not found in config file, using system default SHA-1');
+          log_message('debug',__METHOD__.' signdigest empty or not found in config file, using system default: SHA-1');
           $digestmethod = 'SHA-1';
        }
        else
        {
-          log_message('debug',__METHOD__.' signdigest set to '.$digestmethod);
+          log_message('debug',__METHOD__.' signdigest default set to: '.$digestmethod);
        }
 
        $type =  $this->uri->segment(3);
@@ -120,7 +120,7 @@ class Msigner extends MY_Controller {
            {
               $digest2 = $digestmethod;
            }
-            
+           log_message('debug' , __METHOD__. ' final digestsign is set to: '.$digest1. 'and for export-federation if enabled set to: '.$digest2);
            $encfedname = $fed->getSysname();
            $sourceurl = base_url().'metadata/federation/'.$encfedname.'/metadata.xml';
            $options[] = array('src'=>''.$sourceurl.'','type'=>'federation','encname'=>''.$encfedname.'','digest'=>''.$digest1.'');
