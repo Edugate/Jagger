@@ -28,6 +28,7 @@ class Approval {
     }
 
     public function addToQueue($obj, $action) {
+        log_message('debug',__METHOD__.': obj: '.get_class($obj).' , action: '.$action);
         $queue = new models\Queue();
         if ($obj instanceof models\Federation) {
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
