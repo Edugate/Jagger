@@ -38,7 +38,12 @@ class Msigner extends MY_Controller {
        $digestmethod = $this->config->item('signdigest');
        if(empty($digestmethod))
        {
+          log_message('debug',__METHOD__.' signdigest empty or not found in config file, using system default SHA-1');
           $digestmethod = 'SHA-1';
+       }
+       else
+       {
+          log_message('debug',__METHOD__.' signdigest set to '.$digestmethod);
        }
 
        $type =  $this->uri->segment(3);
