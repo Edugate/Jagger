@@ -1436,7 +1436,7 @@ class Detail extends MY_Controller {
         $keyname = $cert->getKeyname();
         if(!empty($keyname))
         {
-           $d[] = array('name'=> lang('rr_keyname'), 'value'=>$kname);
+           $d[] = array('name'=> lang('rr_keyname'), 'value'=>$keyname);
         } 
         $certData = $cert->getCertData();
         if(!empty($certData))
