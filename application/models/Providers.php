@@ -222,6 +222,8 @@ class Providers {
 
     public function getCircleMembersLight(Provider $provider)
     {
+        $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
+
         $type = $provider->getType();
         $types = array();
         if ($type === 'IDP')
@@ -236,7 +238,6 @@ class Providers {
         {
             $types = array('IDP', 'SP', 'BOTH');
         }
-        $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
         $federations = $provider->getFederations();
         $feds = array();
         foreach ($federations as $f)
@@ -249,10 +250,9 @@ class Providers {
         if (count($feds) > 0)
         {
 
-            $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.membership a WHERE p.type IN (:types) AND a.federation IN (:feds) AND a.joinstate != '2' AND a.isBanned='0' AND a.isDisabled = '0' ORDER BY p.name ASC ";
+            $query = $this->em->createQuery("SELECT p,a FROM models\Provider p LEFT JOIN p.membership a WHERE p.type IN (:types) AND a.federation IN (:feds) AND a.joinstate != '2' AND a.isBanned='0' AND a.isDisabled = '0' ORDER BY p.name ASC");
             $query->setParameter('types', $types);
             $query->setParameter('feds', $feds);
-            $query = $this->em->createQuery($dql);
             $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
             return $query->getResult();
         }
