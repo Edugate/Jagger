@@ -482,9 +482,19 @@ class J_queue
 
         }
         $provider[$i++]['header'] = lang('rr_servicelocations');
+        $servicetypesWithIndex = array('IDPArtifactResolutionService','DiscoveryResponse','AssertionConsumerService','SPArtifactResolutionService');
         foreach ($objData->getServiceLocations() as $service) {
-            $provider[$i]['name'] = $service->getType();
-            $provider[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . " ; index: ".$service->getOrder()."</small><br />";
+            $serviceType = $service->getType();
+            $provider[$i]['name'] = $serviceType;
+            if(in_array($serviceType,$servicetypesWithIndex))
+            {
+               $orderString = 'index: '.$service->getOrder();
+            }
+            else
+            {
+               $orderString = '';
+            }
+            $provider[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . " ".$orderString." </small><br />";
             $i++;
         }
         $provider[$i++]['header'] = lang('rr_supportednameids');
