@@ -167,7 +167,6 @@ class Attribute_policy extends MY_Controller {
      * for global policy requester should be set to 0
      */
     public function detail($idp_id, $attr_id, $type, $requester) {
-        $can_proceed = false;
         $data = array();
         $subtitle = "";
 
@@ -335,10 +334,6 @@ class Attribute_policy extends MY_Controller {
          * pull all attributes defitnitions 
          */
         $attrs = $this->tmp_attrs->getAttributes();
-        $attrs_sarray = array();
-        foreach ($attrs as $a) {
-            $attrs_sarray[$a->getId()] = $a->getName();
-        }
 
         $supportedAttrs = $this->tmp_arps->getSupportedAttributes($idp);
         $supportedArray = array();
@@ -789,7 +784,6 @@ class Attribute_policy extends MY_Controller {
             log_message('debug',  'wrong type:' . $type . ' (expected sp or fed)');
             show_error( 'wrong url request', 404);
         }
-        $tmp_attrs = new models\Attributes;
 
         $tmp_requirements = new models\AttributeRequirements;
         $idp = $this->tmp_providers->getOneIdPById($idp_id);
