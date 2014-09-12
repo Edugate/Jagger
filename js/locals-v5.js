@@ -609,11 +609,11 @@ var GINIT = {
                     result.text(xmlstr).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         containerCss: {
                             padding: 5,
-                            width: 800,
+                            width: 800
                         },
                         maxHeight: 800,
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["10%", ],
+                        position: ["10%"],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '500',
                         minWidth: '500',
@@ -681,12 +681,12 @@ var GINIT = {
                         if (data.returncode == "success")
                         {
                             document.getElementById(fvid).style.backgroundColor = "#00aa00";
-                            document.getElementById(fvid).style.borderColor     = "#00aa00";
-                            document.getElementById(fvid).disabled              = true;
+                            document.getElementById(fvid).style.borderColor = "#00aa00";
+                            document.getElementById(fvid).disabled = true;
                         } else if (data.returncode == "error")
                         {
                             document.getElementById(fvid).style.backgroundColor = "#aa0000";
-                            document.getElementById(fvid).style.borderColor     = "#aa0000";
+                            document.getElementById(fvid).style.borderColor = "#aa0000";
                         }
                         if (data.message)
                         {
@@ -1792,15 +1792,11 @@ $(document).ready(function() {
     img2 = new Image(220, 19);
     img2.src = baseurl + 'images/ajax-loader.gif';
 
-// Launch MODAL BOX if the Login Link is clicked
-//    $("#login_link").click(function() {
-//        $('#login_form').modal();
-//    });
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal(
                 {
                     Height: '500px',
-                    minHeight: '500px',
+                    minHeight: '500px'
                 }
         );
     }
@@ -1821,7 +1817,7 @@ $(document).ready(function() {
             error: function() {
                 $('#spinner').hide();
                 alert('Error occurred');
-            },
+            }
         });
         return false;
     });
@@ -1842,7 +1838,7 @@ $(document).ready(function() {
             error: function() {
                 $('#spinner').hide();
                 alert('Error ocured');
-            },
+            }
         });
         return false;
     });
@@ -1863,7 +1859,7 @@ $(document).ready(function() {
             error: function() {
                 $('#spinner').hide();
                 alert('Error ocured');
-            },
+            }
         });
         return false;
     });
@@ -1922,7 +1918,7 @@ $(document).ready(function() {
                     // Hide Gif Spinning Rotator
                     $('#ajax_loading').hide();
 
-                    if (msg == 'OK') // LOGIN OK?
+                    if (msg === 'OK') // LOGIN OK?
                     {
                         var login_response = '<div id="logged_in">' +
                                 '<div style="width: 350px; float: left; margin-left: 70px;">' +
@@ -1976,7 +1972,7 @@ $(document).ready(function() {
                 data: $("form#notificationaddform").serializeArray(),
                 success: function(data) {
                     $(".message").html(data);
-                    if (data == 'OK')
+                    if (data === 'OK')
                     {
                         $(this).foundation('reveal', 'close');
                         location.reload();
@@ -2044,19 +2040,19 @@ $(document).ready(function() {
                     success: function(data) {
                         if (!oko.hasClass('dis'))
                         {
-                            if ((data == "2" && (cell == "R" || cell == "D")) || (data == "1" && cell == "R"))
+                            if ((data === "2" && (cell === "R" || cell === "D")) || (data === "1" && cell === "R"))
                             {
                                 oko.attr('class', 'perm');
                             }
-                            else if ((data == "2c" && (cell == "R" || cell == "D")) || (data == "1c" && cell == "R"))
+                            else if ((data === "2c" && (cell === "R" || cell === "D")) || (data === "1c" && cell === "R"))
                             {
                                 oko.attr('class', 'spec');
                             }
-                            else if ((data == "1" && cell == "D") || (data == "0"))
+                            else if ((data === "1" && cell === "D") || (data === "0"))
                             {
                                 oko.attr('class', 'den');
                             }
-                            else if ((data == "1c" && cell == "D") || (data == "0c"))
+                            else if ((data === "1c" && cell === "D") || (data === "0c"))
                             {
                                 oko.attr('class', 'den');
                             }
@@ -2093,7 +2089,7 @@ $(document).ready(function() {
                 data: data,
                 success: function(data) {
                     if (data) {
-                        if (data == 'deactivated')
+                        if (data === 'deactivated')
                         {
                             $('button[value="disablefed"]').hide();
                             $('button[value="enablefed"]').show();
@@ -2101,7 +2097,7 @@ $(document).ready(function() {
                             $('td.fedstatusinactive').show();
                             $('show.fedstatusinactive').show();
                         }
-                        else if (data == 'activated')
+                        else if (data === 'activated')
                         {
                             $('button[value="disablefed"]').show();
                             $('button[value="enablefed"]').hide();
@@ -2109,7 +2105,7 @@ $(document).ready(function() {
                             $('td.fedstatusinactive').hide();
                             $('span.fedstatusinactive').hide();
                         }
-                        else if (data == 'todelete')
+                        else if (data === 'todelete')
                         {
                             $('button[value="disablefed"]').hide();
                             $('button[value="enablefed"]').hide();
@@ -3293,13 +3289,67 @@ $("a.afilter").click(function() {
 
 $('a.initiated').trigger('click');
 
-$('button.addnewlogo').click(function(){
+
+$('button[name="mrolebtn"]').click(function(e) {
+    var link = $(this).attr('value');
+    $.ajax({
+        type: "GET",
+        url: link,
+        timeout: 2500,
+        cache: false,
+        dataType: "json",
+        success: function(json) {
+            var rarray = new Array();
+             $.each(json, function(ig, vg) {
+                rarray.push(vg);
+                 
+             });
+            $("input[name='checkrole[]']").each(function() {
+                var val = $(this).attr('value');
+                var cc = $(this).attr('checked')
+                if(cc)
+                {
+                    alert(val);
+                }
+                
+                if ($.inArray(val, rarray) === -1) {
+                   
+                    $(this).attr("checked", false);
+
+                }
+                else
+                {
+                    $(this).attr("checked", true);
+                }
+            });
+            
+        }
+    });
+});
+
+$('button[name="updaterole"]').click(function(e){
+    e.preventDefault();
+    var form = $(this).parents('form:first');
+    var link = form.attr('action');
+    $.ajax({
+        type: 'POST',
+        url: link,
+        cache: false,
+        data: form.serializeArray(),
+        success: function(){
+               $('#mroles').foundation('reveal', 'close');
+    }
+   
+});
+ 
+});
+$('button.addnewlogo').click(function() {
     var f = $(this).closest('div.reviewlogo');
     var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
     var ftype = f.attr('id');
-    var type ;
-    var rname ='';
-    if(ftype === 'idpreviewlogo')
+    var type;
+    var rname = '';
+    if (ftype === 'idpreviewlogo')
     {
         type = 'idp';
     }
@@ -3308,12 +3358,12 @@ $('button.addnewlogo').click(function(){
         type = 'sp';
     }
     for (var i = 0; i < 5; i++)
-            rname += possible.charAt(Math.floor(Math.random() * possible.length));
-    
-    var logourl = f.find("input[name='"+type+"inputurl']").attr('value');
-    var logosize = f.find("input[name='"+type+"inputsize']").attr('value');
-    var logolang = f.find("select[name='"+type+"logolang']").val();
-    if(logolang==='0')
+        rname += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    var logourl = f.find("input[name='" + type + "inputurl']").attr('value');
+    var logosize = f.find("input[name='" + type + "inputsize']").attr('value');
+    var logolang = f.find("select[name='" + type + "logolang']").val();
+    if (logolang === '0')
     {
         var logolangtxt = 'unspec';
     }
@@ -3321,21 +3371,22 @@ $('button.addnewlogo').click(function(){
     {
         var logolangtxt = logolang;
     }
-    
-  
-    var hiddeninputurl = '<input type="hidden" name="f[uii]['+type+'sso][logo][n'+rname+'][url]" value="' + logourl + '">';
-    var hiddeninputsize = '<input type="hidden" name="f[uii]['+type+'sso][logo][n'+rname+'][size]" value="' + logosize + '">';
-    var hiddeninputlang = '<input type="hidden" name="f[uii]['+type+'sso][logo][n'+rname+'][lang]" value="' + logolang + '">';
-    var origblock = $('li#nlogo'+type+'row');
+
+
+    var hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logourl + '">';
+    var hiddeninputsize = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][size]" value="' + logosize + '">';
+    var hiddeninputlang = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][lang]" value="' + logolang + '">';
+    var origblock = $('li#nlogo' + type + 'row');
     var newblock = origblock.clone(true);
     newblock.removeAttr('id');
-    newblock.find('img').first().attr('src',logourl).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
-    newblock.find('div.logoinfo').first().append(''+logolangtxt+'<br />').append(logourl+'<br />').append(logosize+'<br />');
-    
+    newblock.find('img').first().attr('src', logourl).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
+    newblock.find('div.logoinfo').first().append('' + logolangtxt + '<br />').append(logourl + '<br />').append(logosize + '<br />');
+
     newblock.insertBefore(origblock).show();
-    
-    
+
+
 });
+
 
 $('button.getlogo').click(function() {
     var btnname = $(this).attr('name');
@@ -3407,7 +3458,7 @@ $('button.getlogo').click(function() {
                         hiddeninputsize = '<input type="hidden" name="spinputsize" value="' + sizeinfo + '">';
                         $("div#spreviewlogo div.imgsource").empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
                         $("div#spreviewlogo div.logoinfo").empty().append(sizeinfo);
-                        
+
                         logoreview.show();
                     }
                 }

@@ -224,6 +224,19 @@ class User {
         {
             $this->getRoles()->add($role);
         }
+
+        return $this;
+    }
+
+    public function unsetRole(AclRole $role)
+    {
+        $already_there = $this->getRoles()->contains($role);
+        if ($already_there)
+        {
+            $this->getRoles()->remove($role);    
+        }
+        return $this;
+        
     }
 
     /**
