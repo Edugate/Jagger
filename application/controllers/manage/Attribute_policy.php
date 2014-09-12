@@ -333,7 +333,6 @@ class Attribute_policy extends MY_Controller {
         /**
          * pull all attributes defitnitions 
          */
-        $attrs = $this->tmp_attrs->getAttributes();
 
         $supportedAttrs = $this->tmp_arps->getSupportedAttributes($idp);
         $supportedArray = array();

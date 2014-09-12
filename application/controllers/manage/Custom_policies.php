@@ -162,11 +162,6 @@ class Custom_policies extends MY_Controller {
 
 
             $supported_attrs = $this->tmp_arps->getSupportedAttributes($idp);
-            $attr_formdown = array();
-            foreach ($supported_attrs as $s)
-            {
-                $attr_formdown[$s->getAttribute()->getName()] = $s->getAttribute()->getFullname();
-            }
             $data['idp_id'] = $idp->getId();
             $data['idp_name'] = $idp->getName();
             $data['locked'] = $locked;

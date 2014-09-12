@@ -22,7 +22,6 @@ class Attribute_requirement extends MY_Controller {
 
     private $current_sp;
     private $current_fed;
-    private $current_idp;
     private $log_prefix;
 
     public function __construct() {

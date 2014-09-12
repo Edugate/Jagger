@@ -300,7 +300,6 @@ class Entityedit extends MY_Controller {
 
                         $tmpurl = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['order']);
-                        $tmpdefaultexist = array_key_exists('default', $y['f']['srv']['AssertionConsumerService']['' . $k . '']);
                         if (!empty($tmpurl))
                         {
                             if (!empty($v['order']))
@@ -359,7 +358,6 @@ class Entityedit extends MY_Controller {
                             {
                                 $spartindexes[] = $v['order'];
                             }
-                            $sparturls[] = 1;
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in SP ArtifactResolutionService is not numeric';
@@ -394,7 +392,6 @@ class Entityedit extends MY_Controller {
                             {
                                 $idpartindexes[] = $v['order'];
                             }
-                            $idparturls[] = 1;
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in IDP ArtifactResolutionService is not numeric';
@@ -434,7 +431,6 @@ class Entityedit extends MY_Controller {
                             {
                                 $drindexes[] = $v['order'];
                             }
-                            $drurls[] = 1;
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in DiscoveryResponse is not numeric';
@@ -985,7 +981,6 @@ class Entityedit extends MY_Controller {
                     $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
                     if (count($domlist) == 1)
                     {
-                        $d = array();
                         foreach ($domlist as $l)
                         {
                             $entarray = $this->metadata2array->entityDOMToArray($l, TRUE);
@@ -1052,10 +1047,6 @@ class Entityedit extends MY_Controller {
                             $q->setName('unknown');
                         }
                         $ttype = $ent->getType();
-                        $mm = $ent->getCoc();
-
-
-
 
                         if (!empty($y['federation']))
                         {
@@ -1136,7 +1127,6 @@ class Entityedit extends MY_Controller {
                         try
                         {
                             $this->em->flush();
-                            $redirect_to = current_url();
                             redirect(base_url() . 'manage/entityedit/registersuccess');
                         }
                         catch (Exception $e)
