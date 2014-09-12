@@ -121,10 +121,25 @@ class Entitystate extends MY_Controller {
         {
             show_error('Provider not found', 404);
         }
-        $lang = MY_Controller::getLang();
-        $titlename = $this->entity->getNameToWebInLang($lang,$this->entity->getType());
+        $type = $this->entity->getType();
+        if(strcasecmp($type,'SP')==0)
+        {
+              $titleprefix = lang('serviceprovider');
+        }
+        elseif(strcasecmp($type,'IDP')==0)
+        {
+              $titleprefix = lang('identityprovider');
 
-        $data['titlepage'] = lang('serviceprovider').': <a href="'.base_url().'providers/detail/show/'.$this->entity->getId().'">'.$titlename.'</a>';
+        }
+        else
+        {
+             $titleprefix  = '';
+
+        }
+        $lang = MY_Controller::getLang();
+        $titlename = $this->entity->getNameToWebInLang($lang,$type);
+
+        $data['titlepage'] = $titleprefix.': <a href="'.base_url().'providers/detail/show/'.$this->entity->getId().'">'.$titlename.'</a>';
         $data['subtitlepage'] = lang('rr_status_mngmt');
         $data['entid'] = $id;
         $data['current_locked'] = $this->entity->getLocked();
