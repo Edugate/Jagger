@@ -3307,19 +3307,16 @@ $('button[name="mrolebtn"]').click(function(e) {
             $("input[name='checkrole[]']").each(function() {
                 var val = $(this).attr('value');
                 var cc = $(this).attr('checked')
-                if(cc)
-                {
-                    alert(val);
-                }
+               
                 
                 if ($.inArray(val, rarray) === -1) {
                    
-                    $(this).attr("checked", false);
+                    $(this).prop("checked", false);
 
                 }
                 else
                 {
-                    $(this).attr("checked", true);
+                    $(this).prop("checked", true);
                 }
             });
             
@@ -3336,8 +3333,10 @@ $('button[name="updaterole"]').click(function(e){
         url: link,
         cache: false,
         data: form.serializeArray(),
-        success: function(){
+        dataType: "json",
+        success: function(json){  
                $('#mroles').foundation('reveal', 'close');
+               
     }
    
 });

@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,7 +17,8 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Users extends MY_Controller {
+class Users extends MY_Controller
+{
 
     function __construct()
     {
@@ -73,6 +73,73 @@ class Users extends MY_Controller {
         return true;
     }
 
+    private function ajaxplusowner($encoded_user)
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            return false;
+        }
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin)
+        {
+            return false;
+        }
+        $currnetUser = $_SESSION['username'];
+        $decodedUser = base64url_decode(trim($encoded_user));
+        if (!strcasecmp($currnetUser, $decodedUser) != 0)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private function getRolenamesToJson(models\User $user, $range = null)
+    {
+        $roles = $user->getRoles();
+        $result = array();
+        if (!empty($range) && $range === 'system')
+        {
+            foreach ($roles as $r)
+            {
+                $rtype = $r->getType();
+                if ($rtype === 'system')
+                {
+                    $result[] = $r->getName();
+                }
+            }
+        }
+        else
+        {
+            foreach ($roles as $r)
+            {
+                $result[] = $r->getName();
+            }
+        }
+        return json_encode($result);
+    }
+
+    public function currentRoles($encodeduser)
+    {
+        $encodeduser = strip_tags($encodeduser);
+        if (!$this->ajaxplusadmin() && !$this->ajaxplusowner($encodeduser))
+        {
+            set_status_header(403);
+            echo 'denied';
+            return;
+        }
+        $username = base64url_decode(trim($encodeduser));
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        if (empty($user))
+        {
+            set_status_header(404);
+            echo 'user not found';
+            return;
+        }
+        $result = $this->getRolenamesToJson($user);
+        echo $result;
+        return;
+    }
+
     public function currentSroles($encodeduser)
     {
         if (!$this->ajaxplusadmin())
@@ -87,19 +154,10 @@ class Users extends MY_Controller {
         {
             set_status_header(404);
             echo 'user not found';
-            return;         
+            return;
         }
-        $roles = $user->getRoles();
-        $result = array();
-        foreach($roles as $r)
-        {
-            $rtype = $r->getType();
-            if($rtype ==='system')
-            {
-                $result[] = $r->getName();
-            }
-        }
-        echo json_encode($result);
+        $result = $this->getRolenamesToJson($user, 'system');
+        echo $result;
         return;
     }
 
@@ -117,27 +175,32 @@ class Users extends MY_Controller {
         {
             set_status_header(404);
             echo 'user not found';
-            return;         
+            return;
         }
-        
+
         $inputroles = $this->input->post('checkrole[]');
-        
-        
-        $roles = $user->getRoles();
-        foreach($roles as $r)
+        $currentRoles = $user->getRoles();
+        foreach ($currentRoles as $r)
         {
-            log_message('debug', 'DUPA '.$r->getName());
-            $rname = $r->getName();
-            if(!in_array($rname, $inputroles))
+            $currentRolename = $r->getName();
+            $roleType = $r->getType();
+            if (!in_array($currentRolename, $inputroles) && ($roleType === 'system'))
             {
+                log_message('debug', 'DUPA ' . $currentRolename . ' not  in inputroles unsetting role');
                 $user->unsetRole($r);
-                
             }
-            $this->em->persist($user);
         }
-        $sysroles = $this->em->getRepository("models\AclRole")->findBy(array('type'=>'system'));
+        $sysroles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
+        foreach ($sysroles as $newRole)
+        {
+            $newRolename = $newRole->getName();
+            if (in_array($newRolename, $inputroles))
+            {
+                $user->setRole($newRole);
+            }
+        }
+        $this->em->persist($user);
         $this->em->flush();
-         
     }
 
     public function add()
@@ -370,7 +433,7 @@ class Users extends MY_Controller {
 
         if ($isAdmin)
         {
-            $manageBtn = '';//$this->_manage_role_btn($encoded_username);
+            $manageBtn = $this->_manage_role_btn($encoded_username);
         }
         else
         {
@@ -478,10 +541,10 @@ class Users extends MY_Controller {
 
     private function _manage_role_btn($encodeuser)
     {
-        $formTarget = base_url() . 'manage/users/updaterole/'.$encodeuser;
+        $formTarget = base_url() . 'manage/users/updaterole/' . $encodeuser;
         $roles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
         //$r = '<a href="#" data-reveal-id="mroles" class="button tiny">Manage roles</a>';
-        $r = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="'.base_url().'manage/users/currentSroles/'.$encodeuser.'">Manage roles</button>';
+        $r = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">Manage roles</button>';
         $r .= '<div id="mroles" class="reveal-modal tiny" data-reveal>';
         $r .= '<h2>Manage roles.</h2>';
         $r .= '<p class="lead">Your couch. It is mine.</p>';

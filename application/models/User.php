@@ -233,7 +233,7 @@ class User {
         $already_there = $this->getRoles()->contains($role);
         if ($already_there)
         {
-            $this->getRoles()->remove($role);    
+            $this->getRoles()->removeElement($role);    
         }
         return $this;
         
