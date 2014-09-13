@@ -275,7 +275,7 @@ class Entityedit extends MY_Controller {
                 }
                 if (array_key_exists('SPSingleLogoutService', $y['f']['srv']))
                 {
-                   
+
                     foreach ($y['f']['srv']['SPSingleLogoutService'] as $k => $v)
                     {
                         $nospslo[] = $y['f']['srv']['SPSingleLogoutService']['' . $k . '']['bind'];
@@ -300,7 +300,6 @@ class Entityedit extends MY_Controller {
 
                         $tmpurl = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['order']);
-                        $tmpdefaultexist = array_key_exists('default', $y['f']['srv']['AssertionConsumerService']['' . $k . '']);
                         if (!empty($tmpurl))
                         {
                             if (!empty($v['order']))
@@ -359,7 +358,6 @@ class Entityedit extends MY_Controller {
                             {
                                 $spartindexes[] = $v['order'];
                             }
-                            $sparturls[] = 1;
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in SP ArtifactResolutionService is not numeric';
@@ -394,7 +392,6 @@ class Entityedit extends MY_Controller {
                             {
                                 $idpartindexes[] = $v['order'];
                             }
-                            $idparturls[] = 1;
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in IDP ArtifactResolutionService is not numeric';
@@ -434,7 +431,6 @@ class Entityedit extends MY_Controller {
                             {
                                 $drindexes[] = $v['order'];
                             }
-                            $drurls[] = 1;
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in DiscoveryResponse is not numeric';
@@ -490,55 +486,49 @@ class Entityedit extends MY_Controller {
 
     private function _save_draft($id, $data)
     {
-        if (isset($data['lname']))
+        $attrs1 = array('lname', 'ldisplayname', 'lhelpdesk', 'regpol', 'coc');
+        foreach ($attrs1 as $a1)
         {
-            $data['lname'] = array_filter($data['lname']);
+            if (isset($data['' . $a1 . '']))
+            {
+                $data['' . $a1 . ''] = array_filter($data['' . $a1 . '']);
+            }
+            else
+            {
+                $data['' . $a1 . ''] = array();
+            }
         }
-        else
+        //  crt
+        $crts = array('idpsso', 'aa', 'spsso');
+        foreach ($crts as $a1)
         {
-            $data['lname'] = array();
+            if (isset($data['crt']['' . $a1 . '']))
+            {
+                $data['crt']['' . $a1 . ''] = array_filter($data['crt']['' . $a1 . '']);
+            }
+            else
+            {
+                $data['crt']['' . $a1 . ''] = array();
+            }
         }
-        if (isset($data['ldisplayname']))
+        $srvs = array(
+            'AssertionConsumerService', 'RequestInitiator',
+            'SPArtifactResolutionService', 'IDPArtifactResolutionService',
+            'IDPAttributeService', 'DiscoveryResponse',
+            'SingleSignOnService', 'IDPSingleLogoutService', 'SPSingleLogoutService'
+        );
+        foreach ($srvs as $a1)
         {
-            $data['ldisplayname'] = array_filter($data['ldisplayname']);
+            if (isset($data['srv']['' . $a1 . '']))
+            {
+                $data['srv']['' . $a1 . ''] = array_filter($data['srv']['' . $a1 . '']);
+            }
+            else
+            {
+                $data['srv']['' . $a1 . ''] = array();
+            }
         }
-        else
-        {
-            $data['ldisplayname'] = array();
-        }
-        if (isset($data['lhelpdesk']))
-        {
-            $data['lhelpdesk'] = array_filter($data['lhelpdesk']);
-        }
-        else
-        {
-            $data['lhelpdesk'] = array();
-        }
-        if (isset($data['crt']['idpsso']))
-        {
-            $data['crt']['idpsso'] = array_filter($data['crt']['idpsso']);
-        }
-        else
-        {
-            $data['crt']['idpsso'] = array();
-        }
-        if (isset($data['crt']['aa']))
-        {
-            $data['crt']['aa'] = array_filter($data['crt']['aa']);
-        }
-        else
-        {
-            $data['crt']['aa'] = array();
-        }
-        if (isset($data['crt']['spsso']))
-        {
-            $data['crt']['spsso'] = array_filter($data['crt']['spsso']);
-        }
-        else
-        {
-            $data['crt']['spsso'] = array();
-        }
-
+        
         if (isset($data['uii']['idpsso']['desc']))
         {
             $data['uii']['idpsso']['desc'] = array_filter($data['uii']['idpsso']['desc']);
@@ -620,23 +610,7 @@ class Entityedit extends MY_Controller {
         {
             $data['prvurl']['idpsso'] = array();
         }
-        if (isset($data['regpol']))
-        {
-            $data['regpol'] = array_filter($data['regpol']);
-        }
-        else
-        {
-            $data['regpol'] = array();
-        }
 
-        if (isset($data['coc']))
-        {
-            $data['coc'] = array_filter($data['coc']);
-        }
-        else
-        {
-            $data['coc'] = array();
-        }
         if (isset($data['prvurl']['spsso']))
         {
             $data['prvurl']['spsso'] = array_filter($data['prvurl']['spsso']);
@@ -644,84 +618,6 @@ class Entityedit extends MY_Controller {
         else
         {
             $data['prvurl']['spsso'] = array();
-        }
-        if (isset($data['srv']['AssertionConsumerService']))
-        {
-            $data['srv']['AssertionConsumerService'] = array_filter($data['srv']['AssertionConsumerService']);
-        }
-        else
-        {
-            $data['srv']['AssertionConsumerService'] = array();
-        }
-
-
-        if (isset($data['srv']['RequestInitiator']))
-        {
-            $data['srv']['RequestInitiator'] = array_filter($data['srv']['RequestInitiator']);
-        }
-        else
-        {
-            $data['srv']['RequestInitiator'] = array();
-        }
-
-        if (isset($data['srv']['SPArtifactResolutionService']))
-        {
-            $data['srv']['SPArtifactResolutionService'] = array_filter($data['srv']['SPArtifactResolutionService']);
-        }
-        else
-        {
-            $data['srv']['SPArtifactResolutionService'] = array();
-        }
-        if (isset($data['srv']['IDPArtifactResolutionService']))
-        {
-            $data['srv']['IDPArtifactResolutionService'] = array_filter($data['srv']['IDPArtifactResolutionService']);
-        }
-        else
-        {
-            $data['srv']['IDPArtifactResolutionService'] = array();
-        }
-        if (isset($data['srv']['IDPAttributeService']))
-        {
-            $data['srv']['IDPAttributeService'] = array_filter($data['srv']['IDPAttributeService']);
-        }
-        else
-        {
-            $data['srv']['IDPAttributeService'] = array();
-        }
-        if (isset($data['srv']['DiscoveryResponse']))
-        {
-            $data['srv']['DiscoveryResponse'] = array_filter($data['srv']['DiscoveryResponse']);
-        }
-        else
-        {
-            $data['srv']['DiscoveryResponse'] = array();
-        }
-        if (isset($data['srv']['SingleSignOnService']))
-        {
-
-            $data['srv']['SingleSignOnService'] = array_filter($data['srv']['SingleSignOnService']);
-        }
-        else
-        {
-            $data['srv']['SingleSignOnService'] = array();
-        }
-        if (isset($data['srv']['IDPSingleLogoutService']))
-        {
-
-            $data['srv']['IDPSingleLogoutService'] = array_filter($data['srv']['IDPSingleLogoutService']);
-        }
-        else
-        {
-            $data['srv']['IDPSingleLogoutService'] = array();
-        }
-        if (isset($data['srv']['SPSingleLogoutService']))
-        {
-
-            $data['srv']['SPSingleLogoutService'] = array_filter($data['srv']['SPSingleLogoutService']);
-        }
-        else
-        {
-            $data['srv']['SPSingleLogoutService'] = array();
         }
         if (isset($data['prot']['spsso']))
         {
@@ -985,7 +881,6 @@ class Entityedit extends MY_Controller {
                     $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
                     if (count($domlist) == 1)
                     {
-                        $d = array();
                         foreach ($domlist as $l)
                         {
                             $entarray = $this->metadata2array->entityDOMToArray($l, TRUE);
@@ -1052,10 +947,6 @@ class Entityedit extends MY_Controller {
                             $q->setName('unknown');
                         }
                         $ttype = $ent->getType();
-                        $mm = $ent->getCoc();
-
-
-
 
                         if (!empty($y['federation']))
                         {
@@ -1136,7 +1027,6 @@ class Entityedit extends MY_Controller {
                         try
                         {
                             $this->em->flush();
-                            $redirect_to = current_url();
                             redirect(base_url() . 'manage/entityedit/registersuccess');
                         }
                         catch (Exception $e)

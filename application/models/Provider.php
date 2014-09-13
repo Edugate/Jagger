@@ -3329,7 +3329,6 @@ class Provider {
         /**
          * defauls values
          */
-        $attrs_in_sp = FALSE;
         $type = $this->type;
   
         $s_metadata = null;
@@ -3636,10 +3635,8 @@ class Provider {
         }
         if (array_key_exists('desc', $ext) && is_array($ext['desc']))
         {
-            $ldesc = array();
             foreach ($ext['desc'] as $k => $p)
             {
-                $ldesc[$p['lang']] = $p['val'];
                 $extdesc = new ExtendMetadata;
                 $extdesc->setNamespace('mdui');
                 $extdesc->setType($type);
