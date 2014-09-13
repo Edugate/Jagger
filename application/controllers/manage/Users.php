@@ -28,7 +28,7 @@ class Users extends MY_Controller
         $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'table', 'zacl'));
     }
 
-    private function _modify_submit_validate()
+    private function modifySubmitValidate()
     {
         $this->form_validation->set_rules('oldpassword', '' . lang('rr_oldpassword') . '', 'min_length[5]|max_length[50]');
         $this->form_validation->set_rules('password', '' . lang('rr_password') . '', 'required|min_length[5]|max_length[50]|matches[passwordconf]');
@@ -36,7 +36,7 @@ class Users extends MY_Controller
         return $this->form_validation->run();
     }
 
-    private function _add_submit_validate()
+    private function addSubmitValidate()
     {
         log_message('debug', '(add user) validating form initialized');
         $usernameMinLength = $this->config->item('username_min_length') ? : 5;
@@ -219,7 +219,7 @@ class Users extends MY_Controller
         }
         else
         {
-            if (!$this->_add_submit_validate())
+            if (!$this->addSubmitValidate())
             {
                 $form_attributes = array('id' => 'formver2', 'class' => 'register');
                 $action = base_url() . "manage/users/add";
@@ -433,7 +433,7 @@ class Users extends MY_Controller
 
         if ($isAdmin)
         {
-            $manageBtn = $this->_manage_role_btn($encoded_username);
+            $manageBtn = $this->manageRoleBtn($encoded_username);
         }
         else
         {
@@ -539,11 +539,10 @@ class Users extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    private function _manage_role_btn($encodeuser)
+    private function manageRoleBtn($encodeuser)
     {
         $formTarget = base_url() . 'manage/users/updaterole/' . $encodeuser;
         $roles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
-        //$r = '<a href="#" data-reveal-id="mroles" class="button tiny">Manage roles</a>';
         $r = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">Manage roles</button>';
         $r .= '<div id="mroles" class="reveal-modal tiny" data-reveal>';
         $r .= '<h2>Manage roles.</h2>';
@@ -602,14 +601,14 @@ class Users extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    private function _remove_submit_validate()
+    private function removeSubmitValidate()
     {
         log_message('debug', '(remove user) validating form initialized');
         $this->form_validation->set_rules('username', 'Username', 'required|trim|max_length[128]|user_username_exists[username]');
         return $this->form_validation->run();
     }
 
-    private function _accessmodify_submit_validate()
+    private function accessmodifySubmitValidate()
     {
         log_message('debug', '(modify authz type) validating form initialized');
         $this->form_validation->set_rules('authz', 'Access', 'xss');
@@ -632,7 +631,7 @@ class Users extends MY_Controller
         }
         else
         {
-            if (!$this->_remove_submit_validate())
+            if (!$this->removeSubmitValidate())
             {
                 $form_attributes = array('id' => 'formver2', 'class' => 'register');
                 $action = base_url() . "manage/users/remove";
@@ -702,7 +701,7 @@ class Users extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
-        if ($this->_accessmodify_submit_validate() === TRUE)
+        if ($this->accessmodifySubmitValidate() === TRUE)
         {
             $i = $this->input->post('authz');
         }
@@ -760,7 +759,7 @@ class Users extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
-        if (!$this->_modify_submit_validate())
+        if (!$this->modifySubmitValidate())
         {
             $form_attributes = array('id' => 'formver2', 'class' => 'register');
             $action = base_url() . "manage/users/passedit/" . $encoded_username;
@@ -807,19 +806,5 @@ class Users extends MY_Controller
         }
     }
 
-    private function _add()
-    {
-        
-    }
-
-    private function _modify()
-    {
-        
-    }
-
-    public function submit($userid)
-    {
-        
-    }
 
 }
