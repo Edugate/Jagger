@@ -3336,7 +3336,15 @@ $('button[name="updaterole"]').click(function(e){
         dataType: "json",
         success: function(json){  
                $('#mroles').foundation('reveal', 'close');
-               
+               if(json)
+               {
+                   var txtToReplace = '';
+                   $.each(json,function(i,v)
+                   {
+                       txtToReplace = txtToReplace+v+',';
+                   });
+                   $('span#currentroles').empty().append(txtToReplace.substring(0,txtToReplace.length - 1));
+               }
     }
    
 });

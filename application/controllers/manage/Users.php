@@ -186,7 +186,6 @@ class Users extends MY_Controller
             $roleType = $r->getType();
             if (!in_array($currentRolename, $inputroles) && ($roleType === 'system'))
             {
-                log_message('debug', 'DUPA ' . $currentRolename . ' not  in inputroles unsetting role');
                 $user->unsetRole($r);
             }
         }
@@ -201,6 +200,9 @@ class Users extends MY_Controller
         }
         $this->em->persist($user);
         $this->em->flush();
+        $r = $this->getRolenamesToJson($user);
+        echo $r;
+        return;
     }
 
     public function add()
@@ -411,25 +413,23 @@ class Users extends MY_Controller
         $federated_access = $user->getFederated();
         $i = 0;
         $det = array();
-        $det[$i++] = array('data' => array('data' => 'Basic', 'class' => 'highlight', 'colspan' => 2));
-
-        $det[$i++] = array('key' => 'Username', 'val' => $user->getUsername());
+        $det[$i++] = array('key' => lang('rr_username'), 'val' => $user->getUsername());
         if ($write_access)
         {
-            $det[$i++] = array('key' => 'password', 'val' => $passedit_link);
+            $det[$i++] = array('key' => lang('rr_password'), 'val' => $passedit_link);
         }
-        $det[$i++] = array('key' => 'Fullname', 'val' => $user->getFullname());
-        $det[$i++] = array('key' => 'Email', 'val' => $user->getEmail());
+        $det[$i++] = array('key' => ''.lang('rr_userfullname').'', 'val' => $user->getFullname());
+        $det[$i++] = array('key' => ''.lang('rr_uemail').'', 'val' => $user->getEmail());
         $access_type_str = array();
         if ($local_access)
         {
-            $access_type_str[] = "Local authentication";
+            $access_type_str[] = lang('rr_local_authn');
         }
         if ($federated_access)
         {
-            $access_type_str[] = "Federated access";
+            $access_type_str[] = lang('federated_access');
         }
-        $det[$i++] = array('key' => 'Access types', 'val' => implode(", ", $access_type_str));
+        $det[$i++] = array('key' => ''.lang('rr_typeaccess').'', 'val' => implode(", ", $access_type_str));
 
         if ($isAdmin)
         {
@@ -439,7 +439,7 @@ class Users extends MY_Controller
         {
             $manageBtn = '';
         }
-        $det[$i++] = array('key' => 'Assigned roles', 'val' => implode(", ", $user->getRoleNames()) . ' ' . $manageBtn);
+        $det[$i++] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">'.implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
         $det[$i++] = array('key' => lang('rrnotifications'), 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encoded_username . '', lang('rrmynotifications')));
         $det[$i++] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
         $bookmarks = '';
@@ -453,7 +453,7 @@ class Users extends MY_Controller
         {
             if (array_key_exists('idp', $board) && is_array($board['idp']))
             {
-                $bookmarks .= '<p><ul><b>' . lang('identityproviders') . '</b>';
+                $bookmarks .= '<p><ul class="no-bullet"><b>' . lang('identityproviders') . '</b>';
                 foreach ($board['idp'] as $key => $value)
                 {
                     $bookmarks .= '<li><a href="' . base_url() . 'providers/detail/show/' . $key . '">' . $value['name'] . '</a><br /> <small>' . $value['entity'] . '</small></li>';
@@ -462,7 +462,7 @@ class Users extends MY_Controller
             }
             if (array_key_exists('sp', $board) && is_array($board['sp']))
             {
-                $bookmarks .= '<p><ul><b>' . lang('serviceproviders') . '</b>';
+                $bookmarks .= '<p><ul class="no-bullet"><b>' . lang('serviceproviders') . '</b>';
                 foreach ($board['sp'] as $key => $value)
                 {
                     $bookmarks .= '<li><a href="' . base_url() . 'providers/detail/show/' . $key . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
@@ -471,7 +471,7 @@ class Users extends MY_Controller
             }
             if (array_key_exists('fed', $board) && is_array($board['fed']))
             {
-                $bookmarks .= '<p><ul><b>' . lang('federations') . '</b>';
+                $bookmarks .= '<p><ul class="no-bullet"><b>' . lang('federations') . '</b>';
                 foreach ($board['fed'] as $key => $value)
                 {
                     $bookmarks .= '<li><a href="' . base_url() . 'federations/manage/show/' . $value['url'] . '">' . $value['name'] . '</a></li>';
@@ -479,17 +479,17 @@ class Users extends MY_Controller
                 $bookmarks .= '</ul></p>';
             }
         }
-        $det[$i++] = array('key' => 'Bookmarked', 'val' => $bookmarks);
+        $det[$i++] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
 
 
-        $det[$i++] = array('data' => array('data' => 'Authn logs - last ' . $limit_authn, 'class' => 'highlight', 'colspan' => 2));
+        $det[$i++] = array('data' => array('data' => lang('authnlogs').' - '.lang('rr_lastrecent').' '. $limit_authn, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authn_logs as $ath)
         {
             $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U') + j_auth::$timeOffset);
             $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
             $det[$i++] = array('key' => $date, 'val' => $detail);
         }
-        $det[$i++] = array('data' => array('data' => 'Action Logs', 'class' => 'highlight', 'colspan' => 2));
+        $det[$i++] = array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2));
         foreach ($action_logs as $ath)
         {
             $subtype = $ath->getSubType();
@@ -543,10 +543,9 @@ class Users extends MY_Controller
     {
         $formTarget = base_url() . 'manage/users/updaterole/' . $encodeuser;
         $roles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
-        $r = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">Manage roles</button>';
+        $r = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">'.lang('btnmanageroles').'</button>';
         $r .= '<div id="mroles" class="reveal-modal tiny" data-reveal>';
-        $r .= '<h2>Manage roles.</h2>';
-        $r .= '<p class="lead">Your couch. It is mine.</p>';
+        $r .= '<h3>'.lang('rr_manageroles').'</h3>';
         $r .= form_open($formTarget);
         foreach ($roles as $v)
         {
@@ -805,6 +804,5 @@ class Users extends MY_Controller
             }
         }
     }
-
 
 }
