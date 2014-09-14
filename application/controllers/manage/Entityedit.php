@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,7 +17,8 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Entityedit extends MY_Controller {
+class Entityedit extends MY_Controller
+{
 
     protected $current_site;
     protected $tmp_providers;
@@ -344,7 +344,6 @@ class Entityedit extends MY_Controller {
                 if (array_key_exists('SPArtifactResolutionService', $y['f']['srv']))
                 {
                     $spartindexes = array();
-                    $sparturls = array();
                     foreach ($y['f']['srv']['SPArtifactResolutionService'] as $k => $v)
                     {
                         $this->form_validation->set_rules('f[srv][SPArtifactResolutionService][' . $k . '][url]', 'SP ' . lang('ArtifactResolutionService') . ' URL', 'trim|max_length[254]|valid_url');
@@ -378,7 +377,6 @@ class Entityedit extends MY_Controller {
                 if (array_key_exists('IDPArtifactResolutionService', $y['f']['srv']))
                 {
                     $idpartindexes = array();
-                    $idparturls = array();
                     foreach ($y['f']['srv']['IDPArtifactResolutionService'] as $k => $v)
                     {
                         $this->form_validation->set_rules('f[srv][IDPArtifactResolutionService][' . $k . '][url]', 'IDP ArtifactResolutionService URL', 'trim|max_length[254]|valid_url');
@@ -409,19 +407,15 @@ class Entityedit extends MY_Controller {
                         }
                     }
                 }
-
-
                 if (array_key_exists('DiscoveryResponse', $y['f']['srv']))
                 {
                     $drindexes = array();
-                    $drurls = array();
 
                     foreach ($y['f']['srv']['DiscoveryResponse'] as $k => $v)
                     {
                         $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][url]', 'DiscoveryResponse URL', 'trim|required|max_length[254]|valid_url');
                         $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][bind]', 'DiscoveryResponse Binding protocol', 'trim|required|xss_clean');
                         $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][order]', 'DiscoveryResponse Index', 'trim|required|numeric|xss_clean');
-
                         $tmpurl = trim($y['f']['srv']['DiscoveryResponse']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['DiscoveryResponse']['' . $k . '']['order']);
 
@@ -438,7 +432,7 @@ class Entityedit extends MY_Controller {
                             }
                         }
                     }
-                    if ($this->type != 'IDP')
+                    if (strcasecmp($this->type ,'IDP')!=0)
                     {
                         if (count($drindexes) != count(array_unique($drindexes)))
                         {
@@ -456,7 +450,7 @@ class Entityedit extends MY_Controller {
                 }
             }
             $result = $this->form_validation->run();
-            if ($this->type != 'SP')
+            if (strcasecmp($this->type, 'SP') != 0)
             {
 
                 if (empty($nosso) && !$staticisdefault)
@@ -512,9 +506,8 @@ class Entityedit extends MY_Controller {
             }
         }
         $srvs = array(
-            'AssertionConsumerService', 'RequestInitiator',
-            'SPArtifactResolutionService', 'IDPArtifactResolutionService',
-            'IDPAttributeService', 'DiscoveryResponse',
+            'AssertionConsumerService', 'RequestInitiator', 'SPArtifactResolutionService',
+            'IDPArtifactResolutionService', 'IDPAttributeService', 'DiscoveryResponse',
             'SingleSignOnService', 'IDPSingleLogoutService', 'SPSingleLogoutService'
         );
         foreach ($srvs as $a1)
@@ -528,40 +521,24 @@ class Entityedit extends MY_Controller {
                 $data['srv']['' . $a1 . ''] = array();
             }
         }
-        
-        if (isset($data['uii']['idpsso']['desc']))
+        // uii
+        $uiitTypes = array('idpsso', 'spsso');
+        $uiiSubTypes = array('desc', 'logo', 'helpdesk', 'displayname');
+        foreach ($uiitTypes as $t)
         {
-            $data['uii']['idpsso']['desc'] = array_filter($data['uii']['idpsso']['desc']);
-        }
-        else
-        {
-            $data['uii']['idpsso']['desc'] = array();
-        }
-        if (isset($data['uii']['idpsso']['logo']))
-        {
-            $data['uii']['idpsso']['logo'] = array_filter($data['uii']['idpsso']['logo']);
-        }
-        else
-        {
-            $data['uii']['idpsso']['logo'] = array();
-        }
+            foreach ($uiiSubTypes as $p)
+            {
+                if (isset($data['uii'][''.$t.''][''.$p.'']))
+                {
+                    $data['uii'][''.$t.''][''.$p.''] = array_filter($data['uii'][''.$t.''][''.$p.'']);
+                }
+                else
+                {
+                    $data['uii'][''.$t.''][''.$p.''] = array();
+                }
+            }
+        }     
 
-        if (isset($data['uii']['idpsso']['helpdesk']))
-        {
-            $data['uii']['idpsso']['helpdesk'] = array_filter($data['uii']['idpsso']['helpdesk']);
-        }
-        else
-        {
-            $data['uii']['idpsso']['helpdesk'] = array();
-        }
-        if (isset($data['uii']['idpsso']['displayname']))
-        {
-            $data['uii']['idpsso']['displayname'] = array_filter($data['uii']['idpsso']['displayname']);
-        }
-        else
-        {
-            $data['uii']['idpsso']['displayname'] = array();
-        }
         if (isset($data['prvurl']['idpsso']))
         {
             $data['prvurl']['idpsso'] = array_filter($data['prvurl']['idpsso']);
@@ -569,38 +546,6 @@ class Entityedit extends MY_Controller {
         else
         {
             $data['prvurl']['idpsso'] = array();
-        }
-        if (isset($data['uii']['spsso']['desc']))
-        {
-            $data['uii']['spsso']['desc'] = array_filter($data['uii']['spsso']['desc']);
-        }
-        else
-        {
-            $data['uii']['spsso']['desc'] = array();
-        }
-        if (isset($data['uii']['spsso']['helpdesk']))
-        {
-            $data['uii']['spsso']['helpdesk'] = array_filter($data['uii']['spsso']['helpdesk']);
-        }
-        else
-        {
-            $data['uii']['spsso']['helpdesk'] = array();
-        }
-        if (isset($data['uii']['spsso']['displayname']))
-        {
-            $data['uii']['spsso']['displayname'] = array_filter($data['uii']['spsso']['displayname']);
-        }
-        else
-        {
-            $data['uii']['spsso']['displayname'] = array();
-        }
-        if (isset($data['uii']['spsso']['logo']))
-        {
-            $data['uii']['spsso']['logo'] = array_filter($data['uii']['spsso']['logo']);
-        }
-        else
-        {
-            $data['uii']['spsso']['logo'] = array();
         }
         if (isset($data['prvurl']['idpsso']))
         {

@@ -3017,21 +3017,22 @@ class Provider {
 
         foreach ($services as $srv)
         {
-            if (strcmp($srv->getType(), 'SingleSignOnService') == 0)
+            $srv_type = $srv->getType();
+            if (strcmp($srv_type, 'SingleSignOnService') == 0)
             {
                 $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleSignOnService');
                 $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
                 $ServiceLocation_Node->setAttribute("Location", $srv->getUrl());
                 $tmpserorder['sso'][] = $ServiceLocation_Node;
             }
-            elseif ($srv->getType() === 'IDPSingleLogoutService')
+            elseif ($srv_type === 'IDPSingleLogoutService')
             {
                 $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleLogoutService');
                 $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
                 $ServiceLocation_Node->setAttribute("Location", $srv->getUrl());
                 $tmpserorder['logout'][] = $ServiceLocation_Node;
             }
-            elseif($srv->getType() === 'IDPArtifactResolutionService')
+            elseif($srv_type === 'IDPArtifactResolutionService')
             {
                 $ServiceLocation_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ArtifactResolutionService');
                 $ServiceLocation_Node->setAttribute("Binding", $srv->getBindingName());
