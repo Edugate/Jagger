@@ -593,14 +593,12 @@ class Arp_generator {
         $global_policy = array();
         $tmp_attrs = new models\Attributes();
         $tmp_providers = new models\Providers();
-        $attrDefinitions = $tmp_attrs->getAttributes();
-        $tmp_idp = new models\Providers;
+        $tmp_attrs->getAttributes();
         /**
          * get all defined policies for idp
          */
-        $policies = $idp->getAttributeReleasePolicies();
+        $idp->getAttributeReleasePolicies();
 
-        $tmp_myfeds = $tmp_providers->getTrustedActiveFeds($idp);
         $members = $tmp_providers->getSPsForArp($idp);
         $feds_collection = array();
         if ($members->count() == 0)
@@ -694,7 +692,6 @@ class Arp_generator {
             }
         }
         $specific_attributes = array();
-        $t_sp = new models\Providers;
         $spec_attrs = $tmp_s_attrs->getSpecificPolicyAttributes($idp);
         if (!empty($spec_attrs))
         {
@@ -790,7 +787,6 @@ class Arp_generator {
             }
             $attrs[$m->getEntityId()] = array_replace($attrs[$m->getEntityId()], array_intersect_key($overwritePolicy,$attrs[$m->getEntityId()]));
         }
-        $i = 0;
 
         foreach ($specific_attributes as $pkey => $pvalue)
         {          
@@ -850,7 +846,6 @@ class Arp_generator {
                 $feds_1 = $m->getActiveFederations();
                 if (!empty($feds_1))
                 {
-                    $tmp_fed_req = array();
                     foreach ($feds_1->getValues() as $f_key => $f_value)
                     {
                         /* check if sp's federation matches idp federation */
