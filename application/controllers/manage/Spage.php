@@ -17,6 +17,7 @@ class Spage extends MY_Controller
    public function editArticle($pcode)
    {
       $this->load->library('j_auth');
+      $pcode = trim($pcode);
       $loggedin = $this->j_auth->logged_in();
       if(!$loggedin)
       {
@@ -29,16 +30,30 @@ class Spage extends MY_Controller
          return;
 
       }
-
-      $article = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode'=>$pcode));
-      if(empty($article))
+      
+      $newArticle = false;
+      if(strcmp($pcode,'new') !=0)
       {
-         show_error('Not found',404);
-         return;
+         $article = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode'=>$pcode));
+         if(empty($article))
+         {
+            show_error('Not found',404);
+            return;
+         }
+      }
+      else
+      {
+         $newArticle = true;
       }
 
       if($this->submitValidate($pcode))
       {
+             if($newArticle)
+             {
+                $article = new models\Staticpage;
+                $article->setName($this->input->post('acode'));
+                
+             }
              $content = $this->input->post('acontent');
              $contentTitle = $this->input->post('atitle');
              $isEnabled = $this->input->post('aenabled');
@@ -65,16 +80,29 @@ class Spage extends MY_Controller
              $article->setTitle($contentTitle);
              $this->em->persist($article);
              try {
-                $data['successmsg'] = 'Page '.$pcode.' has been updated';
+                if($newArticle)
+                {
+                  $data['successmsg'] = 'Page '.$pcode.' has been created';
+                }
+                else
+                {
+                  $data['successmsg'] = 'Page '.$pcode.' has been updated';
+                }
                 $data['content_view'] = 'manage/spageedit_success_view';
                 $this->em->flush();
                 $this->load->view('page',$data);
-                
+                return;          
               }
              catch (Exception $e){
                 show_error('Error',500);
                 return;
              }
+
+      }
+
+      if($newArticle)
+      {
+         $data['newarticle'] = true;
 
       }
 
@@ -101,6 +129,10 @@ class Spage extends MY_Controller
 
   private function submitValidate($pcode)
   {
+       if(strcmp($pcode,'new')==0)
+       {
+          $this->form_validation->set_rules('acode', 'Article code', 'required|trim|xss_clean|min_length[1]|max_length[25]|no_white_spaces|spage_unique');
+       }
        $this->form_validation->set_rules('acontent', 'contenti', 'required|trim|min_length[1]');
        $this->form_validation->set_rules('atitle', 'Title', 'trim|xss_clean|max_length[128]');
        $this->form_validation->set_rules('acategory', 'Category', 'trim|required|xss_clean|min_length[1]|max_length[25]');

@@ -405,6 +405,27 @@ class MY_form_validation extends CI_form_validation {
             return TRUE;
         }
     }
+    function spage_unique($pcode)
+    {
+        if(strcasecmp($pcode,'new')==0)
+        {
+            $this->set_message('spage_unique', "The %s : \"$pcode\" is not allowed. Please choose different code");
+            return FALSE;
+
+        }
+        $page = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode' => $pcode));
+        if (!empty($page))
+        {
+            $this->set_message('spage_unique', "The %s : \"$pcode\" does already exist in the system.");
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
+
+
+    }
 
     function user_mail_unique($email)
     {

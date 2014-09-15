@@ -139,12 +139,19 @@ class Staticpage {
        return $this;
     }
 
-    public function setEnabled(boolean $a)
+    public function setEnabled($a)
     {
-       $this->enabled = $a;
+       if($a === TRUE)
+       {
+          $this->enabled = TRUE;
+       }
+       else
+       {
+          $this->enabled = FALSE;
+       }
        return $this;
     }
-    public function setPublic(boolean $a)
+    public function setPublic($a)
     {
        $this->ispublic = $a;
        return $this;
