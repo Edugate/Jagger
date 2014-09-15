@@ -38,18 +38,18 @@ echo '<div class="medium-9 columns">'.form_checkbox(array('name'=>'apublic','val
 echo '</div>';
 
 echo '<div class="small-12 columns">';
-echo '<div class="medium-text-right medium-3 columns"><label class="inline" for="aenabled">'.lang('rr_enabled').'</label></div>';
+echo '<div class="medium-text-right medium-3 columns"><label for="aenabled">'.lang('rr_enabled').'</label></div>';
 
 echo '<div class="medium-9 columns">'.form_checkbox(array('name'=>'aenabled','value'=>'1','checked'=>$enabled)).'</div>';
 echo '</div>';
 
 echo '<div class="small-12 columns">';
 echo '<div class="small-12 columns">';
-echo '<textarea name="'.$attrname.'" class="advancededitor">'.$textcontent.'</textarea>';
+echo '<textarea name="'.$attrname.'" class="advancededitor">'.set_value($attrname, $textcontent).'</textarea>';
 echo '</div>';
 echo '</div>';
 echo '<div class="small-12 columns">';
-echo '<div class="small-12 columns buttons">';
+echo '<div class="small-12 columns">';
 echo '<input type="submit" class="button small right" name="update" value="update">';
 echo '</div>';
 echo '</div>';

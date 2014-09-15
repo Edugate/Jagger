@@ -1,6 +1,8 @@
-
 <?php
-if(!empty($successmsg))
+
+if (!empty($successmsg))
 {
-   echo '<div>'.$successmsg.'</div>';
+    echo '<div class="small-12 column">';
+    echo '<div data-alert class="alert-box success">' . $successmsg . '</div>';
+    echo '</div>';
 }

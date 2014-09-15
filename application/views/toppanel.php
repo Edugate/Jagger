@@ -159,6 +159,8 @@
                                     </ul>
                                 </li>
                                 <?php
+                                echo '<li><a href="' . $base_url . 'manage/spage/showall">' . lang('rr_articlesmngmt') . '</a></li>';
+                                
                             }
                             ?>
 

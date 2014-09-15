@@ -56,4 +56,5 @@ class P extends MY_Controller {
        $this->load->view('page',$data);
     }
 
+
 }
