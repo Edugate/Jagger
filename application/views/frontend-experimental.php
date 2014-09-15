@@ -294,27 +294,16 @@ $this->load->view('toppanel',$args);
         
         <button id="jquerybubblepopupthemes" style="display:none;" value="<?php echo $jquerybubblepopupthemes; ?>"></button> 
 
-        <script src="<?php echo $base_url;?>js/jquery.js"></script>
-        <script src="<?php echo $base_url;?>js/jquery-ui-1.10.4.custom.min.js"></script>
-
-        <script type="text/javascript" src="<?php echo $base_url; ?>js/jquery.uitablefilter.js"></script>
         <?php
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.jqplot.min.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.dateAxisRenderer.min.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.cursor.min.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.highlighter.min.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.tablesorter.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.inputfocus-0.9.min.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery-bubble-popup-v3.min.js"></script>';
-?>
-        <script src="<?php echo $base_url;?>js/foundation.min.js"></script>
-        <script src="<?php echo $base_url;?>js/foundation.topbar.js"></script>
-        <script src="<?php echo $base_url;?>js/foundation.tab.js"></script>
-        <script src="<?php echo $base_url;?>js/foundation.alert.js"></script>
-        <script src="<?php echo $base_url;?>js/foundation.reveal.js"></script>
-<?php
-        echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.simplemodal.js"></script>';
-        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v5.js"></script>';
+        // list js files to load 
+        $jsToLoad1 = array(
+             'jquery.js','jquery-ui-1.10.4.custom.min.js','jquery.uitablefilter.js','jquery.jqplot.min.js','jqplot.dateAxisRenderer.min.js',
+             'jqplot.cursor.min.js','jqplot.highlighter.min.js','jquery.tablesorter.js','jquery.inputfocus-0.9.min.js','jquery-bubble-popup-v3.min.js',
+             'foundation.min.js','foundation.topbar.js','foundation.tab.js','foundation.alert.js','foundation.reveal.js','jquery.simplemodal.js' );
+        foreach($jsToLoad1 as $jsFile)
+        { 
+            echo '<script type="text/javascript" src="' . $base_url . 'js/'.$jsFile.'"></script>'.PHP_EOL;
+        }
 ?>
     <script>
       $(document).foundation();
@@ -326,6 +315,36 @@ $this->load->view('toppanel',$args);
             $this->load->view('reports/matrixsp_js_view');
             echo '</script>';
         }
+
+       // load - need to have full url as it might be external one
+       if(!empty($jsAddittionalFiles) && is_array($jsAddittionalFiles))
+       {
+          foreach($jsAddittionalFiles as $jsPath)
+          {
+              echo '<script type="text/javascript" src="'.$jsPath.'"></script>'.PHP_EOL;
+          }
+
+       }
+       
+       // load local final js
+        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v5.js"></script>'.PHP_EOL;
+
+      // raw js from array
+      if(!empty($rawJs) && is_array($rawJs))
+      {
+          echo '<script>';
+
+          foreach($rawJs as $v)
+          {
+              echo $v.PHP_EOL;
+
+          }
+
+
+          echo '</script>';
+
+      }
+
         ?>
 
 

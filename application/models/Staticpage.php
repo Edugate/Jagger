@@ -122,6 +122,39 @@ class Staticpage {
     }
   
 
+
+    public function setName($name)
+    {
+       $this->pcode = trim($name);
+       return $this;
+    }
+    public function  setContent($content)
+    {
+       $this->ptext = $content;
+       return $this;
+    }
+    public function setTitle($title=null)
+    {
+       $this->ptitle = $title;
+       return $this;
+    }
+
+    public function setEnabled(boolean $a)
+    {
+       $this->enabled = $a;
+       return $this;
+    }
+    public function setPublic(boolean $a)
+    {
+       $this->ispublic = $a;
+       return $this;
+    }
+    public function setCategory($cat)
+    {
+       $this->pcategory = $cat;
+       return $this;
+    }
+
     /**
      * @prePersist 
      */
