@@ -55,7 +55,6 @@ class Logomngmt extends MY_Controller
         $canEdit = (boolean) ($has_write_access && $unlocked && $local);
         $attributes = array('class' => 'span-16', 'id' => 'assignedlogos');
         $target_url = base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id;
-        $data['targeturl'] = $target_url;
         $existing_logos = $this->em->getRepository("models\ExtendMetadata")->findBy(array('etype' => $type, 'namespace' => 'mdui', 'element' => 'Logo', 'provider' => $id));
 
         $count_existing_logos = count($existing_logos);
@@ -167,8 +166,6 @@ class Logomngmt extends MY_Controller
                 $logo_attr['width'] = $original_sizes['0'];
                 $logo_attr['height'] = $original_sizes['1'];
             }
-            $element_name = 'Logo';
-            $scheme = 'mdui';
             $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $type));
             if (empty($parent)) {
                 $parent = new models\ExtendMetadata;
@@ -320,7 +317,6 @@ class Logomngmt extends MY_Controller
                 );
 
                 $finfo = new finfo(FILEINFO_MIME_TYPE);
-                $finforaw = new finfo(FILEINFO_RAW);
                 $mimeType = $finfo->buffer($datafile);
                 if (!array_key_exists($mimeType, $img_mimes)) {
                     set_status_header(403);
@@ -342,8 +338,6 @@ class Logomngmt extends MY_Controller
                 $imagewidth = $imagesize['0'];
                 $imageheight = $imagesize['1'];
                 $imagelocation = $extlogourl;
-                $element_name = 'Logo';
-                $scheme = 'mdui';
                 $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $provtype));
                 if (empty($parent)) {
                     $parent = new models\ExtendMetadata;

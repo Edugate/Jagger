@@ -33,7 +33,7 @@ class Dashboard extends MY_Controller {
         if (!$loggedin)
         {
             $data['content_view'] = 'staticpages_view' ;
-            $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode'=>'front_page'));
+            $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode'=>'front_page','enabled'=>true, 'ispublic'=>true));
             if (!empty($frontpage))
             {
                 $data['pcontent'] = $frontpage->getContent();
