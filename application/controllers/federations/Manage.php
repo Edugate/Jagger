@@ -54,7 +54,7 @@ class Manage extends MY_Controller
                     'name' => '' . $v->getName() . '',
                     'title' => '' . $v->getFullName() . '',
                     'desc' => '' . $v->getDescription() . '',
-                    'default' => '' . $v->getIsDefault() . '');
+                    'default' => '' . $v->isDefault() . '');
             }
             $data['titlepage'] = lang('rr_federation_list');
             $data['content_view'] = 'federation/list_view.php';
@@ -99,7 +99,6 @@ class Manage extends MY_Controller
             $federation->setAsDisactive();
             $this->em->persist($federation);
             $this->em->flush();
-            set_status_header(200);
             echo "deactivated";
             return;
         }
@@ -108,7 +107,6 @@ class Manage extends MY_Controller
             $federation->setAsActive();
             $this->em->persist($federation);
             $this->em->flush();
-            set_status_header(200);
             echo "activated";
             return;
 
@@ -122,20 +120,13 @@ class Manage extends MY_Controller
            $q = $this->approval->removeFederation($federation);
            $this->em->persist($q);
            $this->em->flush();
-            
-            set_status_header(200);
             echo "todelete";
             return;
 
         }
-        
         set_status_header(403);
         echo "incorrect params sent";
         return;
-
-
-        
-
     }
 
     private function _get_members($federation, $lang)

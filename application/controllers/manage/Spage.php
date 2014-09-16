@@ -217,8 +217,14 @@ class Spage extends MY_Controller
             $data['public'] = $article->getPublic();
         }
         $data['attrname'] = 'acontent';
-        $data['jsAddittionalFiles'][] = '//cdn.ckeditor.com/4.4.4/standard/ckeditor.js';
-        $data['rawJs'][] = 'CKEDITOR.replace(\'acontent\' );';
+        $data['jsAddittionalFiles'][] = '//cdn.ckeditor.com/4.4.4/full/ckeditor.js';
+        $data['rawJs'][] = "
+
+CKEDITOR.replace('acontent',{
+ removeButtons: 'Flash,Smiley,Iframe',
+ removePlugins: 'forms',
+
+} );";
 
         $data['content_view'] = 'manage/spageedit_view';
 

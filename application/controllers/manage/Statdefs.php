@@ -833,8 +833,6 @@ class Statdefs extends MY_Controller {
        $this->em->remove($def);
        $this->em->flush();
        echo "OK";
-       
-
     }
 
 }
