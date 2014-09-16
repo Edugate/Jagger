@@ -166,7 +166,7 @@ class Fedcategory extends MY_Controller {
         $data['buttonname'] = $currentCategory->getName();
         $data['fullname'] = $currentCategory->getFullName();
         $data['description'] = $currentCategory->getDescription();
-        $data['isdefault'] = $currentCategory->getIsDefault();
+        $data['isdefault'] = $currentCategory->isDefault();
         $members = $currentCategory->getFederations();
         $federations = $this->em->getRepository("models\Federation")->findAll();
         $mult = array();
@@ -216,7 +216,7 @@ class Fedcategory extends MY_Controller {
         foreach ($cats as $c)
         {
             $default = '';
-            if ($c->getIsDefault())
+            if ($c->isDefault())
             {
                 $default = makeLabel('active', lang('rr_default'), lang('rr_default'));
             }

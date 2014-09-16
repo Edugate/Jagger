@@ -2543,27 +2543,6 @@ class Provider {
         }
     }
 
-    public function getSupportedAttributes()
-    {
-        if ($this->type === 'IDP')
-        {
-            $finalArp = new \Doctrine\Common\Collections\ArrayCollection();
-
-            $arp = $this->attributeReleaseIDP;
-            foreach ($arp as $a)
-            {
-                if ($a->getIsDefault())
-                {
-                    $finalArp->add($a);
-                }
-            }
-        }
-        else
-        {
-            return false;
-        }
-        return $finalArp;
-    }
 
     public function getLastModified()
     {
