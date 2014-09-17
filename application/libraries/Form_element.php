@@ -3573,7 +3573,7 @@ class Form_element
         {
            $attrdropdown[''.$k.''] = $k;
         }
-        $r .='';
+        $r ='';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_shortname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name')) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="attrname" class="inline right">Attribute name</label></div><div class="small-6 large-7 columns end">' . form_dropdown('attrname', $attrdropdown,set_value('attrname')) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url')) . '</div></div>';
