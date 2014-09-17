@@ -1053,7 +1053,7 @@ class Provider {
         return $this;
     }
 
-    public function setRegistrationDate(\DateTime $date = null)
+    public function setRegistrationDate($date = null)
     {
         if(empty($date))
         {
