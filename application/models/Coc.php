@@ -51,6 +51,12 @@ class Coc {
     protected $type;
 
     /**
+     * allowed subtypes: for entcat: http://macedir.org/entity-category-support, http://macedir.org/entity-category 
+     * @Column(type="string", length=128, nullable=true)
+     */
+    protected $subtype;
+
+    /**
      * @Column(type="string", length=512, nullable=false )
      */
     protected $url;
@@ -95,6 +101,12 @@ class Coc {
     {
        return $this->type;
     }
+
+    public function getSubtype()
+    {
+       return $this->subtype;
+
+    }
      
     public function getUrl()
     {
@@ -131,6 +143,12 @@ class Coc {
     public function setType($type)
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function setSubtype($a)
+    {
+        $this->subtype = $a;
         return $this;
     }
    

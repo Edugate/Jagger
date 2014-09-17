@@ -68,7 +68,12 @@ class Coc extends MY_Controller
               {
                   $lbl = '<span class="lbl lbl-disabled">'.lang('rr_disabled').'</span>';
               }
-              $data['rows'][] = array($c->getName(),$lbl ,anchor($c->getUrl(),$c->getUrl(),array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(),$l);
+              $subtype = $c->getSubtype();
+              if(empty($subtype))
+              {
+                $subtype = '<span class="label alert">'.lang('lbl_missing').'</span>';
+              }
+              $data['rows'][] = array($c->getName() ,$subtype,anchor($c->getUrl(),$c->getUrl(),array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(),$lbl,$l);
          
           } 
        }
@@ -91,14 +96,16 @@ class Coc extends MY_Controller
     private function _add_submit_validate()
     {
         $this->form_validation->set_rules('name',lang('entcat_shortname'),'required|trim|cocname_unique');
+        $this->form_validation->set_rules('attrname','Attribute name','required|trim|xss_clean');
         $this->form_validation->set_rules('url',lang('entcat_url'),'required|trim|valid_url|cocurl_unique');
         $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
-        $this->form_validation->set_rules('cenabled','Enabled','xss_clean');
+        $this->form_validation->set_rules('cenabled',lang('rr_enabled'),'xss_clean');
         return $this->form_validation->run();
     }
     private function _edit_submit_validate($id)
     {
         $this->form_validation->set_rules('name',lang('entcat_shortname'),'required|trim|cocname_unique_update['.$id.']');
+        $this->form_validation->set_rules('attrname','Attribute name','required|trim');
         $this->form_validation->set_rules('url',lang('entcat_url'),'required|trim|valid_url|cocurl_unique_update['.$id.']');
         $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
         $this->form_validation->set_rules('cenabled','Enabled','xss_clean');
@@ -126,6 +133,13 @@ class Coc extends MY_Controller
            $ncoc->setName($name);
            $ncoc->setUrl($url);
            $ncoc->setType('entcat');
+           $allowedattrs = attrsEntCategoryList();
+           $inputAttrname = $this->input->post('attrname');
+           if(in_array($inputAttrname,$allowedattrs))
+           { 
+              $ncoc->setSubtype($inputAttrname);
+
+           }
            if(!empty($description))
            {
                $ncoc->setDescription($description);
@@ -195,6 +209,12 @@ class Coc extends MY_Controller
            }
            $coc->setName($this->input->post('name'));
            $coc->setUrl($this->input->post('url'));
+           $allowedattrs = attrsEntCategoryList();
+           $inputAttrname = $this->input->post('attrname');
+           if(in_array($inputAttrname,$allowedattrs))
+           { 
+              $coc->setSubtype($inputAttrname);
+           }
            $coc->setDescription($this->input->post('description'));
            $this->em->persist($coc);
            $this->em->flush();

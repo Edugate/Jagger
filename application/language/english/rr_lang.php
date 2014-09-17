@@ -1106,3 +1106,4 @@ $lang['optValidator']             = 'Optional validator(s)';
 $lang['missingfrontpage']          = 'The default front page has not been created yet.';
 $lang['createpcode']              = 'Create page with article id';
 $lang['rr_notitle']               = 'No title';
+$lang['lbl_missing']              = 'missing';

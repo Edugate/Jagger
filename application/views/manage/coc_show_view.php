@@ -15,7 +15,7 @@ if(!empty($rows))
 {
      $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
      $this->table->set_template($tmpl);
-     $this->table->set_heading(lang('entcat_shortname'),lang('rr_status'),lang('entcat_url'),lang('entcat_description'),lang('rr_action'));
+     $this->table->set_heading(lang('rr_displayname'),'Attribute name','Value',lang('entcat_description'),lang('rr_status'),lang('rr_action'));
      echo $this->table->generate($rows);
      $this->table->clear();    
 

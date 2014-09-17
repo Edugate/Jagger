@@ -23,6 +23,41 @@ function notificationCodes()
 }
 
 
+function attrsEntCategory($entype=null)
+{
+   $result = array();
+
+   if(empty($entype) || strcmp($entype,'BOTH')==0)
+   {
+      $result = array(
+         array('name'=>'http://macedir.org/entity-category','entype'=>array('SP','BOTH')),
+         array('name'=>'http://macedir.org/entity-category-support','entype'=>array('IDP','BOTH')),
+      );
+   }
+   elseif(strcmp($entype,'IDP')==0)
+   {
+      $result = array(
+         array('name'=>'http://macedir.org/entity-category-support','entype'=>array('IDP','BOTH'))
+      );
+   }
+   elseif(strcmp($entype,'SP')==0)
+   {
+         $result = array('name'=>'http://macedir.org/entity-category','entype'=>array('SP','BOTH'));
+   }
+ 
+   return $result;
+}
+function attrsEntCategoryList()
+{
+   return array(
+    'http://macedir.org/entity-category-support',
+    'http://macedir.org/entity-category'
+
+  );    
+
+}
+
+
 function languagesCodes(array $filter = null)
 {
 $languages = array(
