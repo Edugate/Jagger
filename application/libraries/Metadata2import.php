@@ -155,6 +155,7 @@ class Metadata2import
         {
             $coclistconverted['' . $c->getId() . ''] = $c;
             $coclistarray['' . $c->getId() . ''] = $c->getUrl();
+            $ncoclistarray[''. $c->getSubtype.'']['' . $c->getId() . ''] = $c->getUrl();
         }
         foreach($regpollist as $k=>$c)
         {
@@ -297,17 +298,26 @@ class Metadata2import
                             $importedProvider->setLocal($local);
                             $importedProvider->setActive($active);
                             // entityCategory begin
-                            foreach ($ent['coc'] as $k => $v)
+                            foreach ($ent['coc'] as $attrname => $v)
                             {
-                                $y = array_search($v, $coclistarray);
-                                if ($y != NULL && $y != FALSE)
+                                if(isset($ncoclistarray[''.$attrname.'']))
                                 {
-                                    $celement = $coclistconverted['' . $y . ''];
-                                    if (!empty($celement))
+                                    foreach($v as $kv=>$pv)
                                     {
-                                        $importedProvider->setCoc($celement);
+                                       $y = array_search($v, $ncoclistarray[''.$attrname.'']);
+                                       if ($y != NULL && $y != FALSE)
+                                       {
+                                            $celement = $coclistconverted['' . $y . ''];
+                                            if (!empty($celement))
+                                            {
+                                                 $importedProvider->setCoc($celement);
+                                            }
+                                       }
+
                                     }
+
                                 }
+
                             }
                             foreach ($ent['regpol'] as $k => $v)
                             {
@@ -389,14 +399,23 @@ class Metadata2import
                                     if ($cType === 'entcat')
                                     {
                                         $cUrl = $c->getUrl();
-                                        $y = array_search($cUrl, $ent['coc']);
-                                        if ($y === NULL || $y === FALSE)
+                                        $cSubtype = $c->getSubtype();
+                                        if(!isset($ent['coc'][''.$cSubtype.'']))
                                         {
-                                            $existingProvider->removeCoc($c);
+                                           $existingProvider->removeCoc($c);
+
                                         }
                                         else
                                         {
-                                            unset($ent['coc']['' . $y . '']);
+                                           $y = array_search($cUrl, $ent['coc'][''.$cSubtype.'']);
+                                           if ($y === NULL || $y === FALSE)
+                                           {
+                                               $existingProvider->removeCoc($c);
+                                           }
+                                           else
+                                           {
+                                               unset($ent['coc'][''.$cSubtype.'']['' . $y . '']);
+                                           }
                                         }
                                     }
                                     elseif($cType === 'regpol')
@@ -424,12 +443,18 @@ class Metadata2import
                                        }
                                     }
                                 }
-                                foreach ($ent['coc'] as $v)
+                                foreach ($ent['coc'] as $attrname => $v)
                                 {
-                                    $y = array_search($v, $coclistarray);
-                                    if ($y !== null && $y !== FALSE)
+                                    if(isset($ncoclistarray[''.$attrname.'']))
                                     {
-                                        $existingProvider->setCoc($coclistconverted['' . $y . '']);
+                                       foreach($v as $k=>$p)
+                                       {
+                                           $y = array_search($p, $ncoclistarray[''.$attrname.'']);
+                                           if ($y !== null && $y !== FALSE)
+                                           {
+                                              $existingProvider->setCoc($coclistconverted['' . $y . '']);
+                                           }
+                                       }
                                     }
                                 }
                                 foreach($ent['regpol'] as $v)
@@ -642,16 +667,19 @@ class Metadata2import
                             $importedProvider->setActive($active);
                             // coc begin
 
-                            foreach ($ent['coc'] as $v)
+                            foreach ($ent['coc'] as $attrname => $v)
                             {
-                                $y = array_search($v, $coclistarray);
-                                if ($y != NULL && $y != FALSE)
+                                if(isset($coclistarray[''.$attrname.'']))
                                 {
-                                    $celement = $coclistconverted['' . $y . ''];
-                                    if (!empty($celement))
+                                    $y = array_search($v, $coclistarray[''.$attrname.'']);
+                                    if ($y != NULL && $y != FALSE)
                                     {
-                                        $importedProvider->setCoc($celement);
-                                    }
+                                       $celement = $coclistconverted['' . $y . ''];
+                                       if (!empty($celement))
+                                       {
+                                           $importedProvider->setCoc($celement);
+                                       }
+                                   }
                                 }
                             }
                             // coc end
@@ -739,14 +767,23 @@ class Metadata2import
                                     if ($cType === 'entcat')
                                     {
                                         $cUrl = $c->getUrl();
-                                        $y = array_search($cUrl, $ent['coc']);
-                                        if ($y === NULL || $y === FALSE)
+                                        $cSubtype = $c->getSubtype();
+                                        if(!isset($ent['coc'][''.$cSubtype.'']))
                                         {
-                                            $existingProvider->removeCoc($c);
+                                           $existingProvider->removeCoc($c);
+
                                         }
                                         else
                                         {
-                                            unset($ent['coc']['' . $y . '']);
+                                           $y = array_search($cUrl, $ent['coc'][''.$cSubtype.'']);
+                                           if ($y === NULL || $y === FALSE)
+                                           {
+                                               $existingProvider->removeCoc($c);
+                                           }
+                                           else
+                                           {
+                                               unset($ent['coc'][''.$cSubtype.'']['' . $y . '']);
+                                           }
                                         }
                                     }
                                     elseif($cType === 'regpol')
@@ -775,12 +812,18 @@ class Metadata2import
                                     }
                                 }
 
-                                foreach ($ent['coc'] as $v)
+                                foreach ($ent['coc'] as $attrname => $v)
                                 {
-                                    $y = array_search($v, $coclistarray);
-                                    if ($y !== null && $y !== FALSE)
+                                    if(isset($ncoclistarray[''.$attrname.'']))
                                     {
-                                        $existingProvider->setCoc($coclistconverted['' . $y . '']);
+                                       foreach($v as $k=>$p)
+                                       {
+                                           $y = array_search($p, $ncoclistarray[''.$attrname.'']);
+                                           if ($y !== null && $y !== FALSE)
+                                           {
+                                              $existingProvider->setCoc($coclistconverted['' . $y . '']);
+                                           }
+                                       }
                                     }
                                 }
                                 foreach($ent['regpol'] as $v)
