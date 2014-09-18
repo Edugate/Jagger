@@ -155,7 +155,7 @@ class Metadata2import
         {
             $coclistconverted['' . $c->getId() . ''] = $c;
             $coclistarray['' . $c->getId() . ''] = $c->getUrl();
-            $ncoclistarray[''. $c->getSubtype.'']['' . $c->getId() . ''] = $c->getUrl();
+            $ncoclistarray[''. $c->getSubtype().'']['' . $c->getId() . ''] = $c->getUrl();
         }
         foreach($regpollist as $k=>$c)
         {
