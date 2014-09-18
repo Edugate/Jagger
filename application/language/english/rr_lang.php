@@ -1107,3 +1107,4 @@ $lang['missingfrontpage']          = 'The default front page has not been create
 $lang['createpcode']              = 'Create page with article id';
 $lang['rr_notitle']               = 'No title';
 $lang['lbl_missing']              = 'missing';
+$lang['rr_langchange']           = 'Change language';
