@@ -119,7 +119,14 @@ class Ajax extends MY_Controller
             echo json_encode($result);
             return;
         }
-        $image_details = getimagesizefromstring($image);
+        if (!function_exists('getimagesizefromstring')) {
+              $uri = 'data://application/octet-stream;base64,' . base64_encode($image);
+              $image_details = getimagesize($uri);
+        }
+        else
+        {
+            $image_details = getimagesizefromstring($image);
+        }
         $result['data'] = array(
             'width'=>$image_details[0],
             'height'=>$image_details[1],
