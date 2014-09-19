@@ -633,10 +633,12 @@ class MY_form_validation extends CI_form_validation {
                 {
                         if (empty($matches[2]))
                         {
+                                $this->set_message('valid_url_ssl','Invalid URL');
                                 return FALSE;
                         }
                         elseif ( ! in_array($matches[1], array('https'), TRUE))
                         {
+                                $this->set_message('valid_url_ssl','Allowed only https protocol');
                                 return FALSE;
                         }
 
@@ -653,8 +655,12 @@ class MY_form_validation extends CI_form_validation {
                         sscanf($str, 'https://%[^/]', $host);
                         $str = substr_replace($str, strtr($host, array('_' => '-', '-' => '_')), 7, strlen($host));
                 }
-
-                return (filter_var($str, FILTER_VALIDATE_URL) !== FALSE);
+                $result = (filter_var($str, FILTER_VALIDATE_URL) !== FALSE);
+                if(!$result)
+                {
+                     $this->set_message('valid_url_ssl','Invalid URL');
+                }
+                return $result;
         }
 
     function match_language($str)
