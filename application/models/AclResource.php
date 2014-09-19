@@ -40,7 +40,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
     protected $id;
 
     /**
-     * @Column(type="string",length=255)
+     * @Column(type="string",length=30, unique=true)
      */
      protected $resource;
     /**
