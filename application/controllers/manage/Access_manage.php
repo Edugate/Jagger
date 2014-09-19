@@ -74,7 +74,7 @@ class Access_manage extends MY_Controller
         {
             show_error(lang('rr_externalentity'),403);
         }
-        $aclResource = $this->em->getRepository("models\AclResource")->findOneBy(array('resourse'=>$ent->getId));
+        $aclResource = $this->em->getRepository("models\AclResource")->findOneBy(array('resource'=>$ent->getId));
         if(empty($aclResource))
         {
            $parent = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => 'entity'));
