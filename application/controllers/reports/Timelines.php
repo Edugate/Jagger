@@ -63,7 +63,8 @@ class Timelines extends MY_Controller {
                 }
             }
         }
-
+        $data['titlepage'] = '<a href="'.base_url().'federations/manage/show/'.base64url_encode($fed->getName()).'">'.lang('rr_federation').': '.$fed->getName().'</a>';
+        $data['subtitlepage'] = lang('rr_progressforfed');
         $data['content_view'] = 'reports/registered_timeline_view';
         $data['grid'] = $diag;
         $this->load->view('page', $data);

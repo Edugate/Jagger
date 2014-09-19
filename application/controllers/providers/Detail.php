@@ -467,11 +467,13 @@ class Detail extends MY_Controller {
            $d[$i]['value'] = $ent->getPrivacyUrl();
         }
 
+        $entityCategories = array();
+        $a = array();
+
         $d[++$i]['name'] = lang('rr_entcats');
         $coc = $ent->getCoc();
         if($coc->count()>0)
         {
-            $a = array();
             foreach($coc as $k=>$v)
             {
               $coctype = $v->getType();
@@ -482,6 +484,7 @@ class Detail extends MY_Controller {
                  {
                     $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
                  }
+                 $entityCategories[] = $v;
                  $a[] = $cocvalue;
               }
             }
@@ -1011,7 +1014,35 @@ class Detail extends MY_Controller {
         /**
          * end certs
          */
-        $subresult[12] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+        $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+
+
+        $d = array();
+        if(count($entityCategories == 0))
+        {
+           $d[]['2cols'] = '<div data-alert class="alert-box notice">'.lang('entcat_notdefined').'</div>';
+        }
+        else
+        {
+        foreach($entityCategories as $entcat)
+           {
+              $d[]['header'] =  lang('title_entcat'); 
+              $d[] = array('name'=>lang('entcat_displayname'),'value'=>$entcat->getName());
+              $d[] = array('name'=>lang('rr_attr_name'),'value'=>$entcat->getSubtype());
+              $d[] = array('name'=>lang('entcat_value'),'value'=>$entcat->getUrl());
+              $d[] = array('name'=>lang('entcat_description'),'value'=>$entcat->getDescription());
+              $entcatStatus = $entcat->getAvailable();
+              if(!$entcatStatus)
+              {
+                 $d[] = array('name'=>'','value'=>'<div class="label alert">'.lang('rr_disabled').'</div>');
+              }
+
+           }
+        }
+        $subresult[12] = array('section' => 'entcats', 'title' => '' . lang('tabEntcats') . '', 'data' => $d);
+
+
+        
         $d = array();
         $i = 0;
         $contacts = $ent->getContacts();

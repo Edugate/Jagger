@@ -241,11 +241,8 @@ class Access_manage extends MY_Controller {
         }
         $entity_link = anchor(base_url() . 'providers/detail/show/' . $id_of_entity, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         $data['resource_name'] = $ent->getName() . " (" . $ent->getEntityId() . ")" . $entity_link;
-        $data['resourcename'] = $ent->getName();
-        if (empty($data['resourcename']))
-        {
-            $data['resourcename'] = $ent->getEntityId();
-        }
+        $lang = MY_Controller::getLang();
+        $data['resourcename'] = $ent->getNameToWebInLang($lang, $ent->getType());
         $data['entityid'] = $ent->getEntityId();
         $data['resourceid'] = $id_of_entity;
         $data['row'] = $row;
