@@ -6,7 +6,7 @@ if (!defined('BASEPATH'))
  * 
  * @package     RR3
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -18,7 +18,7 @@ if (!defined('BASEPATH'))
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 
-class Coc extends MY_Controller
+class Ec extends MY_Controller
 {
 
     function __construct()
@@ -53,7 +53,7 @@ class Coc extends MY_Controller
           {
               if($has_write_access)
               {
-                 $l = '<a href="'.base_url().'manage/coc/edit/'.$c->getId().'" class="button tiny">'.lang('rr_edit').'</a>';
+                 $l = '<a href="'.base_url().'manage/ec/edit/'.$c->getId().'" class="button tiny">'.lang('rr_edit').'</a>';
               }
               else
               {
@@ -95,20 +95,20 @@ class Coc extends MY_Controller
     }
     private function _add_submit_validate()
     {
-        $this->form_validation->set_rules('name',lang('entcat_shortname'),'required|trim|cocname_unique');
-        $this->form_validation->set_rules('attrname','Attribute name','required|trim|xss_clean');
-        $this->form_validation->set_rules('url',lang('entcat_url'),'required|trim|valid_url|cocurl_unique');
+        $this->form_validation->set_rules('name',lang('entcat_displayname'),'required|trim|cocname_unique');
+        $this->form_validation->set_rules('attrname',lang('rr_attr_name'),'required|trim|xss_clean');
+        $this->form_validation->set_rules('url',lang('entcat_value'),'required|trim|valid_url|cocurl_unique');
         $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
-        $this->form_validation->set_rules('cenabled',lang('rr_enabled'),'xss_clean');
+        $this->form_validation->set_rules('cenabled',lang('entcat_enabled'),'xss_clean');
         return $this->form_validation->run();
     }
     private function _edit_submit_validate($id)
     {
-        $this->form_validation->set_rules('name',lang('entcat_shortname'),'required|trim|cocname_unique_update['.$id.']');
-        $this->form_validation->set_rules('attrname','Attribute name','required|trim');
-        $this->form_validation->set_rules('url',lang('entcat_url'),'required|trim|valid_url|cocurl_unique_update['.$id.']');
+        $this->form_validation->set_rules('name',lang('entcat_displayname'),'required|trim|cocname_unique_update['.$id.']');
+        $this->form_validation->set_rules('attrname',lang('rr_attr_name'),'required|trim');
+        $this->form_validation->set_rules('url',lang('entcat_value'),'required|trim|valid_url|cocurl_unique_update['.$id.']');
         $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
-        $this->form_validation->set_rules('cenabled','Enabled','xss_clean');
+        $this->form_validation->set_rules('cenabled',lang('entcat_enabled'),'xss_clean');
         return $this->form_validation->run();
     }
     public function add()
