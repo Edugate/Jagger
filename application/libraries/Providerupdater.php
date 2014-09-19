@@ -846,6 +846,10 @@ class Providerupdater {
                                     unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
                                 }
                             }
+                            else
+                            {
+                                $ent->removeServiceLocation($v);
+                            }
                         }
                     }
                     elseif ($srvtype === 'IDPArtifactResolutionService')
