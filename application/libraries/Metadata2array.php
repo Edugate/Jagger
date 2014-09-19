@@ -69,25 +69,33 @@ class Metadata2array {
         {
             $this->entitiesConvert($child, $full);
         }
-        if(count($this->coclist)> 0 || count($this->regpollist)> 0)
-        {
+
            if(count($this->coclist)> 0)
            {
-              $redusedlist = array_unique($this->coclist);
-              foreach($redusedlist as $r)
-              {
-                  $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$r,'type'=>'entcat'));
-                  if(empty($existing))
-                  {
-                     $nconduct = new models\Coc;
-                     $nconduct->setUrl($r);
-                     $nconduct->setName($r);
-                     $nconduct->setType('entcat');
-                     $nconduct->setDescription($r);
-                     $nconduct->setAvailable(FALSE);
-                     $this->em->persist($nconduct);
-                  }
+             foreach($this->coclist as $attrname=>$attrvalues)
+             {
+                 $redusedlist = array_unique($attrvalues);
+                 foreach($redusedlist as $r)
+                 {
+                      $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$r,'type'=>'entcat','subtype'=>$attrname));
+                      if(empty($existing))
+                      {
+                         $nconduct = new models\Coc;
+                         $nconduct->setUrl($r);
+                         $nconduct->setName($r);
+                         $nconduct->setSubtype($attrname);
+                         $nconduct->setType('entcat');
+                         $nconduct->setDescription(''.$attrname.': '.$r.'');
+                         $nconduct->setAvailable(FALSE);
+                         $this->em->persist($nconduct);
+                     }
+                    
+                 }
+
              }
+           
+
+
            }
            if(count($this->regpollist)> 0)
            {
@@ -112,7 +120,6 @@ class Metadata2array {
               }
            }
            $this->em->flush();
-       }
         return $this->metaArray;
     }
 
@@ -191,6 +198,7 @@ class Metadata2array {
         $entity['details']['org'] = array('OrganizationName'=>array(), 'OrganizationDisplayName'=>array(), 'OrganizationURL'=>array());
         $entity['details']['contacts'] = array();
         $entity['details']['reqattrs'] = array();
+        $allowedEntcats = attrsEntCategoryList();
         foreach ($node->childNodes as $gnode)
         {
             if ($gnode->nodeName === 'md:IDPSSODescriptor' || $gnode->nodeName === 'IDPSSODescriptor')
@@ -256,12 +264,12 @@ class Metadata2array {
                         {
                             foreach( $enode->getElementsByTagNameNS( 'urn:oasis:names:tc:SAML:2.0:assertion','Attribute') as $enode2)
                             {
-                                if($enode2->hasAttributes() && $enode2->getAttribute('Name') === 'http://macedir.org/entity-category' && $enode2->hasChildNodes())
+                                if($enode2->hasAttributes() && in_array($enode2->getAttribute('Name') ,$allowedEntcats) && $enode2->hasChildNodes())
                                 {
                                       foreach($enode2->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue') as $enode3)
                                       {
-                                          $entity['coc'][] = $enode3->nodeValue;
-                                          $this->coclist[] = $enode3->nodeValue;
+                                          $entity['coc'][''.$enode2->getAttribute('Name').''][] = $enode3->nodeValue;
+                                          $this->coclist[''.$enode2->getAttribute('Name').''][] = $enode3->nodeValue;
                                       }
 
                                 }

@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,8 +19,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Form_element
-{
+class Form_element {
 
     protected $ci;
     protected $em;
@@ -573,6 +573,7 @@ class Form_element
         $result = array();
         $sessform = FALSE;
         $enttype = $ent->getType();
+        $allowedCategories = attrsEntCategoryList($enttype);
         if (!empty($ses) && is_array($ses))
         {
             $sessform = TRUE;
@@ -581,7 +582,7 @@ class Form_element
         $entCategoriesArray = array();
         foreach ($entCategories as $v)
         {
-            $entCategoriesArray['' . $v->getId() . ''] = array('name' => $v->getName(), 'enabled' => $v->getAvailable());
+            $entCategoriesArray['' . $v->getId() . ''] = array('name' => $v->getName(), 'enabled' => $v->getAvailable(), 'attrname' => $v->getSubtype(), 'value' => $v->getUrl(), 'desc' => $v->getDescription());
         }
         $assignedEntCategories = $ent->getCoc();
         $assignedEntCategoriesArray = array();
@@ -612,7 +613,7 @@ class Form_element
         {
             $r .= '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
-        $r .= '<div class="large-8 small-offset-0 large-offset-3 end columns"><ul class="checkboxlist">';
+        $r .= '<div class="small-12 columns"><dl class="accordion checkboxlist" data-accordion>';
         foreach ($entCategoriesArray as $k => $v)
         {
             if (isset($v['sel']))
@@ -622,19 +623,36 @@ class Form_element
             else
             {
                 $is = false;
+                if (!in_array($v['attrname'], $allowedCategories))
+                {
+                    continue;
+                }
             }
             if (empty($v['enabled']))
             {
+                if (!$is)
+                {
+                    continue;
+                }
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
             }
             else
             {
-                $lbl = '<span class="label">' . lang('rr_enabled') . '</span>';
+                $lbl = '';
             }
-            $r .= '<li>' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is)) . $v['name'] . ' ' . $lbl . '</li>';
+
+
+            $rcheckbox = form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right'));
+            $r .=' <dd class="accordion-navigation small-12 column">';
+            $r .='<div class="small-3 columns bottom" >' . $rcheckbox . '</div><a href="#entcats' . $k . '" class="small-9 columns inline">' . $v['name'] . ' ' . $lbl . '</a>';
+
+            $r .='<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' . lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>';
+
+            $r .= '</dd>';
         }
-        $r .= '</ul></div>';
+        $r .= '</dl></div>';
         $result[] = $r;
+
         return $result;
     }
 
@@ -1720,6 +1738,8 @@ class Form_element
             $result[] = '<div class="section">Attribute Authority</div>';
             $aabinds = getAllowedSOAPBindings();
             $aalo = array();
+
+
             if (!$sessform && array_key_exists('IDPAttributeService', $g))
             {
                 $tmpid = 100;
@@ -1741,6 +1761,27 @@ class Form_element
                     $row .= $this->_generateLabelInput($v2->getBindingName(), 'f[srv][IDPAttributeService][' . $tid . '][url]', set_value('f[srv][IDPAttributeService][' . $tid . '][url]', $v2->getUrl()), '', TRUE, NULL);
                     $row .='</div>';
                     unset($aabinds[array_search($v2->getBindingName(), $aabinds)]);
+                    $row .= '</div>';
+                    $aalo[] = $row;
+                }
+            }
+            elseif ($sessform && isset($ses['srv']['IDPAttributeService']))
+            {
+                foreach ($ses['srv']['IDPAttributeService'] as $k2 => $v2)
+                {
+                    $tid = $k2;
+
+                    $row = '<div class="srvgroup">';
+                    $row .= '<div class="small-12 columns">';
+                    $row .= form_input(array(
+                        'name' => 'f[srv][IDPAttributeService][' . $tid . '][bind]',
+                        'id' => 'f[srv][IDPAttributeService][' . $tid . '][bind]',
+                        'type' => 'hidden',
+                        'value' => set_value('f[srv][IDPAttributeService][' . $tid . '][bind]', $v2['bind']),
+                    ));
+                    $row .= $this->_generateLabelInput($v2['bind'], 'f[srv][IDPAttributeService][' . $tid . '][url]', set_value('f[srv][IDPAttributeService][' . $tid . '][url]', $v2['url']), '', TRUE, NULL);
+                    $row .='</div>';
+                    unset($aabinds[array_search($v2['bind'], $aabinds)]);
                     $row .= '</div>';
                     $aalo[] = $row;
                 }
@@ -3423,7 +3464,8 @@ class Form_element
         $tmp_providers = new models\Providers();
         $excluded = $idp->getExcarps();
         $members = $tmp_providers->getCircleMembersSP($idp);
-        if (is_array($excluded)) $rows = array();
+        if (is_array($excluded))
+            $rows = array();
         foreach ($excluded as $v)
         {
             $members->remove($v);
@@ -3539,7 +3581,7 @@ class Form_element
         $langselected = set_value('regpollang', $this->defaultlangselect);
         $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_shortname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name')) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name')) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url')) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description')) . '</div></div>';
         return $r;
@@ -3559,7 +3601,7 @@ class Form_element
         $langselected = set_value($langset, $this->defaultlangselect);
         $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_shortname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName())) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName())) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', $coc->getUrl())) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
         return $r;
@@ -3567,18 +3609,34 @@ class Form_element
 
     public function generateAddCoc()
     {
-        $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_shortname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name')) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url')) . '</div></div>';
+        $attrsnames = attrsEntCategoryList();
+        $attrdropdown = array();
+        foreach ($attrsnames as $k)
+        {
+            $attrdropdown['' . $k . ''] = $k;
+        }
+        $r = '';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name')) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="attrname" class="inline right">' . lang('rr_attr_name') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('attrname', $attrdropdown, set_value('attrname')) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_value') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url')) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description')) . '</div></div>';
         return $r;
     }
 
     public function generateEditCoc(models\Coc $coc)
     {
-        $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_shortname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName())) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', $coc->getUrl())) . '</div></div>';
+        $attrsnames = attrsEntCategoryList();
+        $attrdropdown = array();
+        foreach ($attrsnames as $k)
+        {
+            $attrdropdown['' . $k . ''] = $k;
+        }
+        $r = '';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName())) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_value') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', $coc->getUrl())) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="attrname" class="inline right">' . lang('rr_attr_name') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('attrname', $attrdropdown, $coc->getSubtype()) . '</div></div>';
+        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
         return $r;
     }

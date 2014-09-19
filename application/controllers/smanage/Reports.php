@@ -43,6 +43,12 @@ class Reports extends MY_Controller {
         {
             show_error('no perm',403);
         }
+
+        if(function_exists('apc_clear_cache'))
+        {
+           apc_clear_cache();
+
+        }
         $data['titlepage'] = 'system reporter';
         $data['content_view']= 'smanage/index_view';
         $this->load->view('page',$data);
@@ -89,6 +95,10 @@ class Reports extends MY_Controller {
        if(!$this->j_auth->isAdministrator()){
            show_error('No perm',403);
        }
+       $proxyDir = null; //to genearate to default proxy dir
+       $proxyFactory = $this->em->getProxyFactory();
+       $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
+       $proxyFactory->generateProxyClasses($metadatas, $proxyDir);
        $validator = new SchemaValidator($this->em);
        $errors = $validator->validateMapping();
        if(count($errors)>0)
@@ -117,6 +127,7 @@ class Reports extends MY_Controller {
        if(!$this->j_auth->isAdministrator()){
            show_error('Unauthorized request',403);
        }
+
        $validator = new SchemaValidator($this->em);
        $result = $validator->schemaInSyncWithMetadata();
        if($result)

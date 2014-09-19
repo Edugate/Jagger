@@ -340,7 +340,6 @@ class Arp_generator {
             }
         }
         $specific_attributes = array();
-        $t_sp = new models\Providers;
         $spec_attrs = $tmp_s_attrs->getSpecificPolicyAttributes($idp);
         if (!empty($spec_attrs))
         {
@@ -428,8 +427,6 @@ class Arp_generator {
                 }
             }
         }
-        $i = 0;
-
         foreach ($specific_attributes as $pkey => $pvalue)
         {
 
@@ -495,7 +492,6 @@ class Arp_generator {
                 $feds_1 = $m->getActiveFederations();
                 if (!empty($feds_1))
                 {
-                    $tmp_fed_req = array();
                     foreach ($feds_1->getValues() as $f_key => $f_value)
                     {
                         /* check if sp's federation matches idp federation */

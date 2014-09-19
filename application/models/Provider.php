@@ -1053,7 +1053,7 @@ class Provider {
         return $this;
     }
 
-    public function setRegistrationDate(\DateTime $date = null)
+    public function setRegistrationDate($date = null)
     {
         if(empty($date))
         {
@@ -3452,11 +3452,12 @@ class Provider {
            \log_message('debug','GKS provider model coc');
            $cocsenabled = $v->getAvailable();
            $cocstype = $v->getType();
+           $cocsubtype = $v->getSubtype();
            if($cocsenabled === TRUE)
            {
-             if( $cocstype === 'entcat')
+             if( $cocstype === 'entcat' && !empty($cocsubtype))
              {
-                $entityCategories[] = $v;
+                $entityCategories[''.$cocsubtype.''][] = $v;
              }
              elseif($cocstype === 'regpol')
              {
@@ -3502,15 +3503,18 @@ class Provider {
         {
             $AttributesGroup_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:metadata:attribute', 'mdattr:EntityAttributes');
             $EntExtension_Node->appendChild($AttributesGroup_Node);
-            $Attribute_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:Attribute');
-            $Attribute_Node->setAttribute('Name', 'http://macedir.org/entity-category');
-            $Attribute_Node->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-            $AttributesGroup_Node->appendChild($Attribute_Node);
-            foreach($entityCategories as $v)
+            foreach($entityCategories as $key=>$value)
             {
-               $Attribute_Value = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:AttributeValue');
-               $Attribute_Value->appendChild($Attribute_Node->ownerDocument->createTextNode($v->getUrl()));
-               $Attribute_Node->appendChild($Attribute_Value);
+                $Attribute_Node = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:Attribute');
+                $Attribute_Node->setAttribute('Name', ''.$key.'');
+                $Attribute_Node->setAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+                $AttributesGroup_Node->appendChild($Attribute_Node);
+                foreach($value as $v)
+                {
+                   $Attribute_Value = $EntityDesc_Node->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:AttributeValue');
+                   $Attribute_Value->appendChild($Attribute_Node->ownerDocument->createTextNode($v->getUrl()));
+                   $Attribute_Node->appendChild($Attribute_Value);
+                }
             }
         }
 

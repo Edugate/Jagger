@@ -210,7 +210,7 @@ a.bookentity {
 }
 
 
-div.perm {
+div.perm, td.perm {
     background-color: #00FF00;
     text-transform: uppercase;
     font-weight: bold;
@@ -220,7 +220,7 @@ div.perm:not(:empty){
 }
 div.dis {
     background-color: #E3E5FF;
-//    text-transform: uppercase;
+    text-transform: uppercase;
 
     font-weight: bold;
 }
@@ -229,16 +229,16 @@ div.dis:not(:empty){
 }
 div.spec {
     background-color: #FFFF00;
- //   text-transform: uppercase;
+    text-transform: uppercase;
 
     font-weight: bold;
 }
 div.spec:not(:empty){
    cursor: pointer;
 }
-div.den {
+div.den, td.den {
     background-color: red;
- //text-transform: uppercase;
+   text-transform: uppercase;
 
     font-weight: bold;
 }

@@ -331,16 +331,9 @@ class Zacl {
             {
                 log_message('debug', 'found acl_group called: ' . $group);
             }
-            $acl_children = $acl_group->getChildren();
-            foreach ($acl_children as $c)
-            {
-                $r = $c->getResource();
-                if ($r == $resource)
-                {
-                    $acl_resource = $c;
-                    break;
-                }
-            }
+            
+            $acl_resource = $this->em->getRepository("models\AclResource")->findOneBy(array('resource'=>$resource));
+      
             if (empty($acl_resource))
             {
                 log_message('debug', 'not found acl_resource (' . $resource . ')in group');

@@ -262,7 +262,7 @@ if (isset($disp_mem['status']) && (boolean) $disp_mem['status'] === TRUE)
 
 
         <div id="languageset" class="reveal-modal tiny" data-reveal>
-            <h4>Change language</h4>
+            <h4><?php echo lang('rr_langchange');?></h4>
             <form action="<?php echo $base_url . 'ajax/changelanguage/'; ?>" method="POST">
                 <label>
                     <select  name="changelanguage">
@@ -283,6 +283,7 @@ foreach ($langs as $key => $value)
                     </select>
                 </label>
             </form>
+         <a class="close-reveal-modal">&#215;</a>
         </div>
 
 

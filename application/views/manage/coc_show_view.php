@@ -7,7 +7,7 @@ if(!empty($error_message))
 if($showaddbutton)
 {
 
-echo '<div class="small-12 text-right"><a href="'.base_url().'manage/coc/add" class="button small">'.lang('addentcat_btn').'</a></div>';
+echo '<div class="small-12 text-right"><a href="'.base_url().'manage/ec/add" class="button small">'.lang('addentcat_btn').'</a></div>';
  
 }
 
@@ -15,7 +15,7 @@ if(!empty($rows))
 {
      $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
      $this->table->set_template($tmpl);
-     $this->table->set_heading(lang('entcat_shortname'),lang('rr_status'),lang('entcat_url'),lang('entcat_description'),lang('rr_action'));
+     $this->table->set_heading(lang('rr_displayname'),lang('rr_attr_name'),lang('entcat_value') ,lang('entcat_description'),lang('rr_status'),lang('rr_action'));
      echo $this->table->generate($rows);
      $this->table->clear();    
 
