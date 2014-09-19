@@ -350,8 +350,9 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = '<b>' . $entstatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s',$ent->getLastModified()->format('U')+j_auth::$timeOffset) . '</b>';
-        $d[++$i]['name'] = lang('rr_entityid');
-        $d[$i]['value'] = $ent->getEntityId();
+        $entityIdRecord = array('name'=>lang('rr_entityid'),'value'=>$ent->getEntityId());
+        $d[++$i] = &$entityIdRecord;
+        
         $d[++$i]['name'] = lang('e_orgname');
         $lname = $ent->getMergedLocalName();
         $lvalues = '';
@@ -774,6 +775,7 @@ class Detail extends MY_Controller {
                 $services[$v->getType()][] = $v;
             }
         }
+        $d[++$i] = &$entityIdRecord;
         if ($idppart)
         {
             $d[++$i]['msection'] = 'IDPSSODescriptor';
