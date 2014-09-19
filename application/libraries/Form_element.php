@@ -613,7 +613,7 @@ class Form_element
         {
             $r .= '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
-        $r .= '<div class="large-8 small-offset-0 large-offset-3 end columns"><dl class="accordion checkboxlist" data-accordion>';
+        $r .= '<div class="small-12 columns"><dl class="accordion checkboxlist" data-accordion>';
         foreach ($entCategoriesArray as $k => $v)
         {
             if (isset($v['sel']))
@@ -642,9 +642,9 @@ class Form_element
             }
 
 
-            $rcheckbox = form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is));
-            $r .=' <dd class="accordion-navigation">';
-            $r .=$rcheckbox . ' <a href="#entcats' . $k . '">' . $v['name'] . ' ' . $lbl . '</a>';
+            $rcheckbox = form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is,'class'=>'right' ));
+            $r .=' <dd class="accordion-navigation small-12 column">';
+            $r .='<div class="small-3 columns bottom" >'.$rcheckbox . '</div><a href="#entcats' . $k . '" class="small-9 columns inline">' . $v['name'] . ' ' . $lbl . '</a>';
 
             $r .='<div id="entcats' . $k . '" class="content"><b>'.lang('attrname').'</b>: '.$v['attrname'].'<br /><b>'.lang('entcat_url').'</b>: '.$v['value'].'<br /><b>'.lang('rr_description').'</b>:<p>'.$v['desc'].'</p></div>';
 

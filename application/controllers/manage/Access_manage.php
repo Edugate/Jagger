@@ -74,22 +74,6 @@ class Access_manage extends MY_Controller
         {
             show_error(lang('rr_externalentity'),403);
         }
-        $aclResource = $this->em->getRepository("models\AclResource")->findOneBy(array('resource'=>$ent->getId));
-        if(empty($aclResource))
-        {
-           $parent = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => 'entity'));
-           $r = new models\AclResource;
-           $resource_name = $ent->getId();
-           $r->setResource($resource_name);
-           $r->setDefaultValue('view');
-           $r->setType('entity');
-           $r->setParent($parent);
-           $this->em->persist($r);
-           $this->em->flush();
-           $this->zacl = new Zacl();
-           
-        }
-        
 
         $submited = $this->input->post('change_access');
         if(!empty($submited))
