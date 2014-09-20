@@ -2761,6 +2761,74 @@ class Form_element {
              * end display
              */
             /**
+             * start description
+             */
+            $result[] = '';
+            $r = '';
+            $langsdisplaynames = $langs;
+            if (!$sessform && isset($ext['idp']['mdui']['Description']))
+            {
+                foreach ($ext['idp']['mdui']['Description'] as $v1)
+                {
+                    $l = $v1->getAttributes();
+                    if (isset($l['xml:lang']))
+                    {
+                        $lang = $l['xml:lang'];
+                        if (!array_key_exists($lang, $langs))
+                        {
+                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $lang;
+                        }
+                        else
+                        {
+                            $langtxt = $langs['' . $lang . ''];
+                            unset($langsdisplaynames['' . $lang . '']);
+                        }
+                    }
+                    else
+                    {
+                        log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
+                        continue;
+                    }
+                    $origval = $v1->getEvalue();
+                    $nval = $origval;
+                    if ($sessform && isset($ses['uii']['idpsso']['desc']['' . $lang . '']))
+                    {
+                        $nval = $ses['uii']['idpsso']['desc']['' . $lang . ''];
+                        unset($ses['uii']['idpsso']['desc']['' . $lang . '']);
+                    }
+                    $currval = set_value('f[uii][idpsso][desc][' . $lang . ']', $nval);
+                    $displaynotice = '';
+                    if ($currval != $origval)
+                    {
+                        $displaynotice = 'notice';
+                    }
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][idpsso][desc][' . $lang . ']', 'lhelpdesk', $lang, $currval, $displaynotice);
+                    $r .= '</div>';
+                }
+            }
+            if ($sessform && isset($ses['uii']['idpsso']['desc']) && is_array($ses['uii']['idpsso']['desc']))
+            {
+                foreach ($ses['uii']['idpsso']['desc'] as $key => $value)
+                {
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][idpsso][desc][' . $key . ']', 'lhelpdesk', $key, set_value('f[uii][idpsso][desc][' . $key . ']', $value), 'notice');
+                    $r .= '</div>';
+                    unset($langsdisplaynames['' . $key . '']);
+                }
+            }
+            $r .='<div class="small-12 columns">';
+            $r .= $this->_generateLangAddButton('idpuiidescadd', 'idpuiidesclangcode', MY_Controller::$langselect, 'idpadduiidesc', '' . lang('rr_description') . '');
+            $r .='</div>';
+            $result[] = '<fieldset><legend>' . lang('e_idpservicedesc') . '</legend>' . $r . '</fieldset>';
+            $result[] = '';
+            /**
+             * end description 
+             */
+
+
+            /**
              * start helpdesk 
              */
             $result[] = '';
@@ -2835,72 +2903,6 @@ class Form_element {
 
             /**
              * end helpdesk
-             */
-            /**
-             * start description
-             */
-            $result[] = '';
-            $r = '';
-            $langsdisplaynames = $langs;
-            if (!$sessform && isset($ext['idp']['mdui']['Description']))
-            {
-                foreach ($ext['idp']['mdui']['Description'] as $v1)
-                {
-                    $l = $v1->getAttributes();
-                    if (isset($l['xml:lang']))
-                    {
-                        $lang = $l['xml:lang'];
-                        if (!array_key_exists($lang, $langs))
-                        {
-                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                            $langtxt = $lang;
-                        }
-                        else
-                        {
-                            $langtxt = $langs['' . $lang . ''];
-                            unset($langsdisplaynames['' . $lang . '']);
-                        }
-                    }
-                    else
-                    {
-                        log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
-                        continue;
-                    }
-                    $origval = $v1->getEvalue();
-                    $nval = $origval;
-                    if ($sessform && isset($ses['uii']['idpsso']['desc']['' . $lang . '']))
-                    {
-                        $nval = $ses['uii']['idpsso']['desc']['' . $lang . ''];
-                        unset($ses['uii']['idpsso']['desc']['' . $lang . '']);
-                    }
-                    $currval = set_value('f[uii][idpsso][desc][' . $lang . ']', $nval);
-                    $displaynotice = '';
-                    if ($currval != $origval)
-                    {
-                        $displaynotice = 'notice';
-                    }
-                    $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][idpsso][desc][' . $lang . ']', 'lhelpdesk', $lang, $currval, $displaynotice);
-                    $r .= '</div>';
-                }
-            }
-            if ($sessform && isset($ses['uii']['idpsso']['desc']) && is_array($ses['uii']['idpsso']['desc']))
-            {
-                foreach ($ses['uii']['idpsso']['desc'] as $key => $value)
-                {
-                    $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][idpsso][desc][' . $key . ']', 'lhelpdesk', $key, set_value('f[uii][idpsso][desc][' . $key . ']', $value), 'notice');
-                    $r .= '</div>';
-                    unset($langsdisplaynames['' . $key . '']);
-                }
-            }
-            $r .='<div class="small-12 columns">';
-            $r .= $this->_generateLangAddButton('idpuiidescadd', 'idpuiidesclangcode', MY_Controller::$langselect, 'idpadduiidesc', '' . lang('rr_description') . '');
-            $r .='</div>';
-            $result[] = '<fieldset><legend>' . lang('e_idpservicedesc') . '</legend>' . $r . '</fieldset>';
-            $result[] = '';
-            /**
-             * end description 
              */
             /**
              * start privacy url
