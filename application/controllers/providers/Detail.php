@@ -591,6 +591,8 @@ class Detail extends MY_Controller {
 
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
         $gearman_enabled = $this->config->item('gearman');
+        $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
+        $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','');
 
         $circlemetaFeature = $this->config->item('featdisable');
         $circleEnabled = !(is_array($circlemetaFeature) && isset($circlemetaFeature['circlemeta']) && $circlemetaFeature['circlemeta'] === TRUE);
@@ -609,8 +611,6 @@ class Detail extends MY_Controller {
             {
                $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
                $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-               $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-               $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','');
 
                $d[++$i]['name'] = lang('rr_circleoftrust');
                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"');
@@ -1018,7 +1018,7 @@ class Detail extends MY_Controller {
 
 
         $d = array();
-        if(count($entityCategories == 0))
+        if(count($entityCategories) == 0)
         {
            $d[]['2cols'] = '<div data-alert class="alert-box notice">'.lang('entcat_notdefined').'</div>';
         }
@@ -1214,11 +1214,11 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('e_idpserviceprivacyurl');
-            if (isset($uiiarray['PrivacyStatementURL']))
+            $d[++$i]['name'] = lang('e_idpserviceinfourl');
+            if (isset($uiiarray['InformationURL']))
             {
                 $str = '';
-                foreach ($uiiarray['PrivacyStatementURL'] as $v)
+                foreach ($uiiarray['InformationURL'] as $v)
                 {
                     $attr = $v->getAttributes();
                     $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
@@ -1229,11 +1229,11 @@ class Detail extends MY_Controller {
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('e_idpserviceinfourl');
-            if (isset($uiiarray['InformationURL']))
+            $d[++$i]['name'] = lang('e_idpserviceprivacyurl');
+            if (isset($uiiarray['PrivacyStatementURL']))
             {
                 $str = '';
-                foreach ($uiiarray['InformationURL'] as $v)
+                foreach ($uiiarray['PrivacyStatementURL'] as $v)
                 {
                     $attr = $v->getAttributes();
                     $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
@@ -1253,7 +1253,7 @@ class Detail extends MY_Controller {
                 'screenx' => '0',
                 'screeny' => '0'
             );
-            $d[++$i]['name'] = lang('rr_logos');
+            $d[++$i]['name'] = lang('rr_logoofservice');
             if (isset($uiiarray['Logo']))
             {
                 $str = '';

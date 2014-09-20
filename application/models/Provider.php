@@ -3309,7 +3309,7 @@ class Provider {
         /**
          * defauls values
          */
-        $type = $this->type;
+      //  $type = $this->type;
   
         $s_metadata = null;
         $valid_until = null;
@@ -3318,9 +3318,6 @@ class Provider {
         {
             $valid_until = $p_validUntil->format('Y-m-d\TH:i:s\Z');
         }
-
-
-
         if ($this->is_static)
         {
             $static_meta = $this->getStaticMetadata();
@@ -3518,7 +3515,7 @@ class Provider {
             }
         }
 
-        if ($type !== 'SP')
+        if ($this->type !== 'SP')
         {
             $SSODesc_Node = $this->getIDPSSODescriptorToXML($EntityDesc_Node);
             if (!empty($SSODesc_Node))
@@ -3537,7 +3534,7 @@ class Provider {
             }
            
         }
-        if ($type !== 'IDP')
+        if ($this->type !== 'IDP')
         {
 
             $SSODesc_Node = $this->getSPSSODescriptorToXML($EntityDesc_Node, $options);
