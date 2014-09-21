@@ -366,9 +366,10 @@ class Form_element {
              */
             $result[] = '';
 
-            $result[] = $this->_generateLabelInput(lang('rr_regauthority'), 'f[regauthority]', $f_regauthority, $regauthority_notice, FALSE);
+            $result[] = jGenerateInput(lang('rr_regauthority'), 'f[regauthority]', $f_regauthority, $regauthority_notice);
+            
 
-            $result[] = $this->_generateLabelInput(lang('rr_regdate'), 'f[registrationdate]', $f_regdate, 'registrationdate' . $regdate_notice . '', FALSE);
+            $result[] = jGenerateInput(lang('rr_regdate'), 'f[registrationdate]', $f_regdate, 'registrationdate' . $regdate_notice . '');
             $result[] = '';
         }
 
@@ -744,23 +745,10 @@ class Form_element {
             }
 
 
-            $row .='<div class="small-12 columns">';
-            $row .= $this->_generateLabelSelect(lang('rr_contacttype'), 'f[contact][' . $tid . '][type]', $formtypes, $t1, $class_cnt1, FALSE);
-            $row .= '</div>';
-
-            $row .= '<div class="small-12 columns">';
-            $row .= $this->_generateLabelInput(lang('rr_contactfirstname'), 'f[contact][' . $tid . '][fname]', $t2, $class_cnt2, FALSE);
-            $row .= '</div>';
-
-
-            $row .= '<div class="small-12 columns">';
-            $row .= $this->_generateLabelInput(lang('rr_contactlastname'), 'f[contact][' . $tid . '][sname]', $t3, $class_cnt3, FALSE);
-            $row .= '</div>';
-
-
-            $row .= '<div class="small-12 columns">';
-            $row .= $this->_generateLabelInput(lang('rr_contactemail'), 'f[contact][' . $tid . '][email]', $t4, $class_cnt4, FALSE);
-            $row .= '</div>';
+            $row .='<div class="small-12 columns">'.jGenerateDropdown(lang('rr_contacttype'),'f[contact][' . $tid . '][type]',$formtypes, $t1,$class_cnt1).'</div>';
+            $row .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $tid . '][fname]', $t2, $class_cnt2).'</div>';
+            $row .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $tid . '][sname]', $t3, $class_cnt3).'</div>';
+            $row .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $tid . '][email]', $t4, $class_cnt4).'</div>';
             $row .= '<div class="small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="contactrm button tiny alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
             $result[] = '';
             $result[] = form_fieldset(lang('rr_contact')) . '<div>' . $row . '</div>' . form_fieldset_close();
@@ -776,21 +764,10 @@ class Form_element {
             {
                 $n = '<fieldset class="newcontact"><legend>' . lang('rr_contact') . '</legend><div>';
 
-                $n .= '<div class="small-12 columns">';
-                $n .= $this->_generateLabelSelect(lang('rr_contacttype'), 'f[contact][' . $k . '][type]', $formtypes, set_value('f[contact][' . $k . '][type]', $v['type']), '', FALSE);
-                $n .= '</div>';
-
-                $n .= '<div class="small-12 columns">';
-                $n .= $this->_generateLabelInput(lang('rr_contactfirstname'), 'f[contact][' . $k . '][fname]', set_value('f[contact][' . $k . '][fname]', $v['fname']), '', FALSE);
-                $n .= '</div>';
-
-                $n .= '<div class="small-12 columns">';
-                $n .= $this->_generateLabelInput(lang('rr_contactlastname'), 'f[contact][' . $k . '][sname]', set_value('f[contact][' . $k . '][sname]', $v['sname']), '', FALSE);
-                $n .= '</div>';
-
-                $n .= '<div class="small-12 columns">';
-                $n .= $this->_generateLabelInput(lang('rr_contactemail'), 'f[contact][' . $k . '][email]', set_value('f[contact][' . $k . '][email]', $v['email']), '', FALSE);
-                $n .= '</div>';
+                $n .='<div class="small-12 columns">'.jGenerateDropdown(lang('rr_contacttype'),'f[contact][' . $k . '][type]',$formtypes,  set_value('f[contact][' . $k . '][type]', $v['type']),'').'</div>';
+                $n .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $k . '][fname]', set_value('f[contact][' . $k . '][fname]', $v['fname']), '').'</div>';
+                $n .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $k . '][sname]', set_value('f[contact][' . $k . '][sname]', $v['sname']), '').'</div>';
+                $n .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $k . '][email]', set_value('f[contact][' . $k . '][email]', $v['email']), '').'</div>';
                 $n .= '<div class="rmelbtn fromprevtoright small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm button alert tiny inline right" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
                 $n .= '</div>' . form_fieldset_close();
                 $result[] = '';
@@ -1275,7 +1252,7 @@ class Form_element {
         {
             $class_ent .=' alertonchange ';
         }
-        $result[] = $this->_generateLabelInput(lang('rr_entityid'), 'f[entityid]', $t1, $class_ent, FALSE, $addargs);
+        $result[] = jGenerateInput(lang('rr_entityid'), 'f[entityid]', $t1, $class_ent, FALSE, $addargs);
 
         $result[] = '';
 
@@ -1353,7 +1330,7 @@ class Form_element {
                         'type' => 'hidden',
                         'value' => set_value('f[srv][SingleSignOnService][' . $tid . '][bind]', $v1->getBindingName()),
                     ));
-                    $row .= $this->_generateLabelInput($v1->getBindingName(), 'f[srv][SingleSignOnService][' . $tid . '][url]', $t1, $rnotice, FALSE, NULL);
+                    $row .= jGenerateInput($v1->getBindingName(), 'f[srv][SingleSignOnService][' . $tid . '][url]', $t1, $rnotice);
                     $row .= '</div>';
                     $sso[] = $row;
                     unset($ssotmpl[$v1->getBindingName()]);
@@ -1370,7 +1347,7 @@ class Form_element {
                         'type' => 'hidden',
                         'value' => set_value('f[srv][SingleSignOnService][' . $k . '][bind]', $v['bind']),
                     ));
-                    $row .= $this->_generateLabelInput($v['bind'], 'f[srv][SingleSignOnService][' . $k . '][url]', $v['url'], '', FALSE, NULL);
+                    $row .= jGenerateInput($v['bind'], 'f[srv][SingleSignOnService][' . $k . '][url]', $v['url'], '');
                     $row .= '</div>';
                     $sso[] = $row;
                     unset($ssotmpl[$v['bind']]);
@@ -1392,7 +1369,7 @@ class Form_element {
                     'type' => 'hidden',
                     'value' => $vm,
                 ));
-                $r .= $this->_generateLabelInput($km, 'f[srv][SingleSignOnService][n' . $i . '][url]', $value, $rnotice, FALSE, NULL);
+                $r .= jGenerateInput($km, 'f[srv][SingleSignOnService][n' . $i . '][url]', $value, $rnotice);
 
                 $r .= '</div>';
                 $sso[] = $r;
@@ -1435,7 +1412,7 @@ class Form_element {
                         'type' => 'hidden',
                         'value' => set_value('f[srv][IDPSingleLogoutService][' . $tid . '][bind]', $v2->getBindingName()),
                     ));
-                    $row .= $this->_generateLabelInput($v2->getBindingName(), 'f[srv][IDPSingleLogoutService][' . $tid . '][url]', $t1, '', FALSE, NULL);
+                    $row .= jGenerateInput($v2->getBindingName(), 'f[srv][IDPSingleLogoutService][' . $tid . '][url]', $t1, '');
                     $row .= '</div>';
                     unset($slotmpl[array_search($v2->getBindingName(), $slotmpl)]);
                     $idpslo[] = $row;
@@ -1454,7 +1431,7 @@ class Form_element {
                         'type' => 'hidden',
                         'value' => set_value('f[srv][IDPSingleLogoutService][' . $k . '][bind]', $v['bind']),
                     ));
-                    $row .= $this->_generateLabelInput($v['bind'], 'f[srv][IDPSingleLogoutService][' . $k . '][url]', $v['url'], '', FALSE, NULL);
+                    $row .= jGenerateInput($v['bind'], 'f[srv][IDPSingleLogoutService][' . $k . '][url]', $v['url'], '');
                     $row .= '</div>';
                     $idpslo[] = $row;
                     unset($slotmpl[array_search($v['bind'], $slotmpl)]);
@@ -1471,7 +1448,7 @@ class Form_element {
                     'id' => 'f[srv][IDPSingleLogoutService][n' . $ni . '][bind]',
                     'type' => 'hidden',
                     'value' => $v3,));
-                $row .= $this->_generateLabelInput($v3, 'f[srv][IDPSingleLogoutService][n' . $ni . '][url]', set_value('f[srv][IDPSingleLogoutService][n' . $ni . '][url]'), '', FALSE, NULL);
+                $row .= jGenerateInput($v3, 'f[srv][IDPSingleLogoutService][n' . $ni . '][url]', set_value('f[srv][IDPSingleLogoutService][n' . $ni . '][url]'), '');
                 $row .= '</div>';
                 $idpslo[] = $row;
                 ++$ni;
@@ -1720,11 +1697,11 @@ class Form_element {
             $result[] = '';
             if (in_array('scope', $this->disallowedparts))
             {
-                $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, $scopeidpssonotice, FALSE, array('readonly' => 'readonly'));
+                $result[] = jGenerateInputReadonly(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, $scopeidpssonotice);
             }
             else
             {
-                $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, $scopeidpssonotice, FALSE, NULL);
+                $result[] = jGenerateInput(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, $scopeidpssonotice);
             }
             $result[] = '';
 
@@ -1758,7 +1735,7 @@ class Form_element {
                         'type' => 'hidden',
                         'value' => set_value('f[srv][IDPAttributeService][' . $tid . '][bind]', $v2->getBindingName()),
                     ));
-                    $row .= $this->_generateLabelInput($v2->getBindingName(), 'f[srv][IDPAttributeService][' . $tid . '][url]', set_value('f[srv][IDPAttributeService][' . $tid . '][url]', $v2->getUrl()), '', TRUE, NULL);
+                    $row .= jGenerateInput($v2->getBindingName(), 'f[srv][IDPAttributeService][' . $tid . '][url]', set_value('f[srv][IDPAttributeService][' . $tid . '][url]', $v2->getUrl()), '');
                     $row .='</div>';
                     unset($aabinds[array_search($v2->getBindingName(), $aabinds)]);
                     $row .= '</div>';
@@ -1779,7 +1756,7 @@ class Form_element {
                         'type' => 'hidden',
                         'value' => set_value('f[srv][IDPAttributeService][' . $tid . '][bind]', $v2['bind']),
                     ));
-                    $row .= $this->_generateLabelInput($v2['bind'], 'f[srv][IDPAttributeService][' . $tid . '][url]', set_value('f[srv][IDPAttributeService][' . $tid . '][url]', $v2['url']), '', TRUE, NULL);
+                    $row .= jGenerateInput($v2['bind'], 'f[srv][IDPAttributeService][' . $tid . '][url]', set_value('f[srv][IDPAttributeService][' . $tid . '][url]', $v2['url']), '');
                     $row .='</div>';
                     unset($aabinds[array_search($v2['bind'], $aabinds)]);
                     $row .= '</div>';
@@ -1795,7 +1772,7 @@ class Form_element {
                     'id' => 'f[srv][IDPAttributeService][n' . $ni . '][bind]',
                     'type' => 'hidden',
                     'value' => $v3,));
-                $row .= $this->_generateLabelInput($v3, 'f[srv][IDPAttributeService][n' . $ni . '][url]', set_value('f[srv][IDPAttributeService][n' . $ni . '][url]'), TRUE, NULL);
+                $row .= jGenerateInput($v3, 'f[srv][IDPAttributeService][n' . $ni . '][url]', set_value('f[srv][IDPAttributeService][n' . $ni . '][url]'),'');
                 $row .= '</div></div>';
                 $aalo[] = $row;
                 ++$ni;
@@ -1922,11 +1899,11 @@ class Form_element {
             }
             if (in_array('scope', $this->disallowedparts))
             {
-                $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, $scopeaanotice, FALSE, array('readonly' => 'readonly'));
+                $result[] = jGenerateInputReadonly(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, $scopeaanotice);
             }
             else
             {
-                $result[] = $this->_generateLabelInput(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, $scopeaanotice, FALSE, NULL);
+                $result[] = jGenerateInput(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, $scopeaanotice);
             }
             $result[] = '';
         }
@@ -3635,9 +3612,9 @@ class Form_element {
             $attrdropdown['' . $k . ''] = $k;
         }
         $r = '';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName())) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_value') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', $coc->getUrl())) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="attrname" class="inline right">' . lang('rr_attr_name') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('attrname', $attrdropdown, $coc->getSubtype()) . '</div></div>';
+        $r .= '<div class="small-12 columns">'.jGenerateInput(lang('entcat_displayname'),'name',set_value('name', $coc->getName()),'').'</div>';
+        $r .= '<div class="small-12 columns">'.jGenerateInput(lang('entcat_value'),'url',set_value('url', $coc->getUrl()),'').'</div>';
+        $r .= '<div class="small-12 columns">'.jGenerateDropdown(lang('rr_attr_name'),'attrname',$attrdropdown, $coc->getSubtype(),'').'</div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
         return $r;
