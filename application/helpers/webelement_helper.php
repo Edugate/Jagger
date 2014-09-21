@@ -127,19 +127,19 @@ function generateSelectInputFields($label1, $name1, $select1, $selected1, $label
 
 function jGenerateInput($label,$inputname,$value,$inputclass)
 {
-   $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="iinline">'.$label.'</label></div>';
+   $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="inline">'.$label.'</label></div>';
    $r .= '<div class="medium-8 large-7 columns end"><input type="text" id="'.$inputname.'" name="'.$inputname.'" value="'.$value.'" class="'.$inputclass.'"></div>';
    return $r;
 }
 function jGenerateInputReadonly($label,$inputname,$value,$inputclass)
 {
-   $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="iinline">'.$label.'</label></div>';
+   $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="inline">'.$label.'</label></div>';
    $r .= '<div class="medium-8 large-7 columns end"><input type="text" id="'.$inputname.'" name="'.$inputname.'" value="'.$value.'" class="'.$inputclass.'" readonly="readonly"></div>';
    return $r;
 }
 function jGenerateDropdown($label,$inputname,$dropdowns,$value,$inputclass)
 {
-   $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="iinline">'.$label.'</label></div>';
+   $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="inline">'.$label.'</label></div>';
 
    $r .= '<div class="medium-8 large-7 columns end">'.form_dropdown($inputname, $dropdowns, $value).'</div>';
 
