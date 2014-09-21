@@ -777,7 +777,7 @@ class Statdefs extends MY_Controller {
        {
           show_error('method not allowed', 401);
        }
-       if(empty($defid) && !is_numeric($defid))
+       if(empty($defid) || !is_numeric($defid))
        {
           set_status_header(404);
           echo 'not found';
