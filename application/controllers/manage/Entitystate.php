@@ -72,10 +72,23 @@ class Entitystate extends MY_Controller {
         {
             show_error('Provider not found', 404);
         }
+        $type = $this->entity->getType();
+        if($type === 'IDP')
+        {
+           $data['titlepage'] = lang('identityprovider').':';
+        }
+        elseif($type === 'SP')
+        {
+           $data['titlepage'] = lang('serviceprovider').':';
+        }
+        else
+        {
+           $data['titlepage'] = '';
+        }
         $lang = MY_Controller::getLang();
         $isLocked = $this->entity->getLocked();
         $titlename = $this->entity->getNameToWebInLang($lang, $this->entity->getType());
-        $data['titlepage'] = lang('serviceprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>';
+        $data['titlepage'] .= ' <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>';
         $data['subtitlepage'] = lang('title_regpols');
         $data['providerid'] = $this->entity->getId();
         $has_write_access = $this->zacl->check_acl($this->entity->getId(), 'write', 'entity', '');
