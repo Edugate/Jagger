@@ -37,7 +37,7 @@ class Providerupdater {
         $p['entityid'] = $ent->getEntityId();
     }
 
-    public function updateRegPolicies(models\Provider $ent, array $ch)
+    public function updateRegPolicies(models\Provider $ent, array $ch, $isAdmin = false)
     {
         $currentCocs = $ent->getCoc();
         if (array_key_exists('regpol', $ch))
@@ -61,6 +61,7 @@ class Providerupdater {
                     
                 }
             }
+            $requestNew  = false;
             foreach ($ch['regpol'] as $k => $v)
             {
                 log_message('debug','GKS assignign regpolicy id:'.$v);
@@ -77,6 +78,7 @@ class Providerupdater {
                     }
                     if (!empty($c) && !$currentRegPol->contains($c))
                     {
+                        $requestNew = true;
                         
                         if ($isAdmin)
                         {
@@ -90,6 +92,10 @@ class Providerupdater {
                     }
                 }
             }
+        }
+        if(!$requestNew)
+        {
+           $this->ci->globalnotices[] = lang('updated');
         }
     }
 

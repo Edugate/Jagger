@@ -77,6 +77,7 @@ class Entitystate extends MY_Controller {
         $titlename = $this->entity->getNameToWebInLang($lang, $this->entity->getType());
         $data['titlepage'] = lang('serviceprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>';
         $data['subtitlepage'] = lang('title_regpols');
+        $data['providerid'] = $this->entity->getId();
         $has_write_access = $this->zacl->check_acl($this->entity->getId(), 'write', 'entity', '');
         if (!$has_write_access)
         {
@@ -88,30 +89,54 @@ class Entitystate extends MY_Controller {
             show_error('entity id locked', 403);
             return;
         }
+
+        $isAdmin = $this->j_auth->isAdministrator();
         
         if (!$_POST)
         {
-            $this->load->library('form_element');
             $data['r'] = $this->form_element->NgenerateRegistrationPolicies($this->entity);
             $data['content_view'] = 'manage/entityedit_regpolicies';
             $this->load->view('page', $data);
         }
         else
         {
-            $this->load->library('providerupdater');
-            $input = $this->input->post('f');
-            if (empty($input))
+            $p = $this->input->post('entregpolform');
+            if(!empty($p) && strcmp($p,$this->entity->getId())==0)
             {
-                $input['regpol'] = array();
-            }
-            $this->load->library('approval');
-            $this->providerupdater->updateRegPolicies($this->entity, $input);
-            $this->em->flush();
+                $this->load->library('providerupdater');
+                $input = $this->input->post('f');
+                if (empty($input))
+                {
+                   $input['regpol'] = array();
+                }
+                $this->load->library('approval');
+                $this->providerupdater->updateRegPolicies($this->entity, $input,$isAdmin);
+                try
+                {
+                  $this->em->flush();
+                  $data['content_view'] = 'manage/entityedit_regpolicies_success';
+                  if($isAdmin)
+                  {
+                     $this->globalnotices[] = lang('updated');
+                  }
+                  elseif(count($this->globalnotices) == 0)
+                  {
+                     $this->globalnotices[]  = lang('requestsentforapproval');
+                  }
+                  $this->load->view('page',$data);
+                  return;
+                }
+                catch(Exception $e)
+                {
+                   log_message('error',__METHOD__.' '.$e);
+                   show_error('Internal server error',500);
+                   return;
+                }
 
-            $this->load->library('form_element');
-            $data['r'] = $this->form_element->NgenerateRegistrationPolicies($this->entity);
-            $data['content_view'] = 'manage/entityedit_regpolicies';
-            $this->load->view('page', $data);
+                $data['r'] = $this->form_element->NgenerateRegistrationPolicies($this->entity);
+                $data['content_view'] = 'manage/entityedit_regpolicies';
+                $this->load->view('page', $data);
+            }
         }
     }
 

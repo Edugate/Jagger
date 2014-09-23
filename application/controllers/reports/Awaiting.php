@@ -101,7 +101,7 @@ class Awaiting extends MY_Controller {
         $action = $q->getAction();
         $type = $q->getType();
         $recipient = $q->getRecipient();
-        $recipienttype = $q->getRecipientType();
+        $recipientType = $q->getRecipientType();
 
         if ($action === 'Join')
         {

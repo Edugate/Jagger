@@ -16,13 +16,14 @@ if(!empty($error_messages) || !empty($error_messages2))
 echo form_open();
 foreach($r as $v)
 {
-
  echo $v;
 }
-echo '<div class="small-12 columns"></div>';
-echo '<div class="small-12 small-centered columns"><ul class="button-group text-center">';
- echo '
-        <li><input type="submit" name="discard" value="'.lang('rr_cancel').'" class="button small alert" /></li>
-        <li><input type="submit" name="modify" value="'.lang('btnupdate').'" class="button small"/></li>';
-echo '</ul></div>';
+
+echo '<div class="small-12 column button-group">';
+echo '
+        <div class="small-6 column text-right"><a href="'.base_url().'providers/detail/show/'.$providerid.'" class="button small alert">'.lang('rr_cancel').'</a></div>
+        <div class="small-6 column"><input type="submit" name="modify" value="'.lang('btnupdate').'" class="button small"/></div>';
+echo '</div>';
+echo '<input type="hidden" name="entregpolform" value="'.$providerid.'">';
+
 echo form_close();
