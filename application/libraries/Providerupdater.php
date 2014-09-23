@@ -37,6 +37,62 @@ class Providerupdater {
         $p['entityid'] = $ent->getEntityId();
     }
 
+    public function updateRegPolicies(models\Provider $ent, array $ch)
+    {
+        $currentCocs = $ent->getCoc();
+        if (array_key_exists('regpol', $ch))
+        {
+            log_message('debug', 'GKS ' . __METHOD__ . ' ' . serialize($ch['regpol']) . '');
+            $currentRegPol = &$currentCocs;
+            $regPolToAssign = array();
+            foreach ($currentRegPol as $k => $v)
+            {
+                $cid = $v->getId();
+                $ctype = $v->getType();
+                if ($ctype === 'regpol')
+                {
+                    $foundkey = array_search($cid, $ch['regpol']);
+                    if ($foundkey === null || $foundkey === false)
+                    {
+                        log_message('debug','GKS not found '.$cid);
+                        $ent->removeCoc($v);
+                    }
+                    
+                    
+                }
+            }
+            foreach ($ch['regpol'] as $k => $v)
+            {
+                log_message('debug','GKS assignign regpolicy id:'.$v);
+                if (!empty($v) && is_numeric($v))
+                {
+                    $c = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $v, 'type' => 'regpol'));
+                    if(!empty($c))
+                    {
+                        log_message('debug','GKS found regpl with id:'.$c->getId());
+                    }
+                    if(!empty($ent))
+                    {
+                        log_message('debug','GKS ENT:'.$ent->getId());
+                    }
+                    if (!empty($c) && !$currentRegPol->contains($c))
+                    {
+                        
+                        if ($isAdmin)
+                        {
+                            $ent->setCoc($c);
+                            log_message('debug', 'GKS setting coc');
+                        }
+                        else
+                        {
+                            $this->ci->approval->applyForRegistrationPolicy($c, $ent);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public function updateProvider(models\Provider $ent, array $ch)
     {
         // $m - array for modifications
@@ -370,43 +426,7 @@ class Providerupdater {
             }
         }
 
-        if (array_key_exists('regpol', $ch))
-        {
-            log_message('debug', 'GKS ' . __METHOD__ . ' ' . serialize($ch['regpol']) . '');
-            $currentRegPol = &$currentCocs;
-            foreach ($currentRegPol as $k => $v)
-            {
-                $cid = $v->getId();
-                $ctype = $v->getType();
-                if ($ctype === 'regpol')
-                {
-                    $foundkey = array_search($cid, $ch['regpol']);
-                    if ($foundkey === null || $foundkey === false)
-                    {
-                        $ent->removeCoc($v);
-                    }
-                }
-            }
-            foreach ($ch['regpol'] as $k => $v)
-            {
-                if (!empty($v) && is_numeric($v))
-                {
-                    $c = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $v, 'type' => 'regpol'));
-                    if (!empty($c) && !$currentRegPol->contains($c))
-                    {
-                        if ($isAdmin || empty($entid))
-                        {
-                            $ent->setCoc($c);
-                            log_message('debug', 'GKS setting coc');
-                        }
-                        else
-                        {
-                            $this->ci->approval->applyForRegistrationPolicy($c, $ent);
-                        }
-                    }
-                }
-            }
-        }
+
 
         if (array_key_exists('privacyurl', $ch))
         {
@@ -819,7 +839,7 @@ class Providerupdater {
                             log_message('debug', 'GG:IDPAttributeService entity SP removein service');
                             $ent->removeServiceLocation($v);
                         }
-                        elseif (in_array($v->getBindingName(), $idpaabinds) || ! in_array($v->getBindingName(), $allowedAABind))
+                        elseif (in_array($v->getBindingName(), $idpaabinds) || !in_array($v->getBindingName(), $allowedAABind))
                         {
                             log_message('debug', 'GG: found bind:' . $v->getBindingName() . ' in array idpslobinds');
                             log_message('debug', 'GG current values in spslobinds: ' . serialize($idpaabinds));
