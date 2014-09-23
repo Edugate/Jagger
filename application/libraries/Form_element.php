@@ -644,8 +644,8 @@ class Form_element {
 
 
             $rcheckbox = form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right'));
-            $r .=' <dd class="accordion-navigation small-12 column">';
-            $r .='<div class="small-3 columns bottom" >' . $rcheckbox . '</div><a href="#entcats' . $k . '" class="small-9 columns inline">' . $v['name'] . ' ' . $lbl . '</a>';
+            $r .=' <dd class="accordion-navigation small-12 column" style="vertical-align: middle">';
+            $r .='<div class="small-3 columns" style="vertical-align: bottom" >' . $rcheckbox . '</div><a href="#entcats' . $k . '" class="small-9 columns inline">' . $v['name'] . ' ' . $lbl . '</a>';
 
             $r .='<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' . lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>';
 
