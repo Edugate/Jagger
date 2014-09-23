@@ -97,16 +97,19 @@ class Ec extends MY_Controller
     {
         $this->form_validation->set_rules('name',lang('entcat_displayname'),'required|trim|cocname_unique');
         $this->form_validation->set_rules('attrname',lang('rr_attr_name'),'required|trim|xss_clean');
-        $this->form_validation->set_rules('url',lang('entcat_value'),'required|trim|valid_url|cocurl_unique');
+        $attrname = $this->input->post('attrname');
+        $this->form_validation->set_rules('url',lang('entcat_value'),'required|trim|valid_url|ecUrlInsert['.$attrname.']');
         $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
         $this->form_validation->set_rules('cenabled',lang('entcat_enabled'),'xss_clean');
         return $this->form_validation->run();
     }
     private function _edit_submit_validate($id)
     {
+        $attrname = $this->input->post('attrname');    
         $this->form_validation->set_rules('name',lang('entcat_displayname'),'required|trim|cocname_unique_update['.$id.']');
         $this->form_validation->set_rules('attrname',lang('rr_attr_name'),'required|trim');
-        $this->form_validation->set_rules('url',lang('entcat_value'),'required|trim|valid_url|cocurl_unique_update['.$id.']');
+        $ecUrlUpdateParams = serialize(array('id'=>$id,'subtype'=>$attrname));
+        $this->form_validation->set_rules('url',lang('entcat_value'),'required|trim|valid_url|ecUrlUpdate['.$ecUrlUpdateParams.']');
         $this->form_validation->set_rules('description',lang('entcat_description'),'xss_clean');
         $this->form_validation->set_rules('cenabled',lang('entcat_enabled'),'xss_clean');
         return $this->form_validation->run();
