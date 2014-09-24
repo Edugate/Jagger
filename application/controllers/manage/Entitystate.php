@@ -68,7 +68,7 @@ class Entitystate extends MY_Controller {
         {
             $this->entity = $this->tmp_providers->getOneById($id);
         }
-        if (!isset($this->entity))
+        if (empty($this->entity))
         {
             show_error('Provider not found', 404);
         }
