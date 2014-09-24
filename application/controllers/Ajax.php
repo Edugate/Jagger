@@ -76,13 +76,13 @@ class Ajax extends MY_Controller
         }
         $this->load->library('form_validation');
         $result = array();
-     
-        
-        
+
+
+
         $this->form_validation->set_rules('logourl', 'URL Logo', 'trim|required|min_length[5]|max_length[500]|no_white_spaces|valid_url_ssl');
         $isvalid = $this->form_validation->run();
-        $v_errors =  validation_errors('<span>','</span>');
-        
+        $v_errors = validation_errors('<span>', '</span>');
+
         if (!$isvalid)
         {
             $result['error'] = $v_errors;
@@ -91,18 +91,31 @@ class Ajax extends MY_Controller
         }
         $logourl = trim($this->input->post('logourl'));
         $this->load->library('curl');
+        $configlogossl = $this->config->item('addlogocheckssl');
+        if (isset($configlogossl) && $configlogossl === FALSE)
+        {
+            $sslvalidate = FALSE;
+            $sslvalidatehost = 0;
+        }
+        else
+        {
+            $sslvalidate = TRUE;
+            $sslvalidatehost = 2;
+        }
         $image = $this->curl->simple_get('' . $logourl . '', array(), array(
+            CURLOPT_SSL_VERIFYPEER => $sslvalidate,
+            CURLOPT_SSL_VERIFYHOST => $sslvalidatehost,
             CURLOPT_TIMEOUT => 10,
             CURLOPT_BUFFERSIZE => 128,
             CURLOPT_NOPROGRESS => FALSE,
             CURLOPT_PROGRESSFUNCTION => function($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
-        return ($Downloaded > (1000 * 1024)) ? 1 : 0;
-    }
+                return ($Downloaded > (1000 * 1024)) ? 1 : 0;
+            }
         ));
-        
-        if(empty($image))
+
+        if (empty($image))
         {
-            $result['error']=$this->curl->error_string;
+            $result['error'] = $this->curl->error_string;
             echo json_encode($result);
             return;
         }
@@ -115,31 +128,30 @@ class Ajax extends MY_Controller
         );
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->buffer($image);
-        if(!in_array($mimeType, $img_mimes))
+        if (!in_array($mimeType, $img_mimes))
         {
-            $result['error']='Incorrect mime type '.$mimeType;
+            $result['error'] = 'Incorrect mime type ' . $mimeType;
             echo json_encode($result);
             return;
         }
-        if (!function_exists('getimagesizefromstring')) {
-              $uri = 'data://application/octet-stream;base64,' . base64_encode($image);
-              $image_details = getimagesize($uri);
+        if (!function_exists('getimagesizefromstring'))
+        {
+            $uri = 'data://application/octet-stream;base64,' . base64_encode($image);
+            $image_details = getimagesize($uri);
         }
         else
         {
             $image_details = getimagesizefromstring($image);
         }
         $result['data'] = array(
-            'width'=>$image_details[0],
-            'height'=>$image_details[1],
-            'mime'=>$mimeType,
-            'url'=>$logourl,
+            'width' => $image_details[0],
+            'height' => $image_details[1],
+            'mime' => $mimeType,
+            'url' => $logourl,
         );
         echo json_encode($result);
-        
+
         return;
-
-
     }
 
     public function getfeds()
