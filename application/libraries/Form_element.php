@@ -404,13 +404,12 @@ class Form_element
                 );
             }
         }
-        $isAdmin = $this->ci->j_auth->isAdministrator();
         $result[] = '';
         if (count($currentRegPolicies) == 0)
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
         }
-        elseif (!$isAdmin)
+        elseif (!$this->ci->j_auth->isAdministrator())
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
