@@ -21,6 +21,6 @@ if($isadmin)
 $tmpl = array('table_open' => '<table  id="details" class="tablesorter drop-shadow lifted">');
 
     $this->table->set_template($tmpl);
-    $this->table->set_heading(''.lang('attrname').'',''.lang('attrfullname').'',''.lang('attroid').'',''.lang('attrurn').'');
+    $this->table->set_heading(''.lang('attrname').'',''.lang('attrfullname').'',''.lang('attrsaml2').'',''.lang('attrsaml1').'');
     echo $this->table->generate($attributes);
 ?>

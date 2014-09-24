@@ -32,7 +32,7 @@ echo form_input(array(
 echo '</div>';
 echo '</div>';
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns"><label for="attroidname" class="right inline">'.lang('attroid').'</label></div>';
+echo '<div class="small-3 columns"><label for="attroidname" class="right inline">'.lang('attrsaml2').'</label></div>';
 echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attroidname',
@@ -44,7 +44,7 @@ echo form_input(array(
 echo '</div>';
 echo '</div>';
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns"><label for="attrurnname" class="right inline">'.lang('attrurn').'</label></div>';
+echo '<div class="small-3 columns"><label for="attrurnname" class="right inline">'.lang('attrsaml1').'</label></div>';
 echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrurnname',
