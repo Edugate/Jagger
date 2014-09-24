@@ -367,150 +367,77 @@ class Form_element {
             $result[] = '';
 
             $result[] = jGenerateInput(lang('rr_regauthority'), 'f[regauthority]', $f_regauthority, $regauthority_notice);
-            
+
 
             $result[] = jGenerateInput(lang('rr_regdate'), 'f[registrationdate]', $f_regdate, 'registrationdate' . $regdate_notice . '');
             $result[] = '';
         }
 
-        /**
-         * new regpolicy start
-         */
-        $result[] = '';
-        $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
-        if (!empty($entid))
-        {
-            $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
-        }
-        else
-        {
-            $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol', 'is_enabled' => TRUE));
-        }
-        $entRegPoliciesArray = array();
-        foreach ($entRegPolicies as $v)
-        {
-            $entRegPoliciesArray['' . $v->getId() . ''] = array('name' => $v->getName(), 'enabled' => $v->getAvailable(), 'lang' => $v->getLang(), 'link' => $v->getUrl(), 'desc' => $v->getDescription());
-        }
-        $isAdmin = $this->ci->j_auth->isAdministrator();
 
-        if (count($entRegPolicies) == 0)
-        {
-            $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
-        }
-        elseif (!$isAdmin && !empty($entid))
-        {
-            $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
-        }
-        $assignedRegPolicies = $ent->getCoc();
-        $assignedRegPoliciesArray = array();
-        if ($sessform && isset($ses['regpol']))
-        {
-            foreach ($ses['regpol'] as $k => $v)
-            {
-                if (isset($entRegPoliciesArray['' . $v . '']))
-                {
-                    $entRegPoliciesArray['' . $v . '']['sel'] = TRUE;
-                }
-            }
-        }
-        else
-        {
-            foreach ($assignedRegPolicies as $k => $v)
-            {
-                $vtype = $v->getType();
-                if (strcmp($vtype, 'regpol') == 0)
-                {
-                    $entRegPoliciesArray['' . $v->getId() . '']['sel'] = true;
-                }
-            }
-        }
-        $r = '<div class="large-8 small-offset-0 large-offset-3 end columns"><div class="checkboxlist">';
-        foreach ($entRegPoliciesArray as $k => $v)
-        {
-            if (isset($v['sel']))
-            {
-                $is = true;
-            }
-            else
-            {
-                $is = false;
-            }
-            if (empty($v['enabled']))
-            {
-                $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-            }
-            else
-            {
-                $lbl = '';
-            }
-            $r .= '<div>' . form_checkbox(array('name' => 'f[regpol][]', 'id' => 'f[regpol][]', 'value' => $k, 'checked' => $is)) . '<span class="label secondary"><b>' . $v['lang'] . '</b></span>  <span data-tooltip class="has-tip" title="' . $v['desc'] . '">' . $v['link'] . '</span> ' . $lbl . '</div>';
-        }
-        $r .= '</div></div>';
-
-        $result[] = $r;
-        $result[] = '';
-
-        /**
-         * new regpolicy end
-         */
         return $result;
     }
 
-    public function NgenerateRegPolicies(models\Provider $ent, $ses = null)
+    public function NgenerateRegistrationPolicies(models\Provider $ent)
     {
-        if (!empty($entid))
+        $langs = languagesCodes();
+        $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
+        $currentCocs = $ent->getCoc();
+        $currentRegPolicies = array();
+        foreach ($currentCocs as $c)
         {
-            $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
+            $rtype = $c->getType();
+            if ($rtype === 'regpol')
+            {
+                $currentRegPolicies['' . $c->getId() . ''] = array(
+                    'name' => $c->getName(), 'enabled' => $c->getAvailable(), 'lang' => $c->getLang(), 'link' => $c->getUrl(), 'desc' => $c->getDescription(), 'sel' => 1
+                );
+            }
         }
-        else
+        foreach ($entRegPolicies as $c)
         {
-            $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol', 'is_enabled' => TRUE));
-        }
-        $entRegPoliciesArray = array();
-        foreach ($entRegPolicies as $v)
-        {
-            $entRegPoliciesArray['' . $v->getId() . ''] = array('name' => $v->getName(), 'enabled' => $v->getAvailable(), 'lang' => $v->getLang(), 'link' => $v->getUrl(), 'desc' => $v->getDescription());
+            $enabled = $c->getAvailable();
+            $rpid = $c->getId();
+            if ($enabled && !array_key_exists($rpid, $currentRegPolicies))
+            {
+                $currentRegPolicies['' . $c->getId() . ''] = array(
+                    'name' => $c->getName(), 'enabled' => $c->getAvailable(), 'lang' => $c->getLang(), 'link' => $c->getUrl(), 'desc' => $c->getDescription(), 'sel' => 0
+                );
+            }
         }
         $isAdmin = $this->ci->j_auth->isAdministrator();
         $result[] = '';
-        $result[] = '<div class="langgroup">' . lang('rr_regpolicy') . ' ' . showBubbleHelp('' . lang('entregpolicy_expl') . '') . '</div>';
-        if (count($entRegPolicies) == 0)
+        if (count($currentRegPolicies) == 0)
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
         }
-        elseif (!$isAdmin && !empty($entid))
+        elseif (!$isAdmin)
         {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
-        $assignedRegPolicies = $ent->getCoc();
-        $assignedRegPoliciesArray = array();
-        if ($sessform && isset($ses['regpol']))
+        $r ='';
+        $policiesByLang = array();
+        foreach($currentRegPolicies as $k=>$v)
         {
-            foreach ($ses['regpol'] as $k => $v)
-            {
-                if (isset($entRegPoliciesArray['' . $v . '']))
-                {
-                    $entRegPoliciesArray['' . $v . '']['sel'] = TRUE;
-                }
-            }
+            $policiesByLang[''.$v['lang'].''][''.$k.''] = $v;
         }
-        else
+        
+        $rp = '';
+        foreach($policiesByLang as $keylang=>$val)
         {
-            foreach ($assignedRegPolicies as $k => $v)
+            if(isset($langs[''.$keylang.'']))
             {
-                $vtype = $v->getType();
-                if (strcmp($vtype, 'regpol') == 0)
-                {
-                    $entRegPoliciesArray['' . $v->getId() . '']['sel'] = true;
-                }
+                $langToString = $langs[''.$keylang.''];
             }
-        }
-        $r = '<div class="small-12 large-8 small-offset-0 large-offset-3 end columns"><div class="checkboxlist">';
-        foreach ($entRegPoliciesArray as $k => $v)
-        {
-            $is = false;
+            else
+            {
+                $langToString = $keylang;
+            }
+            $r .= '<div class="small-12 column groupradiosection">'.lang('regpolsinlang').' '.$langToString.'</div>';
+            foreach($val as $k=>$v)
+            {
+                 $is = false;
             $lbl = '';
-            if (isset($v['sel']))
+            if (!empty($v['sel']))
             {
                 $is = true;
             }
@@ -518,14 +445,19 @@ class Form_element {
             {
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
             }
-            $r .= '<div>' . form_checkbox(array('name' => 'f[regpol][]', 'id' => 'f[regpol][]', 'value' => $k, 'checked' => $is)) . '<span class="label secondary"><b>' . $v['lang'] . '</b></span>  <span data-tooltip class="has-tip" title="' . $v['desc'] . '">' . $v['link'] . '</span> ' . $lbl . '</div>';
+            $r .= '<div class="small-12 column">';
+            $r .= '<div class="small-1 large-3 column text-right">' . form_radio(array('name' => 'f[regpol]['.$keylang.'][]', 'id' => 'f[regpol]['.$keylang.'][]', 'value' => $k, 'checked' => $is, 'class'=>'inline withuncheck')) . '</div><div class="small-11 large-9 column"><span class="label secondary"><b>' . $v['lang'] . '</b></span>  <span data-tooltip class="has-tip" title="' . $v['desc'] . '">' . $v['link'] . '</span> ' . $lbl . '</div>';
+            $r .= '</div>';
+            }
         }
-        $r .= '</div></div>';
+        
+        
         $result[] = $r;
         $result[] = '';
 
         return $result;
     }
+
 
     public function NgeneratePrivacy(models\Provider $ent, $ses = null)
     {
@@ -641,14 +573,10 @@ class Form_element {
             {
                 $lbl = '';
             }
-
-
             $rcheckbox = form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right'));
-            $r .=' <dd class="accordion-navigation small-12 column">';
-            $r .='<div class="small-3 columns bottom" >' . $rcheckbox . '</div><a href="#entcats' . $k . '" class="small-9 columns inline">' . $v['name'] . ' ' . $lbl . '</a>';
-
+            $r .='<dd class="accordion-navigation small-12 column">';
+            $r .='<div class="small-3 columns" >' . $rcheckbox . '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' . $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>';
             $r .='<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' . lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>';
-
             $r .= '</dd>';
         }
         $r .= '</dl></div>';
@@ -745,10 +673,10 @@ class Form_element {
             }
 
 
-            $row .='<div class="small-12 columns">'.jGenerateDropdown(lang('rr_contacttype'),'f[contact][' . $tid . '][type]',$formtypes, $t1,$class_cnt1).'</div>';
-            $row .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $tid . '][fname]', $t2, $class_cnt2).'</div>';
-            $row .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $tid . '][sname]', $t3, $class_cnt3).'</div>';
-            $row .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $tid . '][email]', $t4, $class_cnt4).'</div>';
+            $row .='<div class="small-12 columns">' . jGenerateDropdown(lang('rr_contacttype'), 'f[contact][' . $tid . '][type]', $formtypes, $t1, $class_cnt1) . '</div>';
+            $row .='<div class="small-12 columns">' . jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $tid . '][fname]', $t2, $class_cnt2) . '</div>';
+            $row .='<div class="small-12 columns">' . jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $tid . '][sname]', $t3, $class_cnt3) . '</div>';
+            $row .='<div class="small-12 columns">' . jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $tid . '][email]', $t4, $class_cnt4) . '</div>';
             $row .= '<div class="small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="contactrm button tiny alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
             $result[] = '';
             $result[] = form_fieldset(lang('rr_contact')) . '<div>' . $row . '</div>' . form_fieldset_close();
@@ -764,10 +692,10 @@ class Form_element {
             {
                 $n = '<fieldset class="newcontact"><legend>' . lang('rr_contact') . '</legend><div>';
 
-                $n .='<div class="small-12 columns">'.jGenerateDropdown(lang('rr_contacttype'),'f[contact][' . $k . '][type]',$formtypes,  set_value('f[contact][' . $k . '][type]', $v['type']),'').'</div>';
-                $n .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $k . '][fname]', set_value('f[contact][' . $k . '][fname]', $v['fname']), '').'</div>';
-                $n .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $k . '][sname]', set_value('f[contact][' . $k . '][sname]', $v['sname']), '').'</div>';
-                $n .='<div class="small-12 columns">'.jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $k . '][email]', set_value('f[contact][' . $k . '][email]', $v['email']), '').'</div>';
+                $n .='<div class="small-12 columns">' . jGenerateDropdown(lang('rr_contacttype'), 'f[contact][' . $k . '][type]', $formtypes, set_value('f[contact][' . $k . '][type]', $v['type']), '') . '</div>';
+                $n .='<div class="small-12 columns">' . jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $k . '][fname]', set_value('f[contact][' . $k . '][fname]', $v['fname']), '') . '</div>';
+                $n .='<div class="small-12 columns">' . jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $k . '][sname]', set_value('f[contact][' . $k . '][sname]', $v['sname']), '') . '</div>';
+                $n .='<div class="small-12 columns">' . jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $k . '][email]', set_value('f[contact][' . $k . '][email]', $v['email']), '') . '</div>';
                 $n .= '<div class="rmelbtn fromprevtoright small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm button alert tiny inline right" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
                 $n .= '</div>' . form_fieldset_close();
                 $result[] = '';
@@ -1772,7 +1700,7 @@ class Form_element {
                     'id' => 'f[srv][IDPAttributeService][n' . $ni . '][bind]',
                     'type' => 'hidden',
                     'value' => $v3,));
-                $row .= jGenerateInput($v3, 'f[srv][IDPAttributeService][n' . $ni . '][url]', set_value('f[srv][IDPAttributeService][n' . $ni . '][url]'),'');
+                $row .= jGenerateInput($v3, 'f[srv][IDPAttributeService][n' . $ni . '][url]', set_value('f[srv][IDPAttributeService][n' . $ni . '][url]'), '');
                 $row .= '</div></div>';
                 $aalo[] = $row;
                 ++$ni;
@@ -2803,8 +2731,6 @@ class Form_element {
             /**
              * end description 
              */
-
-
             /**
              * start helpdesk 
              */
@@ -3577,7 +3503,8 @@ class Form_element {
                 $langs['' . $langset . ''] = $langset;
             }
         }
-        $langselected = set_value($langset, $this->defaultlangselect);
+       
+        $langselected = $langset;
         $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName())) . '</div></div>';
@@ -3612,9 +3539,9 @@ class Form_element {
             $attrdropdown['' . $k . ''] = $k;
         }
         $r = '';
-        $r .= '<div class="small-12 columns">'.jGenerateInput(lang('entcat_displayname'),'name',set_value('name', $coc->getName()),'').'</div>';
-        $r .= '<div class="small-12 columns">'.jGenerateInput(lang('entcat_value'),'url',set_value('url', $coc->getUrl()),'').'</div>';
-        $r .= '<div class="small-12 columns">'.jGenerateDropdown(lang('rr_attr_name'),'attrname',$attrdropdown, $coc->getSubtype(),'').'</div>';
+        $r .= '<div class="small-12 columns">' . jGenerateInput(lang('entcat_displayname'), 'name', set_value('name', $coc->getName()), '') . '</div>';
+        $r .= '<div class="small-12 columns">' . jGenerateInput(lang('entcat_value'), 'url', set_value('url', $coc->getUrl()), '') . '</div>';
+        $r .= '<div class="small-12 columns">' . jGenerateDropdown(lang('rr_attr_name'), 'attrname', $attrdropdown, $coc->getSubtype(), '') . '</div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
         return $r;

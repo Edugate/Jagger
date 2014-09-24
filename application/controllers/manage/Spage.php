@@ -14,9 +14,10 @@ class Spage extends MY_Controller
         $this->load->library('form_validation');
         $this->load->library('table');
         $t = $this->config->item('pageeditor');
-        if ($t === TRUE)
+        $this->isEnabled = TRUE;
+        if ($t === FALSE)
         {
-            $this->isEnabled = TRUE;
+           $this->isEnabled = FALSE;
         }
     }
 

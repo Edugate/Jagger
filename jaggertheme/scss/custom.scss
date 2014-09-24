@@ -463,7 +463,7 @@ code {
 
 
 }
-.section {
+.section , .groupradiosection{
    background-color: $info-color;
    font-size: bigger;
    font-weight: bold;
@@ -524,6 +524,11 @@ ul.subtab > .tab-title.active{
 }
 .imgsource > img {
   max-height: 100px;
+}
+
+dd.accordion-navigation {
+  margin-top: 5px;
+
 }
 
 pre.xml {

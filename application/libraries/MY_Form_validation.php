@@ -301,6 +301,46 @@ class MY_form_validation extends CI_form_validation {
            return TRUE;
        }
     }
+    
+    
+    function ecUrlInsert($url, $attrname)
+    {
+        $e = $this->em->getRepository("models\Coc")->findOneBy(array('url'=>$url,'subtype'=>$attrname,'type'=>'entcat'));
+        if(!empty($e))
+        {
+             $this->set_message('ecUrlInsert', "The %s : (". $attrname." : ".$url.") does already exist in the system.");
+             return  FALSE;
+             
+        }
+        return TRUE;
+    }
+    
+    function ecUrlUpdate($url,$params)
+    {
+        $p = unserialize($params);
+        $e = $this->em->getRepository("models\Coc")->findBy(array('url'=>$url,'subtype'=>$p['subtype'],'type'=>'entcat'));
+        $id = $p['id'];
+        $found = false;
+        foreach($e as $v)
+        {
+            $vId = $v->getId();
+            if($id != $vId)
+            {
+                $found = true;
+                break;
+            }
+        }
+        if($found)
+        {
+            $this->set_message('ecUrlUpdate',"The %s :\"$url\" does already exist for \"$attrname\"");
+            return FALSE;
+                
+                
+        }
+        return TRUE;
+        
+    }
+    
     function cocurl_unique_update($url,$id)
     {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url));

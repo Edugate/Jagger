@@ -447,7 +447,7 @@ class Detail extends MY_Controller {
                 }
                 if(strcasecmp($vtype,'regpol')==0)
                 { 
-                  $regpolicy_value .='<div><b>'.$v->getLang().'</b>: '.$v->getUrl().' '.$l.'</div>';
+                  $regpolicy_value .='<div><b>'.$v->getLang().'</b>: <a href="'.$v->getUrl().'">'.$v->getName().'</a> '.$l.'</div>';
                 }
 
             }
@@ -1386,7 +1386,6 @@ class Detail extends MY_Controller {
         $subresult[3] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
         $d = array();
         $i = 0;
-        $d[++$i]['header'] = lang('rr_management');
         if ($has_manage_access)
         {
             $d[++$i]['name'] = lang('rr_managestatus');
@@ -1422,6 +1421,11 @@ class Detail extends MY_Controller {
         else
         {
             $d[$i]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
+        }
+        if($has_manage_access || $has_write_access)
+        {
+
+          $d[++$i] = array('name'=>lang('regpols_menulink'),'value'=>'<a href="'.base_url().'manage/entitystate/regpolicies/'.$ent->getId().'" class="button tiny">'.lang('rr_edit').'');
         }
 
         ksort($subresult);
@@ -1504,6 +1508,8 @@ class Detail extends MY_Controller {
          
 
     }
+
+
 
     function showmembers($providerid)
     {

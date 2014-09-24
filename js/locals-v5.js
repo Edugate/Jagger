@@ -3479,3 +3479,13 @@ $('button.getlogo').click(function() {
 
 });
 
+var checkRegpol;
+
+$('input[type="radio"].withuncheck').hover(function() {
+    checkRegpol = $(this).is(':checked');
+});
+
+$('input[type="radio"].withuncheck').click(function() {
+    checkRegpol = !checkRegpol;
+    $(this).attr("checked", checkRegpol);
+});

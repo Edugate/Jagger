@@ -76,6 +76,7 @@ class Arp extends MY_Controller
             log_message('debug', 'IdP not found with id:.' . $idp_entityid);
             show_error("Identity Provider not found", 404);
         }
+        $entityid = $idp->getEntityId();
         $keyprefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
 
@@ -112,6 +113,16 @@ class Arp extends MY_Controller
         if (!empty($data['out'])) {
             $this->load->view('metadata_view', $data);
             log_message('info', 'Downloaded......');
+            $this->trackRequest($entityid);
+        }
+        else {
+            show_error('ARP cannot be generated because no policy had been set', 404);
+        }
+    }
+
+
+    private function trackRequest($resourcename)
+    {
             $ref = null;
             $reqtype = null;
             if (isset($_SERVER['HTTP_REFERER'])) {
@@ -125,18 +136,13 @@ class Arp extends MY_Controller
             if ((!empty($reqtype) && $reqtype == 'GET') && ((!empty($ref) && stristr($ref, $reftomatch) === FALSE) || (empty($ref)))) {
                 log_message('debug', 'Arp downloading set1');
                 $sync_with_db = true;
-                $resourcename = $idp->getEntityId();
+              //  $resourcename = $idp->getEntityId();
                 $details = null;
                 $this->tracker->save_track($this->resourcetype, $this->subtype, $resourcename, $details, $sync_with_db);
             }
-        }
-        else {
-            show_error('ARP cannot be generated because no policy had been set', 404);
-        }
+          
+
     }
-
-
-
 
     /**
      *

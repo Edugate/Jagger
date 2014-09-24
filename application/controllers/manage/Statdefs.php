@@ -777,17 +777,17 @@ class Statdefs extends MY_Controller {
        {
           show_error('method not allowed', 401);
        }
-       if(empty($defid) || !is_numeric($defid))
-       {
-          set_status_header(404);
-          echo 'not found';
-          return;
-       }
        $loggedin = $this->j_auth->logged_in();
        if (!$loggedin)
        {
           set_status_header(403);
           echo 'Access denied';
+          return;
+       }
+       if(empty($defid) || !is_numeric($defid))
+       {
+          set_status_header(404);
+          echo 'not found';
           return;
        }
        $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
@@ -805,9 +805,8 @@ class Statdefs extends MY_Controller {
           echo 'not found';
           return;
        }
-       $providerId = $provider->getId();
        $this->load->library('zacl');
-       $hasAccess = $this->zacl->check_acl('' . $providerId . '', 'write', 'entity', '');
+       $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
        if (!$hasAccess)
        {
           set_status_header(403);
@@ -823,7 +822,7 @@ class Statdefs extends MY_Controller {
             echo 'Access denied';
             return;
        }
-       if((strcmp($inputProviderId,$providerId) != 0) || (strcmp($inputDefId,$defid)!= 0))
+       if((strcmp($inputProviderId,$provider->getId()) != 0) || (strcmp($inputDefId,$defid)!= 0))
        {
            log_message('error', 'remove statdefid received inccorect params');
             set_status_header(403);

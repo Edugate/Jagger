@@ -480,7 +480,7 @@ class Entityedit extends MY_Controller
 
     private function _save_draft($id, $data)
     {
-        $attrs1 = array('lname', 'ldisplayname', 'lhelpdesk', 'regpol', 'coc');
+        $attrs1 = array('lname', 'ldisplayname', 'lhelpdesk', 'coc');
         foreach ($attrs1 as $a1)
         {
             if (isset($data['' . $a1 . '']))
