@@ -3261,13 +3261,7 @@ class Provider
     public function getProviderToXML(\DOMElement $parent = NULL, $options = NULL)
     {
         log_message('debug', __METHOD__ . ' start:  ' . $this->entityid);
-        $comment = "\"" . $this->getEntityId() . "\" \n";
-
-        /**
-         * defauls values
-         */
-        //  $type = $this->type;
-
+        $comment = "\"" . $this->getEntityId() . "\" \n";     
         $s_metadata = null;
         $valid_until = null;
         $p_validUntil = $this->getValidTo();
@@ -3664,7 +3658,7 @@ class Provider
         }
     }
 
-    private function AADescriptorFromArray($b)
+    private function aaDescriptorFromArray($b)
     {
         if (array_key_exists('protocols', $b))
         {
@@ -3724,7 +3718,7 @@ class Provider
         }
     }
 
-    private function IDPSSODescriptorFromArray($b)
+    private function idpSSODescriptorFromArray($b)
     {
         if (array_key_exists('extensions', $b))
         {
@@ -4032,13 +4026,13 @@ class Provider
                 if (array_key_exists('idpssodescriptor', $a['details']))
                 {
 
-                    $this->IDPSSODescriptorFromArray($a['details']['idpssodescriptor']);
+                    $this->idpSSODescriptorFromArray($a['details']['idpssodescriptor']);
                 }
                 if (array_key_exists('aadescriptor', $a['details']))
                 {
                     \log_message('debug', 'GKL import aa');
 
-                    $this->AADescriptorFromArray($a['details']['aadescriptor']);
+                    $this->aaDescriptorFromArray($a['details']['aadescriptor']);
                 }
             }
             if ($a['type'] !== 'IDP')

@@ -25,12 +25,14 @@ class Form_element
     protected $em;
     protected $disallowedparts = array();
     protected $defaultlangselect = 'en';
+    protected $langs;
 
     function __construct()
     {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->helper(array('form', 'shortcodes'));
+        $this->langs = languagesCodes();
         $a = $this->ci->config->item('langselectdefault');
         if (!empty($a))
         {
