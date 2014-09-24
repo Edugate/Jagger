@@ -116,18 +116,13 @@ class Detail extends MY_Controller {
                return;
             }
             $d = array();
-            $group = 'entity';
             $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
             if (!empty($ent))
             {
-                $has_write_access = $this->zacl->check_acl($id, 'write', $group, '');
+                $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
                 if ($has_write_access === TRUE)
                 {
-
                     $i = 0;
-                    /**
-                     * @todo remove stats link later
-                     */
                     $isactive = $ent->getActive();
                     $islocal = $ent->getLocal();
                     $isgearman = $this->config->item('gearman');
@@ -199,8 +194,7 @@ class Detail extends MY_Controller {
         $idppart = FALSE;
         $type = strtolower($ent->getType());
         $data['type'] = &$type;
-        $group = 'entity';
-        $entstatus = '';
+        $entStatus = '';
         $edit_attributes = '';
         $edit_policy = '';
 
@@ -223,10 +217,10 @@ class Detail extends MY_Controller {
             $idppart = TRUE;
             $data['presubtitle'] = lang('rr_asboth');
         }
-        $has_read_access = $this->zacl->check_acl($id, 'read', $group, '');
-        $has_write_access = $this->zacl->check_acl($id, 'write', $group, '');
-        $has_manage_access = $this->zacl->check_acl($id, 'manage', $group, '');
-        if (!$has_read_access)
+        $hasReadAccess = $this->zacl->check_acl($id, 'read', 'entity', '');
+        $hasWriteAccess = $this->zacl->check_acl($id, 'write', 'entity', '');
+        $hasManageAccess = $this->zacl->check_acl($id, 'manage', 'entity', '');
+        if (!$hasReadAccess)
         {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang("rr_nospaccess");
@@ -236,59 +230,59 @@ class Detail extends MY_Controller {
         // off canvas menu for provider
         $entmenu = array();
 
-        $is_validtime = $ent->getIsValidFromTo();
-        $is_active = $ent->getActive();
-        $is_local = $ent->getLocal();
-        $is_publiclisted = $ent->getPublicVisible();
-        $locked = $ent->getLocked();
+        $isValidTime = $ent->getIsValidFromTo();
+        $isActive = $ent->getActive();
+        $isLocal = $ent->getLocal();
+        $isPublicListed = $ent->getPublicVisible();
+        $isLocked = $ent->getLocked();
         $lockicon = genIcon('locked', lang('rr_locked'));
         $edit_link = '';
-        if(empty($is_publiclisted))
+        if(empty($isPublicListed))
         {
-            $entstatus .= ' ' . makeLabel('disabled', lang('lbl_publichidden'), lang('lbl_publichidden'));
+            $entStatus .= ' ' . makeLabel('disabled', lang('lbl_publichidden'), lang('lbl_publichidden'));
         }
-        if (empty($is_active))
+        if (empty($isActive))
         {
-            $entstatus .= ' ' . makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
-        }
-        else
-        {
-            $entstatus .= ' ' . makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
-        }
-        if (!$is_validtime)
-        {
-            $entstatus .= ' ' . makeLabel('alert', lang('rr_validfromto_notmatched1'), strtolower(lang('rr_metadata')) . ' ' . lang('rr_expired'));
-        }
-        if ($locked)
-        {
-            $entstatus .= ' ' . makeLabel('locked', lang('rr_locked'), lang('rr_locked'));
-        }
-        if ($is_local)
-        {
-            $entstatus .= ' ' . makeLabel('local', lang('rr_managedlocally'), lang('rr_managedlocally'));
+            $entStatus .= ' ' . makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
         }
         else
         {
-            $entstatus .= ' ' . makeLabel('local', lang('rr_external'), lang('rr_external'));
+            $entStatus .= ' ' . makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
+        }
+        if (!$isValidTime)
+        {
+            $entStatus .= ' ' . makeLabel('alert', lang('rr_validfromto_notmatched1'), strtolower(lang('rr_metadata')) . ' ' . lang('rr_expired'));
+        }
+        if ($isLocked)
+        {
+            $entStatus .= ' ' . makeLabel('locked', lang('rr_locked'), lang('rr_locked'));
+        }
+        if ($isLocal)
+        {
+            $entStatus .= ' ' . makeLabel('local', lang('rr_managedlocally'), lang('rr_managedlocally'));
+        }
+        else
+        {
+            $entStatus .= ' ' . makeLabel('local', lang('rr_external'), lang('rr_external'));
         }
         if ($is_static)
         {
-            $entstatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
+            $entStatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
             $alerts[] = lang('staticmeta_info');
             
         }
 
-        if (!$has_write_access)
+        if (!$hasWriteAccess)
         {
             $edit_link .= makeLabel('noperm', lang('rr_nopermission'), lang('rr_nopermission'));
             $entmenu[0] = array('name'=>''.lang('rr_nopermission').'','link'=>'#','class'=>'alert');
         }
-        elseif (!$is_local)
+        elseif (!$isLocal)
         {
             $edit_link .= makeLabel('external', lang('rr_externalentity'), lang('rr_external'));
             $entmenu[0] = array('name'=>''.lang('rr_externalentity').'','link'=>'#','class'=>'alert');
         }
-        elseif ($locked)
+        elseif ($isLocked)
         {
             $edit_link .= makeLabel('locked', lang('rr_lockedentity'), lang('rr_lockedentity'));
             $entmenu[0] = array('name'=>''.lang('rr_lockedentity').'','link'=>'#','class'=>'alert');
@@ -347,7 +341,7 @@ class Detail extends MY_Controller {
         $i = 0;
         $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
 
-        $d[$i]['value'] = '<b>' . $entstatus . '</b>';
+        $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s',$ent->getLastModified()->format('U')+j_auth::$timeOffset) . '</b>';
         $entityIdRecord = array('name'=>lang('rr_entityid'),'value'=>$ent->getEntityId());
@@ -407,7 +401,7 @@ class Detail extends MY_Controller {
         $regauthoritytext = null;
         if (empty($regauthority))
         {
-            if ($is_local && !empty($confRegLoad) && !empty($confRegAuth))
+            if ($isLocal && !empty($confRegLoad) && !empty($confRegAuth))
             {
                 $regauthoritytext = lang('rr_regauthority_alt') . ' <b>' . $confRegAuth . '</b><br /><small><i>' . lang('loadedfromglobalcnf') . '</i></small>';
             }
@@ -451,8 +445,7 @@ class Detail extends MY_Controller {
                 }
 
             }
-        }
-         
+        }      
         elseif (!empty($confRegistrationPolicy) && !empty($confRegLoad))
         {
             $regpolicy_value .= '<b>en:</b> ' . $confRegistrationPolicy . ' <div data-alert class="alert-box info">' . lang('loadedfromglobalcnf') . '</div>';
@@ -512,7 +505,7 @@ class Detail extends MY_Controller {
         {
             $validto = lang('rr_unlimited');
         }
-        if ($is_validtime)
+        if ($isValidTime)
         {
             $d[$i]['value'] = $validfrom . ' <b>--</b> ' . $validto;
         }
@@ -600,7 +593,7 @@ class Detail extends MY_Controller {
         if($circleEnabled)
         {
 
-            if (!$is_local && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
+            if (!$isLocal && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
             {
                $d[++$i]['name'] = lang('rr_circleoftrust');
                $d[$i]['value'] = lang('disableexternalcirclemeta');
@@ -618,7 +611,7 @@ class Detail extends MY_Controller {
                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
            }
         }
-        if ($is_local && $has_write_access && !empty($gearman_enabled) && $circleEnabled)
+        if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled)
         {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
             $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button tiny">' . lang('btn_signmetadata') . '</a>';
@@ -695,9 +688,9 @@ class Detail extends MY_Controller {
             $federationsString .='</ul>';
             $manage_membership = '';
             $no_feds = $membership->count();
-            if ($no_feds > 0 && $has_write_access)
+            if ($no_feds > 0 && $hasWriteAccess)
             {
-                if (!$locked)
+                if (!$isLocked)
                 {
                     $manage_membership .= '<div><a href="'.base_url().'manage/leavefed/leavefederation/'.$ent->getId().'" class="button tiny alert">'.lang('rr_federationleave').'</a></div>';
                     $entmenu[11] = array('name'=>lang('rr_federationleave'),'link'=>''.base_url() . 'manage/leavefed/leavefederation/' . $ent->getId().'','class'=>'');
@@ -707,9 +700,9 @@ class Detail extends MY_Controller {
                     $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . $lockicon . ' <br />';
                 }
             }
-            if ($has_write_access && (count($membershipNotLeft) < count($all_federations)))
+            if ($hasWriteAccess && (count($membershipNotLeft) < count($all_federations)))
             {
-                if (!$locked)
+                if (!$isLocked)
                 {
                     $manage_membership .= '<div><a href="'.base_url().'manage/joinfed/joinfederation/'.$ent->getId().'" class="button tiny">'.lang('rr_federationjoin').'</a></div>';
                     $entmenu[10] = array('name'=>lang('rr_federationjoin'),'link'=>''.base_url() . 'manage/joinfed/joinfederation/' . $ent->getId().'','class'=>'');
@@ -1085,7 +1078,7 @@ class Detail extends MY_Controller {
             //
 
             $exc = $ent->getExcarps();
-            if (!$locked && $has_write_access && $ent->getLocal())
+            if (!$isLocked && $hasWriteAccess && $ent->getLocal())
             {
                 
                 $mlink = '';
@@ -1116,7 +1109,7 @@ class Detail extends MY_Controller {
         if ($idppart)
         {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-            if ($has_write_access)
+            if ($hasWriteAccess)
             {
                 $entmenu[20] = array('label'=>''.lang('rr_attributes').'');
                 $entmenu[22] = array('name'=>''.lang('rr_supportedattributes').'','link'=>'' . base_url() . 'manage/supported_attributes/idp/' . $id . '','class'=>'');
@@ -1143,7 +1136,7 @@ class Detail extends MY_Controller {
         {
             $edit_req_attrs_link = '';
 
-            if ($has_write_access)
+            if ($hasWriteAccess)
             {
                 $entmenu[20] = array('label'=>''.lang('rr_attributes').'');
                 $d[++$i]['name'] = lang('rr_attrsoverview');
@@ -1386,11 +1379,11 @@ class Detail extends MY_Controller {
         $subresult[3] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
         $d = array();
         $i = 0;
-        if ($has_manage_access)
+        if ($hasManageAccess)
         {
             $d[++$i]['name'] = lang('rr_managestatus');
             $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' ' . anchor(base_url() . 'manage/entitystate/modify/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-            if(!$is_active)
+            if(!$isActive)
             {
               $d[$i]['value'] .= '<div>'.lang('rr_rmprovider').' '. anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>').'</div>';
             }
@@ -1401,7 +1394,7 @@ class Detail extends MY_Controller {
 
             }
         }
-        elseif($has_write_access)
+        elseif($hasWriteAccess)
         {
             $d[++$i]['name'] = lang('rr_managestatus');
             $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <img src="' . base_url() . 'images/icons/prohibition.png"/><div class="alert">'.lang('rerror_managepermneeded').'</div>';
@@ -1414,7 +1407,7 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
         $d[++$i]['name'] = '';
-        if ($has_manage_access)
+        if ($hasManageAccess)
         {
             $d[$i]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/access_manage/entity/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
         }
@@ -1422,7 +1415,7 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
-        if($has_manage_access || $has_write_access)
+        if($hasManageAccess || $hasWriteAccess)
         {
 
           $d[++$i] = array('name'=>lang('regpols_menulink'),'value'=>'<a href="'.base_url().'manage/entitystate/regpolicies/'.$ent->getId().'" class="button tiny">'.lang('rr_edit').'');
