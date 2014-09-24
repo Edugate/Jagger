@@ -1,6 +1,5 @@
 <?php
 $base = base_url();
-$this->load->helper('form');
 $shib = $this->config->item('Shibboleth');
 $ssphp = $this->config->item('simplesamlphp');
 $fedenabled = FALSE;

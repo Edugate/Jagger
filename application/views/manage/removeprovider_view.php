@@ -22,7 +22,6 @@ if (!empty($success_message))
 }
 if ($showform)
 {
-    $this->load->helper('form');
     $attributes = array('class' => 'span-16', 'id' => 'formver1');
     echo form_open(current_url(), $attributes);
     echo form_fieldset(lang('rr_provider_rmform'));

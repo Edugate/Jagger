@@ -42,7 +42,6 @@ if(!empty($result))
    {
    $rrs = array('id'=>'idpmatrixform','style'=>'display: none');
 
-   $this->load->helper('form');
    echo form_open(base_url().'manage/attribute_policyajax/submit_sp/'.$idpid,$rrs);
    echo form_input(array('name'=>'attribute','id'=>'attribute','type'=>'hidden','value'=>''));
    echo form_input(array('name'=>'idpid','id'=>'idpid','type'=>'hidden','value'=>''.$idpid.''));

@@ -24,7 +24,6 @@ if(!empty($warnmessage))
  */
    $rrs = array('id'=>'notificationupdateform');
 
-   $this->load->helper('form');
    echo '<div id="notificationupdatemodal" class="reveal-modal" data-reveal>';
    echo form_open(base_url().'notification/subscriber/updatestatus/',$rrs);
    echo form_input(array('name'=>'noteid','id'=>'noteid','type'=>'hidden','value'=>''));
@@ -52,7 +51,6 @@ if(!empty($warnmessage))
  */
    $rrs = array('id'=>'notificationaddform');
 
-   $this->load->helper('form');
    echo '<div id="notificationaddmodal" class="reveal-modal" data-reveal>';
    echo form_open(base_url().'notifications/subscriber/add/'.$encodeduser.'',$rrs);
    ?>
