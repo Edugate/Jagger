@@ -447,7 +447,7 @@ class Detail extends MY_Controller {
                 }
                 if(strcasecmp($vtype,'regpol')==0)
                 { 
-                  $regpolicy_value .='<div><b>'.$v->getLang().'</b>: '.$v->getUrl().' '.$l.'</div>';
+                  $regpolicy_value .='<div><b>'.$v->getLang().'</b>: <a href="'.$v->getUrl().'">'.$v->getName().'</a> '.$l.'</div>';
                 }
 
             }
