@@ -379,6 +379,7 @@ class Form_element {
 
     public function NgenerateRegistrationPolicies(models\Provider $ent)
     {
+        $langs = languagesCodes();
         $entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
         $currentCocs = $ent->getCoc();
         $currentRegPolicies = array();
@@ -414,9 +415,27 @@ class Form_element {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
         $r ='';
-        foreach ($currentRegPolicies as $k=>$v)
+        $policiesByLang = array();
+        foreach($currentRegPolicies as $k=>$v)
         {
-            $is = false;
+            $policiesByLang[''.$v['lang'].''][''.$k.''] = $v;
+        }
+        
+        $rp = '';
+        foreach($policiesByLang as $keylang=>$val)
+        {
+            if(isset($langs[''.$keylang.'']))
+            {
+                $langToString = $langs[''.$keylang.''];
+            }
+            else
+            {
+                $langToString = $keylang;
+            }
+            $r .= '<div class="small-12 column groupradiosection">'.lang('regpolsinlang').' '.$langToString.'</div>';
+            foreach($val as $k=>$v)
+            {
+                 $is = false;
             $lbl = '';
             if (!empty($v['sel']))
             {
@@ -427,9 +446,12 @@ class Form_element {
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
             }
             $r .= '<div class="small-12 column">';
-            $r .= '<div class="small-1 large-3 column text-right">' . form_checkbox(array('name' => 'f[regpol][]', 'id' => 'f[regpol][]', 'value' => $k, 'checked' => $is, 'class'=>'inline')) . '</div><div class="small-11 large-9 column"><span class="label secondary"><b>' . $v['lang'] . '</b></span>  <span data-tooltip class="has-tip" title="' . $v['desc'] . '">' . $v['link'] . '</span> ' . $lbl . '</div>';
+            $r .= '<div class="small-1 large-3 column text-right">' . form_radio(array('name' => 'f[regpol]['.$keylang.'][]', 'id' => 'f[regpol]['.$keylang.'][]', 'value' => $k, 'checked' => $is, 'class'=>'inline withuncheck')) . '</div><div class="small-11 large-9 column"><span class="label secondary"><b>' . $v['lang'] . '</b></span>  <span data-tooltip class="has-tip" title="' . $v['desc'] . '">' . $v['link'] . '</span> ' . $lbl . '</div>';
             $r .= '</div>';
+            }
         }
+        
+        
         $result[] = $r;
         $result[] = '';
 
@@ -3481,7 +3503,8 @@ class Form_element {
                 $langs['' . $langset . ''] = $langset;
             }
         }
-        $langselected = set_value($langset, $this->defaultlangselect);
+       
+        $langselected = $langset;
         $r = '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName())) . '</div></div>';

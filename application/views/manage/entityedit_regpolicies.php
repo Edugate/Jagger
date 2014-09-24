@@ -12,8 +12,9 @@ if(!empty($error_messages) || !empty($error_messages2))
    }
    echo '</div>';
 }
-
-echo form_open();
+$action = current_url();
+$attributes = array('class'=>'');
+echo form_open($action,$attributes);
 foreach($r as $v)
 {
  echo $v;

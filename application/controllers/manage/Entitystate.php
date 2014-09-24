@@ -117,13 +117,20 @@ class Entitystate extends MY_Controller {
             if(!empty($p) && strcmp($p,$this->entity->getId())==0)
             {
                 $this->load->library('providerupdater');
+                $process['regpol'] = array();
                 $input = $this->input->post('f');
-                if (empty($input))
+                if (!empty($input) && isset($input['regpol']))
                 {
-                   $input['regpol'] = array();
+                   foreach($input['regpol'] as $p => $v)
+                   {
+                       foreach($v as $k=>$l)
+                       {
+                            $process['regpol'][] = $l;
+                       }
+                   }
                 }
                 $this->load->library('approval');
-                $this->providerupdater->updateRegPolicies($this->entity, $input,$isAdmin);
+                $this->providerupdater->updateRegPolicies($this->entity, $process,$isAdmin);
                 try
                 {
                   $this->em->flush();
