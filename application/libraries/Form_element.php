@@ -2382,6 +2382,7 @@ class Form_element {
         $btnlangs = array('0' => lang('rr_unspecified')) + $btnlangs;
         $type = $ent->getType();
         $sessform = FALSE;
+        $entid = $ent->getId();
         if (is_array($ses))
         {
             $sessform = TRUE;
@@ -2398,6 +2399,7 @@ class Form_element {
         if (!$sessform)
         {
             $metaext = $ent->getExtendMetadata();
+            $vid = 0;
             foreach ($metaext as $v)
             {
                 $velement = $v->getElement();
@@ -2414,7 +2416,12 @@ class Form_element {
                 {
                     $lang = 0;
                 }
-                $logos[$v->getType()]['' . $v->getId() . ''] = array(
+                $eid = $v->getId();
+                if(empty($eid))
+                {
+                   $eid = 'n'.$vid++; 
+                }
+                $logos[$v->getType()]['' . $eid . ''] = array(
                     'url' => '' . $v->getLogoValue() . '',
                     'lang' => '' . $lang . '',
                     'width' => $attrs['width'],
@@ -2457,6 +2464,7 @@ class Form_element {
         $result = array();
 
 
+        
         foreach ($logos as $k1 => $v1)
         {
             $result[$k1][] = '';
