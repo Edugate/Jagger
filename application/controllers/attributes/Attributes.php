@@ -45,8 +45,8 @@ class Attributes extends MY_Controller
     private function _add_submit_validate()
     {
         $this->form_validation->set_rules('attrname', lang('attrname'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[name]');
-        $this->form_validation->set_rules('attroidname', lang('attroid'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[oid]');
-        $this->form_validation->set_rules('attrurnname', lang('attrurn'), 'trim|required|min_length[3]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[urn]');
+        $this->form_validation->set_rules('attroidname', lang('attrsaml2'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[oid]');
+        $this->form_validation->set_rules('attrurnname', lang('attrsaml1'), 'trim|required|min_length[3]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[urn]');
         $this->form_validation->set_rules('attrfullname', lang('attrfullname'), 'trim|required|min_length[3]|max_length[128]|xss_clean|attribute_unique[fullname]');
         $this->form_validation->set_rules('description', lang('rr_description'), 'trim|required|min_length[3]|max_length[128]|xss_clean');
         return $this->form_validation->run();
