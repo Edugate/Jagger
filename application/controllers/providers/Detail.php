@@ -384,7 +384,7 @@ class Detail extends MY_Controller {
            $lvalues = '';
            foreach($localizedHelpdesk as $k=>$v)
            {
-                $lvalues .= '<div><b>' . $k . ':</b> ' . $v . '</div>';
+                $lvalues .= '<div><b>' . $k . ':</b> <a href="'.$v.'"  target="_blank">' . $v . '</a></div>';
               
            }
            $d[$i]['value'] = $lvalues;
@@ -441,7 +441,7 @@ class Detail extends MY_Controller {
                 }
                 if(strcasecmp($vtype,'regpol')==0)
                 { 
-                  $regpolicy_value .='<div><b>'.$v->getLang().'</b>: <a href="'.$v->getUrl().'">'.$v->getName().'</a> '.$l.'</div>';
+                  $regpolicy_value .='<div><b>'.$v->getLang().'</b>: <a href="'.$v->getUrl().'" target="_blank">'.$v->getName().'</a> '.$l.'</div>';
                 }
 
             }
@@ -472,7 +472,7 @@ class Detail extends MY_Controller {
               $coctype = $v->getType();
               if($coctype  === 'entcat')
               {
-                 $cocvalue =  anchor($v->getUrl(),$v->getName());
+                 $cocvalue =  '<a href="'.$v->getUrl().'"  target="_blank" title="'.$v->getDescription().'">'.$v->getName().'</a>';
                  if (!$v->getAvailable())
                  {
                     $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
