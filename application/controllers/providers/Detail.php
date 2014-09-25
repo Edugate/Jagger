@@ -51,58 +51,57 @@ class Detail extends MY_Controller {
 
     function refreshentity($id)
     {
-       if ($this->input->is_ajax_request())
-       {
-           if (!$this->j_auth->logged_in())
-           {
-              set_status_header(403);
-              echo 'no user session';
-              return;
-           }
-           if(!is_numeric($id))
-           {
-              set_status_header(403);
-              echo 'received incorrect params';
-              return;
-           }
-           $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
-           log_message('debug','TEST access '.$has_write_access);
-           if ($has_write_access === TRUE)
-           {
-               log_message('debug','TEST access '.$has_write_access);
-               $id=trim($id);
-               $keyPrefix = getCachePrefix();
-               $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
-               $cache1 = 'mcircle_' . $id;
-               $this->cache->delete($cache1);
-               $arpByInherit = $this->config->item('arpbyinherit');
-               if(!empty($arpByInherit))
-               {
-                   $cache2 = 'arp2_'.$id;
-                   $this->cache->delete($cache2);
-                   $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($id), -1);
-
-               }
-               else
-               {
-                   $cache2 = 'arp_'.$id;
-                   $this->cache->delete($cache2);
-                   $this->j_cache->library('arp_generator', 'arpToArray', array($id), -1);
-               }
-               echo 'OK';
-               return TRUE;
-           }
-           else
-           {
-              set_status_header(403);
-              echo 'access denied';
-              return;
-           } 
-       }
-       else
-       {
-           show_error('Access denied', 403);
-       }
+        if ($this->input->is_ajax_request())
+        {
+            if (!$this->j_auth->logged_in())
+            {
+                set_status_header(403);
+                echo 'no user session';
+                return;
+            }
+            if (!is_numeric($id))
+            {
+                set_status_header(403);
+                echo 'received incorrect params';
+                return;
+            }
+            $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
+            log_message('debug', 'TEST access ' . $has_write_access);
+            if ($has_write_access === TRUE)
+            {
+                log_message('debug', 'TEST access ' . $has_write_access);
+                $id = trim($id);
+                $keyPrefix = getCachePrefix();
+                $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
+                $cache1 = 'mcircle_' . $id;
+                $this->cache->delete($cache1);
+                $arpByInherit = $this->config->item('arpbyinherit');
+                if (!empty($arpByInherit))
+                {
+                    $cache2 = 'arp2_' . $id;
+                    $this->cache->delete($cache2);
+                    $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($id), -1);
+                }
+                else
+                {
+                    $cache2 = 'arp_' . $id;
+                    $this->cache->delete($cache2);
+                    $this->j_cache->library('arp_generator', 'arpToArray', array($id), -1);
+                }
+                echo 'OK';
+                return TRUE;
+            }
+            else
+            {
+                set_status_header(403);
+                echo 'access denied';
+                return;
+            }
+        }
+        else
+        {
+            show_error('Access denied', 403);
+        }
     }
 
     function showlogs($id)
@@ -111,9 +110,9 @@ class Detail extends MY_Controller {
         {
             if (!$this->j_auth->logged_in())
             {
-               set_status_header(403);
-               echo 'no session';
-               return;
+                set_status_header(403);
+                echo 'no session';
+                return;
             }
             $d = array();
             $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
@@ -131,14 +130,14 @@ class Detail extends MY_Controller {
                     {
                         $d[++$i]['header'] = 'Statistics';
                         $d[++$i]['name'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt'));
-                        $d[$i]['value'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<img src="'.base_url().'images/stats_bars.png">');
+                        $d[$i]['value'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<img src="' . base_url() . 'images/stats_bars.png">');
                     }
                     $d[++$i]['header'] = lang('rr_logs');
                     $d[++$i]['name'] = lang('rr_variousreq');
-                    $d[$i]['value'] =$this->show_element->generateRequestsList($ent, 10);
+                    $d[$i]['value'] = $this->show_element->generateRequestsList($ent, 10);
                     $d[++$i]['name'] = lang('rr_modifications');
                     $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 10);
-                    if ((strcasecmp($ent->getType(), 'IDP') == 0) OR (strcasecmp($ent->getType(), 'BOTH') == 0))
+                    if ((strcasecmp($ent->getType(), 'IDP') == 0) OR ( strcasecmp($ent->getType(), 'BOTH') == 0))
                     {
                         $tmp_logs = new models\Trackers;
                         $arp_logs = $tmp_logs->getArpDownloaded($ent);
@@ -147,7 +146,7 @@ class Detail extends MY_Controller {
                         {
                             foreach ($arp_logs as $l)
                             {
-                                $logg_tmp .= '<li><b>' . date('Y-m-d H:i:s',$l->getCreated()->format('U')+j_auth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+                                $logg_tmp .= '<li><b>' . date('Y-m-d H:i:s', $l->getCreated()->format('U') + j_auth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
                             }
                         }
                         $logg_tmp .= '</ul>';
@@ -171,7 +170,7 @@ class Detail extends MY_Controller {
 
     function show($id)
     {
-        
+
         if (empty($id) || !ctype_digit($id))
         {
             show_error(lang('error404'), 404);
@@ -184,9 +183,19 @@ class Detail extends MY_Controller {
             show_error(lang('error404'), 404);
             return;
         }
+        $feathide = $this->config->item('feathide');
+        if (empty($feathide))
+        {
+            $feathide = array();
+        }
+        $featdisable = $this->config->item('featdisable');
+        if (empty($featdisable))
+        {
+            $featdisable = array();
+        }
         $alerts = array();
         $is_static = $ent->getStatic();
-        
+
         $params = array(
             'enable_classes' => true,
         );
@@ -237,7 +246,7 @@ class Detail extends MY_Controller {
         $isLocked = $ent->getLocked();
         $lockicon = genIcon('locked', lang('rr_locked'));
         $edit_link = '';
-        if(empty($isPublicListed))
+        if (empty($isPublicListed))
         {
             $entStatus .= ' ' . makeLabel('disabled', lang('lbl_publichidden'), lang('lbl_publichidden'));
         }
@@ -269,28 +278,27 @@ class Detail extends MY_Controller {
         {
             $entStatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
             $alerts[] = lang('staticmeta_info');
-            
         }
 
         if (!$hasWriteAccess)
         {
             $edit_link .= makeLabel('noperm', lang('rr_nopermission'), lang('rr_nopermission'));
-            $entmenu[0] = array('name'=>''.lang('rr_nopermission').'','link'=>'#','class'=>'alert');
+            $entmenu[0] = array('name' => '' . lang('rr_nopermission') . '', 'link' => '#', 'class' => 'alert');
         }
         elseif (!$isLocal)
         {
             $edit_link .= makeLabel('external', lang('rr_externalentity'), lang('rr_external'));
-            $entmenu[0] = array('name'=>''.lang('rr_externalentity').'','link'=>'#','class'=>'alert');
+            $entmenu[0] = array('name' => '' . lang('rr_externalentity') . '', 'link' => '#', 'class' => 'alert');
         }
         elseif ($isLocked)
         {
             $edit_link .= makeLabel('locked', lang('rr_lockedentity'), lang('rr_lockedentity'));
-            $entmenu[0] = array('name'=>''.lang('rr_lockedentity').'','link'=>'#','class'=>'alert');
+            $entmenu[0] = array('name' => '' . lang('rr_lockedentity') . '', 'link' => '#', 'class' => 'alert');
         }
         else
         {
             $edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon button small" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
-            $entmenu[0] = array('name'=>''.lang('rr_editentity').'','link'=>''.base_url().'manage/entityedit/show/'.$id.'','class'=>'');
+            $entmenu[0] = array('name' => '' . lang('rr_editentity') . '', 'link' => '' . base_url() . 'manage/entityedit/show/' . $id . '', 'class' => '');
             $data['showclearcache'] = TRUE;
         }
         $data['edit_link'] = $edit_link;
@@ -318,7 +326,7 @@ class Detail extends MY_Controller {
 
         $data['entid'] = $ent->getId();
         $lang = MY_Controller::getLang();
-        $data['name'] = $ent->getNameToWebInLang($lang,$type);
+        $data['name'] = $ent->getNameToWebInLang($lang, $type);
         $this->title = lang('rr_providerdetails') . ' :: ' . $data['name'];
         $b = $this->session->userdata('board');
         if (!empty($b) && is_array($b))
@@ -343,14 +351,14 @@ class Detail extends MY_Controller {
 
         $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
-        $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s',$ent->getLastModified()->format('U')+j_auth::$timeOffset) . '</b>';
-        $entityIdRecord = array('name'=>lang('rr_entityid'),'value'=>$ent->getEntityId());
+        $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s', $ent->getLastModified()->format('U') + j_auth::$timeOffset) . '</b>';
+        $entityIdRecord = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
         $d[++$i] = &$entityIdRecord;
-        
+
         $d[++$i]['name'] = lang('e_orgname');
         $lname = $ent->getMergedLocalName();
         $lvalues = '';
-        if (count($lname)>0)
+        if (count($lname) > 0)
         {
             foreach ($lname as $k => $v)
             {
@@ -363,15 +371,15 @@ class Detail extends MY_Controller {
             $d[$i]['value'] = '';
         }
         $d[++$i]['name'] = lang('e_orgdisplayname');
-        $ldisplayname =  $ent->getMergedLocalDisplayName();
+        $ldisplayname = $ent->getMergedLocalDisplayName();
         $lvalues = '';
-        if (count($ldisplayname)>0)
+        if (count($ldisplayname) > 0)
         {
             foreach ($ldisplayname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
             }
-            $d[$i]['value'] = '<div id="selectme">'.$lvalues.'</div>';
+            $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
         }
         else
         {
@@ -379,19 +387,18 @@ class Detail extends MY_Controller {
         }
         $d[++$i]['name'] = lang('e_orgurl');
         $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
-        if(is_array($localizedHelpdesk) && count($localizedHelpdesk)>0)
+        if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0)
         {
-           $lvalues = '';
-           foreach($localizedHelpdesk as $k=>$v)
-           {
-                $lvalues .= '<div><b>' . $k . ':</b> <a href="'.$v.'"  target="_blank">' . $v . '</a></div>';
-              
-           }
-           $d[$i]['value'] = $lvalues;
+            $lvalues = '';
+            foreach ($localizedHelpdesk as $k => $v)
+            {
+                $lvalues .= '<div><b>' . $k . ':</b> <a href="' . $v . '"  target="_blank">' . $v . '</a></div>';
+            }
+            $d[$i]['value'] = $lvalues;
         }
         else
         {
-           $d[$i]['value'] = '';
+            $d[$i]['value'] = '';
         }
         $d[++$i]['name'] = lang('rr_regauthority');
         $regauthority = $ent->getRegistrationAuthority();
@@ -420,7 +427,7 @@ class Detail extends MY_Controller {
         $regdate = $ent->getRegistrationDate();
         if (isset($regdate))
         {
-            $d[$i]['value'] = date('Y-m-d',$regdate->format('U')+j_auth::$timeOffset);
+            $d[$i]['value'] = date('Y-m-d', $regdate->format('U') + j_auth::$timeOffset);
         }
         else
         {
@@ -430,22 +437,21 @@ class Detail extends MY_Controller {
         $regpolicy_value = '';
         if (count($regpolicy) > 0)
         {
-            foreach($regpolicy as $v)
+            foreach ($regpolicy as $v)
             {
                 $vtype = $v->getType();
                 $venabled = $v->getAvailable();
                 $l = '';
-                if(!$venabled)
+                if (!$venabled)
                 {
-                   $l= '<span class="label alert">'.lang('rr_disabled').'</span>';
+                    $l = '<span class="label alert">' . lang('rr_disabled') . '</span>';
                 }
-                if(strcasecmp($vtype,'regpol')==0)
-                { 
-                  $regpolicy_value .='<div><b>'.$v->getLang().'</b>: <a href="'.$v->getUrl().'" target="_blank">'.$v->getName().'</a> '.$l.'</div>';
+                if (strcasecmp($vtype, 'regpol') == 0)
+                {
+                    $regpolicy_value .='<div><b>' . $v->getLang() . '</b>: <a href="' . $v->getUrl() . '" target="_blank">' . $v->getName() . '</a> ' . $l . '</div>';
                 }
-
             }
-        }      
+        }
         elseif (!empty($confRegistrationPolicy) && !empty($confRegLoad))
         {
             $regpolicy_value .= '<b>en:</b> ' . $confRegistrationPolicy . ' <div data-alert class="alert-box info">' . lang('loadedfromglobalcnf') . '</div>';
@@ -454,10 +460,10 @@ class Detail extends MY_Controller {
         $d[$i]['value'] = $regpolicy_value;
 
         $defaultprivacyurl = $ent->getPrivacyUrl();
-        if(!empty($defaultprivacyurl))
+        if (!empty($defaultprivacyurl))
         {
-           $d[++$i]['name'] = lang('rr_defaultprivacyurl');
-           $d[$i]['value'] = $ent->getPrivacyUrl();
+            $d[++$i]['name'] = lang('rr_defaultprivacyurl');
+            $d[$i]['value'] = $ent->getPrivacyUrl();
         }
 
         $entityCategories = array();
@@ -465,33 +471,33 @@ class Detail extends MY_Controller {
 
         $d[++$i]['name'] = lang('rr_entcats');
         $coc = $ent->getCoc();
-        if($coc->count()>0)
+        if ($coc->count() > 0)
         {
-            foreach($coc as $k=>$v)
+            foreach ($coc as $k => $v)
             {
-              $coctype = $v->getType();
-              if($coctype  === 'entcat')
-              {
-                 $cocvalue =  '<a href="'.$v->getUrl().'"  target="_blank" title="'.$v->getDescription().'">'.$v->getName().'</a>';
-                 if (!$v->getAvailable())
-                 {
-                    $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
-                 }
-                 $entityCategories[] = $v;
-                 $a[] = $cocvalue;
-              }
+                $coctype = $v->getType();
+                if ($coctype === 'entcat')
+                {
+                    $cocvalue = '<a href="' . $v->getUrl() . '"  target="_blank" title="' . $v->getDescription() . '">' . $v->getName() . '</a>';
+                    if (!$v->getAvailable())
+                    {
+                        $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
+                    }
+                    $entityCategories[] = $v;
+                    $a[] = $cocvalue;
+                }
             }
-            $d[$i]['value'] = implode('<br />',$a);
+            $d[$i]['value'] = implode('<br />', $a);
         }
         else
         {
-             $d[$i]['value'] = lang('rr_notset');
+            $d[$i]['value'] = lang('rr_notset');
         }
 
-        $d[++$i]['name'] = lang('rr_validfromto'). ' <div class="dhelp">'.lang('d_validfromto').'</div>';
+        $d[++$i]['name'] = lang('rr_validfromto') . ' <div class="dhelp">' . lang('d_validfromto') . '</div>';
         if ($ent->getValidFrom())
         {
-            $validfrom = date('Y M d HH:MM',$ent->getValidFrom()->format('U')+j_auth::$timeOffset);
+            $validfrom = date('Y M d HH:MM', $ent->getValidFrom()->format('U') + j_auth::$timeOffset);
         }
         else
         {
@@ -499,7 +505,7 @@ class Detail extends MY_Controller {
         }
         if ($ent->getValidTo())
         {
-            $validto = date('Y M d H:i',$ent->getValidTo()->format('U')+j_auth::$timeOffset);
+            $validto = date('Y M d H:i', $ent->getValidTo()->format('U') + j_auth::$timeOffset);
         }
         else
         {
@@ -519,57 +525,56 @@ class Detail extends MY_Controller {
         /**
          * ORG tab
          */
-         $d = array();
-         $i = 0;
-         $d[++$i]['name'] = lang('e_orgname');
-         $lname = $ent->getMergedLocalName();
-         $lvalues = '';
-         if (count($lname)>0)
-         {
+        $d = array();
+        $i = 0;
+        $d[++$i]['name'] = lang('e_orgname');
+        $lname = $ent->getMergedLocalName();
+        $lvalues = '';
+        if (count($lname) > 0)
+        {
             foreach ($lname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
             }
             $d[$i]['value'] = $lvalues;
-         }
-         else
-         {
-            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">'.lang('rr_notset').'</div>';
-         }
+        }
+        else
+        {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+        }
         $d[++$i]['name'] = lang('e_orgdisplayname');
-        $ldisplayname =  $ent->getMergedLocalDisplayName();
+        $ldisplayname = $ent->getMergedLocalDisplayName();
         $lvalues = '';
-        if (count($ldisplayname)>0)
+        if (count($ldisplayname) > 0)
         {
             foreach ($ldisplayname as $k => $v)
             {
                 $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
             }
-            $d[$i]['value'] = '<div id="selectme">'.$lvalues.'</div>';
+            $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
         }
         else
         {
-            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">'.lang('rr_notset').'</div>';
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
         }
         $d[++$i]['name'] = lang('e_orgurl');
         $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
-        if(is_array($localizedHelpdesk) && count($localizedHelpdesk)>0)
+        if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0)
         {
-           $lvalues = '';
-           foreach($localizedHelpdesk as $k=>$v)
-           {
+            $lvalues = '';
+            foreach ($localizedHelpdesk as $k => $v)
+            {
                 $lvalues .= '<div><b>' . $k . ':</b> ' . $v . '</div>';
-              
-           }
-           $d[$i]['value'] = $lvalues;
+            }
+            $d[$i]['value'] = $lvalues;
         }
         else
         {
-            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">'.lang('rr_notset').'</div>';
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
         }
-          
 
-         $subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $d); 
+
+        $subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $d);
 
 
 
@@ -584,43 +589,51 @@ class Detail extends MY_Controller {
 
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
         $gearman_enabled = $this->config->item('gearman');
+        
+        if(!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true))
+        {
         $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-        $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','');
+        $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', '');
+        }
+        $circleEnabled = !((isset($featdisable['circlemeta']) && $featdisable['circlemeta'] === TRUE) || (isset($feathide['circlemeta']) && $feathide['circlemeta'] === TRUE));
 
-        $circlemetaFeature = $this->config->item('featdisable');
-        $circleEnabled = !(is_array($circlemetaFeature) && isset($circlemetaFeature['circlemeta']) && $circlemetaFeature['circlemeta'] === TRUE);
-      
-        if($circleEnabled)
+        if ($circleEnabled)
         {
 
             if (!$isLocal && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
             {
-               $d[++$i]['name'] = lang('rr_circleoftrust');
-               $d[$i]['value'] = lang('disableexternalcirclemeta');
-               $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-               $d[$i]['value'] = lang('disableexternalcirclemeta');
+                $d[++$i]['name'] = lang('rr_circleoftrust');
+                $d[$i]['value'] = lang('disableexternalcirclemeta');
+                $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+                $d[$i]['value'] = lang('disableexternalcirclemeta');
             }
             else
             {
-               $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-               $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+                $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+                $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
 
-               $d[++$i]['name'] = lang('rr_circleoftrust');
-               $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"');
-               $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-               $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-           }
+                $d[++$i]['name'] = lang('rr_circleoftrust');
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"');
+                $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            }
         }
         if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled)
         {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
             $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button tiny">' . lang('btn_signmetadata') . '</a>';
         }
-        if ($sppart)
+        $wayfhide = false;
+
+        if ((isset($feathide['discojuice']) && $feathide['discojuice'] === true) || (isset($featdisable['discojuice']) && $featdisable['discojuice'] === true))
+        {
+            $wayfhide = true;
+        }
+        if ($sppart && !$wayfhide)
         {
             $d[++$i]['header'] = 'WAYF';
-            $d[++$i]['name'] = lang('rr_ds_json_url'). ' <div class="dhelp">'.lang('entdswayf').'</div>';
-            
+            $d[++$i]['name'] = lang('rr_ds_json_url') . ' <div class="dhelp">' . lang('entdswayf') . '</div>';
+
             $d[$i]['value'] = anchor(base_url() . 'disco/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.json?callback=dj_md_1', lang('rr_link'));
 
             $tmpwayflist = $ent->getWayfList();
@@ -651,39 +664,62 @@ class Detail extends MY_Controller {
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
         $membership = $ent->getMembership();
         $membershipNotLeft = array();
+        $showMetalinks = TRUE;
+
+        if (isset($featihide['metasonprov']) && $feathide['metasonprov'] === true)
+        {
+            $showMetalinks = FALSE;
+        }
         if (!empty($membership))
         {
             $federationsString = '<ul class="no-bullet">';
             foreach ($membership as $f)
             {
                 $joinstate = $f->getJoinState();
-                if($joinstate === 2)
+                if ($joinstate === 2)
                 {
-                   continue;
+                    continue;
                 }
                 $membershipNotLeft[] = 1;
                 $membershipDisabled = '';
-                if($f->getIsDisabled())
+                if ($f->getIsDisabled())
                 {
-                    $membershipDisabled = makeLabel('disabled',lang('membership_inactive'),lang('membership_inactive'));
+                    $membershipDisabled = makeLabel('disabled', lang('membership_inactive'), lang('membership_inactive'));
                 }
                 $membershipBanned = '';
-                if($f->getIsBanned())
+                if ($f->getIsBanned())
                 {
-                    $membershipBanned = makeLabel('disabled',lang('membership_banned'),lang('membership_banned'));
+                    $membershipBanned = makeLabel('disabled', lang('membership_banned'), lang('membership_banned'));
                 }
-                $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getFederation()->getName()));
-                $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
                 $fedActive = $f->getFederation()->getActive();
-                if($fedActive)
+
+                $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getFederation()->getName()));
+                if ($showMetalinks)
                 {
-                    $federationsString .= '<li>'. $membershipDisabled .'  '.$membershipBanned . ' ' .anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"') . '</li>';
+                    $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
+                }
+                if ($showMetalinks)
+                {
+                    if ($fedActive)
+                    {
+                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"') . '</li>';
+                    }
+                    else
+                    {
+                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"') . '</li>';
+                    }
                 }
                 else
                 {
-                    $federationsString .= '<li>'.$membershipDisabled .' '.$membershipBanned.' ' .makeLabel('disabled',lang('rr_fed_inactive_full'),lang('rr_fed_inactive_full')). ' '.anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>','class="showmetadata"') . '</li>';
-
-                 }
+                    if ($fedActive)
+                    {
+                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' </li>';
+                    }
+                    else
+                    {
+                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"') . '</li>';
+                    }
+                }
             }
             $federationsString .='</ul>';
             $manage_membership = '';
@@ -692,8 +728,8 @@ class Detail extends MY_Controller {
             {
                 if (!$isLocked)
                 {
-                    $manage_membership .= '<div><a href="'.base_url().'manage/leavefed/leavefederation/'.$ent->getId().'" class="button tiny alert">'.lang('rr_federationleave').'</a></div>';
-                    $entmenu[11] = array('name'=>lang('rr_federationleave'),'link'=>''.base_url() . 'manage/leavefed/leavefederation/' . $ent->getId().'','class'=>'');
+                    $manage_membership .= '<div><a href="' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '" class="button tiny alert">' . lang('rr_federationleave') . '</a></div>';
+                    $entmenu[11] = array('name' => lang('rr_federationleave'), 'link' => '' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '', 'class' => '');
                 }
                 else
                 {
@@ -704,8 +740,8 @@ class Detail extends MY_Controller {
             {
                 if (!$isLocked)
                 {
-                    $manage_membership .= '<div><a href="'.base_url().'manage/joinfed/joinfederation/'.$ent->getId().'" class="button tiny">'.lang('rr_federationjoin').'</a></div>';
-                    $entmenu[10] = array('name'=>lang('rr_federationjoin'),'link'=>''.base_url() . 'manage/joinfed/joinfederation/' . $ent->getId().'','class'=>'');
+                    $manage_membership .= '<div><a href="' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '" class="button tiny">' . lang('rr_federationjoin') . '</a></div>';
+                    $entmenu[10] = array('name' => lang('rr_federationjoin'), 'link' => '' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '', 'class' => '');
                 }
                 else
                 {
@@ -750,8 +786,6 @@ class Detail extends MY_Controller {
                 $d[++$i]['2cols'] = '<code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
             $subresult[20] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
-          
-
         }
 
 
@@ -790,7 +824,7 @@ class Detail extends MY_Controller {
             $scopeString .= '</ul>';
             $d[$i]['value'] = $scopeString;
 
-            $d[++$i]['name'] = lang('rr_supportednameids') ;
+            $d[++$i]['name'] = lang('rr_supportednameids');
             $nameids = '<ul class="no-bullet">';
             foreach ($ent->getNameIds('idpsso') as $r)
             {
@@ -808,7 +842,7 @@ class Detail extends MY_Controller {
                     $def = '';
                     if ($s->getDefault())
                     {
-                        $def = '<i>('.lang('rr_default').')</i>';
+                        $def = '<i>(' . lang('rr_default') . ')</i>';
                     }
                     $ssovalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                 }
@@ -850,7 +884,7 @@ class Detail extends MY_Controller {
             $aanameids = $ent->getNameIds('aa');
             if (count($aanameids) > 0)
             {
-                $d[++$i]['name'] = lang('rr_supportednameids') ;
+                $d[++$i]['name'] = lang('rr_supportednameids');
                 $aanameid = '<ul class="no-bullet">';
                 foreach ($aanameids as $r)
                 {
@@ -874,7 +908,7 @@ class Detail extends MY_Controller {
         if ($sppart)
         {
             $d[++$i]['msection'] = 'SPSSODescriptor';
-            $d[++$i]['name'] = lang('rr_supportedprotocols') ;
+            $d[++$i]['name'] = lang('rr_supportedprotocols');
             $v = implode('<br />', $ent->getProtocolSupport('spsso'));
             $d[$i]['value'] = $v;
             $nameids = '<ul class="no-bullet">';
@@ -925,7 +959,7 @@ class Detail extends MY_Controller {
                 }
                 $d[$i]['value'] = '<ul class="no-bullet">' . $slvalues . '</ul>';
             }
-            if(array_key_exists('RequestInitiator', $services) || array_key_exists('DiscoveryResponse', $services))
+            if (array_key_exists('RequestInitiator', $services) || array_key_exists('DiscoveryResponse', $services))
             {
                 $d[++$i]['header'] = 'SPSSODescriptor/Extensions';
                 if (array_key_exists('RequestInitiator', $services))
@@ -934,7 +968,7 @@ class Detail extends MY_Controller {
                     $rivalues = '';
                     foreach ($services['RequestInitiator'] as $s)
                     {
-                       $rivalues .= '<li><b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
+                        $rivalues .= '<li><b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                     }
                     $d[$i]['value'] = '<ul class="no-bullet">' . $rivalues . '</ul>';
                 }
@@ -948,7 +982,6 @@ class Detail extends MY_Controller {
                     }
                     $d[$i]['value'] = '<ul class="no-bullet">' . $drvalues . '</ul>';
                 }
-
             }
         }
         $subresult[5] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
@@ -967,11 +1000,11 @@ class Detail extends MY_Controller {
             {
                 foreach ($certs['idpsso'] as $v)
                 {
-                  $c = $this->_genCertView($v);
-                  foreach($c as $v)
-                  {
-                    $d[] = $v;
-                  }
+                    $c = $this->_genCertView($v);
+                    foreach ($c as $v)
+                    {
+                        $d[] = $v;
+                    }
                 }
             }
             // AA
@@ -981,11 +1014,10 @@ class Detail extends MY_Controller {
                 foreach ($certs['aa'] as $v)
                 {
                     $c = $this->_genCertView($v);
-                    foreach($c as $v)
+                    foreach ($c as $v)
                     {
-                       $d[] = $v;
+                        $d[] = $v;
                     }
-                   
                 }
             }
         }
@@ -997,9 +1029,9 @@ class Detail extends MY_Controller {
                 foreach ($certs['spsso'] as $v)
                 {
                     $c = $this->_genCertView($v);
-                    foreach($c as $v)
+                    foreach ($c as $v)
                     {
-                       $d[] = $v;
+                        $d[] = $v;
                     }
                 }
             }
@@ -1010,67 +1042,66 @@ class Detail extends MY_Controller {
         $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
 
 
-        $xmldata = $ent->getProviderToXML($parent = null, array('attrs'=>1)); 
+        $xmldata = $ent->getProviderToXML($parent = null, array('attrs' => 1));
         $xmldata->formatOutput = true;
         $xmlToHtml = $xmldata->saveXML();
-        
-        $xmlmetatitle = '<img src="'.base_url().'images/jicons/xml3.svg" style="height: 20px"/> ';
-        $subresult[1] = array('section'=>'xmlmeta','title'=>$xmlmetatitle ,'data'=>'<code>'.$this->geshilib->highlight($xmlToHtml,'xml',$params).'</code>');
+
+        $xmlmetatitle = '<img src="' . base_url() . 'images/jicons/xml3.svg" style="height: 20px"/> ';
+        $subresult[1] = array('section' => 'xmlmeta', 'title' => $xmlmetatitle, 'data' => '<code>' . $this->geshilib->highlight($xmlToHtml, 'xml', $params) . '</code>');
 
         $d = array();
-        if(count($entityCategories) == 0)
+        if (count($entityCategories) == 0)
         {
-           $d[]['2cols'] = '<div data-alert class="alert-box notice">'.lang('entcat_notdefined').'</div>';
+            $d[]['2cols'] = '<div data-alert class="alert-box notice">' . lang('entcat_notdefined') . '</div>';
         }
         else
         {
-        foreach($entityCategories as $entcat)
-           {
-              $d[]['header'] =  lang('title_entcat'); 
-              $d[] = array('name'=>lang('entcat_displayname'),'value'=>$entcat->getName());
-              $d[] = array('name'=>lang('rr_attr_name'),'value'=>$entcat->getSubtype());
-              $d[] = array('name'=>lang('entcat_value'),'value'=>$entcat->getUrl());
-              $d[] = array('name'=>lang('entcat_description'),'value'=>$entcat->getDescription());
-              $entcatStatus = $entcat->getAvailable();
-              if(!$entcatStatus)
-              {
-                 $d[] = array('name'=>'','value'=>'<div class="label alert">'.lang('rr_disabled').'</div>');
-              }
-
-           }
+            foreach ($entityCategories as $entcat)
+            {
+                $d[]['header'] = lang('title_entcat');
+                $d[] = array('name' => lang('entcat_displayname'), 'value' => $entcat->getName());
+                $d[] = array('name' => lang('rr_attr_name'), 'value' => $entcat->getSubtype());
+                $d[] = array('name' => lang('entcat_value'), 'value' => $entcat->getUrl());
+                $d[] = array('name' => lang('entcat_description'), 'value' => $entcat->getDescription());
+                $entcatStatus = $entcat->getAvailable();
+                if (!$entcatStatus)
+                {
+                    $d[] = array('name' => '', 'value' => '<div class="label alert">' . lang('rr_disabled') . '</div>');
+                }
+            }
         }
         $subresult[12] = array('section' => 'entcats', 'title' => '' . lang('tabEntcats') . '', 'data' => $d);
 
 
-        
+
         $d = array();
         $i = 0;
         $contacts = $ent->getContacts();
         $contactsTypeToTranslate = array(
-             'technical' => lang('rr_cnt_type_tech'),
-             'administrative' => lang('rr_cnt_type_admin'),
-             'support' => lang('rr_cnt_type_support'),
-             'billing' => lang('rr_cnt_type_bill'),
-             'other' => lang('rr_cnt_type_other')
+            'technical' => lang('rr_cnt_type_tech'),
+            'administrative' => lang('rr_cnt_type_admin'),
+            'support' => lang('rr_cnt_type_support'),
+            'billing' => lang('rr_cnt_type_bill'),
+            'other' => lang('rr_cnt_type_other')
         );
-        if(count($contacts) > 0)
+        if (count($contacts) > 0)
         {
-             foreach ($contacts as $c)
-             {
+            foreach ($contacts as $c)
+            {
                 $d[++$i]['header'] = lang('rr_contact');
                 $d[++$i]['name'] = lang('type');
-                $d[$i]['value'] = $contactsTypeToTranslate[''.strtolower($c->getType()).''];
+                $d[$i]['value'] = $contactsTypeToTranslate['' . strtolower($c->getType()) . ''];
                 $d[++$i]['name'] = lang('rr_contactfirstname');
                 $d[$i]['value'] = $c->getGivenname();
                 $d[++$i]['name'] = lang('rr_contactlastname');
                 $d[$i]['value'] = $c->getSurname();
                 $d[++$i]['name'] = lang('rr_contactemail');
                 $d[$i]['value'] = $c->getEmail();
-             }
+            }
         }
         else
         {
-             $d[++$i]['2cols'] = '<div data-alert class="alert-box warning">'.lang('rr_notset').'</div>';
+            $d[++$i]['2cols'] = '<div data-alert class="alert-box warning">' . lang('rr_notset') . '</div>';
         }
         $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
         $d = array();
@@ -1087,10 +1118,10 @@ class Detail extends MY_Controller {
             $exc = $ent->getExcarps();
             if (!$isLocked && $hasWriteAccess && $ent->getLocal())
             {
-                
+
                 $mlink = '';
-                $entmenu[20]  = array('label'=> ''.lang('rr_attributes').'');
-                $entmenu[21] = array('name'=>lang('rr_arpexclist_edit'),'link'=>'' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '','class'=>'');
+                $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
+                $entmenu[21] = array('name' => lang('rr_arpexclist_edit'), 'link' => '' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '', 'class' => '');
                 $d[++$i]['name'] = lang('rr_arpexclist_title') . ' <br />' . $mlink;
                 if (is_array($exc) && count($exc) > 0)
                 {
@@ -1118,9 +1149,9 @@ class Detail extends MY_Controller {
             $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
             if ($hasWriteAccess)
             {
-                $entmenu[20] = array('label'=>''.lang('rr_attributes').'');
-                $entmenu[22] = array('name'=>''.lang('rr_supportedattributes').'','link'=>'' . base_url() . 'manage/supported_attributes/idp/' . $id . '','class'=>'');
-                $entmenu[23] = array('name'=>''.lang('rr_attributepolicy').'','link'=>'' . base_url() . 'manage/attribute_policy/globals/' . $id . '','class'=>'');
+                $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
+                $entmenu[22] = array('name' => '' . lang('rr_supportedattributes') . '', 'link' => '' . base_url() . 'manage/supported_attributes/idp/' . $id . '', 'class' => '');
+                $entmenu[23] = array('name' => '' . lang('rr_attributepolicy') . '', 'link' => '' . base_url() . 'manage/attribute_policy/globals/' . $id . '', 'class' => '');
             }
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;
@@ -1145,13 +1176,13 @@ class Detail extends MY_Controller {
 
             if ($hasWriteAccess)
             {
-                $entmenu[20] = array('label'=>''.lang('rr_attributes').'');
+                $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
                 $d[++$i]['name'] = lang('rr_attrsoverview');
-                $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'),'class="button small editbutton"');
+                $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'), 'class="button small editbutton"');
 
                 $image_link = '<img src="' . base_url('images/icons/pencil-field.png') . '"/>';
-                $edit_req_attrs_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '" class="editbutton editicon" title="edit" >' .  lang('rr_edit') . '</a></span>';
-                $entmenu[24] = array('name'=>''.lang('rr_requiredattributes').'','link'=>''.base_url().'manage/attribute_requirement/sp/' . $ent->getId() . '','class'=>'');
+                $edit_req_attrs_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '" class="editbutton editicon" title="edit" >' . lang('rr_edit') . '</a></span>';
+                $entmenu[24] = array('name' => '' . lang('rr_requiredattributes') . '', 'link' => '' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '', 'class' => '');
             }
             $requiredAttributes = $ent->getAttributesRequirement();
             if ($requiredAttributes->count() === 0)
@@ -1176,7 +1207,7 @@ class Detail extends MY_Controller {
         if ($idppart)
         {
             $uiiarray = array();
-            $d[++$i]['msection'] = lang('identityprovider') ;
+            $d[++$i]['msection'] = lang('identityprovider');
             foreach ($extend as $e)
             {
                 if ($e->getNamespace() == 'mdui' && $e->getType() == 'idp')
@@ -1390,23 +1421,20 @@ class Detail extends MY_Controller {
         {
             $d[++$i]['name'] = lang('rr_managestatus');
             $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' ' . anchor(base_url() . 'manage/entitystate/modify/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
-            if(!$isActive)
+            if (!$isActive)
             {
-              $d[$i]['value'] .= '<div>'.lang('rr_rmprovider').' '. anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>').'</div>';
+                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . ' ' . anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</div>';
             }
             else
             {
-              $d[$i]['value'] .= '<div>'.lang('rr_rmprovider').'<img src="' . base_url() . 'images/icons/prohibition.png"/> <div class="alert">'.lang('rmproviderdisablefirst').'</div></div>';
-
-
+                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<img src="' . base_url() . 'images/icons/prohibition.png"/> <div class="alert">' . lang('rmproviderdisablefirst') . '</div></div>';
             }
         }
-        elseif($hasWriteAccess)
+        elseif ($hasWriteAccess)
         {
             $d[++$i]['name'] = lang('rr_managestatus');
-            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <img src="' . base_url() . 'images/icons/prohibition.png"/><div class="alert">'.lang('rerror_managepermneeded').'</div>';
-            $d[$i]['value'] .= '<div>'.lang('rr_rmprovider').'<img src="' . base_url() . 'images/icons/prohibition.png"/> <div class="alert">'.lang('rerror_managepermneeded').'</div> </div>';
-            
+            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <img src="' . base_url() . 'images/icons/prohibition.png"/><div class="alert">' . lang('rerror_managepermneeded') . '</div>';
+            $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<img src="' . base_url() . 'images/icons/prohibition.png"/> <div class="alert">' . lang('rerror_managepermneeded') . '</div> </div>';
         }
         else
         {
@@ -1422,147 +1450,140 @@ class Detail extends MY_Controller {
         {
             $d[$i]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
         }
-        if($hasManageAccess || $hasWriteAccess)
+        if ($hasManageAccess || $hasWriteAccess)
         {
 
-          $d[++$i] = array('name'=>lang('regpols_menulink'),'value'=>'<a href="'.base_url().'manage/entitystate/regpolicies/'.$ent->getId().'" class="button tiny">'.lang('rr_edit').'');
+            $d[++$i] = array('name' => lang('regpols_menulink'), 'value' => '<a href="' . base_url() . 'manage/entitystate/regpolicies/' . $ent->getId() . '" class="button tiny">' . lang('rr_edit') . '');
         }
 
         ksort($subresult);
-        
+
         $finalsubtab = &$subresult;
         $result[] = array('section' => 'samlmetadata', 'title' => 'Metadata', 'subtab' => $finalsubtab);
         $result[] = array('section' => 'mngt', 'title' => '' . lang('tabMngt') . '', 'data' => $d);
         $d = array();
         $i = 0;
 
-        
+
 
         $data['tabs'] = $result;
         /**
          * @todo finish show alert block if some warnings realted to entity 
          */
         $data['alerts'] = $alerts;
-        if(!empty($providerlogourl))
+        if (!empty($providerlogourl))
         {
-           $data['providerlogourl'] = $providerlogourl;
+            $data['providerlogourl'] = $providerlogourl;
         }
-        $data['titlepage'] = $data['presubtitle'] . ': ' . $data['name']; 
+        $data['titlepage'] = $data['presubtitle'] . ': ' . $data['name'];
         $data['content_view'] = 'providers/detail_view.php';
         $this->load->view('page', $data);
     }
- 
+
     private function _genCertView($cert)
     {
         $certusage = $cert->getCertuse();
         if ($certusage === 'signing')
         {
-          $langcertusage = lang('certsign');
+            $langcertusage = lang('certsign');
         }
         elseif ($certusage === 'encryption')
         {
-          $langcertusage =  lang('certenc');
+            $langcertusage = lang('certenc');
         }
         else
         {
-          $langcertusage = lang('certsign') . '/' . lang('certenc');
+            $langcertusage = lang('certsign') . '/' . lang('certenc');
         }
         $d = array();
-        $d[] = array('header'=>lang('rr_certificate'));
-        $d[] = array( 'name'=>lang('rr_certusage'), 'value'=>$langcertusage );
+        $d[] = array('header' => lang('rr_certificate'));
+        $d[] = array('name' => lang('rr_certusage'), 'value' => $langcertusage);
         $keyname = $cert->getKeyname();
-        if(!empty($keyname))
+        if (!empty($keyname))
         {
-           $d[] = array('name'=> lang('rr_keyname'), 'value'=>$keyname);
-        } 
+            $d[] = array('name' => lang('rr_keyname'), 'value' => $keyname);
+        }
         $certData = $cert->getCertData();
-        if(!empty($certData))
+        if (!empty($certData))
         {
             $certtype = $cert->getCertType();
-            if($certtype === 'X509Certificate')
+            if ($certtype === 'X509Certificate')
             {
-                $fingerprint_md5 = generateFingerprint($certData,'md5');
-                $fingerprint_sha1 = generateFingerprint($certData,'sha1');
+                $fingerprint_md5 = generateFingerprint($certData, 'md5');
+                $fingerprint_sha1 = generateFingerprint($certData, 'sha1');
                 $certValid = validateX509($certData);
                 if (!$certValid)
                 {
-                   $cString ='<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
+                    $cString = '<span class="error">' . lang('rr_certificatenotvalid') . '</span>';
                 }
                 else
                 {
-                   $pemdata = $cert->getPEM($cert->getCertData());
+                    $pemdata = $cert->getPEM($cert->getCertData());
 
-                   $d[] = array('name'=>lang('rr_keysize'),'value'=>''.getKeysize($pemdata).'');
-                   $d[] = array('name'=>lang('rr_fingerprint') . ' (md5)','value'=> ''.generateFingerprint($certData,'md5').''); 
-                   $d[] = array('name'=>lang('rr_fingerprint') . ' (sha1)','value'=>''.generateFingerprint($certData,'sha1').'');
-                   $d[] = array(
-                     'name'=>'',
-                     'value'=>'<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c'.$cert->getId().'">' . lang('rr_certbody') . '</a><code id="c'.$cert->getId().'" class="content">' . trim($certData) . '</code></dd></dl>'
-                   );
+                    $d[] = array('name' => lang('rr_keysize'), 'value' => '' . getKeysize($pemdata) . '');
+                    $d[] = array('name' => lang('rr_fingerprint') . ' (md5)', 'value' => '' . generateFingerprint($certData, 'md5') . '');
+                    $d[] = array('name' => lang('rr_fingerprint') . ' (sha1)', 'value' => '' . generateFingerprint($certData, 'sha1') . '');
+                    $d[] = array(
+                        'name' => '',
+                        'value' => '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c' . $cert->getId() . '">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
+                    );
                 }
-
             }
-
         }
-       return $d;
-         
-
+        return $d;
     }
-
-
 
     function showmembers($providerid)
     {
         if (!$this->input->is_ajax_request())
         {
-           set_status_header(403);
-           echo 'unsupported request';
-           return;
+            set_status_header(403);
+            echo 'unsupported request';
+            return;
         }
         if (!$this->j_auth->logged_in())
         {
-            
-           set_status_header(403);
-           echo 'no session';
-           return;
 
+            set_status_header(403);
+            echo 'no session';
+            return;
         }
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if (empty($ent))
         {
-           set_status_header(404);
-           echo lang('error404');
-           return;
+            set_status_header(404);
+            echo lang('error404');
+            return;
         }
         $has_read_access = $this->zacl->check_acl($providerid, 'read', 'entity', '');
         if (!$has_read_access)
         {
-           set_status_header(403);
-           echo 'no access';
-           return;
+            set_status_header(403);
+            echo 'no access';
+            return;
         }
 
         $tmp_providers = new models\Providers;
         $members = $tmp_providers->getTrustedServicesWithFeds($ent);
         if (empty($members))
         {
-           $l[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');
+            $l[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');
         }
         $preurl = base_url() . 'providers/detail/show/';
         foreach ($members as $m)
         {
-           $feds = array();
-           $name = $m->getName();
-           if (empty($name))
-           {
-               $name = $m->getEntityId();
-           }
-           $y = $m->getFederations();
-           foreach($y as $yv)
-           {
-              $feds[] = $yv->getName();
-           }
-           $l[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId(),'feds'=>$feds);
+            $feds = array();
+            $name = $m->getName();
+            if (empty($name))
+            {
+                $name = $m->getEntityId();
+            }
+            $y = $m->getFederations();
+            foreach ($y as $yv)
+            {
+                $feds[] = $yv->getName();
+            }
+            $l[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId(), 'feds' => $feds);
         }
         echo json_encode($l);
     }

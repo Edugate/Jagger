@@ -31,6 +31,15 @@ class Disco extends MY_Controller {
 
     function circle($entityId, $m = NULL)
     {
+
+        $cnf = $this->config->item('featdisable');
+        if(isset($cnf['discojuice']) && $cnf['discojuice'] === true) 
+        {
+             show_error('The feature no enabled', 404);
+             return;
+
+        }
+
         if (!empty($m) && $m != 'metadata.json')
         {
             show_error('Request not allowed', 403);
