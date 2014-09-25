@@ -284,6 +284,56 @@ class Awaiting extends MY_Controller
         $objData->importFromArray($data);
     }
 
+    private function detailFederation(models\Queue $qObject)
+    {
+        $objAction = $qObject->getAction();
+        $recipientType = $qObject->getRecipientType();
+        if (strcasecmp($objAction, 'Create') == 0)
+        {
+            $fedrows = $this->j_queue->displayRegisterFederation($qObject);
+            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId());
+            $data['fedrows'] = $fedrows;
+            $data['content_view'] = 'reports/awaiting_federation_register_view';
+            $r['data'] = $data;
+            return $r;
+        }
+        if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($recipientType, 'provider') == 0)
+        {
+            $recipient_write_access = $this->zacl->check_acl($qObject->getRecipient(), 'write', 'entity', '');
+            $requestor_view_access = (boolean) $qObject->getCreator()->getUsername() === $this->j_auth->current_user();
+            if ($requestor_view_access || $recipient_write_access)
+            {
+                $result = $this->j_queue->displayInviteProvider($qObject);
+                if (!empty($result))
+                {
+                    $data['result'] = $result;
+                }
+                else
+                {
+                    $data['error_message'] = "Couldn't load request details";
+                }
+            }
+            else
+            {
+                $data['error_message'] = lang('rerror_noperm_viewqueuerequest');
+            }
+
+            $data['content_view'] = 'reports/awaiting_invite_provider_view';
+            $r['data'] = $data;
+            return $r;
+        }
+        if (strcasecmp($objAction, 'Delete') == 0)
+        {
+            $fedrows = $this->j_queue->displayDeleteFederation($qObject);
+            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId());
+            $data['fedrows'] = $fedrows;
+            $data['content_view'] = 'reports/awaiting_federation_register_view';
+            $r['data'] = $data;
+            return $r;
+        }
+        return null;
+    }
+
     private function detailProvider(models\Queue $qObject)
     {
         $objAction = $qObject->getAction();
@@ -308,9 +358,9 @@ class Awaiting extends MY_Controller
         if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($objRecipientType, 'federation') == 0)
         {
 
-            $recipient_write_access = $this->zacl->check_acl('f_' . $qObject->getRecipient(), 'write', 'federation', '');
-            $requestor_view_access = (boolean) $qObject->getCreator()->getUsername() === $this->j_auth->current_user();
-            if ($requestor_view_access || $recipient_write_access)
+            $recipientWriteAccess = $this->zacl->check_acl('f_' . $qObject->getRecipient(), 'write', 'federation', '');
+            $requestorViewAccess = (boolean) $qObject->getCreator()->getUsername() === $this->j_auth->current_user();
+            if ($requestorViewAccess || $recipientWriteAccess)
             {
 
                 $result = $this->j_queue->displayInviteFederation($qObject);
@@ -355,7 +405,6 @@ class Awaiting extends MY_Controller
             $this->load->view('page', $data);
         }
 
-        $objData = null;
         $data = $qObject->getData();
         $objType = $qObject->getObjType();
         $objAction = $qObject->getAction();
@@ -371,59 +420,17 @@ class Awaiting extends MY_Controller
             }
             else
             {
-                show_error('Unknown error',500);
+                show_error('Unknown error', 500);
                 return;
             }
         }
         elseif ($objType === 'Federation')
         {
-            if ($objAction == 'Create')
+            $r = $this->detailFederation($qObject);
+            if (!empty($r))
             {
-
-
-                $fedrows = $this->j_queue->displayRegisterFederation($qObject);
-                $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId());
-                $data['fedrows'] = $fedrows;
+                $this->load->view('page', $r['data']);
             }
-            elseif ($objAction == 'Join')
-            {
-                if ($qObject->getRecipientType() == 'provider')
-                {
-                    $recipient_write_access = $this->zacl->check_acl($qObject->getRecipient(), 'write', 'entity', '');
-                    $requestor_view_access = (boolean) $qObject->getCreator()->getUsername() === $this->j_auth->current_user();
-                    if ($requestor_view_access or $recipient_write_access)
-                    {
-                        $result = $this->j_queue->displayInviteProvider($qObject);
-                        if (!empty($result))
-                        {
-                            $data['result'] = $result;
-                        }
-                        else
-                        {
-                            $data['error_message'] = "Couldn't load request details";
-                        }
-                    }
-                    else
-                    {
-                        $data['error_message'] = lang('rerror_noperm_viewqueuerequest');
-                    }
-                    $data['content_view'] = 'reports/awaiting_invite_provider_view';
-                    $this->load->view('page', $data);
-                    return;
-                }
-            }
-            elseif ($objAction == 'Delete')
-            {
-                $fedrows = $this->j_queue->displayDeleteFederation($qObject);
-                $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId());
-                $data['fedrows'] = $fedrows;
-            }
-            else
-            {
-                $data['error'] = 'Unknown action';
-            }
-            $data['content_view'] = 'reports/awaiting_federation_register_view';
-            $this->load->view('page', $data);
         }
         elseif ($objType === 'User' && $objAction === 'Create')
         {
