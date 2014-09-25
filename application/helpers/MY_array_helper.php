@@ -120,3 +120,4 @@ function assoc_array_prop(array &$arr = NULL, $prop = 'id')
 
 	return $arr = $newarr;
 }
+

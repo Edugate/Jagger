@@ -97,11 +97,10 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
                             $cell = array('data' => $row['header'], 'class' => 'highlight', 'colspan' => 2);
                             $this->table->add_row($cell);
                         }
-                        elseif(array_key_exists('msection', $row))
+                        elseif (array_key_exists('msection', $row))
                         {
                             $cell = array('data' => $row['msection'], 'class' => 'highlight', 'colspan' => 2);
                             $this->table->add_row($cell);
- 
                         }
                         elseif (array_key_exists('2cols', $row))
                         {
@@ -147,9 +146,9 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
                     $d = $t['subtab'];
                     echo '<ul class="tabs subtab" data-tab>';
                     $tact = true;
-                    foreach ($d as $dv)
+                    foreach ($d as $key => $dv)
                     {
-                        if ($tact)
+                        if ($tact && $key != 1)
                         {
                             echo '<li class="tab-title active">';
                             $tact = false;
@@ -166,60 +165,80 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
                     $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
                     echo '<div class="tabs-content subtab">';
                     $tact = true;
-                    foreach ($d as $v)
+                    foreach ($d as $key => $v)
                     {
-                        foreach($v['data'] as $row)
+                        if (is_array($v['data']))
                         {
-                        if (array_key_exists('header', $row))
-                        {
-                            $cell = array('data' => $row['header'], 'class' => 'highlight', 'colspan' => 2);
-                            $this->table->add_row($cell);
-                        }
-                        elseif(array_key_exists('msection', $row))
-                        {   
-                            $cell = array('data' => $row['msection'], 'class' => 'section', 'colspan' => 2);
-                            $this->table->add_row($cell);
-                        
-                        }
-                        elseif (array_key_exists('2cols', $row))
-                        {
-                            $cell = array('data' => $row['2cols'], 'colspan' => 2);
-                            $this->table->add_row($cell);
-                        }
-                        else
-                        {
-                            if (isset($row['name']))
+                            foreach ($v['data'] as $row)
                             {
-                                $c1 = $row['name'];
+                                if (array_key_exists('header', $row))
+                                {
+                                    $cell = array('data' => $row['header'], 'class' => 'highlight', 'colspan' => 2);
+                                    $this->table->add_row($cell);
+                                }
+                                elseif (array_key_exists('msection', $row))
+                                {
+                                    $cell = array('data' => $row['msection'], 'class' => 'section', 'colspan' => 2);
+                                    $this->table->add_row($cell);
+                                }
+                                elseif (array_key_exists('2cols', $row))
+                                {
+                                    $cell = array('data' => $row['2cols'], 'colspan' => 2);
+                                    $this->table->add_row($cell);
+                                }
+                                else
+                                {
+                                    if (isset($row['name']))
+                                    {
+                                        $c1 = $row['name'];
+                                    }
+                                    else
+                                    {
+                                        $c1 = '';
+                                    }
+                                    if (isset($row['value']))
+                                    {
+                                        $c2 = $row['value'];
+                                    }
+                                    else
+                                    {
+                                        $c2 = '';
+                                    }
+                                    $this->table->add_row($c1, $c2);
+                                }
+                            }
+                            if ($tact && $key != 1)
+                            {
+                                echo '<div id="' . $v['section'] . '" class="content nopadding active">';
+                                $tact = false;
                             }
                             else
                             {
-                                $c1 = '';
+                                echo '<div id="' . $v['section'] . '" class="content nopadding">';
                             }
-                            if (isset($row['value']))
+                            if ($key != 1)
                             {
-                                $c2 = $row['value'];
+                                echo $this->table->generate();
                             }
-                            else
-                            {
-                                $c2 = '';
-                            }
-                            $this->table->add_row($c1, $c2);
-                        }
-                        }
-                        if($tact)
-                        {
-                           echo '<div id="' . $v['section'] . '" class="content nopadding active">';
-                           $tact = false;
+                            $this->table->clear();
+                            echo '</div>';
                         }
                         else
                         {
-                           echo '<div id="' . $v['section'] . '" class="content nopadding">';
+                            if ($tact && $key != 1)
+                            {
+                                echo '<div id="' . $v['section'] . '" class="content nopadding active">';
+                                $tact = false;
+                            }
+                            else
+                            {
+                                echo '<div id="' . $v['section'] . '" class="content nopadding">';
+                            }
 
+                            echo $v['data'];
+
+                            echo '</div>';
                         }
-                        echo $this->table->generate();
-                        $this->table->clear();
-                        echo '</div>';
                     }
                     echo '</div>'; //tabs-content
                 }
@@ -235,7 +254,7 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
         <a class="exit-off-canvas"></a>
 
     </div>
-<?php echo '</div>'; //end offcan    ?>
+    <?php echo '</div>'; //end offcan     ?>
 
     <div class="metadataresult" style="display: none"></div>
 

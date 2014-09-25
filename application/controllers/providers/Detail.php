@@ -569,7 +569,7 @@ class Detail extends MY_Controller {
         }
           
 
-         $subresult[1] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $d); 
+         $subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $d); 
 
 
 
@@ -951,7 +951,7 @@ class Detail extends MY_Controller {
 
             }
         }
-        $subresult[4] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
+        $subresult[5] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $tcerts = $ent->getCertificates();
@@ -1010,6 +1010,13 @@ class Detail extends MY_Controller {
         $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
 
 
+        $xmldata = $ent->getProviderToXML($parent = null, array('attrs'=>1)); 
+        $xmldata->formatOutput = true;
+        $xmlToHtml = $xmldata->saveXML();
+        
+        $xmlmetatitle = '<img src="'.base_url().'images/jicons/xml3.svg" style="height: 20px"/> ';
+        $subresult[1] = array('section'=>'xmlmeta','title'=>$xmlmetatitle ,'data'=>'<code>'.$this->geshilib->highlight($xmlToHtml,'xml',$params).'</code>');
+
         $d = array();
         if(count($entityCategories) == 0)
         {
@@ -1065,7 +1072,7 @@ class Detail extends MY_Controller {
         {
              $d[++$i]['2cols'] = '<div data-alert class="alert-box warning">'.lang('rr_notset').'</div>';
         }
-        $subresult[2] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
+        $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
         $d = array();
         $i = 0;
         if ($idppart)
@@ -1376,7 +1383,7 @@ class Detail extends MY_Controller {
             }
         }
 
-        $subresult[3] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
+        $subresult[4] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
         $d = array();
         $i = 0;
         if ($hasManageAccess)
