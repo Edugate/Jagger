@@ -584,7 +584,7 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
 
-        $d[++$i]['header'] = lang('rr_metadata');
+        
         $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
 
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
@@ -592,6 +592,7 @@ class Detail extends MY_Controller {
 
         if (!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true))
         {
+            $d[++$i]['header'] = lang('rr_metadata');
             $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
             $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', '');
         }
