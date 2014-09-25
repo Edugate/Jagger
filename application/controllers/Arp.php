@@ -136,7 +136,6 @@ class Arp extends MY_Controller
             if ((!empty($reqtype) && $reqtype == 'GET') && ((!empty($ref) && stristr($ref, $reftomatch) === FALSE) || (empty($ref)))) {
                 log_message('debug', 'Arp downloading set1');
                 $sync_with_db = true;
-              //  $resourcename = $idp->getEntityId();
                 $details = null;
                 $this->tracker->save_track($this->resourcetype, $this->subtype, $resourcename, $details, $sync_with_db);
             }

@@ -538,6 +538,10 @@ pre.xml {
   overflow: auto;
 
 }
+#xmlmeta pre.xml {
+    max-width: 100%;
+
+}
 .xml {
     background-color: white;
 }
