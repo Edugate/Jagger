@@ -589,11 +589,11 @@ class Detail extends MY_Controller {
 
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
         $gearman_enabled = $this->config->item('gearman');
-        
-        if(!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true))
+
+        if (!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true))
         {
-        $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-        $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', '');
+            $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', '');
         }
         $circleEnabled = !((isset($featdisable['circlemeta']) && $featdisable['circlemeta'] === TRUE) || (isset($feathide['circlemeta']) && $feathide['circlemeta'] === TRUE));
 
@@ -666,7 +666,7 @@ class Detail extends MY_Controller {
         $membershipNotLeft = array();
         $showMetalinks = TRUE;
 
-        if (isset($featihide['metasonprov']) && $feathide['metasonprov'] === true)
+        if (isset($feathide['metasonprov']) && $feathide['metasonprov'] === true)
         {
             $showMetalinks = FALSE;
         }
@@ -694,12 +694,10 @@ class Detail extends MY_Controller {
                 $fedActive = $f->getFederation()->getActive();
 
                 $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getFederation()->getName()));
+
                 if ($showMetalinks)
                 {
                     $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
-                }
-                if ($showMetalinks)
-                {
                     if ($fedActive)
                     {
                         $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"') . '</li>';
@@ -717,7 +715,7 @@ class Detail extends MY_Controller {
                     }
                     else
                     {
-                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"') . '</li>';
+                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . '</li>';
                     }
                 }
             }
@@ -1043,9 +1041,13 @@ class Detail extends MY_Controller {
 
 
         $xmldata = $ent->getProviderToXML($parent = null, array('attrs' => 1));
-        $xmldata->formatOutput = true;
-        $xmlToHtml = $xmldata->saveXML();
+        if (!empty($xmldata))
+        {
 
+
+            $xmldata->formatOutput = true;
+            $xmlToHtml = $xmldata->saveXML();
+        }
         $xmlmetatitle = '<img src="' . base_url() . 'images/jicons/xml3.svg" style="height: 20px"/> ';
         $subresult[1] = array('section' => 'xmlmeta', 'title' => $xmlmetatitle, 'data' => '<code>' . $this->geshilib->highlight($xmlToHtml, 'xml', $params) . '</code>');
 
