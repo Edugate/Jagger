@@ -457,9 +457,7 @@ class Manage extends MY_Controller {
         $data['federation_sysname'] = $federation->getSysname();
         $data['federation_urn'] = $federation->getUrn();
         $data['federation_desc'] = $federation->getDescription();
-
         $data['federation_is_active'] = $federation->getActive();
-        $federationMembers = $federation->getMembers();
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
 
 
@@ -467,18 +465,11 @@ class Manage extends MY_Controller {
 
         $data['titlepage'] = lang('rr_feddetail') . ': ' . $data['federation_name'];
 
-
-
-        //$data['meta_link'] = base_url() . 'metadata/federation/' . $data['federation_sysname'] . '/metadata.xml';
-        //$data['meta_link_signed'] = base_url() . 'signedmetadata/federation/' . $data['federation_sysname'] . '/metadata.xml';
-        //$data['metaexport_link'] = base_url() . 'metadata/federationexport/' . $data['federation_sysname'] . '/metadata.xml';
-        //$data['metaexport_link_signed'] = base_url() . 'signedmetadata/federationexport/' . $data['federation_sysname'] . '/metadata.xml';
-
         $data['content_view'] = 'federation/federation_show_view';
         if (!$canEdit)
         {
             $editLink = '<img src="' . base_url() . 'images/icons/pencil-prohibition.png" title="' . lang('rr_nopermission') . '"/>';
-            ;
+            
         }
         else
         {
@@ -605,13 +596,6 @@ class Manage extends MY_Controller {
             $SPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['sp']);
             $BOTHmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['both']);
 
-
-
-
-
-
-            
-           
 
             $data['result']['membership'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
             $data['result']['membership'][] = array('data' => array('data' => $IDPmembersInArrayToHtml, 'colspan' => 2));
