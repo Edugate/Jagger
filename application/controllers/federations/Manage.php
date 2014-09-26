@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -21,7 +20,8 @@ if (!defined('BASEPATH'))
 /**
  * @todo add permission to check for public or private perms
  */
-class Manage extends MY_Controller {
+class Manage extends MY_Controller
+{
 
     private $tmp_providers;
 
@@ -246,33 +246,15 @@ class Manage extends MY_Controller {
         }
         $fed_members = $federation->getActiveMembers();
         $members_ids = array();
-        if (!empty($type))
+        if (!empty($type) && (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp') == 0))
         {
-            if ($type === 'idp')
+            foreach ($fed_members as $m)
             {
-                foreach ($fed_members as $m)
+                $entype = $m->getType();
+                if (strcasecmp($entype, $type) == 0)
                 {
-                    $entype = $m->getType();
-                    if (strcasecmp($entype, 'SP') != 0)
-                    {
-                        $members_ids[] = $m->getId();
-                    }
+                    $members_ids[] = $m->getId();
                 }
-            }
-            elseif ($type === 'sp')
-            {
-                foreach ($fed_members as $m)
-                {
-                    $entype = $m->getType();
-                    if (strcasecmp($entype, 'IDP') != 0)
-                    {
-                        $members_ids[] = $m->getId();
-                    }
-                }
-            }
-            else
-            {
-                show_error(404);
             }
         }
         else
@@ -282,13 +264,11 @@ class Manage extends MY_Controller {
                 $members_ids[] = $m->getId();
             }
         }
-
         if (count($members_ids) == 0)
         {
             show_error(lang('error_nomembersforfed'), 404);
             return;
         }
-
         $contacts = $this->em->getRepository("models\Contact")->findBy(array('provider' => $members_ids));
         $cont_array = array();
         foreach ($contacts as $c)
@@ -307,20 +287,20 @@ class Manage extends MY_Controller {
         force_download($filename, $result, 'text/plain');
     }
 
-    private function showMetadataTab(models\Federation $federation,$hasWriteAccess)
+    private function showMetadataTab(models\Federation $federation, $hasWriteAccess)
     {
-        $d =array();
-        
+        $d = array();
+
         $altMetaUrlEnabled = $federation->getAltMetaUrlEnabled();
-       
-        if($altMetaUrlEnabled === TRUE)
+
+        if ($altMetaUrlEnabled === TRUE)
         {
             $altMetaUrl = $federation->getAltMetaUrl();
             $lbl = lang('metapublicationurl');
-            $d[] = array($lbl,anchor($altMetaUrl));
+            $d[] = array($lbl, anchor($altMetaUrl));
             return $d;
         }
-     
+
         $defaultDigest = $this->config->item('signdigest');
         if (empty($defaultDigest))
         {
@@ -336,7 +316,7 @@ class Manage extends MY_Controller {
         {
             $digestExport = $defaultDigest;
         }
-        
+
         $metaLink = base_url() . 'metadata/federation/' . $federation->getSysname() . '/metadata.xml';
         $metaLinkSigned = base_url() . 'signedmetadata/federation/' . $federation->getSysname() . '/metadata.xml';
         $metaExportLink = base_url() . 'metadata/federationexport/' . $federation->getSysname() . '/metadata.xml';
@@ -469,7 +449,6 @@ class Manage extends MY_Controller {
         if (!$canEdit)
         {
             $editLink = '<img src="' . base_url() . 'images/icons/pencil-prohibition.png" title="' . lang('rr_nopermission') . '"/>';
-            
         }
         else
         {
@@ -573,7 +552,7 @@ class Manage extends MY_Controller {
         }
 
 
-        $metadataTab = $this->showMetadataTab($federation,$hasWriteAccess);
+        $metadataTab = $this->showMetadataTab($federation, $hasWriteAccess);
         if (!isset($data['result']['metadata']))
         {
             $data['result']['metadata'] = array();
@@ -886,8 +865,7 @@ class Manage extends MY_Controller {
                     {
                         $doFilter = array('' . $federation->getId() . '');
                         $m1 = $nmember->getMembership()->filter(
-                                function($entry) use($doFilter)
-                        {
+                                function($entry) use($doFilter) {
                             return (in_array($entry->getFederation()->getId(), $doFilter));
                         }
                         );
@@ -1123,8 +1101,7 @@ class Manage extends MY_Controller {
                     }
                     $doFilter = array('' . $federation->getId() . '');
                     $m2 = $inv_member->getMembership()->filter(
-                            function($entry) use($doFilter)
-                    {
+                            function($entry) use($doFilter) {
                         return (in_array($entry->getFederation()->getId(), $doFilter));
                     }
                     );
