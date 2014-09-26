@@ -40,6 +40,22 @@ class Translator extends MY_Controller
         return $this->form_validation->run();
     }
 
+    private function checkPermission($langto)
+    {
+        $username = $this->j_auth->current_user();
+        $translator = $this->config->item('translator_access');
+        if(!empty($translator) && is_array($translator) && isset($translator[$langto]) && strcasecmp($translator[$langto],$username)==0)
+        {
+            return true;
+        }
+        else
+        {
+            log_message('warning',__METHOD__.' no acccess to translate to lang:'.$langto.'. Possible reason: no entry in config file: translator_access['.$langto.']['.$username.']');
+            return false;
+        }
+        
+    }
+
     public function tolanguage($l)
     {
         $original = $this->lang->language;
@@ -52,26 +68,12 @@ class Translator extends MY_Controller
         {
             show_error('wrong', 404);
         }
-        $username = $this->j_auth->current_user();
-        $translator = $this->config->item('translator_access');
-        if (empty($translator))
+        
+        $isAccess = $this->checkPermission($langto);
+        if(!$isAccess)
         {
-            log_message('debug', 'translator_access not found in config');
-            show_error('no perm 1', 403);
-        }
-        if (empty($translator[$langto]))
-        {
-            log_message('debug', 'language code ' . $langto . ' not found in as key for translator_access');
-            show_error('no perm', 403);
-        }
-        else
-        {
-            $config_username = $translator['' . $langto . ''];
-            if (strcasecmp($config_username, $username) != 0)
-            {
-                log_message('debug', 'translation not permited for ' . $username);
-                show_error('no perm', 403);
-            }
+            show_error('No access',403);
+            return;
         }
         $this->lang->load('rr', $langto);
         $translatedTo = $this->lang->language;
