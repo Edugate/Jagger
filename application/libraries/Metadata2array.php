@@ -110,46 +110,43 @@ class Metadata2array
         return $this->metaArray;
     }
 
-    function entitiesConvert($doc, $full = false)
+    function entitiesConvert(\DOMElement $doc, $full = false)
     {
-        if ($doc instanceof DOMElement)
+        if ($doc->nodeName === "md:EntityDescriptor" || $doc->nodeName === "EntityDescriptor")
         {
-            if ($doc->nodeName === "md:EntityDescriptor" || $doc->nodeName === "EntityDescriptor")
+            $this->entityConvert($doc, $full);
+        }
+        elseif ($doc->nodeName === "EntitiesDescriptor" || $doc->nodeName === "md:EntitiesDescriptor")
+        {
+            $lxpath = new \DomXPath($this->doc);
+            foreach ($lxpath->query('namespace::*', $doc) as $pnode)
             {
-                $this->entityConvert($doc, $full);
-            }
-            elseif ($doc->nodeName === "EntitiesDescriptor" || $doc->nodeName === "md:EntitiesDescriptor")
-            {
-                $lxpath = new \DomXPath($this->doc);
-                foreach ($lxpath->query('namespace::*', $doc) as $pnode)
+                $prefix = $pnode->prefix;
+                $val = $pnode->nodeValue;
+                if (!empty($prefix) && (strcmp($prefix, 'xml') != 0))
                 {
-                    $prefix = $pnode->prefix;
-                    $val = $pnode->nodeValue;
-                    if (!empty($prefix) && (strcmp($prefix, 'xml') != 0))
-                    {
-                        $this->newNameSpaces['' . $prefix . ''] = $val;
-                    }
+                    $this->newNameSpaces['' . $prefix . ''] = $val;
                 }
-                $namespaces = h_metadataNamespaces();
-                $this->newNameSpaces = array_diff_assoc($this->newNameSpaces, $namespaces);
+            }
+            $namespaces = h_metadataNamespaces();
+            $this->newNameSpaces = array_diff_assoc($this->newNameSpaces, $namespaces);
 
-                if (count($this->newNameSpaces))
-                {
-                    log_message('warning', __METHOD__ . ' Found additional xmlns not known by system ' . serialize($this->newNameSpaces));
-                    foreach ($this->newNameSpaces as $k => $v)
-                    {
-                        $this->xpath->registerNamespace($k, $v);
-                    }
-                }
-                foreach ($doc->childNodes as $child)
-                {
-                    $this->entitiesConvert($child, $full);
-                }
-            }
-            else
+            if (count($this->newNameSpaces))
             {
-                return;
+                log_message('warning', __METHOD__ . ' Found additional xmlns not known by system ' . serialize($this->newNameSpaces));
+                foreach ($this->newNameSpaces as $k => $v)
+                {
+                    $this->xpath->registerNamespace($k, $v);
+                }
             }
+            foreach ($doc->childNodes as $child)
+            {
+                $this->entitiesConvert($child, $full);
+            }
+        }
+        else
+        {
+            return;
         }
     }
 
@@ -192,7 +189,7 @@ class Metadata2array
                 if (!empty($full))
                 {
 
-                    $entity['details']['idpssodescriptor'] = $this->IDPSSODescriptorConvert($gnode);
+                    $entity['details']['idpssodescriptor'] = $this->idpSSODescriptorConvert($gnode);
                 }
             }
             if ($gnode->nodeName === 'md:SPSSODescriptor' || $gnode->nodeName === 'SPSSODescriptor')
@@ -202,7 +199,7 @@ class Metadata2array
                 if (!empty($full))
                 {
 
-                    $entity['details']['spssodescriptor'] = $this->SPSSODescriptorConvert($gnode);
+                    $entity['details']['spssodescriptor'] = $this->spSSODescriptorConvert($gnode);
                 }
                 foreach ($gnode->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:metadata', 'RequestedAttribute') as $reqattr)
                 {
@@ -215,7 +212,7 @@ class Metadata2array
             }
             if ($gnode->nodeName === 'md:AttributeAuthorityDescriptor' || $gnode->nodeName === 'AttributeAuthorityDescriptor')
             {
-                $entity['details']['aadescriptor'] = $this->AADescriptorConvert($gnode);
+                $entity['details']['aadescriptor'] = $this->attributeAuthorityDescriptorConvert($gnode);
             }
             if ($gnode->nodeName === 'Extensions' || $gnode->nodeName === 'md:Extensions')
             {
@@ -263,11 +260,11 @@ class Metadata2array
             }
             elseif ($gnode->nodeName === 'md:ContactPerson' || $gnode->nodeName === 'ContactPerson')
             {
-                $entity['details']['contacts'][] = $this->ContactPersonConvert($gnode);
+                $entity['details']['contacts'][] = $this->contactPersonConvert($gnode);
             }
             elseif ($gnode->nodeName === 'md:Organization' || $gnode->nodeName === 'Organization')
             {
-                $entity['details']['org'] = $this->OrganizationConvert($gnode);
+                $entity['details']['org'] = $this->organizationConvert($gnode);
             }
         }
         if ($isIdp && $isSp)
@@ -320,7 +317,7 @@ class Metadata2array
         $this->metaArray[$entity['entityid']] = $entity;
     }
 
-    private function AADescriptorConvert(\DOMElement $node)
+    private function attributeAuthorityDescriptorConvert(\DOMElement $node)
     {
         $result = array();
         $result['protocols'] = array_filter(explode(' ', $node->getAttribute('protocolSupportEnumeration')), 'strlen');
@@ -328,7 +325,7 @@ class Metadata2array
         {
             if ($child->nodeName === 'md:Extensions' || $child->nodeName === 'Extensions')
             {
-                $result['extensions'] = $this->AAExtensionsToArray($child);
+                $result['extensions'] = $this->aaExtensionsToArray($child);
             }
             elseif ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat')
             {
@@ -340,13 +337,13 @@ class Metadata2array
             }
             elseif ($child->nodeName === "KeyDescriptor" || $child->nodeName === "md:KeyDescriptor")
             {
-                $result['certificate'][] = $this->KeyDescriptorConvert($child);
+                $result['certificate'][] = $this->keyDescriptorConvert($child);
             }
         }
         return $result;
     }
 
-    private function IDPSSODescriptorConvert(\DOMElement $node)
+    private function idpSSODescriptorConvert(\DOMElement $node)
     {
         $result = array();
         $result['protocols'] = array_filter(explode(' ', $node->getAttribute('protocolSupportEnumeration')), 'strlen');
@@ -354,7 +351,7 @@ class Metadata2array
         {
             if ($child->nodeName === 'md:Extensions' || $child->nodeName === 'Extensions')
             {
-                $result['extensions'] = $this->ExtensionsToArray($child);
+                $result['extensions'] = $this->extensionsToArray($child);
             }
             elseif ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat')
             {
@@ -385,13 +382,13 @@ class Metadata2array
             }
             elseif ($child->nodeName == "KeyDescriptor" || $child->nodeName == "md:KeyDescriptor")
             {
-                $result['certificate'][] = $this->KeyDescriptorConvert($child);
+                $result['certificate'][] = $this->keyDescriptorConvert($child);
             }
         }
         return $result;
     }
 
-    private function SPSSODescriptorConvert($node)
+    private function spSSODescriptorConvert($node)
     {
         $profiles = $node->getAttribute('protocolSupportEnumeration');
         $profiles = explode(" ", $profiles);
@@ -405,7 +402,7 @@ class Metadata2array
         {
             if ($child->nodeName === 'md:Extensions' || $child->nodeName === 'Extensions')
             {
-                $result['extensions'] = $this->ExtensionsToArray($child);
+                $result['extensions'] = $this->extensionsToArray($child);
             }
             elseif ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat')
             {
@@ -445,14 +442,14 @@ class Metadata2array
             }
             elseif ($child->nodeName === 'KeyDescriptor' || $child->nodeName === 'md:KeyDescriptor')
             {
-                $result['certificate'][] = $this->KeyDescriptorConvert($child);
+                $result['certificate'][] = $this->keyDescriptorConvert($child);
             }
         }
 
         return $result;
     }
 
-    private function KeyDescriptorConvert($node)
+    private function keyDescriptorConvert($node)
     {
         $cert = array();
         $usecase = $node->getAttribute('use');
@@ -490,7 +487,7 @@ class Metadata2array
         return $cert;
     }
 
-    private function AAExtensionsToArray($node)
+    private function aaExtensionsToArray($node)
     {
         $result = array();
         foreach ($node->childNodes as $enode)
@@ -503,7 +500,7 @@ class Metadata2array
         return $result;
     }
 
-    private function ExtensionsToArray($node)
+    private function extensionsToArray($node)
     {
         foreach ($node->childNodes as $enode)
         {
@@ -587,7 +584,7 @@ class Metadata2array
         return $ext;
     }
 
-    private function OrganizationConvert($node)
+    private function organizationConvert($node)
     {
         $org = array('OrganizationName' => array(), 'OrganizationDisplayName' => array(), 'OrganizationURL' => array());
         if ($node->hasChildNodes())
@@ -603,7 +600,7 @@ class Metadata2array
         return $org;
     }
 
-    private function ContactPersonConvert($node)
+    private function contactPersonConvert($node)
     {
         $cnt = array();
         $cnt['type'] = $node->getAttribute('contactType');
