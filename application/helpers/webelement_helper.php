@@ -125,10 +125,24 @@ function generateSelectInputFields($label1, $name1, $select1, $selected1, $label
 }
 
 
-function jGenerateInput($label,$inputname,$value,$inputclass)
+function jGenerateInput($label,$inputname,$value,$inputclass,$placeholder=null)
+{
+   if(!empty($placeholder))
+   {
+       $pl = ' placeholder="'.$placeholder.'" ';
+   }
+   else
+   {
+       $pl = '';
+   }
+   $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="inline">'.$label.'</label></div>';
+   $r .= '<div class="medium-8 large-7 columns end"><input type="text" id="'.$inputname.'" name="'.$inputname.'" value="'.$value.'" class="'.$inputclass.'" '.$pl.'></div>';
+   return $r;
+}
+function jGenerateTextarea($label,$inputname,$value,$inputclass)
 {
    $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="inline">'.$label.'</label></div>';
-   $r .= '<div class="medium-8 large-7 columns end"><input type="text" id="'.$inputname.'" name="'.$inputname.'" value="'.$value.'" class="'.$inputclass.'"></div>';
+   $r .= '<div class="medium-8 large-7 columns end">'.form_textarea($inputname, $value).'</div>';
    return $r;
 }
 function jGenerateInputReadonly($label,$inputname,$value,$inputclass)
@@ -145,6 +159,26 @@ function jGenerateDropdown($label,$inputname,$dropdowns,$value,$inputclass)
 
 
    return $r;
+}
+
+function jGenerateRadios($label,$inputname,$radios,$value,$inputclass)
+{
+     $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="inline">'.$label.'</label></div>';
+     $r .= '<div class="medium-8 large-7 columns end">';
+     foreach($radios as $k=>$p)
+     {
+         if($p['value'] === $value)
+         {
+             $checked = 'checked="checked"';
+         }
+         else
+         {
+             $checked = '';
+         }
+         $r .=  '<div class="small-12 column"><div class="small-1 column"><input type="radio" name="'.$inputname.'" value="'.$p['value'].'" id="'.$inputname.$k.'" '.$checked.'></div><div class="small-11 column"><label for="'.$inputname.$k.'">'.$p['label'].'</label></div></div>';
+     }
+     $r .='</div>';
+     return $r;
 }
 
 

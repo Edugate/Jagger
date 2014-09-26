@@ -58,6 +58,12 @@ class Fededit extends MY_Controller {
         $this->form_validation->set_rules('publisher',lang('rr_fed_publisher'),'trim|xss_clean|max_length[500]');
         $this->form_validation->set_rules('digestmethod',lang('digestmethodsign'),'trim|xss_clean|matches_inarray['.serialize($allowedDigests).']');
         $this->form_validation->set_rules('digestmethodext',lang('digestmethodexportsign'),'trim|xss_clean|matches_inarray['.serialize($allowedDigests).']');
+        $this->form_validation->set_rules('usealtmeta',lang('metaalturlinput').' radio','trim|required|xss_clean');
+        $usealtmeta = $this->input->post('usealtmeta');
+        if(!empty($usealtmeta) && $usealtmeta === 'ext')
+        {
+            $this->form_validation->set_rules('altmetaurl',lang('metaalturlinput'),'trim|required|valid_url');
+        }
 
         return $this->form_validation->run();
     }
@@ -100,10 +106,21 @@ class Fededit extends MY_Controller {
             $publisher = $this->input->post('publisher');
             $digest = $this->input->post('digestmethod');
             $digestExport = $this->input->post('digestmethodext');
+            $usealtmeta = $this->input->post('usealtmeta');
+            $altMetaUrl = $this->input->post('altmetaurl');
             if ($infedid != $fedid)
             {
                 show_error('Incorrect post', 403);
             }
+            if(!empty($usealtmeta) && strcasecmp($usealtmeta, 'ext')==0)
+            {
+                $fed->setAltMetaUrlEnabled(TRUE);
+            }
+            else
+            {
+                $fed->setAltMetaUrlEnabled(FALSE);
+            }
+            $fed->setAltMetaUrl($altMetaUrl);
             $fed->setName($fedname);
             $fed->setUrn($inurn);
             if($incattrs == 'accept')

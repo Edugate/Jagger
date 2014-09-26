@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,8 +19,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Form_element
-{
+class Form_element {
 
     protected $ci;
     protected $em;
@@ -3308,45 +3308,79 @@ class Form_element
 
     public function generateFederationEditForm(models\Federation $federation)
     {
-        $f = null;
+        $f = '<div class="small-12 columns">';
+        $f .= jGenerateInput(lang('rr_fed_name'), 'fedname', set_value('fedname', $federation->getName()), '');
+        $f .= '</div>';
+
+
         $f .= '<div class="small-12 columns">';
-        $f .='<div class="small-3 columns">' . form_label(lang('rr_fed_name'), 'fedname') . '</div>';
-        $f .= '<div class="small-8 large-7 columns">' . form_input('fedname', set_value('fedname', $federation->getName())) . '</div><div></div>';
+
+        $useal = $federation->getAltMetaUrlEnabled();
+        if ($useal)
+        {
+            $usealtmeta = 'ext';
+        }
+        else
+        {
+            $usealtmeta = 'loc';
+        }
+        $radios = array(
+            array('value' => 'loc', 'label' => lang('lblusejaggermetaurl') . ':<br />' . base_url() . 'signedmetadata/federation/' . $federation->getSysname() . '/metadata.xml'),
+            array('value' => 'ext', 'label' => lang('lbluseothermetaurl')),
+        );
+        $f .= jGenerateRadios(lang('metapublicationurl'), 'usealtmeta', $radios, set_value('usealtmeta', $usealtmeta), '');
         $f .= '</div>';
         $f .= '<div class="small-12 columns">';
-        $f .='<div class="small-3 columns">' . form_label(lang('fednameinmeta'), 'urn') . '</div>';
-        $f .= '<div class="small-8 large-7 columns">' . form_input('urn', set_value('urn', $federation->getUrn())) . '</div><div></div>';
-        $f .= '</div>';
-        $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('rr_fed_publisher'), 'publisher') . '</div><div class="small-8 large-7 columns">' . form_input('publisher', set_value('publisher', $federation->getPublisher())) . '</div><div class="small-1 large-2 "></div>';
-        $f .= '</div>';
-        $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('rr_isfedpublic') . ' ' . showBubbleHelp(lang('rhelppublicfed')), 'ispublic') . '</div><div class="small-8 large-7 columns end">' . form_checkbox('ispublic', 'accept', set_value('ispublic', $federation->getPublic())) . '</div>';
-        $f .= '</div>';
-        $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('rr_include_attr_in_meta'), 'incattrs') . '</div><div class="small-8 large-7 columns">' . form_checkbox('incattrs', 'accept', set_value('incattrs', $federation->getAttrsInmeta())) . '</div><div class="small-1 large-2 "></div></div>';
+
+        $f .= jGenerateInput('', 'altmetaurl', set_value('altmetaurl', $federation->getAltMetaUrl()), 'alert',lang('metaalturlinput'));
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('rr_lexport_enabled'), 'lexport') . '</div><div class="small-8 large-7 columns">' . form_checkbox('lexport', 'accept', set_value('lexport', $federation->getLocalExport())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= jGenerateInput(lang('fednameinmeta'), 'urn', set_value('urn', $federation->getUrn()), '');
+        $f .= '</div>';
+
+
+        $f .= '<div class="small-12 columns">';
+        $f .= jGenerateInput(lang('rr_fed_publisher'), 'publisher', set_value('publisher', $federation->getPublisher()), '');
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodsign'), 'digestmethod') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethod', array('SHA-1' => 'SHA-1', 'SHA-256' => 'SHA-256'), set_value('digestmethod', $federation->getDigest())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '<div class="small-3 columns text-right">' . form_label(lang('rr_isfedpublic') . ' ' . showBubbleHelp(lang('rhelppublicfed')), 'ispublic') . '</div><div class="small-8 large-7 columns end">' . form_checkbox('ispublic', 'accept', set_value('ispublic', $federation->getPublic())) . '</div>';
+        $f .= '</div>';
+        $f .= '<div class="small-12 columns">';
+        $f .= '<div class="small-3 columns text-right">' . form_label(lang('rr_include_attr_in_meta'), 'incattrs') . '</div><div class="small-8 large-7 columns">' . form_checkbox('incattrs', 'accept', set_value('incattrs', $federation->getAttrsInmeta())) . '</div><div class="small-1 large-2 "></div></div>';
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns">' . form_label(lang('digestmethodexportsign'), 'digestmethodext') . '</div><div class="small-8 large-7 columns">' . form_dropdown('digestmethodext', array('SHA-1' => 'SHA-1', 'SHA-256' => 'SHA-256'), set_value('digestmethodext', $federation->getDigestExport())) . '</div><div class="small-1 large-2 "></div>';
+        $f .= '<div class="small-3 columns text-right">' . form_label(lang('rr_lexport_enabled'), 'lexport') . '</div><div class="small-8 large-7 columns">' . form_checkbox('lexport', 'accept', set_value('lexport', $federation->getLocalExport())) . '</div><div class="small-1 large-2 "></div>';
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
-        $f .='<div class="small-3 columns">' . form_label(lang('rr_description'), 'description') . '</div>';
-        $f .='<div class="small-8 large-7 columns">' . form_textarea('description', set_value('description', $federation->getDescription())) . '</div>';
+
+        $f .= jGenerateDropdown(lang('digestmethodsign'), 'digestmethod', array('SHA-1' => 'SHA-1', 'SHA-256' => 'SHA-256'), set_value('digestmethod', $federation->getDigest()), '');
+
+        $f .= '</div>';
+
+        $f .= '<div class="small-12 columns">';
+
+        $f .= jGenerateDropdown(lang('digestmethodexportsign'), 'digestmethodext', array('SHA-1' => 'SHA-1', 'SHA-256' => 'SHA-256'), set_value('digestmethodext', $federation->getDigestExport()), '');
+
+
+        $f .= '</div>';
+
+        $f .= '<div class="small-12 columns">';
+
+
+        $f .= jGenerateTextarea(lang('rr_description'), 'description', set_value('description', $federation->getDescription()), '');
+
         $f .= '<div class="small-1 large-2 "></div>';
         $f .= '</div>';
         $f .= '<div class="small-12 columns">';
-        $f .='<div class="small-3 columns">' . form_label(lang('rr_fed_tou'), 'tou') . '</div>';
-        $f .= '<div class="small-8 large-7 columns">' . form_textarea('tou', set_value('tou', $federation->getTou())) . '</div>';
+
+
+
+        $f .= jGenerateTextarea(lang('rr_fed_tou'), 'tou', set_value('tou', $federation->getTou()), '');
+
         $f .= '<div class="small-1 large-2 "></div>';
         $f .= '</div>';
         return $f;
@@ -3357,7 +3391,8 @@ class Form_element
         $tmp_providers = new models\Providers();
         $excluded = $idp->getExcarps();
         $members = $tmp_providers->getCircleMembersSP($idp);
-        if (is_array($excluded)) $rows = array();
+        if (is_array($excluded))
+            $rows = array();
         foreach ($excluded as $v)
         {
             $members->remove($v);
