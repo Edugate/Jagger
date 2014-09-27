@@ -23,7 +23,6 @@ class Spage extends MY_Controller
 
     public function showall()
     {
-
         $this->load->library('j_auth');
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
@@ -93,19 +92,12 @@ class Spage extends MY_Controller
             );
         }
 
-        $data['rows'] = &$rows;
-        
+        $data['rows'] = &$rows;     
         if(!$frontpage)
         {
             $data['msg1'] = lang('missingfrontpage');
-            $data['msg2'] = lang('createpcode');
-            
+            $data['msg2'] = lang('createpcode');    
         }
-
-
-
-
-
         $data['content_view'] = 'manage/spageshowall_view';
         $this->load->view('page', $data);
     }

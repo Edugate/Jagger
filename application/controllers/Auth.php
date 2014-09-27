@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,7 +17,8 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Auth extends MY_Controller {
+class Auth extends MY_Controller
+{
 
     function __construct()
     {
@@ -31,7 +31,8 @@ class Auth extends MY_Controller {
         if (!$this->j_auth->logged_in())
         {
             return $this->login();
-        } else
+        }
+        else
         {
             redirect($this->config->item('base_url'), 'location');
         }
@@ -46,87 +47,81 @@ class Auth extends MY_Controller {
         $this->load->view('auth/logout');
     }
 
-
     function fedregister()
     {
-        if(!$this->input->is_ajax_request())
+        if (!$this->input->is_ajax_request())
         {
-           show_error('Permission denied',403);
+            show_error('Permission denied', 403);
         }
-        if($_SERVER['REQUEST_METHOD'] !== 'POST')
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
         {
-           set_status_header(403);
-           echo 'permission denied';
-           return;
+            set_status_header(403);
+            echo 'permission denied';
+            return;
         }
         if ($this->j_auth->logged_in())
         {
-           set_status_header(403);
-           echo 'already euthenticated';
-           return;
+            set_status_header(403);
+            echo 'already euthenticated';
+            return;
         }
-       
+
         $fedidentity = $this->session->userdata('fedidentity');
-        log_message('debug',__METHOD__.' fedregistration in post received'.serialize($this->session->all_userdata()));
-        if(!empty($fedidentity) && is_array($fedidentity))
+        log_message('debug', __METHOD__ . ' fedregistration in post received' . serialize($this->session->all_userdata()));
+        if (!empty($fedidentity) && is_array($fedidentity))
         {
-           if(isset($fedidentity['fedusername']))
-           {
+            if (isset($fedidentity['fedusername']))
+            {
                 $username = $fedidentity['fedusername'];
-           }
-           if(isset($fedidentity['fedemail']))
-           {
+            }
+            if (isset($fedidentity['fedemail']))
+            {
                 $email = $fedidentity['fedemail'];
-           }
-           if(empty($username) || empty($email))
-           {
-              set_status_header(403);
-              $this->session->sess_destroy();
-              $this->session->sess_regenerate(TRUE);
-              echo 'missing some attrs like username or/and email';
-              return;
-           }
-           if(isset($fedidentity['fedfname']))
-           {
+            }
+            if (empty($username) || empty($email))
+            {
+                set_status_header(403);
+                $this->session->sess_destroy();
+                $this->session->sess_regenerate(TRUE);
+                echo 'missing some attrs like username or/and email';
+                return;
+            }
+            if (isset($fedidentity['fedfname']))
+            {
                 $fname = $fedidentity['fedfname'];
-           }
-           if(isset($fedidentity['fedsname']))
-           {
+            }
+            if (isset($fedidentity['fedsname']))
+            {
                 $sname = $fedidentity['fedsname'];
-           }
-           
-        }  
-       
-        $ip = $this->input->ip_address();      
+            }
+        }
+        $ip = $this->input->ip_address();
         $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        if(!empty($checkuser))
+        if (!empty($checkuser))
         {
-           $this->session->sess_destroy();
-           $this->session->sess_regenerate(TRUE);
-           set_status_header(403);
-           echo lang('err_userexist');
-           return;
+            $this->session->sess_destroy();
+            $this->session->sess_regenerate(TRUE);
+            set_status_header(403);
+            echo lang('err_userexist');
+            return;
         }
-        $inqueue = $this->em->getRepository("models\Queue")->findOneBy(array('name'=>$username,'action'=>'Create'));
-        if(!empty($inqueue))
+        $inqueue = $this->em->getRepository("models\Queue")->findOneBy(array('name' => $username, 'action' => 'Create'));
+        if (!empty($inqueue))
         {
-           set_status_header(403);
-           echo lang('err_userinqueue');
-           return;
+            set_status_header(403);
+            echo lang('err_userinqueue');
+            return;
+        }
 
-        }
-         
-         
+
         $user = array(
-         'username'=>trim($username),
-         'email'=>trim($email),
-         'fname'=>trim($fname),
-         'sname'=>trim($sname),
-         'type'=>'federated',
-         'ip'=>$ip,
-       
+            'username' => trim($username),
+            'email' => trim($email),
+            'fname' => trim($fname),
+            'sname' => trim($sname),
+            'type' => 'federated',
+            'ip' => $ip,
         );
-
         $queue = new models\Queue;
         $queue->setAction('Create');
         $queue->setName($username);
@@ -138,33 +133,29 @@ class Auth extends MY_Controller {
          * BEGIN send notification
          */
         $sbj = 'User registration request';
-        $body = 'Dear user,'.PHP_EOL;
-        $body .= 'You have received this mail because your email address is on the notification list'.PHP_EOL;
-        $body .= 'User from '.$ip.' using federated access has applied for an account.'.PHP_EOL;
-        $body .= 'Please review the request and make appriopriate action (reject/approve)'.PHP_EOL;
-        $body .= 'Details about the request: '.base_url().'reports/awaiting/detail/'.$queue->getToken().PHP_EOL;
-        $this->email_sender->addToMailQueue(array(),null,$sbj,$body,array(),FALSE);  
+        $body = 'Dear user,' . PHP_EOL;
+        $body .= 'You have received this mail because your email address is on the notification list' . PHP_EOL;
+        $body .= 'User from ' . $ip . ' using federated access has applied for an account.' . PHP_EOL;
+        $body .= 'Please review the request and make appriopriate action (reject/approve)' . PHP_EOL;
+        $body .= 'Details about the request: ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
+        $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), FALSE);
         /**
          * END send notification
          */
-        
-        try{
-              $this->em->flush();
-              $this->session->sess_destroy();
-              $this->session->sess_regenerate(TRUE);
-              set_status_header(200);
-              echo lang('userregreceived');
-              return;
-        }
-        catch(Exception $e)
+        try
         {
-           log_message('error',__METHOD__.' '.$e);
-           set_status_header(500);
-           echo 'Unknown error occured';
-           return;
-         
+            $this->em->flush();
+            $this->session->sess_destroy();
+            $this->session->sess_regenerate(TRUE);
+            set_status_header(200);
+            echo lang('userregreceived');
         }
-     
+        catch (Exception $e)
+        {
+            log_message('error', __METHOD__ . ' ' . $e);
+            set_status_header(500);
+            echo 'Unknown error occured';
+        }
     }
 
     function ssphpauth()
@@ -184,7 +175,7 @@ class Auth extends MY_Controller {
             show_error('Server error', 500);
         }
 
-        if(!isset($spsp['attributes']))
+        if (!isset($spsp['attributes']))
         {
             log_message('error', 'missing defined $[simplesamlphp][attributes]');
             show_error('Server error', 500);
@@ -200,64 +191,61 @@ class Auth extends MY_Controller {
         $auth->requireAuth();
 
         $attributes = $auth->getAttributes();
-      
-      
-        
+
+
+
         if (!empty($attributes['' . $mapped['username'] . '']))
         {
-             
             if (is_array($attributes['' . $mapped['username'] . '']) && count($attributes['' . $mapped['username'] . '']) == 1)
             {
-               
                 $username = reset($attributes['' . $mapped['username'] . '']);
-          
-             
                 if (empty($username))
                 {
-                      
                     show_error('Missing atribute from IdP', 403);
                 }
-            } else
+            }
+            else
             {
                 log_message('warning', 'Missing or multiple values found for attr: ' . $mapped['username'] . ' ');
                 show_error('Missing or multiple values found for attr', 403);
             }
-        } else
+        }
+        else
         {
             log_message('warning', 'Couldn find ' . $mapped['username'] . ' provider by simplesaml');
             show_error('Missing atribute from IdP to map as username', 403);
         }
-      
         $mail = null;
         if (!empty($attributes['' . $mapped['mail'] . '']))
         {
- 
             if (is_array($attributes['' . $mapped['mail'] . '']) && count($attributes['' . $mapped['mail'] . '']) > 0)
             {
 
                 $mail = reset($attributes['' . $mapped['mail'] . '']);
-    
+
                 if (empty($mail))
                 {
                     log_message('warning', 'IdP didnt provide mail');
                     show_error('Missing mail attribute', 403);
                 }
-            } else
+            }
+            else
             {
                 log_message('warning', 'IdP didnt provide mail');
                 show_error('Missing mail attribute', 403);
             }
-        } else
+        }
+        else
         {
             log_message('warning', 'IdP didnt provide mail');
             show_error('Missing mail attribute', 403);
         }
-     
+
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
- 
+
         if (!empty($user))
         {
-    
+
             $can_access = (bool) ($user->isEnabled() && $user->getFederated());
             if (!$can_access)
             {
@@ -286,22 +274,21 @@ class Auth extends MY_Controller {
             $track_details = 'Authn from ' . $ip . '  with federated access';
             $this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
             $this->em->flush();
-        } else
+        }
+        else
         {
-      
+
             $can_autoregister = $this->config->item('autoregister_federated');
-       
             if (!$can_autoregister)
             {
-        
+
                 log_message('error', 'User authorization failed: ' . $username . ' doesnt exist in RR');
                 show_error(' ' . htmlentities($username) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $mail . '">' . lang('rrhere') . '</a>', 403);
-            } else
-            {   
+            }
+            else
+            {
                 $attrs = array('username' => $username, 'mail' => $mail);
-               
                 $reg = $this->registerUser($attrs);
-              
                 if ($reg !== TRUE)
                 {
                     show_error('User couldnt be registered.', 403);
@@ -320,7 +307,8 @@ class Auth extends MY_Controller {
         if ($shib['enabled'] === TRUE)
         {
             $this->data['shib_url'] = base_url() . $shib['loginapp_uri'];
-        } else
+        }
+        else
         {
             $this->data['shib_url'] = null;
         }
@@ -350,17 +338,20 @@ class Auth extends MY_Controller {
                 if (!empty($cu))
                 {
                     redirect($cu, 'location');
-                } else
+                }
+                else
                 {
                     redirect($this->config->item('base_url'), 'location');
                 }
-            } else
+            }
+            else
             {
                 $this->session->set_flashdata('message', $this->j_auth->errors());
 
                 redirect('auth/login', 'location'); //use redirects instead of loading views for compatibility with MY_Controller libraries
             }
-        } else
+        }
+        else
         {  //the user is not logging in so display the login page
 //set the flash data error message if there is one
             $this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
@@ -385,85 +376,95 @@ class Auth extends MY_Controller {
         }
     }
 
-    private function get_shib_username()
+    private function getShibUsername()
     {
-        $username_var = $this->config->item('Shib_username');
-        if (isset($_SERVER[$username_var]))
+        $usernameVarName = $this->config->item('Shib_username');
+        if (isset($_SERVER[$usernameVarName]))
         {
-            return $_SERVER[$username_var];
-        } elseif (isset($_SERVER['REDIRECT_' . $username_var]))
+            return $_SERVER[$usernameVarName];
+        }
+        elseif (isset($_SERVER['REDIRECT_' . $usernameVarName]))
         {
-            return $_SERVER['REDIRECT_' . $username_var];
-        } else
+            return $_SERVER['REDIRECT_' . $usernameVarName];
+        }
+        else
         {
             return FALSE;
         }
     }
-    private function get_shib_fname()
+
+    private function getShibFname()
     {
-        $fname_var = $this->config->item('Shib_fname');
-        if(empty($fname_var))
+        $fnameVarName = $this->config->item('Shib_fname');
+        if (empty($fnameVarName))
         {
-           return false;
+            return false;
         }
-        if (isset($_SERVER[$fname_var]))
+        if (isset($_SERVER[$fnameVarName]))
         {
-            return $_SERVER[$fname_var];
+            return $_SERVER[$fnameVarName];
         }
-        elseif(isset($_SERVER['REDIRECT_'.$fname_var]))
+        elseif (isset($_SERVER['REDIRECT_' . $fnameVarName]))
         {
-            return $_SERVER['REDIRECT_'.$fname_var];
-        }
-        return false;
-    }
-    private function get_shib_sname()
-    {
-        $sname_var = $this->config->item('Shib_sname');
-        if(empty($sname_var))
-        {
-           return false;
-        }
-        if (isset($_SERVER[$sname_var]))
-        {
-            return $_SERVER[$sname_var];
-        }
-        elseif(isset($_SERVER['REDIRECT_'.$sname_var]))
-        {
-            return $_SERVER['REDIRECT_'.$sname_var];
+            return $_SERVER['REDIRECT_' . $fnameVarName];
         }
         return false;
     }
 
-    private function get_shib_mail()
+    private function getShibSname()
     {
-        $email_var = $this->config->item('Shib_mail');
-        if (isset($_SERVER[$email_var]))
+        $snameVarName = $this->config->item('Shib_sname');
+        if (empty($snameVarName))
         {
-            return $_SERVER[$email_var];
-        } elseif (isset($_SERVER['REDIRECT_' . $email_var]))
+            return false;
+        }
+        if (isset($_SERVER[$snameVarName]))
         {
-            return $_SERVER['REDIRECT_' . $email_var];
-        } else
+            return $_SERVER[$snameVarName];
+        }
+        elseif (isset($_SERVER['REDIRECT_' . $snameVarName]))
+        {
+            return $_SERVER['REDIRECT_' . $snameVarName];
+        }
+        return false;
+    }
+
+    private function getShibMail()
+    {
+        $emailVarName = $this->config->item('Shib_mail');
+        if (isset($_SERVER[$emailVarName]))
+        {
+            return $_SERVER[$emailVarName];
+        }
+        elseif (isset($_SERVER['REDIRECT_' . $emailVarName]))
+        {
+            return $_SERVER['REDIRECT_' . $emailVarName];
+        }
+        else
         {
             return '';
         }
     }
 
-    private function get_shib_idp()
+    private function getShibIdp()
     {
         if (isset($_SERVER['Shib-Identity-Provider']))
         {
             return $_SERVER['Shib-Identity-Provider'];
-        } elseif (isset($_SERVER['REDIRECT_Shib-Identity-Provider']))
+        }
+        elseif (isset($_SERVER['REDIRECT_Shib-Identity-Provider']))
         {
             return $_SERVER['REDIRECT_Shib-Identity-Provider'];
-        } elseif (isset($_SERVER['Shib_Identity_Provider']))
+        }
+        elseif (isset($_SERVER['Shib_Identity_Provider']))
         {
             return $_SERVER['Shib_Identity_Provider'];
-        } elseif (isset($_SERVER['REDIRECT_Shib_Identity_Provider']))
+        }
+        elseif (isset($_SERVER['REDIRECT_Shib_Identity_Provider']))
         {
             return $_SERVER['REDIRECT_Shib_Identity_Provider'];
-        } else
+        }
+        else
         {
             return '';
         }
@@ -473,12 +474,9 @@ class Auth extends MY_Controller {
     {
         $username = $attrs['username'];
         $mail = $attrs['mail'];
-
         $fname = trim($attrs['fname']);
         $sname = trim($attrs['sname']);
-
-
-
+        
         $user = new models\User;
         $this->load->helper('random_generator');
         $randompass = str_generator();
@@ -491,11 +489,11 @@ class Auth extends MY_Controller {
         $user->setAccepted();
         $user->setEnabled();
         $user->setValid();
-        if(!empty($fname))
+        if (!empty($fname))
         {
             $user->setGivenname($fname);
         }
-        if(!empty($sname))
+        if (!empty($sname))
         {
             $user->setSurname($sname);
         }
@@ -524,14 +522,14 @@ class Auth extends MY_Controller {
         $this->em->persist($user);
         $this->tracker->save_track('user', 'create', $username, 'user autocreated in the system', false);
         $this->em->flush();
-        
-        
+
+
         return true;
     }
 
     public function fedauth($timeoffset = null)
     {
-        $shibb_valid = (bool) $this->get_shib_idp();
+        $shibb_valid = (bool) $this->getShibIdp();
         if (!$shibb_valid)
         {
             log_message('error', 'This location should be protected by shibboleth in apache');
@@ -539,16 +537,16 @@ class Auth extends MY_Controller {
         }
         if ($this->j_auth->logged_in())
         {
-           redirect(''.base_url().'','location'); 
+            redirect('' . base_url() . '', 'location');
         }
-        $user_var = $this->get_shib_username();
-        if (empty($user_var))
+        $userValue = $this->getShibUsername();
+        if (empty($userValue))
         {
             log_message('error', 'IdP didnt provide username');
             show_error('Internal server error: missing attribute from IdP', 500);
         }
 
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user_var));
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $userValue));
         if (!empty($user))
         {
             $can_access = (bool) ($user->isEnabled() && $user->getFederated());
@@ -572,18 +570,18 @@ class Auth extends MY_Controller {
                 $_SESSION['timeoffset'] = (int) $timeoffset;
             }
             $updatefullname = $this->config->item('shibb_updatefullname');
-            if(!empty($updatefullname)&& $updatefullname === TRUE)
+            if (!empty($updatefullname) && $updatefullname === TRUE)
             {
-               $fname = trim($this->get_shib_fname());
-               $sname = trim($this->get_shib_sname());
-               if(!empty($fname))
-               {
-                   $user->setGivenname(''.$fname.'');
-               }
-               if(!empty($sname))
-               {
-                   $user->setSurname(''.$sname.'');
-               }
+                $fname = trim($this->getShibFname());
+                $sname = trim($this->getShibSname());
+                if (!empty($fname))
+                {
+                    $user->setGivenname('' . $fname . '');
+                }
+                if (!empty($sname))
+                {
+                    $user->setSurname('' . $sname . '');
+                }
             }
             $ip = $_SERVER['REMOTE_ADDR'];
             $user->setIP($ip);
@@ -593,34 +591,35 @@ class Auth extends MY_Controller {
             $track_details = 'Authn from ' . $ip . '  with federated access';
             $this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
             $this->em->flush();
-        } else
+        }
+        else
         {
-            $fname_var = $this->get_shib_fname();
-            $sname_var = $this->get_shib_sname();
-            $email_var = $this->get_shib_mail();
-            $can_autoregister = $this->config->item('autoregister_federated');
-            if (empty($email_var))
+            $fnameVarName = $this->getShibFname();
+            $snameVarName = $this->getShibSname();
+            $emailVarName = $this->getShibMail();
+            $canAutoRegister = $this->config->item('autoregister_federated');
+            if (empty($emailVarName))
             {
-                log_message('warning', __METHOD__.' User hasnt provided email attr during federated access');
+                log_message('warning', __METHOD__ . ' User hasnt provided email attr during federated access');
                 show_error(lang('error_noemail'), 403);
                 return;
             }
-            
-            if (!$can_autoregister)
+
+            if (!$canAutoRegister)
             {
-                log_message('error', 'User authorization failed: ' . $user_var . ' doesnt exist in RR');
-              
-                $fedidentity = array('fedusername'=>$user_var,'fedfname'=>$this->get_shib_fname(),'fedsname'=>$this->get_shib_sname(),'fedemail'=>$this->get_shib_mail());
-                $this->session->set_userdata(array('fedidentity'=>$fedidentity));
+                log_message('error', 'User authorization failed: ' . $userValue . ' doesnt exist in RR');
+
+                $fedidentity = array('fedusername' => $userValue, 'fedfname' => $this->getShibFname(), 'fedsname' => $this->getShibSname(), 'fedemail' => $this->getShibMail());
+                $this->session->set_userdata(array('fedidentity' => $fedidentity));
                 $data['content_view'] = 'feduserregister_view';
-                log_message('debug','GKS SESS:'.serialize($this->session->all_userdata()));
-                $this->load->view('page',$data);
+                log_message('debug', 'GKS SESS:' . serialize($this->session->all_userdata()));
+                $this->load->view('page', $data);
                 return;
-                
-            } else
+            }
+            else
             {
 
-                $attrs = array('username' => $user_var, 'mail' => $email_var,'fname'=>$fname_var,'sname'=>$sname_var);
+                $attrs = array('username' => $userValue, 'mail' => $emailVarName, 'fname' => $fnameVarName, 'sname' => $snameVarName);
                 $reg = $this->registerUser($attrs);
 
                 if ($reg !== TRUE)

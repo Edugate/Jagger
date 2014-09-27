@@ -236,19 +236,17 @@ class Logomngmt extends MY_Controller
             echo lang('logo404');
             return;
         }
+        $this->em->remove($existingLogo);
         try
-        {
-            $this->em->remove($existingLogo);
+        {   
             $this->em->flush();
-            echo lang('rr_logoisunsigned');
-            return;
+            echo lang('rr_logoisunsigned');      
         }
         catch (Exception $e)
         {
             log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
-            echo 'Server Error occured';
-            return;
+            echo 'Server Error occured';        
         }
     }
 
