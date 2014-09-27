@@ -60,29 +60,18 @@ class Ajax extends MY_Controller
 
     public function checklogourl()
     {
-        if (!$this->input->is_ajax_request())
-        {
-            set_status_header(403);
-            echo 'denied';
-            return;
-        }
         $this->load->library('j_auth');
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
+        if (!($this->input->is_ajax_request() && $this->j_auth->logged_in()))
         {
             set_status_header(403);
             echo 'denied';
             return;
-        }
+        }   
         $this->load->library('form_validation');
         $result = array();
-
-
-
         $this->form_validation->set_rules('logourl', 'URL Logo', 'trim|required|min_length[5]|max_length[500]|no_white_spaces|valid_url_ssl');
         $isvalid = $this->form_validation->run();
         $v_errors = validation_errors('<span>', '</span>');
-
         if (!$isvalid)
         {
             $result['error'] = $v_errors;

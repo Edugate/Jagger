@@ -24,10 +24,6 @@ class Gworkers extends MY_Controller {
     function __construct() {
         parent::__construct();
     }
-
-     
-
-
     function worker()
     {
         if($this->input->is_cli_request())
@@ -37,7 +33,6 @@ class Gworkers extends MY_Controller {
         }
         else
         {
-
            show_error('denied',403);
         }
     }
@@ -46,12 +41,9 @@ class Gworkers extends MY_Controller {
     {
        if(!$this->input->is_cli_request())
        {
-
            show_error('denied',403);
            return;
-
-       }
-       
+       }  
        log_message('info','MAILQUEUE STARTED : daemon needs to be restarted after any changes in configs');
        $this->load->library('doctrine');
        $em = $this->doctrine->em;
@@ -68,8 +60,6 @@ class Gworkers extends MY_Controller {
           log_message('warning','MAILQUEUE ::  it is recommended to  set default footer (mail_footer) for mails in email.php config file');
           $mailfooter = '';
        }
-       $attempt = 0;
-       $maxattempts = 10;
        while(TRUE)
        {
            if(empty($sending_enabled))

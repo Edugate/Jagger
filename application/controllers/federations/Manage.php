@@ -735,9 +735,8 @@ class Manage extends MY_Controller
         }
         $this->load->library('zacl');
         $form_elements = array();
-
         $this->load->helper('form');
-        if ($type === 'idp')
+        if (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp'))
         {
             $this->load->library('show_element');
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
@@ -746,10 +745,8 @@ class Manage extends MY_Controller
                 show_error(lang('error_fednotfound'), 404);
             }
             $resource = $federation->getId();
-            $action = 'addbulk';
-            $group = 'federation';
-            $has_addbulk_access = $this->zacl->check_acl($resource, $action, $group, '');
-            if (!$has_addbulk_access)
+            $hasAddbulkAccess = $this->zacl->check_acl($resource, 'addbulk', 'federation', '');
+            if (!$hasAddbulkAccess)
             {
                 $data['content_view'] = 'nopermission';
                 $data['error'] = lang('rr_noperm');
@@ -759,31 +756,19 @@ class Manage extends MY_Controller
             $data['federation_name'] = $federation->getName();
             $data['federation_urn'] = $federation->getUrn();
             $data['federation_desc'] = $federation->getDescription();
-
             $data['federation_is_active'] = $federation->getActive();
-            $federation_members = $federation->getMembers();
-            $providers = $this->tmp_providers->getIdps();
-            $memberstype = 'idp';
-            $data['memberstype'] = $memberstype;
-            $data['subtitlepage'] = lang('rr_addnewidpsnoinv');
-        }
-        elseif ($type === 'sp')
-        {
-            $this->load->library('show_element');
-            $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
-            if (empty($federation))
+            $federationMembers = $federation->getMembers();
+            if (strcasecmp($type, 'idp') == 0)
             {
-                show_error(lang('error_fednotfound'), 404);
+                $providers = $this->tmp_providers->getIdps();
+                $data['subtitlepage'] = lang('rr_addnewidpsnoinv');
             }
-            $data['federation_name'] = $federation->getName();
-            $data['federation_urn'] = $federation->getUrn();
-            $data['federation_desc'] = $federation->getDescription();
-
-            $data['federation_is_active'] = $federation->getActive();
-            $federation_members = $federation->getMembers();
-            $providers = $this->tmp_providers->getSps();
-            $data['memberstype'] = 'sp';
-            $data['subtitlepage'] = lang('rr_addnewspsnoinv');
+            else
+            {
+                $providers = $this->tmp_providers->getSps();
+                $data['subtitlepage'] = lang('rr_addnewspsnoinv');
+            }
+            $data['memberstype'] = strtolwer($type);
         }
         else
         {
@@ -792,7 +777,7 @@ class Manage extends MY_Controller
         }
         foreach ($providers as $i)
         {
-            if (!$federation_members->contains($i))
+            if (!$federationMembers->contains($i))
             {
                 $checkbox = array(
                     'id' => 'member[' . $i->getId() . ']',

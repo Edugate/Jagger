@@ -1464,9 +1464,6 @@ class Provider
     {
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
-
-
-
         $this->setName($provider->getName());
         $this->setLocalName($provider->getLocalName());
         $this->setDisplayName($provider->getDisplayName());
@@ -1476,10 +1473,8 @@ class Provider
         $this->setEntityId($provider->getEntityId());
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
         $this->setRegistrationDate($provider->getRegistrationDate());
-
         $this->overwriteWithNameid($provider);
         log_message('debug', 'GG :' . serialize($this->getNameIds()));
-
         $prototypes = array('idpsso', 'aa', 'spsso');
         foreach ($prototypes as $a)
         {
@@ -3261,7 +3256,7 @@ class Provider
     public function getProviderToXML(\DOMElement $parent = NULL, $options = NULL)
     {
         log_message('debug', __METHOD__ . ' start:  ' . $this->entityid);
-        $comment = "\"" . $this->getEntityId() . "\" \n";     
+        $comment = "\"" . $this->getEntityId() . "\" \n";
         $s_metadata = null;
         $valid_until = null;
         $p_validUntil = $this->getValidTo();
@@ -3684,9 +3679,8 @@ class Provider
                 $this->setServiceLocation($aa);
             }
         }
-        if (array_key_exists('certificate', $b) && count($b['certificate']) > 0)
+        if (array_key_exists('certificate', $b))
         {
-
             foreach ($b['certificate'] as $c)
             {
                 $cert = new Certificate();
@@ -3731,41 +3725,24 @@ class Provider
         }
         if (array_key_exists('servicelocations', $b))
         {
-            if (isset($b['servicelocations']['singlesignonservice']) && is_array($b['servicelocations']['singlesignonservice']))
+            $tmpsrcl = array('singlesignonservice' => 'SingleSignOnService', 'singlelogout' => 'IDPSingleLogoutService', 'artifactresolutionservice' => 'IDPArtifactResolutionService');
+            foreach ($tmpsrcl as $kc => $vc)
             {
-                foreach ($b['servicelocations']['singlesignonservice'] as $s)
+                if (isset($b['servicelocations']['' . $kc . '']) && is_array($b['servicelocations']['' . $kc . '']))
                 {
-                    $sso = new ServiceLocation;
-                    $sso->setType('SingleSignOnService');
-                    $sso->setBindingName($s['binding']);
-                    $sso->setUrl($s['location']);
-                    $sso->setProvider($this);
-                    $this->setServiceLocation($sso);
-                }
-            }
-            if (isset($b['servicelocations']['singlelogout']) && is_array($b['servicelocations']['singlelogout']))
-            {
-                foreach ($b['servicelocations']['singlelogout'] as $s)
-                {
-                    $sso = new ServiceLocation;
-                    $sso->setType('IDPSingleLogoutService');
-                    $sso->setBindingName($s['binding']);
-                    $sso->setUrl($s['location']);
-                    $sso->setProvider($this);
-                    $this->setServiceLocation($sso);
-                }
-            }
-            if (isset($b['servicelocations']['artifactresolutionservice']) && is_array($b['servicelocations']['artifactresolutionservice']))
-            {
-                foreach ($b['servicelocations']['artifactresolutionservice'] as $s)
-                {
-                    $srv = new ServiceLocation;
-                    $srv->setType('IDPArtifactResolutionService');
-                    $srv->setBindingName($s['binding']);
-                    $srv->setUrl($s['location']);
-                    $srv->setOrder($s['order']);
-                    $srv->setProvider($this);
-                    $this->setServiceLocation($srv);
+                    foreach ($b['servicelocations'][''.$kc.''] as $s)
+                    {
+                        $sso = new ServiceLocation;
+                        $sso->setType($vc);
+                        $sso->setBindingName($s['binding']);
+                        $sso->setUrl($s['location']);
+                        if($vc === 'IDPArtifactResolutionService')
+                        {
+                            $sso->setOrder($s['order']);
+                        }
+                        $sso->setProvider($this);
+                        $this->setServiceLocation($sso);
+                    }
                 }
             }
         }
