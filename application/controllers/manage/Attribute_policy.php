@@ -348,8 +348,7 @@ class Attribute_policy extends MY_Controller
             return;
         }
         $resource = $idp->getId();
-        $group = 'idp';
-        $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
+        $has_write_access = $this->zacl->check_acl($resource, 'write', 'entity', '');
         if (!$has_write_access)
         {
             $data['content_view'] = 'nopermission';
@@ -400,14 +399,12 @@ class Attribute_policy extends MY_Controller
         $attrs_array_newform = array_diff_key($supportedArray, $globalArray);
         $data['attrs_array_newform'] = $attrs_array_newform;
         $data['spid'] = null;
-
         $data['formdown'][''] = lang('selectone') . '...';
         $sps = $this->tmp_providers->getCircleMembersLight($idp);
         foreach ($sps as $key)
         {
             $data['formdown'][$key->getId()] = $key->getNameToWebInLang($lang, 'sp') . ' (' . $key->getEntityId() . ')';
         }
-
         $data['idpid'] = $search_idp;
         $data['idp_name'] = $idp->getName();
         $data['idp_entityid'] = $idp->getEntityId();
