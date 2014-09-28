@@ -12,6 +12,7 @@ class Ajax extends MY_Controller
     {
 
         parent::__construct();
+        $this->load->library(array('form_validation','j_auth','curl'));
     }
 
     public function consentCookies()
@@ -37,7 +38,6 @@ class Ajax extends MY_Controller
             echo 'denied';
             return;
         }
-        $this->load->library('j_auth');
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
         {
@@ -60,14 +60,12 @@ class Ajax extends MY_Controller
 
     public function checklogourl()
     {
-        $this->load->library('j_auth');
         if (!($this->input->is_ajax_request() && $this->j_auth->logged_in()))
         {
             set_status_header(403);
             echo 'denied';
             return;
         }   
-        $this->load->library('form_validation');
         $result = array();
         $this->form_validation->set_rules('logourl', 'URL Logo', 'trim|required|min_length[5]|max_length[500]|no_white_spaces|valid_url_ssl');
         $isvalid = $this->form_validation->run();
@@ -79,7 +77,6 @@ class Ajax extends MY_Controller
             return;
         }
         $logourl = trim($this->input->post('logourl'));
-        $this->load->library('curl');
         $configlogossl = $this->config->item('addlogocheckssl');
         if (isset($configlogossl) && $configlogossl === FALSE)
         {
@@ -151,7 +148,6 @@ class Ajax extends MY_Controller
             echo 'denied';
             return;
         }
-        $this->load->library('j_auth');
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
         {
@@ -286,8 +282,6 @@ class Ajax extends MY_Controller
             echo 'incorrect param';
             return;
         }
-
-        $this->load->library('j_auth');
         $loggedin = $this->j_auth->logged_in();
         if ($loggedin)
         {
@@ -329,7 +323,6 @@ class Ajax extends MY_Controller
         if ($this->input->is_ajax_request())
         {
             log_message('debug', 'bookentity: got ajax request');
-            $this->load->library('j_auth');
             $loggedin = $this->j_auth->logged_in();
             if ($loggedin)
             {
@@ -363,7 +356,6 @@ class Ajax extends MY_Controller
     {
         if ($this->input->is_ajax_request())
         {
-            $this->load->library('j_auth');
             $loggedin = $this->j_auth->logged_in();
             if ($loggedin && is_numeric($id))
             {
@@ -387,7 +379,6 @@ class Ajax extends MY_Controller
         if ($this->input->is_ajax_request())
         {
             log_message('debug', 'bookfed: got ajax request');
-            $this->load->library('j_auth');
             $loggedin = $this->j_auth->logged_in();
             if ($loggedin)
             {
@@ -419,7 +410,6 @@ class Ajax extends MY_Controller
     {
         if ($this->input->is_ajax_request())
         {
-            $this->load->library('j_auth');
             $loggedin = $this->j_auth->logged_in();
             if ($loggedin && is_numeric($id))
             {

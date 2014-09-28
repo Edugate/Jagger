@@ -192,19 +192,21 @@ class Logomngmt extends MY_Controller
     public function unsign($type = null, $id = null)
     {
         if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST')) {
-            set_status_header(403);
-            echo lang('error403');
-            return;
+            $s=403;
+            $msg =  lang('error403');
         }
-        if (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
-            set_status_header(404);
-            echo lang('error403');
-            return;
+        elseif (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
+            $s=404;
+            $msg =lang('error403');
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            set_status_header(403);
-            echo lang('errsess');
+        elseif (!$this->j_auth->logged_in()) {
+            $s = 403;
+            $msg =  lang('errsess');        
+        }
+        if($s)
+        {
+            set_status_header($s);
+            echo $msg;
             return;
         }
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id, 'type' => array('BOTH', '' . strtoupper($type) . '')));
@@ -223,7 +225,6 @@ class Logomngmt extends MY_Controller
             echo lang('error403');
             return;
         }
-
         $logoidPost = $this->input->post('logoid');
         if (empty($logoidPost) || !ctype_digit($logoidPost)) {
             set_status_header(403);

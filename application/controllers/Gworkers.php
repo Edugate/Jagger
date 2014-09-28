@@ -47,22 +47,24 @@ class Gworkers extends MY_Controller {
        log_message('info','MAILQUEUE STARTED : daemon needs to be restarted after any changes in configs');
        $this->load->library('doctrine');
        $em = $this->doctrine->em;
-       $sending_enabled = $this->config->item('mail_sending_active');
-       $mailfrom = $this->config->item('mail_from');
-       $subjsuffix = $this->config->item('mail_subject_suffix');
-       if(empty($subjsuffix))
+       $sendOptions = array(
+           'sendenabled' => $this->config->item('mail_sending_active'),
+           'mailfrom' => $this->config->item('mail_from'),
+           'subjsuffix'=>$this->config->item('mail_subject_suffix'),
+           'mailfooter'=>$this->config->item('mail_footer')
+       );
+       if(empty($sendOptions['subjsuffix']))
        {
-          $subjsuffix ='';
+          $sendOptions['subjsuffix'] ='';
        }
-       $mailfooter = $this->config->item('mail_footer');
-       if(empty($mailfooter))
+       if(empty($sendOptions['mailfooter']))
        {
           log_message('warning','MAILQUEUE ::  it is recommended to  set default footer (mail_footer) for mails in email.php config file');
-          $mailfooter = '';
+          $sendOptions['mailfooter'] = '';
        }
        while(TRUE)
        {
-           if(empty($sending_enabled))
+           if(empty($sendOptions['sendenabled']))
            {
               log_message('warning', 'MAILQUEUE :: sending mails is disabled - check config "mail_sending_active" ');
            }
@@ -78,10 +80,10 @@ class Gworkers extends MY_Controller {
                      log_message('debug','MAILQUEUE sending '.$m->getId());
                      $maildata = $m->getMailToArray();
                      $this->email->clear();
-                     $this->email->from($mailfrom);
+                     $this->email->from($sendOptions['mailfrom']);
                      $this->email->to($maildata['to']);
-                     $this->email->subject($maildata['subject'].' '.$subjsuffix);
-                     $this->email->message($maildata['data'].PHP_EOL.''.$mailfooter.PHP_EOL);
+                     $this->email->subject($maildata['subject'].' '.$sendOptions['subjsuffix']);
+                     $this->email->message($maildata['data'].PHP_EOL.''.$sendOptions['mailfooter'].PHP_EOL);
                      if($this->email->send())
                      {
                         $m->setMailSent();
@@ -89,8 +91,7 @@ class Gworkers extends MY_Controller {
                      }
                      else
                      {
-                        log_message('error','MAILQUEUE couldnt sent mail to '.$maildata['to']);
-                        log_message('error','MAILQUEUE ::'.$this->email->print_debugger());
+                        log_message('error','MAILQUEUE couldnt sent mail to '.$maildata['to'].'    ::'.$this->email->print_debugger());
                      }
                  }
                  $em->flush();
