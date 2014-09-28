@@ -44,14 +44,15 @@ class Arpsexcl extends MY_Controller {
             log_message('error', __METHOD__ . "IdP edit: Identity Provider with id=" . $id . " not found");
             show_error(lang('rerror_idpnotfound'), 404);
             return;
-        }
-       
+        }     
         $locked = $idp->getLocked();
         $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
         if (!$hasWriteAccess)
         {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rrerror_noperm_provedit').': ' . $idp->getEntityid();
+            $data = array(
+                'content_view'=>'nopermission',
+                'error'=> ''.lang('rrerror_noperm_provedit').': ' . $idp->getEntityid().'',
+            );
             $this->load->view('page', $data);
             return;
         }
@@ -90,16 +91,18 @@ class Arpsexcl extends MY_Controller {
            $this->em->persist($idp);
            $this->em->flush();
 
-       } 
-        $data['rows'] = $this->form_element->excludedArpsForm($idp);
-        $data['idp_name'] = $idp->getName();
-        $data['idp_id'] = $idp->getId();
-        $data['idp_entityid'] = $idp->getEntityId(); 
-        $lang = MY_Controller::getLang();
-        $displayname = $idp->getNameToWebInLang($lang,'idp');
-        $data['content_view'] =  'manage/arpsexcl_view';
-        $data['titlepage'] = anchor(base_url().'providers/detail/show/'.$data['idp_id'],  $displayname );
-        $data['subtitlepage'] =  lang('rr_arpexcl1');
+       }
+       $lang = MY_Controller::getLang();
+       $displayname = $idp->getNameToWebInLang($lang,'idp');
+       $data = array(
+           'rows'=>$this->form_element->excludedArpsForm($idp),
+           'idp_name'=>$idp->getName(),
+           'idp_id'=>$idp->getId(),
+           'idp_entityid'=> $idp->getEntityId(),
+           'content_view'=>'manage/arpsexcl_view',
+           'titlepage'=>anchor(base_url().'providers/detail/show/'.$data['idp_id'],  $displayname ),
+           'subtitlepage'=>lang('rr_arpexcl1')
+       );
         $this->load->view('page', $data);
 
     }

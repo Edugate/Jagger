@@ -191,17 +191,13 @@ class Logomngmt extends MY_Controller
 
     public function unsign($type = null, $id = null)
     {
-        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST')) {
+        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || !$this->j_auth->logged_in()) {
             $s=403;
             $msg =  lang('error403');
         }
         elseif (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
             $s=404;
             $msg =lang('error403');
-        }
-        elseif (!$this->j_auth->logged_in()) {
-            $s = 403;
-            $msg =  lang('errsess');        
         }
         if($s)
         {
