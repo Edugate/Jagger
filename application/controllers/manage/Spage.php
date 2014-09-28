@@ -11,8 +11,7 @@ class Spage extends MY_Controller
     {
         parent::__construct();
         $this->load->helper('form');
-        $this->load->library('form_validation');
-        $this->load->library('table');
+        $this->load->library(array('form_validation','table','j_auth'));
         $t = $this->config->item('pageeditor');
         $this->isEnabled = TRUE;
         if ($t === FALSE)
@@ -23,7 +22,6 @@ class Spage extends MY_Controller
 
     public function showall()
     {
-        $this->load->library('j_auth');
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
         {
@@ -35,7 +33,6 @@ class Spage extends MY_Controller
             show_error('Permission denied', 403);
             return;
         }
-
         if ($this->isEnabled)
         {
             $data['addbtn'] = '<a href="' . base_url() . 'manage/spage/editarticle/new" class="button small">' . lang('rr_add') . '</a>';
@@ -91,7 +88,6 @@ class Spage extends MY_Controller
                 '<a href="'.base_url().'p/page/'.$a->getName().'">'.$stitle.'</a>', $a->getCategory(), $e, $p, $a->getName(), $editlink
             );
         }
-
         $data['rows'] = &$rows;     
         if(!$frontpage)
         {
@@ -104,7 +100,6 @@ class Spage extends MY_Controller
 
     public function editArticle($pcode)
     {
-        $this->load->library('j_auth');
         $pcode = trim($pcode);
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
@@ -190,7 +185,6 @@ class Spage extends MY_Controller
                 return;
             }
         }
-
         if ($newArticle)
         {
             $data['newarticle'] = true;

@@ -50,21 +50,21 @@ class Attribute_policy extends MY_Controller
         $this->load->library('zacl');
     }
 
-    private function display_default_policy($idp)
+    private function displayDefaultPolicy($idp)
     {
         $this->load->library('show_element');
         $result = $this->show_element->generateTableDefaultArp($idp, TRUE);
         return $result . '<br />';
     }
 
-    private function display_specific_policy($idp)
+    private function displaySpecificPolicy($idp)
     {
         $this->load->library('show_element');
         $result = $this->show_element->generateTableSpecificArp($idp, TRUE);
         return $result;
     }
 
-    private function display_federations_policy($idp)
+    private function displayFederationsPolicy($idp)
     {
         $this->load->library('show_element');
         $result = $this->show_element->generateTableFederationsArp($idp, TRUE);
@@ -366,11 +366,11 @@ class Attribute_policy extends MY_Controller
         /**
          * pull default arp - it's equal to supported attributes 
          */
-        $data['default_policy'] = $this->display_default_policy($idp);
+        $data['default_policy'] = $this->displayDefaultPolicy($idp);
 
-        $data['federations_policy'] = $this->display_federations_policy($idp);
+        $data['federations_policy'] = $this->displayFederationsPolicy($idp);
 
-        $data['specific_policy'] = $this->display_specific_policy($idp);
+        $data['specific_policy'] = $this->displaySpecificPolicy($idp);
 
         /**
          * pull all attributes defitnitions 

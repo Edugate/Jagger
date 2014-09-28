@@ -216,10 +216,10 @@ class Logomngmt extends MY_Controller
             return;
         }
         $this->load->library('zacl');
-        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
+        $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         $unlocked = !($provider->getLocked());
         $local = $provider->getLocal();
-        $canEdit = (boolean) ($has_write_access && $unlocked && $local);
+        $canEdit = (boolean) ($hasWriteAccess && $unlocked && $local);
         if (!$canEdit) {
             set_status_header(403);
             echo lang('error403');
