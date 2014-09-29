@@ -64,7 +64,7 @@ class Federation {
     protected $publisher;
 
     /**
-     * @Column(type="string", length=255, nullable=true)
+     * @Column(type="text",  nullable=true)
      */
     protected $description;
 
