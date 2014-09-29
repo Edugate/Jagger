@@ -50,7 +50,7 @@ class Fededit extends MY_Controller {
         $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'trim|required|min_length[5]|max_length[128]|xss_clean|federation_updateunique['.serialize($ar1).']');
         $ar2 = array('attr'=>'urn','fedid'=>''.$fedid.'');
         $this->form_validation->set_rules('urn', lang('fednameinmeta'), 'trim|required|min_length[5]|max_length[128]|xss_clean|federation_updateunique['.serialize($ar2).']');
-        $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[500]|xss_clean');
+        $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[2000]|xss_clean');
         $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'trim|min_length[5]|max_length[1000]|xss_clean');
         $this->form_validation->set_rules('incattrs',lang('rr_include_attr_in_meta'),'trim|xss_clean|max_length[10]');
         $this->form_validation->set_rules('ispublic',lang('rr_isfedpublic'),'trim|xss_clean|max_length[10]');
