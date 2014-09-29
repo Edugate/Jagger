@@ -34,7 +34,7 @@ class Disco extends MY_Controller {
             $this->logo_baseurl = base_url();
         }
         $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
-        $this->wayflist = [];
+        $this->wayflist = array();
     }
 
     private function providerToDisco(models\Provider $ent)
