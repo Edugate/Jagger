@@ -41,34 +41,33 @@ class Disco extends MY_Controller {
     {
         $r['entityID'] = $ent->getEntityId();
         $r['title'] = $ent->getNameToWebInLang('en');
-       // $extend = $ent->getExtendMetadata();
-        $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('GeolocationHint','Logo'));
+        $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('GeolocationHint', 'Logo'));
         $extend = $ent->getExtendMetadata()->filter(
                 function($entry) use ($doFilter)
         {
             return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
         });
-
-        $count_extend = count($extend);
-        $e_extend = array();
-        $logo_set = FALSE;
-        $geo_set = FALSE;
-
+        $logoSet = FALSE;
+        $geoSet = FALSE;
         foreach ($extend as $ex)
         {
-            $e_namespace = $ex->getNamespace();
-            $e_element = $ex->getElement();
-            if ( $e_element === 'GeolocationHint' && ($geo_set === FALSE))
+            $eElement = $ex->getElement();
+            if ($eElement === 'GeolocationHint')
             {
-                $e_value = explode(',', $ex->getEvalue());
-                if (!array_key_exists('geo', $r))
+                if ($geoSet === TRUE)
                 {
-                    $r['geo'] = array('lat' => $e_value[0], 'lon' => $e_value[1]);
-                    $geo_set = true;
+                    continue;
                 }
+                $eValue = explode(',', $ex->getEvalue());
+                $r['geo'] = array('lat' => $eValue[0], 'lon' => $eValue[1]);
+                $geoSet = true;
             }
-            elseif ($e_element === 'Logo' && ($logo_set === FALSE))
+            elseif ($eElement === 'Logo')
             {
+                if($logoSet === TRUE)
+                {
+                    continue;
+                }
                 if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches)))
                 {
                     $ElementValue = $this->logo_url . $ex->getEvalue();
@@ -79,7 +78,7 @@ class Disco extends MY_Controller {
                 }
 
                 $r['icon'] = $ElementValue;
-                $logo_set = true;
+                $logoSet = true;
             }
         }
 
