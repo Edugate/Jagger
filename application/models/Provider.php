@@ -3521,7 +3521,7 @@ class Provider
      *
      * extensions inside IDPSSODEscriptor (idp) or SPSODescriptor (sp)
      */
-    private function SSODescriptorExtensionsFromArray($ext, $type)
+    private function ssoDescriptorExtensionsFromArray($ext, $type)
     {
         $parentUIInfo = new ExtendMetadata;
         $parentUIInfo->setNamespace('mdui');
@@ -3661,7 +3661,7 @@ class Provider
         }
         if (array_key_exists('extensions', $b))
         {
-            $this->SSODescriptorExtensionsFromArray($b['extensions'], 'aa');
+            $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'aa');
         }
         if (array_key_exists('nameid', $b) && is_array($b['nameid']))
         {
@@ -3716,7 +3716,7 @@ class Provider
     {
         if (array_key_exists('extensions', $b))
         {
-            $this->SSODescriptorExtensionsFromArray($b['extensions'], 'idp');
+            $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'idp');
         }
 
         if (array_key_exists('nameid', $b) && is_array($b['nameid']))
@@ -3782,11 +3782,11 @@ class Provider
         return $this;
     }
 
-    private function SPSSODescriptorFromArray($b)
+    private function spSSODescriptorFromArray($b)
     {
         if (array_key_exists('extensions', $b))
         {
-            $this->SSODescriptorExtensionsFromArray($b['extensions'], 'sp');
+            $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'sp');
         }
         if (array_key_exists('nameid', $b) && is_array($b['nameid']))
         {
@@ -4016,7 +4016,7 @@ class Provider
             {
                 if (array_key_exists('spssodescriptor', $a['details']))
                 {
-                    $this->SPSSODescriptorFromArray($a['details']['spssodescriptor']);
+                    $this->spSSODescriptorFromArray($a['details']['spssodescriptor']);
                 }
             }
         }

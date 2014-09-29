@@ -31,11 +31,7 @@ class Arpsexcl extends MY_Controller {
             redirect('auth/login', 'location');
         }
         $this->tmp_providers = new models\Providers;
-        $this->load->library('form_element');
-        $this->load->library('form_validation');
-        $this->load->library('metadata_validator');
-        $this->load->library('zacl');
-        $this->load->helper('shortcodes');
+        $this->load->library(array('form_element','form_validation','metadata_validator','zacl'));
     }
 
     public function idp($id)
@@ -45,18 +41,18 @@ class Arpsexcl extends MY_Controller {
         $idp = $tmp_providers->getOneIdpById($id);
         if (empty($idp))
         {
-            log_message('error', $pref . "IdP edit: Identity Provider with id=" . $idpid . " not found");
+            log_message('error', __METHOD__ . "IdP edit: Identity Provider with id=" . $id . " not found");
             show_error(lang('rerror_idpnotfound'), 404);
-        }
-       
+            return;
+        }     
         $locked = $idp->getLocked();
-        $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'idp', '');
-        
-
-        if (!$has_write_access)
+        $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
+        if (!$hasWriteAccess)
         {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rrerror_noperm_provedit').': ' . $idp->getEntityid();
+            $data = array(
+                'content_view'=>'nopermission',
+                'error'=> ''.lang('rrerror_noperm_provedit').': ' . $idp->getEntityid().'',
+            );
             $this->load->view('page', $data);
             return;
         }
@@ -68,16 +64,14 @@ class Arpsexcl extends MY_Controller {
             $this->load->view('page', $data);
             return;
         }
-        $is_local = $idp->getLocal();
-        if (!$is_local)
+        $isLocal = $idp->getLocal();
+        if (!$isLocal)
         {
             $data['error'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), $idp->getName()) .' ' . lang('rerror_cannotmanageexternal');
             $data['content_view'] = "nopermission";
             $this->load->view('page', $data);
             return;
-        }
-                
-        
+        }     
        if($this->_submit_validate() === TRUE)
        {
            $excarray = $this->input->post('exc');
@@ -97,21 +91,18 @@ class Arpsexcl extends MY_Controller {
            $this->em->persist($idp);
            $this->em->flush();
 
-       } 
-        $data['rows'] = $this->form_element->excludedArpsForm($idp);
-        $data['idp_name'] = $idp->getName();
-        $data['idp_id'] = $idp->getId();
-        $data['idp_entityid'] = $idp->getEntityId(); 
-        $lang = MY_Controller::getLang();
-        $displayname = $idp->getNameToWebInLang($lang,'idp');
-        if(empty($displayname))
-        {
-             $displayname = $idp->getEntityId();
-        }
-
-        $data['content_view'] =  'manage/arpsexcl_view';
-        $data['titlepage'] = anchor(base_url().'providers/detail/show/'.$data['idp_id'],  $displayname );
-        $data['subtitlepage'] =  lang('rr_arpexcl1');
+       }
+       $lang = MY_Controller::getLang();
+       $displayname = $idp->getNameToWebInLang($lang,'idp');
+       $data = array(
+           'rows'=>$this->form_element->excludedArpsForm($idp),
+           'idp_name'=>$idp->getName(),
+           'idp_id'=>$idp->getId(),
+           'idp_entityid'=> $idp->getEntityId(),
+           'content_view'=>'manage/arpsexcl_view',
+           'titlepage'=>anchor(base_url().'providers/detail/show/'.$data['idp_id'],  $displayname ),
+           'subtitlepage'=>lang('rr_arpexcl1')
+       );
         $this->load->view('page', $data);
 
     }

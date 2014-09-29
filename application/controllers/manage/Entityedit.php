@@ -547,14 +547,6 @@ class Entityedit extends MY_Controller
         {
             $data['prvurl']['idpsso'] = array();
         }
-        if (isset($data['prvurl']['idpsso']))
-        {
-            $data['prvurl']['idpsso'] = array_filter($data['prvurl']['idpsso']);
-        }
-        else
-        {
-            $data['prvurl']['idpsso'] = array();
-        }
 
         if (isset($data['prvurl']['spsso']))
         {

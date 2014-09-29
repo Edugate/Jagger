@@ -218,118 +218,115 @@ class Users extends MY_Controller
             $data['error'] = lang('rr_nopermnewuser');
             $data['content_view'] = 'nopermission';
             $this->load->view('page', $data);
+            return;
+        }
+        if (!$this->addSubmitValidate())
+        {
+            $form_attributes = array('id' => 'formver2', 'class' => 'register');
+            $action = base_url() . "manage/users/add";
+            $form = form_open($action, $form_attributes);
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_username') . '', 'username') . '</div>';
+            $form .= '<div class="small-6 large-7 columns end">' . form_input('username', set_value('username')) . '</div>';
+            $form .= '</div>';
+
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_uemail') . '', 'email') . '</div>';
+            $form .= '<div class="small-6 large-7 columns end">' . form_input('email', set_value('email')) . '</div>';
+            $form .= '</div>';
+            $form .= '<div class="small-12 columns passwordrow">';
+            $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_password') . '', 'password') . '</div>';
+            $form .= '<div class="small-6 large-7 columns end">' . form_password('password') . '</div>';
+            $form .= '</div>';
+            $form .= '<div class="small-12 columns passwordrow">';
+            $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_passwordconf') . '', 'passwordconf') . '</div>';
+            $form .= '<div class="small-6 large-7 columns end">' . form_password('passwordconf') . '</div>';
+            $form .= '</div>';
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_fname') . '', 'fname') . '</div>';
+            $form .= '<div class="small-6 large-7 columns end">' . form_input('fname', set_value('fname')) . '</div>';
+            $form .= '</div>';
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_lname') . '', 'sname') . '</div>';
+            $form .= '<div class="small-6 large-7 columns end">' . form_input('sname', set_value('sname')) . '</div>';
+            $form .= '</div>';
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_typeaccess') . '', 'access') . '</div>';
+            $access_type = array('' => '' . lang('rr_select') . '', 'local' => '' . lang('rr_onlylocalauthn') . '', 'fed' => '' . lang('rr_onlyfedauth') . '', 'both' => '' . lang('rr_bothauth') . '');
+            $form .= '<div class="small-6 large-7 columns end">' . form_dropdown('access', $access_type, set_value('access'), 'class="nuseraccesstype"') . '</div>';
+            $form .= '</div>';
+            $form .= '<div class="small-12 columns">';
+            $form .= '<div class="small-9 large-10 text-right columns"><button type="submit"  name="submit" value="submit" class="addbutton addicon">' . lang('adduser_btn') . '</button></div>';
+            $form .='</div>';
+            $form .= form_close();
+            $data['message'] = $form;
+            $data['titlepage'] = lang('userregisterform');
+            $data['content_view'] = 'manage/new_user_view';
+            $this->load->view('page', $data);
         }
         else
         {
-            if (!$this->addSubmitValidate())
+            $username = $this->input->post('username');
+            $email = $this->input->post('email');
+            $fname = $this->input->post('fname');
+            $sname = $this->input->post('sname');
+            $access = $this->input->post('access');
+            if (!strcasecmp($access, 'fed') == 0)
             {
-                $form_attributes = array('id' => 'formver2', 'class' => 'register');
-                $action = base_url() . "manage/users/add";
-
-                $form = form_open($action, $form_attributes);
-                $form .= '<div class="small-12 columns">';
-                $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_username') . '', 'username') . '</div>';
-                $form .= '<div class="small-6 large-7 columns end">' . form_input('username', set_value('username')) . '</div>';
-                $form .= '</div>';
-
-                $form .= '<div class="small-12 columns">';
-                $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_uemail') . '', 'email') . '</div>';
-                $form .= '<div class="small-6 large-7 columns end">' . form_input('email', set_value('email')) . '</div>';
-                $form .= '</div>';
-                $form .= '<div class="small-12 columns passwordrow">';
-                $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_password') . '', 'password') . '</div>';
-                $form .= '<div class="small-6 large-7 columns end">' . form_password('password') . '</div>';
-                $form .= '</div>';
-                $form .= '<div class="small-12 columns passwordrow">';
-                $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_passwordconf') . '', 'passwordconf') . '</div>';
-                $form .= '<div class="small-6 large-7 columns end">' . form_password('passwordconf') . '</div>';
-                $form .= '</div>';
-                $form .= '<div class="small-12 columns">';
-                $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_fname') . '', 'fname') . '</div>';
-                $form .= '<div class="small-6 large-7 columns end">' . form_input('fname', set_value('fname')) . '</div>';
-                $form .= '</div>';
-                $form .= '<div class="small-12 columns">';
-                $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_lname') . '', 'sname') . '</div>';
-                $form .= '<div class="small-6 large-7 columns end">' . form_input('sname', set_value('sname')) . '</div>';
-                $form .= '</div>';
-                $form .= '<div class="small-12 columns">';
-                $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_typeaccess') . '', 'access') . '</div>';
-                $access_type = array('' => '' . lang('rr_select') . '', 'local' => '' . lang('rr_onlylocalauthn') . '', 'fed' => '' . lang('rr_onlyfedauth') . '', 'both' => '' . lang('rr_bothauth') . '');
-                $form .= '<div class="small-6 large-7 columns end">' . form_dropdown('access', $access_type, set_value('access'), 'class="nuseraccesstype"') . '</div>';
-                $form .= '</div>';
-                $form .= '<div class="small-12 columns">';
-                $form .= '<div class="small-9 large-10 text-right columns"><button type="submit"  name="submit" value="submit" class="addbutton addicon">' . lang('adduser_btn') . '</button></div>';
-                $form .='</div>';
-                $form .= form_close();
-                $data['message'] = $form;
-                $data['titlepage'] = lang('userregisterform');
-                $data['content_view'] = 'manage/new_user_view';
-                $this->load->view('page', $data);
+                $password = $this->input->post('password');
             }
             else
             {
-                $username = $this->input->post('username');
-                $email = $this->input->post('email');
-                $fname = $this->input->post('fname');
-                $sname = $this->input->post('sname');
-                $access = $this->input->post('access');
-                if (!strcasecmp($access, 'fed') == 0)
-                {
-                    $password = $this->input->post('password');
-                }
-                else
-                {
-                    $password = str_generator();
-                }
-                $user = new models\User;
-                $user->setSalt();
-                $user->setUsername($username);
-                $user->setPassword($password);
-                $user->setEmail($email);
-                $user->setGivenname($fname);
-                $user->setSurname($sname);
-                if ($access == 'both')
-                {
-                    $user->setLocalEnabled();
-                    $user->setFederatedEnabled();
-                }
-                elseif ($access == 'fed')
-                {
-                    $user->setLocalDisabled();
-                    $user->setFederatedEnabled();
-                }
-                elseif ($access == 'local')
-                {
-                    $user->setLocalEnabled();
-                    $user->setFederatedDisabled();
-                }
-
-                $user->setAccepted();
-                $user->setEnabled();
-                $user->setValid();
-                $member = new models\AclRole;
-                $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Member'));
-                if (!empty($member))
-                {
-                    $user->setRole($member);
-                }
-                $p_role = new models\AclRole;
-                $p_role->setName($username);
-                $p_role->setType('user');
-                $p_role->setDescription('personal role for user ' . $username);
-                $user->setRole($p_role);
-                $this->em->persist($p_role);
-                $this->em->persist($user);
-
-                $this->em->flush();
-
-                $this->tracker->save_track('user', 'create', $username, 'user created in the system', true);
-
-
-                $data['message'] = 'user has been added';
-                $data['content_view'] = 'manage/new_user_view';
-                $this->load->view('page', $data);
+                $password = str_generator();
             }
+            $user = new models\User;
+            $user->setSalt();
+            $user->setUsername($username);
+            $user->setPassword($password);
+            $user->setEmail($email);
+            $user->setGivenname($fname);
+            $user->setSurname($sname);
+            if ($access == 'both')
+            {
+                $user->setLocalEnabled();
+                $user->setFederatedEnabled();
+            }
+            elseif ($access == 'fed')
+            {
+                $user->setLocalDisabled();
+                $user->setFederatedEnabled();
+            }
+            elseif ($access == 'local')
+            {
+                $user->setLocalEnabled();
+                $user->setFederatedDisabled();
+            }
+
+            $user->setAccepted();
+            $user->setEnabled();
+            $user->setValid();
+            $member = new models\AclRole;
+            $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Member'));
+            if (!empty($member))
+            {
+                $user->setRole($member);
+            }
+            $p_role = new models\AclRole;
+            $p_role->setName($username);
+            $p_role->setType('user');
+            $p_role->setDescription('personal role for user ' . $username);
+            $user->setRole($p_role);
+            $this->em->persist($p_role);
+            $this->em->persist($user);
+
+            $this->em->flush();
+
+            $this->tracker->save_track('user', 'create', $username, 'user created in the system', true);
+
+
+            $data['message'] = 'user has been added';
+            $data['content_view'] = 'manage/new_user_view';
+            $this->load->view('page', $data);
         }
     }
 
@@ -418,8 +415,8 @@ class Users extends MY_Controller
         {
             $det[$i++] = array('key' => lang('rr_password'), 'val' => $passedit_link);
         }
-        $det[$i++] = array('key' => ''.lang('rr_userfullname').'', 'val' => $user->getFullname());
-        $det[$i++] = array('key' => ''.lang('rr_uemail').'', 'val' => $user->getEmail());
+        $det[$i++] = array('key' => '' . lang('rr_userfullname') . '', 'val' => $user->getFullname());
+        $det[$i++] = array('key' => '' . lang('rr_uemail') . '', 'val' => $user->getEmail());
         $access_type_str = array();
         if ($local_access)
         {
@@ -429,7 +426,7 @@ class Users extends MY_Controller
         {
             $access_type_str[] = lang('federated_access');
         }
-        $det[$i++] = array('key' => ''.lang('rr_typeaccess').'', 'val' => implode(", ", $access_type_str));
+        $det[$i++] = array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(", ", $access_type_str));
 
         if ($isAdmin)
         {
@@ -439,7 +436,7 @@ class Users extends MY_Controller
         {
             $manageBtn = '';
         }
-        $det[$i++] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">'.implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
+        $det[$i++] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
         $det[$i++] = array('key' => lang('rrnotifications'), 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encoded_username . '', lang('rrmynotifications')));
         $det[$i++] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
         $bookmarks = '';
@@ -482,7 +479,7 @@ class Users extends MY_Controller
         $det[$i++] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
 
 
-        $det[$i++] = array('data' => array('data' => lang('authnlogs').' - '.lang('rr_lastrecent').' '. $limit_authn, 'class' => 'highlight', 'colspan' => 2));
+        $det[$i++] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limit_authn, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authn_logs as $ath)
         {
             $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U') + j_auth::$timeOffset);
@@ -543,9 +540,9 @@ class Users extends MY_Controller
     {
         $formTarget = base_url() . 'manage/users/updaterole/' . $encodeuser;
         $roles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
-        $r = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">'.lang('btnmanageroles').'</button>';
+        $r = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">' . lang('btnmanageroles') . '</button>';
         $r .= '<div id="mroles" class="reveal-modal tiny" data-reveal>';
-        $r .= '<h3>'.lang('rr_manageroles').'</h3>';
+        $r .= '<h3>' . lang('rr_manageroles') . '</h3>';
         $r .= form_open($formTarget);
         foreach ($roles as $v)
         {
