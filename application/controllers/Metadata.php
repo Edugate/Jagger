@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -17,8 +18,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Metadata extends MY_Controller
-{
+class Metadata extends MY_Controller {
 
     //put your code here
 
@@ -276,17 +276,18 @@ class Metadata extends MY_Controller
             /**
              * @todo ValidUntil
              */
-            if(!empty($t) && (strcasecmp($t, 'IDP')==0 || (strcasecmp($t, 'SP')==0)))
+            if (!empty($t) && (strcasecmp($t, 'IDP') == 0 || (strcasecmp($t, 'SP') == 0)))
             {
                 foreach ($members as $key)
                 {
-                    if ($key->getLocalAvailable() && (strcasecmp($key->getType(), $t) == 0 || strcasecmp($key->getType() ,'BOTH') == 0))
+                    if ($key->getLocalAvailable() && (strcasecmp($key->getType(), $t) == 0 || strcasecmp($key->getType(), 'BOTH') == 0))
                     {
                         $key->getProviderToXML($Entities_Node, $options);
                     }
                 }
             }
-            else             {
+            else
+            {
                 for ($i = 0; $i < $membersCount; $i++)
                 {
                     if ($members->get($membersKeys['' . $i . ''])->getLocalAvailable())
@@ -295,7 +296,7 @@ class Metadata extends MY_Controller
                     }
                 }
             }
-            
+
             $docXML->appendChild($Entities_Node);
             $data['out'] = $docXML->saveXML();
             $this->load->view('metadata_view', $data);
@@ -338,15 +339,21 @@ class Metadata extends MY_Controller
         }
     }
 
+    private function isCircleFeatureEnabled()
+    {
+        $circlemetaFeature = $this->config->item('featdisable');
+        return !(is_array($circlemetaFeature) && isset($circlemetaFeature['circlemeta']) && $circlemetaFeature['circlemeta'] === TRUE);
+    }
+
     public function circle($entityId = NULL, $m = NULL)
     {
         $circlemetaFeature = $this->config->item('featdisable');
         $circleEnabled = !(is_array($circlemetaFeature) && isset($circlemetaFeature['circlemeta']) && $circlemetaFeature['circlemeta'] === TRUE);
-        if (!$circleEnabled)
+        $isEnabled = $this->isCircleFeatureEnabled();
+        if (!$isEnabled)
         {
             show_error('Circle of trust  metadata : Feature is disabled', 404);
         }
-
         if (empty($entityId) || empty($m) || strcmp($m, 'metadata.xml') != 0)
         {
             show_error('Request not allowed', 403);
@@ -398,19 +405,20 @@ class Metadata extends MY_Controller
         {
             $xpath->registerNamespace($key, $value);
         }
-        $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
+
         $validfor = new \DateTime("now", new \DateTimezone('UTC'));
         $idsuffix = $validfor->format('Ymd\THis');
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
-        $Entities_Node->setAttribute('validUntil', $validuntil);
-        $Entities_Node->setAttribute('Name', 'circle:' . $me->getEntityId());
         $idprefix = '';
         $prefid = $this->config->item('circlemetadataidprefix');
         if (!empty($prefid))
         {
             $idprefix = $prefid;
         }
+        $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
+        $Entities_Node->setAttribute('validUntil', $validuntil);
+        $Entities_Node->setAttribute('Name', 'circle:' . $me->getEntityId());
         $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
 
         foreach ($p1 as $v)
