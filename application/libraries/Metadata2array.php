@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,8 +19,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Metadata2array
-{
+class Metadata2array {
 
     private $i;
     private $occurance;
@@ -164,21 +164,23 @@ class Metadata2array
 
     private function entityConvert(\DOMElement $node, $full = false)
     {
-        $entity = array();
-        $entity['metadata'] = null;
-        $entity['details'] = null;
-        $entity['entityid'] = $node->getAttribute('entityID');
-        $entity['validuntil'] = null;
-        $entity['rigistrar'] = null;
-        $entity['regdate'] = null;
-        $entity['coc'] = array();
-        $entity['regpol'] = array();
-        $entity['validuntil'] = $node->getAttribute('validUntil');
         $isIdp = false;
         $isSp = false;
-        $entity['details']['org'] = array('OrganizationName' => array(), 'OrganizationDisplayName' => array(), 'OrganizationURL' => array());
-        $entity['details']['contacts'] = array();
-        $entity['details']['reqattrs'] = array();
+        $entity = array(
+            'metadata' => null,
+            'details' => null,
+            'entityid' => $node->getAttribute('entityID'),
+            'validuntil' => $node->getAttribute('validUntil'),
+            'rigistrar' => null,
+            'regdate' => null,
+            'coc' => array(),
+            'regpol' => array(),
+            'details' => array(
+                'org' => array('OrganizationName' => array(), 'OrganizationDisplayName' => array(), 'OrganizationURL' => array()),
+                'contacts' => array(),
+                'reqattrs' => array(),
+            ),
+        );
         $allowedEntcats = attrsEntCategoryList();
         foreach ($node->childNodes as $gnode)
         {
@@ -192,7 +194,7 @@ class Metadata2array
                     $entity['details']['idpssodescriptor'] = $this->idpSSODescriptorConvert($gnode);
                 }
             }
-            if ($gnode->nodeName === 'md:SPSSODescriptor' || $gnode->nodeName === 'SPSSODescriptor')
+            elseif ($gnode->nodeName === 'md:SPSSODescriptor' || $gnode->nodeName === 'SPSSODescriptor')
             {
                 $isSp = true;
                 $entity['type'] = 'SP';
@@ -210,11 +212,11 @@ class Metadata2array
                     }
                 }
             }
-            if ($gnode->nodeName === 'md:AttributeAuthorityDescriptor' || $gnode->nodeName === 'AttributeAuthorityDescriptor')
+            elseif ($gnode->nodeName === 'md:AttributeAuthorityDescriptor' || $gnode->nodeName === 'AttributeAuthorityDescriptor')
             {
                 $entity['details']['aadescriptor'] = $this->attributeAuthorityDescriptorConvert($gnode);
             }
-            if ($gnode->nodeName === 'Extensions' || $gnode->nodeName === 'md:Extensions')
+            elseif ($gnode->nodeName === 'Extensions' || $gnode->nodeName === 'md:Extensions')
             {
                 if ($gnode->hasChildNodes())
                 {
@@ -312,7 +314,7 @@ class Metadata2array
         }
         catch (Exception $e)
         {
-            log_message('warning', 'Couldn store xml');
+            log_message('warning', 'Couldn store xml: ' . $e);
         }
         $this->metaArray[$entity['entityid']] = $entity;
     }
@@ -390,14 +392,17 @@ class Metadata2array
 
     private function spSSODescriptorConvert($node)
     {
-        $profiles = $node->getAttribute('protocolSupportEnumeration');
-        $profiles = explode(" ", $profiles);
-        $result['protocols'] = $profiles;
-        $result['servicelocations'] = array('assertionconsumerservice' => array(), 'singlelogout' => array());
-        $result['extensions']['idpdisc'] = array();
-        $result['extensions']['init'] = array();
-        $result['extensions']['desc'] = array();
-
+        $profilesTmp = $node->getAttribute('protocolSupportEnumeration');
+        $profiles = explode(" ", $profilesTmp);
+        $result = array(
+            'protocols' => $profiles,
+            'servicelocations' => array('assertionconsumerservice' => array(), 'singlelogout' => array()),
+            'extensions' => array(
+                'idpdisc' => array(),
+                'init' => array(),
+                'desc' => array()
+            ),
+        );
         foreach ($node->childNodes as $child)
         {
             if ($child->nodeName === 'md:Extensions' || $child->nodeName === 'Extensions')
