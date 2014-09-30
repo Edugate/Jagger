@@ -719,59 +719,45 @@ class Form_element {
         {
             $sessform = TRUE;
         }
-
         if (strcmp($enttype, 'SP') != 0)
         {
             $Part = '<fieldset><legend>' . lang('idpcerts') . ' <small><i>IDPSSODesciptor</i></small></legend><div>';
             $idpssocerts = array();
             // start CERTS IDPSSODescriptor
-            if ($sessform)
+            if ($sessform && isset($ses['crt']['idpsso']))
             {
-                if (isset($ses['crt']['idpsso']))
+                foreach ($ses['crt']['idpsso'] as $key => $value)
                 {
-                    foreach ($ses['crt']['idpsso'] as $key => $value)
-                    {
-                        $idpssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][idpsso]", 'idpsso', TRUE);
-                    }
+                    $idpssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][idpsso]", 'idpsso', TRUE);
                 }
             }
-            else
+            elseif (isset($origcerts['idpsso']))
             {
-                if (isset($origcerts['idpsso']))
+                foreach ($origcerts['idpsso'] as $k => $v)
                 {
-                    foreach ($origcerts['idpsso'] as $k => $v)
-                    {
-                        $idpssocerts[] = $this->_genCertFieldFromObj($v, "f[crt][idpsso]", TRUE);
-                    }
+                    $idpssocerts[] = $this->_genCertFieldFromObj($v, "f[crt][idpsso]", TRUE);
                 }
             }
             $Part .= implode('', $idpssocerts);
             $newelement = '<div><button class="editbutton addicon small" type="button" id="nidpssocert">' . lang('addnewcert') . ' ' . lang('for') . ' IDPSSODescriptor</button></div>';
             $Part .= $newelement . '</div></fieldset>';
             $result[] = $Part;
-
             // end CERTS IDPSSODescriptor
             $Part = '<fieldset><legend>' . lang('idpcerts') . ' <small><i>AttributeAuthorityDesciptor</i></small></legend><div>';
             $aacerts = array();
             // start CERTS AttributeAuthorityDescriptor
-            if ($sessform)
+            if ($sessform && isset($ses['crt']['aa']))
             {
-                if (isset($ses['crt']['aa']))
+                foreach ($ses['crt']['aa'] as $key => $value)
                 {
-                    foreach ($ses['crt']['aa'] as $key => $value)
-                    {
-                        $aacerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][aa]", 'aa', TRUE);
-                    }
+                    $aacerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][aa]", 'aa', TRUE);
                 }
             }
-            else
+            elseif (isset($origcerts['aa']))
             {
-                if (isset($origcerts['aa']))
+                foreach ($origcerts['aa'] as $k => $v)
                 {
-                    foreach ($origcerts['aa'] as $k => $v)
-                    {
-                        $aacerts[] = $this->_genCertFieldFromObj($v, "f[crt][aa]", TRUE);
-                    }
+                    $aacerts[] = $this->_genCertFieldFromObj($v, "f[crt][aa]", TRUE);
                 }
             }
             $Part .= implode('', $aacerts);
@@ -779,31 +765,24 @@ class Form_element {
             $Part .= $newelement . '</div></fieldset>';
             $result[] = $Part;
             $Part = '';
-
             // end CERTS AttributeAuthorityDescriptor
         }
         if (strcmp($enttype, 'IDP') != 0)
         {
             $Part = '<fieldset><legend>' . lang('rr_certificates') . ' <small><i>' . lang('serviceprovider') . '</i></small></legend><div>';
             $spssocerts = array();
-            if ($sessform)
+            if ($sessform && isset($ses['crt']['spsso']))
             {
-                if (isset($ses['crt']['spsso']))
+                foreach ($ses['crt']['spsso'] as $key => $value)
                 {
-                    foreach ($ses['crt']['spsso'] as $key => $value)
-                    {
-                        $spssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][spsso]", 'spsso', TRUE);
-                    }
+                    $spssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][spsso]", 'spsso', TRUE);
                 }
             }
-            else
+            elseif (isset($origcerts['spsso']))
             {
-                if (isset($origcerts['spsso']))
+                foreach ($origcerts['spsso'] as $k => $v)
                 {
-                    foreach ($origcerts['spsso'] as $k => $v)
-                    {
-                        $spssocerts[] = $this->_genCertFieldFromObj($v, "f[crt][spsso]", TRUE);
-                    }
+                    $spssocerts[] = $this->_genCertFieldFromObj($v, "f[crt][spsso]", TRUE);
                 }
             }
             $Part .= implode('', $spssocerts);
@@ -811,8 +790,6 @@ class Form_element {
             $Part .= $newelement . '</div></fieldset>';
             $result[] = $Part;
         }
-
-
         return $result;
     }
 
@@ -1598,7 +1575,7 @@ class Form_element {
             /**
              * end nameids
              */
-            $scopes = array();
+
             $scopes = array('idpsso' => $ent->getScope('idpsso'), 'aa' => $ent->getScope('aa'));
 
             if ($sessform && isset($ses['scopes']['idpsso']))
@@ -3332,7 +3309,7 @@ class Form_element {
         $f .= '</div>';
         $f .= '<div class="small-12 columns">';
 
-        $f .= jGenerateInput('', 'altmetaurl', set_value('altmetaurl', $federation->getAltMetaUrl()), 'alert',lang('metaalturlinput'));
+        $f .= jGenerateInput('', 'altmetaurl', set_value('altmetaurl', $federation->getAltMetaUrl()), 'alert', lang('metaalturlinput'));
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
