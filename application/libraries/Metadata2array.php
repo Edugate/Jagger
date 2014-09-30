@@ -139,9 +139,15 @@ class Metadata2array {
                     $this->xpath->registerNamespace($k, $v);
                 }
             }
-            foreach ($doc->childNodes as $child)
+            if ($doc->hasChildNodes())
             {
-                $this->entitiesConvert($child, $full);
+                foreach ($doc->childNodes as $child)
+                {
+                    if ($child instanceof \DOMElement)
+                    {
+                        $this->entitiesConvert($child, $full);
+                    }
+                }
             }
         }
         else
