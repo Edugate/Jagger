@@ -20,10 +20,6 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Attribute_requirement extends MY_Controller
 {
 
-    private $current_sp;
-    private $current_fed;
-    private $log_prefix;
-
     public function __construct()
     {
         parent::__construct();
@@ -34,40 +30,28 @@ class Attribute_requirement extends MY_Controller
         {
             redirect('auth/login', 'location');
         }
-        $this->log_prefix = "attribute_requirement: ";
-        log_message('debug', $this->log_prefix . "started");
         $this->load->library('zacl');
     }
 
     public function fed($fedid = null)
     {
-
         $data['no_new_attr'] = 1;
-
         $this->title = lang('rr_attributerequirements');
         $data['content_view'] = 'manage/attribute_fed_requirement_view';
-        log_message('debug', $this->log_prefix . "fedid= " . $fedid);
-        log_message('debug', $this->log_prefix . "current_fed=" . $this->current_fed);
-        if (empty($fedid) or ! is_numeric($fedid))
+        if (empty($fedid) || !is_numeric($fedid))
         {
-            if (empty($this->current_fed))
-            {
-                $this->session->set_flashdata('target', $this->current_site);
-                redirect('manage/settings/fed', 'location');
-            }
-            $fedid = $this->current_fed;
+            show_error('Page not found', 404);
+            return;
         }
         $fed = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
         if (empty($fed))
         {
-            log_message('error', $this->log_prefix . "federation not found");
             show_error('Federation not found', 404);
+            return;
         }
-
         $resource = 'f_' . $fed->getId();
         $group = 'federation';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-
         if (!$has_write_access)
         {
             $data['content_view'] = 'nopermission';
@@ -75,16 +59,11 @@ class Attribute_requirement extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
-
-
         log_message('debug', 'preparing for federation: ' . $fed->getName());
-        $data['head'] = lang('rr_attributerequirements') . ': ' . $fed->getName();
+
         $add_attr = array();
         $attrs = $this->em->getRepository("models\Attribute")->findAll();
         $already_in_attr = array();
-        $add_attr_final = array();
-
-        log_message('debug', $this->log_prefix . "found " . count($attrs) . " global attributes");
         foreach ($attrs as $a_def)
         {
             $add_attr[$a_def->getId()] = $a_def->getName();
@@ -92,7 +71,6 @@ class Attribute_requirement extends MY_Controller
         $attrCollection = $fed->getAttributesRequirement()->getValues();
         if (!empty($attrCollection))
         {
-            log_message('debug', $this->log_prefix . "found " . count($attrCollection) . " required attributes");
             foreach ($attrCollection as $a)
             {
                 $attrId = $a->getAttribute()->getId();
@@ -117,6 +95,7 @@ class Attribute_requirement extends MY_Controller
         $data['fed_encoded'] = base64url_encode($fed->getName());
         $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $data['fed_encoded'] . '">' . $data['fed_name'] . '</a>';
         $data['subtitlepage'] = lang('rr_requiredattributes');
+        $data['head'] = lang('rr_attributerequirements') . ': ' . $fed->getName();
         $this->load->view('page', $data);
     }
 
@@ -128,8 +107,8 @@ class Attribute_requirement extends MY_Controller
         $data['no_new_attr'] = 1;
         $this->title = lang('rr_attributerequirements');
         $data['content_view'] = 'manage/attribute_requirement_view';
-        log_message('debug', $this->log_prefix . "spid= " . $spid);
-        log_message('debug', $this->log_prefix . "current_sp=" . $this->current_sp);
+        log_message('debug', __METHOD__ . "spid= " . $spid);
+        log_message('debug', __METHOD__ . "current_sp=" . $this->current_sp);
         if (empty($spid) or ! is_numeric($spid))
         {
             if (empty($this->current_sp))
@@ -142,11 +121,11 @@ class Attribute_requirement extends MY_Controller
         $sp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $spid, 'type' => array('SP', 'BOTH')));
         if (!empty($sp))
         {
-            log_message('debug', $this->log_prefix . "found sp = " . $sp->getEntityId());
+            log_message('debug', __METHOD__ . "found sp = " . $sp->getEntityId());
         }
         else
         {
-            log_message('debug', $this->log_prefix . "sp not found");
+            log_message('debug', __METHOD__ . "sp not found");
             show_error(lang('rerror_spnotfound'), 404);
             return;
         }
@@ -163,7 +142,7 @@ class Attribute_requirement extends MY_Controller
         if (empty($a))
         {
             $b = $sp->getEntityId();
-            log_message('debug', $this->log_prefix . "name is not set for " . $sp->getId());
+            log_message('debug', __METHOD__ . "name is not set for " . $sp->getId());
         }
         else
         {
@@ -177,8 +156,7 @@ class Attribute_requirement extends MY_Controller
         /**
          * $add_attr minus $already_in_attr 
          */
-        $add_attr_final = array();
-        log_message('debug', $this->log_prefix . "found " . count($attrs) . " global attributes");
+        log_message('debug', __METHOD__ . "found " . count($attrs) . " global attributes");
         foreach ($attrs as $a_def)
         {
             $add_attr[$a_def->getId()] = $a_def->getName();
@@ -186,18 +164,21 @@ class Attribute_requirement extends MY_Controller
         $attrCollection = $sp->getAttributesRequirement()->getValues();
         if (!empty($attrCollection))
         {
-            log_message('debug', $this->log_prefix . "found " . count($attrCollection) . " required attributes");
+            log_message('debug', __METHOD__ . "found " . count($attrCollection) . " required attributes");
             foreach ($attrCollection as $a)
             {
+                $aAttr = $a->getAttribute();
+                $already_in_attr[''.$aAttr->getId().''] = array(
+                    'name'=>$aAttr->getName(),
+                    'fullname'=>$aAttr->getFullname(),
+                    'urn'=>$aAttr->getUrn(),
+                    'oid'=>$aAttr->getOid(),
+                    'description'=>$aAttr->getDescription(),
+                    'attr_id'=>$aAttr->getId(),
+                    'status'=>$a->getStatus(),
+                    'reason'=>$a->getReason()
+                );
 
-                $already_in_attr[$a->getAttribute()->getId()]['name'] = $a->getAttribute()->getName();
-                $already_in_attr[$a->getAttribute()->getId()]['fullname'] = $a->getAttribute()->getFullname();
-                $already_in_attr[$a->getAttribute()->getId()]['urn'] = $a->getAttribute()->getUrn();
-                $already_in_attr[$a->getAttribute()->getId()]['oid'] = $a->getAttribute()->getOid();
-                $already_in_attr[$a->getAttribute()->getId()]['description'] = $a->getAttribute()->getDescription();
-                $already_in_attr[$a->getAttribute()->getId()]['attr_id'] = $a->getAttribute()->getId();
-                $already_in_attr[$a->getAttribute()->getId()]['status'] = $a->getStatus();
-                $already_in_attr[$a->getAttribute()->getId()]['reason'] = $a->getReason();
             }
         }
         $add_attr_final = array_diff_key($add_attr, $already_in_attr);
@@ -212,7 +193,6 @@ class Attribute_requirement extends MY_Controller
         {
             $displayname = $sp->getEntityId();
         }
-
         $data['titlepage'] = lang('serviceprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $data['spid'] . '">' . $displayname . '</a> ';
         $data['subtitlepage'] = lang('rr_attributerequirements');
         $this->load->view('page', $data);
@@ -283,7 +263,7 @@ class Attribute_requirement extends MY_Controller
         /**
          * @todo add better check if form submited correctly also add comparison if session sp equals input sp
          */
-        log_message('debug', $this->log_prefix . "sp-submited");
+        log_message('debug', __METHOD__ . "sp-submited");
         $spid = $this->input->post('spid');
         if ($this->_submit_validate() === FALSE)
         {
@@ -295,7 +275,7 @@ class Attribute_requirement extends MY_Controller
         $status = $this->input->post('requirement');
         $reason = $this->input->post('reason');
         $action = $this->input->post('submit');
-        log_message('debug', 'KLS: action: ' . $action . '; status: ' . $status . '; reason: ' . $reason);
+        log_message('debug', __METHOD__ . ': action: ' . $action . '; status: ' . $status . '; reason: ' . $reason);
         if (empty($spid) || !is_numeric($spid))
         {
             show_error('Incorect sp id', 404);
@@ -329,7 +309,6 @@ class Attribute_requirement extends MY_Controller
             {
                 $this->_remove($v);
             }
-
             $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attr));
             $attr_req = new models\AttributeRequirement;
             $attr_req->setReason($reason);
@@ -348,7 +327,7 @@ class Attribute_requirement extends MY_Controller
         }
         elseif ($attr && $status && $action == 'Modify')
         {
-            log_message('debug', $this->log_prefix . 'for spid:' . $spid . ' and attr:' . $attr . ' submited for modification');
+            log_message('debug', __METHOD__ . 'for spid:' . $spid . ' and attr:' . $attr . ' submited for modification');
             $attr_req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('sp_id' => $spid, 'attribute_id' => $attr));
             if (count($attr_req) > 0)
             {
@@ -382,7 +361,7 @@ class Attribute_requirement extends MY_Controller
     public function fedsubmit()
     {
 
-        log_message('debug', $this->log_prefix . "fed-submited");
+        log_message('debug', __METHOD__ . "fed-submited");
         $attr = $this->input->post('attribute');
         $status = $this->input->post('requirement');
         $reason = $this->input->post('reason');
@@ -416,13 +395,17 @@ class Attribute_requirement extends MY_Controller
         }
         if ($attr && $status && $action === 'Add')
         {
-            $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attr));
-            $attr_req = new models\AttributeRequirement;
-            $attr_req->setReason($reason);
-            $attr_req->setStatus($status);
-            $attr_req->setAttribute($attribute);
-            $attr_req->setType('FED');
-            $this->_addfed($fedid, $attr_req);
+            $isAttrReqExist = $this->em->getRepository("models\AttributeRequirement")->findBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
+            if (count($isAttrReqExist) == 0)
+            {
+                $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attr));
+                $attr_req = new models\AttributeRequirement;
+                $attr_req->setReason($reason);
+                $attr_req->setStatus($status);
+                $attr_req->setAttribute($attribute);
+                $attr_req->setType('FED');
+                $this->_addfed($fedid, $attr_req);
+            }
         }
         elseif ($attr && $status && $action === 'Modify')
         {
@@ -435,10 +418,10 @@ class Attribute_requirement extends MY_Controller
         }
         elseif ($attr && $status && $action === "Remove")
         {
-            $attr_req = $this->em->getRepository("models\AttributeRequirement")->findOneBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
-            if (!empty($attr_req))
+            $attr_req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
+            foreach ($attr_req as $v)
             {
-                $this->_removefed($attr_req);
+                $this->_removefed($v);
             }
         }
         else
