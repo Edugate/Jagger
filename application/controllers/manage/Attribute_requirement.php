@@ -168,17 +168,16 @@ class Attribute_requirement extends MY_Controller
             foreach ($attrCollection as $a)
             {
                 $aAttr = $a->getAttribute();
-                $already_in_attr[''.$aAttr->getId().''] = array(
-                    'name'=>$aAttr->getName(),
-                    'fullname'=>$aAttr->getFullname(),
-                    'urn'=>$aAttr->getUrn(),
-                    'oid'=>$aAttr->getOid(),
-                    'description'=>$aAttr->getDescription(),
-                    'attr_id'=>$aAttr->getId(),
-                    'status'=>$a->getStatus(),
-                    'reason'=>$a->getReason()
+                $already_in_attr['' . $aAttr->getId() . ''] = array(
+                    'name' => $aAttr->getName(),
+                    'fullname' => $aAttr->getFullname(),
+                    'urn' => $aAttr->getUrn(),
+                    'oid' => $aAttr->getOid(),
+                    'description' => $aAttr->getDescription(),
+                    'attr_id' => $aAttr->getId(),
+                    'status' => $a->getStatus(),
+                    'reason' => $a->getReason()
                 );
-
             }
         }
         $add_attr_final = array_diff_key($add_attr, $already_in_attr);
@@ -367,7 +366,6 @@ class Attribute_requirement extends MY_Controller
         $reason = $this->input->post('reason');
         $action = $this->input->post('submit');
         $fedid = $this->input->post('fedid');
-        $has_write_access = false;
         if (empty($fedid) || !is_numeric($fedid) || empty($action) || empty($status) || empty($attr))
         {
             show_error('Missing information in post', 403);
@@ -393,40 +391,40 @@ class Attribute_requirement extends MY_Controller
             $data['error'] = lang('rr_noperm_mngtattrforfed') . ': ' . $f->getName();
             $this->load->view('page', $data);
         }
-        if ($attr && $status && $action === 'Add')
+        if ($attr && $status && in_array($action, array('Add', 'Modify', 'Remove')))
         {
-            $isAttrReqExist = $this->em->getRepository("models\AttributeRequirement")->findBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
-            if (count($isAttrReqExist) == 0)
+            if ($action === 'Add')
             {
-                $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attr));
-                $attr_req = new models\AttributeRequirement;
+                $isAttrReqExist = $this->em->getRepository("models\AttributeRequirement")->findBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
+                if (count($isAttrReqExist) == 0)
+                {
+                    $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attr));
+                    $attr_req = new models\AttributeRequirement;
+                    $attr_req->setReason($reason);
+                    $attr_req->setStatus($status);
+                    $attr_req->setAttribute($attribute);
+                    $attr_req->setType('FED');
+                    $this->_addfed($fedid, $attr_req);
+                }
+            }
+            elseif ($action === 'Modify')
+            {
+                $attr_req = $this->em->getRepository("models\AttributeRequirement")->findOneBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
                 $attr_req->setReason($reason);
                 $attr_req->setStatus($status);
-                $attr_req->setAttribute($attribute);
                 $attr_req->setType('FED');
-                $this->_addfed($fedid, $attr_req);
+                $this->em->persist($attr_req);
+                $this->em->flush();
             }
-        }
-        elseif ($attr && $status && $action === 'Modify')
-        {
-            $attr_req = $this->em->getRepository("models\AttributeRequirement")->findOneBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
-            $attr_req->setReason($reason);
-            $attr_req->setStatus($status);
-            $attr_req->setType('FED');
-            $this->em->persist($attr_req);
-            $this->em->flush();
-        }
-        elseif ($attr && $status && $action === "Remove")
-        {
-            $attr_req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
-            foreach ($attr_req as $v)
+            else 
             {
-                $this->_removefed($v);
+                /** remove action */
+                $attr_req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
+                foreach ($attr_req as $v)
+                {
+                    $this->_removefed($v);
+                }
             }
-        }
-        else
-        {
-            return $this->fed($fedid);
         }
         return $this->fed($fedid);
     }
