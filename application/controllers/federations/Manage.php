@@ -130,7 +130,7 @@ class Manage extends MY_Controller
         return;
     }
 
-    private function _get_members($federation, $lang)
+    private function getMembers($federation, $lang)
     {
         $keyprefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
@@ -224,7 +224,7 @@ class Manage extends MY_Controller
             return;
         }
 
-        $result = $this->_get_members($federation, $lang);
+        $result = $this->getMembers($federation, $lang);
         echo json_encode($result);
     }
 
@@ -237,7 +237,6 @@ class Manage extends MY_Controller
             return;
         }
         $this->load->library('zacl');
-
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation))
         {
@@ -290,7 +289,6 @@ class Manage extends MY_Controller
     private function showMetadataTab(models\Federation $federation, $hasWriteAccess)
     {
         $d = array();
-
         $altMetaUrlEnabled = $federation->getAltMetaUrlEnabled();
 
         if ($altMetaUrlEnabled === TRUE)
@@ -316,7 +314,6 @@ class Manage extends MY_Controller
         {
             $digestExport = $defaultDigest;
         }
-
         $metaLink = base_url() . 'metadata/federation/' . $federation->getSysname() . '/metadata.xml';
         $metaLinkSigned = base_url() . 'signedmetadata/federation/' . $federation->getSysname() . '/metadata.xml';
         $metaExportLink = base_url() . 'metadata/federationexport/' . $federation->getSysname() . '/metadata.xml';
@@ -368,7 +365,6 @@ class Manage extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
-        $result = array();
         $this->load->library('show_element');
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation))
@@ -456,7 +452,8 @@ class Manage extends MY_Controller
             $editLink = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon button small" title="edit">' . lang('rr_edit') . '</a>';
         }
 
-        $data['result']['general'][] = array('data' => array('data' => ' ' . $editLink, 'class' => 'text-right', 'colspan' => 2));
+        $data['editlink'] = $editLink;
+        //$data['result']['general'][] = array('data' => array('data' => ' ' . $editLink, 'class' => 'text-right', 'colspan' => 2));
         if (empty($data['federation_is_active']))
         {
             $data['result']['general'][] = array(
@@ -568,7 +565,7 @@ class Manage extends MY_Controller
             $membersInArray = array('idp' => array(), 'sp' => array(), 'both' => array());
             $lang = MY_Controller::getLang();
 
-            $membersInArray2 = $this->_get_members($federation, $lang);
+            $membersInArray2 = $this->getMembers($federation, $lang);
             $membersInArray = array_merge($membersInArray, $membersInArray2);
 
             $IDPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['idp']);
