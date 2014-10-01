@@ -107,10 +107,19 @@ class Sync_metadata extends CI_Controller {
     public function semiautomatic($syncpass, $encoded_url, $encoded_federationurn, $conditions_to_set = null)
     {
 
-        $protectpass = $this->config->item('syncpass');
-        if ($protectpass != $syncpass)
+        $featenabled = $this->config->item('featdisable');
+        if(!empty($featenabled) && is_array($featenabled) && isset($featenabled['metasync']))
         {
-            show_error('Access Denied - invalid token', 403);
+           set_status_header(403);
+           echo 'Denied';
+           return;
+        }
+
+        $protectpass = $this->config->item('syncpass');
+        if (empty($protectpass) || strlen($protectpass)<10 ||  strcmp($protectpass, $syncpass) !=0)
+        {
+            set_status_header(403);
+            echo 'Access Denied - invalid token';
             return;
         }
         $conditions_default = array(

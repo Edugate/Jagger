@@ -1154,7 +1154,7 @@ class Detail extends MY_Controller {
             {
                 $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
                 $entmenu[22] = array('name' => '' . lang('rr_supportedattributes') . '', 'link' => '' . base_url() . 'manage/supported_attributes/idp/' . $id . '', 'class' => '');
-                $entmenu[23] = array('name' => '' . lang('rr_attributepolicy') . '', 'link' => '' . base_url() . 'manage/attribute_policy/globals/' . $id . '', 'class' => '');
+                $entmenu[23] = array('name' => '' . lang('rr_attributepolicy') . '', 'link' => '' . base_url() . 'manage/attributepolicy/globals/' . $id . '', 'class' => '');
             }
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;

@@ -12,12 +12,12 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  */
 
 /**
- * Attribute_policy Class
+ * Attributepolicy Class
  * 
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Attribute_policy extends MY_Controller
+class Attributepolicy extends MY_Controller
 {
 
     protected $tmp_providers;
@@ -233,7 +233,7 @@ class Attribute_policy extends MY_Controller
         if ($type === 'global')
         {
             $attr_policy = $this->tmp_arps->getOneGlobalPolicy($idp_id, $attr_id);
-            $action = base_url('manage/attribute_policy/submit_global');
+            $action = base_url('manage/attributepolicy/submit_global');
             $subtitle = lang('rr_defaultarp');
             if ($locked)
             {
@@ -250,7 +250,7 @@ class Attribute_policy extends MY_Controller
                 $data['fed_name'] = $fed->getName();
                 $data['fed_url'] = base64url_encode($fed->getName());
             }
-            $action = base_url('manage/attribute_policy/submit_fed/' . $idp_id);
+            $action = base_url('manage/attributepolicy/submit_fed/' . $idp_id);
             $subtitle = lang('rr_arpforfed');
             if ($locked)
             {
@@ -272,7 +272,7 @@ class Attribute_policy extends MY_Controller
                 log_message('debug', 'SP not found with id: ' . $requester);
                 show_error(lang('rerror_spnotfound') . ' id:' . $requester, 404);
             }
-            $action = base_url('manage/attribute_policy/submit_sp/' . $idp_id);
+            $action = base_url('manage/attributepolicy/submit_sp/' . $idp_id);
             $subtitle = lang('rr_specarpforsp');
             if ($locked)
             {
@@ -441,7 +441,7 @@ class Attribute_policy extends MY_Controller
 
         if (($this->input->post('fedid')) && empty($fed_id))
         {
-            redirect(base_url('manage/attribute_policy/show_feds/' . $idp_id . '/' . $this->input->post('fedid')), 'location');
+            redirect(base_url('manage/attributepolicy/show_feds/' . $idp_id . '/' . $this->input->post('fedid')), 'location');
         }
         elseif (empty($fed_id))
         {
@@ -582,7 +582,7 @@ class Attribute_policy extends MY_Controller
                 $fed = $tmp_feds->getOneFederationById($fedid);
                 if (empty($fed))
                 {
-                    log_message('error', 'Form attribute_policy for fed. Federation not found with id: ' . $this->input->post('fedid'));
+                    log_message('error', 'Form attributepolicy for fed. Federation not found with id: ' . $this->input->post('fedid'));
                     show_error(lang('error_fednotfound'), 404);
                 }
                 else
@@ -906,7 +906,7 @@ class Attribute_policy extends MY_Controller
 
         if (empty($idp))
         {
-            log_message('error', '(manage/attribute_policy/multi) Identity Provider not found with id:' . $idp_id);
+            log_message('error', '(manage/attributepolicy/multi) Identity Provider not found with id:' . $idp_id);
             show_error(lang('rerror_idpnotfound'), 404);
         }
         $excluded_arp = $idp->getExcarps();
@@ -931,13 +931,13 @@ class Attribute_policy extends MY_Controller
         $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $idpDisplayname . '</a>';
         if ($type == 'sp')
         {
-            log_message('debug', '(manage/attribute_policy/multi) type SP');
+            log_message('debug', '(manage/attributepolicy/multi) type SP');
             $data['content_view'] = 'manage/attribute_policy_multi_sp_view';
             $sp = $this->tmp_providers->getOneSpById($requester);
 
             if (empty($sp))
             {
-                log_message('error', '(manage/attribute_policy/multi) Service Provider as requester not found with id:' . $requester);
+                log_message('error', '(manage/attributepolicy/multi) Service Provider as requester not found with id:' . $requester);
                 show_error(lang('rerror_spnotfound'), 404);
             }
 
@@ -1038,7 +1038,7 @@ class Attribute_policy extends MY_Controller
         elseif ($type == 'fed')
         {
             $data['content_view'] = 'manage/attribute_policy_multi_fed_view';
-            log_message('debug', '(manage/attribute_policy/multi) type FED');
+            log_message('debug', '(manage/attributepolicy/multi) type FED');
             /**
              * @todo finish
              */
@@ -1078,7 +1078,7 @@ class Attribute_policy extends MY_Controller
             }
             else
             {
-                redirect(base_url('manage/attribute_policy/multi/' . $idp_id . '/sp/' . $sp_id), 'location');
+                redirect(base_url('manage/attributepolicy/multi/' . $idp_id . '/sp/' . $sp_id), 'location');
             }
         }
     }

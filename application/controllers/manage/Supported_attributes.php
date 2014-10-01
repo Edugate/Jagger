@@ -148,7 +148,7 @@ class Supported_attributes extends MY_Controller {
         $data['idp_entityid'] = $idp->getEntityId();
         $data['titlepage'] = lang('identityprovider').': '.anchor(base_url()."providers/detail/show/".$idp->getId(),$idp->getNameToWebInLang($lang,'idp'));
         $data['subtitlepage'] =  lang('rr_supportedattributes');
-        $data['submenupage'] = array(array('name'=>''.lang('rr_attributereleasepolicy').'','url'=>''.base_url().'manage/attribute_policy/globals/'.$idp_id.''));
+        $data['submenupage'] = array(array('name'=>''.lang('rr_attributereleasepolicy').'','url'=>''.base_url().'manage/attributepolicy/globals/'.$idp_id.''));
         $data['content_view'] = 'manage/supported_attributes_view.php';
         $this->load->view('page', $data);
 

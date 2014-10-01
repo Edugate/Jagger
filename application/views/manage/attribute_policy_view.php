@@ -1,7 +1,7 @@
 
 <div class="iui-widget small-12 columns">
     <?php
-    $action = base_url().'manage/attribute_policy/specific/'.$idpid.'/sp';
+    $action = base_url().'manage/attributepolicy/specific/'.$idpid.'/sp';
     $attributes = array('id'=>'formver3');
     echo '<div class="small-12 columns">';
        echo form_open($action,$attributes);
@@ -46,7 +46,7 @@ if(!empty($fedid))
 {
 	$hidden['fedid'] = $fedid;
 }
-$target = base_url() . 'manage/attribute_policy/submit_global';
+$target = base_url() . 'manage/attributepolicy/submit_global';
 if (count($attrs_array_newform) > 0)
 {
     echo '<span class="span-22">';
@@ -85,7 +85,7 @@ echo '</div>';
 echo '<div id="fedarptab" class="content" >';
 
 echo '<div class="buttons clear">';
-echo anchor('manage/attribute_policy/show_feds/'.$idpid.'','<span class="buttons"><button class="savebutton saveicon small">'.lang('rr_arpforfed').'</button></span>');
+echo anchor('manage/attributepolicy/show_feds/'.$idpid.'','<span class="buttons"><button class="savebutton saveicon small">'.lang('rr_arpforfed').'</button></span>');
 echo '</div>';
 
 if (!empty($federations_policy))

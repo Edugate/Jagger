@@ -52,7 +52,7 @@ if(count($tbl_row)>0)
 		'spid'=>$requester_id,
 		'type'=>'sp',
 		);
-	echo form_open(base_url().'manage/attribute_policy/submit_multi/'.$provider_id,$form_attributes,$form_hidden);
+	echo form_open(base_url().'manage/attributepolicy/submit_multi/'.$provider_id,$form_attributes,$form_hidden);
 	echo $this->table->generate($tbl_row);
 	echo '<div class="buttons">'.$reset_button . $modify_button.'</div>';
 	echo form_close();

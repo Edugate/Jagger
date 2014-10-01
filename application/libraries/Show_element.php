@@ -272,8 +272,8 @@ class Show_element {
         $source = $this->displaySpecificArp($provider);
         $attributes = array();
         $supported_attrs_url = base_url() . "manage/supported_attributes/idp/" . $provider->getId();
-        $prefix_url = base_url() . "manage/attribute_policy/detail/";
-        $prefix_multi_url = base_url() . "manage/attribute_policy/multi/";
+        $prefix_url = base_url() . "manage/attributepolicy/detail/";
+        $prefix_multi_url = base_url() . "manage/attributepolicy/multi/";
         $icon = base_url() . "images/icons/pencil-field.png";
         if (!empty($source))
         {
@@ -372,7 +372,7 @@ class Show_element {
         }
         $source = $this->displayFederationsArp($provider);
         $attributes = array();
-        $prefix_url = base_url() . 'manage/attribute_policy/detail/';
+        $prefix_url = base_url() . 'manage/attributepolicy/detail/';
         $icon = base_url() . 'images/icons/pencil-field.png';
         if (!empty($source))
         {
@@ -411,7 +411,7 @@ class Show_element {
     {
         $source = $this->displayDefaultArp($provider);
         $attributes = array();
-        $prefix_url = base_url() . 'manage/attribute_policy/detail/';
+        $prefix_url = base_url() . 'manage/attributepolicy/detail/';
         $icon = base_url() . 'images/icons/pencil-field.png';
         $supported = $this->tmp_policies->getSupportedAttributes($provider);
         $supported_attrs = array();
