@@ -418,7 +418,7 @@ class Metadata extends MY_Controller {
         }
         $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
         $Entities_Node->setAttribute('validUntil', $validuntil);
-        $Entities_Node->setAttribute('Name', 'circle:' . $me->getEntityId());
+        $Entities_Node->setAttribute('Name',''.$me->getEntityId().'');
         $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
 
         foreach ($p1 as $v)
