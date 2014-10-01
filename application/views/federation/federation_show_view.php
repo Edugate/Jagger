@@ -25,7 +25,7 @@ echo '<li class="tab-title"><a href="#management">' . lang('tabMngt') . '</a></l
  </ul>
  ';
 
-$tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
+$tmpl = array('table_open' => '<table id="detailsnosort" >');
 
 echo '<div class="tabs-content">';
 foreach ($result as $k => $v)
@@ -36,11 +36,13 @@ foreach ($result as $k => $v)
     }
     else
     {
+     
        echo '<div id="' . $k . '" class="content active nopadding">';
+       echo '<div class="text-right">'.$editlink.'</div>';
     
     }
     $this->table->set_template($tmpl);
-    $this->table->set_heading('', '' . lang('coldetails') . '');
+   // $this->table->set_heading('', '');
     echo $this->table->generate($v);
     $this->table->clear();
     echo '</div>';
