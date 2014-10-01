@@ -2,7 +2,7 @@
 <?php
 $attributes = array('class' => 'email', 'id' => 'formver2');
 $hidden = array('fedid' => $fedid, 'idpid' => $idpid);
-$target = base_url() . "manage/attribute_policy/submit_fed/".$idpid;
+$target = base_url() . "manage/attributepolicy/submit_fed/".$idpid;
 echo form_open($target,$attributes,$hidden);
 $tmpl = array ( 'table_open'  => '<table id="detailsnosort">' );
 $this->table->set_template($tmpl); 

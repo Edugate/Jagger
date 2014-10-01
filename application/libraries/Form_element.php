@@ -67,7 +67,7 @@ class Form_element {
                 anchor($base . 'geolocation/show/' . $id . '/idp', '' . lang('rr_geolocation') . ''),
                 anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . ''),
                 anchor($base . 'manage/supported_attributes/idp/' . $id . '', '' . lang('rr_supportedattributes') . ''),
-                anchor($base . 'manage/attribute_policy/globals/' . $id . '', '' . lang('rr_attributepolicy') . ''),
+                anchor($base . 'manage/attributepolicy/globals/' . $id . '', '' . lang('rr_attributepolicy') . ''),
                 anchor($base . 'manage/arpsexcl/idp/' . $id . '', '' . lang('srvs_excluded_from_arp') . '')
             );
         }
@@ -87,7 +87,7 @@ class Form_element {
                 anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('identityprovider') . ')'),
                 anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('serviceprovider') . ')'),
                 anchor($base . 'manage/supported_attributes/idp/' . $id . '', '' . lang('rr_supportedattributes') . ''),
-                anchor($base . 'manage/attribute_policy/globals/' . $id . '', '' . lang('rr_attributepolicy') . ''),
+                anchor($base . 'manage/attributepolicy/globals/' . $id . '', '' . lang('rr_attributepolicy') . ''),
                 anchor($base . 'manage/arpsexcl/idp/' . $id . '', '' . lang('srvs_excluded_from_arp') . ''),
                 anchor($base . 'manage/attribute_requirement/sp/' . $id . '', '' . lang('rr_requiredattributes') . '')
             );
@@ -3449,7 +3449,7 @@ class Form_element {
         }
         if (empty($action))
         {
-            $action = base_url() . 'manage/attribute_policy/submit';
+            $action = base_url() . 'manage/attributepolicy/submit';
         }
         $result .= form_open($action, $attributes, $hidden);
         $result .= $this->generateEditPolicyFormElement($arp);
