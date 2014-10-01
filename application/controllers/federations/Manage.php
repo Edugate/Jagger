@@ -435,10 +435,6 @@ class Manage extends MY_Controller
         $data['federation_desc'] = $federation->getDescription();
         $data['federation_is_active'] = $federation->getActive();
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
-
-
-
-
         $data['titlepage'] = lang('rr_feddetail') . ': ' . $data['federation_name'];
 
         $data['content_view'] = 'federation/federation_show_view';
@@ -453,7 +449,6 @@ class Manage extends MY_Controller
         }
 
         $data['editlink'] = $editLink;
-        //$data['result']['general'][] = array('data' => array('data' => ' ' . $editLink, 'class' => 'text-right', 'colspan' => 2));
         if (empty($data['federation_is_active']))
         {
             $data['result']['general'][] = array(
