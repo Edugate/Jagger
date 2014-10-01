@@ -211,7 +211,7 @@ class Attribute_requirement extends MY_Controller
         }
     }
 
-    private function _addfed($federation_id, $attr_req)
+    private function addFed($federation_id, $attr_req)
     {
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $federation_id));
         if (!empty($federation) && !empty($attr_req))
@@ -225,7 +225,7 @@ class Attribute_requirement extends MY_Controller
         }
     }
 
-    private function _remove($attr_req)
+    private function removeReqAttr($attr_req)
     {
         if (!empty($attr_req))
         {
@@ -235,7 +235,7 @@ class Attribute_requirement extends MY_Controller
         }
     }
 
-    private function _removefed($attr_req)
+    private function removeFed($attr_req)
     {
         if (!empty($attr_req))
         {
@@ -245,7 +245,7 @@ class Attribute_requirement extends MY_Controller
         }
     }
 
-    private function _submit_validate()
+    private function submitValidate()
     {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('attribute', 'attribute', 'trim|xss_clean');
@@ -264,7 +264,7 @@ class Attribute_requirement extends MY_Controller
          */
         log_message('debug', __METHOD__ . "sp-submited");
         $spid = $this->input->post('spid');
-        if ($this->_submit_validate() === FALSE)
+        if ($this->submitValidate() === FALSE)
         {
             log_message('debug', 'KLS1');
             return $this->sp($spid);
@@ -306,7 +306,7 @@ class Attribute_requirement extends MY_Controller
             $checkattrreq = $this->em->getRepository("models\AttributeRequirement")->findBy(array('sp_id' => $spid, 'attribute_id' => $attr));
             foreach ($checkattrreq as $v)
             {
-                $this->_remove($v);
+                $this->removeReqAttr($v);
             }
             $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attr));
             $attr_req = new models\AttributeRequirement;
@@ -321,7 +321,7 @@ class Attribute_requirement extends MY_Controller
             $attr_req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('sp_id' => $spid, 'attribute_id' => $attr));
             foreach ($attr_req as $v)
             {
-                $this->_remove($v);
+                $this->removeReqAttr($v);
             }
         }
         elseif ($attr && $status && $action == 'Modify')
@@ -343,7 +343,7 @@ class Attribute_requirement extends MY_Controller
                     }
                     else
                     {
-                        $this->_remove($v);
+                        $this->removeReqAttr($v);
                     }
                 }
                 $this->em->flush();
@@ -377,7 +377,7 @@ class Attribute_requirement extends MY_Controller
         }
         try
         {
-            $has_write_access = $this->zacl->check_acl('f_' . $f->getId() . '', 'write', 'federation', '');
+            $hasWriteAccess = $this->zacl->check_acl('f_' . $f->getId() . '', 'write', 'federation', '');
         }
         catch (Exception $e)
         {
@@ -385,7 +385,7 @@ class Attribute_requirement extends MY_Controller
             show_error('Internal Server Error', 500);
         }
 
-        if (!$has_write_access)
+        if (!$hasWriteAccess)
         {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_noperm_mngtattrforfed') . ': ' . $f->getName();
@@ -404,7 +404,7 @@ class Attribute_requirement extends MY_Controller
                     $attr_req->setStatus($status);
                     $attr_req->setAttribute($attribute);
                     $attr_req->setType('FED');
-                    $this->_addfed($fedid, $attr_req);
+                    $this->addFed($fedid, $attr_req);
                 }
             }
             elseif ($action === 'Modify')
@@ -422,7 +422,7 @@ class Attribute_requirement extends MY_Controller
                 $attr_req = $this->em->getRepository("models\AttributeRequirement")->findBy(array('fed_id' => $fedid, 'attribute_id' => $attr));
                 foreach ($attr_req as $v)
                 {
-                    $this->_removefed($v);
+                    $this->removeFed($v);
                 }
             }
         }
