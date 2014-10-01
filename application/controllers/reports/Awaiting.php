@@ -98,19 +98,15 @@ class Awaiting extends MY_Controller
         }
 
         $action = $q->getAction();
-        $type = $q->getType();
         $recipient = $q->getRecipient();
         $recipientType = $q->getRecipientType();
 
         if ($action === 'Join')
         {
-            if (!empty($recipienttype) && $recipienttype === 'federation')
+            if (!empty($recipientType) && $recipientType === 'federation' && !empty($recipient))
             {
-                if (!empty($recipient))
-                {
-                    $hasWrite = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '');
-                    return $hasWrite;
-                }
+                $hasWrite = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '');
+                return $hasWrite;
             }
         }
         elseif (strcasecmp($action, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0)
@@ -138,15 +134,14 @@ class Awaiting extends MY_Controller
         }
 
         $action = $q->getAction();
-        $type = $q->getType();
         $recipient = $q->getRecipient();
-        $recipienttype = $q->getRecipientType();
+        $recipientType = $q->getRecipientType();
 
         if ($action === 'Join')
         {
-            if (!empty($recipienttype))
+            if (!empty($recipientType))
             {
-                if ($recipienttype === 'federation')
+                if ($recipientType === 'federation')
                 {
                     if (!empty($recipient))
                     {
@@ -154,7 +149,7 @@ class Awaiting extends MY_Controller
                         return $hasAccess;
                     }
                 }
-                elseif ($recipienttype === 'provider')
+                elseif ($recipientType === 'provider')
                 {
                     if (!empty($recipient))
                     {
@@ -177,13 +172,11 @@ class Awaiting extends MY_Controller
 
         $this->load->library('zacl');
         $this->load->library('j_queue');
-        $currentUser = $this->j_auth->current_user();
         $queueArray = $this->em->getRepository("models\Queue")->findAll();
         $result = array();
         $kid = 0;
         foreach ($queueArray as $q)
         {
-            $access = false;
             $c_creator = 'anonymous';
             $creator = $q->getCreator();
             $access = $this->_hasAccess($q);
@@ -195,8 +188,6 @@ class Awaiting extends MY_Controller
             {
                 $c_creator = $creator->getUsername();
             }
-            $request_type = $q->getType();
-            $request_action = $q->getAction();
             $recipientid = $q->getRecipient();
             $recipenttype = $q->getRecipientType();
             $recipientname = '';
@@ -939,8 +930,8 @@ class Awaiting extends MY_Controller
                             $fedsysname = base64url_encode($fed->getName());
                             $fed->setSysname($fedsysname);
                         }
-                        
-                        
+
+
 
                         $fed_check = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $fed->getName()));
                         if (empty($fed_check))
