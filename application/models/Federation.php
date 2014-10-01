@@ -184,6 +184,7 @@ class Federation {
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->is_protected = FALSE;
         $this->is_local = TRUE;
+        $this->usealtmetaurl = FALSE;
     }
 
     public function setName($name)
