@@ -939,11 +939,8 @@ class Awaiting extends MY_Controller
                             $fedsysname = base64url_encode($fed->getName());
                             $fed->setSysname($fedsysname);
                         }
-                        $creator = $queueObj->getCreator();
-                        if (!empty($creator))
-                        {
-                            $fed->setOwner($creator->getUsername());
-                        }
+                        
+                        
 
                         $fed_check = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $fed->getName()));
                         if (empty($fed_check))

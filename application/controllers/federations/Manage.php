@@ -374,22 +374,8 @@ class Manage extends MY_Controller
         }
         $resource = $federation->getId();
         $group = 'federation';
-        $owner = $federation->getOwner();
-        $matchedOwner = FALSE;
-        if ($owner == $this->j_auth->current_user())
-        {
-            $matchedOwner = TRUE;
-        }
-        if (!empty($owner) && $matchedOwner)
-        {
-            $hasReadAccess = TRUE;
-            $hasWriteAccess = TRUE;
-        }
-        else
-        {
-            $hasReadAccess = $this->zacl->check_acl('f_' . $resource, 'read', $group, '');
-            $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
-        }
+        $hasReadAccess = $this->zacl->check_acl('f_' . $resource, 'read', $group, '');
+        $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
         $hasAddbulkAccess = $this->zacl->check_acl('f_' . $resource, 'addbulk', $group, '');
         $hasManageAccess = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
         $canEdit = (boolean) ($hasManageAccess OR $hasWriteAccess);
@@ -468,7 +454,6 @@ class Manage extends MY_Controller
         $data['result']['general'][] = array(lang('rr_fed_publisher'), $federation->getPublisher());
         $data['result']['general'][] = array(lang('rr_fed_desc'), $federation->getDescription());
         $data['result']['general'][] = array(lang('rr_fed_tou'), $federation->getTou());
-        $data['result']['general'][] = array(lang('rr_fedownercreator'), $federation->getOwner());
         $idp_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/idp', lang('rr_fed_cntidps_list'));
         $sp_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/sp', lang('rr_fed_cntisps_list'));
         $all_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '', lang('rr_fed_cnt_list'));
@@ -919,20 +904,7 @@ class Manage extends MY_Controller
             show_error('Federation not found', 404);
         }
         $resource = $federation->getId();
-        $owner = $federation->getOwner();
-        $matched_owner = FALSE;
-        if ($owner == $this->j_auth->current_user())
-        {
-            $matched_owner = TRUE;
-        }
-        if (!empty($owner) && $matched_owner)
-        {
-            $has_write_access = TRUE;
-        }
-        else
-        {
-            $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
-        }
+        $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
         if (!$has_write_access)
         {
             show_error('no access', 403);
@@ -1028,20 +1000,7 @@ class Manage extends MY_Controller
         }
         $lang = MY_Controller::getLang();
         $resource = $federation->getId();
-        $owner = $federation->getOwner();
-        $matched_owner = FALSE;
-        if ($owner == $this->j_auth->current_user())
-        {
-            $matched_owner = TRUE;
-        }
-        if (!empty($owner) && $matched_owner)
-        {
-            $has_write_access = TRUE;
-        }
-        else
-        {
-            $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
-        }
+        $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
         if (!$has_write_access)
         {
             show_error('no access', 403);

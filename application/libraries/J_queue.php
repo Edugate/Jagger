@@ -336,7 +336,6 @@ class J_queue
         $creator = $q->getCreator();
         if ($creator) {
             $fedrows[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
-            $objData->setOwner($creator->getUsername());
         }
         else {
             $fedrows[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
@@ -366,7 +365,6 @@ class J_queue
         $creator = $q->getCreator();
         if ($creator) {
             $fedrows[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
-            $objData->setOwner($creator->getUsername());
         }
         else {
             $fedrows[] = array('name' => lang('requestor'), 'value' => lang('unknown'));

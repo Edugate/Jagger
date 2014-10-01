@@ -66,21 +66,8 @@ class Attribute_requirement extends MY_Controller
 
         $resource = 'f_' . $fed->getId();
         $group = 'federation';
+        $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
 
-        $matched_owner = FALSE;
-        $owner = $fed->getOwner();
-        if ($owner == $this->j_auth->current_user())
-        {
-            $matched_owner = TRUE;
-        }
-        if (!empty($owner) && $matched_owner)
-        {
-            $has_write_access = TRUE;
-        }
-        else
-        {
-            $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        }
         if (!$has_write_access)
         {
             $data['content_view'] = 'nopermission';
@@ -111,14 +98,14 @@ class Attribute_requirement extends MY_Controller
                 $attrId = $a->getAttribute()->getId();
 
                 $already_in_attr['' . $attrId . ''] = array(
-                            'name' => $a->getAttribute()->getName(),
-                            'fullname' => $a->getAttribute()->getFullname(),
-                            'urn' => $a->getAttribute()->getUrn(),
-                            'oid' => $a->getAttribute()->getOid(),
-                            'attr_id' => $attrId,
-                            'status' => $a->getStatus(),
-                            'reason' => $a->getReason(),
-                            'description' => $a->getAttribute()->getDescription()
+                    'name' => $a->getAttribute()->getName(),
+                    'fullname' => $a->getAttribute()->getFullname(),
+                    'urn' => $a->getAttribute()->getUrn(),
+                    'oid' => $a->getAttribute()->getOid(),
+                    'attr_id' => $attrId,
+                    'status' => $a->getStatus(),
+                    'reason' => $a->getReason(),
+                    'description' => $a->getAttribute()->getDescription()
                 );
             }
         }
@@ -413,7 +400,7 @@ class Attribute_requirement extends MY_Controller
         }
         try
         {
-            $has_write_access = $this->zacl->check_acl('f_' . $f->getId().'', 'write', 'federation', '');
+            $has_write_access = $this->zacl->check_acl('f_' . $f->getId() . '', 'write', 'federation', '');
         }
         catch (Exception $e)
         {

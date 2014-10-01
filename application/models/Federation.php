@@ -336,11 +336,7 @@ class Federation {
         return $this;
     }
 
-    public function setOwner($username)
-    {
-        $this->owner = $username;
-        return $this;
-    }
+   
 
     public function setAttributesRequirement(AttributeRequirement $attribute)
     {
@@ -582,10 +578,7 @@ class Federation {
         return $this->digestexport;
     }
 
-    public function getOwner()
-    {
-        return $this->owner;
-    }
+    
 
     public function getPublisher()
     {
