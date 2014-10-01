@@ -22,8 +22,7 @@ class Spage extends MY_Controller
 
     public function showall()
     {
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
+        if (!$this->j_auth->logged_in())
         {
             redirect('auth/login', 'location');
         }
@@ -33,14 +32,7 @@ class Spage extends MY_Controller
             show_error('Permission denied', 403);
             return;
         }
-        if ($this->isEnabled)
-        {
-            $data['addbtn'] = '<a href="' . base_url() . 'manage/spage/editarticle/new" class="button small">' . lang('rr_add') . '</a>';
-        }
-        else
-        {
-            $data['addbtn'] = '';
-        }
+        $data['addbtn'] = $this->isEnabled;
         $articles = $this->em->getRepository("models\Staticpage")->findAll();
         $rows = array();
         $yes = lang('rr_yes');
