@@ -778,7 +778,7 @@ class Gmap {
                 "height" => ($elevation_height != "" ? $elevation_height : str_replace("px", "", $this->height) / 2),
                 "elevation_dom_id" => $elevation_dom_id
             );
-            if ($add_markers == true) {
+            if ($add_markers === true) {
                 $this->addMarkerByAddress($start_address, $start_address, $start_address);
                 $this->addMarkerByAddress($dest_address, $dest_address, $dest_address);
             }
@@ -1554,7 +1554,7 @@ class Gmap {
      */
     function getHeaderJS() {
         $_headerJS = "";
-        if ($this->mobile == true) {
+        if ($this->mobile === true) {
             $_headerJS .= "
         	   <meta name='viewport' content='initial-scale=1.0, user-scalable=no' />
         	";
@@ -1567,7 +1567,7 @@ class Gmap {
 				google.load('visualization', '1', {packages: ['columnchart']});
 			</script>";
         }
-        $_headerJS .= "<script type='text/javascript' src='https://maps.google.com/maps/api/js?sensor=" . (($this->mobile == true) ? "true" : "false") . "'></script>";
+        $_headerJS .= "<script type='text/javascript' src='https://maps.google.com/maps/api/js?sensor=" . (($this->mobile === true) ? "true" : "false") . "'></script>";
         if ($this->marker_clusterer) {
             $_headerJS .= "<script type='text/javascript' src='" . $this->marker_clusterer_location . "' ></script>";
         }
@@ -1967,7 +1967,7 @@ google.maps.event.addListener(map'.$_key.',\'click\',function(zdarzenie)
             $map_id = $this->map_id;
         }
 
-        if ($pano == false) {
+        if ($pano === false) {
             $_prefix = "map";
         } else {
             $_prefix = "panorama" . $this->street_view_dom_id;
@@ -1976,11 +1976,11 @@ google.maps.event.addListener(map'.$_key.',\'click\',function(zdarzenie)
         foreach ($this->_markers as $_marker) {
             $iw_html = str_replace('"', '\"', str_replace(array("\n", "\r"), "", $_marker['html']));
             $_output .= "var point = new google.maps.LatLng(" . $_marker['lat'] . "," . $_marker['lon'] . ");\n";
-            $_output .= sprintf('%s.push(createMarker(%s%s, point,"%s","%s", %s, %s, "%s", %s ));', (($pano == true) ? $_prefix : "") . "markers" . $map_id, $_prefix, $map_id, str_replace('"', '\"', $_marker['title']), str_replace('/', '\/', $iw_html), (isset($_marker["icon_key"])) ? "icon" . $map_id . "['" . $_marker["icon_key"] . "'].image" : "''", (isset($_marker["icon_key"]) && isset($_marker["shadow_icon"])) ? "icon" . $map_id . "['" . $_marker["icon_key"] . "'].shadow" : "''", (($this->sidebar) ? $this->sidebar_id : ""), ((isset($_marker["openers"]) && count($_marker["openers"]) > 0) ? json_encode($_marker["openers"]) : "''")
+            $_output .= sprintf('%s.push(createMarker(%s%s, point,"%s","%s", %s, %s, "%s", %s ));', (($pano === true) ? $_prefix : "") . "markers" . $map_id, $_prefix, $map_id, str_replace('"', '\"', $_marker['title']), str_replace('/', '\/', $iw_html), (isset($_marker["icon_key"])) ? "icon" . $map_id . "['" . $_marker["icon_key"] . "'].image" : "''", (isset($_marker["icon_key"]) && isset($_marker["shadow_icon"])) ? "icon" . $map_id . "['" . $_marker["icon_key"] . "'].shadow" : "''", (($this->sidebar) ? $this->sidebar_id : ""), ((isset($_marker["openers"]) && count($_marker["openers"]) > 0) ? json_encode($_marker["openers"]) : "''")
                     ) . "\n";
         }
 
-        if ($this->marker_clusterer && $pano == false) {//only do marker clusterer for map, not streetview
+        if ($this->marker_clusterer && $pano === false) {//only do marker clusterer for map, not streetview
             $_output .= "
         	   markerClusterer" . $map_id . " = new MarkerClusterer(" . $_prefix . $map_id . ", markers" . $map_id . ", {
 		          maxZoom: " . $this->marker_clusterer_options["maxZoom"] . ",
@@ -2410,7 +2410,7 @@ google.maps.event.addListener(map'.$_key.',\'click\',function(zdarzenie)
     function geoGetCoords($address, $depth = 0) {
         switch ($this->lookup_service) {
             case 'GOOGLE':
-                $_url = sprintf('http://%s/maps/api/geocode/json?sensor=%s&address=%s', $this->lookup_server['GOOGLE'], $this->mobile == true ? "true" : "false", rawurlencode($address));
+                $_url = sprintf('http://%s/maps/api/geocode/json?sensor=%s&address=%s', $this->lookup_server['GOOGLE'], $this->mobile === true ? "true" : "false", rawurlencode($address));
                 $_result = false;
                 if ($_result = $this->fetchURL($_url)) {
                     $_result_parts = json_decode($_result);
@@ -2447,7 +2447,7 @@ google.maps.event.addListener(map'.$_key.',\'click\',function(zdarzenie)
     function geoGetCoordsFull($address, $depth = 0) {
         switch ($this->lookup_service) {
             case 'GOOGLE':
-                $_url = sprintf('http://%s/maps/api/geocode/json?sensor=%s&address=%s', $this->lookup_server['GOOGLE'], $this->mobile == true ? "true" : "false", rawurlencode($address));
+                $_url = sprintf('http://%s/maps/api/geocode/json?sensor=%s&address=%s', $this->lookup_server['GOOGLE'], $this->mobile === true ? "true" : "false", rawurlencode($address));
                 $_result = false;
                 if ($_result = $this->fetchURL($_url)) {
                     return json_decode($_result);
