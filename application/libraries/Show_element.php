@@ -60,20 +60,22 @@ class Show_element {
         }
         $arps = $this->tmp_policies->getSPPolicy($id);
         $no_arps = count($arps);
-        if ($no_arps = 0)
+        if ($no_arps == 0)
         {
             return null;
         }
 
-        $custom_arps = $this->tmp_policies->getCustomSpPolicyAttributes($provider);
+        $customArps = $this->tmp_policies->getCustomSpPolicyAttributes($provider);
         $c_arps = array();
-        foreach ($custom_arps as $key)
-        {
-            $c_arps[$key->getRequester()][$key->getAttribute()->getName()]['id'] = $key->getId();
-            $c_arps[$key->getRequester()][$key->getAttribute()->getName()]['custom'] = $key->getRawdata();
-            $c_arps[$key->getRequester()][$key->getAttribute()->getName()]['attr_id'] = $key->getAttribute()->getId();
-            $c_arps[$key->getRequester()][$key->getAttribute()->getName()]['status'] = null;
-            $spid = $key->getRequester();
+        foreach ($customArps as $cArp)
+        { 
+            $c_arps[$cArp->getRequester()][$cArp->getAttribute()->getName()] = array(
+                'id'=>$cArp->getId(),
+                'custom'=>$cArp->getRawdata(),
+                'attr_id'=>$cArp->getAttribute()->getId(),
+                'status'=>null
+            );         
+            $spid = $cArp->getRequester();
             $sp_requester = $this->tmp_providers->getOneSpById($spid);
             $requesterName = $sp_requester->getName();
             $this->entitiesmaps[$sp_requester->getEntityId()] = $requesterName;
@@ -150,7 +152,6 @@ class Show_element {
                }
             }
         } 
-        $result3 = array();
         if (!empty($result2) && is_array($result2) && count($result) > 0)
         {
             foreach ($result2 as $key => $value)
@@ -542,7 +543,6 @@ class Show_element {
         {
             return null;
         }
-        $no_results = count($tracks);
         $mcounter = 0;
         $result = '<dl class="accordion" data-accordion="requestsList">';
         foreach ($tracks as $t)
@@ -587,7 +587,6 @@ class Show_element {
         {
             $modArray = unserialize($t->getDetail());
             $chng = array();
-            $i = 0;
             foreach ($modArray as $ckey => $cvalue)
             {
                 $chng[$ckey] = array(
