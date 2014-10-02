@@ -36,6 +36,7 @@ class MY_Controller extends CI_Controller {
     public $globalnotices = array();
     public static $langselect = array();
     public static $menuactive;
+    private static $langs;
 
     public function __construct()
     {
@@ -44,36 +45,55 @@ class MY_Controller extends CI_Controller {
         $this->em = $this->doctrine->em;
         $this->title = "";
         $this->lang->load('rr_lang', 'english');
-        $langs = array('pl','pt','it','lt','es','cs','fr-ca','english','ga','sr');
+        
+        self::$langs = array(
+            'en' => array('path' => 'english', 'val' => 'english'),
+            'cs' => array('path' => 'cs', 'val' => 'čeština'),
+            'es' => array('path' => 'es', 'val' => 'español'),
+            'fr-ca' => array('path' => 'fr-ca', 'val' => 'français'),
+            'ga' => array('path' => 'ga', 'val' => 'gaeilge'),
+            'it' => array('path' => 'it', 'val' => 'italiano'),
+            'lt' => array('path' => 'lt', 'val' => 'lietuvos'),
+            'pl' => array('path' => 'pl', 'val' => 'polski'),
+            'pt' => array('path' => 'pt', 'val' => 'português'),
+            'sr' => array('path' => 'sr', 'val' => 'srpski'),
+        );
         $cookie_lang = $this->input->cookie('rrlang', TRUE);
         $cookdefaultlang = $this->config->item('rr_lang');
-        if(empty($cookdefaultlang))
+        $addlangs = $this->config->item('guilangs');
+        if(!empty($addlangs) && is_array($addlangs))
         {
-           $cookdefaultlang = 'english';
+            foreach($addlangs as $k=>$v)
+            {
+                self::$langs[''.$k.''] = $v;
+            }
+        }
+        if (empty($cookdefaultlang))
+        {
+            $cookdefaultlang = 'english';
         }
         else
         {
-           $this->lang->load('rr_lang', ''.$cookdefaultlang.'');
-           self::$current_language = ''.$cookdefaultlang.'';
-
+            $this->lang->load('rr_lang', '' . $cookdefaultlang . '');
+            self::$current_language = '' . $cookdefaultlang . '';
         }
         $defaultlang_cookie = array(
             'name' => 'rrlang',
-            'value' => ''.$cookdefaultlang.'',
+            'value' => '' . $cookdefaultlang . '',
             'expire' => '2600000',
             'secure' => TRUE
         );
 
-        if (!empty($cookie_lang) && in_array($cookie_lang, $langs))
+        if (!empty($cookie_lang) && (strcmp($cookie_lang,'english') ==0 ||  array_key_exists($cookie_lang, self::$langs)))
         {
             $this->lang->load('rr_lang', $cookie_lang);
-            if($cookie_lang === 'english')
+            if ($cookie_lang === 'english')
             {
-               self::$current_language = 'en';
+                self::$current_language = 'en';
             }
             else
             {
-               self::$current_language = $cookie_lang;
+                self::$current_language = $cookie_lang;
             }
         }
         else
@@ -81,18 +101,24 @@ class MY_Controller extends CI_Controller {
             $this->input->set_cookie($defaultlang_cookie);
         }
 
-        self::$langselect = languagesCodes($this->config->item('langselectlimit')); 
+        self::$langselect = languagesCodes($this->config->item('langselectlimit'));
         self::$menuactive = '';
 
-        if(file_exists(APPPATH.'helpers/custom_helper.php'))
+        if (file_exists(APPPATH . 'helpers/custom_helper.php'))
         {
-          $this->load->helper('custom');
-          log_message('debug',__METHOD__.' custom_helper loaded');
+            $this->load->helper('custom');
+            log_message('debug', __METHOD__ . ' custom_helper loaded');
         }
     }
+
     public static function getLang()
     {
         return self::$current_language;
+    }
+
+    public static function guiLangs()
+    {
+        return self::$langs;
     }
 
 }
