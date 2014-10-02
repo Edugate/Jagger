@@ -374,22 +374,8 @@ class Manage extends MY_Controller
         }
         $resource = $federation->getId();
         $group = 'federation';
-        $owner = $federation->getOwner();
-        $matchedOwner = FALSE;
-        if ($owner == $this->j_auth->current_user())
-        {
-            $matchedOwner = TRUE;
-        }
-        if (!empty($owner) && $matchedOwner)
-        {
-            $hasReadAccess = TRUE;
-            $hasWriteAccess = TRUE;
-        }
-        else
-        {
-            $hasReadAccess = $this->zacl->check_acl('f_' . $resource, 'read', $group, '');
-            $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
-        }
+        $hasReadAccess = $this->zacl->check_acl('f_' . $resource, 'read', $group, '');
+        $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
         $hasAddbulkAccess = $this->zacl->check_acl('f_' . $resource, 'addbulk', $group, '');
         $hasManageAccess = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
         $canEdit = (boolean) ($hasManageAccess OR $hasWriteAccess);
@@ -468,7 +454,6 @@ class Manage extends MY_Controller
         $data['result']['general'][] = array(lang('rr_fed_publisher'), $federation->getPublisher());
         $data['result']['general'][] = array(lang('rr_fed_desc'), $federation->getDescription());
         $data['result']['general'][] = array(lang('rr_fed_tou'), $federation->getTou());
-        $data['result']['general'][] = array(lang('rr_fedownercreator'), $federation->getOwner());
         $idp_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/idp', lang('rr_fed_cntidps_list'));
         $sp_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/sp', lang('rr_fed_cntisps_list'));
         $all_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '', lang('rr_fed_cnt_list'));
@@ -797,98 +782,88 @@ class Manage extends MY_Controller
         }
         $this->load->library('zacl');
         $message = null;
-        $fed_name = $this->input->post('fed');
+        $encodedFedName = $this->input->post('fed');
         $memberstype = $this->input->post('memberstype');
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
-        if (!empty($federation))
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
+        if (empty($federation))
         {
-            $existingMembers = $federation->getMembershipProviders();
-            $membership = $federation->getMembership();
-
-
-            $m = $this->input->post('member');
-            if (!empty($m) && is_array($m) && count($m) > 0)
+            show_error('federation not found', 404);
+            return;
+        }
+        $existingMembers = $federation->getMembershipProviders();
+        $membership = $federation->getMembership();
+        $m = $this->input->post('member');
+        if (!empty($m) && is_array($m) && count($m) > 0)
+        {
+            $mKeys = array_keys($m);
+            if(strcasecmp($memberstype, 'idp')==0 || strcasecmp($memberstype, 'sp')==0)
             {
-                $m_keys = array_keys($m);
-                if ($memberstype === 'idp')
-                {
-                    $new_members = $this->em->getRepository("models\Provider")->findBy(array('type' => array('IDP', 'BOTH'), 'id' => $m_keys));
-                }
-                elseif ($memberstype === 'sp')
-                {
-                    $new_members = $this->em->getRepository("models\Provider")->findBy(array('type' => array('SP', 'BOTH'), 'id' => $m_keys));
-                }
-                else
-                {
-                    log_message('error', 'missed or wrong membertype while adding new members to federation');
-                    show_error('Missed members type', 503);
-                }
-                $newMembersArray = array();
-                foreach ($new_members as $nmember)
-                {
-                    if (!$existingMembers->contains($nmember))
-                    {
-                        $newMembersArray[] = $nmember->getEntityId();
-                        $newMembership = new models\FederationMembers();
-                        $newMembership->setProvider($nmember);
-                        $newMembership->setFederation($federation);
-                        if ($nmember->getLocal())
-                        {
-                            $newMembership->setJoinState('1');
-                        }
-                        $this->em->persist($newMembership);
-                    }
-                    else
-                    {
-                        $doFilter = array('' . $federation->getId() . '');
-                        $m1 = $nmember->getMembership()->filter(
-                                function($entry) use($doFilter) {
-                            return (in_array($entry->getFederation()->getId(), $doFilter));
-                        }
-                        );
-                        if (!empty($m1))
-                        {
-                            foreach ($m1 as $v1)
-                            {
-                                if ($nmember->getLocal())
-                                {
-                                    $v1->setJoinState('1');
-                                }
-                                else
-                                {
-                                    $v1->setJoinState('0');
-                                }
-                                $this->em->persist($v1);
-                                $newMembersArray[] = $nmember->getEntityId();
-                            }
-                        }
-                    }
-                }
-                if (count($newMembersArray) > 0)
-                {
-                    $subject = 'Members of Federations changed';
-                    $body = 'Dear user' . PHP_EOL;
-                    $body .= 'Federation ' . $federation->getName() . ' has new members:' . PHP_EOL;
-                    $body .= implode(';' . PHP_EOL, $newMembersArray);
-                    $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $subject, $body, array(), false);
-                }
-
-                $this->em->flush();
-                $message = '<div class="success">' . lang('rr_fedmembersadded') . '</div>';
+                $newMembersList = $this->em->getRepository("models\Provider")->findBy(array('type' => array(''.  strtoupper($memberstype).'', 'BOTH'), 'id' => $mKeys));
             }
             else
             {
-                $message = '<div class="alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>';
+                log_message('error', 'missed or wrong membertype while adding new members to federation');
+                show_error('Missed members type', 503);
             }
+            $newMembersArray = array();
+            foreach ($newMembersList as $nmember)
+            {
+                if (!$existingMembers->contains($nmember))
+                {
+                    $newMembersArray[] = $nmember->getEntityId();
+                    $newMembership = new models\FederationMembers();
+                    $newMembership->setProvider($nmember);
+                    $newMembership->setFederation($federation);
+                    if ($nmember->getLocal())
+                    {
+                        $newMembership->setJoinState('1');
+                    }
+                    $this->em->persist($newMembership);
+                }
+                else
+                {
+                    $doFilter = array('' . $federation->getId() . '');
+                    $m1 = $nmember->getMembership()->filter(
+                            function($entry) use($doFilter) {
+                        return (in_array($entry->getFederation()->getId(), $doFilter));
+                    }
+                    );
+                    if (!empty($m1))
+                    {
+                        foreach ($m1 as $v1)
+                        {
+                            if ($nmember->getLocal())
+                            {
+                                $v1->setJoinState('1');
+                            }
+                            else
+                            {
+                                $v1->setJoinState('0');
+                            }
+                            $this->em->persist($v1);
+                            $newMembersArray[] = $nmember->getEntityId();
+                        }
+                    }
+                }
+            }
+            if (count($newMembersArray) > 0)
+            {
+                $subject = 'Members of Federations changed';
+                $body = 'Dear user' . PHP_EOL. 'Federation ' . $federation->getName() . ' has new members:' . PHP_EOL. implode(';' . PHP_EOL, $newMembersArray);
+                $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $subject, $body, array(), false);
+            }
+            $this->em->flush();
+            $message = '<div class="success">' . lang('rr_fedmembersadded') . '</div>';
         }
         else
         {
-            show_error('federation not found', 404);
+            $message = '<div class="alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>';
         }
-        return $this->addbulk($fed_name, $memberstype, $message);
+
+        return $this->addbulk($encodedFedName, $memberstype, $message);
     }
 
-    private function _invite_submitvalidate()
+    private function inviteSubmitValidate()
     {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
@@ -896,7 +871,7 @@ class Manage extends MY_Controller
         return $this->form_validation->run();
     }
 
-    private function _remove_submitvalidate()
+    private function removeSubmitValidate()
     {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
@@ -919,28 +894,15 @@ class Manage extends MY_Controller
             show_error('Federation not found', 404);
         }
         $resource = $federation->getId();
-        $owner = $federation->getOwner();
-        $matched_owner = FALSE;
-        if ($owner == $this->j_auth->current_user())
-        {
-            $matched_owner = TRUE;
-        }
-        if (!empty($owner) && $matched_owner)
-        {
-            $has_write_access = TRUE;
-        }
-        else
-        {
-            $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
-        }
-        if (!$has_write_access)
+        $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
+        if (!$hasWriteAccess)
         {
             show_error('no access', 403);
             return;
         }
         $data['subtitle'] = lang('rr_federation') . ': ' . $federation->getName() . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), '<img src="' . base_url() . 'images/icons/arrow-in.png"/>');
         log_message('debug', '_________Before validation');
-        if ($this->_invite_submitvalidate() === TRUE)
+        if ($this->inviteSubmitValidate() === TRUE)
         {
             log_message('debug', 'Invitation form is valid');
             $provider_id = $this->input->post('provider');
@@ -1028,26 +990,13 @@ class Manage extends MY_Controller
         }
         $lang = MY_Controller::getLang();
         $resource = $federation->getId();
-        $owner = $federation->getOwner();
-        $matched_owner = FALSE;
-        if ($owner == $this->j_auth->current_user())
-        {
-            $matched_owner = TRUE;
-        }
-        if (!empty($owner) && $matched_owner)
-        {
-            $has_write_access = TRUE;
-        }
-        else
-        {
-            $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
-        }
+        $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
         if (!$has_write_access)
         {
             show_error('no access', 403);
             return;
         }
-        if ($this->_remove_submitvalidate() === TRUE)
+        if ($this->removeSubmitValidate() === TRUE)
         {
             log_message('debug', 'Remove provider from fed form is valid');
             $provider_id = $this->input->post('provider');

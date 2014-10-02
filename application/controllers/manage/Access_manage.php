@@ -262,7 +262,6 @@ class Access_manage extends MY_Controller {
             return;
         }
         $group = 'federation';
-        $owner = $fed->getOwner();
         $has_manage_access = $this->zacl->check_acl('f_' . $fed->getId(), 'manage', $group, '');
         if (!$has_manage_access)
         {
@@ -348,13 +347,11 @@ class Access_manage extends MY_Controller {
         $row = array();
         $i = 0;
         $session_user = $_SESSION['username'];
-        $isitowner = false;
+
         foreach ($users_array as $key => $value)
         {
             $is_me = "";
             $isitme = false;
-
-            $is_owner = "";
             if ($session_user == $key)
             {
                 $is_me = '<span class="alert">' . lang('rr_you') . '</span>';
@@ -371,11 +368,11 @@ class Access_manage extends MY_Controller {
             }
             if ($k)
             {
-                $row[$i] = array('' . $is_me . ' ' . $key . ' (Administrator' . showBubbleHelp('' . lang('rhelp_admfullright') . '') . ')  ' . $is_owner . '', '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '');
+                $row[$i] = array('' . $is_me . ' ' . $key . ' (Administrator' . showBubbleHelp('' . lang('rhelp_admfullright') . '') . ')', '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '');
             }
             else
             {
-                $row[$i][] = $is_me . " " . $key . " " . $is_owner;
+                $row[$i][] = $is_me . " " . $key . " ";
                 $hasAccess = lang('rr_hasaccess');
                 $hasNoAccess = lang('rr_hasnoaccess');
                 foreach ($value as $ackey => $acvalue)
