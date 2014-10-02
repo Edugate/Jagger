@@ -1482,8 +1482,6 @@ class Provider
      */
     public function overwriteByProvider(Provider $provider)
     {
-        $this->ci = & get_instance();
-        $this->em = $this->ci->doctrine->em;
         $this->setName($provider->getName());
         $this->setLocalName($provider->getLocalName());
         $this->setDisplayName($provider->getDisplayName());
@@ -1537,7 +1535,6 @@ class Provider
         {
             $this->setContact($cn2);
         }
-
         foreach ($this->getExtendMetadata() as $f)
         {
             if (!empty($f))
