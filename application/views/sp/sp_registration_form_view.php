@@ -1,7 +1,8 @@
 <?php
 $this->load->helper("cert");
 $errors_v = validation_errors('<span>', '</span><br />');
-if (!empty($errors_v)) {
+if (!empty($errors_v))
+{
     echo '<div class="error">' . $errors_v . '</div>';
 }
 
@@ -19,8 +20,8 @@ echo form_open($action, $form_attributes);
 <?php
 echo form_fieldset('Step1');
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns">'; 
-echo jform_label('Metadata <small>(' . lang('rr_optional') . ')</small>'.showBubbleHelp(lang('rhelp_regspparsemeta')), 'metadatabody');
+echo '<div class="small-3 columns">';
+echo jform_label('Metadata <small>(' . lang('rr_optional') . ')</small>' . showBubbleHelp(lang('rhelp_regspparsemeta')), 'metadatabody');
 echo '</div>';
 echo '<div class="small-6 large-7 columns">';
 echo form_textarea(array(
@@ -33,16 +34,16 @@ echo form_textarea(array(
 ));
 echo '</div>';
 
-echo '<div class="small-3 large-2 columns"><button  type="button" name="parsemetadatasp" id="parsemetadatasp" value="parsemetadatasp" class="savebutton">'.lang('btnparsemeta').'</button>';
+echo '<div class="small-3 large-2 columns"><button  type="button" name="parsemetadatasp" id="parsemetadatasp" value="parsemetadatasp" class="savebutton">' . lang('btnparsemeta') . '</button>';
 echo '</div>';
 echo '</div>';
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns">'.jform_label(lang('advancedmode'),'advanced').'</div>';
+echo '<div class="small-3 columns">' . jform_label(lang('advancedmode'), 'advanced') . '</div>';
 echo '<div class="small-6 large-7 end columns text-left"><input type="checkbox" name="advanced" id="advanced" value="advanced"/></div>';
-echo '</div>'; 
+echo '</div>';
 
-echo '<button type="button" name="next" class="simplemode next savebutton button">'. lang('nextstep').'</button>';
-echo '<button type="submit" name="next" class="advancedmode button" value="'.base_url().'providers/sp_registration/advanced">'.lang('btngoadvancedmode').'</button>';
+echo '<button type="button" name="next" class="simplemode next savebutton button">' . lang('nextstep') . '</button>';
+echo '<button type="submit" name="next" class="advancedmode button" value="' . base_url() . 'providers/sp_registration/advanced">' . lang('btngoadvancedmode') . '</button>';
 
 echo form_fieldset_close();
 ?>
@@ -52,19 +53,19 @@ echo form_fieldset('General');
 /**
  * federation select
  */
-if(!empty($federations) && is_array($federations))
+if (!empty($federations) && is_array($federations))
 {
     echo '<div class="small-12 columns"><div class="small-3 columns">';
-    echo jform_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'federation').'</div>';
+    echo jform_label(lang('rr_federation') . ' ' . showBubbleHelp(lang('rhelp_onlypublicfeds')) . '', 'federation') . '</div>';
     echo '<div class="small-6 large-7 columns end">';
-    echo form_dropdown('federation', $federations,set_value('federation'));
+    echo form_dropdown('federation', $federations, set_value('federation'));
     echo '</div>';
     echo '</div>';
 }
 echo '<div class="small-12 columns">';
 echo '<div class="small-3 columns">' . jform_label(lang('rr_entityid'), 'entityid');
 echo '</div>';
- echo '<div class="small-6 large-7 columns end">';
+echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
     'id' => 'entityid',
     'name' => 'entityid',
@@ -123,7 +124,6 @@ echo form_input(array(
 ));
 echo '</div>';
 echo '</div>';
-
 ?>
 <button type="button" name="previous" class="previous savebutton"><?php echo lang('prevstep'); ?></button>
 <button type="button" name="next" class="next savebutton"><?php echo lang('nextstep'); ?></button>
@@ -140,14 +140,14 @@ echo form_fieldset(lang('rr_technicalinformation'));
 
 echo '<div class="spregacs">';
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns">'.jform_label(lang('rr_assertionconsumerservicebind') . showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding').'</div>';
+echo '<div class="small-3 columns">' . jform_label(lang('rr_assertionconsumerservicebind') . showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding') . '</div>';
 $dropdownid = 'id="acs_bind[0]"';
 echo '<div class="small-6 large-7 columns end">';
 echo form_dropdown('acs_bind[0]', $acs_dropdown, set_value('acs_bind[0]'), $dropdownid);
 echo '</div>';
 echo '</div>';
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns">'.jform_label(lang('rr_acsurl') . showBubbleHelp(lang('rhelp_acsurl')), 'acs_url[0]').'</div>';
+echo '<div class="small-3 columns">' . jform_label(lang('rr_acsurl') . showBubbleHelp(lang('rhelp_acsurl')), 'acs_url[0]') . '</div>';
 
 $inp = array(
     'id' => 'acs_url[0]',
@@ -155,7 +155,7 @@ $inp = array(
     'value' => set_value('acs_url[0]'),
     'class' => 'required',
 );
-echo '<div class="small-6 large-6 columns">'.form_input($inp).'</div>';
+echo '<div class="small-6 large-6 columns">' . form_input($inp) . '</div>';
 echo '<div class="small-1 large-1 columns text-left end">';
 $inp = array(
     'id' => 'acs_order[0]',
@@ -172,42 +172,41 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 
-foreach($acs as $k => $v)
+foreach ($acs as $k => $v)
 {
-echo '<div class="optspregacs">';
-echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns">'.jform_label(lang('rr_assertionconsumerservicebind') . showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding').'</div>';
-$dropdownid = 'id="acs_bind['.$k.']"';
-echo '<div class="small-6 large-7 columns end">'.form_dropdown('acs_bind['.$k.']', $acs_dropdown, set_value('acs_bind['.$k.']'), $v['bind']).'</div>';
-echo '</div>';
-echo '<div class="small-12 columns">';
+    echo '<div class="optspregacs">';
+    echo '<div class="small-12 columns">';
+    echo '<div class="small-3 columns">' . jform_label(lang('rr_assertionconsumerservicebind') . showBubbleHelp(lang('rhelp_assertionconsumer')), 'assertionconsumer_binding') . '</div>';
+    $dropdownid = 'id="acs_bind[' . $k . ']"';
+    echo '<div class="small-6 large-7 columns end">' . form_dropdown('acs_bind[' . $k . ']', $acs_dropdown, set_value('acs_bind[' . $k . ']'), $v['bind']) . '</div>';
+    echo '</div>';
+    echo '<div class="small-12 columns">';
 
-echo '<div class="small-3 columns">'.jform_label(lang('rr_acsurl') . showBubbleHelp(lang('rhelp_acsurl')), 'acs_url['.$k.']').'</div>';
-$inp = array(
-    'id' => 'acs_url['.$k.']',
-    'name' => 'acs_url['.$k.']',
-    'value' => $v['url'],
-);
-echo '<div class="small-6 large-6 columns">'.form_input($inp).'</div>';
+    echo '<div class="small-3 columns">' . jform_label(lang('rr_acsurl') . showBubbleHelp(lang('rhelp_acsurl')), 'acs_url[' . $k . ']') . '</div>';
+    $inp = array(
+        'id' => 'acs_url[' . $k . ']',
+        'name' => 'acs_url[' . $k . ']',
+        'value' => $v['url'],
+    );
+    echo '<div class="small-6 large-6 columns">' . form_input($inp) . '</div>';
 
-echo '<div class="small-1 large-1 columns text-left end">';
+    echo '<div class="small-1 large-1 columns text-left end">';
 
-$inp = array(
-    'id' => 'acs_order['.$k.']',
-    'name' => 'acs_order['.$k.']',
-    'length' => 3,
-    'value' => set_value('acs_order['.$k.']',$v['order']),
-    'class' => 'acsindex required',
-);
-echo form_input($inp);
-echo '</div>';
-echo '</div>';
-echo '</div>';
-
+    $inp = array(
+        'id' => 'acs_order[' . $k . ']',
+        'name' => 'acs_order[' . $k . ']',
+        'length' => 3,
+        'value' => set_value('acs_order[' . $k . ']', $v['order']),
+        'class' => 'acsindex required',
+    );
+    echo form_input($inp);
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
 }
 
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns">'.jform_label('NameId(s) <small>(' . lang('rr_optional') . ')</small>', 'nameids').'</div>';
+echo '<div class="small-3 columns">' . jform_label('NameId(s) <small>(' . lang('rr_optional') . ')</small>', 'nameids') . '</div>';
 echo '<div class="small-6 large-7 columns end">';
 echo form_textarea(array(
     'id' => 'nameids',
@@ -223,7 +222,7 @@ echo '</div>';
 
 
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns">'.jform_label(lang('rr_certificatesigning') . ' <small>(' . lang('rr_optional') . ')</small>', 'sign_cert_body').'</div>';
+echo '<div class="small-3 columns">' . jform_label(lang('rr_certificatesigning') . ' <small>(' . lang('rr_optional') . ')</small>', 'sign_cert_body') . '</div>';
 echo '<div class="small-6 large-7 columns end">';
 echo form_textarea(array(
     'id' => 'sign_cert_body',
@@ -260,19 +259,18 @@ echo form_fieldset_close();
 <!-- step4 -->
 <?php
 echo form_fieldset(lang('rr_primarycontact'));
+
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns">';
-echo jform_label(lang('rr_contactname'), 'contact_name');
+echo '<div class="small-3 columns">' . jform_label(lang('rr_contactfirstname'), 'contactfname') . '</div>';
+echo '<div class="small-6 large-7 columns end">' . form_input(array('id' => 'contactfname', 'name' => 'contactfname', 'value' => set_value('contactfname'))) . '</div>';
 echo '</div>';
-echo '<div class="small-6 large-7 columns end">';
-echo form_input(array(
-    'id' => 'contact_name',
-    'name' => 'contact_name',
-    'value' => set_value('contact_name'),
-    'class' => 'required',
-));
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">' . jform_label(lang('rr_contactlastname'), 'contactlname') . '</div>';
+echo '<div class="small-6 large-7 columns end">' . form_input(array('id' => 'contactlname', 'name' => 'contactlname', 'value' => set_value('contactlname'))) . '</div>';
 echo '</div>';
-echo '</div>';
+
+
+
 
 $in3 = array('id' => 'contact_mail',
     'name' => 'contact_mail',
@@ -281,13 +279,18 @@ $in3 = array('id' => 'contact_mail',
 );
 echo '<div class="small-12 columns">';
 echo '<div class="small-3 columns">';
-
 echo jform_label(lang('rr_contactemail'), 'contact_mail');
 echo '</div>';
 echo '<div class="small-6 large-7 columns end">';
-echo form_input($in3) ;
+echo form_input($in3);
 echo '</div>';
 echo '</div>';
+
+
+
+
+
+
 
 
 
@@ -305,7 +308,6 @@ echo '<div class="small-6 large-7 columns end">';
 echo form_input($in4);
 echo '</div>';
 echo '</div>';
-
 ?>
 <button type="button" name="previous" class="previous savebutton"><?php echo lang('prevstep'); ?></button>
 <button type="submit" name="submit" value="Submit and wait for approval" class="savebutton saveicon"><?php echo lang('rr_submitwait'); ?></button>

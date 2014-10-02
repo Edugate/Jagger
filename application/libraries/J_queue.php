@@ -520,8 +520,17 @@ class J_queue
 
         $provider[$i++]['header'] = lang('rr_contacts');
         foreach ($objData->getContacts() as $contact) {
+            $phone = $contact->getPhone();
+            if(!empty($phone))
+            {
+                $phoneStr = 'Tel:'.$phone;
+            }
+            else
+            {
+                $phoneStr = '';
+            }
             $provider[$i]['name'] = lang('rr_contact') . ' (' . $contact->getType() . ')';
-            $provider[$i]['value'] = $contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt;";
+            $provider[$i]['value'] = $contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt; ".$phoneStr;
             $i++;
         }
         if($showXML)

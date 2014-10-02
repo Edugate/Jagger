@@ -75,20 +75,19 @@ class Idp_registration extends MY_Controller {
              * create 3 the same contacts objects (administrative,technical,support)
              */
             $contact1 = new models\Contact;
-            $contact1->setFullname($this->input->post('contact_name'));
+            $contact1->setGivenName($this->input->post('contactfname'));
+            $contact1->setSurName($this->input->post('contactlname'));
             $contact1->setType('administrative');
             $contact1->setEmail($this->input->post('contact_mail'));
             $contact1->setPhone($this->input->post('contact_phone'));
             /* clone object */
             $contact2 = clone $contact1;
             $contact2->setType('technical');
-            /* clone object */
-            $contact3 = clone $contact1;
-            $contact3->setType('support');
+            
             /* add contacts to idp collection */
             $idp->setContact($contact1);
             $idp->setContact($contact2);
-            $idp->setContact($contact3);
+            
 
             $signcert = new models\Certificate;
             $signcert->setAsIDPSSO();
@@ -313,9 +312,10 @@ class Idp_registration extends MY_Controller {
         $this->form_validation->set_rules('sso[]', 'SingleSignOn', 'trim|valid_url');
         $this->form_validation->set_rules('sign_cert_body', lang('rr_certificatesigning'), 'trim|required|xss_clean|verify_cert[certbody]');
         $this->form_validation->set_rules('encrypt_cert_body', lang('rr_certificateencrypting'), 'trim|required|xss_clean|verify_cert[certbody]');
-        $this->form_validation->set_rules('contact_phone', 'Phone', 'trim|xss_clean');
-        $this->form_validation->set_rules('contact_name', 'Contact name', 'trim|required|min_length[5]|max_length[255]|xss_clean');
-        $this->form_validation->set_rules('contact_mail', 'Contact email', 'trim|required|max_length[255]|valid_email');
+        $this->form_validation->set_rules('contact_phone', lang('rr_contactphone'), 'trim|xss_clean');
+        $this->form_validation->set_rules('contactfname', lang('rr_contactfirstname'), 'trim|required|min_length[1]|max_length[255]|xss_clean');
+         $this->form_validation->set_rules('contactlname', lang('rr_contactlastname'), 'trim|required|min_length[1]|max_length[255]|xss_clean');
+        $this->form_validation->set_rules('contact_mail', lang('rr_contactemail'), 'trim|required|max_length[255]|valid_email');
         $this->form_validation->set_rules('helpdeskurl', lang('e_orgurl'), 'trim|required|valid_url|xss_clean');
         $this->form_validation->set_rules('idpssoscope', 'Scope', 'trim|required|xss_clean');
         $this->form_validation->set_rules('privacyurl', 'Privacy Statement URL', 'trim|valid_url');

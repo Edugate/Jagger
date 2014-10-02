@@ -206,18 +206,13 @@ echo form_fieldset_close();
 <?php
 echo form_fieldset(lang('rr_primarycontact'));
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns">';
-echo jform_label(lang('rr_contactname'), 'contact_name');
+echo '<div class="small-3 columns">' . jform_label(lang('rr_contactfirstname'), 'contactfname') . '</div>';
+echo '<div class="small-6 large-7 columns end">' . form_input(array('id' => 'contactfname', 'name' => 'contactfname', 'value' => set_value('contactfname'))) . '</div>';
 echo '</div>';
-echo '<div class="small-6 large-7 columns end">';
-
-echo form_input(array(
-    'id' => 'contact_name',
-    'name' => 'contact_name',
-    'value' => set_value('contact_name'),
-    'class' => 'required',
-));
-echo '</div></div>';
+echo '<div class="small-12 columns">';
+echo '<div class="small-3 columns">' . jform_label(lang('rr_contactlastname'), 'contactlname') . '</div>';
+echo '<div class="small-6 large-7 columns end">' . form_input(array('id' => 'contactlname', 'name' => 'contactlname', 'value' => set_value('contactlname'))) . '</div>';
+echo '</div>';
 $in3 = array('id' => 'contact_mail',
     'name' => 'contact_mail',
     'value' => set_value('contact_mail'),
