@@ -80,7 +80,7 @@ class FederationMembers
       return $this->joinstate;
    }
 
-   public function getIsFinalMembership()
+   public function isFinalMembership()
    {
       return !($this->isDisabled || $this->isBanned || ($this->joinstate == 2));
  

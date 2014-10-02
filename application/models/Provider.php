@@ -1803,7 +1803,7 @@ class Provider
         $federations = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($mem as $m)
         {
-            if ($m->getIsFinalMembership())
+            if ($m->isFinalMembership())
             {
                 $federations->add($m->getFederation());
                 ;

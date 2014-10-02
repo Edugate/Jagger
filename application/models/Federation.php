@@ -514,7 +514,7 @@ class Federation {
         $mem = $this->membership;
         foreach ($mem as $m)
         {
-            $isOK = $m->getIsFinalMembership();
+            $isOK = $m->isFinalMembership();
             if ($isOK)
             {
                 $members->set($m->getProvider()->getEntityId(), $m->getProvider());
