@@ -184,8 +184,8 @@ class Manage extends MY_Controller
             }
             $membersInArray['' . $ptype . ''][] = array(
                 'pid' => $p->getId(),
-                'mdisabled' => (int) $m->getIsDisabled(),
-                'mbanned' => (int) $m->getIsBanned(),
+                'mdisabled' => (int) $m->isDisabled(),
+                'mbanned' => (int) $m->isBanned(),
                 'entityid' => $p->getEntityId(),
                 'pname' => $name,
                 'penabled' => $p->getAvailable(),

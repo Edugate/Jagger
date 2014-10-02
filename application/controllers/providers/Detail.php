@@ -239,7 +239,7 @@ class Detail extends MY_Controller {
         // off canvas menu for provider
         $entmenu = array();
 
-        $isValidTime = $ent->getIsValidFromTo();
+        $isValidTime = $ent->isValidFromTo();
         $isActive = $ent->getActive();
         $isLocal = $ent->getLocal();
         $isPublicListed = $ent->getPublicVisible();
@@ -683,12 +683,12 @@ class Detail extends MY_Controller {
                 }
                 $membershipNotLeft[] = 1;
                 $membershipDisabled = '';
-                if ($f->getIsDisabled())
+                if ($f->isDisabled())
                 {
                     $membershipDisabled = makeLabel('disabled', lang('membership_inactive'), lang('membership_inactive'));
                 }
                 $membershipBanned = '';
-                if ($f->getIsBanned())
+                if ($f->isBanned())
                 {
                     $membershipBanned = makeLabel('disabled', lang('membership_banned'), lang('membership_banned'));
                 }

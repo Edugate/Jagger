@@ -199,7 +199,7 @@ class Providers {
         $membership = $provider->getMembership();
         foreach ($membership as $m)
         {
-            \log_message('debug', 'GKS2: disabled: ' . (int) $m->getIsDisabled() . ' : ' . $m->getFederation()->getName());
+            \log_message('debug', 'GKS2: disabled: ' . (int) $m->isDisabled() . ' : ' . $m->getFederation()->getName());
             $fullyEnabled = $m->isFinalMembership();
             \log_message('debug', 'GKS2: fullyEnabled: ' . $fullyEnabled . ' : ' . $m->getFederation()->getName());
             $federationEnabled = $m->getFederation()->getActive();
