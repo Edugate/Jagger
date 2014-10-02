@@ -822,6 +822,26 @@ class Provider
         $this->scope = serialize($ex);
         return $this;
     }
+    private function overwriteScopeFull(Provider $provider)
+    {
+       $pScope = $provider->getScopeFull();
+       if(!isset($pScope['idpsso']))
+       {
+           $pScope['idpsso'] = array();
+       }
+       if(!isset($pScope['aa']))
+       {
+           $pScope['aa'] = array();
+       }
+       foreach($pScope as $k => $v)
+       {
+           if($k === 'idpsso' || $k === 'aa')
+           {
+               $this->setScope($k, $v);
+           }
+       }
+       return $this;
+    }
 
     public function overwriteScope($n, Provider $provider)
     {
@@ -1462,14 +1482,11 @@ class Provider
      */
     public function overwriteByProvider(Provider $provider)
     {
-        $this->ci = & get_instance();
-        $this->em = $this->ci->doctrine->em;
         $this->setName($provider->getName());
         $this->setLocalName($provider->getLocalName());
         $this->setDisplayName($provider->getDisplayName());
         $this->setLocalDisplayName($provider->getLocalDisplayName());
-        $this->setScope('idpsso', $provider->getScope('idpsso'));
-        $this->setScope('aa', $provider->getScope('aa'));
+        $this->overwriteScopeFull($provider);
         $this->setEntityId($provider->getEntityId());
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
         $this->setRegistrationDate($provider->getRegistrationDate());
@@ -1518,7 +1535,6 @@ class Provider
         {
             $this->setContact($cn2);
         }
-
         foreach ($this->getExtendMetadata() as $f)
         {
             if (!empty($f))
@@ -1716,6 +1732,18 @@ class Provider
         else
         {
             return array();
+        }
+    }
+    public function getScopeFull()
+    {
+        $s = @unserialize($this->scope);
+        if(!empty($s))
+        {
+            return $s;
+        }
+        else
+        {
+            return array('aa'=>array(),'idpsso'=>array());
         }
     }
 

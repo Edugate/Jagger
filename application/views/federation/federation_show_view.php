@@ -42,7 +42,6 @@ foreach ($result as $k => $v)
     
     }
     $this->table->set_template($tmpl);
-   // $this->table->set_heading('', '');
     echo $this->table->generate($v);
     $this->table->clear();
     echo '</div>';

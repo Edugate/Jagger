@@ -359,7 +359,6 @@ class Attribute_requirement extends MY_Controller
 
     public function fedsubmit()
     {
-
         log_message('debug', __METHOD__ . "fed-submited");
         $attr = $this->input->post('attribute');
         $status = $this->input->post('requirement');
@@ -387,8 +386,7 @@ class Attribute_requirement extends MY_Controller
 
         if (!$hasWriteAccess)
         {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rr_noperm_mngtattrforfed') . ': ' . $f->getName();
+            $data = array('content_view'=>'nopermission','error'=>''.lang('rr_noperm_mngtattrforfed') . ': ' . $f->getName().'');
             $this->load->view('page', $data);
         }
         if ($attr && $status && in_array($action, array('Add', 'Modify', 'Remove')))

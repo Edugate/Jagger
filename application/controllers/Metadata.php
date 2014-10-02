@@ -45,7 +45,7 @@ class Metadata extends MY_Controller {
             $type = 'all';
         }
 
-        $permitPull = $this->_checkAccess();
+        $permitPull = $this->checkAccess();
         if ($permitPull !== TRUE)
         {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
@@ -183,7 +183,7 @@ class Metadata extends MY_Controller {
             show_error('Not found', 404);
         }
         $data = array();
-        $permitPull = $this->_checkAccess();
+        $permitPull = $this->checkAccess();
         if ($permitPull !== TRUE)
         {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
@@ -345,10 +345,20 @@ class Metadata extends MY_Controller {
         return !(is_array($circlemetaFeature) && isset($circlemetaFeature['circlemeta']) && $circlemetaFeature['circlemeta'] === TRUE);
     }
 
+    private function isProviderAllowedForCircle(\models\Provider $provider)
+    {
+        $circleForExternalAllowed = $this->config->item('disable_extcirclemeta');
+        $isLocal = $provider->getLocal();
+        $result = true;
+        if (!$isLocal && (!empty($circleForExternalAllowed) && $circleForExternalAllowed === true))
+        {
+            $result = false;
+        }
+        return $result;
+    }
+
     public function circle($entityId = NULL, $m = NULL)
     {
-        $circlemetaFeature = $this->config->item('featdisable');
-        $circleEnabled = !(is_array($circlemetaFeature) && isset($circlemetaFeature['circlemeta']) && $circlemetaFeature['circlemeta'] === TRUE);
         $isEnabled = $this->isCircleFeatureEnabled();
         if (!$isEnabled)
         {
@@ -358,7 +368,7 @@ class Metadata extends MY_Controller {
         {
             show_error('Request not allowed', 403);
         }
-        $permitPull = $this->_checkAccess();
+        $permitPull = $this->checkAccess();
         if ($permitPull !== TRUE)
         {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
@@ -366,8 +376,8 @@ class Metadata extends MY_Controller {
         }
         $data = array();
         $name = base64url_decode($entityId);
-        $tmp = new models\Providers;
-        $me = $tmp->getOneByEntityId($name);
+        $me = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $name . ''));
+
         if (empty($me))
         {
             log_message('debug', 'Failed generating circle metadata for ' . $name);
@@ -375,24 +385,18 @@ class Metadata extends MY_Controller {
             return;
         }
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
-        if (!empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE)
+
+        if (!$this->isProviderAllowedForCircle($me))
         {
-            $is_local = $me->getLocal();
-            if (!$is_local)
-            {
-                log_message('warning', 'Cannot generate circle metadata for external provider:' . $me->getEntityId());
-                log_message('debug', 'To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE');
-                show_error($me->getEntityId() . ': This is external provider. Cannot generate circle metadata', 403);
-                return;
-            }
+            log_message('warning', 'Cannot generate circle metadata for external provider:' . $me->getEntityId());
+            log_message('debug', 'To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE');
+            show_error($me->getEntityId() . ': This is not managed localy. Cannot generate circle metadata', 403);
+            return;
         }
         $keyPrefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
         $cacheId = 'circlemeta_' . $me->getId();
-
         $options['attrs'] = 1;
-
-
         $p = new models\Providers;
         $p1 = $p->getCircleMembersByType($me, $excludeDisabledFeds = TRUE);
         $docXML = new \DOMDocument();
@@ -418,7 +422,7 @@ class Metadata extends MY_Controller {
         }
         $Entities_Node = $docXML->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EntitiesDescriptor');
         $Entities_Node->setAttribute('validUntil', $validuntil);
-        $Entities_Node->setAttribute('Name',''.$me->getEntityId().'');
+        $Entities_Node->setAttribute('Name', '' . $me->getEntityId() . '');
         $Entities_Node->setAttribute('ID', '' . $idprefix . $idsuffix . '');
 
         foreach ($p1 as $v)
@@ -476,7 +480,7 @@ class Metadata extends MY_Controller {
         $this->load->view('metadata_view', $data);
     }
 
-    private function _checkAccess()
+    private function checkAccess()
     {
         $permitPull = FALSE;
 

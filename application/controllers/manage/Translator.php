@@ -59,8 +59,9 @@ class Translator extends MY_Controller
     public function tolanguage($l)
     {
         $original = $this->lang->language;
-        $allowedlangs = array('pt', 'pl', 'it', 'es', 'lt', 'fr', 'de', 'ar', 'cs', 'fr-ca', 'sr', 'ga');
-        if (in_array($l, $allowedlangs))
+        $allowedlangs = MY_Controller::guiLangs();
+        unset($allowedlangs['en']);
+        if (array_key_exists($l, $allowedlangs))
         {
             $langto = $l;
         }

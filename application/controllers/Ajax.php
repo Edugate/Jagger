@@ -163,18 +163,20 @@ class Ajax extends MY_Controller
 
     public function changelanguage($language)
     {
-
         if ($this->input->is_ajax_request())
         {
-            log_message('debug', 'ajax');
-            $language = substr($language, 0, 5);
-            if (in_array($language, array('pl', 'pt', 'it', 'lt', 'es', 'cs', 'fr-ca', 'ga', 'sr')))
+            $language = substr($language, 0, 7);
+            
+            $langs = MY_Controller::guiLangs();
+            
+            if (array_key_exists($language, $langs))
             {
-                log_message('debug', 'GKS lang selected: ' . $language);
+                log_message('info',__METHOD__.'changed gui lang to:'.$language);
                 $cookie_value = $language;
             }
             else
             {
+                log_message('warning',__METHOD__.' '.$language.' not found in allowed langs, setting english');
                 $cookie_value = 'english';
             }
             $lang_cookie = array(
