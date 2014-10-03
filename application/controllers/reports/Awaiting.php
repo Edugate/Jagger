@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -17,8 +18,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Awaiting extends MY_Controller
-{
+class Awaiting extends MY_Controller {
 
     private $alert;
     private $error_message;
@@ -26,9 +26,7 @@ class Awaiting extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        $this->load->helper('form');
-        $this->load->helper('url');
-        $this->load->helper('cert');
+        $this->load->helper(array('form', 'url', 'cert'));
         $this->load->library('table');
         $this->title = lang('title_approval');
     }
@@ -67,18 +65,16 @@ class Awaiting extends MY_Controller
         }
         $this->load->library('zacl');
         $this->load->library('j_queue');
-        $queueArray = $this->em->getRepository("models\Queue")->findAll();
-        $kid = 0;
-        $queuelist = $this->_getQueueList();
-        $data['list'] = $queuelist;
-
-        $data['error_message'] = $this->session->flashdata('error_message');
-
-        $data['content_view'] = 'reports/awaiting_list_view';
+        $queuelist = $this->getQueueList();
+        $data = array(
+            'list' => $queuelist,
+            'error_message' => $this->session->flashdata('error_message'),
+            'content_view' => 'reports/awaiting_list_view'
+        );
         $this->load->view('reports/awaiting_list_view', $data);
     }
 
-    private function _hasAccess($q)
+    private function hasQAccess($q)
     {
         $result = false;
         $isAdministrator = $this->j_auth->isAdministrator();
@@ -96,7 +92,6 @@ class Awaiting extends MY_Controller
                 return true;
             }
         }
-
         $action = $q->getAction();
         $recipient = $q->getRecipient();
         $recipientType = $q->getRecipientType();
@@ -124,7 +119,7 @@ class Awaiting extends MY_Controller
         return $result;
     }
 
-    private function _hasApproveAccess($q)
+    private function hasApproveAccess($q)
     {
         $result = false;
         $isAdministrator = $this->j_auth->isAdministrator();
@@ -132,44 +127,28 @@ class Awaiting extends MY_Controller
         {
             return true;
         }
-
         $action = $q->getAction();
         $recipient = $q->getRecipient();
         $recipientType = $q->getRecipientType();
 
-        if ($action === 'Join')
+        if ($action === 'Join' && !empty($recipientType))
         {
-            if (!empty($recipientType))
+            if ($recipientType === 'federation' && !empty($recipient))
             {
-                if ($recipientType === 'federation')
-                {
-                    if (!empty($recipient))
-                    {
-                        $hasAccess = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '');
-                        return $hasAccess;
-                    }
-                }
-                elseif ($recipientType === 'provider')
-                {
-                    if (!empty($recipient))
-                    {
-                        $hasAccess = $this->zacl->check_acl($recipient, 'write', 'provider', '');
-                        return $hasAccess;
-                    }
-                }
+                $hasAccess = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '');
+                return $hasAccess;
+            }
+            elseif ($recipientType === 'provider' && !empty($recipient))
+            {
+                $hasAccess = $this->zacl->check_acl($recipient, 'write', 'provider', '');
+                return $hasAccess;
             }
         }
         return $result;
     }
 
-    private function _getQueueList()
+    private function getQueueList()
     {
-        if (!$this->j_auth->logged_in())
-        {
-            log_message('error', __METHOD__ . ' user is not logged in');
-            return false;
-        }
-
         $this->load->library('zacl');
         $this->load->library('j_queue');
         $queueArray = $this->em->getRepository("models\Queue")->findAll();
@@ -179,7 +158,7 @@ class Awaiting extends MY_Controller
         {
             $c_creator = 'anonymous';
             $creator = $q->getCreator();
-            $access = $this->_hasAccess($q);
+            $access = $this->hasQAccess($q);
             if (!$access)
             {
                 continue;
@@ -220,13 +199,12 @@ class Awaiting extends MY_Controller
         return $result;
     }
 
-    function dashajaxrefresh()
+    public function dashajaxrefresh()
     {
         if (!$this->input->is_ajax_request())
         {
             show_error('Permission denied', 403);
         }
-
         if (!$this->j_auth->logged_in())
         {
             set_status_header(403);
@@ -235,15 +213,15 @@ class Awaiting extends MY_Controller
         }
         $this->load->library('zacl');
         $this->load->library('j_queue');
-
-        $queuelist = $this->_getQueueList();
-        $data['list'] = $queuelist;
-
-        $data['content_view'] = 'reports/dashawaiting_list_view';
+        $queuelist = $this->getQueueList();
+        $data = array(
+            'list' => $queuelist,
+            'content_view' => 'reports/dashawaiting_list_view'
+        );
         $this->load->view('reports/dashawaiting_list_view', $data);
     }
 
-    function counterqueue()
+    public function counterqueue()
     {
         if (!$this->input->is_ajax_request())
         {
@@ -259,7 +237,7 @@ class Awaiting extends MY_Controller
         }
         $this->load->library('zacl');
         $this->load->library('j_queue');
-        $queuelist = $this->_getQueueList();
+        $queuelist = $this->getQueueList();
         $c = count($queuelist);
         set_status_header(200);
         echo $c;
@@ -268,9 +246,7 @@ class Awaiting extends MY_Controller
 
     private function idpDetails($queueList)
     {
-        $objData = null;
         $data = $queueList->getData();
-        $objType = $queueList->getObjType();
         $objData = new models\Provider;
         $objData->importFromArray($data);
     }
@@ -378,25 +354,21 @@ class Awaiting extends MY_Controller
     function detail($token)
     {
         $loggedin = $this->j_auth->logged_in();
-        if ($loggedin)
-        {
-            $this->load->library('zacl');
-            $this->load->library('j_queue');
-        }
-        else
+        if (!$loggedin)
         {
             redirect('auth/login', 'location');
         }
+        $this->load->library(array('zacl', 'j_queue'));
 
         $qObject = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $token));
         if (empty($qObject))
         {
-            $data['content_view'] = 'error_message';
-            $data['error_message'] = lang('rerror_qid_noexist');
-            $this->load->view('page', $data);
+            $dataview = array(
+                'content_view' => 'error_message',
+                'error_message' => lang('rerror_qid_noexist')
+            );
+            $this->load->view('page', $dataview);
         }
-
-        $data = $qObject->getData();
         $objType = $qObject->getObjType();
         $objAction = $qObject->getAction();
         $recipientType = $qObject->getRecipientType();
@@ -407,13 +379,12 @@ class Awaiting extends MY_Controller
             if (!empty($r))
             {
                 $this->load->view('page', $r['data']);
-                return;
             }
             else
             {
                 show_error('Unknown error', 500);
-                return;
             }
+            return;
         }
         elseif ($objType === 'Federation')
         {
@@ -422,90 +393,78 @@ class Awaiting extends MY_Controller
             {
                 $this->load->view('page', $r['data']);
             }
+            else
+            {
+                show_error('Unknown error', 500);
+            }
+            return;
         }
         elseif ($objType === 'User' && $objAction === 'Create')
         {
-            if ($this->_hasAccess($qObject))
+            if ($this->hasQAccess($qObject))
             {
-                $data['userdata'] = $this->j_queue->displayRegisterUser($qObject);
                 $buttons = $this->j_queue->displayFormsButtons($qObject->getId());
-                $data['userdata'][]['2cols'] = $buttons;
-                $data['content_view'] = 'reports/awaiting_user_register_view';
-                $data['error_message'] = $this->error_message;
-
-                $this->load->view('page', $data);
+                $dataview = array(
+                    'userdata' => $this->j_queue->displayRegisterUser($qObject),
+                    'content_view' => 'reports/awaiting_user_register_view',
+                    'error_message' => $this->error_message
+                );
+                $dataview['userdata'][]['2cols'] = $buttons;
+                $this->load->view('page', $dataview);
             }
             else
             {
-                $data['content_view'] = 'nopermission';
-                $data['error'] = lang('rr_nopermission');
-                $this->load->view('page', $data);
+                $dataview = array(
+                    'content_view' => 'nopermission',
+                    'error' => lang('rr_nopermission')
+                );
+                $this->load->view('page', $dataview);
             }
         }
         elseif ($objType === 'n' && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) // apply for entity category
         {
-            if ($this->_hasAccess($qObject))
+            if ($this->hasQAccess($qObject))
             {
-                $approveaccess = $this->_hasApproveAccess($qObject);
-                $data['requestdata'] = $this->j_queue->displayApplyForEntityCategory($qObject);
-                if ($approveaccess)
-                {
-                    $buttons = $this->j_queue->displayFormsButtons($qObject->getId());
-                }
-                else
-                {
-                    $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), TRUE);
-                }
-                $data['content_view'] = 'reports/awaiting_applyforentcat_view';
-                $data['requestdata'][]['2cols'] = $buttons;
-                $this->load->view('page', $data);
+                $approveaccess = $this->hasApproveAccess($qObject);
+                $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), $approveaccess);
+                $dataview = array(
+                    'requestdata'=>$this->j_queue->displayApplyForEntityCategory($qObject),
+                    'content_view'=> 'reports/awaiting_applyforentcat_view'
+                );
+                $dataview['requestdata'][]['2cols'] = $buttons;
+                $this->load->view('page', $dataview);
             }
             else
             {
-                $data['content_view'] = 'nopermission';
-                $data['error'] = lang('rr_nopermission');
-                $this->load->view('page', $data);
+                $dataview = array(
+                    'content_view'=>'nopermission',
+                    'error'=>lang('rr_nopermission')
+                );
+                $this->load->view('page', $dataview);
             }
         }
         elseif ($objType === 'n' && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) // apply for entity category
         {
-            if ($this->_hasAccess($qObject))
+            if ($this->hasQAccess($qObject))
             {
-                $approveaccess = $this->_hasApproveAccess($qObject);
-                $data['requestdata'] = $this->j_queue->displayApplyForRegistrationPolicy($qObject);
-                if ($approveaccess)
-                {
-                    $buttons = $this->j_queue->displayFormsButtons($qObject->getId());
-                }
-                else
-                {
-                    $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), TRUE);
-                }
-                $data['content_view'] = 'reports/awaiting_applyforentcat_view';
-                $data['requestdata'][]['2cols'] = $buttons;
-                $this->load->view('page', $data);
+                $approveaccess = $this->hasApproveAccess($qObject);
+                $dataview['requestdata'] = $this->j_queue->displayApplyForRegistrationPolicy($qObject);
+                $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), $approveaccess);
+                $dataview['content_view'] = 'reports/awaiting_applyforentcat_view';
+                $dataview['requestdata'][]['2cols'] = $buttons;
+                $this->load->view('page', $dataview);
             }
             else
             {
-                $data['content_view'] = 'nopermission';
-                $data['error'] = lang('rr_nopermission');
-                $this->load->view('page', $data);
+                $dataview['content_view'] = 'nopermission';
+                $dataview['error'] = lang('rr_nopermission');
+                $this->load->view('page', $dataview);
             }
         }
         else
         {
-            $data['error'] = 'Unknown type';
+            $dataview['error'] = 'Unknown type';
         }
-    }
-
-    private function _idpDetail($id, $action)
-    {
-        
-    }
-
-    private function _idpCreateApprove($obj)
-    {
-        
     }
 
     function approve()
@@ -534,7 +493,7 @@ class Awaiting extends MY_Controller
                 log_message('debug', 'queue object is not empty');
                 if (($queueAction === 'Create') && ($queueObj->getType() === 'User'))
                 {
-                    $approve_allowed = $this->_hasApproveAccess($queueObj);
+                    $approve_allowed = $this->hasApproveAccess($queueObj);
                     if (!$approve_allowed)
                     {
                         $data['error_message'] = lang('rerror_noperm_approve');
@@ -1207,7 +1166,7 @@ class Awaiting extends MY_Controller
             {
                 $queueAction = $queueObj->getAction();
                 $creator = $queueObj->getCreator();
-                $reject_access = $this->_hasAccess($queueObj);
+                $reject_access = $this->hasQAccess($queueObj);
                 $recipienttype = $queueObj->getRecipientType();
                 if (!empty($creator))
                 {
