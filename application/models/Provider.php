@@ -1491,7 +1491,6 @@ class Provider
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
         $this->setRegistrationDate($provider->getRegistrationDate());
         $this->overwriteWithNameid($provider);
-        log_message('debug', 'GG :' . serialize($this->getNameIds()));
         $prototypes = array('idpsso', 'aa', 'spsso');
         foreach ($prototypes as $a)
         {
