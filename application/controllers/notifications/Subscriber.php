@@ -23,6 +23,7 @@ class Subscriber extends MY_Controller {
     function __construct()
     {
         parent::__construct();
+        $this->load->helper('shortcodes');
     }
 
     private function getSubscriptionsToJson($subscribtionOwner)
@@ -213,7 +214,6 @@ class Subscriber extends MY_Controller {
             return;
         }
         $isAdministator = $this->j_auth->isAdministrator();
-
         $decodeduser = base64url_decode($encodeduser);
         $requetmatchuser = (boolean) (strcmp($username, $decodeduser) == 0);
         if (!($isAdministator || $requetmatchuser))
@@ -258,7 +258,7 @@ class Subscriber extends MY_Controller {
             return;
         }
         $nemail = trim($this->input->post('semail'));
-        $this->load->helper('shortcodes');
+
         $codes = notificationCodes();
         if (!array_key_exists($ntype, $codes))
         {
