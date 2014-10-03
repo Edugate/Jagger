@@ -1580,7 +1580,7 @@ class Providerupdater {
         {
             $typeFilter = array('idp');
             $idpextend = $ent->getExtendMetadata()->filter(
-                    function($entry) use ($typeFilter)
+                    function(models\ExtendMetadata $entry) use ($typeFilter)
             {
                 return in_array($entry->getType(), $typeFilter);
             });
@@ -1590,7 +1590,7 @@ class Providerupdater {
 
             $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
-                    function($entry) use ($doFilter)
+                    function(models\ExtendMetadata $entry) use ($doFilter)
             {
                 return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
             });
@@ -1615,7 +1615,7 @@ class Providerupdater {
                     log_message('debug', 'PKS ' . $elkey);
                     $doFilter = array('' . $elvalue . '');
                     $collection = $ent->getExtendMetadata()->filter(
-                            function($entry) use ($doFilter)
+                            function(models\ExtendMetadata $entry) use ($doFilter)
                     {
                         return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                     });
@@ -1665,11 +1665,10 @@ class Providerupdater {
             }
             // logos not updatting value - just remove entry or add new one
             if (isset($ch['uii']['idpsso']['logo']) && is_array($ch['uii']['idpsso']['logo']))
-            {
-                log_message('debug', 'PKS LOOOO');
+            {     
                 $doFilter = array('Logo');
                 $collection = $ent->getExtendMetadata()->filter(
-                        function($entry) use ($doFilter)
+                        function(models\ExtendMetadata $entry) use ($doFilter)
                 {
                     return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                 });
@@ -1757,13 +1756,13 @@ class Providerupdater {
         {
             $typeFilter = array('sp');
             $spextend = $ent->getExtendMetadata()->filter(
-                    function($entry) use ($typeFilter)
+                    function(models\ExtendMetadata $entry) use ($typeFilter)
             {
                 return in_array($entry->getType(), $typeFilter);
             });
             $doFilter = array('t' => array('sp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
-                    function($entry) use ($doFilter)
+                    function(models\ExtendMetadata $entry) use ($doFilter)
             {
                 return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
             });
@@ -1787,7 +1786,7 @@ class Providerupdater {
                 {
                     $doFilter = array('' . $elvalue . '');
                     $collection = $ent->getExtendMetadata()->filter(
-                            function($entry) use ($doFilter)
+                            function(models\ExtendMetadata $entry) use ($doFilter)
                     {
                         return ($entry->getType() === 'sp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                     });
@@ -1839,7 +1838,7 @@ class Providerupdater {
 
                 $doFilter = array('Logo');
                 $collection = $ent->getExtendMetadata()->filter(
-                        function($entry) use ($doFilter)
+                        function(models\ExtendMetadata $entry) use ($doFilter)
                 {
                     return ($entry->getType() === 'sp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                 });

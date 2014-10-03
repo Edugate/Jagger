@@ -131,7 +131,7 @@ class Providers {
         $feds = array();
         foreach ($membership as $m)
         {
-            $fullTrustEnabled = $m->getIsFinalMembership();
+            $fullTrustEnabled = $m->isFinalMembership();
             if ($excludeDisabledFeds)
             {
                 $isFedEnabled = TRUE;
@@ -199,8 +199,8 @@ class Providers {
         $membership = $provider->getMembership();
         foreach ($membership as $m)
         {
-            \log_message('debug', 'GKS2: disabled: ' . (int) $m->getIsDisabled() . ' : ' . $m->getFederation()->getName());
-            $fullyEnabled = $m->getIsFinalMembership();
+            \log_message('debug', 'GKS2: disabled: ' . (int) $m->isDisabled() . ' : ' . $m->getFederation()->getName());
+            $fullyEnabled = $m->isFinalMembership();
             \log_message('debug', 'GKS2: fullyEnabled: ' . $fullyEnabled . ' : ' . $m->getFederation()->getName());
             $federationEnabled = $m->getFederation()->getActive();
             if ($fullyEnabled && $federationEnabled)

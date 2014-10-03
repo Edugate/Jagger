@@ -514,7 +514,7 @@ class Federation {
         $mem = $this->membership;
         foreach ($mem as $m)
         {
-            $isOK = $m->getIsFinalMembership();
+            $isOK = $m->isFinalMembership();
             if ($isOK)
             {
                 $members->set($m->getProvider()->getEntityId(), $m->getProvider());
@@ -529,7 +529,7 @@ class Federation {
         $mem = $this->membership;
         foreach ($mem as $m)
         {
-            $isOK = !(($m->getJoinState() == 3) || ($m->getJoinState() == 2)) && !($m->getIsDisabled() || $m->getIsBanned());
+            $isOK = !(($m->getJoinState() == 3) || ($m->getJoinState() == 2)) && !($m->isDisabled() || $m->isBanned());
             if ($isOK)
             {
                 $members->set($m->getProvider()->getEntityId(), $m->getProvider());

@@ -96,7 +96,7 @@ class Idp_list extends MY_Controller {
             {
                $iconsblock .= $disabledicon .' ';
             }
-            if(!($i->getIsValidFromTo()))
+            if(!($i->isValidFromTo()))
             {
                $iconsblock .= $expiredicon .' ';
             }

@@ -43,7 +43,7 @@ class Disco extends MY_Controller {
         $r['title'] = $ent->getNameToWebInLang('en');
         $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('GeolocationHint', 'Logo'));
         $extend = $ent->getExtendMetadata()->filter(
-                function($entry) use ($doFilter)
+                function(models\ExtendMetadata $entry) use ($doFilter)
         {
             return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
         });
