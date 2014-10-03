@@ -25,7 +25,6 @@ class Statdefs extends MY_Controller
         parent::__construct();
         $this->load->library('form_validation');
     }
-
     public function download($defid = null)
     {
         if (!$this->input->is_ajax_request())
