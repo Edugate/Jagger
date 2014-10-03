@@ -410,7 +410,6 @@ class Awaiting extends MY_Controller {
                     'error_message' => $this->error_message
                 );
                 $dataview['userdata'][]['2cols'] = $buttons;
-                $this->load->view('page', $dataview);
             }
             else
             {
@@ -418,8 +417,7 @@ class Awaiting extends MY_Controller {
                     'content_view' => 'nopermission',
                     'error' => lang('rr_nopermission')
                 );
-                $this->load->view('page', $dataview);
-            }
+            }         
         }
         elseif ($objType === 'n' && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) // apply for entity category
         {
@@ -428,47 +426,52 @@ class Awaiting extends MY_Controller {
                 $approveaccess = $this->hasApproveAccess($qObject);
                 $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), $approveaccess);
                 $dataview = array(
-                    'requestdata'=>$this->j_queue->displayApplyForEntityCategory($qObject),
-                    'content_view'=> 'reports/awaiting_applyforentcat_view'
+                    'requestdata' => $this->j_queue->displayApplyForEntityCategory($qObject),
+                    'content_view' => 'reports/awaiting_applyforentcat_view'
                 );
                 $dataview['requestdata'][]['2cols'] = $buttons;
-                $this->load->view('page', $dataview);
             }
             else
             {
                 $dataview = array(
-                    'content_view'=>'nopermission',
-                    'error'=>lang('rr_nopermission')
+                    'content_view' => 'nopermission',
+                    'error' => lang('rr_nopermission')
                 );
-                $this->load->view('page', $dataview);
-            }
+            }          
         }
         elseif ($objType === 'n' && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) // apply for entity category
         {
             if ($this->hasQAccess($qObject))
             {
                 $approveaccess = $this->hasApproveAccess($qObject);
-                $dataview['requestdata'] = $this->j_queue->displayApplyForRegistrationPolicy($qObject);
                 $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), $approveaccess);
-                $dataview['content_view'] = 'reports/awaiting_applyforentcat_view';
+                $dataview = array(
+                    'requestdata' => $this->j_queue->displayApplyForRegistrationPolicy($qObject),
+                    'content_view' => 'reports/awaiting_applyforentcat_view'
+                );
                 $dataview['requestdata'][]['2cols'] = $buttons;
-                $this->load->view('page', $dataview);
             }
             else
             {
-                $dataview['content_view'] = 'nopermission';
-                $dataview['error'] = lang('rr_nopermission');
-                $this->load->view('page', $dataview);
-            }
+                $dataview = array(
+                    'content_view' => 'nopermission',
+                    'error' => lang('rr_nopermission')
+                );
+            }          
         }
         else
         {
-            $dataview['error'] = 'Unknown type';
+            $dataview = array(
+                'error' => 'Unknown type',
+                'content_view' => 'nopermission'
+            );
         }
+        $this->load->view('page', $dataview);
     }
 
     function approve()
     {
+        log_message('info', __METHOD__.' run');
         $loggedin = $this->j_auth->logged_in();
         if ($loggedin)
         {
@@ -478,10 +481,7 @@ class Awaiting extends MY_Controller {
         else
         {
             redirect('auth/login', 'location');
-        }
-
-
-        log_message('debug', 'approve');
+        }  
         $message = "";
         $error_message = null;
         if ($this->input->post('qaction') === 'approve')
