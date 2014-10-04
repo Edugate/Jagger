@@ -292,7 +292,7 @@ class Awaiting extends MY_Controller
         if (strcasecmp($objAction, 'Delete') == 0)
         {
             $fedrows = $this->j_queue->displayDeleteFederation($qObject);
-            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId());
+            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId(), !$this->j_auth->isAdministrator());
             $data['fedrows'] = $fedrows;
             $data['content_view'] = 'reports/awaiting_federation_register_view';
             $r['data'] = $data;
@@ -470,6 +470,41 @@ class Awaiting extends MY_Controller
         $this->load->view('page', $dataview);
     }
 
+    private function deleteFederation(\models\Queue $q)
+    {
+        $qFed = new models\Federation;
+        $qFed->importFromArray($q->getData());
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $qFed->getName()));
+        if (empty($federation))
+        {
+            $this->error_message = 'Federation not found';
+            return false;
+        }
+        $isActive = $federation->getActive();
+        if ($isActive)
+        {
+            $this->error_message = 'Federation is active , cannot delete';
+            return false;
+        }
+        $this->load->library('FederationRemover');
+        $sbj = 'Federation has been removed';
+        $body = 'Dear user,' . PHP_EOL;
+        $body .= 'Federation : ' . $federation->getName() . ' has been removed from the system';
+        $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), $sync = false);
+        $this->federationremover->removeFederation($federation);
+        $this->em->remove($q);
+        try
+        {
+            $this->em->flush();
+        }
+        catch (Exception $e)
+        {
+            $this->error_message = 'Error ocurrred during Federation removal from database';
+            log_message('error', __METHOD__ . ' ' . $e);
+            return false;
+        }
+    }
+
     private function createProvider(\models\Queue $q)
     {
         $d = $q->getData();
@@ -612,6 +647,7 @@ class Awaiting extends MY_Controller
         {
             redirect('auth/login', 'location');
         }
+        $isAdministrator = $this->j_auth->isAdministrator();
         $this->load->library('zacl');
         $this->load->library('j_queue');
         $message = "";
@@ -635,11 +671,12 @@ class Awaiting extends MY_Controller
             $message = $_SERVER['REQUEST_URI'];
             $message .= ' id=' . $this->input->post('qid') . ' doesnt exist in queue';
             log_message('debug', $message);
-            $data['error_message'] = 'Can\'t approve it because this request dosn\'t exist';
-            $data['content_view'] = 'error_message';
-            $this->load->view('page', $data);
+            $dataview = array(
+                'error_message' => 'It cannot be approved because it does not exist',
+                'content_view' => 'error_message'
+            );
+            $this->load->view('page', $dataview);
         }
-
         $queueAction = $queueObj->getAction();
         $queueObjType = $queueObj->getType();
         $allowedActionsAndTypes['Create']['User'] = array(
@@ -727,7 +764,6 @@ class Awaiting extends MY_Controller
         }
         elseif (strcasecmp($queueAction, 'Delete') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0)
         {
-            $isAdministrator = $this->j_auth->isAdministrator();
             if (!$isAdministrator)
             {
                 $data['error_message'] = lang('rerror_noperm_approve');
@@ -735,33 +771,18 @@ class Awaiting extends MY_Controller
                 $this->load->view('page', $data);
                 return;
             }
-            $fed = new models\Federation;
-            $fed->importFromArray($queueObj->getData());
-            $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $fed->getName()));
-            if (empty($federation))
+
+            $r = $this->deleteFederation($queueObj);
+            if (!$r)
             {
-                $data['error_message'] = 'Federation not found';
+                $data['error_message'] = $this->error_message;
                 $data['content_view'] = 'error_message';
                 $this->load->view('page', $data);
                 return;
             }
-            $isActive = $federation->getActive();
-            if ($isActive)
-            {
-                $data['error_message'] = 'Federation is active , cannot delete';
-                $data['content_view'] = 'error_message';
-                $this->load->view('page', $data);
-                return;
-            }
-            $fed = null;
-            $this->load->library('FederationRemover');
-            $sbj = 'Federation has been removed';
-            $body = 'Dear user,' . PHP_EOL;
-            $body .= 'Federation : ' . $federation->getName() . ' has been removed from the system';
-            $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), $sync = false);
-            $this->federationremover->removeFederation($federation);
-            $this->em->remove($queueObj);
-            $this->em->flush();
+
+         
+  
         }
         elseif (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0)
         {
@@ -966,8 +987,8 @@ class Awaiting extends MY_Controller
                     show_error('Entity category or provider does not exist', 404);
                     return; /// @todo finish
                 }
-                $isAdmin = $this->j_auth->isAdministrator();
-                if (!$isAdmin)
+
+                if (!$isAdministrator)
                 {
                     show_error('no permission', 403);
                     return;
@@ -991,8 +1012,8 @@ class Awaiting extends MY_Controller
                     show_error('Entity category or provider does not exist', 404);
                     return; /// @todo finish
                 }
-                $isAdmin = $this->j_auth->isAdministrator();
-                if (!$isAdmin)
+
+                if (!$isAdministrator)
                 {
                     show_error('no permission', 403);
                     return;
