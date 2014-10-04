@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,7 +17,8 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Awaiting extends MY_Controller {
+class Awaiting extends MY_Controller
+{
 
     private $alert;
     private $error_message;
@@ -87,7 +87,7 @@ class Awaiting extends MY_Controller {
         if (!empty($creator))
         {
             $name = $creator->getUsername();
-            if ($name === $currentUser)
+            if (strcasecmp($name, $currentUser) == 0)
             {
                 return true;
             }
@@ -96,9 +96,9 @@ class Awaiting extends MY_Controller {
         $recipient = $q->getRecipient();
         $recipientType = $q->getRecipientType();
 
-        if ($action === 'Join')
+        if (strcasecmp($action, 'Join') == 0)
         {
-            if (!empty($recipientType) && $recipientType === 'federation' && !empty($recipient))
+            if (!empty($recipientType) && strcasecmp($recipientType, 'federation') == 0 && !empty($recipient))
             {
                 $hasWrite = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '');
                 return $hasWrite;
@@ -131,14 +131,14 @@ class Awaiting extends MY_Controller {
         $recipient = $q->getRecipient();
         $recipientType = $q->getRecipientType();
 
-        if ($action === 'Join' && !empty($recipientType))
+        if (strcasecmp($action, 'Join') == 0 && !empty($recipientType))
         {
-            if ($recipientType === 'federation' && !empty($recipient))
+            if (strcasecmp($recipientType, 'federation') == 0 && !empty($recipient))
             {
                 $hasAccess = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '');
                 return $hasAccess;
             }
-            elseif ($recipientType === 'provider' && !empty($recipient))
+            elseif (strcasecmp($recipientType, 'provider') == 0 && !empty($recipient))
             {
                 $hasAccess = $this->zacl->check_acl($recipient, 'write', 'provider', '');
                 return $hasAccess;
@@ -170,7 +170,7 @@ class Awaiting extends MY_Controller {
             $recipientid = $q->getRecipient();
             $recipenttype = $q->getRecipientType();
             $recipientname = '';
-            if ($recipenttype === 'provider')
+            if (strcasecmp($recipenttype, 'provider') == 0)
             {
                 $p = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $recipientid));
                 if (!empty($p))
@@ -267,7 +267,7 @@ class Awaiting extends MY_Controller {
         if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($recipientType, 'provider') == 0)
         {
             $recipient_write_access = $this->zacl->check_acl($qObject->getRecipient(), 'write', 'entity', '');
-            $requestor_view_access = (boolean) $qObject->getCreator()->getUsername() === $this->j_auth->current_user();
+            $requestor_view_access = (strcasecmp($qObject->getCreator()->getUsername(), $this->j_auth->current_user()) == 0);
             if ($requestor_view_access || $recipient_write_access)
             {
                 $result = $this->j_queue->displayInviteProvider($qObject);
@@ -324,13 +324,12 @@ class Awaiting extends MY_Controller {
         }
         if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($objRecipientType, 'federation') == 0)
         {
-
             $recipientWriteAccess = $this->zacl->check_acl('f_' . $qObject->getRecipient(), 'write', 'federation', '');
-            $requestorViewAccess = (boolean) $qObject->getCreator()->getUsername() === $this->j_auth->current_user();
+            $requestorViewAccess = (strcasecmp($qObject->getCreator()->getUsername(), $this->j_auth->current_user()) == 0);
             if ($requestorViewAccess || $recipientWriteAccess)
             {
 
-                $result = $this->j_queue->displayInviteFederation($qObject);
+                $result = $this->j_queue->displayInviteFederation($qObject, $recipientWriteAccess);
                 if (!empty($result))
                 {
                     $data['result'] = $result;
@@ -372,8 +371,7 @@ class Awaiting extends MY_Controller {
         $objType = $qObject->getObjType();
         $objAction = $qObject->getAction();
         $recipientType = $qObject->getRecipientType();
-
-        if ($objType === 'Provider')
+        if (strcasecmp($objType, 'Provider') == 0)
         {
             $r = $this->detailProvider($qObject);
             if (!empty($r))
@@ -386,7 +384,7 @@ class Awaiting extends MY_Controller {
             }
             return;
         }
-        elseif ($objType === 'Federation')
+        elseif (strcasecmp($objType, 'Federation') == 0)
         {
             $r = $this->detailFederation($qObject);
             if (!empty($r))
@@ -399,7 +397,7 @@ class Awaiting extends MY_Controller {
             }
             return;
         }
-        elseif ($objType === 'User' && $objAction === 'Create')
+        elseif (strcasecmp($objType, 'User') == 0 && strcasecmp($objAction, 'Create') == 0)
         {
             if ($this->hasQAccess($qObject))
             {
@@ -419,12 +417,12 @@ class Awaiting extends MY_Controller {
                 );
             }
         }
-        elseif ($objType === 'n' && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) // apply for entity category
+        elseif (strcasecmp($objType, 'n') == 0 && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) // apply for entity category
         {
             if ($this->hasQAccess($qObject))
             {
                 $approveaccess = $this->hasApproveAccess($qObject);
-                $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), $approveaccess);
+                $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), !$approveaccess);
                 $dataview = array(
                     'requestdata' => $this->j_queue->displayApplyForEntityCategory($qObject),
                     'content_view' => 'reports/awaiting_applyforentcat_view'
@@ -439,12 +437,15 @@ class Awaiting extends MY_Controller {
                 );
             }
         }
-        elseif ($objType === 'n' && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) // apply for entity category
+        elseif (strcasecmp($objType, 'n') == 0 && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) // apply for entity category
         {
             if ($this->hasQAccess($qObject))
             {
-                $approveaccess = $this->hasApproveAccess($qObject);
-                $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), $approveaccess);
+
+                $approveaccess = (boolean) $this->hasApproveAccess($qObject);
+
+                $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), !$approveaccess);
+
                 $dataview = array(
                     'requestdata' => $this->j_queue->displayApplyForRegistrationPolicy($qObject),
                     'content_view' => 'reports/awaiting_applyforentcat_view'
@@ -654,7 +655,7 @@ class Awaiting extends MY_Controller {
         $allowedActionsAndTypes['Join'] = array();
         $allowedActionsAndTypes['apply'] = array();
 
-        if (($queueAction === 'Create') && ($queueObjType === 'User'))
+        if (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObjType, 'User') == 0)
         {
             $approve_allowed = $this->hasApproveAccess($queueObj);
             if (!$approve_allowed)
@@ -692,7 +693,7 @@ class Awaiting extends MY_Controller {
                 return;
             }
         }
-        elseif (($queueAction === 'Create') && (($queueObjType === 'IDP') || ($queueObjType === 'SP')))
+        elseif (strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0))
         {
             $approve_allowed = $this->zacl->check_acl(strtolower($queueObjType), 'create', 'entity', '');
             if ($approve_allowed)
@@ -724,7 +725,7 @@ class Awaiting extends MY_Controller {
                 $this->load->view('page', $data);
             }
         }
-        elseif (($queueAction === 'Delete') && ($queueObj->getType() === 'Federation'))
+        elseif (strcasecmp($queueAction, 'Delete') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0)
         {
             $isAdministrator = $this->j_auth->isAdministrator();
             if (!$isAdministrator)
@@ -762,7 +763,7 @@ class Awaiting extends MY_Controller {
             $this->em->remove($queueObj);
             $this->em->flush();
         }
-        elseif (($queueAction === 'Create') && ($queueObj->getType() === 'Federation'))
+        elseif (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0)
         {
             $approve_allowed = $this->zacl->check_acl('federation', 'create', 'default', '');
             if ($approve_allowed)
@@ -828,7 +829,7 @@ class Awaiting extends MY_Controller {
         /**
          *          JOIN - accept request (by provider) sent by federation to provider
          */
-        elseif (($queueAction === 'Join'))
+        elseif (strcasecmp($queueAction, 'Join') == 0)
         {
             $recipient = $queueObj->getRecipient();
             $recipienttype = $queueObj->getRecipientType();
@@ -1025,7 +1026,7 @@ class Awaiting extends MY_Controller {
             redirect('auth/login', 'location');
         }
 
-        if ($this->input->post('qaction') === 'reject')
+        if (strcasecmp($this->input->post('qaction'), 'reject') == 0)
         {
             $notification = $this->config->item('notify_if_queue_rejected');
             $queueObj = $this->em->getRepository("models\Queue")->findOneBy(array('id' => $this->input->post('qid')));
@@ -1039,26 +1040,26 @@ class Awaiting extends MY_Controller {
                 $recipienttype = $queueObj->getRecipientType();
                 if (!empty($creator))
                 {
-                    $reject_access = (bool) ($creator->getUsername() === $this->j_auth->current_user());
+                    $reject_access = (strcasecmp($creator->getUsername(), $this->j_auth->current_user()) == 0);
                 }
                 if ($reject_access === FALSE)
                 {
-                    if ($queueAction === 'Create')
+                    if (strcasecmp($queueAction, 'Create') == 0)
                     {
-                        if ($queueObj->getType() === 'IDP')
+                        if (strcasecmp($queueObj->getType(), 'IDP') == 0)
                         {
                             $reject_access = $this->zacl->check_acl('idp', 'create', 'entity', '');
                         }
-                        elseif ($queueObj->getType() === 'SP')
+                        elseif (strcasecmp($queueObj->getType(), 'SP') == 0)
                         {
                             $reject_access = $this->zacl->check_acl('sp', 'create', 'entity', '');
                         }
-                        elseif ($queueObj->getType() === 'Federation')
+                        elseif (strcasecmp($queueObj->getType(), 'Federation') == 0)
                         {
                             $reject_access = $this->zacl->check_acl('federation', 'create', 'default', '');
                         }
                     }
-                    elseif (($queueAction === 'Join'))
+                    elseif (strcasecmp($queueAction, 'Join') == 0)
                     {
                         $recipient = $queueObj->getRecipient();
                         $type = $queueObj->getType();
@@ -1074,10 +1075,10 @@ class Awaiting extends MY_Controller {
                             }
                         }
                     }
-                    elseif (($queueAction === 'Delete'))
+                    elseif (strcasecmp($queueAction, 'Delete') == 0)
                     {
                         $type = $queueObj->getType();
-                        if ($type === 'Federation')
+                        if (strcasecmp($type, 'Federation') == 0)
                         {
                             $isAdmin = $this->j_auth->isAdministrator();
                             if ($isAdmin)

@@ -585,7 +585,7 @@ class J_queue
         return $result;
     }
 
-    function displayInviteFederation(models\Queue $queue)
+    function displayInviteFederation(models\Queue $queue, $canApprove = false)
     {
 
         $this->ci->load->library('table');
@@ -666,7 +666,7 @@ class J_queue
             $cell = array(lang('rr_message'), $data['message']);
             $this->ci->table->add_row($cell);
         }
-        $cell = array('data' => $this->displayFormsButtons($queue->getId()), 'colspan' => 2);
+        $cell = array('data' => $this->displayFormsButtons($queue->getId(),!$canApprove), 'colspan' => 2);
         $this->ci->table->add_row($cell);
         # show additional information returned by validator
         $text = '<div id="fvresult" style="display:none;" data-alert class="alert-box info"><div><b>'.lang('fvalidcodereceived').'</b>: <span id="fvreturncode"></span></div><div><p><b>'.lang('fvalidmsgsreceived').'</b>:</p><div id="fvmessages"></div></div></div>';
