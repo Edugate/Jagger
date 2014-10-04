@@ -558,6 +558,11 @@ class Federation {
         return $this->is_public;
     }
 
+    public function isJoinAllowedForNew()
+    {
+        return (boolean) ($this->is_active && $this->is_active);
+    }
+    
     public function getProtected()
     {
         return $this->is_protected;

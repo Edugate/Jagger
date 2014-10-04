@@ -490,12 +490,13 @@ class Awaiting extends MY_Controller
         $sbj = 'Federation has been removed';
         $body = 'Dear user,' . PHP_EOL;
         $body .= 'Federation : ' . $federation->getName() . ' has been removed from the system';
-        $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), $sync = false);
+        $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(),false);
         $this->federationremover->removeFederation($federation);
         $this->em->remove($q);
         try
         {
             $this->em->flush();
+            return true;
         }
         catch (Exception $e)
         {
@@ -558,9 +559,7 @@ class Awaiting extends MY_Controller
                         $gg = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $g['sysname']));
                         if (!empty($gg))
                         {
-                            $ispublic = $gg->getPublic();
-                            $isactive = $gg->getActive();
-                            if ($ispublic && $isactive)
+                            if ($gg->isJoinAllowedForNew())
                             {
                                 $membership = new models\FederationMembers;
                                 $membership->setJoinState('1');

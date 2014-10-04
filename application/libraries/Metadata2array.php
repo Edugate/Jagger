@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -19,7 +18,8 @@ if (!defined('BASEPATH'))
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Metadata2array {
+class Metadata2array
+{
 
     private $i;
     private $occurance;
@@ -65,7 +65,10 @@ class Metadata2array {
         }
         foreach ($this->doc->childNodes as $child)
         {
-            $this->entitiesConvert($child, $full);
+            if ($child instanceof \DOMElement)
+            {
+                $this->entitiesConvert($child, $full);
+            }
         }
 
         foreach ($this->coclist as $attrname => $attrvalues)
