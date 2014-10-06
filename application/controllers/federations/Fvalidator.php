@@ -26,7 +26,6 @@ class Fvalidator extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        
     }
 
     public function detail($fedid, $validatorid)
@@ -53,18 +52,18 @@ class Fvalidator extends MY_Controller
             echo 'Not authorized';
             return;
         }
-        if(!empty($fid) && !empty($fvid))
+        if (!empty($fid) && !empty($fvid))
         {
-            $fvalidator = $this->em->getRepository("models\FederationValidator")->findOneBy(array('id'=>$fvid,'federation'=>$fid,'isEnabled'=>TRUE));
-            if(empty($fvalidator))
+            $fvalidator = $this->em->getRepository("models\FederationValidator")->findOneBy(array('id' => $fvid, 'federation' => $fid, 'isEnabled' => TRUE));
+            if (empty($fvalidator))
             {
-                 set_status_header(404);
-                 echo 'Not found';
-                 return;
+                set_status_header(404);
+                echo 'Not found';
+                return;
             }
             else
             {
-                $result = array('id'=>$fvalidator->getId(),'fedid'=>$fid,'name'=>$fvalidator->getName(),'desc'=>$fvalidator->getDescription());
+                $result = array('id' => $fvalidator->getId(), 'fedid' => $fid, 'name' => $fvalidator->getName(), 'desc' => $fvalidator->getDescription());
                 echo json_encode($result);
                 return;
             }
@@ -108,40 +107,54 @@ class Fvalidator extends MY_Controller
 
     public function validate()
     {
-        $loggedin = $this->j_auth->logged_in();
-        $is_ajax = $this->input->is_ajax_request();
-        if (!$is_ajax)
+        if (!($this->input->is_ajax_request() && $this->j_auth->logged_in()))
         {
-            show_error('not ajax', 403);
+            show_error('access denied', 403);
         }
-        if (!($loggedin && $is_ajax))
+        $inputArgs = array(
+            'providerid' => trim($this->input->post('provid')),
+            'federationid' => trim($this->input->post('fedid')),
+            'fvalidatorid' => trim($this->input->post('fvid')),
+            'queuetoken' => trim($this->input->post('qtoken')),
+            'tmpprovid' => trim($this->input->post('tmpprovid'))
+        );
+        if (empty($inputArgs['federationid']) || !ctype_digit($inputArgs['federationid']) || empty($inputArgs['fvalidatorid']) || !ctype_digit($inputArgs['fvalidatorid']))
         {
-            show_error('not authenticated', 403);
+            set_status_header(403);
+            echo 'incorrect/missing paramters  passed';
+            return;
         }
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $inputArgs['federationid']));
+        $fvalidator = $this->em->getRepository("models\FederationValidator")->findOneBy(array('id' => $inputArgs['fvalidatorid']));
 
-        $providerid = $this->input->post('provid');
-        $federationid = $this->input->post('fedid');
-        $fvalidatorid = $this->input->post('fvid');
-
-        if (empty($providerid) || empty($federationid) || empty($fvalidatorid) || !is_numeric($providerid) || !is_numeric($federationid) || !is_numeric($fvalidatorid))
+        $reqAttrPassed = FALSE;
+        if(!empty($inputArgs['queuetoken']) && ctype_alnum($inputArgs['queuetoken']))
         {
-            show_error('incorrect/missing paramters  passed', 403);
+            $providerMetadataUrl = base_url().'metadata/queue/'.$inputArgs['queuetoken'];
+            $reqAttrPassed = TRUE;
         }
-
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $federationid));
-        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
-        $fvalidator = $this->em->getRepository("models\FederationValidator")->findOneBy(array('id' => $fvalidatorid));
-        if (!($provider && $fvalidator && $federation))
+        elseif(!empty($inputArgs['providerid']) && ctype_digit($inputArgs['providerid']))
         {
-            show_error('not found ', 404);
+            $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $inputArgs['providerid']));
+            if(!empty($provider))
+            {
+                $providerMetadataUrl = base_url() . '/metadata/service/' . base64url_encode($provider->getEntityId()) . '/metadata.xml';
+                $reqAttrPassed = TRUE;
+            }
+        }      
+        if (!$reqAttrPassed || empty($fvalidator) || empty($federation))
+        {
+            set_status_header(404);
+            echo 'One of following not found: fedValidator, federation, requesttype';
+            return;
         }
         $validators = $federation->getValidators();
         if (!$validators->contains($fvalidator))
         {
-            show_error('federation desnt match validator', 404);
+            
+            set_status_header(404);
+            echo 'federation desnt match validator';
         }
-
-        $providerMetadataUrl = base_url() . '/metadata/service/' . base64url_encode($provider->getEntityId()) . '/metadata.xml';
         $method = $fvalidator->getMethod();
         $remoteUrl = $fvalidator->getUrl();
         $entityParam = $fvalidator->getEntityParam();
@@ -248,7 +261,8 @@ class Fvalidator extends MY_Controller
                 if ($o->length > 0)
                 {
                     $result['message'][$v] = array();
-                    for ($i = 0; $i < $o->length; $i++) {
+                    for ($i = 0; $i < $o->length; $i++)
+                    {
                         $g = trim($o->item($i)->nodeValue);
                         log_message('debug', __METHOD__ . ' value for ' . $v . ' element: ' . $g);
                         if (!empty($g))
