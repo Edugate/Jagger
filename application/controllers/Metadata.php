@@ -341,7 +341,7 @@ class Metadata extends MY_Controller {
 
     public function queue($tokenid)
     {
-        if(strlen($tokenid)>20 || !ctype_alnum($tokenid))
+        if(strlen($tokenid)>100 || !ctype_alnum($tokenid))
         {
             show_error('Not found', 404);
             return;
