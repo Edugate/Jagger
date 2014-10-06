@@ -589,7 +589,8 @@ class J_queue
     {
 
         $this->ci->load->library('table');
-        if ($queue->getRecipientType() == 'federation') {
+        $recipientType = $queue->getRecipientType();
+        if (strcasecmp($recipientType, 'federation')==0) {
             $federation = $this->tmp_federations->getOneFederationById($queue->getRecipient());
         }
         if (empty($federation)) {

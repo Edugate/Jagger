@@ -341,7 +341,6 @@ class Metadata extends MY_Controller {
 
     public function queue($tokenid)
     {
-        $token = $tokenid;
         $q = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $tokenid));
         if (empty($q))
         {
@@ -360,6 +359,13 @@ class Metadata extends MY_Controller {
         {
             $entity = new models\Provider;
             $entity->importFromArray($d);
+            $options['attrs'] = 1;
+            if (empty($entity))
+            {
+                show_error('Not found', 404);
+            }
+            $y = $entity->getProviderToXML($parent = null, $options);
+            $data['out'] = $y->saveXML();         
         }
         else
         {
@@ -376,16 +382,7 @@ class Metadata extends MY_Controller {
                 return false;
             }
             $data['out'] = $metadataDOM->saveXML();
-            $this->load->view('metadata_view', $data);
-            return;
         }
-        $options['attrs'] = 1;
-        if (empty($entity))
-        {
-            show_error('Not found', 404);
-        }
-        $y = $entity->getProviderToXML($parent = null, $options);
-        $data['out'] = $y->saveXML();
         $this->load->view('metadata_view', $data);
     }
 
