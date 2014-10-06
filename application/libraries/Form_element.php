@@ -2240,7 +2240,6 @@ class Form_element {
             }
             $spssoprotocols = $ent->getProtocolSupport('spsso');
             $selected_options = array();
-            $spssonotice = '';
             if ($sessform && isset($ses['prot']['spsso']) && is_array($ses['prot']['spsso']))
             {
                 foreach ($ses['prot']['spsso'] as $v)
@@ -2815,7 +2814,6 @@ class Form_element {
                 $r .= $this->_generateLangInputWithRemove($langsdisplaynames['' . $k4 . ''], 'f[prvurl][idpsso][' . $k4 . ']', 'prvurlidpsso', $k4, $v4['url'], '');
                 $r .= '</div>';
             }
-            $idpssolangcodes = array_diff_key($langsdisplaynames, $sorig);
             $r .='<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('addlprivacyurlidpsso localized', 'langcode', MY_Controller::$langselect, 'addlprivacyurlidpsso', 'addlprivacyurlidpsso');
             $r .= '</div>';
