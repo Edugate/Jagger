@@ -709,6 +709,7 @@ class Users extends MY_Controller
             show_error('User not found', 404);
         }
 
+        
         $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
         $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
         if (!$write_access && !$manage_access)
@@ -718,32 +719,11 @@ class Users extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
+        $data['encoded_username'] = $encoded_username;
+        $data['manage_access'] = $manage_access;
+        $data['write_access'] = $write_access;
         if (!$this->modifySubmitValidate())
         {
-            $form_attributes = array('id' => 'formver2', 'class' => 'register');
-            $action = base_url() . "manage/users/passedit/" . $encoded_username;
-            $form = form_open($action, $form_attributes);
-
-            if ($write_access && !$manage_access)
-            {
-                $form .= '<div class="small-12 columns">';
-                $form .= '<div class="small-3 columns">' . jform_label('Current password', 'oldpassword') . '</div>';
-                $form .= '<div class="small-6 large-6 columns end">' . form_password('oldpassword') . '</div>';
-                $form .="</div>";
-            }
-            $form .= '<div class="small-12 columns">';
-            $form .= '<div class="small-3 columns">' . jform_label(lang('rr_npassword'), 'password') . '</div>';
-            $form .= '<div class="small-6 large-6 columns end">' . form_password('password') . '</div>';
-            $form .= '</div>';
-            $form .= '<div class="small-12 columns">';
-            $form .= '<div class="small-3 columns">' . jform_label(lang('rr_npasswordconf'), 'passwordconf') . '</div>';
-            $form .= '<div class="small-6 large-6 columns end">' . form_password('passwordconf') . '</div>';
-            $form .="</div>";
-            $form .= '<div class="buttons small-12 columns text-right">';
-            $form .= '<div class="small-9 columns "><button type="submit"  name="submit", value="submit" class="button savebutton saveicon">' . lang('rr_changepass') . '</button></div>';
-            $form .='</div>';
-            $form .= form_close();
-            $data['form'] = $form;
             $data['titlepage'] = lang('rr_changepass') . ': ' . htmlentities($user->getUsername());
             $data['content_view'] = 'manage/password_change_view';
             $this->load->view('page', $data);
