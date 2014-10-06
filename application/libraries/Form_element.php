@@ -2240,13 +2240,8 @@ class Form_element {
             }
             $spssoprotocols = $ent->getProtocolSupport('spsso');
             $selected_options = array();
-            $spssonotice = '';
             if ($sessform && isset($ses['prot']['spsso']) && is_array($ses['prot']['spsso']))
             {
-                if (count(array_diff($ses['prot']['spsso'], $spssoprotocols)) > 0 || count(array_diff($spssoprotocols, $ses['prot']['spsso'])) > 0)
-                {
-                    $spssonotice = 'notice';
-                }
                 foreach ($ses['prot']['spsso'] as $v)
                 {
                     $selected_options[$v] = $v;
@@ -2347,7 +2342,6 @@ class Form_element {
 
     private function NgenerateLogoForm(models\Provider $ent, $ses = null)
     {
-        $langs = languagesCodes();
         $btnlangs = MY_Controller::$langselect;
         $btnlangs = array('0' => lang('rr_unspecified')) + $btnlangs;
         $type = $ent->getType();
@@ -2820,7 +2814,6 @@ class Form_element {
                 $r .= $this->_generateLangInputWithRemove($langsdisplaynames['' . $k4 . ''], 'f[prvurl][idpsso][' . $k4 . ']', 'prvurlidpsso', $k4, $v4['url'], '');
                 $r .= '</div>';
             }
-            $idpssolangcodes = array_diff_key($langsdisplaynames, $sorig);
             $r .='<div class="small-12 columns">';
             $r .= $this->_generateLangAddButton('addlprivacyurlidpsso localized', 'langcode', MY_Controller::$langselect, 'addlprivacyurlidpsso', 'addlprivacyurlidpsso');
             $r .= '</div>';
@@ -3109,7 +3102,6 @@ class Form_element {
                 $r .= $this->_generateLangInputWithRemove($langsdisplaynames['' . $k4 . ''], 'f[prvurl][spsso][' . $k4 . ']', 'prvurlspsso', $k4, $v4['url'], '');
                 $r .= '</div>';
             }
-            $idpssolangcodes = array_diff_key($langsdisplaynames, $sorig);
             $r .= '<div class="small-12 columns">';
 
 
@@ -3184,65 +3176,6 @@ class Form_element {
         }
         $result .= form_dropdown('fedid', $list, set_value('fedid'));
         return $result;
-    }
-
-    private function generateContactsForm(models\Provider $provider, $action = null, $template = null)
-    {
-        $cntform = '<fieldset><legend class="accordionButton">' . lang('rr_contacts') . '</legend>';
-        $cntform .='<ol class="accordionContent">';
-        $formtypes = array(
-            'administrative' => lang('rr_cnt_type_admin'),
-            'technical' => lang('rr_cnt_type_tech'),
-            'support' => lang('rr_cnt_type_support'),
-            'billing' => lang('rr_cnt_type_bill'),
-            'other' => lang('rr_cnt_type_other')
-        );
-        $no_contacts = 0;
-
-        $cntcollection = $provider->getContacts();
-        $no_contacts = $cntcollection->count();
-        if (!empty($cntcollection))
-        {
-            foreach ($cntcollection->getValues() as $cnt)
-            {
-
-                $cntform .= form_fieldset(lang('rr_contacts')) . '<li>';
-                $cntform .= form_label(lang('rr_contacttype'), 'contact_' . $cnt->getId() . '_type');
-                $cntform .= form_dropdown('contact_' . $cnt->getId() . '_type', $formtypes, set_value('contact_' . $cnt->getId() . '_type', $cnt->getType()));
-                $cntform .= '</li><li>' . form_label(lang('rr_contactfirstname'), 'contact_' . $cnt->getId() . '_fname');
-                $cntform .= form_input(array('name' => 'contact_' . $cnt->getId() . '_fname', 'id' => 'contact_' . $cnt->getId() . '_fname',
-                    'value' => set_value('contact_' . $cnt->getId() . '_fname', htmlentities($cnt->getGivenname()))));
-                $cntform .= '</li><li>' . form_label(lang('rr_contactlastname'), 'contact_' . $cnt->getId() . '_sname');
-                $sur = htmlspecialchars_decode($cnt->getSurname());
-                $cntform .= form_input(array('name' => 'contact_' . $cnt->getId() . '_sname', 'id' => 'contact_' . $cnt->getId() . '_sname',
-                    'value' => set_value('contact_' . $cnt->getId() . '_sname', $sur)));
-                $cntform .= '</li><li>' . form_label(lang('rr_contactemail'), 'contact_' . $cnt->getId() . '_email');
-                $cntform .= form_input(array('name' => 'contact_' . $cnt->getId() . '_email', 'id' => 'contact_' . $cnt->getId() . '_email',
-                    'value' => set_value('contact_' . $cnt->getId() . '_email', $cnt->getEmail())));
-                $cntform .= '</li>' . form_fieldset_close();
-            }
-            $no_contacts++;
-
-            $cntform .= '<fieldset class="newcontact"><legend>' . lang('rr_newcontact') . '</legend>';
-            $cntform .= '<li>';
-            $cntform .= form_label(lang('rr_contacttype'), 'contact_0n_type');
-            $cntform .= form_dropdown('contact_0n_type', $formtypes, set_value('contact_0n_type'));
-            $cntform .= '<div style="display:none">';
-            $cntform .= form_input(array('name' => 'no_contacts', 'type' => 'hidden', 'value' => $no_contacts));
-            $cntform .= '</div>';
-            $cntform .= '</li><li>';
-            $cntform .= form_label(lang('rr_contactfirstname'), 'contact_0n_fname');
-            $cntform .= form_input(array('name' => 'contact_0n_fname', 'id' => 'contact_0n_fname', 'value' => set_value('contact_0n_fname')));
-            $cntform .= '</li><li>';
-            $cntform .= form_label(lang('rr_contactlastname'), 'contact_0n_sname');
-            $cntform .= form_input(array('name' => 'contact_0n_sname', 'id' => 'contact_0n_sname', 'value' => set_value('contact_0n_sname')));
-            $cntform .= '</li><li>';
-            $cntform .= form_label(lang('rr_contactemail'), 'contact_0n_email');
-            $cntform .= form_input(array('name' => 'contact_0n_email', 'id' => 'contact_0n_email', 'value' => set_value('contact_0n_email')));
-            $cntform .= '</li>' . form_fieldset_close();
-        }
-        $cntform .='</ol>' . form_fieldset_close();
-        return $cntform;
     }
 
     /**

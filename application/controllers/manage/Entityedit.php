@@ -44,7 +44,7 @@ class Entityedit extends MY_Controller
         }
     }
 
-    private function _submit_validate($id)
+    private function submitValidate($id)
     {
         $register = false;
         if (strcmp($id, 'idp') == 0 || strcmp($id, 'sp') == 0)
@@ -59,7 +59,7 @@ class Entityedit extends MY_Controller
         if (isset($y['f']))
         {
             $loggedin = $this->j_auth->logged_in();
-            $this->_save_draft($id, $y['f']);
+            $this->saveToDraft($id, $y['f']);
 
             $this->form_validation->set_rules('f[usestatic]', 'use metadata', "valid_static[" . base64_encode($this->input->post('f[static]')) . ":::" . $this->input->post('f[entityid]') . " ]");
 
@@ -478,7 +478,7 @@ class Entityedit extends MY_Controller
         return $result;
     }
 
-    private function _save_draft($id, $data)
+    private function saveToDraft($id, $data)
     {
         $attrs1 = array('lname', 'ldisplayname', 'lhelpdesk', 'coc');
         foreach ($attrs1 as $a1)
@@ -582,19 +582,19 @@ class Entityedit extends MY_Controller
         $this->session->set_userdata($n, $data);
     }
 
-    private function _get_draft($id)
+    private function getFromDraft($id)
     {
         $n = 'entform' . $id;
         return $this->session->userdata($n);
     }
 
-    private function _discard_draft($id)
+    private function discardDraft($id)
     {
         $n = 'entform' . $id;
         $this->session->unset_userdata($n);
     }
 
-    private function _check_perms($id)
+    private function checkPermissions($id)
     {
         $has_write_access = $this->zacl->check_acl($id, 'write', 'entity');
 
@@ -637,23 +637,23 @@ class Entityedit extends MY_Controller
         $this->idpssoscope = $ent->getScope('idpsso');
         $this->aascope = $ent->getScope('aa');
         $this->type = $ent->getType();
-        $this->_check_perms($id);
+        $this->checkPermissions($id);
 
 
         if ($this->input->post('discard'))
         {
-            $this->_discard_draft($id);
+            $this->discardDraft($id);
             redirect(base_url() . 'providers/detail/show/' . $id, 'location');
         }
-        elseif ($this->_submit_validate($id) === TRUE)
+        elseif ($this->submitValidate($id) === TRUE)
         {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
-            $this->_save_draft($id, $y);
+            $this->saveToDraft($id, $y);
             if ($submittype === 'modify')
             {
                 $this->load->library('providerupdater');
-                $c = $this->_get_draft($id);
+                $c = $this->getFromDraft($id);
                 if (!empty($c) && is_array($c))
                 {
 
@@ -663,7 +663,7 @@ class Entityedit extends MY_Controller
                         $cacheId = 'mcircle_' . $ent->getId();
                         $this->em->persist($ent);
                         $this->em->flush();
-                        $this->_discard_draft($id);
+                        $this->discardDraft($id);
                         $keyPrefix = getCachePrefix();
                         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
                         $this->cache->delete($cacheId);
@@ -672,7 +672,7 @@ class Entityedit extends MY_Controller
                 }
             }
         }
-        $entsession = $this->_get_draft($id);
+        $entsession = $this->getFromDraft($id);
         if (!empty($entsession))
         {
             $data['sessform'] = true;
@@ -718,7 +718,7 @@ class Entityedit extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    private function _isfromsimplereg()
+    private function isFromSimpleRegistration()
     {
         $fromSimpleMode = $this->input->post('advanced');
         if (!empty($fromSimpleMode) && strcmp($fromSimpleMode, 'advanced') == 0)
@@ -788,7 +788,7 @@ class Entityedit extends MY_Controller
         /**
          * check if submit from simpleform
          */
-        if ($this->_isfromsimplereg())
+        if ($this->isFromSimpleRegistration())
         {
             $metadatabody = trim($this->input->post('metadatabody'));
             if (!empty($metadatabody))
@@ -807,7 +807,7 @@ class Entityedit extends MY_Controller
                 }
                 else
                 {
-                    $this->_discard_draft($t);
+                    $this->discardDraft($t);
                     $this->load->library('metadata2array');
                     $xpath = new DomXPath($metadataDOM);
                     $namespaces = h_metadataNamespaces();
@@ -837,10 +837,10 @@ class Entityedit extends MY_Controller
         }
         elseif ($this->input->post('discard'))
         {
-            $this->_discard_draft($t);
+            $this->discardDraft($t);
             redirect(base_url() . 'providers/' . strtolower($t) . '_registration', 'location');
         }
-        elseif ($this->_submit_validate($t) === TRUE)
+        elseif ($this->submitValidate($t) === TRUE)
         {
 
             log_message('debug', __METHOD__ . ' line ' . __LINE__ . ' GKS  _submit_validate');
@@ -851,7 +851,7 @@ class Entityedit extends MY_Controller
             {
                 \log_message('debug', __METHOD__ . 'GKS submittype=modify');
                 $this->load->library('providerupdater');
-                $c = $this->_get_draft($t);
+                $c = $this->getFromDraft($t);
                 if (!empty($c) && is_array($c))
                 {
 
@@ -977,7 +977,7 @@ class Entityedit extends MY_Controller
             }
         }
         ////////////////////////////////
-        $entsession = $this->_get_draft($t);
+        $entsession = $this->getFromDraft($t);
         if (!empty($entsession))
         {
             $data['sessform'] = true;

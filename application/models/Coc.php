@@ -185,5 +185,16 @@ class Coc {
         }
         return $this;
     }
+    
+    public function setEntityCategory($name,$url,$subtype,$description,$isavailable)
+    {
+        $this->name = trim($name);
+        $this->url = trim($url);
+        $this->subtype = trim($subtype);
+        $this->cdescription = trim($description);
+        $this->is_enabled = $isavailable;
+        $this->type = 'entcat';
+        return $this;
+    }
 
 }

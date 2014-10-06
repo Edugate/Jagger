@@ -131,7 +131,7 @@ class Spage extends MY_Controller
                 $article = new models\Staticpage;
                 $article->setName($this->input->post('acode'));
             }
-            $content = strip_tags($this->input->post('acontent'),'<p><img><a><b><i><strong><table><tbody><th><tr><td><h1><h2><h3><h4><h5><h6><em><s><ol><ul><li><blockquote><pre><hr><div><span>');
+            $content = strip_tags($this->input->post('acontent'),'<p><img><a><b><i><strong><table><tbody><th><tr><td><h1><h2><h3><h4><h5><h6><em><s><ol><ul><li><blockquote><pre><hr><div><span><br>');
             $contentTitle = $this->input->post('atitle');
             $isEnabled = $this->input->post('aenabled');
             $category = $this->input->post('acategory');

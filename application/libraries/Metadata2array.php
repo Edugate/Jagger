@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -19,7 +18,8 @@ if (!defined('BASEPATH'))
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Metadata2array {
+class Metadata2array
+{
 
     private $i;
     private $occurance;
@@ -65,7 +65,10 @@ class Metadata2array {
         }
         foreach ($this->doc->childNodes as $child)
         {
-            $this->entitiesConvert($child, $full);
+            if ($child instanceof \DOMElement)
+            {
+                $this->entitiesConvert($child, $full);
+            }
         }
 
         foreach ($this->coclist as $attrname => $attrvalues)
@@ -77,12 +80,7 @@ class Metadata2array {
                 if (empty($existing))
                 {
                     $nconduct = new models\Coc;
-                    $nconduct->setUrl($r);
-                    $nconduct->setName($r);
-                    $nconduct->setSubtype($attrname);
-                    $nconduct->setType('entcat');
-                    $nconduct->setDescription('' . $attrname . ': ' . $r . '');
-                    $nconduct->setAvailable(FALSE);
+                    $nconduct->setEntityCategory($r, $r, $attrname, '' . $attrname . ': ' . $r . '', FALSE);
                     $this->em->persist($nconduct);
                 }
             }
@@ -396,7 +394,7 @@ class Metadata2array {
         return $result;
     }
 
-    private function spSSODescriptorConvert($node)
+    private function spSSODescriptorConvert(\DOMElement $node)
     {
         $profilesTmp = $node->getAttribute('protocolSupportEnumeration');
         $profiles = explode(" ", $profilesTmp);
@@ -460,7 +458,7 @@ class Metadata2array {
         return $result;
     }
 
-    private function keyDescriptorConvert($node)
+    private function keyDescriptorConvert(\DOMElement $node)
     {
         $cert = array();
         $usecase = $node->getAttribute('use');
@@ -498,7 +496,7 @@ class Metadata2array {
         return $cert;
     }
 
-    private function aaExtensionsToArray($node)
+    private function aaExtensionsToArray(\DOMElement $node)
     {
         $result = array();
         foreach ($node->childNodes as $enode)
@@ -511,7 +509,7 @@ class Metadata2array {
         return $result;
     }
 
-    private function extensionsToArray($node)
+    private function extensionsToArray(\DOMElement $node)
     {
         foreach ($node->childNodes as $enode)
         {
@@ -595,7 +593,7 @@ class Metadata2array {
         return $ext;
     }
 
-    private function organizationConvert($node)
+    private function organizationConvert(\DOMElement $node)
     {
         $org = array('OrganizationName' => array(), 'OrganizationDisplayName' => array(), 'OrganizationURL' => array());
         if ($node->hasChildNodes())
@@ -611,7 +609,7 @@ class Metadata2array {
         return $org;
     }
 
-    private function contactPersonConvert($node)
+    private function contactPersonConvert(\DOMElement $node)
     {
         $cnt = array();
         $cnt['type'] = $node->getAttribute('contactType');

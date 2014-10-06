@@ -197,7 +197,7 @@ class Attribute_requirement extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    private function _add($provider_id, $attr_req)
+    private function add($provider_id, $attr_req)
     {
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $provider_id, 'type' => array('SP', 'BOTH')));
         if (!empty($provider) && !empty($attr_req))
@@ -266,10 +266,8 @@ class Attribute_requirement extends MY_Controller
         $spid = $this->input->post('spid');
         if ($this->submitValidate() === FALSE)
         {
-            log_message('debug', 'KLS1');
             return $this->sp($spid);
         }
-
         $attr = $this->input->post('attribute');
         $status = $this->input->post('requirement');
         $reason = $this->input->post('reason');
@@ -314,7 +312,7 @@ class Attribute_requirement extends MY_Controller
             $attr_req->setStatus($status);
             $attr_req->setAttribute($attribute);
             $attr_req->setType('SP');
-            $this->_add($spid, $attr_req);
+            $this->add($spid, $attr_req);
         }
         elseif ($attr && $status && $action == 'Remove')
         {

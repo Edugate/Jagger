@@ -47,6 +47,7 @@ $lang['title_listspages']           = 'List static pages';
 $lang['rr_title']                   = 'Title';
 $lang['fedvalidator']               = 'Federation validator';
 $lang['rr_federation'] =             'Federation';
+$lang['rr_fedstojoin']              = 'Federation(s) to join';
 $lang['fvalidcodereceived']         = 'Status received from validator';
 $lang['fvalidmsgsreceived']         = 'Additional information received';
 $lang['statsmngmt']                 = 'Statistics management';

@@ -56,7 +56,7 @@ class Supported_attributes extends MY_Controller {
 
     public function submit()
     {
-        $idpId = $this->input->post('idpid');
+        $idpId = trim($this->input->post('idpid'));
         if (empty($idpId) || !ctype_digit($idpId))
         {
             show_error('Missing or incorrect id of IdP', 503);
@@ -68,7 +68,7 @@ class Supported_attributes extends MY_Controller {
             log_message('error', "Lost idp");
             show_error('Lost idp', 503);
         }
-        $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'idp', '');
+        $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
         if (!$hasWriteAccess)
         {
             $data = array(
@@ -76,7 +76,6 @@ class Supported_attributes extends MY_Controller {
                 'error' => '' . lang('noperm_idpedit') . ': ' . $idp->getEntityid() . '',
             );
             $this->load->view('page', $data);
-            return;
         }
         $new_attrs = $this->input->post('attr');
         if (empty($new_attrs) || !is_array($new_attrs))
@@ -87,6 +86,7 @@ class Supported_attributes extends MY_Controller {
         $tmp = new models\AttributeReleasePolicies();
         $existingAttrs = $tmp->getSupportedAttributes($idp);
         $changes = array();
+        $tempAttr = new models\Attributes();
         foreach ($existingAttrs as $a)
         {
             log_message('debug', 'current ' . $a->getAttribute()->getId());
@@ -104,13 +104,9 @@ class Supported_attributes extends MY_Controller {
                 $this->em->remove($a);
             }
         }
-        if (count($new_attrs) > 0)
-        {
-            log_message('debug', 'New attributed to be added to supported pool');
             foreach ($new_attrs as $key => $value)
             {
-                log_message('debug', $key . ' will be added to supported pool');
-                $tempAttr = new models\Attributes();
+                log_message('debug', $key . ' will be added to supported pool');              
                 $attribute = $tempAttr->getAttributeById($key);
                 $newOne = new models\AttributeReleasePolicy();
                 $newOne->setSupportedAttribute($idp, $attribute);
@@ -120,7 +116,6 @@ class Supported_attributes extends MY_Controller {
                     'after' => 'support added'
                 );
             }
-        }
         if (count($changes) > 0)
         {
             $idp->updated();

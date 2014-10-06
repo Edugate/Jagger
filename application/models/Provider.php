@@ -1491,7 +1491,6 @@ class Provider
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
         $this->setRegistrationDate($provider->getRegistrationDate());
         $this->overwriteWithNameid($provider);
-        log_message('debug', 'GG :' . serialize($this->getNameIds()));
         $prototypes = array('idpsso', 'aa', 'spsso');
         foreach ($prototypes as $a)
         {
@@ -1803,7 +1802,7 @@ class Provider
         $federations = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($mem as $m)
         {
-            if ($m->getIsFinalMembership())
+            if ($m->isFinalMembership())
             {
                 $federations->add($m->getFederation());
                 ;
@@ -2076,7 +2075,7 @@ class Provider
     /**
      * return boolean if entity is between validfrom and validto dates
      */
-    public function getIsValidFromTo()
+    public function isValidFromTo()
     {
         /**
          * @todo fix broken time for the momemnt reurns true
@@ -2141,7 +2140,7 @@ class Provider
         return $this->extend;
     }
 
-    public function getIsStaticMetadata()
+    public function isStaticMetadata()
     {
         $c = $this->getStatic();
         $d = $this->getStaticMetadata();
@@ -2252,7 +2251,7 @@ class Provider
     public function getAvailable()
     {
 
-        return ($this->is_active && $this->is_approved && $this->getIsValidFromTo());
+        return ($this->is_active && $this->is_approved && $this->isValidFromTo());
     }
 
     public function getLocal()
@@ -2262,7 +2261,7 @@ class Provider
 
     public function getLocalAvailable()
     {
-        return ( $this->is_local && $this->is_active && $this->is_approved && $this->getIsValidFromTo());
+        return ( $this->is_local && $this->is_active && $this->is_approved && $this->isValidFromTo());
     }
 
     public function getDescription()
