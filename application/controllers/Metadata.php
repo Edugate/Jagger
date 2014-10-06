@@ -339,6 +339,56 @@ class Metadata extends MY_Controller {
         }
     }
 
+    public function queue($tokenid)
+    {
+        $token = $tokenid;
+        $q = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $tokenid));
+        if (empty($q))
+        {
+            show_error('Not found', 404);
+            return;
+        }
+        $queueAction = $q->getAction();
+        $queueObjType = $q->getType();
+        if (!(strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0)))
+        {
+            show_error('Not found', 404);
+            return;
+        }
+        $d = $q->getData();
+        if (!isset($d['metadata']))
+        {
+            $entity = new models\Provider;
+            $entity->importFromArray($d);
+        }
+        else
+        {
+            $this->load->library('xmlvalidator');
+            libxml_use_internal_errors(true);
+            $metadataDOM = new \DOMDocument();
+            $metadataDOM->strictErrorChecking = FALSE;
+            $metadataDOM->WarningChecking = FALSE;
+            $metadataDOM->loadXML(base64_decode($d['metadata']));
+            $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
+            if (!$isValid)
+            {
+                show_error('invalida metadata', 404);
+                return false;
+            }
+            $data['out'] = $metadataDOM->saveXML();
+            $this->load->view('metadata_view', $data);
+            return;
+        }
+        $options['attrs'] = 1;
+        if (empty($entity))
+        {
+            show_error('Not found', 404);
+        }
+        $y = $entity->getProviderToXML($parent = null, $options);
+        $data['out'] = $y->saveXML();
+        $this->load->view('metadata_view', $data);
+    }
+
     private function isCircleFeatureEnabled()
     {
         $circlemetaFeature = $this->config->item('featdisable');
