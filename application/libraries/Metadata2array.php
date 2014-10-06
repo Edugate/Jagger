@@ -80,12 +80,7 @@ class Metadata2array
                 if (empty($existing))
                 {
                     $nconduct = new models\Coc;
-                    $nconduct->setUrl($r);
-                    $nconduct->setName($r);
-                    $nconduct->setSubtype($attrname);
-                    $nconduct->setType('entcat');
-                    $nconduct->setDescription('' . $attrname . ': ' . $r . '');
-                    $nconduct->setAvailable(FALSE);
+                    $nconduct->setEntityCategory($r, $r, $attrname, '' . $attrname . ': ' . $r . '', FALSE);
                     $this->em->persist($nconduct);
                 }
             }
