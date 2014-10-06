@@ -394,7 +394,7 @@ class Metadata2array
         return $result;
     }
 
-    private function spSSODescriptorConvert($node)
+    private function spSSODescriptorConvert(\DOMElement $node)
     {
         $profilesTmp = $node->getAttribute('protocolSupportEnumeration');
         $profiles = explode(" ", $profilesTmp);
@@ -458,7 +458,7 @@ class Metadata2array
         return $result;
     }
 
-    private function keyDescriptorConvert($node)
+    private function keyDescriptorConvert(\DOMElement $node)
     {
         $cert = array();
         $usecase = $node->getAttribute('use');
@@ -496,7 +496,7 @@ class Metadata2array
         return $cert;
     }
 
-    private function aaExtensionsToArray($node)
+    private function aaExtensionsToArray(\DOMElement $node)
     {
         $result = array();
         foreach ($node->childNodes as $enode)
@@ -509,7 +509,7 @@ class Metadata2array
         return $result;
     }
 
-    private function extensionsToArray($node)
+    private function extensionsToArray(\DOMElement $node)
     {
         foreach ($node->childNodes as $enode)
         {
@@ -593,7 +593,7 @@ class Metadata2array
         return $ext;
     }
 
-    private function organizationConvert($node)
+    private function organizationConvert(\DOMElement $node)
     {
         $org = array('OrganizationName' => array(), 'OrganizationDisplayName' => array(), 'OrganizationURL' => array());
         if ($node->hasChildNodes())
@@ -609,7 +609,7 @@ class Metadata2array
         return $org;
     }
 
-    private function contactPersonConvert($node)
+    private function contactPersonConvert(\DOMElement $node)
     {
         $cnt = array();
         $cnt['type'] = $node->getAttribute('contactType');
