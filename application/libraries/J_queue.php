@@ -428,17 +428,21 @@ class J_queue
         }
         $i = 0;
         $feds = $objData->getFederations();
-        $fedCollection = array();
+        $fedIdsCollection = array();
 
-        $provider[$i++]['header'] = lang('rr_fedstojoin');
+        $dataRows[$i++]['header'] = lang('rr_fedstojoin');
         if ($feds->count() > 0)
         {
 
             foreach ($objData->getFederations() as $fed)
             {
-                $fedCollection[] = $fed;
-                $provider[$i]['name'] = lang('rr_federation');
-                $provider[$i]['value'] = $fed->getName();
+                $realFed = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $fed->getSysname()));
+                if (!empty($realFed))
+                {
+                    $fedIdsCollection[] = $realFed->getId();
+                }
+                $dataRows[$i]['name'] = lang('rr_federation');
+                $dataRows[$i]['value'] = $fed->getName();
                 $i++;
             }
         }
@@ -449,58 +453,86 @@ class J_queue
                 $p = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $f['sysname']));
                 if (!empty($p))
                 {
-                    $fedCollection[] = $p;
-                    $provider[$i]['name'] = lang('rr_federation');
-                    $provider[$i]['value'] = $p->getName();
+                    $fedIdsCollection[] = $p->getId();
+
+                    $dataRows[$i]['name'] = lang('rr_federation');
+                    $dataRows[$i]['value'] = $p->getName();
                     $i++;
                 }
             }
         }
         else
         {
-            $provider[$i]['name'] = '';
-            $provider[$i]['value'] = lang('noneatthemoment');
-            $i++;
+            $dataRows[$i++] = array('name' => '','value' => lang('noneatthemoment'));
         }
+        
         /**
          * @todo show all fedvalidators which are assigned to federations
-         * if(count($fedCollection>0))
-         * {
-         * }
          */
-       
-        $provider[$i++]['header'] = lang('rr_basicinformation');
-        $provider[$i]['name'] = lang('rr_homeorganisationname');
-        $provider[$i++]['value'] = $objData->getName();
+        $valMandatory = null;
+        $valOptional = null;
+        $attrs = array('id' => 'fvform', 'style' => 'display: inline', 'class' => '');
+        if (count($fedIdsCollection) > 0)
+        {
+            $validators = $this->em->getRepository("models\FederationValidator")->findBy(array('federation' => $fedIdsCollection, 'isEnabled' => true));
+            foreach ($validators as $v)
+            {
+                if ($v->getMandatory())
+                {
+                    $hidden = array('fedid' => $v->getFederation()->getId(), 'qtoken' => $q->getToken(), 'fvid' => $v->getId());
+                    $valMandatory .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden);
+                    $valMandatory .= '<button id="' . $v->getId() . '" title="' . $v->getDescription() . '">' . $v->getName() . '</button> ';
+                    $valMandatory .= form_close();
+                }
+                else
+                {
+                    $hidden = array('fedid' => $v->getFederation()->getId(), 'qtoken' => $q->getToken(), 'fvid' => $v->getId());
+                    $valOptional .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden);
+                    $valOptional .= '<button id="' . $v->getId() . '" title="' . $v->getDescription() . '">' . $v->getName() . '</button> ';
+                    $valOptional .= form_close();
+                }
+            }
+            $dataRows[$i++] = array('name' => lang('manValidator'),'value' => $valMandatory);
+            $dataRows[$i++] = array('name' => lang('optValidator'),'value' => $valOptional);
+            $resultValidation = '<div id="fvresult" style="display:none;" data-alert class="alert-box info"><div><b>' . lang('fvalidcodereceived') . '</b>: <span id="fvreturncode"></span></div><div><p><b>' . lang('fvalidmsgsreceived') . '</b>:</p><div id="fvmessages"></div></div></div>';
+            $resultValidation .= '<div id="fvalidesc"></div>';
+            $dataRows[$i++] = array('2cols'=>$resultValidation);
+        }
 
-        $provider[$i]['name'] = 'entityID';
 
-        $provider[$i++]['value'] = $objData->getEntityId();
+
+        $dataRows[$i++]['header'] = lang('rr_basicinformation');
+        $dataRows[$i]['name'] = lang('rr_homeorganisationname');
+        $dataRows[$i++]['value'] = $objData->getName();
+
+        $dataRows[$i]['name'] = 'entityID';
+
+        $dataRows[$i++]['value'] = $objData->getEntityId();
         $type = $objData->getType();
         if ($type === 'IDP')
         {
-            $provider[$i]['name'] = lang('type');
-            $provider[$i++]['value'] = lang('identityprovider');
+            $dataRows[$i]['name'] = lang('type');
+            $dataRows[$i++]['value'] = lang('identityprovider');
 
-            $provider[$i]['name'] = lang('rr_scope') . ' <br /><small>IDPSSODescriptor</small>';
-            $provider[$i++]['value'] = implode(';', $objData->getScope('idpsso'));
+            $dataRows[$i]['name'] = lang('rr_scope') . ' <br /><small>IDPSSODescriptor</small>';
+            $dataRows[$i++]['value'] = implode(';', $objData->getScope('idpsso'));
         }
         elseif ($type === 'SP')
         {
-            $provider[$i]['name'] = lang('type');
-            $provider[$i++]['value'] = lang('serviceprovider');
+            $dataRows[$i]['name'] = lang('type');
+            $dataRows[$i++]['value'] = lang('serviceprovider');
         }
 
-        $provider[$i]['name'] = lang('rr_helpdeskurl');
-        $provider[$i++]['value'] = $objData->getHelpdeskUrl();
+        $dataRows[$i]['name'] = lang('rr_helpdeskurl');
+        $dataRows[$i++]['value'] = $objData->getHelpdeskUrl();
 
 
-        $provider[$i++]['header'] = lang('rr_servicelocations');
+        $dataRows[$i++]['header'] = lang('rr_servicelocations');
         $servicetypesWithIndex = array('IDPArtifactResolutionService', 'DiscoveryResponse', 'AssertionConsumerService', 'SPArtifactResolutionService');
         foreach ($objData->getServiceLocations() as $service)
         {
             $serviceType = $service->getType();
-            $provider[$i]['name'] = $serviceType;
+            $dataRows[$i]['name'] = $serviceType;
             if (in_array($serviceType, $servicetypesWithIndex))
             {
                 $orderString = 'index: ' . $service->getOrder();
@@ -509,34 +541,34 @@ class J_queue
             {
                 $orderString = '';
             }
-            $provider[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . " " . $orderString . " </small><br />";
+            $dataRows[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . " " . $orderString . " </small><br />";
             $i++;
         }
-        $provider[$i++]['header'] = lang('rr_supportednameids');
-        $provider[$i]['name'] = lang('nameid');
+        $dataRows[$i++]['header'] = lang('rr_supportednameids');
+        $dataRows[$i]['name'] = lang('nameid');
         if ($type === 'IDP')
         {
-            $provider[$i++]['value'] = implode(', ', $objData->getNameIds('idpsso'));
+            $dataRows[$i++]['value'] = implode(', ', $objData->getNameIds('idpsso'));
         }
         elseif ($type === 'SP')
         {
-            $provider[$i++]['value'] = implode(', ', $objData->getNameIds('spsso'));
+            $dataRows[$i++]['value'] = implode(', ', $objData->getNameIds('spsso'));
         }
 
 
 
-        $provider[$i++]['header'] = lang('rr_certificates');
+        $dataRows[$i++]['header'] = lang('rr_certificates');
         foreach ($objData->getCertificates() as $cert)
         {
-            $provider[$i]['name'] = "Certificate (" . $cert->getCertUse() . ")";
+            $dataRows[$i]['name'] = "Certificate (" . $cert->getCertUse() . ")";
             $certdatacell = reformatPEM($cert->getCertdata());
 
 
-            $provider[$i]['value'] = "<span class=\"span-10\"><code>" . $certdatacell . "</code></span>";
+            $dataRows[$i]['value'] = "<span class=\"span-10\"><code>" . $certdatacell . "</code></span>";
             $i++;
         }
 
-        $provider[$i++]['header'] = lang('rr_contacts');
+        $dataRows[$i++]['header'] = lang('rr_contacts');
         foreach ($objData->getContacts() as $contact)
         {
             $phone = $contact->getPhone();
@@ -548,8 +580,8 @@ class J_queue
             {
                 $phoneStr = '';
             }
-            $provider[$i]['name'] = lang('rr_contact') . ' (' . $contact->getType() . ')';
-            $provider[$i]['value'] = $contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt; " . $phoneStr;
+            $dataRows[$i]['name'] = lang('rr_contact') . ' (' . $contact->getType() . ')';
+            $dataRows[$i]['value'] = $contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt; " . $phoneStr;
             $i++;
         }
         if ($showXML)
@@ -558,12 +590,12 @@ class J_queue
                 'enable_classes' => true,
             );
 
-            $provider[$i]['name'] = 'XML';
+            $dataRows[$i]['name'] = 'XML';
             $this->ci->load->library('geshilib');
-            $provider[$i]['value'] = '' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . '';
+            $dataRows[$i]['value'] = '' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . '';
             $i++;
         }
-        return $provider;
+        return $dataRows;
     }
 
     function displayInviteProvider(models\Queue $queue)
