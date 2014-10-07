@@ -594,7 +594,7 @@ class Detail extends MY_Controller {
         {
             $d[++$i]['header'] = lang('rr_metadata');
             $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', '');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<i class="fi-arrow-right"></i>', '');
         }
         $circleEnabled = !((isset($featdisable['circlemeta']) && $featdisable['circlemeta'] === TRUE) || (isset($feathide['circlemeta']) && $feathide['circlemeta'] === TRUE));
 
@@ -614,9 +614,9 @@ class Detail extends MY_Controller {
                 $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
 
                 $d[++$i]['name'] = lang('rr_circleoftrust');
-                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_circle_metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"');
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_circle_metalink, '<i class="fi-arrow-right"></i>', 'class="showmetadata"');
                 $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<i class="fi-arrow-right"></i>');
             }
         }
         if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled)
@@ -701,11 +701,11 @@ class Detail extends MY_Controller {
                     $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
                     if ($fedActive)
                     {
-                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"') . '</li>';
+                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class="showmetadata"') . '</li>';
                     }
                     else
                     {
-                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<img src="' . base_url() . 'images/icons/arrow.png"/>', 'class="showmetadata"') . '</li>';
+                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class="showmetadata"') . '</li>';
                     }
                 }
                 else
@@ -1115,7 +1115,7 @@ class Detail extends MY_Controller {
             $encoded_entityid = base64url_encode($ent->getEntityId());
             $arp_url = base_url() . 'arp/format2/' . $encoded_entityid . '/arp.xml';
             $d[++$i]['name'] = lang('rr_individualarpurl');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_arpurl') . '</span><span class="accordionContent"><br />' . $arp_url . '&nbsp;</span>&nbsp;' . anchor_popup($arp_url, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_arpurl') . '</span><span class="accordionContent"><br />' . $arp_url . '&nbsp;</span>&nbsp;' . anchor_popup($arp_url, '<i class="fi-arrow-right"></i>');
             //
 
             $exc = $ent->getExcarps();
@@ -1149,7 +1149,7 @@ class Detail extends MY_Controller {
          */
         if ($idppart)
         {
-            $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
+            $image_link = '<i class="fi-pencil"></i>';
             if ($hasWriteAccess)
             {
                 $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
@@ -1183,7 +1183,7 @@ class Detail extends MY_Controller {
                 $d[++$i]['name'] = lang('rr_attrsoverview');
                 $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'), 'class="button small editbutton"');
 
-                $image_link = '<img src="' . base_url('images/icons/pencil-field.png') . '"/>';
+                $image_link = '<i class="fi-pencil"></i>';
                 $edit_req_attrs_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '" class="editbutton editicon" title="edit" >' . lang('rr_edit') . '</a></span>';
                 $entmenu[24] = array('name' => '' . lang('rr_requiredattributes') . '', 'link' => '' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '', 'class' => '');
             }
@@ -1423,10 +1423,10 @@ class Detail extends MY_Controller {
         if ($hasManageAccess)
         {
             $d[++$i]['name'] = lang('rr_managestatus');
-            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' ' . anchor(base_url() . 'manage/entitystate/modify/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' ' . anchor(base_url() . 'manage/entitystate/modify/' . $id, '<i class="fi-arrow-right"></i>');
             if (!$isActive)
             {
-                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . ' ' . anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>') . '</div>';
+                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . ' ' . anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<i class="fi-arrow-right"></i>') . '</div>';
             }
             else
             {
@@ -1447,7 +1447,7 @@ class Detail extends MY_Controller {
         $d[++$i]['name'] = '';
         if ($hasManageAccess)
         {
-            $d[$i]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/access_manage/entity/' . $id, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+            $d[$i]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/access_manage/entity/' . $id, '<i class="fi-arrow-right"></i>');
         }
         else
         {
@@ -1528,7 +1528,7 @@ class Detail extends MY_Controller {
                     $d[] = array('name' => lang('rr_fingerprint') . ' (sha1)', 'value' => '' . generateFingerprint($certData, 'sha1') . '');
                     $d[] = array(
                         'name' => '',
-                        'value' => '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c' . $cert->getId() . '">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
+                        'value' => '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c' . $cert->getId() . '" class="accordion-icon">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
                     );
                 }
             }

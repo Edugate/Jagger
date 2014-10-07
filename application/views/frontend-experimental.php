@@ -53,6 +53,7 @@ $jquerybubblepopupthemes = $base_url . 'styles/jquerybubblepopup-themes';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />';
+        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/foundation-icons.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />';
         echo '<script src="' . $base_url . 'js/modernizr.js"></script>';
         ?>

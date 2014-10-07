@@ -66,7 +66,7 @@ class Premoval extends MY_Controller {
         $data['entityid'] = $provider->getEntityId();
         $data['type'] = $provider->getType();
         $data['providerid'] = $provider->getId();
-        $data['link'] = anchor(base_url() . 'providers/detail/show/'. $data['providerid'], '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $data['link'] = anchor(base_url() . 'providers/detail/show/'. $data['providerid'], '<i class="fi-arrow-right"></i>');
         $enabled = $provider->getActive();
         $rmaccess = $this->zacl->check_acl($provider->getId(), 'manage', 'entity', '');
         if (!$rmaccess)
