@@ -320,7 +320,7 @@ class Attributepolicy extends MY_Controller
     {
         $data['content_view'] = 'manage/attribute_policy_view';
         $this->title = lang('rr_attributereleasepolicy');
-        if (!is_numeric($idp_id))
+        if (!ctype_digit($idp_id))
         {
             if (empty($this->current_idp))
             {
@@ -347,8 +347,7 @@ class Attributepolicy extends MY_Controller
             show_error(lang('rerror_idpnotfound'), 404);
             return;
         }
-        $resource = $idp->getId();
-        $has_write_access = $this->zacl->check_acl($resource, 'write', 'entity', '');
+        $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
         if (!$has_write_access)
         {
             $data['content_view'] = 'nopermission';
@@ -358,8 +357,6 @@ class Attributepolicy extends MY_Controller
         }
         $lang = MY_Controller::getLang();
         $displayname = $idp->getNameToWebInLang($lang, 'idp');
-
-
         $data['titlepage'] = lang('identityprovider') . ': ' . '<a href="' . base_url() . 'providers/detail/show/' . $idp_id . '">' . $displayname . '</a>';
         $data['subtitlepage'] = lang('rr_attributereleasepolicy');
 
@@ -408,8 +405,6 @@ class Attributepolicy extends MY_Controller
         $data['idpid'] = $search_idp;
         $data['idp_name'] = $idp->getName();
         $data['idp_entityid'] = $idp->getEntityId();
-
-
         $this->load->view('page', $data);
     }
 

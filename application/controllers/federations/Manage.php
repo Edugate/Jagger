@@ -796,9 +796,9 @@ class Manage extends MY_Controller
         if (!empty($m) && is_array($m) && count($m) > 0)
         {
             $mKeys = array_keys($m);
-            if(strcasecmp($memberstype, 'idp')==0 || strcasecmp($memberstype, 'sp')==0)
+            if (strcasecmp($memberstype, 'idp') == 0 || strcasecmp($memberstype, 'sp') == 0)
             {
-                $newMembersList = $this->em->getRepository("models\Provider")->findBy(array('type' => array(''.  strtoupper($memberstype).'', 'BOTH'), 'id' => $mKeys));
+                $newMembersList = $this->em->getRepository("models\Provider")->findBy(array('type' => array('' . strtoupper($memberstype) . '', 'BOTH'), 'id' => $mKeys));
             }
             else
             {
@@ -824,7 +824,7 @@ class Manage extends MY_Controller
                 {
                     $doFilter = array('' . $federation->getId() . '');
                     $m1 = $nmember->getMembership()->filter(
-                            function($entry) use($doFilter) {
+                            function(models\FederationMembers $entry) use($doFilter) {
                         return (in_array($entry->getFederation()->getId(), $doFilter));
                     }
                     );
@@ -849,7 +849,7 @@ class Manage extends MY_Controller
             if (count($newMembersArray) > 0)
             {
                 $subject = 'Members of Federations changed';
-                $body = 'Dear user' . PHP_EOL. 'Federation ' . $federation->getName() . ' has new members:' . PHP_EOL. implode(';' . PHP_EOL, $newMembersArray);
+                $body = 'Dear user' . PHP_EOL . 'Federation ' . $federation->getName() . ' has new members:' . PHP_EOL . implode(';' . PHP_EOL, $newMembersArray);
                 $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $subject, $body, array(), false);
             }
             $this->em->flush();
@@ -978,6 +978,7 @@ class Manage extends MY_Controller
 
     public function removeprovider($fed_name)
     {
+        log_message('debug', 'DDDUPA');
         if (!$this->j_auth->logged_in())
         {
             redirect('auth/login', 'location');
@@ -1027,7 +1028,7 @@ class Manage extends MY_Controller
                     }
                     $doFilter = array('' . $federation->getId() . '');
                     $m2 = $inv_member->getMembership()->filter(
-                            function($entry) use($doFilter) {
+                            function(models\FederationMembers $entry) use($doFilter) {
                         return (in_array($entry->getFederation()->getId(), $doFilter));
                     }
                     );
@@ -1045,7 +1046,7 @@ class Manage extends MY_Controller
                             $this->em->remove($v2);
                         }
                     }
-                    $entype = strtolower($inv_member->getType);
+                    $entype = strtolower($inv_member->getType());
                     if (strcmp($entype, 'both') == 0)
                     {
                         $entype = 'idp';

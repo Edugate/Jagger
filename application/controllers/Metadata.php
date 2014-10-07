@@ -341,6 +341,11 @@ class Metadata extends MY_Controller {
 
     public function queue($tokenid)
     {
+        if(strlen($tokenid)>100 || !ctype_alnum($tokenid))
+        {
+            show_error('Not found', 404);
+            return;
+        }
         $q = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $tokenid));
         if (empty($q))
         {

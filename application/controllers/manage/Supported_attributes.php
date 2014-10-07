@@ -104,8 +104,6 @@ class Supported_attributes extends MY_Controller {
                 $this->em->remove($a);
             }
         }
-        if (count($new_attrs) > 0)
-        {
             foreach ($new_attrs as $key => $value)
             {
                 log_message('debug', $key . ' will be added to supported pool');              
@@ -118,7 +116,6 @@ class Supported_attributes extends MY_Controller {
                     'after' => 'support added'
                 );
             }
-        }
         if (count($changes) > 0)
         {
             $idp->updated();
