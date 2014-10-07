@@ -239,7 +239,7 @@ class Access_manage extends MY_Controller {
             }
             $i++;
         }
-        $entity_link = anchor(base_url() . 'providers/detail/show/' . $id_of_entity, '<img src="' . base_url() . 'images/icons/arrow.png"/>');
+        $entity_link = anchor(base_url() . 'providers/detail/show/' . $id_of_entity, '<i class="fi-arrow-right"></i>');
         $data['resource_name'] = $ent->getName() . " (" . $ent->getEntityId() . ")" . $entity_link;
         $lang = MY_Controller::getLang();
         $data['resourcename'] = $ent->getNameToWebInLang($lang, $ent->getType());

@@ -3165,7 +3165,7 @@ $("a.afilter").click(function() {
     $.ajax({
         type: "GET",
         url: url,
-        timeout: 5500,
+        timeout: 9500,
         cache: true,
         dataType: "json",
         success: function(json) {

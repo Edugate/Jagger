@@ -422,10 +422,31 @@ span.alert{
 
   color:red;
 }
+
+.accordion-icon:before {
+  font-family: "foundation-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  text-decoration: inherit;
+  padding-right: 5px;
+
+ content: "\f199";
+    
+}
+.active > .accordion-icon:before {
+    content: "\f176 ";
+ }
+
 .accordionButton {
  cursor: pointer;
 
 }
+
 td.highlight {
 
         background-color: darken($body-bg,10%);
@@ -440,6 +461,7 @@ ul.no-bullet {
 }
 code {
  white-space: pre;
+ font-size: smaller;
 
 }
 

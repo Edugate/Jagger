@@ -275,7 +275,7 @@ class Show_element {
         $supported_attrs_url = base_url() . "manage/supported_attributes/idp/" . $provider->getId();
         $prefix_url = base_url() . "manage/attributepolicy/detail/";
         $prefix_multi_url = base_url() . "manage/attributepolicy/multi/";
-        $icon = base_url() . "images/icons/pencil-field.png";
+        $icon = '<i class="fi-pencil"></i>';
         if (!empty($source))
         {
             foreach ($source as $key => $value)
@@ -285,7 +285,7 @@ class Show_element {
                 {
                     $tmp_spid = $tmp_sp_array['spid'];
                 }
-                $link_sp = '<a href="' . $prefix_multi_url . $provider->getId() . '/sp/' . $tmp_spid . '"><img src="' . $icon . '"/></a>';
+                $link_sp = '<a href="' . $prefix_multi_url . $provider->getId() . '/sp/' . $tmp_spid . '">'.$icon.'</a>';
                 if (in_array($key, $exluded_arps))
                 {
                     $lbl = '<span class="lbl lbl-disabled">'.lang('lbl_excluded').'</span> ';
@@ -316,7 +316,7 @@ class Show_element {
                     {
                         $policy_id = $attr_value['id'];
                     }
-                    $link = anchor($prefix_url . "" . $provider->getId() . "/" . $attr_value['attr_id'] . "/sp/" . $attr_value['spid'], '<img src="' . $icon . '"/>');
+                    $link = anchor($prefix_url  . $provider->getId() . '/' . $attr_value['attr_id'] . '/sp/' . $attr_value['spid'],  $icon );
                     $permited_values = '';
                     $denied_values = '';
                     $lng_permitedval = lang('rr_permvalues');
@@ -343,7 +343,7 @@ class Show_element {
                             $denied_values .="</dl>";
                         }
                     }
-                    $custom_link = anchor(base_url() . "manage/custom_policies/idp/" . $provider->getId() . "/" . $attr_value['spid'] . "/" . $attr_value['attr_id'], '<img src="' . $icon . '"/>');
+                    $custom_link = anchor(base_url() . "manage/custom_policies/idp/" . $provider->getId() . "/" . $attr_value['spid'] . "/" . $attr_value['attr_id'], $icon );
 
                     $attributes[] = array($attr_name . $link, $attr_value['status'], $attr_value['policy'] . '<br /><div ><b>'.lang('custompolicy').'</b>' . $custom_link .  $permited_values  . $denied_values . '</div>');
                 }
@@ -374,7 +374,7 @@ class Show_element {
         $source = $this->displayFederationsArp($provider);
         $attributes = array();
         $prefix_url = base_url() . 'manage/attributepolicy/detail/';
-        $icon = base_url() . 'images/icons/pencil-field.png';
+        $icon = '<i class="fi-pencil"></i>';
         if (!empty($source))
         {
             $tmpl = array('table_open' => '<table  id="detailsnosort">');
@@ -390,7 +390,7 @@ class Show_element {
                 $attributes[] = array('data' => array('data' => ''.lang('rr_federation').': <b>' . $s['fedname'] . '</b>', 'colspan' => 2, 'class' => 'highlight'));
                 foreach ($s['attrs'] as $attr_key => $attr_value)
                 {
-                    $edit_link = anchor($prefix_url . "" . $provider->getId() . "/" . $attr_value['attrid'] . "/fed/" . $s['fedid'], '<img src="' . $icon . '"/>');
+                    $edit_link = anchor($prefix_url . "" . $provider->getId() . "/" . $attr_value['attrid'] . "/fed/" . $s['fedid'], $icon );
                     if (!array_key_exists($attr_value['name'], $supported_attrs))
                     {
                         $attr_name = '<span class="alert" title="'.lang('attrnotsupported').'">' . $attr_value['name'] . '</span>';
@@ -413,7 +413,7 @@ class Show_element {
         $source = $this->displayDefaultArp($provider);
         $attributes = array();
         $prefix_url = base_url() . 'manage/attributepolicy/detail/';
-        $icon = base_url() . 'images/icons/pencil-field.png';
+        $icon = '<i class="fi-pencil"></i>';
         $supported = $this->tmp_policies->getSupportedAttributes($provider);
         $supported_attrs = array();
         foreach ($supported as $sa)
@@ -434,7 +434,7 @@ class Show_element {
                 {
                     $attr_name = $s['name'];
                 }
-                $link = anchor($prefix_url . "" . $provider->getId() . "/" . $s['attrid'] . "/global/0", '<img src="' . $icon . '"/>');
+                $link = anchor($prefix_url . "" . $provider->getId() . "/" . $s['attrid'] . "/global/0",  $icon );
                 $attributes[] = array('' . $attr_name . '' . $link . '', $s['release']);
             }
 

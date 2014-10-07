@@ -51,7 +51,7 @@ class Regpolicy extends MY_Controller
           {
               if($has_write_access)
               {
-                 $l = '<a href="'.base_url().'manage/regpolicy/edit/'.$c->getId().'" class="button tiny">'.lang('rr_edit').'</a>';
+                 $l = '<a href="'.base_url().'manage/regpolicy/edit/'.$c->getId().'" ><i class="fi-pencil"></i></a>';
               }
               else
               {

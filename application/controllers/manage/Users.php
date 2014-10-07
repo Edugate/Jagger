@@ -361,8 +361,7 @@ class Users extends MY_Controller
             return;
         }
 
-        $image_link = '<img src="' . base_url() . 'images/icons/pencil-field.png"/>';
-        $passedit_link = '<span><a href="' . base_url() . 'manage/users/passedit/' . $encoded_username . '" class="edit" title="edit" >' . $image_link . '</a></span>';
+        $passedit_link = '<span><a href="' . base_url() . 'manage/users/passedit/' . $encoded_username . '" class="edit" title="edit" ><i class="fi-pencil"></i></a></span>';
 
         $authn_logs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limit_authn);
 
