@@ -833,10 +833,19 @@ class Awaiting extends MY_Controller
                     $parent_res = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => 'federation'));
                     $acl_res->setParent($parent_res);
                     $this->em->persist($acl_res);
+                    try {
                     $this->em->flush();
 
                     $message = lang('rr_federation') . ' ' . $fedname . ' ID:' . $fed->getId() . ' ' . lang('hasbeenadded');
+                    
                     log_message('debug', "Federation " . $fedname . "witch ID:" . $fed->getId() . " has been added");
+                    $this->load->view('page',array('content_view'=>'reports/awaiting_approved_view','success_message'=>$message));
+                    }
+                    catch(Exception $e)
+                    {
+                        log_message('error',__METHOD__.' '.$e);
+                        show_error('Internal server error',500);
+                    }
                 }
             }
             else

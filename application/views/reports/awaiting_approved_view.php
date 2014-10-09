@@ -1,5 +1,5 @@
 <?php
 if(!empty($success_message))
 {
-	echo '<div class="notice">'.$success_message.'</div>';
+	echo '<div data-alert class="alert-box success">'.$success_message.'</div>';
 }
