@@ -713,7 +713,7 @@ class Manage extends MY_Controller
         $this->load->library('zacl');
         $form_elements = array();
         $this->load->helper('form');
-        if (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp'))
+        if (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp')==0)
         {
             $this->load->library('show_element');
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
@@ -745,7 +745,7 @@ class Manage extends MY_Controller
                 $providers = $this->tmp_providers->getSps();
                 $data['subtitlepage'] = lang('rr_addnewspsnoinv');
             }
-            $data['memberstype'] = strtolwer($type);
+            $data['memberstype'] = strtolower($type);
         }
         else
         {
