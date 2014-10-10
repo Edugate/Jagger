@@ -779,6 +779,9 @@ class Awaiting extends MY_Controller
                 $this->load->view('page', $data);
                 return;
             }
+            $data['success_message'] = 'Federation has been removed from the system';
+            $data['content_view'] = 'reports/awaiting_approved_view';
+            $this->load->view('page',$data);
 
          
   
