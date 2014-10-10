@@ -749,15 +749,6 @@ class Providertoxml {
         return $xml;
     }
 
-    public function entityConvertNewDocument(\models\Provider $ent)
-    {
-        $xml = $this->createXMLDocucument();
-        /**
-         * @todo finish
-         */
-        return $xml;
-    }
-
     private function verifySP($ent)
     {
         $doFilter = array('AssertionConsumerService');
@@ -833,15 +824,15 @@ class Providertoxml {
         if ($hasIdpRole)
         {
             $canProceed = $this->verifyIdP($ent);
-            if(!$canProceed)
+            if (!$canProceed)
             {
                 return $xml;
             }
         }
-        if($hasSpRole)
+        if ($hasSpRole)
         {
             $canProceed = $this->verifySP($ent);
-            if(!$canProceed)
+            if (!$canProceed)
             {
                 return $xml;
             }
@@ -882,6 +873,105 @@ class Providertoxml {
         $this->createContacts($xml, $ent);
 
         $xml->endElement();
+        return $xml;
+    }
+
+    private function createXMLDocument()
+    {
+        $xml = new XMLWriter();
+        $xml->openMemory();
+        $xml->setIndent(true);
+        $xml->setIndentString(' ');
+        return $xlm;
+    }
+
+    public function entityConvertNewDocument(\models\Provider $ent)
+    {
+        $type = $ent->getType();
+        $hasIdpRole = FALSE;
+        $hasSpRole = FALSE;
+        if (strcasecmp($type, 'IDP') == 0)
+        {
+            $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor');
+            $hasIdpRole = TRUE;
+        }
+        elseif (strcasecmp($type, 'SP') == 0)
+        {
+            $hasSpRole = TRUE;
+            $rolesFns = array('createSPSSODescriptor');
+        }
+        else
+        {
+            $hasIdpRole = TRUE;
+            $hasSpRole = TRUE;
+            $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor', 'createSPSSODescriptor');
+        }
+        $islocal = $ent->getLocal();
+        $valiUntil = $ent->getValidTo();
+
+        if ($hasIdpRole)
+        {
+            $canProceed = $this->verifyIdP($ent);
+            if (!$canProceed)
+            {
+                return null;
+            }
+        }
+        if ($hasSpRole)
+        {
+            $canProceed = $this->verifySP($ent);
+            if (!$canProceed)
+            {
+                return null;
+            }
+        }
+        $xml = $this->createXMLDocument();
+        $xml->startElementNs('md', 'EntityDescriptor', null);
+        $xml->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
+        $regNamespaces = h_metadataNamespaces();
+        foreach ($regNamespaces as $k => $v)
+        {
+            $xml->writeAttribute('xmlns:' . $k . '', '' . $v . '');
+        }
+        if ($islocal && $this->isGenIdFnExist)
+        {
+            $genId = customGenerateEntityDescriptorID(array('id' => '' . $ent->getId() . '', 'entityid' => '' . $ent->getEntityId() . ''));
+            if (!empty($genId))
+            {
+
+                $xml->writeAttribute('ID', $genId);
+            }
+        }
+        $xml->writeAttribute('entityID', $ent->getEntityId());
+        if (!empty($valiUntil))
+        {
+            $xml->writeAttribute('validUntil', $valiUntil->format('Y-m-d\TH:i:s\Z'));
+        }
+// entity exitension start
+        $this->createEntityExtensions($xml, $ent);
+// entity ext end
+
+        foreach ($rolesFns as $fn)
+        {
+            if (strcmp($fn, 'createSPSSODescriptor') == 0)
+            {
+                $this->$fn($xml, $ent, $options);
+            }
+            else
+            {
+                $this->$fn($xml, $ent);
+            }
+        }
+
+        $this->createOrganization($xml, $ent);
+        $this->createContacts($xml, $ent);
+
+        $xml->endElement();
+        $xml->endDocument();
+        return $xml;
+        /**
+         * @todo finish
+         */
         return $xml;
     }
 
