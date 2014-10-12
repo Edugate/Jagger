@@ -109,8 +109,6 @@ class Form_element {
         {
             $sessform = TRUE;
         }
-        $class_ent = '';
-        $class_org = '';
         $t_regauthority = $ent->getRegistrationAuthority();
         $t_regdate = '';
         $origregdate = '';
@@ -456,7 +454,6 @@ class Form_element {
     {
         $result = array();
         $sessform = FALSE;
-        $enttype = $ent->getType();
         if (!empty($ses) && is_array($ses))
         {
             $sessform = TRUE;
@@ -511,7 +508,6 @@ class Form_element {
             $entCategoriesArray['' . $v->getId() . ''] = array('name' => $v->getName(), 'enabled' => $v->getAvailable(), 'attrname' => $v->getSubtype(), 'value' => $v->getUrl(), 'desc' => $v->getDescription());
         }
         $assignedEntCategories = $ent->getCoc();
-        $assignedEntCategoriesArray = array();
         if ($sessform && isset($ses['coc']))
         {
             foreach ($ses['coc'] as $k => $v)
@@ -581,7 +577,6 @@ class Form_element {
     public function NgenerateContactsForm(models\Provider $ent, $ses = null)
     {
         $origcnts = $ent->getContacts();
-        $sesscnts = array();
         $r = FALSE;
         $formtypes = array(
             'administrative' => lang('rr_cnt_type_admin'),

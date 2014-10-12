@@ -551,9 +551,6 @@ class Providers {
        
        return $query->getResult();
 
-       return $result;
-
-
     }  
   
     public function getActiveFederationMembers(Federation $federation, $excludeType=null)
@@ -573,7 +570,6 @@ class Providers {
        
        return $query->getResult();
 
-       return $result;
     }
 
     public function getOneIdpById($id)

@@ -109,15 +109,6 @@ class Providertoxml {
         
     }
 
-    private function createXMLDocucument()
-    {
-        $xml = new XMLWriter();
-        $xml->openMemory();
-        $xml->setIndent(true);
-        $xml->setIndentString(' ');
-        $xml->startDocument('1.0', 'UTF-8');
-        return $xml;
-    }
 
     private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent)
     {
@@ -342,7 +333,7 @@ class Providertoxml {
 
     private function createDiscoHints(\XMLWriter $xml, \models\Provider $ent, $role)
     {
-        //$doFilter1 = array('GeolocationHint');
+       
         // @todo filtering collection
         $extMetada = $ent->getExtendMetadata();
         $extarray = array();
@@ -449,7 +440,6 @@ class Providertoxml {
         $xml->startElementNs('md', 'AttributeConsumingService', null);
         $xml->writeAttribute('index', '0');
         $doFilter1 = array('DisplayName', 'Description');
-        $doFilter2 = array('sp');
         $extendMeta = $ent->getExtendMetadata()->filter(
                 function(models\ExtendMetadata $entry) use ($doFilter1)
         {
@@ -969,10 +959,7 @@ class Providertoxml {
         $xml->endElement();
         $xml->endDocument();
         return $xml;
-        /**
-         * @todo finish
-         */
-        return $xml;
+     
     }
 
     public function entityStaticConvert(\XMLWriter $xml, \models\Provider $ent)

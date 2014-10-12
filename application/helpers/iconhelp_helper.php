@@ -28,7 +28,7 @@ function showHelp($string)
 
 function showBubbleHelp($string)
 {
-    //$h = '<span data-tooltip class="has-tip" data-options="show_on:large" title="'.htmlspecialchars($string).'"><img src="'.base_url().'images/icons/question.png"></span>';
+    
     $h = '<span data-tooltip class="has-tip" data-options="show_on:large" title="'.htmlspecialchars($string).'"><i class="fi-info" ></i></span>';
     return $h;
 
