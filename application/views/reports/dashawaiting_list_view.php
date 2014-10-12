@@ -32,12 +32,5 @@ if (!empty($list))
     }
     echo $this->table->generate();
     $this->table->clear();
-    if(count($list['s'])>0)
-    {
-       
-        foreach($list['s'] as $s)
-        {
-        //    echo $s['subscriber'].'<br />';
-        }
-    }
+    //@todo add list notification approval request
 }
