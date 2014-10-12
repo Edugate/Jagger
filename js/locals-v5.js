@@ -174,9 +174,9 @@ var GINIT = {
             });
         }
         function notificationupdate(message, callback) {
-            $("#notificationupdatemodal").foundation('reveal', 'open', {});
+            $("#notificationupdatemodal").foundation('reveal', 'open');
             $(document).on('opened', '#notificationupdatemodal', function() {
-                var modal = this;
+                //var modal = this;
                 $(".no").click(function() {
                     $("#notificationupdatemodal").foundation('reveal', 'close');
                 });
@@ -190,7 +190,7 @@ var GINIT = {
                 });
 
             });
-
+            
 
         }
 
@@ -543,7 +543,7 @@ var GINIT = {
             });
 
         }));
-        $("button.updatenotifactionstatus").click(function(ev) {
+        $("button.updatenotifactionstatus").click(function() {
             var related;
             var notid = $(this).attr('value');
             var ctbl = $(this).closest("tbody");
