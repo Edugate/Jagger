@@ -687,6 +687,7 @@ $lang['subscrstatus']               = 'Status';
 $lang['subscisactive']               = 'active';
 $lang['subscdisabled']              = 'disabled';
 $lang['subscnotapproved']              = 'not approved';
+$lang['notificationsapprovelist']   = 'Subscriptions need to be approved';
 
 $lang['registerfornotification']    = 'Register for new notification';
 

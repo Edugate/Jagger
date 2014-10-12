@@ -44,6 +44,8 @@ class Awaiting extends MY_Controller
             redirect('auth/login', 'location');
         }
 
+        $this->title =  lang('rr_listawaiting');
+        $data['titlepage'] = lang('rr_listawaiting');
         $data['content_view'] = 'reports/awaiting_view';
         $data['message'] = $this->alert;
         $data['error_message'] = $this->error_message;
@@ -152,7 +154,8 @@ class Awaiting extends MY_Controller
         $this->load->library('zacl');
         $this->load->library('j_queue');
         $queueArray = $this->em->getRepository("models\Queue")->findAll();
-        $result = array();
+        $result = array('q'=>array(),'s'=>array());
+        
         $kid = 0;
         foreach ($queueArray as $q)
         {
@@ -180,7 +183,8 @@ class Awaiting extends MY_Controller
             }
             if ($access)
             {
-                $result[$kid] = array(
+                $result['q'][$kid++] = array(
+                    'issubscription'=>0,
                     'requester' => $c_creator,
                     'idate' => $q->getCreatedAt(),
                     'datei' => $q->getCreatedAt(),
@@ -193,7 +197,21 @@ class Awaiting extends MY_Controller
                     'token' => $q->getToken(),
                     'confirmed' => $q->getConfirm()
                 );
-                $kid++;
+               
+            }
+        }
+        $subscriptions = $this->em->getRepository('models\NotificationList')->findBy(array('is_approved'=>'0','is_enabled'=>'1'));
+        $isAdmin = $this->j_auth->isAdministrator();
+        if($isAdmin)
+        {
+            
+            foreach($subscriptions as $s)
+            {
+               $result['s'][$kid++] = array(
+                   'subscriber'=>$s->getSubscriber()->getUsername(),
+                   'type'=>lang($s->getType()),
+               ); 
+               
             }
         }
         return $result;
@@ -238,7 +256,7 @@ class Awaiting extends MY_Controller
         $this->load->library('zacl');
         $this->load->library('j_queue');
         $queuelist = $this->getQueueList();
-        $c = count($queuelist);
+        $c = count($queuelist['q'])+count($queuelist['s']);
         set_status_header(200);
         echo $c;
         return;
