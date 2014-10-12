@@ -687,6 +687,7 @@ $lang['subscrstatus']               = 'Status';
 $lang['subscisactive']               = 'active';
 $lang['subscdisabled']              = 'disabled';
 $lang['subscnotapproved']              = 'not approved';
+$lang['notificationsapprovelist']   = 'Subscriptions need to be approved';
 
 $lang['registerfornotification']    = 'Register for new notification';
 
@@ -916,6 +917,7 @@ $lang['addlocalizeduiidisplayname'] = 'Add localized UII DisplayName';
 $lang['SingleSignOnService']    = 'SingleSignOnService';
 $lang['ArtifactResolutionService'] = 'ArtifactResolutionService';
 $lang['IdPSLO']                 = 'IDP SingleLogoutService';
+$lang['updnotifstatus']         = 'update status';
 $lang['rr_progressforfed']      = 'Progress for federation';
 $lang['rr_progresslocalents']   = 'Progress of locally registered entities';
 $lang['rr_progress']            = 'Progress';

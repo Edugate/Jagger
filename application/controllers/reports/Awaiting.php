@@ -44,6 +44,8 @@ class Awaiting extends MY_Controller
             redirect('auth/login', 'location');
         }
 
+        $this->title =  lang('rr_listawaiting');
+        $data['titlepage'] = lang('rr_listawaiting');
         $data['content_view'] = 'reports/awaiting_view';
         $data['message'] = $this->alert;
         $data['error_message'] = $this->error_message;
@@ -152,7 +154,8 @@ class Awaiting extends MY_Controller
         $this->load->library('zacl');
         $this->load->library('j_queue');
         $queueArray = $this->em->getRepository("models\Queue")->findAll();
-        $result = array();
+        $result = array('q'=>array(),'s'=>array());
+        
         $kid = 0;
         foreach ($queueArray as $q)
         {
@@ -180,7 +183,8 @@ class Awaiting extends MY_Controller
             }
             if ($access)
             {
-                $result[$kid] = array(
+                $result['q'][$kid++] = array(
+                    'issubscription'=>0,
                     'requester' => $c_creator,
                     'idate' => $q->getCreatedAt(),
                     'datei' => $q->getCreatedAt(),
@@ -193,7 +197,21 @@ class Awaiting extends MY_Controller
                     'token' => $q->getToken(),
                     'confirmed' => $q->getConfirm()
                 );
-                $kid++;
+               
+            }
+        }
+        $subscriptions = $this->em->getRepository('models\NotificationList')->findBy(array('is_approved'=>'0','is_enabled'=>'1'));
+        $isAdmin = $this->j_auth->isAdministrator();
+        if($isAdmin)
+        {
+            
+            foreach($subscriptions as $s)
+            {
+               $result['s'][$kid++] = array(
+                   'subscriber'=>$s->getSubscriber()->getUsername(),
+                   'type'=>lang($s->getType()),
+               ); 
+               
             }
         }
         return $result;
@@ -238,7 +256,7 @@ class Awaiting extends MY_Controller
         $this->load->library('zacl');
         $this->load->library('j_queue');
         $queuelist = $this->getQueueList();
-        $c = count($queuelist);
+        $c = count($queuelist['q'])+count($queuelist['s']);
         set_status_header(200);
         echo $c;
         return;
@@ -490,7 +508,7 @@ class Awaiting extends MY_Controller
         $sbj = 'Federation has been removed';
         $body = 'Dear user,' . PHP_EOL;
         $body .= 'Federation : ' . $federation->getName() . ' has been removed from the system';
-        $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(),false);
+        $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), false);
         $this->federationremover->removeFederation($federation);
         $this->em->remove($q);
         try
@@ -675,6 +693,7 @@ class Awaiting extends MY_Controller
                 'content_view' => 'error_message'
             );
             $this->load->view('page', $dataview);
+            return;
         }
         $queueAction = $queueObj->getAction();
         $queueObjType = $queueObj->getType();
@@ -719,6 +738,7 @@ class Awaiting extends MY_Controller
                     log_message('error', __METHOD__ . ' ' . $e);
                     show_error("server internal error", 500);
                 }
+                return;
             }
             else
             {
@@ -742,7 +762,7 @@ class Awaiting extends MY_Controller
                         'content_view' => 'reports/awaiting_approved_view'
                     );
                     $this->load->view('page', $data);
-                    return;
+                   
                 }
                 else
                 {
@@ -760,6 +780,7 @@ class Awaiting extends MY_Controller
                 $data['content_view'] = 'error_message';
                 $this->load->view('page', $data);
             }
+            return;
         }
         elseif (strcasecmp($queueAction, 'Delete') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0)
         {
@@ -779,9 +800,10 @@ class Awaiting extends MY_Controller
                 $this->load->view('page', $data);
                 return;
             }
-
-         
-  
+            $data['success_message'] = 'Federation has been removed from the system';
+            $data['content_view'] = 'reports/awaiting_approved_view';
+            $this->load->view('page', $data);
+            return;
         }
         elseif (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0)
         {
@@ -816,7 +838,7 @@ class Awaiting extends MY_Controller
                     $data['error_message'] = $error_message;
                     $data['content_view'] = 'error_message';
                     $this->load->view('page', $data);
-                    return;
+                    
                 }
                 else
                 {
@@ -833,26 +855,29 @@ class Awaiting extends MY_Controller
                     $parent_res = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => 'federation'));
                     $acl_res->setParent($parent_res);
                     $this->em->persist($acl_res);
-                    try {
-                    $this->em->flush();
-
-                    $message = lang('rr_federation') . ' ' . $fedname . ' ID:' . $fed->getId() . ' ' . lang('hasbeenadded');
-                    
-                    log_message('debug', "Federation " . $fedname . "witch ID:" . $fed->getId() . " has been added");
-                    $this->load->view('page',array('content_view'=>'reports/awaiting_approved_view','success_message'=>$message));
-                    }
-                    catch(Exception $e)
+                    try
                     {
-                        log_message('error',__METHOD__.' '.$e);
-                        show_error('Internal server error',500);
+                        $this->em->flush();
+
+                        $message = lang('rr_federation') . ' ' . $fedname . ' ID:' . $fed->getId() . ' ' . lang('hasbeenadded');
+
+                        log_message('debug', "Federation " . $fedname . "witch ID:" . $fed->getId() . " has been added");
+                        $this->load->view('page', array('content_view' => 'reports/awaiting_approved_view', 'success_message' => $message));
+                    }
+                    catch (Exception $e)
+                    {
+                        log_message('error', __METHOD__ . ' ' . $e);
+                        show_error('Internal server error', 500);
                     }
                 }
+                return;
             }
             else
             {
                 $data['error_message'] = lang('rerror_noperm_approve');
                 $data['content_view'] = 'error_message';
                 $this->load->view('page', $data);
+                return;
             }
         }
         /**
@@ -909,10 +934,27 @@ class Awaiting extends MY_Controller
                     $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
                     $this->em->remove($queueObj);
                     $this->email_sender->addToMailQueue(array('grequeststoproviders'), null, $sbj, $body, array(), $sync = false);
-                    $this->em->flush();
-                    $data['content_view'] = 'reports/awaiting_invite_provider_view';
-                    $this->load->view('page', $data);
+                    try
+                    {
+                        $this->em->flush();
+                        $data['success_message'] = 'Request has been approved';
+                        $data['content_view'] = 'reports/awaiting_approved_view';
+                        $this->load->view('page', $data);
+                    }
+                    catch (Exception $e)
+                    {
+                        log_message('error', __METHOD__ . ' ' . $e);
+                        $data['error_message'] = 'Error occured';
+                        $data['content_view'] = 'error_message';
+                        $this->load->view('page', $data);
+                    }
                 }
+                else
+                {
+                    log_message('error', __METHOD__ . ' line ' . __LINE__ . ' unknown request');
+                    show_error('Unknown request', 404);
+                }
+                return;
             }
             elseif (!empty($recipienttype) && !empty($recipient) && $recipienttype == 'federation')
             {
@@ -970,7 +1012,8 @@ class Awaiting extends MY_Controller
                     $this->em->remove($queueObj);
                     $this->email_sender->addToMailQueue(array('gjoinfedreq', 'joinfedreq'), $federation, $sbj, $body, $additionalReceipients, false);
                     $this->em->flush();
-                    $data['content_view'] = 'reports/awaiting_invite_federation_view';
+                    $data['success_message'] = 'Request has been approved';
+                    $data['content_view'] = 'reports/awaiting_approved_view';
                     $this->load->view('page', $data);
                 }
             }
@@ -1008,7 +1051,18 @@ class Awaiting extends MY_Controller
                 $this->em->persist($provider);
                 $this->em->persist($coc);
                 $this->em->remove($queueObj);
-                $this->em->flush();
+                try
+                {
+                    $this->em->flush();
+                    $data = array('content_view' => 'reports/awaiting_approved_view', 'success_message' => 'Request has been approved');
+                    $this->load->view('page', $data);
+                }
+                catch (Exception $e)
+                {
+                    log_message('error', __METHOD__ . ' ' . $e);
+                    $data = array('content_view' => 'error_message', 'error_message' => 'Problem occured');
+                    $this->load->view('page', $data);
+                }
             }
             elseif (strcasecmp($recipienttype, 'regpolicy') == 0 && strcasecmp($type, 'Provider') == 0 && !empty($name))
             {
@@ -1033,12 +1087,29 @@ class Awaiting extends MY_Controller
                 $this->em->persist($provider);
                 $this->em->persist($coc);
                 $this->em->remove($queueObj);
-                $this->em->flush();
+                try
+                {
+                    $this->em->flush();
+                    $data = array('content_view' => 'reports/awaiting_approved_view', 'success_message' => 'Request has been approved');
+                    $this->load->view('page', $data);
+                }
+                catch (Exception $e)
+                {
+                    log_message('error', __METHOD__ . ' ' . $e);
+                    $data = array('content_view' => 'error_message', 'error_message' => 'Problem occured');
+                    $this->load->view('page', $data);
+                }
+            }
+            else
+            {
+                log_message('error', __METHOD__ . ' line:' . __LINE__ . ' unkown request');
+                show_error('unknown request', 404);
             }
         }
         else
         {
-            
+            log_message('error', __METHOD__ . ' line:' . __LINE__ . ' unkown request');
+            show_error('unknown request', 404);
         }
     }
 

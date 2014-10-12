@@ -531,6 +531,51 @@ class Providers {
         return $users;
     }
 
+
+
+
+    public function getActiveFederationmembersForExport(Federation $federation, $excludeType=null)
+    {
+       if(is_null($excludeType))
+       {
+          $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation = ?1  AND m.joinstate IN ('0','1') AND m.isBanned='0' AND p.is_active='1' AND p.is_approved='1' AND p.is_local='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
+       }
+       else
+       {
+          $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation = ?1  AND m.joinstate IN ('0','1') AND m.isBanned='0' AND p.type != :type AND  p.is_active='1' AND p.islocal='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
+
+          $query->setParameter('type',strtoupper($excludeType));
+       }
+       $query->setParameter(1, $federation->getId());
+       $query->setParameter('today', new \DateTime("now"));
+       
+       return $query->getResult();
+
+       return $result;
+
+
+    }  
+  
+    public function getActiveFederationMembers(Federation $federation, $excludeType=null)
+    {
+       if(is_null($excludeType))
+       {
+          $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation = ?1  AND m.joinstate != '2' AND m.isBanned='0' AND p.is_active='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
+       }
+       else
+       {
+          $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation = ?1  AND m.joinstate != '2' AND m.isBanned='0' AND p.type != :type AND  p.is_active='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
+
+          $query->setParameter('type',strtoupper($excludeType));
+       }
+       $query->setParameter(1, $federation->getId());
+       $query->setParameter('today', new \DateTime("now"));
+       
+       return $query->getResult();
+
+       return $result;
+    }
+
     public function getOneIdpById($id)
     {
         $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('type' => array('IDP', 'BOTH'), 'id' => $id));

@@ -168,8 +168,8 @@ class Subscriber extends MY_Controller {
                 {
                     $relatedto = $v['langany'];
                 }
-                $button = '<button type="button" value="' . $v['id'] . '" class="updatenotifactionstatus editbutton tiny">' . lang('btnupdate') . '</button>';
-                $row[] = array(++$i, $type, $relatedto, $v['delivery'], $v['rcptto'], $v['langstatus'], $v['updated'], $button);
+                $button = '<button type="button" value="' . $v['id'] . '" class="updatenotifactionstatus editbutton tiny"  data-reveal-id="notificationupdatemodal">' . lang('btnupdate') . '</button>';
+                $row[] = array(++$i, $type, $relatedto, $v['delivery'], $v['rcptto'], '<div class="subscrstatus">'.$v['langstatus'].'</div>', $v['updated'], $button);
             }
         }
 
@@ -241,12 +241,12 @@ class Subscriber extends MY_Controller {
 
         $ntype = trim(htmlentities($this->input->post('type')));
         $nprovider = trim($this->input->post('sprovider'));
-        if (!empty($nprovider) && !is_numeric($nprovider))
+        if (!empty($nprovider) && !ctype_digit($nprovider))
         {
             echo '<div class="error">incorrect provider</div>';
         }
         $nfederation = trim($this->input->post('sfederation'));
-        if (!empty($nfederation) && !is_numeric($nfederation))
+        if (!empty($nfederation) && !ctype_digit($nfederation))
         {
             echo '<div class="error">incorrect federation</div>';
         }
@@ -287,7 +287,7 @@ class Subscriber extends MY_Controller {
             {
                 $notification->setEmail($nemail);
             }
-            $notification->setEnabled(FALSE);
+            $notification->setEnabled(TRUE);
             if ($has_write_access)
             {
                 $notification->setApproved(TRUE);
@@ -317,7 +317,7 @@ class Subscriber extends MY_Controller {
             {
                 $notification->setEmail($nemail);
             }
-            $notification->setEnabled(FALSE);
+            $notification->setEnabled(TRUE);
             if ($has_write_access)
             {
                 $notification->setApproved(TRUE);
@@ -336,7 +336,7 @@ class Subscriber extends MY_Controller {
             {
                 $notification->setEmail($nemail);
             }
-            $notification->setEnabled(FALSE);
+            $notification->setEnabled(TRUE);
 
             if ($isAdministator)
             {

@@ -13,10 +13,11 @@ if (!empty($error_message))
 }
 if (!empty($list))
 {
+  
     $tmpl = array('table_open' => '<table  id="detailsi" class="itablesorter">');
     $this->table->set_template($tmpl);
     $this->table->set_heading(lang('rr_tbltitle_date'), lang('rr_tbltitle_requester'), lang('rr_tbltitle_requesttype') ,'');
-    foreach ($list as $q)
+    foreach ($list['q'] as $q)
     {
         if ($q['confirmed'])
         {
@@ -31,4 +32,12 @@ if (!empty($list))
     }
     echo $this->table->generate();
     $this->table->clear();
+    if(count($list['s'])>0)
+    {
+       
+        foreach($list['s'] as $s)
+        {
+        //    echo $s['subscriber'].'<br />';
+        }
+    }
 }

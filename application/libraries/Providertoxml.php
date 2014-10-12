@@ -12,8 +12,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *
  * @author janul
  */
-class Providertoxml
-{
+class Providertoxml {
 
     private $ci;
     private $em;
@@ -31,15 +30,48 @@ class Providertoxml
         $this->srvMap = array(
             'SingleSignOnService' => array(
                 'name' => 'SingleSignOnService',
-                'isorder' => 0
+                'isorder' => 0,
+                'ns' => 'md',
             ),
             'IDPSingleLogoutService' => array(
                 'name' => 'SingleLogoutService',
-                'isorder' => 0
+                'isorder' => 0,
+                'ns' => 'md',
             ),
             'IDPArtifactResolutionService' => array(
                 'name' => 'ArtifactResolutionService',
-                'isorder' => 1
+                'isorder' => 1,
+                'ns' => 'md',
+            ),
+            'IDPAttributeService' => array(
+                'name' => 'AttributeService',
+                'isorder' => 0,
+                'ns' => 'md',
+            ),
+            'RequestInitiator' => array(
+                'name' => 'RequestInitiator',
+                'isorder' => 0,
+                'ns' => 'init',
+            ),
+            'DiscoveryResponse' => array(
+                'name' => 'RequestInitiator',
+                'isorder' => 1,
+                'ns' => 'idpdisc',
+            ),
+            'AssertionConsumerService' => array(
+                'name' => 'AssertionConsumerService',
+                'isorder' => 1,
+                'ns' => 'md',
+            ),
+            'SPSingleLogoutService' => array(
+                'name' => 'SingleLogoutService',
+                'isorder' => 0,
+                'ns' => 'md',
+            ),
+            'SPArtifactResolutionService' => array(
+                'name' => 'ArtifactResolutionService',
+                'isorder' => 1,
+                'ns' => 'md',
             ),
         );
         if (function_exists('customGenerateEntityDescriptorID'))
@@ -50,7 +82,7 @@ class Providertoxml
         {
             $this->isGenIdFnExist = false;
         }
-        if (!empty($this->ci->config->item('registrationAutority')) && !empty($this->ci->config('load_registrationAutority')))
+        if (!empty($this->ci->config->item('registrationAutority')) && !empty($this->ci->config->item('load_registrationAutority')))
         {
             $this->useGlobalRegistrar = true;
             $this->globalRegistrar = $this->ci->config->item('registrationAutority');
@@ -96,7 +128,8 @@ class Providertoxml
         }
         $doFilter = array(TRUE);
         $cocs = $ent->getCoc()->filter(
-                function(models\Coc $entry) use ($doFilter) {
+                function(models\Coc $entry) use ($doFilter)
+        {
             return in_array($entry->getAvailable(), $doFilter);
         }
         );
@@ -288,13 +321,13 @@ class Providertoxml
         {
             $xml->startElementNs('mdui', 'Logo', null);
             $logoAttrs = array_filter($l->getAttributes());
-            foreach($logoAttrs as $lk=>$lv)
+            foreach ($logoAttrs as $lk => $lv)
             {
                 $xml->writeAttribute($lk, $lv);
             }
             if (!filter_var($l->getElementValue(), FILTER_VALIDATE_URL))
             {
-                $xml->text($this->logoPrefixUrl.$l->getElementValue());
+                $xml->text($this->logoPrefixUrl . $l->getElementValue());
             }
             else
             {
@@ -312,21 +345,52 @@ class Providertoxml
         //$doFilter1 = array('GeolocationHint');
         // @todo filtering collection
         $extMetada = $ent->getExtendMetadata();
-       
+        $extarray = array();
+        foreach ($extMetada as $v)
+        {
+            if (($v->getElement() === 'GeolocationHint') && (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui'))
+            {
+                $extarray[] = $v;
+            }
+        }
+        if (count($extarray) > 0)
+        {
+            $xml->startElementNs('mdui', 'DiscoHints', null);
+
+            foreach ($extarray as $e)
+            {
+                $xml->startElementNs('mdui', 'GeolocationHint', null);
+                $xml->text($e->getElementValue());
+                $xml->endElement();
+            }
+
+            $xml->endElement();
+        }
         return $xml;
     }
 
     private function createServiceLocations(\XMLWriter $xml, $serviceCollection)
     {
+        $discrespindex = array('-1');
         foreach ($serviceCollection as $srv)
         {
             $srvType = $srv->getType();
-            $xml->startElementNs('md', '' . $this->srvMap['' . $srvType . '']['name'] . '', null);
+            $xml->startElementNs($this->srvMap['' . $srvType . '']['ns'], '' . $this->srvMap['' . $srvType . '']['name'] . '', null);
             $xml->writeAttribute('Binding', $srv->getBindingName());
             $xml->writeAttribute('Location', $srv->getUrl());
             if ($this->srvMap['' . $srvType . '']['isorder'])
             {
-                $xml->writeAttribute('index', $srv->getOrder());
+                $discorder = $srv->getOrder();
+                if (is_null($discorder) || in_array($discorder, $discrespindex))
+                {
+                    $discorder = max($discrespindex) + 20;
+                    $discrespindex[] = $discorder;
+                }
+                else
+                {
+                    $discrespindex[] = $discorder;
+                }
+                $xml->writeAttribute('index', $discorder);
             }
             $xml->endElement();
         }
@@ -375,6 +439,84 @@ class Providertoxml
         return $xml;
     }
 
+    private function createAttributeConsumingService(\XMLWriter $xml, $ent, $options)
+    {
+        $requiredAttributes = $ent->getAttributesRequirement();
+        if ($requiredAttributes->count() == 0 && count($options['fedreqattrs']) == 0)
+        {
+            return $xml;
+        }
+        $xml->startElementNs('md', 'AttributeConsumingService', null);
+        $xml->writeAttribute('index', '0');
+        $doFilter1 = array('DisplayName', 'Description');
+        $doFilter2 = array('sp');
+        $extendMeta = $ent->getExtendMetadata()->filter(
+                function(models\ExtendMetadata $entry) use ($doFilter1)
+        {
+            return in_array($entry->getElement(), $doFilter1);
+        }
+        );
+        $extArray = array('DisplayName' => array(), 'Description' => array());
+        foreach ($extendMeta as $v)
+        {
+            $l = $v->getAttributes();
+            if (!empty($l['xml:lang']))
+            {
+                $extArray['' . $v->getElement() . '']['' . $l['xml:lang'] . ''] = $v->getEvalue();
+            }
+        }
+        // set 
+        if (count($extArray['DisplayName']) == 0)
+        {
+            $ldorgnames = array_filter($ent->getMergedLocalDisplayName());
+            if (count($ldorgnames) == 0)
+            {
+                $extArray['DisplayName']['en'] = $ent->getEntityId();
+            }
+            else
+            {
+                $extArray['DisplayName'] = $ldorgnames;
+            }
+        }
+        $cArray = array(
+            'ServiceName' => $extArray['DisplayName'],
+            'ServiceDescription' => $extArray['Description']
+        );
+        foreach ($cArray as $keyElement => $element)
+        {
+            foreach ($element as $extKey => $extValue)
+            {
+                $xml->startElementNs('md', $keyElement, null);
+                $xml->writeAttribute('xml:lang', $extKey);
+                $xml->text($extValue);
+                $xml->endElement();
+            }
+        }
+        if ($requiredAttributes->count() > 0)
+        {
+            foreach ($requiredAttributes as $attr)
+            {
+
+                $xml->startElementNs('md', 'RequestedAttribute', null);
+                $xml->writeAttribute('FriendlyName', $attr->getAttribute()->getName());
+                $xml->writeAttribute('Name', $attr->getAttribute()->getOid());
+                $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+                if (strcmp($attr->getStatus(), 'required') == 0)
+                {
+                    $xml->writeAttribute('isRequired', 'true');
+                }
+                else
+                {
+                    $xml->writeAttribute('isRequired', 'false');
+                }
+                $xml->endElement();
+            }
+        }
+
+        $xml->endElement();
+        return $xml;
+    }
+
     private function createIDPSSODescriptor(\XMLWriter $xml, \models\Provider $ent)
     {
         $protocol = $ent->getProtocolSupport('idpsso');
@@ -384,7 +526,8 @@ class Providertoxml
 
         $doFilter = array('SingleSignOnService', 'IDPSingleLogoutService', 'IDPArtifactResolutionService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter) {
+                function(models\ServiceLocation $entry) use ($doFilter)
+        {
             return in_array($entry->getType(), $doFilter);
         }
         );
@@ -402,10 +545,12 @@ class Providertoxml
          */
         $doCertFilter = array('idpsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter) {
+                function(models\Certificate $entry) use ($doCertFilter)
+        {
             return in_array($entry->getType(), $doCertFilter);
         }
         );
+
         /**
          * @todo check if certs found
          */
@@ -447,11 +592,125 @@ class Providertoxml
 
     private function createAttributeAuthorityDescriptor(\XMLWriter $xml, \models\Provider $ent)
     {
+        $doFilter = array('IDPAttributeService');
+        $services = $ent->getServiceLocations()->filter(
+                function($entry) use ($doFilter)
+        {
+            return in_array($entry->getType(), $doFilter);
+        });
+        $doCertFilter = array('aa');
+        $certificates = $ent->getCertificates()->filter(
+                function($entry) use ($doCertFilter)
+        {
+            return in_array($entry->getType(), $doCertFilter);
+        });
+        if (count($certificates) == 0 || count($services) == 0)
+        {
+            return $xml;
+        }
+        $protocol = $ent->getProtocolSupport('aa');
+        $protocolEnum = implode(" ", $protocol);
+        if (empty($protocolEnum))
+        {
+            $protocolEnum = 'urn:oasis:names:tc:SAML:2.0:protocol';
+        }
+        $scopes = $ent->getScope('aa');
+
+        $xml->startElementNs('md', 'AttributeAuthorityDescriptor', null);
+        $xml->writeAttribute('protocolSupportEnumeration', $protocolEnum);
+
+        $xml->startElementNs('md', 'Extensions', null);
+        foreach ($scopes as $scope)
+        {
+            $xml->startElementNs('shibmd', 'Scope', null);
+            $xml->writeAttribute('regexp', 'false');
+            $xml->text($scope);
+            $xml->endElement();
+        }
+        $xml->endElement(); // end md:Extensions
+        $this->createCerts($xml, $certificates);
+        $this->createServiceLocations($xml, $services);
+
+        $nameids = $ent->getNameIds('aa');
+        foreach ($nameids as $nameid)
+        {
+            $xml->startElementNs('md', 'NameIDFormat', null);
+            $xml->text($nameid);
+            $xml->endElement();
+        }
+        $xml->endElement(); //AttributeAuthorityDescriptor
+
+
         return $xml;
     }
 
-    private function createSPSSODescriptor(\XMLWriter $xml, \models\Provider $ent)
+    private function createSPSSODescriptor(\XMLWriter $xml, \models\Provider $ent, $options)
     {
+        $protocol = $ent->getProtocolSupport('spsso');
+        $protocolEnum = implode(" ", $protocol);
+        if (empty($protocolEnum))
+        {
+            $protocolEnum = 'urn:oasis:names:tc:SAML:2.0:protocol';
+        }
+
+        $srvsByType = array(
+            'RequestInitiator' => array(),
+            'DiscoveryResponse' => array(),
+            'AssertionConsumerService' => array(),
+            'SPSingleLogoutService' => array(),
+            'SPArtifactResolutionService' => array());
+        $doFilter = array_keys($srvsByType);
+        $serviceLocations = $ent->getServiceLocations()->filter(
+                function(models\ServiceLocation $entry) use ($doFilter)
+        {
+            return in_array($entry->getType(), $doFilter);
+        }
+        );
+        $doCertFilter = array('spsso');
+        $certificates = $ent->getCertificates()->filter(
+                function(models\Certificate $entry) use ($doCertFilter)
+        {
+            return in_array($entry->getType(), $doCertFilter);
+        }
+        );
+        foreach ($serviceLocations as $s)
+        {
+            $srvsByType['' . $s->getType() . ''][] = $s;
+        }
+
+
+        $xml->startElementNs('md', 'SPSSODescriptor', null);
+        $xml->writeAttribute('protocolSupportEnumeration', $protocolEnum);
+
+        $xml->startElementNs('md', 'Extensions', null);
+        foreach (array('RequestInitiator', 'DiscoveryResponse') as $srvtype)
+        {
+            $this->createServiceLocations($xml, $srvsByType[$srvtype]);
+        }
+
+        $this->createUIIInfo($xml, $ent, 'sp');
+        $this->createDiscoHints($xml, $ent, 'sp');
+        $xml->endElement(); //Extensions
+
+        $this->createCerts($xml, $certificates);
+
+        $this->createServiceLocations($xml, $srvsByType['SPArtifactResolutionService']);
+        $this->createServiceLocations($xml, $srvsByType['SPSingleLogoutService']);
+        $nameids = $ent->getNameIds('spsso');
+        foreach ($nameids as $nameid)
+        {
+            $xml->startElementNs('md', 'NameIDFormat', null);
+            $xml->text($nameid);
+            $xml->endElement();
+        }
+
+        $xml->endElement(); //SPSSODescriptor
+        $this->createServiceLocations($xml, $srvsByType['AssertionConsumerService']);
+        if ($options['attrs'] == 0)
+        {
+            return $xml;
+        }
+        $this->createAttributeConsumingService($xml, $ent, $options);
         return $xml;
     }
 
@@ -490,33 +749,94 @@ class Providertoxml
         return $xml;
     }
 
-    public function entityConvertNewDocument(\models\Provider $ent)
+    private function verifySP($ent)
     {
-        $xml = $this->createXMLDocucument();
-        /**
-         * @todo finish
-         */
-        return $xml;
+        $doFilter = array('AssertionConsumerService');
+        $serviceLocations = $ent->getServiceLocations()->filter(
+                function(models\ServiceLocation $entry) use ($doFilter)
+        {
+            return in_array($entry->getType(), $doFilter);
+        }
+        );
+        if (count($serviceLocations) == 0)
+        {
+            log_message('error', __METHOD__ . ' missing AssertionConsumerService for entity:' . $ent->getEntityId());
+            return FALSE;
+        }
+        return TRUE;
     }
 
-    public function entityConvert(\XMLWriter $xml, \models\Provider $ent)
+    private function verifyIdP($ent)
+    {
+        $doFilter = array('SingleSignOnService');
+        $serviceLocations = $ent->getServiceLocations()->filter(
+                function(models\ServiceLocation $entry) use ($doFilter)
+        {
+            return in_array($entry->getType(), $doFilter);
+        }
+        );
+        if (count($serviceLocations) == 0)
+        {
+            log_message('error', __METHOD__ . ' missing SingleSignOnService for entity:' . $ent->getEntityId());
+            return FALSE;
+        }
+        $doCertFilter = array('idpsso');
+        $certificates = $ent->getCertificates()->filter(
+                function(models\Certificate $entry) use ($doCertFilter)
+        {
+            return in_array($entry->getType(), $doCertFilter);
+        }
+        );
+        if (count($certificates) == 0)
+        {
+            log_message('error', __METHOD__ . ' missing cert for IDP : entity:' . $ent->getEntityId());
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    public function entityConvert(\XMLWriter $xml, \models\Provider $ent, $options)
     {
 
         $type = $ent->getType();
+        $hasIdpRole = FALSE;
+        $hasSpRole = FALSE;
         if (strcasecmp($type, 'IDP') == 0)
         {
             $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor');
+            $hasIdpRole = TRUE;
         }
         elseif (strcasecmp($type, 'SP') == 0)
         {
+            $hasSpRole = TRUE;
             $rolesFns = array('createSPSSODescriptor');
         }
         else
         {
+            $hasIdpRole = TRUE;
+            $hasSpRole = TRUE;
             $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor', 'createSPSSODescriptor');
         }
         $islocal = $ent->getLocal();
         $valiUntil = $ent->getValidTo();
+
+        if ($hasIdpRole)
+        {
+            $canProceed = $this->verifyIdP($ent);
+            if (!$canProceed)
+            {
+                return $xml;
+            }
+        }
+        if ($hasSpRole)
+        {
+            $canProceed = $this->verifySP($ent);
+            if (!$canProceed)
+            {
+                return $xml;
+            }
+        }
 
         $xml->startElementNs('md', 'EntityDescriptor', null);
         if ($islocal && $this->isGenIdFnExist)
@@ -539,13 +859,119 @@ class Providertoxml
 
         foreach ($rolesFns as $fn)
         {
-            $this->$fn($xml, $ent);
+            if (strcmp($fn, 'createSPSSODescriptor') == 0)
+            {
+                $this->$fn($xml, $ent, $options);
+            }
+            else
+            {
+                $this->$fn($xml, $ent);
+            }
         }
 
         $this->createOrganization($xml, $ent);
         $this->createContacts($xml, $ent);
 
         $xml->endElement();
+        return $xml;
+    }
+
+    private function createXMLDocument()
+    {
+        $xml = new XMLWriter();
+        $xml->openMemory();
+        $xml->setIndent(true);
+        $xml->setIndentString(' ');
+        return $xlm;
+    }
+
+    public function entityConvertNewDocument(\models\Provider $ent)
+    {
+        $type = $ent->getType();
+        $hasIdpRole = FALSE;
+        $hasSpRole = FALSE;
+        if (strcasecmp($type, 'IDP') == 0)
+        {
+            $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor');
+            $hasIdpRole = TRUE;
+        }
+        elseif (strcasecmp($type, 'SP') == 0)
+        {
+            $hasSpRole = TRUE;
+            $rolesFns = array('createSPSSODescriptor');
+        }
+        else
+        {
+            $hasIdpRole = TRUE;
+            $hasSpRole = TRUE;
+            $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor', 'createSPSSODescriptor');
+        }
+        $islocal = $ent->getLocal();
+        $valiUntil = $ent->getValidTo();
+
+        if ($hasIdpRole)
+        {
+            $canProceed = $this->verifyIdP($ent);
+            if (!$canProceed)
+            {
+                return null;
+            }
+        }
+        if ($hasSpRole)
+        {
+            $canProceed = $this->verifySP($ent);
+            if (!$canProceed)
+            {
+                return null;
+            }
+        }
+        $xml = $this->createXMLDocument();
+        $xml->startElementNs('md', 'EntityDescriptor', null);
+        $xml->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
+        $regNamespaces = h_metadataNamespaces();
+        foreach ($regNamespaces as $k => $v)
+        {
+            $xml->writeAttribute('xmlns:' . $k . '', '' . $v . '');
+        }
+        if ($islocal && $this->isGenIdFnExist)
+        {
+            $genId = customGenerateEntityDescriptorID(array('id' => '' . $ent->getId() . '', 'entityid' => '' . $ent->getEntityId() . ''));
+            if (!empty($genId))
+            {
+
+                $xml->writeAttribute('ID', $genId);
+            }
+        }
+        $xml->writeAttribute('entityID', $ent->getEntityId());
+        if (!empty($valiUntil))
+        {
+            $xml->writeAttribute('validUntil', $valiUntil->format('Y-m-d\TH:i:s\Z'));
+        }
+// entity exitension start
+        $this->createEntityExtensions($xml, $ent);
+// entity ext end
+
+        foreach ($rolesFns as $fn)
+        {
+            if (strcmp($fn, 'createSPSSODescriptor') == 0)
+            {
+                $this->$fn($xml, $ent, $options);
+            }
+            else
+            {
+                $this->$fn($xml, $ent);
+            }
+        }
+
+        $this->createOrganization($xml, $ent);
+        $this->createContacts($xml, $ent);
+
+        $xml->endElement();
+        $xml->endDocument();
+        return $xml;
+        /**
+         * @todo finish
+         */
         return $xml;
     }
 

@@ -296,7 +296,7 @@ class Provider
     protected $attributeRequirement;
 
     /**
-     * @OneToOne(targetEntity="StaticMetadata", mappedBy="provider",cascade={"all"})
+     * @OneToOne(targetEntity="StaticMetadata", mappedBy="provider", fetch="EXTRA_LAZY", cascade={"all"})
      */
     protected $metadata;
 

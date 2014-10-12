@@ -174,9 +174,11 @@ var GINIT = {
             });
         }
         function notificationupdate(message, callback) {
-            $("#notificationupdatemodal").foundation('reveal', 'open', {});
-            $(document).on('opened', '#notificationupdatemodal', function() {
-                var modal = this;
+            $("#notificationupdatemodal").foundation('reveal', 'open');
+            $("#notificationupdatemodal").on('opened', function(){
+
+                alert ("o");
+                //var modal = this;
                 $(".no").click(function() {
                     $("#notificationupdatemodal").foundation('reveal', 'close');
                 });
@@ -189,8 +191,8 @@ var GINIT = {
                     }
                 });
 
-            });
-
+           });
+            
 
         }
 
@@ -543,52 +545,16 @@ var GINIT = {
             });
 
         }));
-        $("button.updatenotifactionstatus").click(function(ev) {
+        $("button.updatenotifactionstatus").click(function() {
             var related;
             var notid = $(this).attr('value');
             var ctbl = $(this).closest("tbody");
+            var ctr = $(this).closest("tr");
+            var subsriptionstatus = ctr.find('div.subscrstatus:first');
             var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
             $("form#notificationupdateform").attr('action', posturl);
             $("form#notificationupdateform #noteid").val(notid);
-            notificationupdate('', function(ev) {
-                var serializedData = $("form#notificationupdateform").serializeArray();
-                $.ajax({
-                    type: "POST",
-                    url: posturl,
-                    data: serializedData,
-                    success: function(data) {
-                        if (data)
-                        {
-                            ctbl.html("");
-                            var trdata;
-                            var number = 1;
-                            $.each(data, function(i, v) {
-                                if (v.federationid)
-                                {
-                                    related = v.langfederation + ': ' + v.federationname;
-                                }
-                                else if (v.providerid)
-                                {
-                                    related = v.langprovider + ': ' + v.providername;
-
-                                }
-                                else
-                                {
-                                    related = v.langany;
-                                }
-                                trdata = '<tr><td>' + number + '</td><td>' + v.langtype + '</td><td>' + related + '</td><td>' + v.delivery + '</td><td>' + v.rcptto + '</td><td>' + v.langstatus + '</td><td>' + v.updated + '</td><td><button class="updatenotifactionstatus editbuttoni tiny" type="button" value="' + v.id + '">update</button></td></tr>';
-                                ctbl.append(trdata);
-                                number = number + 1;
-
-                            });
-                            GINIT.initialize();
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        alert('Error occured: ' + errorThrown);
-                    }
-                });
-            });
+           // $('#notificationupdateform').foundation('reveal', 'open'); 
         });
 
 
@@ -3092,7 +3058,52 @@ $("#showhelps").click(function(e) {
 $("div.section").parent().addClass("section");
 
 
+$("form#notificationupdateform").submit(function(e){
 
+  e.preventDefault();
+  var serializedData = $(this).serializeArray();
+  var posturl = $(this).attr('action');
+  var notid = $("input[name=noteid]").val();
+  var buttonwithval = $('button[type="button"][value="'+notid+'"]');
+  var ctr = $(buttonwithval).closest("tr");
+  var subsriptionstatus = ctr.find('div.subscrstatus:first');
+    $.ajax({
+       type: "POST",
+       url: posturl,
+       data: serializedData,
+                    success: function(data) {
+                        if (data)
+                        {
+                            var foundrecord = false;
+                            
+                            $.each(data, function(i, v) {
+                                if(v.id == notid)
+                                {
+                                    foundrecord = true;
+                                   
+                                    subsriptionstatus.text(v.langstatus);        
+                                }
+
+                            });
+                            if(!foundrecord)
+                            {
+                               ctr.hide();
+                            }
+                        }
+                        else
+                        {
+                           
+                        }
+                        $('#notificationupdatemodal').foundation('reveal', 'close');    
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error occured: ' + errorThrown);
+                    }
+       
+
+    });
+
+});
 
 
 
