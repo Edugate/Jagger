@@ -175,7 +175,9 @@ var GINIT = {
         }
         function notificationupdate(message, callback) {
             $("#notificationupdatemodal").foundation('reveal', 'open');
-            $(document).on('opened', '#notificationupdatemodal', function() {
+            $("#notificationupdatemodal").on('opened', function(){
+
+                alert ("o");
                 //var modal = this;
                 $(".no").click(function() {
                     $("#notificationupdatemodal").foundation('reveal', 'close');
@@ -189,7 +191,7 @@ var GINIT = {
                     }
                 });
 
-            });
+           });
             
 
         }
@@ -552,33 +554,7 @@ var GINIT = {
             var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
             $("form#notificationupdateform").attr('action', posturl);
             $("form#notificationupdateform #noteid").val(notid);
-            notificationupdate('', function(ev) {
-                var serializedData = $("form#notificationupdateform").serializeArray();
-                $.ajax({
-                    type: "POST",
-                    url: posturl,
-                    data: serializedData,
-                    success: function(data) {
-                        if (data)
-                        {
-                            var foundrecord = false;
-                            
-                            $.each(data, function(i, v) {
-                                if(v.id == notid)
-                                {
-                                    foundrecord = true;
-                                    subsriptionstatus.text(v.langstatus);        
-                                }
-
-                            });
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        alert('Error occured: ' + errorThrown);
-                    }
-                });
-            });
-            return false;
+           // $('#notificationupdateform').foundation('reveal', 'open'); 
         });
 
 
@@ -3082,7 +3058,52 @@ $("#showhelps").click(function(e) {
 $("div.section").parent().addClass("section");
 
 
+$("form#notificationupdateform").submit(function(e){
 
+  e.preventDefault();
+  var serializedData = $(this).serializeArray();
+  var posturl = $(this).attr('action');
+  var notid = $("input[name=noteid]").val();
+  var buttonwithval = $('button[type="button"][value="'+notid+'"]');
+  var ctr = $(buttonwithval).closest("tr");
+  var subsriptionstatus = ctr.find('div.subscrstatus:first');
+    $.ajax({
+       type: "POST",
+       url: posturl,
+       data: serializedData,
+                    success: function(data) {
+                        if (data)
+                        {
+                            var foundrecord = false;
+                            
+                            $.each(data, function(i, v) {
+                                if(v.id == notid)
+                                {
+                                    foundrecord = true;
+                                   
+                                    subsriptionstatus.text(v.langstatus);        
+                                }
+
+                            });
+                            if(!foundrecord)
+                            {
+                               ctr.hide();
+                            }
+                        }
+                        else
+                        {
+                           
+                        }
+                        $('#notificationupdatemodal').foundation('reveal', 'close');    
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error occured: ' + errorThrown);
+                    }
+       
+
+    });
+
+});
 
 
 

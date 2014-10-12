@@ -24,12 +24,12 @@ if(!empty($warnmessage))
  */
    $rrs = array('id'=>'notificationupdateform');
 
-   echo '<div id="notificationupdatemodal" class="reveal-modal" data-reveal>';
+   echo '<div id="notificationupdatemodal" class="reveal-modal medium" data-reveal>';
    echo form_open(base_url().'notification/subscriber/updatestatus/',$rrs);
    echo form_input(array('name'=>'noteid','id'=>'noteid','type'=>'hidden','value'=>''));
    ?>
       <div class="header">
-      <span><?php echo 'update status'; ?></span>
+      <span><?php echo lang('updnotifstatus'); ?></span>
       </div>
       <div></div>
       <p class="message"></p>
@@ -39,11 +39,12 @@ if(!empty($warnmessage))
      ?>
     </div>
       <div class="buttons">
-      <div class="no"><?php echo lang('rr_cancel');?></div>
-      <div class="yes"><?php echo lang('btnupdate');?></div>
+      <button class="alert"><?php echo lang('rr_cancel');?></button>
+      <button type="submit" name="updstatus"><?php echo lang('btnupdate');?></button>
      </div>
    <?php
    echo form_close();
+   echo' <a class="close-reveal-modal">&#215;</a>';
    echo '</div>';
 
 /**
@@ -92,5 +93,6 @@ if(!empty($warnmessage))
      </div>
    <?php
    echo form_close();
+   echo' <a class="close-reveal-modal">&#215;</a>';
    echo '</div>';
 
