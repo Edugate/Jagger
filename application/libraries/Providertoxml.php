@@ -12,7 +12,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *
  * @author janul
  */
-class Providertoxml {
+class Providertoxml
+{
 
     private $ci;
     private $em;
@@ -54,7 +55,7 @@ class Providertoxml {
                 'ns' => 'init',
             ),
             'DiscoveryResponse' => array(
-                'name' => 'RequestInitiator',
+                'name' => 'DiscoveryResponse',
                 'isorder' => 1,
                 'ns' => 'idpdisc',
             ),
@@ -120,8 +121,7 @@ class Providertoxml {
         }
         $doFilter = array(TRUE);
         $cocs = $ent->getCoc()->filter(
-                function(models\Coc $entry) use ($doFilter)
-        {
+                function(models\Coc $entry) use ($doFilter) {
             return in_array($entry->getAvailable(), $doFilter);
         }
         );
@@ -215,12 +215,12 @@ class Providertoxml {
         $contacts = $ent->getContacts();
         foreach ($contacts as $c)
         {
-            $givenName = $c->getGivenName();
+            $givenName = $c->getGivenname();
             $surName = $c->getSurname();
             $email = $c->getEmail();
             $xml->startElementNs('md', 'ContactPerson', null);
             $xml->writeAttribute('contactType', $c->getType());
-            if (empty($givenName))
+            if (!empty($givenName))
             {
                 $xml->startElementNs('md', 'GivenName', null);
                 $xml->text($givenName);
@@ -442,8 +442,7 @@ class Providertoxml {
         $xml->writeAttribute('index', '0');
         $doFilter1 = array('DisplayName', 'Description');
         $extendMeta = $ent->getExtendMetadata()->filter(
-                function(models\ExtendMetadata $entry) use ($doFilter1)
-        {
+                function(models\ExtendMetadata $entry) use ($doFilter1) {
             return in_array($entry->getElement(), $doFilter1);
         }
         );
@@ -517,8 +516,7 @@ class Providertoxml {
 
         $doFilter = array('SingleSignOnService', 'IDPSingleLogoutService', 'IDPArtifactResolutionService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter)
-        {
+                function(models\ServiceLocation $entry) use ($doFilter) {
             return in_array($entry->getType(), $doFilter);
         }
         );
@@ -536,8 +534,7 @@ class Providertoxml {
          */
         $doCertFilter = array('idpsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter)
-        {
+                function(models\Certificate $entry) use ($doCertFilter) {
             return in_array($entry->getType(), $doCertFilter);
         }
         );
@@ -585,14 +582,12 @@ class Providertoxml {
     {
         $doFilter = array('IDPAttributeService');
         $services = $ent->getServiceLocations()->filter(
-                function($entry) use ($doFilter)
-        {
+                function($entry) use ($doFilter) {
             return in_array($entry->getType(), $doFilter);
         });
         $doCertFilter = array('aa');
         $certificates = $ent->getCertificates()->filter(
-                function($entry) use ($doCertFilter)
-        {
+                function($entry) use ($doCertFilter) {
             return in_array($entry->getType(), $doCertFilter);
         });
         if (count($certificates) == 0 || count($services) == 0)
@@ -652,15 +647,13 @@ class Providertoxml {
             'SPArtifactResolutionService' => array());
         $doFilter = array_keys($srvsByType);
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter)
-        {
+                function(models\ServiceLocation $entry) use ($doFilter) {
             return in_array($entry->getType(), $doFilter);
         }
         );
         $doCertFilter = array('spsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter)
-        {
+                function(models\Certificate $entry) use ($doCertFilter) {
             return in_array($entry->getType(), $doCertFilter);
         }
         );
@@ -692,16 +685,16 @@ class Providertoxml {
         {
             $xml->startElementNs('md', 'NameIDFormat', null);
             $xml->text($nameid);
-            $xml->endElement();
+            $xml->endElement(); //NameIDFormat
         }
-
-        $xml->endElement(); //SPSSODescriptor
         $this->createServiceLocations($xml, $srvsByType['AssertionConsumerService']);
-        if ($options['attrs'] == 0)
+
+
+        if ($options['attrs'] != 0)
         {
-            return $xml;
+            $this->createAttributeConsumingService($xml, $ent, $options);
         }
-        $this->createAttributeConsumingService($xml, $ent, $options);
+        $xml->endElement(); //SPSSODescriptor
         return $xml;
     }
 
@@ -744,8 +737,7 @@ class Providertoxml {
     {
         $doFilter = array('AssertionConsumerService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter)
-        {
+                function(models\ServiceLocation $entry) use ($doFilter) {
             return in_array($entry->getType(), $doFilter);
         }
         );
@@ -761,8 +753,7 @@ class Providertoxml {
     {
         $doFilter = array('SingleSignOnService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter)
-        {
+                function(models\ServiceLocation $entry) use ($doFilter) {
             return in_array($entry->getType(), $doFilter);
         }
         );
@@ -773,8 +764,7 @@ class Providertoxml {
         }
         $doCertFilter = array('idpsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter)
-        {
+                function(models\Certificate $entry) use ($doCertFilter) {
             return in_array($entry->getType(), $doCertFilter);
         }
         );
@@ -877,7 +867,7 @@ class Providertoxml {
         return $xml;
     }
 
-    public function entityConvertNewDocument(\models\Provider $ent,$options, $outputXML = false)
+    public function entityConvertNewDocument(\models\Provider $ent, $options, $outputXML = false)
     {
         $type = $ent->getType();
         $hasIdpRole = FALSE;
