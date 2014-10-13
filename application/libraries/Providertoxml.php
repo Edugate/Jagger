@@ -82,7 +82,9 @@ class Providertoxml {
         {
             $this->isGenIdFnExist = false;
         }
-        if (!empty($this->ci->config->item('registrationAutority')) && !empty($this->ci->config->item('load_registrationAutority')))
+        $registrationAutority = $this->ci->config->item('registrationAutority');
+        $load_registrationAutority = $this->ci->config->item('load_registrationAutority');
+        if (!empty($registrationAutority) && !empty($load_registrationAutority))
         {
             $this->useGlobalRegistrar = true;
             $this->globalRegistrar = $this->ci->config->item('registrationAutority');
