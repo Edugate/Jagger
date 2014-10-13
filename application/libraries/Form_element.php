@@ -705,15 +705,23 @@ class Form_element {
         $sessform = FALSE;
         $enttype = $ent->getType();
         $c = $ent->getCertificates();
+        
         $origcerts = array();
+        $tmpid = 100;
         foreach ($c as $v)
         {
-            $origcerts['' . $v->getType() . '']['' . $v->getId() . ''] = $v;
+            $tid = $v->getId();
+            if(empty($tid))
+            {
+                $tid = 'x' . $tmpid++;
+            }
+            $origcerts['' . $v->getType() . '']['' . $tid . ''] = $v;
         }
         if (!empty($ses) && is_array($ses))
         {
             $sessform = TRUE;
         }
+    
         if (strcmp($enttype, 'SP') != 0)
         {
             $Part = '<fieldset><legend>' . lang('idpcerts') . ' <small><i>IDPSSODesciptor</i></small></legend><div>';
