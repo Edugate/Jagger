@@ -109,7 +109,6 @@ class Providertoxml {
         
     }
 
-
     private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent)
     {
         $registrar = $ent->getRegistrationAuthority();
@@ -333,7 +332,7 @@ class Providertoxml {
 
     private function createDiscoHints(\XMLWriter $xml, \models\Provider $ent, $role)
     {
-       
+
         // @todo filtering collection
         $extMetada = $ent->getExtendMetadata();
         $extarray = array();
@@ -866,16 +865,17 @@ class Providertoxml {
         return $xml;
     }
 
-    private function createXMLDocument()
+    public function createXMLDocument()
     {
         $xml = new XMLWriter();
         $xml->openMemory();
         $xml->setIndent(true);
         $xml->setIndentString(' ');
-        return $xlm;
+        $xml->startDocument('1.0', 'UTF-8');
+        return $xml;
     }
 
-    public function entityConvertNewDocument(\models\Provider $ent)
+    public function entityConvertNewDocument(\models\Provider $ent,$options, $outputXML = false)
     {
         $type = $ent->getType();
         $hasIdpRole = FALSE;
@@ -958,8 +958,14 @@ class Providertoxml {
 
         $xml->endElement();
         $xml->endDocument();
-        return $xml;
-     
+        if ($outputXML)
+        {
+            return $xml->outputMemory();
+        }
+        else
+        {
+            return $xml;
+        }
     }
 
     public function entityStaticConvert(\XMLWriter $xml, \models\Provider $ent)

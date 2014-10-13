@@ -30,6 +30,124 @@ class Metadata extends MY_Controller {
 
     public function federation($federationName = NULL, $t = NULL)
     {
+        $this->federationOld($federationName, $t);
+    }
+    public function federationNew($federationName = NULL, $t = NULL)
+    {
+        $this->load->library('providertoxml');
+        if (empty($federationName))
+        {
+            show_error('Not found', 404);
+        }
+        $data = array();
+        $excludeType = null;
+        $name = $federationName;
+        if (!empty($t) && ((strcasecmp($t, 'SP') == 0) || (strcasecmp($t, 'IDP') == 0) ))
+        {
+            $type = strtoupper($t);
+            if (strcasecmp($t, 'SP') == 0)
+            {
+                $excludeType = 'IDP';
+            }
+            else
+            {
+                $excludeType = 'SP';
+            }
+        }
+        else
+        {
+            $type = 'all';
+        }
+
+        $permitPull = $this->checkAccess();
+        if ($permitPull !== TRUE)
+        {
+            log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
+            show_error('Access denied', 403);
+        }
+
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name));
+
+        if (empty($federation))
+        {
+            show_404('page', 'log_error');
+        }
+        $isactive = $federation->getActive();
+        if (empty($isactive))
+        {
+            /**
+             * dont display metadata if federation is inactive
+             */
+            show_error('federation is not active', 404);
+        }
+        $publisher = $federation->getPublisher();
+        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+        $creationInstant = $validfor->format('Y-m-d\TH:i:s\Z');
+        $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
+        $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
+        $prefid = $this->config->item('fedmetadataidprefix');
+        if (!empty($prefid))
+        {
+            $idprefix = $prefid;
+        }
+        $idsuffix = $validfor->format('YmdHis');
+
+        $include_attrs = $federation->getAttrsInmeta();
+        $reqattrs_by_fed = null;
+        $options = array('attrs' => 0, 'fedreqattrs' => array());
+        if ($include_attrs)
+        {
+            $options['attrs'] = 1;
+            $attrfedreq_tmp = new models\AttributeRequirements;
+            $options['fedreqattrs'] = $attrfedreq_tmp->getRequirementsByFed($federation);
+        }
+        $tmpm = new models\Providers;
+        $members = $tmpm->getActiveFederationMembers($federation, $excludeType);
+       
+        $xmlOut = $this->providertoxml->createXMLDocument();
+
+        // EntitiesDescriptor
+        $xmlOut->startComment();
+        $xmlOut->text('TERMS OF USE' . PHP_EOL . $federation->getTou());
+        $xmlOut->endComment();
+        $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
+        $xmlOut->writeAttribute('ID', '' . $idprefix . $idsuffix . '');
+        $xmlOut->writeAttribute('Name', $federation->getUrn());
+        $xmlOut->writeAttribute('validUntil', $validuntil);
+        $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
+        $regNamespaces = h_metadataNamespaces();
+        foreach ($regNamespaces as $k => $v)
+        {
+            $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
+        }
+        foreach ($members as $k => $m)
+        {
+            $xmlOut->startComment();
+            $xmlOut->text($m->getEntityId());
+            if ($m->isStaticMetadata())
+            {
+                $xmlOut->text(PHP_EOL . 'static' . PHP_EOL);
+                $xmlOut->endComment();
+                $this->providertoxml->entityStaticConvert($xmlOut, $m);
+            }
+            else
+            {
+                $xmlOut->endComment();
+                $this->providertoxml->entityConvert($xmlOut, $m, $options);
+            }
+            unset($members[$k]);
+        }
+        $xmlOut->endElement();
+        $xmlOut->endDocument();
+        $data['out'] = $xmlOut->outputMemory();
+        $memUsage = memory_get_usage();
+        $mem = round($memUsage / 1048576, 2);
+        log_message('info', 'Memory usage: ' . $mem . 'M');
+        $this->load->view('metadata_view', $data);
+    }
+
+    public function federationOld($federationName = NULL, $t = NULL)
+    {
         if (empty($federationName))
         {
             show_error('Not found', 404);
@@ -176,7 +294,115 @@ class Metadata extends MY_Controller {
         }
     }
 
+    private function federationexportNew($federationName = NULL, $t = NULL)
+    {
+        if (empty($federationName))
+        {
+            show_error('Not found', 404);
+        }
+        $data = array();
+        $permitPull = $this->checkAccess();
+        if ($permitPull !== TRUE)
+        {
+            log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
+            show_error('Access denied', 403);
+        }
+
+
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE));
+
+
+        if (empty($federation))
+        {
+            show_404('page', 'log_error');
+        }
+        $this->load->library('providertoxml');
+        /**
+         * check if federation is active
+         */
+        $isactive = $federation->getActive();
+        if (empty($isactive))
+        {
+            /**
+             * dont display metadata if federation is inactive
+             */
+            show_error('federation is not active', 404);
+        }
+        $termsofuse = $federation->getTou();
+        $include_attrs = $federation->getAttrsInmeta();
+        $reqattrs_by_fed = null;
+        $options = array('attrs' => 0, 'fedreqattrs' => array());
+        if ($include_attrs)
+        {
+            $options['attrs'] = 1;
+            $attrfedreq_tmp = new models\AttributeRequirements;
+            $options['fedreqattrs'] = $attrfedreq_tmp->getRequirementsByFed($federation);
+        }
+        $tmpm = new models\Providers;
+        $members = $tmpm->getActiveFederationmembersForExport($federation, $excludeType);
+        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+        $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
+        $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
+        $idprefix = $this->config->item('fedexportmetadataidprefix');
+        if (empty($idprefix))
+        {
+            $idprefix = '';
+        }
+        $idsuffix = $validfor->format('YmdHis');
+        $xmlOut = $this->providertoxml->createXMLDocument();
+        $topcomment = PHP_EOL . '===============================================================' . PHP_EOL . '= Federation metadata containing only localy managed entities.=' . PHP_EOL . '===============================================================' . PHP_EOL;
+        // EntitiesDescriptor
+        $xmlOut->startComment();
+        $xmlOut->text($topcomment);
+        if (!empty($termsofuse))
+        {
+            $toucomment = PHP_EOL . "TERMS OF USE:" . PHP_EOL . $termsofuse . PHP_EOL;
+            $xmlOut->text(h_metadataComment($toucomment));
+        }
+
+        $xmlOut->endComment();
+        $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
+        $xmlOut->writeAttribute('ID', '' . $idprefix . $idsuffix . '');
+        $xmlOut->writeAttribute('Name', $federation->getUrn());
+        $xmlOut->writeAttribute('validUntil', $validuntil);
+        $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
+        $regNamespaces = h_metadataNamespaces();
+        foreach ($regNamespaces as $k => $v)
+        {
+            $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
+        }
+        foreach ($members as $k => $m)
+        {
+
+            $xmlOut->startComment();
+            $xmlOut->text($m->getEntityId());
+            if ($m->isStaticMetadata())
+            {
+                $xmlOut->text(PHP_EOL . 'static' . PHP_EOL);
+                $xmlOut->endComment();
+                $this->providertoxml->entityStaticConvert($xmlOut, $m);
+            }
+            else
+            {
+                $xmlOut->endComment();
+                $this->providertoxml->entityConvert($xmlOut, $m, $options);
+            }
+            unset($members[$k]);
+        }
+        $xmlOut->endElement();
+        $xmlOut->endDocument();
+        $data['out'] = $xmlOut->outputMemory();
+        $mem = memory_get_usage();
+        $mem = round($mem / 1048576, 2);
+        log_message('info', 'Memory usage: ' . $mem . 'M');
+        $this->load->view('metadata_view', $data);
+    }
+
     public function federationexport($federationName = NULL, $t = NULL)
+    {
+        $this->federationexportOld($federationName, $t);
+    }
+    private function federationexportOld($federationName = NULL, $t = NULL)
     {
         if (empty($federationName))
         {
@@ -303,7 +529,63 @@ class Metadata extends MY_Controller {
         }
     }
 
+    public function serviceNew($entityId = null, $m = null)
+    {
+        if (empty($entityId) || empty($m) || strcmp($m, 'metadata.xml') != 0)
+        {
+            show_error('Page not found', 404);
+        }
+
+
+        $data = array();
+        $this->load->library('providertoxml');
+        $name = base64url_decode($entityId);
+        $options['attrs'] = 1;
+        $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
+        if (!empty($entity))
+        {
+            $isStatic = $entity->isStaticMetadata();
+            if ($isStatic)
+            {
+                $xmlOut = $this->providertoxml->createXMLDocument();
+                $this->providertoxml->entityStaticConvert($xmlOut, $entity);
+                $xmlOut->endDocument();
+                $data['out'] = $xmlOut->outputMemory();
+                $mem = memory_get_usage();
+                $mem = round($mem / 1048576, 2);
+                log_message('info', 'Memory usage: ' . $mem . 'M');
+                $this->load->view('metadata_view', $data);
+            }
+            else
+            {
+                $xmlOut = $this->providertoxml->entityConvertNewDocument($entity, $options);
+            }
+            if (!empty($xmlOut))
+            {
+                $data['out'] = $xmlOut->outputMemory();
+                $mem = memory_get_usage();
+                $mem = round($mem / 1048576, 2);
+                log_message('info', 'Memory usage: ' . $mem . 'M');
+                $this->load->view('metadata_view', $data);
+            }
+            else
+            {
+                log_message('error',__METHOD__.' empty xml has been generated');
+                show_error('Internal server error',500);
+            }
+        }
+        else
+        {
+            log_message('debug', 'Identity Provider not found');
+            show_error('Identity Provider not found', 404);
+        }
+    }
+
     public function service($entityId = null, $m = null)
+    {
+        $this->serviceOld($entityId,$m);
+    }
+    public function serviceOld($entityId = null, $m = null)
     {
         if (empty($entityId) || empty($m) || strcmp($m, 'metadata.xml') != 0)
         {
@@ -341,7 +623,7 @@ class Metadata extends MY_Controller {
 
     public function queue($tokenid)
     {
-        if(strlen($tokenid)>100 || !ctype_alnum($tokenid))
+        if (strlen($tokenid) > 100 || !ctype_alnum($tokenid))
         {
             show_error('Not found', 404);
             return;
@@ -370,7 +652,7 @@ class Metadata extends MY_Controller {
                 show_error('Not found', 404);
             }
             $y = $entity->getProviderToXML($parent = null, $options);
-            $data['out'] = $y->saveXML();         
+            $data['out'] = $y->saveXML();
         }
         else
         {
@@ -410,6 +692,13 @@ class Metadata extends MY_Controller {
     }
 
     public function circle($entityId = NULL, $m = NULL)
+    {
+        $this->circleOld($entityId, $m);
+    }
+    
+  
+
+    private function circleOld($entityId = NULL, $m = NULL)
     {
         $isEnabled = $this->isCircleFeatureEnabled();
         if (!$isEnabled)
