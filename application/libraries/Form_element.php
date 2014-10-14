@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -19,7 +18,8 @@ if (!defined('BASEPATH'))
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Form_element {
+class Form_element
+{
 
     protected $ci;
     protected $em;
@@ -151,7 +151,7 @@ class Form_element {
 
 
         $tmprows = '';
-        // providername group 
+// providername group 
         $result[] = '';
         $tmprows .= '<fieldset><legend>' . lang('e_orgname') . '</legend>';
         /**
@@ -726,7 +726,7 @@ class Form_element {
         {
             $Part = '<fieldset><legend>' . lang('idpcerts') . ' <small><i>IDPSSODesciptor</i></small></legend><div>';
             $idpssocerts = array();
-            // start CERTS IDPSSODescriptor
+// start CERTS IDPSSODescriptor
             if ($sessform && isset($ses['crt']['idpsso']))
             {
                 foreach ($ses['crt']['idpsso'] as $key => $value)
@@ -745,10 +745,10 @@ class Form_element {
             $newelement = '<div><button class="editbutton addicon small" type="button" id="nidpssocert">' . lang('addnewcert') . ' ' . lang('for') . ' IDPSSODescriptor</button></div>';
             $Part .= $newelement . '</div></fieldset>';
             $result[] = $Part;
-            // end CERTS IDPSSODescriptor
+// end CERTS IDPSSODescriptor
             $Part = '<fieldset><legend>' . lang('idpcerts') . ' <small><i>AttributeAuthorityDesciptor</i></small></legend><div>';
             $aacerts = array();
-            // start CERTS AttributeAuthorityDescriptor
+// start CERTS AttributeAuthorityDescriptor
             if ($sessform && isset($ses['crt']['aa']))
             {
                 foreach ($ses['crt']['aa'] as $key => $value)
@@ -768,7 +768,7 @@ class Form_element {
             $Part .= $newelement . '</div></fieldset>';
             $result[] = $Part;
             $Part = '';
-            // end CERTS AttributeAuthorityDescriptor
+// end CERTS AttributeAuthorityDescriptor
         }
         if (strcmp($enttype, 'IDP') != 0)
         {
@@ -798,30 +798,30 @@ class Form_element {
 
     private function _generateAttrReqAddButton($attrs)
     {
-       
-        $r  ='<div class="small-12 columns">';
+
+        $r = '<div class="small-12 columns">';
         $r .='<div class="medium-3 columns">';
         $r .= '<select name="nattrreq">';
-        foreach($attrs as $a)
+        foreach ($attrs as $a)
         {
-            if(isset($a['disabled']))
+            if (isset($a['disabled']))
             {
                 $disabled = 'disabled="disabled"';
             }
             else
             {
-                $disabled = '';    
+                $disabled = '';
             }
-            $r .= '<option value="'.$a['attrid'].'" '.$disabled.'>'.$a['attrname'].'</option>';
+            $r .= '<option value="' . $a['attrid'] . '" ' . $disabled . '>' . $a['attrname'] . '</option>';
         }
-        
+
         $r .='</select>';
-       $r .='</div>';
-        $r .= '<div class="medium-3 columns end"><button id="nattrreqbtn" name="nattrreqbtn" class="tiny">'.lang('rr_add').'</button></div>';
+        $r .='</div>';
+        $r .= '<div class="medium-3 columns end"><button id="nattrreqbtn" name="nattrreqbtn" class="tiny">' . lang('rr_add') . '</button></div>';
         $r .='</div>';
         return $r;
-               
     }
+
     private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonname, $buttonvalue)
     {
         $r = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('' . $dropname . '', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div></span>';
@@ -1136,9 +1136,9 @@ class Form_element {
     {
         $allAttrs = $this->em->getRepository("models\Attribute")->findAll();
         $attrArray = array();
-        foreach( $allAttrs as $a)
+        foreach ($allAttrs as $a)
         {
-             $attrArray[$a->getId()] = array('attrname'=>$a->getName(),'attrid'=>$a->getId());
+            $attrArray[$a->getId()] = array('attrname' => $a->getName(), 'attrid' => $a->getId());
         }
         $enttype = $ent->getType();
         if (strcasecmp($enttype, 'IDP') == 0)
@@ -1154,70 +1154,72 @@ class Form_element {
         $reqattrs = array();
         $tmpid = 100;
         $origreqattrs = $ent->getAttributesRequirement();
-        
-        if(!$sessform || !array_key_exists('reqattr',$ses))
+
+        if (!$sessform || !array_key_exists('reqattr', $ses))
         {
-            foreach($origreqattrs as $req)
+            foreach ($origreqattrs as $req)
             {
                 $rid = $req->getId();
                 $attrid = $req->getAttribute()->getId();
-                if(empty($rid))
+                if (empty($rid))
                 {
-                    $rid = 'x'.$tmpid++.'';
+                    $rid = 'x' . $tmpid++ . '';
                 }
                 $rstatus = $req->getStatus();
-                $z = '<fieldset><legend>'.$req->getAttribute()->getName().'</legend>';
-                $z .= '<input type="hidden" name="f[reqattr]['.$rid.'][attrname]" value="'.$req->getAttribute()->getName().'">';
-                $z .= '<input type="hidden" name="f[reqattr]['.$rid.'][attrid]" value="'.$req->getAttribute()->getId().'">';
+                $z = '<fieldset><legend>' . $req->getAttribute()->getName() . '</legend>';
+                $z .= '<input type="hidden" name="f[reqattr][' . $rid . '][attrname]" value="' . $req->getAttribute()->getName() . '">';
+                $z .= '<input type="hidden" name="f[reqattr][' . $rid . '][attrid]" value="' . $req->getAttribute()->getId() . '">';
                 $z .= '<div class="small-12 columns">';
-           ;
+
                 $z .= '<div class="medium-3 columns medium-text-right ">';
-                $z .= form_dropdown('f[reqattr]['.$rid.'][status]', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''),$rstatus);
+                $z .= form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $rstatus);
                 $z .='</div>';
                 $z .= '<div class="medium-6 columns">';
-                $z .='<textarea name="f[reqattr]['.$rid.'][reason]">'.$req->getReason().'</textarea>';
-              
+                $z .='<textarea name="f[reqattr][' . $rid . '][reason]">' . $req->getReason() . '</textarea>';
+
                 $z .= '</div>';
                 $z .='<div class="medium-3 columns end"></div>';
-                $z .= '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr]['.$rid.']" >' . lang('rr_remove') . '</button>';
+                $z .= '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $rid . ']" >' . lang('rr_remove') . '</button>';
                 $z .='</div>';
                 $z .='</fieldset>';
                 $reqattrs[] = $z;
-                $attrArray[''.$attrid.'']['disabled'] = 1;
+                $attrArray['' . $attrid . '']['disabled'] = 1;
             }
         }
         else
         {
-            foreach($ses['reqattr'] as $sk=>$sv)
+            foreach ($ses['reqattr'] as $sk => $sv)
             {
-                $attrArray[''.$sv['attrid'].'']['disabled'] = 1;
-                $z = '<fieldset><legend>'.$sv['attrname'].'</legend>';
-                $z .= '<input type="hidden" name="f[reqattr]['.$sk.'][attrname]" value="'.$sv['attrname'].'">';
-                $z .= '<input type="hidden" name="f[reqattr]['.$sk.'][attrid]" value="'.$sv['attrid'].'">';
+                $attrArray['' . $sv['attrid'] . '']['disabled'] = 1;
+                $z = '<fieldset><legend>' . $sv['attrname'] . '</legend>';
+                $z .= '<input type="hidden" name="f[reqattr][' . $sk . '][attrname]" value="' . $sv['attrname'] . '">';
+                $z .= '<input type="hidden" name="f[reqattr][' . $sk . '][attrid]" value="' . $sv['attrid'] . '">';
                 $z .= '<div class="small-12 columns">';
-           ;
+
                 $z .= '<div class="medium-3 columns medium-text-right ">';
-                $z .= form_dropdown('f[reqattr]['.$sk.'][status]', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''),$sv['status']);
+                $z .= form_dropdown('f[reqattr][' . $sk . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $sv['status']);
                 $z .='</div>';
                 $z .= '<div class="medium-6 columns">';
-                $z .='<textarea name="f[reqattr]['.$sk.'][reason]">'.$sv['reason'].'</textarea>';
-              
+                $z .='<textarea name="f[reqattr][' . $sk . '][reason]">' . $sv['reason'] . '</textarea>';
+
                 $z .= '</div>';
                 $z .='<div class="medium-3 columns end"></div>';
-                $z .= '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr]['.$sk.']" >' . lang('rr_remove') . '</button>';
+                $z .= '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $sk . ']" >' . lang('rr_remove') . '</button>';
                 $z .='</div>';
                 $z .='</fieldset>';
                 $reqattrs[] = $z;
             }
         }
-        
-        
-        $result[] = implode('', $reqattrs);
+        if (count($reqattrs) == 0)
+        {
+            $result[] = '<div></div>';
+        }
+        else
+        {
+            $result[] = implode('', $reqattrs);
+        }
         $result[] = $this->_generateAttrReqAddButton($attrArray);
         return $result;
-        
-        
-        
     }
 
     public function NgenerateSAMLTab(models\Provider $ent, $ses = null)
@@ -1685,7 +1687,7 @@ class Form_element {
             }
             $r .= '</div>';
             $r .= '</div>';
-            ///////////////
+///////////////
             $result[] = '';
             $result[] = '<fieldset><legend>' . lang('rr_supnameids') . '</legend>' . $r . '</fieldset>';
             $result[] = '';
@@ -2088,11 +2090,11 @@ class Form_element {
 
 
                     $r = '<div class="srvgroup">';
-                    ////
+////
                     $r .= '<div class="small-12 columns">';
                     $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $tid . '][bind]', $artifacts_binding, $fbind, '', 'f[srv][SPArtifactResolutionService][' . $tid . '][order]', $forder, NULL);
                     $r .= '</div>';
-                    ////
+////
 
                     $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][SPArtifactResolutionService][' . $tid . '][url]', $furl, 'acsurl ' . $urlnotice . '', TRUE, FALSE);
@@ -2112,7 +2114,7 @@ class Form_element {
 
 
                     $r = '<div class="srvgroup">';
-                    /////
+/////
                     $r .= '<div class="small-12 columns">';
                     $forder = set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['order']);
                     $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, '' . $v4['bind'] . '', '', 'f[srv][SPArtifactResolutionService][' . $k4 . '][order]', $forder, NULL);
@@ -2122,7 +2124,7 @@ class Form_element {
 
                     $r .= generateInputWithRemove(lang('rr_url'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]', 'rmfield', '', set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['url']), 'acsurl notice', 'rmfield');
                     $r .= '</div>';
-                    ////
+////
                     $r .='</div>';
                     $acs[] = $r;
                 }
@@ -2325,7 +2327,7 @@ class Form_element {
 
 
 
-                    ///////////
+///////////
                     $forder = set_value('f[srv][DiscoveryResponse][' . $k4 . '][order]', $ses['srv']['DiscoveryResponse']['' . $k4 . '']['order']);
                     $furl = set_value('f[srv][DiscoveryResponse][' . $k4 . '][url]', $ses['srv']['DiscoveryResponse']['' . $k4 . '']['url']);
                     $r = '<div class="small-12 columns">';
@@ -3417,8 +3419,7 @@ class Form_element {
         $tmp_providers = new models\Providers();
         $excluded = $idp->getExcarps();
         $members = $tmp_providers->getCircleMembersSP($idp);
-        if (is_array($excluded))
-            $rows = array();
+        if (is_array($excluded)) $rows = array();
         foreach ($excluded as $v)
         {
             $members->remove($v);
