@@ -1190,17 +1190,17 @@ class Form_element {
         {
             foreach($ses['reqattr'] as $sk=>$sv)
             {
-                $attrArray[''.$sv[attrid].'']['disabled'] = 1;
+                $attrArray[''.$sv['attrid'].'']['disabled'] = 1;
                 $z = '<fieldset><legend>'.$sv['attrname'].'</legend>';
-                $z .= '<input type="hidden" name="f[reqattr]['.$sk.'][attrname]" value="'.$sv[attrname].'">';
-                $z .= '<input type="hidden" name="f[reqattr]['.$sk.'][attrid]" value="'.$sv[attrid].'">';
+                $z .= '<input type="hidden" name="f[reqattr]['.$sk.'][attrname]" value="'.$sv['attrname'].'">';
+                $z .= '<input type="hidden" name="f[reqattr]['.$sk.'][attrid]" value="'.$sv['attrid'].'">';
                 $z .= '<div class="small-12 columns">';
            ;
                 $z .= '<div class="medium-3 columns medium-text-right ">';
-                $z .= form_dropdown('f[reqattr]['.$sk.'][status]', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''),$sv[status]);
+                $z .= form_dropdown('f[reqattr]['.$sk.'][status]', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''),$sv['status']);
                 $z .='</div>';
                 $z .= '<div class="medium-6 columns">';
-                $z .='<textarea name="f[reqattr]['.$sk.'][reason]">'.$sv[reason].'</textarea>';
+                $z .='<textarea name="f[reqattr]['.$sk.'][reason]">'.$sv['reason'].'</textarea>';
               
                 $z .= '</div>';
                 $z .='<div class="medium-3 columns end"></div>';

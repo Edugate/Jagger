@@ -108,7 +108,7 @@ class Attribute_requirement extends MY_Controller
         $this->title = lang('rr_attributerequirements');
         $data['content_view'] = 'manage/attribute_requirement_view';
         log_message('debug', __METHOD__ . "spid= " . $spid);
-        log_message('debug', __METHOD__ . "current_sp=" . $this->current_sp);
+       
         if (empty($spid) or ! is_numeric($spid))
         {
             if (empty($this->current_sp))
