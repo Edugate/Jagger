@@ -1154,13 +1154,25 @@ class Form_element
         $reqattrs = array();
         $tmpid = 100;
         $origreqattrs = $ent->getAttributesRequirement();
-
+        $alreadyDefined = array();
         if (!$sessform || !array_key_exists('reqattr', $ses))
         {
             foreach ($origreqattrs as $req)
             {
+
                 $rid = $req->getId();
                 $attrid = $req->getAttribute()->getId();
+                if (in_array($attrid, $alreadyDefined))
+                {
+                    log_message('warning', __METHOD__ . ' found duplicated attr req');
+                    $origreqattrs->removeElement($req);
+                    $this->em->remove($req);
+                    continue;
+                }
+                else
+                {
+                    $alreadyDefined[] = $attrid;
+                }
                 if (empty($rid))
                 {
                     $rid = 'x' . $tmpid++ . '';
@@ -1190,6 +1202,17 @@ class Form_element
         {
             foreach ($ses['reqattr'] as $sk => $sv)
             {
+                if (in_array($sv['attrid'], $alreadyDefined))
+                {
+                    log_message('warning', __METHOD__ . ' found duplicated attr req');
+
+
+                    continue;
+                }
+                else
+                {
+                    $alreadyDefined[] = $sv['attrid'];
+                }
                 $attrArray['' . $sv['attrid'] . '']['disabled'] = 1;
                 $z = '<fieldset><legend>' . $sv['attrname'] . '</legend>';
                 $z .= '<input type="hidden" name="f[reqattr][' . $sk . '][attrname]" value="' . $sv['attrname'] . '">';
