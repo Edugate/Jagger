@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -17,8 +18,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Entityedit extends MY_Controller
-{
+class Entityedit extends MY_Controller {
 
     protected $current_site;
     protected $tmp_providers;
@@ -432,7 +432,7 @@ class Entityedit extends MY_Controller
                             }
                         }
                     }
-                    if (strcasecmp($this->type ,'IDP')!=0)
+                    if (strcasecmp($this->type, 'IDP') != 0)
                     {
                         if (count($drindexes) != count(array_unique($drindexes)))
                         {
@@ -528,17 +528,25 @@ class Entityedit extends MY_Controller
         {
             foreach ($uiiSubTypes as $p)
             {
-                if (isset($data['uii'][''.$t.''][''.$p.'']))
+                if (isset($data['uii']['' . $t . '']['' . $p . '']))
                 {
-                    $data['uii'][''.$t.''][''.$p.''] = array_filter($data['uii'][''.$t.''][''.$p.'']);
+                    $data['uii']['' . $t . '']['' . $p . ''] = array_filter($data['uii']['' . $t . '']['' . $p . '']);
                 }
                 else
                 {
-                    $data['uii'][''.$t.''][''.$p.''] = array();
+                    $data['uii']['' . $t . '']['' . $p . ''] = array();
                 }
             }
-        }     
+        }
 
+        if (isset($data['reqattr']))
+        {
+            $data['reqattr'] = array_filter($data['reqattr']);
+        }
+        else
+        {
+            $data['reqattr'] = array();
+        }
         if (isset($data['prvurl']['idpsso']))
         {
             $data['prvurl']['idpsso'] = array_filter($data['prvurl']['idpsso']);
@@ -580,6 +588,7 @@ class Entityedit extends MY_Controller
         }
         $n = 'entform' . $id;
         $this->session->set_userdata($n, $data);
+        //   print_r($data);
     }
 
     private function getFromDraft($id)
@@ -709,6 +718,10 @@ class Entityedit extends MY_Controller
         $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
         $menutabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
+        if (strcasecmp($this->type, 'IDP') != 0)
+        {
+            $menutabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
+        }
         $menutabs[] = array('id' => 'staticmetadata', 'value' => '' . lang('tabstaticmeta') . '', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
         $menutabs[] = array('id' => 'other', 'value' => '' . lang('tabotherforms') . '', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
 
@@ -825,7 +838,45 @@ class Entityedit extends MY_Controller
                         $o = current($entarray);
                         if (isset($o['type']) && strcasecmp($o['type'], $t) == 0)
                         {
-                            $ent->setProviderFromArray(current($entarray));
+                            $ent->setProviderFromArray($o);
+                            if (isset($o['details']['reqattrs']))
+                            {
+                                $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
+                                foreach ($attrsDefinitions as $v)
+                                {
+                                    $attributes['' . $v->getOid() . ''] = $v;
+                                }
+                                $attrsset = array();
+                                foreach ($o['details']['reqattrs'] as $r)
+                                {
+                                    if (array_key_exists($r['name'], $attributes))
+                                    {
+                                        if (!in_array($r['name'], $attrsset))
+                                        {
+                                            $reqattr = new models\AttributeRequirement;
+                                            $reqattr->setAttribute($attributes['' . $r['name'] . '']);
+                                            $reqattr->setType('SP');
+                                            $reqattr->setSP($ent);
+                                            if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0)
+                                            {
+                                                $reqattr->setStatus('required');
+                                            }
+                                            else
+                                            {
+                                                $reqattr->setStatus('desired');
+                                            }
+                                            $reqattr->setReason('');
+                                            $ent->setAttributesRequirement($reqattr);
+                                          
+                                            $attrsset[] = $r['name'];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
+                                    }
+                                }
+                            }
                         }
                         else
                         {
@@ -925,6 +976,10 @@ class Entityedit extends MY_Controller
 
                         log_message('debug', 'GKS before convert: entitid: ' . $ent->getEntityId());
                         $convertedToArray = $ent->convertToArray(True);
+                        $this->load->library('providertoxml');
+                        $options['attrs'] = 1;
+                        $xmlOut = $this->providertoxml->entityConvertNewDocument($ent, $options);
+                        $convertedToArray['metadata'] = base64_encode($xmlOut->outputMemory());
 
                         log_message('debug', 'GKS convertedToArray: ' . serialize($convertedToArray));
 
@@ -991,6 +1046,10 @@ class Entityedit extends MY_Controller
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
         $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
+        if (strcasecmp($ent->getType(), 'IDP') != 0)
+        {
+            $menutabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
+        }
         $data['menutabs'] = $menutabs;
         $data['content_view'] = 'manage/entityedit_view.php';
         $this->load->view('page', $data);

@@ -82,6 +82,7 @@ $lang['tabuii']                     = 'UI Information';
 $lang['tabentcategories']           = 'Entity Categories';
 $lang['tabstaticmeta']              = 'Static Metadata';
 $lang['tabotherforms']              = 'Other forms';
+$lang['tabreqattrs']               ='Required Attributes';
 $lang['btnstartagain']               = 'Start over';
 $lang['btngoadvancedmode']          = 'Go to advanced mode';
 $lang['rr_manageroles']             = 'Manage roles';

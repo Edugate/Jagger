@@ -263,6 +263,10 @@ var GINIT = {
             fieldset.remove();
             GINIT.initialize();
         });
+        $("button.reqattrrm").click(function() {
+            var fieldset = $(this).closest('fieldset');
+            fieldset.remove();
+        });
 
         $('form#availablelogos').on('submit', function(e) {
             e.preventDefault();
@@ -1654,6 +1658,24 @@ $("#nspartifactbtn").click(function() {
     var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-8 large-7 columns inline\"><select name="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select> </div> <div class=\"small-1  columns left\"><input type="text" name="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div>           <div class="small-12 columns"><div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" class="right inline">URL</label></div><div class=\"small-6 large-7 columns inline\"><input name="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" type="text"> </div><div class=\"small-3 large-2 columns\"><button class="inline left button tiny alert rmfield"  name="rmfield" type="button">Remove</button></div></div>';
     $(this).parent().before(newelement);
     GINIT.initialize();
+
+});
+
+$("#nattrreqbtn").click(function(ev){
+     ev.preventDefault();
+     var rname = "";
+     var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+     for (var i = 0; i < 5; i++)
+        rname += possible.charAt(Math.floor(Math.random() * possible.length));
+     var attrselect = $('select[name="nattrreq"]');
+     var attrname = attrselect.find(":selected").text();
+     var attrid = attrselect.find(":selected").val();
+     
+     var newelement = '<fieldset><legend>'+attrname+'</legend><div class="small-12 columns"><div class="medium-3 columns medium-text-right"><select name="f[reqattr]['+rname+'][status]"><option value="required">required</option><option value="desired">desired</option></select><input type="hidden" name="f[reqattr]['+rname+'][attrname]" value="'+attrname+'"><input type="hidden" name="f[reqattr]['+rname+'][attrid]" value="'+attrid+'"></div><div class="medium-6 collumns end"><textarea name="f[reqattr]['+rname+'][reason]"></textarea></div></div></fieldset>';
+     $(this).parent().parent().before(newelement);
+    
+    GINIT.initialize();
+
 
 });
 $("#nidpartifactbtn").click(function() {

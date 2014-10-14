@@ -143,6 +143,52 @@ class Providerupdater {
                 }
             }
         }
+
+        if(array_key_exists('reqattr',$ch) && strcasecmp($type,'IDP')!=0)
+        {
+
+              $attrstmp = $this->em->getRepository("models\Attribute")->findAll();
+              foreach($attrstmp as $attrv)
+              {
+                $attributes[''.$attrv->getId().''] = $attrv;
+              }
+              $trs = $ent->getAttributesRequirement();
+              $origAttrReqs = array();
+              foreach($trs as $tr)
+              {
+                 $origAttrReqs[''.$tr->getAttribute()->getId().''] = $tr;
+              }
+              foreach($ch['reqattr'] as $newAttrReq)
+              {
+                 $idCheck = $newAttrReq['attrid'];
+                 if(array_key_exists($idCheck,$origAttrReqs))
+                 {
+                     $origAttrReqs[''.$idCheck.'']->setReason($newAttrReq['reason']);
+                     $origAttrReqs[''.$idCheck.'']->setStatus($newAttrReq['status']) ;
+                     $this->em->persist($origAttrReqs[''.$idCheck.'']);
+                     unset($origAttrReqs[''.$idCheck.'']);     
+                 }
+                 else
+                 {
+                    $nreq = new models\AttributeRequirement;
+                    $nreq->setStatus($newAttrReq['status']);
+                    $nreq->setReason($newAttrReq['reason']);
+                    $nreq->setType('SP');
+                    //$nreq->setSP($ent);
+                    $nreq->setAttribute($attributes[''.$idCheck.'']);
+                    $ent->setAttributesRequirement($nreq);
+                    $this->em->persist($nreq);
+                    unset($origAttrReqs[''.$idCheck.'']);
+                 }
+              }
+              foreach($origAttrReqs as $orv)
+              {
+                  $trs->removeElement($orv);
+                  $this->em->remove($orv);
+              }             
+              
+        } 
+
         if ($type !== 'SP')
         {
             if (empty($idpMDUIparent))

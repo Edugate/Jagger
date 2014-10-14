@@ -73,6 +73,14 @@ class AttributeRequirement
      */
     protected $reason;
 
+
+     public function setAttributeId($id)
+     {
+         $this->attribute_id = $id;
+         return $this;
+
+     }
+
     public function setAttribute(Attribute $attribute)
     {
         $this->attribute_id = $attribute;

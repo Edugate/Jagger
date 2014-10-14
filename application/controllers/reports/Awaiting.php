@@ -376,7 +376,7 @@ class Awaiting extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->load->library(array('zacl', 'j_queue'));
-
+        $this->load->library('providertoxml');
         $qObject = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $token));
         if (empty($qObject))
         {

@@ -406,6 +406,7 @@ class Providertoxml
             {
                 $xml->writeAttribute('use', $certUse);
             }
+            $xml->startElementNs('ds', 'KeyInfo', null);
             if (!empty($keyName))
             {
                 $keynames = explode(',', $keyName);
@@ -421,10 +422,10 @@ class Providertoxml
                 $xml->startElementNs('ds', 'X509Data', null);
                 $xml->startElementNs('ds', 'X509Certificate', null);
                 $xml->text($certBody);
-                $xml->endElement();
-                $xml->endElement();
+                $xml->endElement();//X509Certificate
+                $xml->endElement();//X509Data
             }
-
+            $xml->endElement(); // KeyInfo
             $xml->endElement(); //KeyDescriptor
         }
 

@@ -705,13 +705,13 @@ class Form_element {
         $sessform = FALSE;
         $enttype = $ent->getType();
         $c = $ent->getCertificates();
-        
+
         $origcerts = array();
         $tmpid = 100;
         foreach ($c as $v)
         {
             $tid = $v->getId();
-            if(empty($tid))
+            if (empty($tid))
             {
                 $tid = 'x' . $tmpid++;
             }
@@ -721,7 +721,7 @@ class Form_element {
         {
             $sessform = TRUE;
         }
-    
+
         if (strcmp($enttype, 'SP') != 0)
         {
             $Part = '<fieldset><legend>' . lang('idpcerts') . ' <small><i>IDPSSODesciptor</i></small></legend><div>';
@@ -796,6 +796,32 @@ class Form_element {
         return $result;
     }
 
+    private function _generateAttrReqAddButton($attrs)
+    {
+       
+        $r  ='<div class="small-12 columns">';
+        $r .='<div class="medium-3 columns">';
+        $r .= '<select name="nattrreq">';
+        foreach($attrs as $a)
+        {
+            if(isset($a['disabled']))
+            {
+                $disabled = 'disabled="disabled"';
+            }
+            else
+            {
+                $disabled = '';    
+            }
+            $r .= '<option value="'.$a['attrid'].'" '.$disabled.'>'.$a['attrname'].'</option>';
+        }
+        
+        $r .='</select>';
+       $r .='</div>';
+        $r .= '<div class="medium-3 columns end"><button id="nattrreqbtn" name="nattrreqbtn" class="tiny">'.lang('rr_add').'</button></div>';
+        $r .='</div>';
+        return $r;
+               
+    }
     private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonname, $buttonvalue)
     {
         $r = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('' . $dropname . '', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div></span>';
@@ -1104,6 +1130,94 @@ class Form_element {
 
 
         return $result;
+    }
+
+    public function nGenerateAttrsReqs(models\Provider $ent, $ses = null)
+    {
+        $allAttrs = $this->em->getRepository("models\Attribute")->findAll();
+        $attrArray = array();
+        foreach( $allAttrs as $a)
+        {
+             $attrArray[$a->getId()] = array('attrname'=>$a->getName(),'attrid'=>$a->getId());
+        }
+        $enttype = $ent->getType();
+        if (strcasecmp($enttype, 'IDP') == 0)
+        {
+            return null;
+        }
+        $entid = $ent->getId();
+        $sessform = FALSE;
+        if (!empty($ses) && is_array($ses))
+        {
+            $sessform = TRUE;
+        }
+        $reqattrs = array();
+        $tmpid = 100;
+        $origreqattrs = $ent->getAttributesRequirement();
+        
+        if(!$sessform || !array_key_exists('reqattr',$ses))
+        {
+            foreach($origreqattrs as $req)
+            {
+                $rid = $req->getId();
+                $attrid = $req->getAttribute()->getId();
+                if(empty($rid))
+                {
+                    $rid = 'x'.$tmpid++.'';
+                }
+                $rstatus = $req->getStatus();
+                $z = '<fieldset><legend>'.$req->getAttribute()->getName().'</legend>';
+                $z .= '<input type="hidden" name="f[reqattr]['.$rid.'][attrname]" value="'.$req->getAttribute()->getName().'">';
+                $z .= '<input type="hidden" name="f[reqattr]['.$rid.'][attrid]" value="'.$req->getAttribute()->getId().'">';
+                $z .= '<div class="small-12 columns">';
+           ;
+                $z .= '<div class="medium-3 columns medium-text-right ">';
+                $z .= form_dropdown('f[reqattr]['.$rid.'][status]', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''),$rstatus);
+                $z .='</div>';
+                $z .= '<div class="medium-6 columns">';
+                $z .='<textarea name="f[reqattr]['.$rid.'][reason]">'.$req->getReason().'</textarea>';
+              
+                $z .= '</div>';
+                $z .='<div class="medium-3 columns end"></div>';
+                $z .= '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr]['.$rid.']" >' . lang('rr_remove') . '</button>';
+                $z .='</div>';
+                $z .='</fieldset>';
+                $reqattrs[] = $z;
+                $attrArray[''.$attrid.'']['disabled'] = 1;
+            }
+        }
+        else
+        {
+            foreach($ses['reqattr'] as $sk=>$sv)
+            {
+                $attrArray[''.$sv[attrid].'']['disabled'] = 1;
+                $z = '<fieldset><legend>'.$sv['attrname'].'</legend>';
+                $z .= '<input type="hidden" name="f[reqattr]['.$sk.'][attrname]" value="'.$sv[attrname].'">';
+                $z .= '<input type="hidden" name="f[reqattr]['.$sk.'][attrid]" value="'.$sv[attrid].'">';
+                $z .= '<div class="small-12 columns">';
+           ;
+                $z .= '<div class="medium-3 columns medium-text-right ">';
+                $z .= form_dropdown('f[reqattr]['.$sk.'][status]', array('desired' => ''.lang('dropdesired').'', 'required' => ''.lang('droprequired').''),$sv[status]);
+                $z .='</div>';
+                $z .= '<div class="medium-6 columns">';
+                $z .='<textarea name="f[reqattr]['.$sk.'][reason]">'.$sv[reason].'</textarea>';
+              
+                $z .= '</div>';
+                $z .='<div class="medium-3 columns end"></div>';
+                $z .= '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr]['.$sk.']" >' . lang('rr_remove') . '</button>';
+                $z .='</div>';
+                $z .='</fieldset>';
+                $reqattrs[] = $z;
+            }
+        }
+        
+        
+        $result[] = implode('', $reqattrs);
+        $result[] = $this->_generateAttrReqAddButton($attrArray);
+        return $result;
+        
+        
+        
     }
 
     public function NgenerateSAMLTab(models\Provider $ent, $ses = null)
@@ -1578,7 +1692,6 @@ class Form_element {
             /**
              * end nameids
              */
-
             $scopes = array('idpsso' => $ent->getScope('idpsso'), 'aa' => $ent->getScope('aa'));
 
             if ($sessform && isset($ses['scopes']['idpsso']))
