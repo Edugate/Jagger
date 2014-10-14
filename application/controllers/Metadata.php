@@ -32,6 +32,7 @@ class Metadata extends MY_Controller {
     {
         $this->federationOld($federationName, $t);
     }
+
     public function federationNew($federationName = NULL, $t = NULL)
     {
         $this->load->library('providertoxml');
@@ -103,7 +104,7 @@ class Metadata extends MY_Controller {
         }
         $tmpm = new models\Providers;
         $members = $tmpm->getActiveFederationMembers($federation, $excludeType);
-       
+
         $xmlOut = $this->providertoxml->createXMLDocument();
 
         // EntitiesDescriptor
@@ -402,6 +403,7 @@ class Metadata extends MY_Controller {
     {
         $this->federationexportOld($federationName, $t);
     }
+
     private function federationexportOld($federationName = NULL, $t = NULL)
     {
         if (empty($federationName))
@@ -570,8 +572,8 @@ class Metadata extends MY_Controller {
             }
             else
             {
-                log_message('error',__METHOD__.' empty xml has been generated');
-                show_error('Internal server error',500);
+                log_message('error', __METHOD__ . ' empty xml has been generated');
+                show_error('Internal server error', 500);
             }
         }
         else
@@ -583,8 +585,9 @@ class Metadata extends MY_Controller {
 
     public function service($entityId = null, $m = null)
     {
-        $this->serviceOld($entityId,$m);
+        $this->serviceOld($entityId, $m);
     }
+
     public function serviceOld($entityId = null, $m = null)
     {
         if (empty($entityId) || empty($m) || strcmp($m, 'metadata.xml') != 0)
@@ -694,9 +697,125 @@ class Metadata extends MY_Controller {
     public function circle($entityId = NULL, $m = NULL)
     {
         $this->circleOld($entityId, $m);
+        }
+
+
+
+        public function circleNew($entityId = NULL, $m = NULL)
+        {
+        $isEnabled = $this->isCircleFeatureEnabled();
+        if (!$isEnabled)
+        {
+        show_error('Circle of trust  metadata : Feature is disabled', 404);
+        }
+        if (empty($entityId) || empty($m) || strcmp($m, 'metadata.xml') != 0)
+        {
+            show_error('Request not allowed', 403);
+        }
+        $permitPull = $this->checkAccess();
+        if ($permitPull !== TRUE)
+        {
+            log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
+            show_error('Access denied', 403);
+        }
+        $data = array();
+        $name = base64url_decode($entityId);
+        $me = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $name . ''));
+
+        if (empty($me))
+        {
+            log_message('debug', 'Failed generating circle metadata for ' . $name);
+            show_error('unknown provider', 404);
+            return;
+        }
+        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
+
+        if (!$this->isProviderAllowedForCircle($me))
+        {
+            log_message('warning', 'Cannot generate circle metadata for external provider:' . $me->getEntityId());
+            log_message('debug', 'To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE');
+            show_error($me->getEntityId() . ': This is not managed localy. Cannot generate circle metadata', 403);
+            return;
+        }
+        $mtype = $me->getType();
+        $excludeType = null;
+        if (strcasecmp($mtype, 'BOTH') != 0)
+        {
+            $excludeType = $mtype;
+        }
+        $keyPrefix = getCachePrefix();
+        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
+        $cacheId = 'circlemeta_' . $me->getId();
+        $options['attrs'] = 1;
+        $p = new models\Providers;
+        $tFeds = $p->getTrustedActiveFeds($me);
+        $feds = array();
+        foreach ($tFeds as $f)
+        {
+            $feds[] = $f->getId();
+        }
+
+        $members = $p->getActiveMembersOfFederations($feds, $excludeType);
+
+        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+        $idsuffix = $validfor->format('Ymd\THis');
+        $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
+        $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
+        $idprefix = '';
+        $prefid = $this->config->item('circlemetadataidprefix');
+        if (!empty($prefid))
+        {
+            $idprefix = $prefid;
+        }
+        $this->load->library('providertoxml');
+        $xmlOut = $this->providertoxml->createXMLDocument();
+        $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
+        $xmlOut->writeAttribute('ID', '' . $idprefix . $idsuffix . '');
+        $xmlOut->writeAttribute('Name', '' . $me->getEntityId() . '');
+        $xmlOut->writeAttribute('validUntil', '' . $validuntil . '');
+        $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
+        $regNamespaces = h_metadataNamespaces();
+        foreach ($regNamespaces as $k => $v)
+        {
+            $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
+        }
+        foreach ($members as $keyMember => $valueMember)
+        {
+
+            $cacheId = 'mcircle_' . $valueMember->getId() . '';
+            $metadataCached = $this->cache->get($cacheId);
+
+            $xmlOut->startComment();
+            $xmlOut->text($valueMember->getEntityId());
+            if (!empty($metadataCached))
+            {
+                $xmlOut->endComment();
+                $xmlOut->writeRaw($metadataCached);
+            }
+            else
+            {
+                if ($valueMember->isStaticMetadata())
+                {
+                    $xmlOut->text(PHP_EOL . 'static' . PHP_EOL);
+                    $xmlOut->endComment();
+                    $this->providertoxml->entityStaticConvert($xmlOut, $valueMember);
+                }
+                else
+                {
+                    $xmlOut->endComment();
+                    $this->providertoxml->entityConvert($xmlOut, $valueMember, $options);
+                }
+            }
+            unset($members[$keyMember]);
+        }
+        $xmlOut->endElement(); //EntitiesDescriptor
+        $xmlOut->endDocument();
+        $data['out'] = $xmlOut->outputMemory();
+        $memUsage = memory_get_usage();
+        $mem = round($memUsage / 1048576, 2);
+        log_message('info', 'Memory usage: ' . $mem . 'M');
+        $this->load->view('metadata_view', $data);
     }
-    
-  
 
     private function circleOld($entityId = NULL, $m = NULL)
     {
