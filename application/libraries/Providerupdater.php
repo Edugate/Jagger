@@ -157,8 +157,19 @@ class Providerupdater
             $attrIdsDefined = array();
             foreach ($trs as $tr)
             {
-                $origAttrReqs['' . $tr->getAttribute()->getId() . ''] = $tr;
+                $keyid = $tr->getAttribute()->getId();
+                if(array_key_exists($keyid, $origAttrReqs))
+                {
+                    log_error('warning',__METHOD__.' found duplicate in attr req for entityid:'.$ent->getEntityId());
+                     $trs->removeElement($tr);
+                     $this->em->remove($tr);
+                     continue;
+                }
+                
+                $origAttrReqs[''.$keyid.''] = $tr;
             }
+            
+            
             foreach ($ch['reqattr'] as $newAttrReq)
             {
                 $alreadyDefined = false;
@@ -173,6 +184,7 @@ class Providerupdater
                 }
                 if (array_key_exists($idCheck, $origAttrReqs))
                 {
+                    log_message('debug','OKA LLLLLLLLLLLLLLL');
                     if ($alreadyDefined)
                     {
                         $trs->removeElement($origAttrReqs['' . $idCheck . '']);
@@ -183,8 +195,9 @@ class Providerupdater
                         $origAttrReqs['' . $idCheck . '']->setReason($newAttrReq['reason']);
                         $origAttrReqs['' . $idCheck . '']->setStatus($newAttrReq['status']);
                         $this->em->persist($origAttrReqs['' . $idCheck . '']);
+                        unset($origAttrReqs['' . $idCheck . '']);
                     }
-                    unset($origAttrReqs['' . $idCheck . '']);
+                    
                 }
                 elseif(!$alreadyDefined)
                 {
@@ -202,6 +215,7 @@ class Providerupdater
             }
             foreach ($origAttrReqs as $orv)
             {
+               
                 $trs->removeElement($orv);
                 $this->em->remove($orv);
             }

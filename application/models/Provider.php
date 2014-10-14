@@ -291,7 +291,7 @@ class Provider
     protected $attributeReleaseIDP;
 
     /**
-     * @OneToMany(targetEntity="AttributeRequirement", mappedBy="sp_id",cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="AttributeRequirement", mappedBy="sp_id",cascade={"all"})
      */
     protected $attributeRequirement;
 

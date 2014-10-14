@@ -856,7 +856,7 @@ class Entityedit extends MY_Controller {
                                             $reqattr = new models\AttributeRequirement;
                                             $reqattr->setAttribute($attributes['' . $r['name'] . '']);
                                             $reqattr->setType('SP');
-                                            $reqattr->setSP($ent);
+                                            //$reqattr->setSP($ent);
                                             if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0)
                                             {
                                                 $reqattr->setStatus('required');
@@ -866,8 +866,9 @@ class Entityedit extends MY_Controller {
                                                 $reqattr->setStatus('desired');
                                             }
                                             $reqattr->setReason('');
+                                            
                                             $ent->setAttributesRequirement($reqattr);
-                                          
+                                          $this->em->persist($reqattr);
                                             $attrsset[] = $r['name'];
                                         }
                                     }

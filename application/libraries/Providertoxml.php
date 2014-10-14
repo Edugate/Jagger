@@ -441,7 +441,7 @@ class Providertoxml
             $toShow  = $reqAttr->getAttribute()->showInMetadata();
             if($toShow)
             {
-                $requiredAttributes[] = $reqAttr;
+                $requiredAttributes[''.$reqAttr->getAttribute()->getId().''] = $reqAttr;
             }
         }
         if (count($requiredAttributes) == 0 && (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0))

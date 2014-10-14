@@ -1164,7 +1164,7 @@ class Form_element
                 $attrid = $req->getAttribute()->getId();
                 if (in_array($attrid, $alreadyDefined))
                 {
-                    log_message('warning', __METHOD__ . ' found duplicated attr req');
+                    log_message('warning', __METHOD__ . 'OKA found duplicated attr req');
                     $origreqattrs->removeElement($req);
                     $this->em->remove($req);
                     continue;
