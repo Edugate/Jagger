@@ -434,11 +434,21 @@ class Providertoxml
 
     private function createAttributeConsumingService(\XMLWriter $xml, $ent, $options)
     {
-        $requiredAttributes = $ent->getAttributesRequirement();
-        if ($requiredAttributes->count() == 0 && (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0))
+        $reqColl = $ent->getAttributesRequirement();
+        $requiredAttributes = array();
+        foreach($reqColl as $reqAttr)
+        {
+            $toShow  = $reqAttr->getAttribute()->showInMetadata();
+            if($toShow)
+            {
+                $requiredAttributes[] = $reqAttr;
+            }
+        }
+        if (count($requiredAttributes) == 0 && (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0))
         {
             return $xml;
         }
+        
         $xml->startElementNs('md', 'AttributeConsumingService', null);
         $xml->writeAttribute('index', '0');
         $doFilter1 = array('DisplayName', 'Description');
@@ -483,7 +493,7 @@ class Providertoxml
                 $xml->endElement();
             }
         }
-        if ($requiredAttributes->count() > 0)
+        if (count($requiredAttributes) > 0)
         {
             foreach ($requiredAttributes as $attr)
             {
