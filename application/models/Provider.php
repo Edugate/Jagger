@@ -3176,11 +3176,15 @@ class Provider
             {
                 foreach ($sp_reqattrs->getValues() as $v)
                 {
-                    $in = $v->getAttribute()->showInMetadata();
-                    if ($in === FALSE)
+                    $reqattr = $v->getAttribute();
+                    if(!empty($reqattr))
                     {
+                       $in = $reqattr->showInMetadata();
+                       if ($in === FALSE)
+                       {
 
                         $sp_reqattrs->removeElement($v);
+                      }
                     }
                 }
             }

@@ -99,7 +99,17 @@ class Entityedit extends MY_Controller {
                 }
             }
 
+            if(isset($y['reqattr']))
+            {
+               foreach($y['reqattr'] as $k=>$r)
+               {
+                  $this->form_validation->set_rules('f[reqattr]['.$k.'][reason]', 'Attribute requirement reason', 'trim|xss_clean');
+                  $this->form_validation->set_rules('f[reqattr]['.$k.'][attrid]', 'Attribute requirement - attribute id is missing', 'trim|required|integer|xss_clean');
+                  
 
+               }
+
+            }
 
             $this->form_validation->set_rules('f[regauthority]', lang('rr_regauthority'), 'trim|xss_clean');
             $this->form_validation->set_rules('f[registrationdate]', lang('rr_regdate'), 'trim|xss_clean|valid_date_past');

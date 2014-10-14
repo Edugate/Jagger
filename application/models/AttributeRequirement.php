@@ -40,7 +40,7 @@ class AttributeRequirement
 
     /**
      * @ManyToOne(targetEntity="Attribute")
-     * @JoinColumn(name="attribute_id", referencedColumnName="id")
+     * @JoinColumn(name="attribute_id", referencedColumnName="id",nullable=false)
      */
     protected $attribute_id;
 

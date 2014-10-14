@@ -184,7 +184,7 @@ class Providerupdater
                 }
                 if (array_key_exists($idCheck, $origAttrReqs))
                 {
-                    log_message('debug','OKA LLLLLLLLLLLLLLL');
+                   
                     if ($alreadyDefined)
                     {
                         $trs->removeElement($origAttrReqs['' . $idCheck . '']);
@@ -199,7 +199,7 @@ class Providerupdater
                     }
                     
                 }
-                elseif(!$alreadyDefined)
+                elseif(!$alreadyDefined && isset($attributes['' . $idCheck . '']))
                 {
                     log_message('debug', __METHOD__ . ' OKA: new reqattr');
                     $nreq = new models\AttributeRequirement;
