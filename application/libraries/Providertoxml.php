@@ -435,7 +435,7 @@ class Providertoxml
     private function createAttributeConsumingService(\XMLWriter $xml, $ent, $options)
     {
         $requiredAttributes = $ent->getAttributesRequirement();
-        if ($requiredAttributes->count() == 0 && count($options['fedreqattrs']) == 0)
+        if ($requiredAttributes->count() == 0 && (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0))
         {
             return $xml;
         }

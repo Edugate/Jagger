@@ -822,25 +822,26 @@ class Provider
         $this->scope = serialize($ex);
         return $this;
     }
+
     private function overwriteScopeFull(Provider $provider)
     {
-       $pScope = $provider->getScopeFull();
-       if(!isset($pScope['idpsso']))
-       {
-           $pScope['idpsso'] = array();
-       }
-       if(!isset($pScope['aa']))
-       {
-           $pScope['aa'] = array();
-       }
-       foreach($pScope as $k => $v)
-       {
-           if($k === 'idpsso' || $k === 'aa')
-           {
-               $this->setScope($k, $v);
-           }
-       }
-       return $this;
+        $pScope = $provider->getScopeFull();
+        if (!isset($pScope['idpsso']))
+        {
+            $pScope['idpsso'] = array();
+        }
+        if (!isset($pScope['aa']))
+        {
+            $pScope['aa'] = array();
+        }
+        foreach ($pScope as $k => $v)
+        {
+            if ($k === 'idpsso' || $k === 'aa')
+            {
+                $this->setScope($k, $v);
+            }
+        }
+        return $this;
     }
 
     public function overwriteScope($n, Provider $provider)
@@ -1733,16 +1734,17 @@ class Provider
             return array();
         }
     }
+
     public function getScopeFull()
     {
         $s = @unserialize($this->scope);
-        if(!empty($s))
+        if (!empty($s))
         {
             return $s;
         }
         else
         {
-            return array('aa'=>array(),'idpsso'=>array());
+            return array('aa' => array(), 'idpsso' => array());
         }
     }
 
@@ -3757,13 +3759,13 @@ class Provider
             {
                 if (isset($b['servicelocations']['' . $kc . '']) && is_array($b['servicelocations']['' . $kc . '']))
                 {
-                    foreach ($b['servicelocations'][''.$kc.''] as $s)
+                    foreach ($b['servicelocations']['' . $kc . ''] as $s)
                     {
                         $sso = new ServiceLocation;
                         $sso->setType($vc);
                         $sso->setBindingName($s['binding']);
                         $sso->setUrl($s['location']);
-                        if($vc === 'IDPArtifactResolutionService')
+                        if ($vc === 'IDPArtifactResolutionService')
                         {
                             $sso->setOrder($s['order']);
                         }
@@ -3908,6 +3910,45 @@ class Provider
                 }
                 $cert->setProvider($this);
                 $this->setCertificate($cert);
+            }
+        }
+        return $this;
+    }
+
+    public function setReqAttrsFromArray($ent, $attributesByName)
+    {
+        if (isset($ent['details']['reqattrs']))
+        {
+            \log_message('info','DI1');
+            $attrsset = array();
+            foreach ($ent['details']['reqattrs'] as $r)
+            {
+                if (array_key_exists($r['name'], $attributesByName))
+                {
+                    if (!in_array($r['name'], $attrsset))
+                    {
+                        $reqattr = new AttributeRequirement;
+                        $reqattr->setAttribute($attributesByName['' . $r['name'] . '']);
+                        $reqattr->setType('SP');
+                        $reqattr->setSP($this);
+                        if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0)
+                        {
+                            $reqattr->setStatus('required');
+                        }
+                        else
+                        {
+                            $reqattr->setStatus('desired');
+                        }
+                        $reqattr->setReason('');
+                        $this->setAttributesRequirement($reqattr);
+                       // $this->em->persist($reqattr);
+                        $attrsset[] = $r['name'];
+                    }
+                }
+                else
+                {
+                    log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
+                }
             }
         }
         return $this;

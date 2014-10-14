@@ -25,6 +25,7 @@ class J_queue
     private $em;
     private $tmp_providers;
     private $tmp_federations;
+    private $attributesByName;
 
     function __construct()
     {
@@ -32,6 +33,11 @@ class J_queue
         $this->em = $this->ci->doctrine->em;
         $this->tmp_providers = new models\Providers;
         $this->tmp_federations = new models\Federations;
+        $attrs = $this->em->getRepository("models\Attribute")->findAll();
+        foreach($attrs as $a)
+        {
+            $this->attributesByName[''.$a->getOid().''] = $a;
+        }
     }
 
     /**
@@ -419,9 +425,11 @@ class J_queue
                     }
                     $objData = new models\Provider;
                     $objData->setProviderFromArray(current($entarray), TRUE);
-                    $y = $objData->getProviderToXML();
-                    $y->formatOutput = true;
-                    $metadataXML = $y->saveXML();
+                    $objData->setReqAttrsFromArray(current($entarray),$this->attributesByName);
+                    $metadataXML = $this->ci->providertoxml->entityConvertNewDocument($objData, array('attrs'=>1), true);
+                   // $y = $objData->getProviderToXML();
+                   // $y->formatOutput = true;
+                   // $metadataXML = $y->saveXML();
                     $showXML = TRUE;
                 }
             }
