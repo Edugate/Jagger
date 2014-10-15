@@ -856,7 +856,7 @@ class Metadata extends MY_Controller {
         $this->load->view('metadata_view', $data);
     }
 
-    private function circleOld($entityId = NULL, $m = NULL)
+    public function circleOld($entityId = NULL, $m = NULL)
     {
         $isEnabled = $this->isCircleFeatureEnabled();
         if (!$isEnabled)
