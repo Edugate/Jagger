@@ -3,11 +3,11 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
- * ResourceRegistry3
+ * Jagger
  * 
- * @package     RR3
+ * @package     Jagger
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -15,22 +15,34 @@ if (!defined('BASEPATH'))
 /**
  * Metadata Class
  * 
- * @package     RR3
+ * @package     Jagger
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Metadata extends MY_Controller {
 
-    //put your code here
+    private $useNewMetagen = false;
 
     function __construct()
     {
         parent::__construct();
         $this->output->set_content_type('text/xml');
+        $c = $this->config->item('useNewMetagenerator');
+        if (!empty($c) && $c === true)
+        {
+            $this->useNewMetagen = true;
+        }
     }
 
     public function federation($federationName = NULL, $t = NULL)
     {
-        $this->federationOld($federationName, $t);
+        if ($this->useNewMetagen)
+        {
+            $this->federationNew($federationName, $t);
+        }
+        else
+        {
+            $this->federationOld($federationName, $t);
+        }
     }
 
     public function federationNew($federationName = NULL, $t = NULL)
@@ -93,10 +105,9 @@ class Metadata extends MY_Controller {
         }
         $idsuffix = $validfor->format('YmdHis');
 
-        $include_attrs = $federation->getAttrsInmeta();
-        $reqattrs_by_fed = null;
+        $includeAttrRequirement = $federation->getAttrsInmeta();
         $options = array('attrs' => 0, 'fedreqattrs' => array());
-        if ($include_attrs)
+        if ($includeAttrRequirement)
         {
             $options['attrs'] = 1;
             $attrfedreq_tmp = new models\AttributeRequirements;
@@ -107,9 +118,10 @@ class Metadata extends MY_Controller {
 
         $xmlOut = $this->providertoxml->createXMLDocument();
 
+        $now = new \DateTime('now', new \DateTimeZone('UTC'));
         // EntitiesDescriptor
         $xmlOut->startComment();
-        $xmlOut->text('TERMS OF USE' . PHP_EOL . $federation->getTou());
+        $xmlOut->text('nMetadata was generated on: ' . $now->format('Y-m-d H:i') . ' UTC' . PHP_EOL . 'TERMS OF USE' . PHP_EOL . $federation->getTou() . PHP_EOL);
         $xmlOut->endComment();
         $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
         $xmlOut->writeAttribute('ID', '' . $idprefix . $idsuffix . '');
@@ -696,17 +708,22 @@ class Metadata extends MY_Controller {
 
     public function circle($entityId = NULL, $m = NULL)
     {
-        $this->circleOld($entityId, $m);
-        }
-
-
-
-        public function circleNew($entityId = NULL, $m = NULL)
+        if ($this->useNewMetagen)
         {
+            $this->circleNew($entityId, $m);
+        }
+        else
+        {
+            $this->circleOld($entityId, $m);
+        }
+    }
+
+    public function circleNew($entityId = NULL, $m = NULL)
+    {
         $isEnabled = $this->isCircleFeatureEnabled();
         if (!$isEnabled)
         {
-        show_error('Circle of trust  metadata : Feature is disabled', 404);
+            show_error('Circle of trust  metadata : Feature is disabled', 404);
         }
         if (empty($entityId) || empty($m) || strcmp($m, 'metadata.xml') != 0)
         {
@@ -779,6 +796,7 @@ class Metadata extends MY_Controller {
         {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
+        
         foreach ($members as $keyMember => $valueMember)
         {
 
@@ -789,11 +807,26 @@ class Metadata extends MY_Controller {
             $xmlOut->text($valueMember->getEntityId());
             if (!empty($metadataCached))
             {
+                $xmlOut->text(PHP_EOL.'from cache'.PHP_EOL);
                 $xmlOut->endComment();
-                $xmlOut->writeRaw($metadataCached);
+                $z = new XMLReader();
+                $z->XML($metadataCached);
+                while ($z->read())
+                {
+                    if ($z->nodeType == XMLReader::ELEMENT &&
+                            ($z->name === 'md:EntityDescriptor' || $z->name === 'EntityDescriptor'))
+                    {
+
+                        $xmlOut->writeRaw($z->readInnerXml());
+                        break;
+                    }
+                }
+                $z->close();
+                
             }
             else
             {
+               
                 if ($valueMember->isStaticMetadata())
                 {
                     $xmlOut->text(PHP_EOL . 'static' . PHP_EOL);

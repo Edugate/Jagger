@@ -99,6 +99,27 @@ class StaticMetadata
 		return $mresult;
     }
 
+    public function getNewGenMetadata()
+    {
+          $mresult = base64_decode($this->metadata);
+          $z = new \XMLReader();
+          $result = null;
+          $z->XML($mresult);
+          while ($z->read())
+          {
+              if ($z->nodeType == \XMLReader::ELEMENT &&
+              ($z->name === 'md:EntityDescriptor' || $z->name === 'EntityDescriptor'))
+              {
+
+                   $result = $z->readInnerXml();
+                   break;
+              }
+          }
+          $z->close();
+          return $result;
+
+  }
+
 	public function getMetadataToDecoded()
 	{
 		$result = $this->getMetadata();

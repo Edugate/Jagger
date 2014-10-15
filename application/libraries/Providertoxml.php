@@ -788,7 +788,7 @@ class Providertoxml
         return TRUE;
     }
 
-    public function entityConvert(\XMLWriter $xml, \models\Provider $ent, $options)
+    public function entityConvert(\XMLWriter $xml, \models\Provider $ent, $options, $doCache=false)
     {
 
         $type = $ent->getType();
@@ -976,7 +976,7 @@ class Providertoxml
         $s = $ent->getStaticMetadata();
         if (!empty($s))
         {
-            $meta = $s->getMetadata();
+            $meta = $s->getNewGenMetadata();
             $xml->writeRaw($meta);
         }
         return $xml;
