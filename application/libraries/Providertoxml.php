@@ -976,7 +976,7 @@ class Providertoxml
         $s = $ent->getStaticMetadata();
         if (!empty($s))
         {
-            $meta = $s->getNewGenMetadata();
+            $meta = $s->getMetadata();
             $xml->writeRaw($meta);
         }
         return $xml;

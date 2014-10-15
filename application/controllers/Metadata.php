@@ -413,7 +413,14 @@ class Metadata extends MY_Controller {
 
     public function federationexport($federationName = NULL, $t = NULL)
     {
-        $this->federationexportOld($federationName, $t);
+        if ($this->useNewMetagen)
+        {
+            $this->federationexportNew($federationName, $t);
+        }
+        else
+        {
+            $this->federationexportOld($federationName, $t);
+        }
     }
 
     private function federationexportOld($federationName = NULL, $t = NULL)
@@ -796,7 +803,7 @@ class Metadata extends MY_Controller {
         {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
-        
+
         foreach ($members as $keyMember => $valueMember)
         {
 
@@ -807,7 +814,7 @@ class Metadata extends MY_Controller {
             $xmlOut->text($valueMember->getEntityId());
             if (!empty($metadataCached))
             {
-                $xmlOut->text(PHP_EOL.'from cache'.PHP_EOL);
+                $xmlOut->text(PHP_EOL . 'from cache' . PHP_EOL);
                 $xmlOut->endComment();
                 $z = new XMLReader();
                 $z->XML($metadataCached);
@@ -822,11 +829,10 @@ class Metadata extends MY_Controller {
                     }
                 }
                 $z->close();
-                
             }
             else
             {
-               
+
                 if ($valueMember->isStaticMetadata())
                 {
                     $xmlOut->text(PHP_EOL . 'static' . PHP_EOL);
