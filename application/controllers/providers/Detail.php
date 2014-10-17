@@ -32,7 +32,7 @@ class Detail extends MY_Controller {
         $this->current_site = current_url();
         if ($loggedin)
         {
-            $this->load->library(array('table', 'geshilib', 'zacl', 'show_element'));
+            $this->load->library(array('table', 'geshilib', 'zacl', 'show_element','providertoxml'));
             $this->logo_basepath = $this->config->item('rr_logouriprefix');
             $this->logo_baseurl = $this->config->item('rr_logobaseurl');
             if (empty($this->logo_baseurl))
@@ -1039,15 +1039,10 @@ class Detail extends MY_Controller {
          * end certs
          */
         $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
-
-
-        $xmldata = $ent->getProviderToXML($parent = null, array('attrs' => 1));
+        $xmldata = $this->providertoxml->entityConvertNewDocument($ent,array('attrs' => 1),TRUE);
         if (!empty($xmldata))
         {
-
-
-            $xmldata->formatOutput = true;
-            $xmlToHtml = $xmldata->saveXML();
+            $xmlToHtml = $xmldata;
         }
         $xmlmetatitle = '<img src="' . base_url() . 'images/jicons/xml3.svg" style="height: 20px"/> ';
         $subresult[1] = array('section' => 'xmlmeta', 'title' => $xmlmetatitle, 'data' => '<code>' . $this->geshilib->highlight($xmlToHtml, 'xml', $params) . '</code>');

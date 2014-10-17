@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -19,7 +18,8 @@ if (!defined('BASEPATH'))
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Providerupdater {
+class Providerupdater
+{
 
     protected $ci;
     protected $em;
@@ -54,32 +54,30 @@ class Providerupdater {
                     $foundkey = array_search($cid, $ch['regpol']);
                     if ($foundkey === null || $foundkey === false)
                     {
-                        log_message('debug','GKS not found '.$cid);
+                        log_message('debug', 'GKS not found ' . $cid);
                         $ent->removeCoc($v);
                     }
-                    
-                    
                 }
             }
-            $requestNew  = false;
+            $requestNew = false;
             foreach ($ch['regpol'] as $k => $v)
             {
-                log_message('debug','GKS assignign regpolicy id:'.$v);
+                log_message('debug', 'GKS assignign regpolicy id:' . $v);
                 if (!empty($v) && is_numeric($v))
                 {
                     $c = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $v, 'type' => 'regpol'));
-                    if(!empty($c))
+                    if (!empty($c))
                     {
-                        log_message('debug','GKS found regpl with id:'.$c->getId());
+                        log_message('debug', 'GKS found regpl with id:' . $c->getId());
                     }
-                    if(!empty($ent))
+                    if (!empty($ent))
                     {
-                        log_message('debug','GKS ENT:'.$ent->getId());
+                        log_message('debug', 'GKS ENT:' . $ent->getId());
                     }
                     if (!empty($c) && !$currentRegPol->contains($c))
                     {
                         $requestNew = true;
-                        
+
                         if ($isAdmin)
                         {
                             $ent->setCoc($c);
@@ -93,9 +91,9 @@ class Providerupdater {
                 }
             }
         }
-        if(!$requestNew)
+        if (!$requestNew)
         {
-           $this->ci->globalnotices[] = lang('updated');
+            $this->ci->globalnotices[] = lang('updated');
         }
     }
 
@@ -143,6 +141,86 @@ class Providerupdater {
                 }
             }
         }
+
+        if (array_key_exists('reqattr', $ch) && strcasecmp($type, 'IDP') != 0)
+        {
+
+
+            log_message('debug', __METHOD__ . ' OKA: ' . count($ch['reqattr']));
+            $attrstmp = $this->em->getRepository("models\Attribute")->findAll();
+            foreach ($attrstmp as $attrv)
+            {
+                $attributes['' . $attrv->getId() . ''] = $attrv;
+            }
+            $trs = $ent->getAttributesRequirement();
+            $origAttrReqs = array();
+            $attrIdsDefined = array();
+            foreach ($trs as $tr)
+            {
+                $keyid = $tr->getAttribute()->getId();
+                if(array_key_exists($keyid, $origAttrReqs))
+                {
+                    log_error('warning',__METHOD__.' found duplicate in attr req for entityid:'.$ent->getEntityId());
+                     $trs->removeElement($tr);
+                     $this->em->remove($tr);
+                     continue;
+                }
+                
+                $origAttrReqs[''.$keyid.''] = $tr;
+            }
+            
+            
+            foreach ($ch['reqattr'] as $newAttrReq)
+            {
+                $alreadyDefined = false;
+                $idCheck = $newAttrReq['attrid'];
+                if (in_array($idCheck, $attrIdsDefined))
+                {
+                    $alreadyDefined = true;
+                }
+                else
+                {
+                    $attrIdsDefined[] = $idCheck;
+                }
+                if (array_key_exists($idCheck, $origAttrReqs))
+                {
+                   
+                    if ($alreadyDefined)
+                    {
+                        $trs->removeElement($origAttrReqs['' . $idCheck . '']);
+                        $this->em->remove($origAttrReqs['' . $idCheck . '']);
+                    }
+                    else
+                    {
+                        $origAttrReqs['' . $idCheck . '']->setReason($newAttrReq['reason']);
+                        $origAttrReqs['' . $idCheck . '']->setStatus($newAttrReq['status']);
+                        $this->em->persist($origAttrReqs['' . $idCheck . '']);
+                        unset($origAttrReqs['' . $idCheck . '']);
+                    }
+                    
+                }
+                elseif(!$alreadyDefined && isset($attributes['' . $idCheck . '']))
+                {
+                    log_message('debug', __METHOD__ . ' OKA: new reqattr');
+                    $nreq = new models\AttributeRequirement;
+                    $nreq->setStatus($newAttrReq['status']);
+                    $nreq->setReason($newAttrReq['reason']);
+                    $nreq->setType('SP');
+                    $nreq->setSP($ent);
+                    $nreq->setAttribute($attributes['' . $idCheck . '']);
+                    $ent->setAttributesRequirement($nreq);
+                    $this->em->persist($nreq);
+                    unset($origAttrReqs['' . $idCheck . '']);
+                }
+            }
+            foreach ($origAttrReqs as $orv)
+            {
+               
+                $trs->removeElement($orv);
+                $this->em->remove($orv);
+            }
+        }
+
         if ($type !== 'SP')
         {
             if (empty($idpMDUIparent))
@@ -1580,8 +1658,7 @@ class Providerupdater {
         {
             $typeFilter = array('idp');
             $idpextend = $ent->getExtendMetadata()->filter(
-                    function(models\ExtendMetadata $entry) use ($typeFilter)
-            {
+                    function(models\ExtendMetadata $entry) use ($typeFilter) {
                 return in_array($entry->getType(), $typeFilter);
             });
 
@@ -1590,8 +1667,7 @@ class Providerupdater {
 
             $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
-                    function(models\ExtendMetadata $entry) use ($doFilter)
-            {
+                    function(models\ExtendMetadata $entry) use ($doFilter) {
                 return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
             });
             $exarray = array();
@@ -1615,8 +1691,7 @@ class Providerupdater {
                     log_message('debug', 'PKS ' . $elkey);
                     $doFilter = array('' . $elvalue . '');
                     $collection = $ent->getExtendMetadata()->filter(
-                            function(models\ExtendMetadata $entry) use ($doFilter)
-                    {
+                            function(models\ExtendMetadata $entry) use ($doFilter) {
                         return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                     });
                     foreach ($collection as $c)
@@ -1665,11 +1740,10 @@ class Providerupdater {
             }
             // logos not updatting value - just remove entry or add new one
             if (isset($ch['uii']['idpsso']['logo']) && is_array($ch['uii']['idpsso']['logo']))
-            {     
+            {
                 $doFilter = array('Logo');
                 $collection = $ent->getExtendMetadata()->filter(
-                        function(models\ExtendMetadata $entry) use ($doFilter)
-                {
+                        function(models\ExtendMetadata $entry) use ($doFilter) {
                     return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                 });
 
@@ -1756,14 +1830,12 @@ class Providerupdater {
         {
             $typeFilter = array('sp');
             $spextend = $ent->getExtendMetadata()->filter(
-                    function(models\ExtendMetadata $entry) use ($typeFilter)
-            {
+                    function(models\ExtendMetadata $entry) use ($typeFilter) {
                 return in_array($entry->getType(), $typeFilter);
             });
             $doFilter = array('t' => array('sp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
-                    function(models\ExtendMetadata $entry) use ($doFilter)
-            {
+                    function(models\ExtendMetadata $entry) use ($doFilter) {
                 return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
             });
             $exarray = array();
@@ -1786,8 +1858,7 @@ class Providerupdater {
                 {
                     $doFilter = array('' . $elvalue . '');
                     $collection = $ent->getExtendMetadata()->filter(
-                            function(models\ExtendMetadata $entry) use ($doFilter)
-                    {
+                            function(models\ExtendMetadata $entry) use ($doFilter) {
                         return ($entry->getType() === 'sp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                     });
                     foreach ($collection as $c)
@@ -1838,8 +1909,7 @@ class Providerupdater {
 
                 $doFilter = array('Logo');
                 $collection = $ent->getExtendMetadata()->filter(
-                        function(models\ExtendMetadata $entry) use ($doFilter)
-                {
+                        function(models\ExtendMetadata $entry) use ($doFilter) {
                     return ($entry->getType() === 'sp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                 });
 

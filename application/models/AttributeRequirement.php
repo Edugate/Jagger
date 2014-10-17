@@ -40,7 +40,7 @@ class AttributeRequirement
 
     /**
      * @ManyToOne(targetEntity="Attribute")
-     * @JoinColumn(name="attribute_id", referencedColumnName="id")
+     * @JoinColumn(name="attribute_id", referencedColumnName="id",nullable=false)
      */
     protected $attribute_id;
 
@@ -72,6 +72,14 @@ class AttributeRequirement
      * @Column(type="string")
      */
     protected $reason;
+
+
+     public function setAttributeId($id)
+     {
+         $this->attribute_id = $id;
+         return $this;
+
+     }
 
     public function setAttribute(Attribute $attribute)
     {

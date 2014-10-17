@@ -569,6 +569,26 @@ class Providers {
        $query->setParameter('today', new \DateTime("now"));
        
        return $query->getResult();
+    }
+
+
+    public function getActiveMembersOfFederations($federations, $excludeType=null)
+    {
+       if(is_null($excludeType))
+       {
+          $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation in (:feds)  AND m.joinstate != '2' AND m.isBanned='0' AND p.is_active='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
+       }
+       else
+       {
+          $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation in (:feds)  AND m.joinstate != '2' AND m.isBanned='0' AND p.type != :type AND  p.is_active='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
+
+          $query->setParameter('type',strtoupper($excludeType));
+       }
+       $query->setParameter('feds', $federations);
+       $query->setParameter('today', new \DateTime("now"));
+       
+       return $query->getResult();
+
 
     }
 

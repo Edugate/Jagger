@@ -22,6 +22,7 @@ class Awaiting extends MY_Controller
 
     private $alert;
     private $error_message;
+    
 
     function __construct()
     {
@@ -376,7 +377,7 @@ class Awaiting extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->load->library(array('zacl', 'j_queue'));
-
+        $this->load->library('providertoxml');
         $qObject = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $token));
         if (empty($qObject))
         {
@@ -526,6 +527,11 @@ class Awaiting extends MY_Controller
 
     private function createProvider(\models\Queue $q)
     {
+        $attrs = $this->em->getRepository("models\Attribute")->findAll();
+        foreach($attrs as $a)
+        {
+            $attributesByName[''.$a->getOid().''] = $a;
+        }
         $d = $q->getData();
         if (!isset($d['metadata']))
         {
@@ -565,6 +571,7 @@ class Awaiting extends MY_Controller
             }
             $entity = new models\Provider;
             $entity->setProviderFromArray(current($entarray), TRUE);
+            $entity->setReqAttrsFromArray(current($entarray),$attributesByName);
             $entity->setActive(TRUE);
             $entity->setStatic(FALSE);
             if (isset($d['federations']))
@@ -667,6 +674,7 @@ class Awaiting extends MY_Controller
         $isAdministrator = $this->j_auth->isAdministrator();
         $this->load->library('zacl');
         $this->load->library('j_queue');
+        
         $message = "";
         $error_message = null;
         $qaction = trim($this->input->post('qaction'));

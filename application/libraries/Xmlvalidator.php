@@ -63,6 +63,7 @@ class Xmlvalidator
                         if ($v instanceof LibXMLError && !empty($v->message))
                         {
                             $this->ci->globalerrors[] = htmlentities($v->message);
+                            log_message('warning', __METHOD__ . ' validation metadata : '.htmlentities($v->message));
                         }
                     }
                 }
@@ -126,7 +127,7 @@ class Xmlvalidator
             else
             {
                 $this->ci->globalerrors[] = 'Metada validation : not valid with schema';
-                log_message('warning', __METHOD__ . ' validated metadata is not with schema');
+                log_message('warning', __METHOD__ . ' validated metadata is not with schema: ');
             }
         }
         \log_message('debug', __METHOD__ . ' end');

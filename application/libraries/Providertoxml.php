@@ -54,7 +54,7 @@ class Providertoxml {
                 'ns' => 'init',
             ),
             'DiscoveryResponse' => array(
-                'name' => 'RequestInitiator',
+                'name' => 'DiscoveryResponse',
                 'isorder' => 1,
                 'ns' => 'idpdisc',
             ),
@@ -82,7 +82,9 @@ class Providertoxml {
         {
             $this->isGenIdFnExist = false;
         }
-        if (!empty($this->ci->config->item('registrationAutority')) && !empty($this->ci->config->item('load_registrationAutority')))
+        $registrationAutority = $this->ci->config->item('registrationAutority');
+        $load_registrationAutority = $this->ci->config->item('load_registrationAutority');
+        if (!empty($registrationAutority) && !empty($load_registrationAutority))
         {
             $this->useGlobalRegistrar = true;
             $this->globalRegistrar = $this->ci->config->item('registrationAutority');
@@ -108,7 +110,6 @@ class Providertoxml {
     {
         
     }
-
 
     private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent)
     {
@@ -214,12 +215,12 @@ class Providertoxml {
         $contacts = $ent->getContacts();
         foreach ($contacts as $c)
         {
-            $givenName = $c->getGivenName();
+            $givenName = $c->getGivenname();
             $surName = $c->getSurname();
             $email = $c->getEmail();
             $xml->startElementNs('md', 'ContactPerson', null);
             $xml->writeAttribute('contactType', $c->getType());
-            if (empty($givenName))
+            if (!empty($givenName))
             {
                 $xml->startElementNs('md', 'GivenName', null);
                 $xml->text($givenName);
@@ -333,7 +334,7 @@ class Providertoxml {
 
     private function createDiscoHints(\XMLWriter $xml, \models\Provider $ent, $role)
     {
-       
+
         // @todo filtering collection
         $extMetada = $ent->getExtendMetadata();
         $extarray = array();
@@ -405,6 +406,7 @@ class Providertoxml {
             {
                 $xml->writeAttribute('use', $certUse);
             }
+            $xml->startElementNs('ds', 'KeyInfo', null);
             if (!empty($keyName))
             {
                 $keynames = explode(',', $keyName);
@@ -420,10 +422,10 @@ class Providertoxml {
                 $xml->startElementNs('ds', 'X509Data', null);
                 $xml->startElementNs('ds', 'X509Certificate', null);
                 $xml->text($certBody);
-                $xml->endElement();
-                $xml->endElement();
+                $xml->endElement(); //X509Certificate
+                $xml->endElement(); //X509Data
             }
-
+            $xml->endElement(); // KeyInfo
             $xml->endElement(); //KeyDescriptor
         }
 
@@ -432,11 +434,21 @@ class Providertoxml {
 
     private function createAttributeConsumingService(\XMLWriter $xml, $ent, $options)
     {
-        $requiredAttributes = $ent->getAttributesRequirement();
-        if ($requiredAttributes->count() == 0 && count($options['fedreqattrs']) == 0)
+        $reqColl = $ent->getAttributesRequirement();
+        $requiredAttributes = array();
+        foreach ($reqColl as $reqAttr)
+        {
+            $toShow = $reqAttr->getAttribute()->showInMetadata();
+            if ($toShow)
+            {
+                $requiredAttributes['' . $reqAttr->getAttribute()->getId() . ''] = $reqAttr;
+            }
+        }
+        if (count($requiredAttributes) == 0 && (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0))
         {
             return $xml;
         }
+
         $xml->startElementNs('md', 'AttributeConsumingService', null);
         $xml->writeAttribute('index', '0');
         $doFilter1 = array('DisplayName', 'Description');
@@ -482,7 +494,7 @@ class Providertoxml {
                 $xml->endElement();
             }
         }
-        if ($requiredAttributes->count() > 0)
+        if (count($requiredAttributes) > 0)
         {
             foreach ($requiredAttributes as $attr)
             {
@@ -584,13 +596,13 @@ class Providertoxml {
     {
         $doFilter = array('IDPAttributeService');
         $services = $ent->getServiceLocations()->filter(
-                function($entry) use ($doFilter)
+                function(models\ServiceLocation $entry) use ($doFilter)
         {
             return in_array($entry->getType(), $doFilter);
         });
         $doCertFilter = array('aa');
         $certificates = $ent->getCertificates()->filter(
-                function($entry) use ($doCertFilter)
+                function(models\Certificate $entry) use ($doCertFilter)
         {
             return in_array($entry->getType(), $doCertFilter);
         });
@@ -679,7 +691,6 @@ class Providertoxml {
         }
 
         $this->createUIIInfo($xml, $ent, 'sp');
-        $this->createDiscoHints($xml, $ent, 'sp');
         $xml->endElement(); //Extensions
 
         $this->createCerts($xml, $certificates);
@@ -691,16 +702,16 @@ class Providertoxml {
         {
             $xml->startElementNs('md', 'NameIDFormat', null);
             $xml->text($nameid);
-            $xml->endElement();
+            $xml->endElement(); //NameIDFormat
         }
-
-        $xml->endElement(); //SPSSODescriptor
         $this->createServiceLocations($xml, $srvsByType['AssertionConsumerService']);
-        if ($options['attrs'] == 0)
+
+
+        if ($options['attrs'] != 0)
         {
-            return $xml;
+            $this->createAttributeConsumingService($xml, $ent, $options);
         }
-        $this->createAttributeConsumingService($xml, $ent, $options);
+        $xml->endElement(); //SPSSODescriptor
         return $xml;
     }
 
@@ -786,9 +797,21 @@ class Providertoxml {
         return TRUE;
     }
 
-    public function entityConvert(\XMLWriter $xml, \models\Provider $ent, $options)
+    // if $doCacheId is set it saves entiy in cache with key = ${systemprefix}.$doCacheId
+    public function entityConvert(\XMLWriter $xmlOut, \models\Provider $ent, $options, $doCacheId = null)
     {
 
+        if (!$doCacheId)
+        {
+            $xml = $xmlOut;
+        }
+        else
+        {
+            $xml = new XMLWriter();
+            $xml->openMemory();
+            $xml->setIndent(true);
+            $xml->setIndentString(' ');
+        }
         $type = $ent->getType();
         $hasIdpRole = FALSE;
         $hasSpRole = FALSE;
@@ -843,9 +866,9 @@ class Providertoxml {
         {
             $xml->writeAttribute('validUntil', $valiUntil->format('Y-m-d\TH:i:s\Z'));
         }
-// entity exitension start
+        // entity exitension start
         $this->createEntityExtensions($xml, $ent);
-// entity ext end
+        // entity ext end
 
         foreach ($rolesFns as $fn)
         {
@@ -863,19 +886,31 @@ class Providertoxml {
         $this->createContacts($xml, $ent);
 
         $xml->endElement();
-        return $xml;
+        if (!$doCacheId)
+        {
+            return $xml;
+        }
+        else
+        {
+            $entityPart = $xml->outputMemory();
+            
+            $this->ci->cache->save($doCacheId, $entityPart, 600);
+            $xmlOut->writeRaw($entityPart);
+            return $xmlOut;
+        }
     }
 
-    private function createXMLDocument()
+    public function createXMLDocument()
     {
         $xml = new XMLWriter();
         $xml->openMemory();
         $xml->setIndent(true);
         $xml->setIndentString(' ');
-        return $xlm;
+        $xml->startDocument('1.0', 'UTF-8');
+        return $xml;
     }
 
-    public function entityConvertNewDocument(\models\Provider $ent)
+    public function entityConvertNewDocument(\models\Provider $ent, $options, $outputXML = false)
     {
         $type = $ent->getType();
         $hasIdpRole = FALSE;
@@ -958,8 +993,14 @@ class Providertoxml {
 
         $xml->endElement();
         $xml->endDocument();
-        return $xml;
-     
+        if ($outputXML)
+        {
+            return $xml->outputMemory();
+        }
+        else
+        {
+            return $xml;
+        }
     }
 
     public function entityStaticConvert(\XMLWriter $xml, \models\Provider $ent)
