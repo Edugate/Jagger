@@ -12,8 +12,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *
  * @author janul
  */
-class Providertoxml
-{
+class Providertoxml {
 
     private $ci;
     private $em;
@@ -121,7 +120,8 @@ class Providertoxml
         }
         $doFilter = array(TRUE);
         $cocs = $ent->getCoc()->filter(
-                function(models\Coc $entry) use ($doFilter) {
+                function(models\Coc $entry) use ($doFilter)
+        {
             return in_array($entry->getAvailable(), $doFilter);
         }
         );
@@ -422,8 +422,8 @@ class Providertoxml
                 $xml->startElementNs('ds', 'X509Data', null);
                 $xml->startElementNs('ds', 'X509Certificate', null);
                 $xml->text($certBody);
-                $xml->endElement();//X509Certificate
-                $xml->endElement();//X509Data
+                $xml->endElement(); //X509Certificate
+                $xml->endElement(); //X509Data
             }
             $xml->endElement(); // KeyInfo
             $xml->endElement(); //KeyDescriptor
@@ -436,24 +436,25 @@ class Providertoxml
     {
         $reqColl = $ent->getAttributesRequirement();
         $requiredAttributes = array();
-        foreach($reqColl as $reqAttr)
+        foreach ($reqColl as $reqAttr)
         {
-            $toShow  = $reqAttr->getAttribute()->showInMetadata();
-            if($toShow)
+            $toShow = $reqAttr->getAttribute()->showInMetadata();
+            if ($toShow)
             {
-                $requiredAttributes[''.$reqAttr->getAttribute()->getId().''] = $reqAttr;
+                $requiredAttributes['' . $reqAttr->getAttribute()->getId() . ''] = $reqAttr;
             }
         }
         if (count($requiredAttributes) == 0 && (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0))
         {
             return $xml;
         }
-        
+
         $xml->startElementNs('md', 'AttributeConsumingService', null);
         $xml->writeAttribute('index', '0');
         $doFilter1 = array('DisplayName', 'Description');
         $extendMeta = $ent->getExtendMetadata()->filter(
-                function(models\ExtendMetadata $entry) use ($doFilter1) {
+                function(models\ExtendMetadata $entry) use ($doFilter1)
+        {
             return in_array($entry->getElement(), $doFilter1);
         }
         );
@@ -527,7 +528,8 @@ class Providertoxml
 
         $doFilter = array('SingleSignOnService', 'IDPSingleLogoutService', 'IDPArtifactResolutionService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter) {
+                function(models\ServiceLocation $entry) use ($doFilter)
+        {
             return in_array($entry->getType(), $doFilter);
         }
         );
@@ -545,7 +547,8 @@ class Providertoxml
          */
         $doCertFilter = array('idpsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter) {
+                function(models\Certificate $entry) use ($doCertFilter)
+        {
             return in_array($entry->getType(), $doCertFilter);
         }
         );
@@ -593,12 +596,14 @@ class Providertoxml
     {
         $doFilter = array('IDPAttributeService');
         $services = $ent->getServiceLocations()->filter(
-                function($entry) use ($doFilter) {
+                function($entry) use ($doFilter)
+        {
             return in_array($entry->getType(), $doFilter);
         });
         $doCertFilter = array('aa');
         $certificates = $ent->getCertificates()->filter(
-                function($entry) use ($doCertFilter) {
+                function($entry) use ($doCertFilter)
+        {
             return in_array($entry->getType(), $doCertFilter);
         });
         if (count($certificates) == 0 || count($services) == 0)
@@ -658,13 +663,15 @@ class Providertoxml
             'SPArtifactResolutionService' => array());
         $doFilter = array_keys($srvsByType);
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter) {
+                function(models\ServiceLocation $entry) use ($doFilter)
+        {
             return in_array($entry->getType(), $doFilter);
         }
         );
         $doCertFilter = array('spsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter) {
+                function(models\Certificate $entry) use ($doCertFilter)
+        {
             return in_array($entry->getType(), $doCertFilter);
         }
         );
@@ -748,7 +755,8 @@ class Providertoxml
     {
         $doFilter = array('AssertionConsumerService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter) {
+                function(models\ServiceLocation $entry) use ($doFilter)
+        {
             return in_array($entry->getType(), $doFilter);
         }
         );
@@ -764,7 +772,8 @@ class Providertoxml
     {
         $doFilter = array('SingleSignOnService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter) {
+                function(models\ServiceLocation $entry) use ($doFilter)
+        {
             return in_array($entry->getType(), $doFilter);
         }
         );
@@ -775,7 +784,8 @@ class Providertoxml
         }
         $doCertFilter = array('idpsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter) {
+                function(models\Certificate $entry) use ($doCertFilter)
+        {
             return in_array($entry->getType(), $doCertFilter);
         }
         );
@@ -788,9 +798,21 @@ class Providertoxml
         return TRUE;
     }
 
-    public function entityConvert(\XMLWriter $xml, \models\Provider $ent, $options, $doCache=false)
+    // if $doCacheId is set it saves entiy in cache with key = ${systemprefix}.$doCacheId
+    public function entityConvert(\XMLWriter $xmlOut, \models\Provider $ent, $options, $doCacheId = null)
     {
 
+        if (!$doCacheId)
+        {
+            $xml = $xmlOut;
+        }
+        else
+        {
+            $xml = new XMLWriter();
+            $xml->openMemory();
+            $xml->setIndent(true);
+            $xml->setIndentString(' ');
+        }
         $type = $ent->getType();
         $hasIdpRole = FALSE;
         $hasSpRole = FALSE;
@@ -845,9 +867,9 @@ class Providertoxml
         {
             $xml->writeAttribute('validUntil', $valiUntil->format('Y-m-d\TH:i:s\Z'));
         }
-// entity exitension start
+        // entity exitension start
         $this->createEntityExtensions($xml, $ent);
-// entity ext end
+        // entity ext end
 
         foreach ($rolesFns as $fn)
         {
@@ -865,7 +887,18 @@ class Providertoxml
         $this->createContacts($xml, $ent);
 
         $xml->endElement();
-        return $xml;
+        if (!$doCacheId)
+        {
+            return $xml;
+        }
+        else
+        {
+            $entityPart = $xml->outputMemory();
+            
+            $this->ci->cache->save($doCacheId, $entityPart, 600);
+            $xmlOut->writeRaw($entityPart);
+            return $xmlOut;
+        }
     }
 
     public function createXMLDocument()

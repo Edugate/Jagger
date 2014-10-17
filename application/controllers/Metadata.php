@@ -808,27 +808,14 @@ class Metadata extends MY_Controller {
         {
 
             $cacheId = 'mcircle_' . $valueMember->getId() . '';
-            $metadataCached = $this->cache->get($cacheId);
-
+            $metadataCached = $this->cache->get($cacheId);          
             $xmlOut->startComment();
             $xmlOut->text($valueMember->getEntityId());
             if (!empty($metadataCached))
             {
                 $xmlOut->text(PHP_EOL . 'from cache' . PHP_EOL);
                 $xmlOut->endComment();
-                $z = new XMLReader();
-                $z->XML($metadataCached);
-                while ($z->read())
-                {
-                    if ($z->nodeType == XMLReader::ELEMENT &&
-                            ($z->name === 'md:EntityDescriptor' || $z->name === 'EntityDescriptor'))
-                    {
-
-                        $xmlOut->writeRaw($z->readInnerXml());
-                        break;
-                    }
-                }
-                $z->close();
+                $xmlOut->writeRaw($metadataCached);
             }
             else
             {
@@ -842,7 +829,7 @@ class Metadata extends MY_Controller {
                 else
                 {
                     $xmlOut->endComment();
-                    $this->providertoxml->entityConvert($xmlOut, $valueMember, $options);
+                    $this->providertoxml->entityConvert($xmlOut, $valueMember, $options, $cacheId);
                 }
             }
             unset($members[$keyMember]);
