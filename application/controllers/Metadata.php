@@ -31,6 +31,8 @@ class Metadata extends MY_Controller {
         {
             $this->useNewMetagen = true;
         }
+        $keyPrefix = getCachePrefix();
+        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
     }
 
     public function federation($federationName = NULL, $t = NULL)
@@ -144,8 +146,26 @@ class Metadata extends MY_Controller {
         }
         foreach ($members as $k => $m)
         {
+            $cacheId = null;
+            $mtype = $m->getType();
+
             $xmlOut->startComment();
             $xmlOut->text($m->getEntityId());
+
+            if (strcmp($mtype, 'IDP') == 0)
+            {
+                $xmlOut->endComment();
+                $cacheId = 'mcircle_' . $m->getId();
+                $metadataCached = $this->cache->get($cacheId);
+                if (!empty($metadataCached))
+                {
+                    $xmlOut->writeRaw($metadataCached);
+                    unset($members[$k]);
+                    continue;
+                }
+            }
+
+
             if ($m->isStaticMetadata())
             {
                 $xmlOut->text(PHP_EOL . 'static' . PHP_EOL);
@@ -155,7 +175,7 @@ class Metadata extends MY_Controller {
             else
             {
                 $xmlOut->endComment();
-                $this->providertoxml->entityConvert($xmlOut, $m, $options);
+                $this->providertoxml->entityConvert($xmlOut, $m, $options,$cacheId);
             }
             unset($members[$k]);
         }
@@ -776,8 +796,7 @@ class Metadata extends MY_Controller {
         {
             $excludeType = $mtype;
         }
-        $keyPrefix = getCachePrefix();
-        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
+
         $cacheId = 'circlemeta_' . $me->getId();
         $options['attrs'] = 1;
         $p = new models\Providers;
@@ -822,7 +841,7 @@ class Metadata extends MY_Controller {
             $xmlOut->text($valueMember->getEntityId());
             if (!empty($metadataCached))
             {
-                $xmlOut->text(PHP_EOL . 'from cache' . PHP_EOL);
+
                 $xmlOut->endComment();
                 $xmlOut->writeRaw($metadataCached);
             }
@@ -888,8 +907,6 @@ class Metadata extends MY_Controller {
             show_error($me->getEntityId() . ': This is not managed localy. Cannot generate circle metadata', 403);
             return;
         }
-        $keyPrefix = getCachePrefix();
-        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
         $cacheId = 'circlemeta_' . $me->getId();
         $options['attrs'] = 1;
         $p = new models\Providers;
