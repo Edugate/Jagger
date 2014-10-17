@@ -31,8 +31,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * @Table(name="provider",indexes={@Index(name="type_idx", columns={"type"}),@Index(name="pname_idx", columns={"name"}),@Index(name="islocal_idx", columns={"is_local"})})
  * @author janusz
  */
-class Provider
-{
+class Provider {
 
     protected $em;
     protected $logo_url;
@@ -1307,7 +1306,8 @@ class Provider
     {
         $doFilter['federation_id'] = array('' . $federation->getId() . '');
         $membership = $this->getMembership()->filter(
-                function($entry) use($doFilter) {
+                function($entry) use($doFilter)
+        {
             return (in_array($entry->getFederation()->getId(), $doFilter['federation_id']));
         }
         );
@@ -1327,7 +1327,8 @@ class Provider
 
         $doFilter['federation_id'] = array('' . $federation->getId() . '');
         $membership = $this->getMembership()->filter(
-                function($entry) use($doFilter) {
+                function($entry) use($doFilter)
+        {
             return (in_array($entry->getFederation()->getId(), $doFilter['federation_id']));
         }
         );
@@ -2794,12 +2795,14 @@ class Provider
         $this->ci = & get_instance();
         $doFilter = array('IDPAttributeService');
         $services = $this->getServiceLocations()->filter(
-                function($entry) use ($doFilter) {
+                function($entry) use ($doFilter)
+        {
             return in_array($entry->getType(), $doFilter);
         });
         $doCertFilter = array('aa');
         $certs = $this->getCertificates()->filter(
-                function($entry) use ($doCertFilter) {
+                function($entry) use ($doCertFilter)
+        {
             return in_array($entry->getType(), $doCertFilter);
         });
 
@@ -3095,13 +3098,6 @@ class Provider
         {
             $Extensions_Node->appendChild($UIInfo_Node);
         }
-      //  $DiscoHints_Node = $this->getMduiDiscoHintToXML($Extensions_Node, 'sp');
-      //  if (!empty($DiscoHints_Node))
-      //  {
-      //      $Extensions_Node->appendChild($DiscoHints_Node);
-      //  }
-
-
 
         foreach ($this->getCertificates() as $cert)
         {
@@ -3177,14 +3173,14 @@ class Provider
                 foreach ($sp_reqattrs->getValues() as $v)
                 {
                     $reqattr = $v->getAttribute();
-                    if(!empty($reqattr))
+                    if (!empty($reqattr))
                     {
-                       $in = $reqattr->showInMetadata();
-                       if ($in === FALSE)
-                       {
+                        $in = $reqattr->showInMetadata();
+                        if ($in === FALSE)
+                        {
 
-                        $sp_reqattrs->removeElement($v);
-                      }
+                            $sp_reqattrs->removeElement($v);
+                        }
                     }
                 }
             }
@@ -3923,7 +3919,7 @@ class Provider
     {
         if (isset($ent['details']['reqattrs']))
         {
-            \log_message('info','DI1');
+            \log_message('info', 'DI1');
             $attrsset = array();
             foreach ($ent['details']['reqattrs'] as $r)
             {
@@ -3945,7 +3941,7 @@ class Provider
                         }
                         $reqattr->setReason('');
                         $this->setAttributesRequirement($reqattr);
-                       // $this->em->persist($reqattr);
+                        // $this->em->persist($reqattr);
                         $attrsset[] = $r['name'];
                     }
                 }

@@ -133,6 +133,15 @@ class Metadata extends MY_Controller {
         {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
+        if (!empty($publisher))
+        {
+            $xmlOut->startElementNs('md', 'Extensions', null);
+            $xmlOut->startElementNs('mdrpi', 'PublicationInfo', null);
+            $xmlOut->writeAttribute('creationInstant', $creationInstant);
+            $xmlOut->writeAttribute('publisher', $publisher);
+            $xmlOut->endElement(); // PublicationInfo
+            $xmlOut->endElement(); // Extensions
+        }
         foreach ($members as $k => $m)
         {
             $xmlOut->startComment();
@@ -808,7 +817,7 @@ class Metadata extends MY_Controller {
         {
 
             $cacheId = 'mcircle_' . $valueMember->getId() . '';
-            $metadataCached = $this->cache->get($cacheId);          
+            $metadataCached = $this->cache->get($cacheId);
             $xmlOut->startComment();
             $xmlOut->text($valueMember->getEntityId());
             if (!empty($metadataCached))

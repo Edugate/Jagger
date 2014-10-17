@@ -596,13 +596,13 @@ class Providertoxml {
     {
         $doFilter = array('IDPAttributeService');
         $services = $ent->getServiceLocations()->filter(
-                function($entry) use ($doFilter)
+                function(models\ServiceLocation $entry) use ($doFilter)
         {
             return in_array($entry->getType(), $doFilter);
         });
         $doCertFilter = array('aa');
         $certificates = $ent->getCertificates()->filter(
-                function($entry) use ($doCertFilter)
+                function(models\Certificate $entry) use ($doCertFilter)
         {
             return in_array($entry->getType(), $doCertFilter);
         });
@@ -691,7 +691,6 @@ class Providertoxml {
         }
 
         $this->createUIIInfo($xml, $ent, 'sp');
-        //$this->createDiscoHints($xml, $ent, 'sp');
         $xml->endElement(); //Extensions
 
         $this->createCerts($xml, $certificates);
