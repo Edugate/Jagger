@@ -684,7 +684,7 @@ class Providertoxml
         }
 
         $this->createUIIInfo($xml, $ent, 'sp');
-        $this->createDiscoHints($xml, $ent, 'sp');
+        //$this->createDiscoHints($xml, $ent, 'sp');
         $xml->endElement(); //Extensions
 
         $this->createCerts($xml, $certificates);
