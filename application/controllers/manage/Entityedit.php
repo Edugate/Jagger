@@ -598,7 +598,6 @@ class Entityedit extends MY_Controller {
         }
         $n = 'entform' . $id;
         $this->session->set_userdata($n, $data);
-        //   print_r($data);
     }
 
     private function getFromDraft($id)
@@ -866,7 +865,6 @@ class Entityedit extends MY_Controller {
                                             $reqattr = new models\AttributeRequirement;
                                             $reqattr->setAttribute($attributes['' . $r['name'] . '']);
                                             $reqattr->setType('SP');
-                                            //$reqattr->setSP($ent);
                                             if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0)
                                             {
                                                 $reqattr->setStatus('required');

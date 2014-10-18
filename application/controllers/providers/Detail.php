@@ -1039,16 +1039,9 @@ class Detail extends MY_Controller {
          * end certs
          */
         $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
-
-
-      //  $xmldata = $ent->getProviderToXML($parent = null, array('attrs' => 1));
         $xmldata = $this->providertoxml->entityConvertNewDocument($ent,array('attrs' => 1),TRUE);
         if (!empty($xmldata))
         {
-
-
-          //  $xmldata->formatOutput = true;
-          //  $xmlToHtml = $xmldata->saveXML();
             $xmlToHtml = $xmldata;
         }
         $xmlmetatitle = '<img src="' . base_url() . 'images/jicons/xml3.svg" style="height: 20px"/> ';

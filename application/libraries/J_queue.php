@@ -427,9 +427,6 @@ class J_queue
                     $objData->setProviderFromArray(current($entarray), TRUE);
                     $objData->setReqAttrsFromArray(current($entarray),$this->attributesByName);
                     $metadataXML = $this->ci->providertoxml->entityConvertNewDocument($objData, array('attrs'=>1), true);
-                   // $y = $objData->getProviderToXML();
-                   // $y->formatOutput = true;
-                   // $metadataXML = $y->saveXML();
                     $showXML = TRUE;
                 }
             }
