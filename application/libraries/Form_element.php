@@ -1145,7 +1145,6 @@ class Form_element
         {
             return null;
         }
-        $entid = $ent->getId();
         $sessform = FALSE;
         if (!empty($ses) && is_array($ses))
         {
@@ -1625,10 +1624,6 @@ class Form_element
             $idpssonotice = '';
             if ($sessform && isset($ses['prot']['idpsso']) && is_array($ses['prot']['idpsso']))
             {
-                if (count(array_diff($ses['prot']['idpsso'], $idpssoprotocols)) > 0 || count(array_diff($idpssoprotocols, $ses['prot']['idpsso'])) > 0)
-                {
-                    $idpssonotice = 'notice';
-                }
                 foreach ($ses['prot']['idpsso'] as $v)
                 {
                     $selected_options[$v] = $v;

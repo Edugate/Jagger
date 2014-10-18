@@ -3941,7 +3941,6 @@ class Provider {
                         }
                         $reqattr->setReason('');
                         $this->setAttributesRequirement($reqattr);
-                        // $this->em->persist($reqattr);
                         $attrsset[] = $r['name'];
                     }
                 }
