@@ -31,7 +31,8 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * @Table(name="provider",indexes={@Index(name="type_idx", columns={"type"}),@Index(name="pname_idx", columns={"name"}),@Index(name="islocal_idx", columns={"is_local"})})
  * @author janusz
  */
-class Provider {
+class Provider
+{
 
     protected $em;
     protected $logo_url;
@@ -1072,7 +1073,7 @@ class Provider {
         return $this;
     }
 
-    public function setRegistrationDate($date = null)
+    public function setRegistrationDate(\DateTime $date = null)
     {
         if (empty($date))
         {
@@ -1306,8 +1307,7 @@ class Provider {
     {
         $doFilter['federation_id'] = array('' . $federation->getId() . '');
         $membership = $this->getMembership()->filter(
-                function($entry) use($doFilter)
-        {
+                function(FederationMembers $entry) use($doFilter) {
             return (in_array($entry->getFederation()->getId(), $doFilter['federation_id']));
         }
         );
@@ -1327,8 +1327,7 @@ class Provider {
 
         $doFilter['federation_id'] = array('' . $federation->getId() . '');
         $membership = $this->getMembership()->filter(
-                function($entry) use($doFilter)
-        {
+                function(FederationMembers $entry) use($doFilter) {
             return (in_array($entry->getFederation()->getId(), $doFilter['federation_id']));
         }
         );
@@ -1550,7 +1549,7 @@ class Provider {
         return $this;
     }
 
-    private function removeExtendWithChildren($e)
+    private function removeExtendWithChildren(ExtendMetadata $e)
     {
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
@@ -2795,14 +2794,12 @@ class Provider {
         $this->ci = & get_instance();
         $doFilter = array('IDPAttributeService');
         $services = $this->getServiceLocations()->filter(
-                function($entry) use ($doFilter)
-        {
+                function(ServiceLocation $entry) use ($doFilter) {
             return in_array($entry->getType(), $doFilter);
         });
         $doCertFilter = array('aa');
         $certs = $this->getCertificates()->filter(
-                function($entry) use ($doCertFilter)
-        {
+                function(Certificate $entry) use ($doCertFilter) {
             return in_array($entry->getType(), $doCertFilter);
         });
 
