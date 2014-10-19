@@ -59,7 +59,6 @@ class Metadata extends MY_Controller
         $name = $federationName;
         if (!empty($t) && ((strcasecmp($t, 'SP') == 0) || (strcasecmp($t, 'IDP') == 0) ))
         {
-            $type = strtoupper($t);
             if (strcasecmp($t, 'SP') == 0)
             {
                 $excludeType = 'IDP';

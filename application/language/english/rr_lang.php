@@ -173,7 +173,7 @@ $lang['DisplayName']                = 'DisplayName';
 $lang['Description']                = 'Description';
 $lang['PrivacyStatementURL']        = 'PrivacyStatementURL';
 $lang['InformationURL']             = 'InformationURL';
-
+$lang['rrjustifyreqattr']            = 'justify the requirement';
 $lang['rr_provdesc']                = 'Provider Description';
 $lang['rr_management']              = 'Management';
 $lang['attrsdeflist']               = 'Attributes definitions';

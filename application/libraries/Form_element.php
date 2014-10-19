@@ -1186,7 +1186,7 @@ class Form_element
                 $z .= form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $rstatus);
                 $z .='</div>';
                 $z .= '<div class="medium-6 columns">';
-                $z .='<textarea name="f[reqattr][' . $rid . '][reason]">' . $req->getReason() . '</textarea>';
+                $z .='<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="'.lang('rrjustifyreqattr').'">' . $req->getReason() . '</textarea>';
 
                 $z .= '</div>';
                 $z .='<div class="medium-3 columns end"></div>';
