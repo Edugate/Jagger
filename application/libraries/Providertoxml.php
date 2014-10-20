@@ -561,18 +561,28 @@ class Providertoxml {
         $xml->startElementNs('md', 'IDPSSODescriptor', null);
         $xml->writeAttribute('protocolSupportEnumeration', $protocolEnum);
 
-        $xml->startElementNs('md', 'Extensions', null);
+        $extXML = new XMLWriter();
+        $extXML->openMemory();
+
+
+
         foreach ($scopes as $scope)
         {
-            $xml->startElementNs('shibmd', 'Scope', null);
-            $xml->writeAttribute('regexp', 'false');
-            $xml->text($scope);
-            $xml->endElement();
+            $extXML->startElementNs('shibmd', 'Scope', null);
+            $extXML->writeAttribute('regexp', 'false');
+            $extXML->text($scope);
+            $extXML->endElement();
         }
-        $this->createUIIInfo($xml, $ent, 'idp');
-        $this->createDiscoHints($xml, $ent, 'idp');
-        $xml->endElement(); // end md:Extensions
+        $this->createUIIInfo($extXML, $ent, 'idp');
+        $this->createDiscoHints($extXML, $ent, 'idp');
+        $extXMLoutput = $extXML->outputMemory();
+        if (!empty($extXMLoutput))
+        {
 
+            $xml->startElementNs('md', 'Extensions', null);
+            $xml->writeRaw($extXMLoutput);
+            $xml->endElement(); // end md:Extensions
+        }
 
         $this->createCerts($xml, $certificates);
 
@@ -684,15 +694,23 @@ class Providertoxml {
         $xml->startElementNs('md', 'SPSSODescriptor', null);
         $xml->writeAttribute('protocolSupportEnumeration', $protocolEnum);
 
-        $xml->startElementNs('md', 'Extensions', null);
+        $extXML = new XMLWriter();
+        $extXML->openMemory();
+
         foreach (array('RequestInitiator', 'DiscoveryResponse') as $srvtype)
         {
-            $this->createServiceLocations($xml, $srvsByType[$srvtype]);
+            $this->createServiceLocations($extXML, $srvsByType[$srvtype]);
         }
 
-        $this->createUIIInfo($xml, $ent, 'sp');
-        $xml->endElement(); //Extensions
+        $this->createUIIInfo($extXML, $ent, 'sp');
 
+        $extXMLoutput = $extXML->outputMemory();
+        if (!empty($extXMLoutput))
+        {
+            $xml->startElementNs('md', 'Extensions', null);
+            $xml->writeRaw($extXMLoutput);
+            $xml->endElement(); //Extensions
+        }
         $this->createCerts($xml, $certificates);
 
         $this->createServiceLocations($xml, $srvsByType['SPArtifactResolutionService']);
@@ -893,7 +911,7 @@ class Providertoxml {
         else
         {
             $entityPart = $xml->outputMemory();
-            
+
             $this->ci->cache->save($doCacheId, $entityPart, 600);
             $xmlOut->writeRaw($entityPart);
             return $xmlOut;
