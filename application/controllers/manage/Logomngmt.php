@@ -54,7 +54,6 @@ class Logomngmt extends MY_Controller
         $local = $provider->getLocal();
         $canEdit = (boolean) ($has_write_access && $unlocked && $local);
         $attributes = array('class' => 'span-16', 'id' => 'assignedlogos');
-        $target_url = base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id;
         $existing_logos = $this->em->getRepository("models\ExtendMetadata")->findBy(array('etype' => $type, 'namespace' => 'mdui', 'element' => 'Logo', 'provider' => $id));
 
         $count_existing_logos = count($existing_logos);
