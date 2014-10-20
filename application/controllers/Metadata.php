@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * Jagger
  * 
@@ -18,7 +17,8 @@ if (!defined('BASEPATH'))
  * @package     Jagger
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Metadata extends MY_Controller {
+class Metadata extends MY_Controller
+{
 
     private $useNewMetagen = false;
 
@@ -59,7 +59,6 @@ class Metadata extends MY_Controller {
         $name = $federationName;
         if (!empty($t) && ((strcasecmp($t, 'SP') == 0) || (strcasecmp($t, 'IDP') == 0) ))
         {
-            $type = strtoupper($t);
             if (strcasecmp($t, 'SP') == 0)
             {
                 $excludeType = 'IDP';
@@ -69,11 +68,6 @@ class Metadata extends MY_Controller {
                 $excludeType = 'SP';
             }
         }
-        else
-        {
-            $type = 'all';
-        }
-
         $permitPull = $this->checkAccess();
         if ($permitPull !== TRUE)
         {
@@ -175,7 +169,7 @@ class Metadata extends MY_Controller {
             else
             {
                 $xmlOut->endComment();
-                $this->providertoxml->entityConvert($xmlOut, $m, $options,$cacheId);
+                $this->providertoxml->entityConvert($xmlOut, $m, $options, $cacheId);
             }
             unset($members[$k]);
         }
@@ -336,7 +330,7 @@ class Metadata extends MY_Controller {
         }
     }
 
-    private function federationexportNew($federationName = NULL, $t = NULL)
+    private function federationexportNew($federationName = NULL)
     {
         if (empty($federationName))
         {
@@ -372,7 +366,6 @@ class Metadata extends MY_Controller {
         }
         $termsofuse = $federation->getTou();
         $include_attrs = $federation->getAttrsInmeta();
-        $reqattrs_by_fed = null;
         $options = array('attrs' => 0, 'fedreqattrs' => array());
         if ($include_attrs)
         {
@@ -381,7 +374,7 @@ class Metadata extends MY_Controller {
             $options['fedreqattrs'] = $attrfedreq_tmp->getRequirementsByFed($federation);
         }
         $tmpm = new models\Providers;
-        $members = $tmpm->getActiveFederationmembersForExport($federation, $excludeType);
+        $members = $tmpm->getActiveFederationmembersForExport($federation, null);
         $validfor = new \DateTime("now", new \DateTimezone('UTC'));
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');

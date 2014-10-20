@@ -42,6 +42,8 @@ class MY_Controller extends CI_Controller {
     {
 
         parent::__construct();
+        $this->output->set_header("Pragma: no-cache"); 
+        $this->output->set_header("X-Frame-Options: SAMEORIGIN"); 
         $this->em = $this->doctrine->em;
         $this->title = "";
         $this->lang->load('rr_lang', 'english');

@@ -1145,7 +1145,6 @@ class Form_element
         {
             return null;
         }
-        $entid = $ent->getId();
         $sessform = FALSE;
         if (!empty($ses) && is_array($ses))
         {
@@ -1187,7 +1186,7 @@ class Form_element
                 $z .= form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $rstatus);
                 $z .='</div>';
                 $z .= '<div class="medium-6 columns">';
-                $z .='<textarea name="f[reqattr][' . $rid . '][reason]">' . $req->getReason() . '</textarea>';
+                $z .='<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="'.lang('rrjustifyreqattr').'">' . $req->getReason() . '</textarea>';
 
                 $z .= '</div>';
                 $z .='<div class="medium-3 columns end"></div>';
@@ -1625,10 +1624,6 @@ class Form_element
             $idpssonotice = '';
             if ($sessform && isset($ses['prot']['idpsso']) && is_array($ses['prot']['idpsso']))
             {
-                if (count(array_diff($ses['prot']['idpsso'], $idpssoprotocols)) > 0 || count(array_diff($idpssoprotocols, $ses['prot']['idpsso'])) > 0)
-                {
-                    $idpssonotice = 'notice';
-                }
                 foreach ($ses['prot']['idpsso'] as $v)
                 {
                     $selected_options[$v] = $v;

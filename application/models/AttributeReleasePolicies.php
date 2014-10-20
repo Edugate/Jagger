@@ -269,7 +269,7 @@ class AttributeReleasePolicies
         return $policies;
     }
 
-    public function getCustomSpArp($idp, $sp)
+    public function getCustomSpArp(Provider $idp, Provider $sp)
     {
         $arp = $this->em->getRepository("models\AttributeReleasePolicy")->findBy(array(
             'idp' => $idp->getId(),
@@ -278,7 +278,7 @@ class AttributeReleasePolicies
         return $arp;
     }
 
-    public function getCustomSpArpByAttribute($idp, $sp, $attr)
+    public function getCustomSpArpByAttribute(Provider $idp, Provider $sp, Attribute $attr)
     {
         $arp = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array(
             'idp' => $idp->getId(),

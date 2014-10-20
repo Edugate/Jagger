@@ -432,7 +432,7 @@ class Providertoxml {
         return $xml;
     }
 
-    private function createAttributeConsumingService(\XMLWriter $xml, $ent, $options)
+    private function createAttributeConsumingService(\XMLWriter $xml, \models\Provider $ent, $options)
     {
         $reqColl = $ent->getAttributesRequirement();
         $requiredAttributes = array();
@@ -733,7 +733,7 @@ class Providertoxml {
         return $xml;
     }
 
-    private function createOrganization(\XMLWriter $xml, \models\Provider $ent)
+    private function createOrganization(\XMLWriter $xml, models\Provider $ent)
     {
         $lorgnames = array_filter($ent->getMergedLocalName());
         $ldorgnames = array_filter($ent->getMergedLocalDisplayName());
@@ -768,8 +768,9 @@ class Providertoxml {
         return $xml;
     }
 
-    private function verifySP($ent)
+    private function verifySP(models\Provider $ent)
     {
+        log_message('info','DUPA:'.get_class($ent));
         $doFilter = array('AssertionConsumerService');
         $serviceLocations = $ent->getServiceLocations()->filter(
                 function(models\ServiceLocation $entry) use ($doFilter)
@@ -785,7 +786,7 @@ class Providertoxml {
         return TRUE;
     }
 
-    private function verifyIdP($ent)
+    private function verifyIdP(\models\Provider $ent)
     {
         $doFilter = array('SingleSignOnService');
         $serviceLocations = $ent->getServiceLocations()->filter(
