@@ -144,15 +144,15 @@ class Metadata extends MY_Controller
             $mtype = $m->getType();
 
             $xmlOut->startComment();
-            $xmlOut->text($m->getEntityId());
+            $xmlOut->text(PHP_EOL.$m->getEntityId().PHP_EOL);
 
             if (strcmp($mtype, 'IDP') == 0)
             {
-                $xmlOut->endComment();
                 $cacheId = 'mcircle_' . $m->getId();
                 $metadataCached = $this->cache->get($cacheId);
                 if (!empty($metadataCached))
                 {
+                    $xmlOut->endComment();
                     $xmlOut->writeRaw($metadataCached);
                     unset($members[$k]);
                     continue;
@@ -162,7 +162,7 @@ class Metadata extends MY_Controller
 
             if ($m->isStaticMetadata())
             {
-                $xmlOut->text(PHP_EOL . 'static' . PHP_EOL);
+                $xmlOut->text('static'.PHP_EOL );
                 $xmlOut->endComment();
                 $this->providertoxml->entityStaticConvert($xmlOut, $m);
             }

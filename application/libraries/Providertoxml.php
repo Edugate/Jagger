@@ -563,6 +563,8 @@ class Providertoxml {
 
         $extXML = new XMLWriter();
         $extXML->openMemory();
+        $extXML->setIndent(true);
+        $extXML->setIndentString(' ');
 
 
 
@@ -580,7 +582,7 @@ class Providertoxml {
         {
 
             $xml->startElementNs('md', 'Extensions', null);
-            $xml->writeRaw($extXMLoutput);
+            $xml->writeRaw(PHP_EOL.$extXMLoutput.PHP_EOL);
             $xml->endElement(); // end md:Extensions
         }
 
