@@ -265,6 +265,12 @@ class Queue {
         return unserialize($this->objdata);
     }
 
+    public function getCN() {
+        $data = unserialize($this->objdata);
+        $cn = $data['fname'] . " " . $data['sname'];
+        return $cn;
+    }
+
     public function getName() {
         return $this->name;
     }
