@@ -270,11 +270,11 @@ class Queue {
         $cn = '';
         if(array_key_exists('fname',$data))
         {
-           $cn .= $data['fname'];
+           $cn .= $data['fname'] . " ";
         }
         if(array_key_exists('sname',$data))
         {
-           $cn = $data['fname'] . " " . $data['sname'];
+           $cn .= $data['sname'];
         }
         return $cn;
     }
