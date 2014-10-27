@@ -265,6 +265,20 @@ class Queue {
         return unserialize($this->objdata);
     }
 
+    public function getCN() {
+        $data = unserialize($this->objdata);
+        $cn = '';
+        if(array_key_exists('fname',$data))
+        {
+           $cn .= $data['fname'] . " ";
+        }
+        if(array_key_exists('sname',$data))
+        {
+           $cn .= $data['sname'];
+        }
+        return $cn;
+    }
+
     public function getName() {
         return $this->name;
     }

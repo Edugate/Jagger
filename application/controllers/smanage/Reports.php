@@ -49,7 +49,8 @@ class Reports extends MY_Controller {
            apc_clear_cache();
 
         }
-        $data['titlepage'] = 'system reporter';
+        $this->title = lang('title_sysreports');
+        $data['titlepage'] =lang('title_sysreports') ;
         $data['content_view']= 'smanage/index_view';
         $this->load->view('page',$data);
 

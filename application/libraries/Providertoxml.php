@@ -523,9 +523,6 @@ class Providertoxml {
     {
         $protocol = $ent->getProtocolSupport('idpsso');
         $protocolEnum = implode(" ", $protocol);
-
-
-
         $doFilter = array('SingleSignOnService', 'IDPSingleLogoutService', 'IDPArtifactResolutionService');
         $serviceLocations = $ent->getServiceLocations()->filter(
                 function(models\ServiceLocation $entry) use ($doFilter)
@@ -580,9 +577,8 @@ class Providertoxml {
         $extXMLoutput = $extXML->outputMemory();
         if (!empty($extXMLoutput))
         {
-
-            $xml->startElementNs('md', 'Extensions', null);
-            $xml->writeRaw(PHP_EOL.$extXMLoutput.PHP_EOL);
+            $xml->startElementNs('md', 'Extensions', null);     
+            $xml->writeRaw(PHP_EOL.$extXMLoutput);
             $xml->endElement(); // end md:Extensions
         }
 

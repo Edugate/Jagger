@@ -304,7 +304,7 @@ class Providers {
                 }
 
                 $y = $f->getMembers()->filter(
-                        function(FederationMembers $entry) use($doFilter)
+                        function(Provider $entry) use($doFilter)
                 {
                     return (in_array($entry->getType(), $doFilter['type']) && in_array($entry->getLocal(), $doFilter['local']));
                 }

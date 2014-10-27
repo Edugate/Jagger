@@ -189,7 +189,7 @@ class Awaiting extends MY_Controller
                     'requester' => $c_creator,
                     'idate' => $q->getCreatedAt(),
                     'datei' => $q->getCreatedAt(),
-                    'iname' => $q->getName(),
+                    'iname' => $q->getCN(),
                     'qid' => $q->getId(),
                     'mail' => $q->getEmail(),
                     'type' => $q->getType(),
