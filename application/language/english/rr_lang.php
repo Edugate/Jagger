@@ -44,6 +44,7 @@ $lang['title_fedcategory']          =  'Federations Categories';
 $lang['title_fedvalidator']         = 'Federation validator';
 $lang['title_usersubscriptions']    = 'User subscriptions';
 $lang['title_listspages']           = 'List static pages';
+$lang['title_sysreports']           = 'System report';
 $lang['rr_title']                   = 'Title';
 $lang['fedvalidator']               = 'Federation validator';
 $lang['rr_federation'] =             'Federation';
