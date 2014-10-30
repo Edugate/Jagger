@@ -768,7 +768,6 @@ class Providertoxml {
 
     private function verifySP(models\Provider $ent)
     {
-        log_message('info','DUPA:'.get_class($ent));
         $doFilter = array('AssertionConsumerService');
         $serviceLocations = $ent->getServiceLocations()->filter(
                 function(models\ServiceLocation $entry) use ($doFilter)
