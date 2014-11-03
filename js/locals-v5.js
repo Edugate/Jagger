@@ -1160,27 +1160,10 @@ $(function () {
 
 
 
-    $("#validfrom").datepicker({
-        dateFormat: 'yy-mm-dd'
+    $(".datepicker").datepicker({
+      dateFormat: 'yy-mm-dd'
     });
-    $(".validfrom").datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
-    $("#validto").datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
-    $(".validto").datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
-    $("#registerdate").datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
-    $(".registrationdate").datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
-    $("#registrationdate").datepicker({
-        dateFormat: 'yy-mm-dd'
-    });
+
     var baseurl = $("[name='baseurl']").val();
     if (baseurl === undefined)
     {

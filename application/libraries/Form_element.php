@@ -369,7 +369,7 @@ class Form_element
             $result[] = jGenerateInput(lang('rr_regauthority'), 'f[regauthority]', $f_regauthority, $regauthority_notice);
 
 
-            $result[] = jGenerateInput(lang('rr_regdate'), 'f[registrationdate]', $f_regdate, 'registrationdate' . $regdate_notice . '');
+            $result[] = jGenerateInput(lang('rr_regdate'), 'f[registrationdate]', $f_regdate, 'datepicker' . $regdate_notice . '');
             $result[] = '';
         }
 

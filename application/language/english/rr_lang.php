@@ -278,6 +278,14 @@ $lang['leavefederation']             = 'Leave federation';
 $lang['menu_actions']                 = 'Actions';
 $lang['rr_action']                    = 'Action';
 
+$lang['mtmplsbj']                   = 'Mail subject';
+$lang['mtmplbody']                  = 'Mail body';
+$lang['mtmpllang']                  = 'Language';
+$lang['mtmplgroup']                 = 'Template group';
+$lang['mtmpldefault']               = 'Is default?';
+$lang['mtmplattach']                = 'Always add';
+
+
 $lang['fedejoinform']               = 'Join Federation Form';
 $lang['acceptprovtofed']            = 'Accept provider as member of this federation';
 $lang['rr_fededitform']             = 'Federation edit form';
