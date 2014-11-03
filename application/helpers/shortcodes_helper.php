@@ -1,5 +1,16 @@
 <?php
 
+
+function mailTemplatesGroups()
+{
+    $result = array(
+        'fedregresquest'=>array('federation registration request','desclang'=>'templfedregreq'),
+        'spregresquest'=>array('sp registration request','desclang'=>'templspregreq'),
+        'idpregresquest'=>array('idp registration request','desclang'=>'templidpregreq'),
+    );
+    return $result;
+}
+
 /**
  * returns array if valid notificationtypes as key , and values are descriptive name for lang
  */

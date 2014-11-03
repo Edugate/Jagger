@@ -160,6 +160,7 @@
                                 </li>
                                 <?php
                                 echo '<li><a href="' . $base_url . 'manage/spage/showall">' . lang('rr_articlesmngmt') . '</a></li>';
+                                echo '<li><a href="' . $base_url . 'manage/mailtemplates/showlist">' . lang('rr_mailtemplmngmt') . '</a></li>';
                                 
                             }
                             ?>

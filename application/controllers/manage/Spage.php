@@ -18,6 +18,7 @@ class Spage extends MY_Controller
         {
            $this->isEnabled = FALSE;
         }
+        MY_Controller::$menuactive = 'admins';
     }
 
     public function showall()
