@@ -7,18 +7,17 @@
  */
 
 namespace models;
-
+use \Doctrine\Common\Collections\ArrayCollection,
+    \Doctrine\ORM\Events;
 /**
- * MailTemplate Model
- *
- * This model for Identity and Service Providers definitions
+ * MailLocalization Model
  * 
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="mailtemplate")
+ * @Table(name="maillocalization")
  * @author janusz
  */
-class MailTemplate {
+class MailLocalization {
 
     /**
      * @Id
@@ -28,9 +27,9 @@ class MailTemplate {
     protected $id;
     
     /**
-     * @Column(type="string", length=15, nullable=false)
+     * @Column(type="string", length=20, nullable=false)
      */
-    protected $group;
+    protected $mgroup;
     
     /**
      * @Column(type="string", length=6, nullable=false)
@@ -76,7 +75,7 @@ class MailTemplate {
     }
     public function getGroup()
     {
-        return $this->group;
+        return $this->mgroup;
     }
     public function getLanguage()
     {
@@ -106,7 +105,7 @@ class MailTemplate {
     
     public function setGroup($a)
     {
-        $this->group = trim($a);
+        $this->mgroup = trim($a);
         return $this;            
     }
     public  function setLanguage($a)
