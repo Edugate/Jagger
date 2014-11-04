@@ -20,11 +20,15 @@ foreach ($templgroups as $t)
             }
             else
             {
-                $labels .= '<span class="label warning">disabled</span>';
+                $labels .= '<span class="label alert">'.lang('lbl_disabled').'</span>';
             }
             if($v->isDefault())
             {
-                $labels .= ' <span class="label">defaul</span>';
+                $labels .= ' <span class="label">'.lang('rr_default').'</span>';
+            }
+            if($v->isAlwaysAttached())
+            {
+                $labels .= ' <span class="label">'.lang('mtmplattach').'</span>';
             }
             $edit = '<a href="'.base_url().'manage/mailtemplates/edit/'.$v->getId().'"><i class="fi-pencil"></i></a>';
             $r = array($i++, $v->getLanguage(),$v->getSubject(),  nl2br($v->getBody()),$labels, $edit);

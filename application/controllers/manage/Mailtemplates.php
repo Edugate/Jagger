@@ -1,9 +1,9 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Mailtemplates extends MY_Controller {
+class Mailtemplates extends MY_Controller
+{
 
     public function __construct()
     {
@@ -18,14 +18,22 @@ class Mailtemplates extends MY_Controller {
         $this->load->library('form_validation');
     }
 
-    private function submitValidate($isNew)
+    private function submitValidate($id=null,$isNew)
     {
         if ($isNew)
         {
-            $this->form_validation->set_rules('msgsubj', 'Subjecy', 'required');
-            $this->form_validation->set_rules('msgbody', 'Body', 'required');
-            $this->form_validation->set_rules('msglang', 'Lang', 'required');
+
+            $this->form_validation->set_rules('msglang', 'Lang', 'trim|required');
+            $this->form_validation->set_rules('msggroup','Group','trim|required|mailtemplate_unique[msglang]');
+            $this->form_validation->set_rules('msgdefault','default','xss_clean|mailtemplate_isdefault[msggroup]');
         }
+        else
+        {
+            $this->form_validation->set_rules('msgdefault','default','xss_clean');
+        }
+        $this->form_validation->set_rules('msgsubj', 'Subjecy', 'required|xss_clean');
+        
+        $this->form_validation->set_rules('msgbody', 'Body', 'required');
         return $this->form_validation->run();
     }
 
@@ -62,42 +70,94 @@ class Mailtemplates extends MY_Controller {
             }
 
             $data = array(
+                'msggroup' => $m->getGroup(),
                 'msgsubj' => $m->getSubject(),
                 'msgbody' => $m->getBody(),
                 'msglang' => $m->getLanguage(),
+                'msgenabled' => $m->isEnabled(),
+                'msgdefault' => $m->isDefault(),
+                'msgattach' => $m->isAlwaysAttached(),
                 'newtmpl' => FALSE,
+                'success'=>lang('msgtmplupdated'),
+                'titlepage'=>'Edit mail template',
             );
         }
         else
         {
             $m = new models\MailLocalization;
+            
             $data = array(
                 'msgsubj' => '',
                 'msgbody' => '',
                 'msglang' => '',
+                'msgenabled' => TRUE,
+                'msgdefault' => FALSE,
+                'msgattach' => FALSE,
                 'newtmpl' => TRUE,
-                'titlepage'=>'New mail template',
+                'titlepage' => 'New mail template',
+                'success'=>lang('msgtmpladded'),
             );
         }
 
 
         $data['groupdropdown'] = $groupDropdown;
         $data['langdropdown'] = $langsDropdown;
-        if ($this->submitValidate($data['newtmpl']) === TRUE)
+        if ($this->submitValidate($id, $data['newtmpl']) === TRUE)
         {
-            if($data['newtmpl'] === TRUE)
+            if ($data['newtmpl'] === TRUE)
             {
-                $m->setBody($this->input->post('msgbody'));
-                $m->setSubject($this->input->post('msgsubj'));
                 $m->setLanguage($this->input->post('msglang'));
                 $m->setGroup($this->input->post('msggroup'));
-                $m->setAlwaysAttach(TRUE);
+            }
+            $m->setBody($this->input->post('msgbody'));
+            $m->setSubject($this->input->post('msgsubj'));
+
+            $nmsgenabled = $this->input->post('msgenabled');
+            $nmsgdefault = $this->input->post('msgdefault');
+            $nmsgattach = $this->input->post('msgattach');
+            log_message('info', 'PLO :' . $nmsgattach);
+            if (!empty($nmsgdefault) && strcmp($nmsgdefault, 'yes') == 0)
+            {
                 $m->setDefault(TRUE);
+            }
+            else
+            {
+                $m->setDefault(FALSE);
+            }
+            if (!empty($nmsgenabled) && strcmp($nmsgenabled, 'yes') == 0)
+            {
                 $m->setEnabled(TRUE);
-                $this->em->persist($m);
+            }
+            else
+            {
+                $m->setEnabled(FALSE);
+            }
+
+            if (!empty($nmsgattach) && strcmp($nmsgattach, 'yes') == 0)
+            {
+                $m->setAlwaysAttach(TRUE);
+            }
+            else
+            {
+                $m->setAlwaysAttach(FALSE);
+            }
+
+
+
+
+            $this->em->persist($m);
+            try
+            {
                 $this->em->flush();
+                $data['content_view'] = 'manage/mailtemplateseditsuccess_view';
+                $this->load->view('page', $data);
+            }
+            catch (Exception $e)
+            {
+                log_message('error', __METHOD__ . ' ' . $e);
             }
         }
+        
         $data['content_view'] = 'manage/mailtemplatesedit_view';
         $this->load->view('page', $data);
     }

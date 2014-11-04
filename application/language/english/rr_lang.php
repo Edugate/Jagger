@@ -69,6 +69,8 @@ $lang['rr_articlesmngmt']                = 'Manage articles';
 $lang['rr_mailtemplmngmt']          = 'Manage mail templates';
 $lang['idpregsuccess']              = 'Identity Provider (Home Organization) registration - success';
 $lang['stadefadded']                = 'New statistic definition has been added';
+$lang['msgtmpladded']               = 'The template has been added';
+$lang['msgtmplupdated']               = 'The template has been updated';
 $lang['spregsuccess']               = 'Service Provider  registration - success';
 $lang['fvalidaddsuccess']           = 'Federation validator has been added';
 $lang['fvalidupdatesuccess']           = 'Federation validator has been updated';
@@ -283,6 +285,7 @@ $lang['mtmplbody']                  = 'Mail body';
 $lang['mtmpllang']                  = 'Language';
 $lang['mtmplgroup']                 = 'Template group';
 $lang['mtmpldefault']               = 'Is default?';
+$lang['mtmplenabled']               = 'Is enabled?';
 $lang['mtmplattach']                = 'Always add';
 
 

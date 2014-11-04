@@ -244,6 +244,50 @@ class MY_form_validation extends CI_form_validation {
         }
 
     }
+    function mailtemplate_unique($group,$field)
+    {
+        if(isset($this->_field_data[$field], $this->_field_data[$field]['postdata']))
+        {
+            $lang = $this->_field_data[$field]['postdata'];
+        }
+        else
+        {
+            return TRUE;
+
+        }
+
+        $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup'=>$group,'lang'=>$lang));
+        if(!empty($l))
+        {
+            $this->set_message('mailtemplate_unique', 'Templeate with specidi lang exist for ');
+            return FALSE;
+        }
+        return TRUE;
+    }
+    function mailtemplate_isdefault($isdefault,$field)
+    {
+        if(isset($this->_field_data[$field], $this->_field_data[$field]['postdata']))
+        {
+            $group = $this->_field_data[$field]['postdata'];
+        }
+        else
+        {
+            return TRUE;
+
+        }
+        if(!empty($isdefault) || strcmp($isdefault,'yes')!=0)
+        {
+            return TRUE;
+        }
+
+        $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup'=>$group,'isdefault'=>TRUE));
+        if(!empty($l))
+        {
+            $this->set_message('mailtemplate_isdefault', 'Templeate with specidi group already has default ');
+            return FALSE;
+        }
+        return TRUE;
+    }
  
     function attribute_unique($value,$name)
     {
