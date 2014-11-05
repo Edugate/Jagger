@@ -995,10 +995,15 @@ class Entityedit extends MY_Controller {
                         if (strcmp($ttype, 'IDP') == 0)
                         {
                             $q->addIDP($convertedToArray);
+                            $mailTemplateGroup = 'idpregresquest';
+                            $notificationGroup = 'gidpregisterreq';
                         }
                         else
                         {
                             $q->addSP($convertedToArray);
+                            $mailTemplateGroup = 'spregresquest';
+                            $notificationGroup = 'gspregisterreq';
+ 
                         }
                         if (empty($contactMail))
                         {
@@ -1015,11 +1020,39 @@ class Entityedit extends MY_Controller {
                             'orgname' => $ent->getName(),
                             'serviceentityid' => $ent->getEntityId(),
                         );
+                        if(!empty($u))
+                        {
 
-                        $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams, NULL);
+                           $requsername = $u->getUsername();
+                           $reqfullname = $u->getFullname();
+                        }
+                        else
+                        {
+                           $requsername = 'anonymous';
+                           $reqfullname  = '';
+                        }
+                        $nowUtc = new \DateTime( 'now',  new \DateTimeZone( 'UTC' ) );
+                  
+                        $messageTemplateArgs = array(
+                             'token'=>$q->getToken(),
+                             'srcip'=>$sourceIP,
+                             'entorgname'=>$ent->getName(),
+                             'entityid'=>$ent->getEntityId(),
+                             'reqemail'=>$contactMail,
+                             'requsername'=>''.$requsername.'',
+                             'reqfullname'=>$reqfullname,
+                             'datetimeutc'=>''.$nowUtc->format('Y-m-d h:i:s').' UTC',
+                                 'qurl'=>''.base_url().'reports/awaiting/detail/'.$q->getToken().'');
+                        
+		        		
+                        $messageTemplate = $this->email_sender->generateLocalizedMail($mailTemplateGroup,$messageTemplateArgs);
+                        if(empty($messageTemplate))
+                        {
+                           $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams, NULL);
+                        }
                         if (!empty($messageTemplate))
                         {
-                            $this->email_sender->addToMailQueue(array('greqisterreq', 'gidpregisterreq'), null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
+                            $this->email_sender->addToMailQueue(array('greqisterreq', $notificationGroup), null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
                         }
 
 

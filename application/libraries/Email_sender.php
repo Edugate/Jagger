@@ -225,8 +225,8 @@ class Email_sender {
     {
        $result = array(
         'fedregresquest'=>array('federation registration request','desclang'=>'templfedregreq','args'=>array('fedname','srcip','requsername','reqemail','token','qurl','datetimeutc')),
-        'spregresquest'=>array('sp registration request','desclang'=>'templspregreq','args'=>array()),
-        'idpregresquest'=>array('idp registration request','desclang'=>'templidpregreq','args'=>array()),
+        'spregresquest'=>array('sp registration request','desclang'=>'templspregreq','args'=>array('token','srcip','entorgname','entityid','reqemail','requsername','reqfullname','datetimeutc','qurl')),
+        'idpregresquest'=>array('idp registration request','desclang'=>'templidpregreq','args'=>array('token','srcip','entorgname','entityid','reqemail','requsername','reqfullname','datetimeutc','qurl')),
     );
     return $result;
     }
