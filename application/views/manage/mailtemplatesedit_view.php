@@ -53,20 +53,17 @@ echo $rowStart;
 echo jGenerateInput(lang('mtmplsbj'), 'msgsubj', set_value('msgsubj', $msgsubj), '', null);
 echo $rowEnd;
 echo $rowStart;
-echo '<div class="medium-8 columns medium-centered dhelp secondary">';
-echo '<dl>';
+echo '<div class="medium-8 columns medium-centered  panel callout" style="font-size: smaller">';
 foreach($mailtmplGroups as $k=>$v)
 {
-    
-    echo '<dt>'.lang($v['desclang']).'</dt>';
-    echo '<dl>';
+    echo '<div><b>'.lang($v['desclang']).'</b></div>';
+    echo '<div>';
     foreach($v['args'] as $a)
     {
-        echo '_'.$a.'_, ';
+        echo '_'.$a.'_ , ';
     }
-    echo '</dl>';
+    echo '</div>';
 }
-echo '</dl>';
 echo '</div>';
 echo $rowEnd;
 

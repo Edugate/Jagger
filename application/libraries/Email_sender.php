@@ -274,11 +274,10 @@ class Email_sender {
         $body = preg_replace($patterns, $replacements, $defaultTemplate->getBody());
         foreach($attachedTemplates as $t)
         {
-           $body .= PHP_EOL.'==============================='.PHP_EOL;
-           $body .= PHP_EOL.'==== '.preg_replace($patterns, $replacements, $t->getSubject()).' ==='.PHP_EOL;
+           $body .= PHP_EOL.'===== '.preg_replace($patterns, $replacements, $t->getSubject()).' ===='.PHP_EOL;
            $body .= PHP_EOL.preg_replace($patterns, $replacements, $t->getBody());
         } 
-        $result['body'] = $body;
+        $result['body'] = $body.PHP_EOL.PHP_EOL;
         return $result;   
     }
 
