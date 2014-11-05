@@ -147,6 +147,7 @@ $lang['rr_category']                = 'Category';
 $lang['templfedregreq']             = 'Federation registration request';
 $lang['templspregreq']              = 'Service Provider registration request';
 $lang['templidpregreq']              = 'Identity Provider registration request';
+$lang['templuserregreq']              = 'User registration request';
 $lang['rrfedcatslist']              = 'Federations Categories';
 $lang['newfedcategory']             = 'Federations Category :: Form';
 $lang['fedcategory'] = 'Federations Category';

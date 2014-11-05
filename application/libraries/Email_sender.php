@@ -31,7 +31,7 @@ class Email_sender {
     // allow to create and use templates in following langs
     static function getLangs()
     {
-        $r = array('en','de','pl');
+        $r = array_keys(languagesCodes());
         return $r;
     }
     
@@ -227,6 +227,7 @@ class Email_sender {
         'fedregresquest'=>array('federation registration request','desclang'=>'templfedregreq','args'=>array('fedname','srcip','requsername','reqemail','token','qurl','datetimeutc')),
         'spregresquest'=>array('sp registration request','desclang'=>'templspregreq','args'=>array('token','srcip','entorgname','entityid','reqemail','requsername','reqfullname','datetimeutc','qurl')),
         'idpregresquest'=>array('idp registration request','desclang'=>'templidpregreq','args'=>array('token','srcip','entorgname','entityid','reqemail','requsername','reqfullname','datetimeutc','qurl')),
+        'userregresquest'=>array('user registration request','desclang'=>'templuserregreq','args'=>array('token', 'srcip', 'reqemail', 'requsername', 'reqfullname','qurl', 'datetimeutc')),
     );
     return $result;
     }
