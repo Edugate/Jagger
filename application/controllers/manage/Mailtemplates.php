@@ -18,21 +18,21 @@ class Mailtemplates extends MY_Controller
         $this->load->library('form_validation');
     }
 
-    private function submitValidate($id=null,$isNew)
+    private function submitValidate($id = null, $isNew)
     {
         if ($isNew)
         {
 
             $this->form_validation->set_rules('msglang', 'Lang', 'trim|required');
-            $this->form_validation->set_rules('msggroup','Group','trim|required|mailtemplate_unique[msglang]');
-            $this->form_validation->set_rules('msgdefault','default','xss_clean|mailtemplate_isdefault[msggroup]');
+            $this->form_validation->set_rules('msggroup', 'Group', 'trim|required|mailtemplate_unique[msglang]');
+            $this->form_validation->set_rules('msgdefault', 'default', 'xss_clean|mailtemplate_isdefault[msggroup]');
         }
         else
         {
-            $this->form_validation->set_rules('msgdefault','default','xss_clean');
+            $this->form_validation->set_rules('msgdefault', 'default', 'xss_clean');
         }
         $this->form_validation->set_rules('msgsubj', 'Subjecy', 'required|xss_clean');
-        
+
         $this->form_validation->set_rules('msgbody', 'Body', 'required');
         return $this->form_validation->run();
     }
@@ -78,14 +78,14 @@ class Mailtemplates extends MY_Controller
                 'msgdefault' => $m->isDefault(),
                 'msgattach' => $m->isAlwaysAttached(),
                 'newtmpl' => FALSE,
-                'success'=>lang('msgtmplupdated'),
-                'titlepage'=>'Edit mail template',
+                'success' => lang('msgtmplupdated'),
+                'titlepage' => 'Edit mail template',
             );
         }
         else
         {
             $m = new models\MailLocalization;
-            
+
             $data = array(
                 'msgsubj' => '',
                 'msgbody' => '',
@@ -95,35 +95,47 @@ class Mailtemplates extends MY_Controller
                 'msgattach' => FALSE,
                 'newtmpl' => TRUE,
                 'titlepage' => 'New mail template',
-                'success'=>lang('msgtmpladded'),
+                'success' => lang('msgtmpladded'),
             );
         }
 
 
         $data['groupdropdown'] = $groupDropdown;
         $data['langdropdown'] = $langsDropdown;
+        $data['mailtmplGroups'] = $mailtmplGroups;
         if ($this->submitValidate($id, $data['newtmpl']) === TRUE)
         {
+            $nmsgenabled = $this->input->post('msgenabled');
+            $nmsgdefault = $this->input->post('msgdefault');
+            $nmsgattach = $this->input->post('msgattach');
+
             if ($data['newtmpl'] === TRUE)
             {
                 $m->setLanguage($this->input->post('msglang'));
                 $m->setGroup($this->input->post('msggroup'));
             }
-            $m->setBody($this->input->post('msgbody'));
-            $m->setSubject($this->input->post('msgsubj'));
-
-            $nmsgenabled = $this->input->post('msgenabled');
-            $nmsgdefault = $this->input->post('msgdefault');
-            $nmsgattach = $this->input->post('msgattach');
-            log_message('info', 'PLO :' . $nmsgattach);
             if (!empty($nmsgdefault) && strcmp($nmsgdefault, 'yes') == 0)
             {
                 $m->setDefault(TRUE);
+                $mid = $m->getId();
+                $existingDefault = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup' =>$m->getGroup(),'isdefault'=>TRUE ));
+                if(!empty($existingDefault))
+                {
+                    if((!empty($mid) && $mid != $existingDefault->getId()) ||(empty($mid)))
+                    {
+                        $existingDefault->setDefault(FALSE);
+                        $this->em->persist($existingDefault);
+                    }
+                }
             }
             else
             {
                 $m->setDefault(FALSE);
             }
+            $m->setBody($this->input->post('msgbody'));
+            $m->setSubject($this->input->post('msgsubj'));
+
+
             if (!empty($nmsgenabled) && strcmp($nmsgenabled, 'yes') == 0)
             {
                 $m->setEnabled(TRUE);
@@ -157,7 +169,7 @@ class Mailtemplates extends MY_Controller
                 log_message('error', __METHOD__ . ' ' . $e);
             }
         }
-        
+
         $data['content_view'] = 'manage/mailtemplatesedit_view';
         $this->load->view('page', $data);
     }

@@ -53,14 +53,32 @@ echo $rowStart;
 echo jGenerateInput(lang('mtmplsbj'), 'msgsubj', set_value('msgsubj', $msgsubj), '', null);
 echo $rowEnd;
 echo $rowStart;
+echo '<div class="medium-8 columns medium-centered dhelp secondary">';
+echo '<dl>';
+foreach($mailtmplGroups as $k=>$v)
+{
+    
+    echo '<dt>'.lang($v['desclang']).'</dt>';
+    echo '<dl>';
+    foreach($v['args'] as $a)
+    {
+        echo '%'.$a.'%, ';
+    }
+    echo '</dl>';
+}
+echo '</dl>';
+echo '</div>';
+echo $rowEnd;
+
+echo $rowStart;
 echo jGenerateTextarea(lang('mtmplbody'), 'msgbody', set_value('msgbody', $msgbody), '');
 
 echo $rowEnd;
 
-echo form_error('mtmplsbj');
+
 
 echo '<div class="small-12 columns text-right">';
-echo '<div class="medium-10 columns end"><button type="submit">Save</button>';
+echo '<div class="medium-10 columns end"><a href="'.base_url().'manage/mailtemplates/showlist" class="button alert">'.lang('rr_cancel').'</a> <button type="submit">'.lang('rr_save').'</button>';
 echo $rowEnd;
 
 echo form_close();

@@ -99,15 +99,16 @@ class Federation_registration extends MY_Controller
              * send email
              */
 
+       $nowUtc = new \DateTime( 'now',  new \DateTimeZone( 'UTC' ) );
+       
        $templateArgs = array(
          'fedname'=>$fedname,
          'srcip'=>$this->input->ip_address(),
-         'requsername'=>'',
+         'requsername'=>$this->j_auth->current_user(),
          'reqemail'=>$q->getEmail(),
-         'reqmessage'=>'',
          'token'=>$q->getToken(),
          'qurl'=>''.base_url().'reports/awaiting/detail/'.$q->getToken().'',
-         'datetimeutc'=>'',
+         'datetimeutc'=>''.$nowUtc->format('Y-m-d h:i:s').' UTC',
        );
       
        $mailTemplate = $this->email_sender->generateLocalizedMail('fedregresquest',$templateArgs);

@@ -224,7 +224,7 @@ class Email_sender {
     static function mailTemplatesGroups()
     {
        $result = array(
-        'fedregresquest'=>array('federation registration request','desclang'=>'templfedregreq','args'=>array('fedname','srcip','requsername','reqemail','reqmessage','token','qurl','datetimeutc')),
+        'fedregresquest'=>array('federation registration request','desclang'=>'templfedregreq','args'=>array('fedname','srcip','requsername','reqemail','token','qurl','datetimeutc')),
         'spregresquest'=>array('sp registration request','desclang'=>'templspregreq','args'=>array()),
         'idpregresquest'=>array('idp registration request','desclang'=>'templidpregreq','args'=>array()),
     );
