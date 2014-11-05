@@ -89,23 +89,6 @@ var GINIT = {
         }
 
 
-        $("input#advanced").click(function () {
-            var thisCheck = $(this);
-            if (thisCheck.is(':checked'))
-            {
-                $("button.simplemode").hide();
-                $("button.advancedmode").show();
-
-            }
-            else
-            {
-                $("button.simplemode").show();
-                $("button.advancedmode").hide();
-
-
-            }
-
-        });
         $("a.bookentity").click(function () {
             var link = $(this), url = link.attr("href");
 
@@ -1585,17 +1568,6 @@ $(function () {
 
 });
 
-if ($('input#advanced').attr('checked'))
-{
-    $("button.simplemode").hide();
-    $("button.advancedmode").show();
-}
-else
-{
-    $("button.simplemode").show();
-    $("button.advancedmode").hide();
-
-}
 
 if ($('#usepredefined').attr('checked')) {
     $("fieldset#stadefext").hide();
