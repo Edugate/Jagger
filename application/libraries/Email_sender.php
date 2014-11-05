@@ -247,15 +247,10 @@ class Email_sender {
         $patterns = array();
         foreach($mygroup['args'] as $a)
         {
-           $patterns[''.$a.''] = '/$'.$a.'$/';
+           $patterns[''.$a.''] = '/_'.$a.'_/';
         }
         ksort($patterns);
         ksort($replacements);
-//        echo '<pre>';
-//        echo 'patterns:';
-//        print_r($patterns);
-//        print_r($replacements); 
-//        echo '</pre>';
         $defaultTemplate = null;
         $attachedTemplates = array();
         foreach($templates as $t)
