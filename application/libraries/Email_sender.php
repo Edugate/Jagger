@@ -247,7 +247,7 @@ class Email_sender {
         $patterns = array();
         foreach($mygroup['args'] as $a)
         {
-           $patterns[''.$a.''] = '/%'.$a.'%/';
+           $patterns[''.$a.''] = '/$'.$a.'$/';
         }
         ksort($patterns);
         ksort($replacements);

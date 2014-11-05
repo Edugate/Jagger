@@ -62,7 +62,7 @@ foreach($mailtmplGroups as $k=>$v)
     echo '<dl>';
     foreach($v['args'] as $a)
     {
-        echo '%'.$a.'%, ';
+        echo '$'.$a.'$, ';
     }
     echo '</dl>';
 }
