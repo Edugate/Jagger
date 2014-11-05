@@ -46,7 +46,7 @@ class Mailtemplates extends MY_Controller
         }
         $langs = Email_sender::getLangs();
         $langsDropdown = languagesCodes($langs);
-        $mailtmplGroups = mailTemplatesGroups();
+        $mailtmplGroups = Email_sender::mailTemplatesGroups();
         $groupDropdown = array();
         foreach ($mailtmplGroups as $k => $v)
         {
@@ -171,7 +171,7 @@ class Mailtemplates extends MY_Controller
         }
         $data['showaddbtn'] = TRUE;
         $mtemplates = $this->em->getRepository("models\MailLocalization")->findAll();
-        $templgroups = mailTemplatesGroups();
+        $templgroups = Email_sender::mailTemplatesGroups();
         foreach ($mtemplates as $t)
         {
             if (array_key_exists($t->getGroup(), $templgroups))

@@ -28,6 +28,7 @@ class Email_sender {
         $this->em = $this->ci->doctrine->em;
     }
 
+    // allow to create and use templates in following langs
     static function getLangs()
     {
         $r = array('en','de','pl');
@@ -219,9 +220,72 @@ class Email_sender {
         return true;
     }
 
+
+    static function mailTemplatesGroups()
+    {
+       $result = array(
+        'fedregresquest'=>array('federation registration request','desclang'=>'templfedregreq','args'=>array('fedname','srcip','requsername','reqemail','reqmessage','token','qurl','datetimeutc')),
+        'spregresquest'=>array('sp registration request','desclang'=>'templspregreq','args'=>array()),
+        'idpregresquest'=>array('idp registration request','desclang'=>'templidpregreq','args'=>array()),
+    );
+    return $result;
+    }
+
     /**
      *  TEMPLATES
      */
+    function generateLocalizedMail($group, $replacements)
+    {
+        $templates = $this->em->getRepository("models\MailLocalization")->findBy(array('mgroup'=>$group,'isenabled'=>TRUE));
+        if(count($templates) ==0)
+        {
+           return null;
+        }
+        $tmpgroups = self::mailTemplatesGroups();
+        $mygroup = $tmpgroups[''.$group.''];
+        $patterns = array();
+        foreach($mygroup['args'] as $a)
+        {
+           $patterns[''.$a.''] = '/%'.$a.'%/';
+        }
+        ksort($patterns);
+        ksort($replacements);
+//        echo '<pre>';
+//        echo 'patterns:';
+//        print_r($patterns);
+//        print_r($replacements); 
+//        echo '</pre>';
+        $defaultTemplate = null;
+        $attachedTemplates = array();
+        foreach($templates as $t)
+        {
+           if($t->isDefault())
+           {
+              $defaultTemplate = $t;
+              continue;
+           }  
+           if($t->isAlwaysAttached())
+           {
+              $attachedTemplates[] = $t;
+           }
+        }
+        if(empty($defaultTemplate))
+        {
+           return null;
+        }
+        $result = array();
+        $result['subject'] = preg_replace($patterns, $replacements, $defaultTemplate->getSubject());
+        $body = preg_replace($patterns, $replacements, $defaultTemplate->getBody());
+        foreach($attachedTemplates as $t)
+        {
+           $body .= PHP_EOL.'==============================='.PHP_EOL;
+           $body .= PHP_EOL.'==== '.preg_replace($patterns, $replacements, $t->getSubject()).' ==='.PHP_EOL;
+           $body .= PHP_EOL.preg_replace($patterns, $replacements, $t->getBody());
+        } 
+        $result['body'] = $body;
+        return $result;   
+    }
+
     function providerRegRequest($type, $args, $lang = null)
     {
         $params = array(

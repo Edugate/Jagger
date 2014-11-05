@@ -98,16 +98,36 @@ class Federation_registration extends MY_Controller
             /**
              * send email
              */
-       $sbj = 'Federation registration request';
-       $body = 'Dear user'.PHP_EOL;
-       $body .= $q->getEmail().' just filled Federation Registration form'.PHP_EOL;
-       if(isset($_SERVER['REMOTE_ADDR']))
+
+       $templateArgs = array(
+         'fedname'=>$fedname,
+         'srcip'=>$this->input->ip_address(),
+         'requsername'=>'',
+         'reqemail'=>$q->getEmail(),
+         'reqmessage'=>'',
+         'token'=>$q->getToken(),
+         'qurl'=>''.base_url().'reports/awaiting/detail/'.$q->getToken().'',
+         'datetimeutc'=>'',
+       );
+      
+       $mailTemplate = $this->email_sender->generateLocalizedMail('fedregresquest',$templateArgs);
+       if(is_array($mailTemplate))
        {
-         $body .= "Requester's IP :". $_SERVER['REMOTE_ADDR']. PHP_EOL;
+          $this->email_sender->addToMailQueue(array('greqisterreq','gfedreqisterreq'),null,$mailTemplate['subject'],$mailTemplate['body'],array(),FALSE);
        }
-       $body .= 'Federation name: '.$fedname. PHP_EOL;
-       $body .= 'You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$q->getToken().PHP_EOL;
-       $this->email_sender->addToMailQueue(array('greqisterreq','gfedreqisterreq'),null,$sbj,$body,array(),FALSE);
+       else
+       {
+          $sbj = 'Federation registration request';
+          $body = 'Dear user'.PHP_EOL;
+          $body .= $q->getEmail().' just filled Federation Registration form'.PHP_EOL;
+          if(isset($_SERVER['REMOTE_ADDR']))
+          {
+            $body .= "Requester's IP :". $_SERVER['REMOTE_ADDR']. PHP_EOL;
+          }
+          $body .= 'Federation name: '.$fedname. PHP_EOL;
+          $body .= 'You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$q->getToken().PHP_EOL;
+          $this->email_sender->addToMailQueue(array('greqisterreq','gfedreqisterreq'),null,$sbj,$body,array(),FALSE);
+       }
        $this->em->flush();
        $data['success'] = lang('rr_fed_req_sent');
        $data['content_view'] = 'federation/success_view';
