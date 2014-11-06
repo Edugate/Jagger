@@ -14,6 +14,7 @@ if(!empty($additional_error))
 $form_attributes = array('id' => 'multistepform', 'class' => 'register');
 $action = current_url();
 echo form_open($action, $form_attributes);
+echo '<input type="hidden" name="advanced" value="advanced">';
 echo '<div class="small-12 columns">';
 echo '<div class="small-3 columns text-right">'.jform_label('Metadata <small>(' . lang('rr_optional') . ')</small>'.showBubbleHelp(lang('rhelp_regspparsemeta')), 'metadatabody').'</div>';
 echo '<div class="small-6 large-7 columns">'.form_textarea(array(
