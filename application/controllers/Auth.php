@@ -147,7 +147,7 @@ class Auth extends MY_Controller
          'srcip'=>$ip,
          'reqemail'=>trim($email),
          'requsername'=>trim($username),
-         'reqfullname'=>$reqfullname
+         'reqfullname'=>$reqfullname,
          'qurl'=>''.base_url().'reports/awaiting/detail/'.$queue->getToken().'',
          'datetimeutc'=>''.$nowUtc->format('Y-m-d h:i:s').' UTC',
         );
