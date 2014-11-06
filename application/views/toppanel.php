@@ -5,7 +5,7 @@
         <ul class="title-area">
             <li class="menu">
                 <?php
-                echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $this->config->item('site_logo') . '" alt="Logo" style="max-height: 40px; background-color: white; margin-top: 2px"/></a>';
+                echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $this->config->item('site_logo') . '" alt="Logo" style="max-height: 40px; margin-top: 2px"/></a>';
                 ?>
 
             </li>
