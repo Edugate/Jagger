@@ -978,7 +978,6 @@ class Manage extends MY_Controller
 
     public function removeprovider($fed_name)
     {
-        log_message('debug', 'DDDUPA');
         if (!$this->j_auth->logged_in())
         {
             redirect('auth/login', 'location');

@@ -151,7 +151,7 @@ function jGenerateInputReadonly($label,$inputname,$value,$inputclass)
    $r .= '<div class="medium-8 large-7 columns end"><input type="text" id="'.$inputname.'" name="'.$inputname.'" value="'.$value.'" class="'.$inputclass.'" readonly="readonly"></div>';
    return $r;
 }
-function jGenerateDropdown($label,$inputname,$dropdowns,$value,$inputclass)
+function jGenerateDropdown($label, $inputname, $dropdowns, $value, $inputclass)
 {
    $r = '<div class="medium-3 columns medium-text-right"><label for="'.$inputname.'" class="inline">'.$label.'</label></div>';
 
@@ -199,5 +199,4 @@ function generateInputWithRemove($label, $name, $buttonname, $buttonvalue, $valu
 function jform_label($a,$b)
 {
   return '<label form="'.$b.'" class="right inline">'.$a.'</label>';
-
 }

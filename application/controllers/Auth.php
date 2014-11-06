@@ -132,13 +132,43 @@ class Auth extends MY_Controller
         /**
          * BEGIN send notification
          */
-        $sbj = 'User registration request';
-        $body = 'Dear user,' . PHP_EOL;
-        $body .= 'You have received this mail because your email address is on the notification list' . PHP_EOL;
-        $body .= 'User from ' . $ip . ' using federated access has applied for an account.' . PHP_EOL;
-        $body .= 'Please review the request and make appriopriate action (reject/approve)' . PHP_EOL;
-        $body .= 'Details about the request: ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
-        $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), FALSE);
+        if(!empty($fname) || !empty($sname))
+        {
+            $reqfullname = trim($fname).' '.trim($sname);
+        }
+        else
+        {
+            $reqfullname = 'unknown fullname';
+        }
+        $nowUtc = new \DateTime( 'now',  new \DateTimeZone( 'UTC' ) );
+
+        $templateArgs = array(
+         'token'=>$queue->getToken(),
+         'srcip'=>$ip,
+         'reqemail'=>trim($email),
+         'requsername'=>trim($username),
+         'reqfullname'=>$reqfullname
+         'qurl'=>''.base_url().'reports/awaiting/detail/'.$queue->getToken().'',
+         'datetimeutc'=>''.$nowUtc->format('Y-m-d h:i:s').' UTC',
+        );
+
+        $mailTemplate = $this->email_sender->generateLocalizedMail('userregresquest',$templateArgs);
+
+        if(empty($mailTemplate))
+        {
+           $sbj = 'User registration request';
+           $body = 'Dear user,' . PHP_EOL;
+           $body .= 'You have received this mail because your email address is on the notification list' . PHP_EOL;
+           $body .= 'User from ' . $ip . ' using federated access has applied for an account.' . PHP_EOL;
+           $body .= 'Please review the request and make appriopriate action (reject/approve)' . PHP_EOL;
+           $body .= 'Details about the request: ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
+           $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), FALSE);
+        }
+        else
+        {
+           $this->email_sender->addToMailQueue(array(), null, $mailTemplate['subject'], $mailTemplate['body'], array(), FALSE);
+
+        }
         /**
          * END send notification
          */
