@@ -94,13 +94,14 @@ class Arpsexcl extends MY_Controller {
        }
        $lang = MY_Controller::getLang();
        $displayname = $idp->getNameToWebInLang($lang,'idp');
+       $this->title = $displayname .': ARP excludes'; 
        $data = array(
            'rows'=>$this->form_element->excludedArpsForm($idp),
            'idp_name'=>$idp->getName(),
            'idp_id'=>$idp->getId(),
            'idp_entityid'=> $idp->getEntityId(),
            'content_view'=>'manage/arpsexcl_view',
-           'titlepage'=>anchor(base_url().'providers/detail/show/'.$data['idp_id'],  $displayname ),
+           'titlepage'=>anchor(base_url().'providers/detail/show/'.$idp->getId(),  $displayname ),
            'subtitlepage'=>lang('rr_arpexcl1')
        );
         $this->load->view('page', $data);
