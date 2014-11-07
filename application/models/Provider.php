@@ -1075,7 +1075,7 @@ class Provider
 
     public function setRegistrationDate(\DateTime $date = null)
     {
-        if (empty($date))
+        if(empty($date))
         {
             $this->registerdate = NULL;
         }
@@ -3976,7 +3976,15 @@ class Provider
             {
                 $p = explode("T", $a['regdate']);
                 $ptime = str_replace('Z', '', $p['1']);
-                $this->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $p[0] . ' ' . $ptime));
+                $pdate = \DateTime::createFromFormat('Y-m-d H:i:s', $p[0] . ' ' . substr($ptime,0,8));
+                if($pdate instanceOf \DateTime)
+                {
+                   $this->setRegistrationDate($pdate);
+                }
+                else
+                {
+                   \log_message('error',__METHOD__. ' couldnt create \DateTime object from string for entity:'.$this->entityid);
+                }
             }
         }
         if ($full & !empty($a['regpol']))
