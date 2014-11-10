@@ -272,7 +272,7 @@ class FederationValidator
         return $this;
     }
 
-    public function setIsEnabledForRegister($arg)
+    public function setEnabledForRegister($arg)
     {
         if ($arg === TRUE)
         {
