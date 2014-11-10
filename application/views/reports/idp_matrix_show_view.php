@@ -38,7 +38,7 @@ if(!empty($result))
    $this->table->clear();
 
    $arpinherit = $this->config->item('arpbyinherit');
-   if(!empty($arpinherit))
+   if(is_null($arpinherit) || $arpinherit !== FALSE)
    {
    $rrs = array('id'=>'idpmatrixform','style'=>'display: none');
 

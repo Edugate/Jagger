@@ -31,8 +31,8 @@ class Attribute_policyajax extends MY_Controller {
         {
             show_error('method not allowed',403);
         }
-        $enabled = $this->config->item('arpbyinherit');
-        if(empty($enabled) || $enabled !== TRUE)
+        $arpByInherit = $this->config->item('arpbyinherit');
+        if(!is_null($arpByInherit) || $arpByInherit === FALSE)
         {
            set_status_header(403);
            echo 'functionality disabled';
@@ -188,8 +188,8 @@ class Attribute_policyajax extends MY_Controller {
         {
             show_error('method not allowed',403);
         }
-        $enabled = $this->config->item('arpbyinherit');
-        if(empty($enabled) || $enabled !== TRUE)
+        $arpByInherit= $this->config->item('arpbyinherit');
+        if(!is_null($arpByInherit) || $arpByInherit === FALSE)
         {
            set_status_header(403);
            echo 'functionality disabled';

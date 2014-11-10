@@ -76,7 +76,7 @@ class Detail extends MY_Controller {
                 $cache1 = 'mcircle_' . $id;
                 $this->cache->delete($cache1);
                 $arpByInherit = $this->config->item('arpbyinherit');
-                if (!empty($arpByInherit))
+                if (is_null($arpByInherit) || $arpByInherit !== FALSE)
                 {
                     $cache2 = 'arp2_' . $id;
                     $this->cache->delete($cache2);

@@ -96,13 +96,13 @@ class Custom_policies extends MY_Controller {
                         $this->em->remove($custom_arp);
                         $this->em->flush();
                         $arpinherit = $this->config->item('arpbyinherit');
-                        if(empty($arpinherit))
+                        if(is_null($arpinherit) || $arpinherit !== FALSE)
                         {
-                           $this->j_cache->library('arp_generator', 'arpToArray', array($idp->getId()), -1);
+                           $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idp->getId()), -1);
                         }
                         else
                         {
-                           $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idp->getId()), -1);
+                           $this->j_cache->library('arp_generator', 'arpToArray', array($idp->getId()), -1);
                         }
                     }
                 }

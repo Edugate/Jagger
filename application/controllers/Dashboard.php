@@ -109,7 +109,6 @@ class Dashboard extends MY_Controller {
             $data['sps'] = $sps;
             $data['feds'] = $feds;
             $data['titlepage'] = lang('quick_access');
-             
             $data['content_view'] = 'default_body';
             $this->load->view('page', $data);
         }

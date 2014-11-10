@@ -82,13 +82,13 @@ class Arp extends MY_Controller
 
         $inherit = $this->config->item('arpbyinherit');
        
-        if(empty($inherit))
+        if(is_null($inherit) || $inherit !== FALSE)
         { 
-           $cacheid = 'arp_' . $idp->getId();
+           $cacheid = 'arp2_' . $idp->getId();
         }
         else
         {
-           $cacheid = 'arp2_' . $idp->getId();
+           $cacheid = 'arp_' . $idp->getId();
         }
 
         $arpcached = $this->cache->get($cacheid);
