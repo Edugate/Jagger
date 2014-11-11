@@ -38,7 +38,7 @@ foreach ($templgroups as $t)
     }
     else
     {
-        $groupcelldet = array('data'=>'no mail templates found for the group', 'colspan'=>$colspan, 'class'=>'warning');
+        $groupcelldet = array('data'=>''.lang('rr_nomailtmplingroup').'', 'colspan'=>$colspan, 'class'=>'warning');
         $this->table->add_row($groupcelldet);
     }
 }

@@ -31,9 +31,9 @@ class Mailtemplates extends MY_Controller
         {
             $this->form_validation->set_rules('msgdefault', 'default', 'xss_clean');
         }
-        $this->form_validation->set_rules('msgsubj', 'Subjecy', 'required|xss_clean');
+        $this->form_validation->set_rules('msgsubj', lang('mtmplsbj'), 'required|xss_clean');
 
-        $this->form_validation->set_rules('msgbody', 'Body', 'required');
+        $this->form_validation->set_rules('msgbody', lang('mtmplbody'), 'required');
         return $this->form_validation->run();
     }
 
@@ -79,7 +79,7 @@ class Mailtemplates extends MY_Controller
                 'msgattach' => $m->isAlwaysAttached(),
                 'newtmpl' => FALSE,
                 'success' => lang('msgtmplupdated'),
-                'titlepage' => 'Edit mail template',
+                'titlepage' => lang('title_mailtmpledit'),
             );
         }
         else
@@ -94,7 +94,7 @@ class Mailtemplates extends MY_Controller
                 'msgdefault' => FALSE,
                 'msgattach' => FALSE,
                 'newtmpl' => TRUE,
-                'titlepage' => 'New mail template',
+                'titlepage' => lang('title_mailtmplnew'),
                 'success' => lang('msgtmpladded'),
             );
         }
