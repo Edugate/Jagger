@@ -5,7 +5,12 @@
         <ul class="title-area">
             <li class="menu">
                 <?php
-                echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $this->config->item('site_logo') . '" alt="Logo" style="max-height: 40px; margin-top: 2px"/></a>';
+                $siteLogo = $this->config->item('site_logo');
+                if(empty($siteLogo))
+                {
+                   $siteLogo = 'logo-default.png';
+                }
+                echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $siteLogo . '" alt="Logo" style="max-height: 40px; margin-top: 2px"/></a>';
                 ?>
 
             </li>
