@@ -281,15 +281,21 @@ class Users extends MY_Controller
             $user->setRole($p_role);
             $this->em->persist($p_role);
             $this->em->persist($user);
+            $this->tracker->save_track('user', 'create', $username, 'user created in the system', false);
 
-            $this->em->flush();
+            try
+            {
+                $this->em->flush();
+                $data['success_message'] = lang('userregsuccess');
+                $data['content_view'] = 'manage/adduser_success_view';
+                $this->load->view('page', $data);
+            }
+            catch(Exception $e)
+            {
+                log_message('error',__METHOD__.' '.$e);
+                show_error('Error occurred',500);
 
-            $this->tracker->save_track('user', 'create', $username, 'user created in the system', true);
-
-
-            $data['message'] = 'user has been added';
-            $data['content_view'] = 'manage/new_user_view';
-            $this->load->view('page', $data);
+            }
         }
     }
 
