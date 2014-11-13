@@ -34,9 +34,12 @@ class Translator extends MY_Controller
         $this->lang->load('rr', 'english');
     }
 
-    private function _submit_validate()
+    private function _submit_validate($inputs)
     {
-        $this->form_validation->set_rules('lang[]', 'lang', 'trim|xss_clean');
+        foreach($inputs as $val)
+        {
+          $this->form_validation->set_rules('lang['.$val.']', 'input "'.$val.'"', 'required|trim');
+        }
         return $this->form_validation->run();
     }
 
@@ -58,7 +61,19 @@ class Translator extends MY_Controller
 
     public function tolanguage($l)
     {
+        $this->title  = lang('title_translator');
+        $data['titlepage'] = lang('title_translator'). '';
+        $this->lang->is_loaded = array();
+        $this->lang->language = array();
+        $this->lang->load('rr_lang', 'english');
         $original = $this->lang->language;
+        $inputs = array_keys($original);
+        $noinputs = (int) count($inputs)+10;
+        $systempost =  (int) ini_get(max_input_vars);
+        if($noinputs > $systempost)
+        {
+           $data['syswarning'] = 'The number of input vars is (>'.$noinputs.') higher that system allows ('.$systempost.'). Please increase max_input_vars in php settings';
+        }
         $allowedlangs = MY_Controller::guiLangs();
         unset($allowedlangs['en']);
         if (array_key_exists($l, $allowedlangs))
@@ -69,6 +84,8 @@ class Translator extends MY_Controller
         {
             show_error('wrong', 404);
         }
+        $data['subtitlepage'] = 'en => '.$langto;
+
         
         $isAccess = $this->checkPermission($langto);
         if(!$isAccess)
@@ -89,17 +106,19 @@ class Translator extends MY_Controller
         }
         $data['merger'] = $merger;
         $data['content_view'] = 'manage/translator_view';
-        if ($this->_submit_validate() === TRUE)
+        if ($this->_submit_validate($inputs) === TRUE)
         {
             $this->load->helper('file');
             $lang = $this->input->post('lang');
-            $y = "<?php \n";
+            $output = '<?php '.PHP_EOL;
+            $y = '';
             foreach ($lang as $k => $v)
             {
-                $y .= '$lang[\'' . $k . '\'] ="' . htmlspecialchars($v) . "\";\n";
+                $y .= '$lang[\'' . $k . '\'] ="' . htmlspecialchars($v) . "\";".PHP_EOL;
             }
+            $output  .= $y; 
             $pathfile = APPPATH . 'language/' . $langto . '/rr_lang.php';
-            if (!write_file($pathfile, $y))
+            if (!write_file($pathfile, $output))
             {
                 echo 'Unable to write the file';
             }
@@ -108,6 +127,11 @@ class Translator extends MY_Controller
                 echo 'File written!';
             }
             return;
+        }
+        else
+        {
+           $data['error_message'] = validation_errors('<div>', '</div>');
+
         }
 
         $this->load->view('page', $data);
