@@ -588,22 +588,6 @@ var GINIT = {
             });
             return false;
         });
-        $('a#editprovider').click(function (e) {
-            //alert(window.location);
-            var curTabID = $('#providertabs .ui-tabs-panel[aria-hidden="false"]').prop('id');
-            var url = $(this).attr('href');
-            if (curTabID == "attributes" || curTabID == "attrs")
-            {
-                var nurl = $('a#editattributesbutton').attr('href');
-                $(this).attr("href", nurl);
-
-            }
-            else
-            {
-                $(this).attr("href", url + "#" + curTabID);
-            }
-
-        });
 
         $('form#fvform').submit(function (e) {
             e.preventDefault();
@@ -1528,17 +1512,6 @@ $(function () {
     });
 
 
-    $("#providertabs").tabs({
-        cache: true,
-        //   data-theme: "none",
-        load: function (event, ui) {
-            $('.accordionButton').unbind();
-            $('#editprovider').unbind();
-
-            $(".ui-widget").removeClass("ui-widget");
-            GINIT.initialize();
-        },
-    });
     $("#fedtabs").tabs({
         cache: true,
         load: function (event, ui) {
