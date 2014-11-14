@@ -881,36 +881,6 @@ $(document).ready(function () {
     var browsertimezone = -browsertime.getTimezoneOffset();
     $('a#fedlogin').attr('href', '' + fedloginurl + '/' + browsertimezone + '');
 
-    var bubbletheme = $("a#jquerybubblepopupthemes").val();
-    $('.bubblepopup').CreateBubblePopup({
-        position: 'top',
-        align: 'center',
-        innerHtml: 'click help',
-        innerHtmlStyle: {
-            color: '#FFFFFF',
-            'text-align': 'center'
-        },
-        themeName: 'all-black',
-        themePath: bubbletheme
-
-    });
-    $('.bubblepopup').mouseover(function () {
-        var some = $(this).val();
-        $(this).ShowBubblePopup({
-            closingDelay: 1000,
-            position: 'top',
-            align: 'center',
-            innerHtml: some,
-            innerHtmlStyle: {
-                color: '#000000',
-                'font-size': '110%',
-                'text-align': 'left'
-            },
-            themeName: 'all-yellow',
-            themePath: bubbletheme
-        }, false).FreezeBubblePopup();
-
-    });
     if ($('#fedcategories dd.active').length) {
         var url = $('dd.active').find('a').first().attr('href');
         var value = $('table.fedistpercat');

@@ -30,7 +30,6 @@ $args['isAdministrator'] = $isAdministrator;
 $args['loggedin'] = $loggedin;
 
 $foundation = $base_url . 'foundation/';
-$jquerybubblepopupthemes = $base_url . 'styles/jquerybubblepopup-themes';
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]> <html lang="<?php echo MY_Controller::getLang(); ?>" class="no-js ie6 oldie"> <![endif]-->
@@ -51,7 +50,6 @@ $jquerybubblepopupthemes = $base_url . 'styles/jquerybubblepopup-themes';
         <link rel="stylesheet" type="text/css" href="<?php echo $base_url; ?>styles/jquery-ui.css"/>
         <?php
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
-        echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-bubble-popup-v3.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/foundation-icons.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />';
@@ -274,13 +272,12 @@ foreach ($langs as $key => $value)
         </div>
 
 
-        <button id="jquerybubblepopupthemes" style="display:none;" value="<?php echo $jquerybubblepopupthemes; ?>"></button> 
 
 <?php
 // list js files to load 
 $jsToLoad1 = array(
     'jquery.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.uitablefilter.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
-    'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.inputfocus-0.9.min.js', 'jquery-bubble-popup-v3.min.js',
+    'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.inputfocus-0.9.min.js',
     'foundation.min.js', 'foundation.topbar.js', 'foundation.tab.js', 'foundation.alert.js', 'foundation.reveal.js', 'jquery.simplemodal.js');
 foreach ($jsToLoad1 as $jsFile)
 {
