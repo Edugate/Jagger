@@ -1,4 +1,4 @@
-jQuery.fn.autoWidth = function (options)
+jQuery.fn.autoWidth = function(options)
 {
     var settings = {
         limitWidth: false
@@ -10,7 +10,7 @@ jQuery.fn.autoWidth = function (options)
 
     var maxWidth = 0;
 
-    this.each(function () {
+    this.each(function() {
         if ($(this).width() > maxWidth) {
             if (settings.limitWidth && maxWidth >= settings.limitWidth) {
                 maxWidth = settings.limitWidth;
@@ -22,7 +22,7 @@ jQuery.fn.autoWidth = function (options)
 
     this.width(maxWidth);
 };
-jQuery.fn.toggleOption = function (show) {
+jQuery.fn.toggleOption = function(show) {
     jQuery(this).toggle(show);
     if (show) {
         while (jQuery(this).parent('span.toggleOption').length)
@@ -33,7 +33,7 @@ jQuery.fn.toggleOption = function (show) {
 };
 
 var BINIT = {
-    initFvalidators: function () {
+    initFvalidators: function() {
 
         $("ul.validatorbuttons button").on('click', function (e) {
             var link = $(this).attr("value");
@@ -2808,17 +2808,6 @@ $('#joinfed select#fedid').on('change', function () {
 // experimental: forcing scroll to top page # urls
 
 $(document).ready(function () {
-    var scrolled = false;
-
-    $(window).scroll(function () {
-        scrolled = true;
-    });
-
-    if (window.location.hash) {
-        $(window).scrollTop(0);
-    }
-
-
     $("button#addlhelpdesk").click(function () {
         var selected = $("span.lhelpdeskadd option:selected").first();
         var nf = selected.val();
@@ -3210,25 +3199,28 @@ $("a.afilter").click(function () {
                         $.each(Columns, function (p, z) {
                             var cell = '';
                             $.each(z, function (r, s) {
-                                if (s === 'pname' && w[s] != null)
+                                if(w[s] != null)
                                 {
-                                    cell = cell + '<a href="' + result.baseurl + 'providers/detail/show/' + w.pid + '">' + w[s] + '</a><br />';
+                                   if (s === 'pname')
+                                   {
+                                      cell = cell + '<a href="' + result.baseurl + 'providers/detail/show/' + w.pid + '">' + w[s] + '</a><br />';
 
-                                }
-                                else if (w[s] != null && s === 'phelpurl')
-                                {
-                                    cell = cell + '<a href="' + w.phelpurl + '">' + w.phelpurl + '</a>';
-                                }
-                                else if (w[s] != null && (s === 'plocked' || s === 'pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable'))
-                                {
-                                    if (result['statedefs'][s][w[s]] != undefined)
-                                    {
-                                        cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
-                                    }
-                                }
-                                else if (w[s] != null)
-                                {
-                                    cell = cell + '  ' + w[s];
+                                   }
+                                   else if ( s === 'phelpurl')
+                                   {
+                                      cell = cell + '<a href="' + w.phelpurl + '">' + w.phelpurl + '</a>';
+                                   }
+                                   else if (s === 'plocked' || s === 'pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable')
+                                   {
+                                      if (result['statedefs'][s][w[s]] != undefined)
+                                      {
+                                          cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
+                                      }
+                                   }
+                                   else 
+                                   {
+                                      cell = cell + '  ' + w[s];
+                                   }
                                 }
                             });
                             tbodyToInsert[a++] = '<td>' + cell + '</td>';
@@ -3443,16 +3435,16 @@ $('button.getlogo').click(function () {
                         hiddeninputurl = '<input type="hidden" name="idpinputurl" value="' + json.data.url + '">';
                         hiddeninputsize = '<input type="hidden" name="idpinputsize" value="' + sizeinfo + '">';
 
-                        $("div#idpreviewlogo div.imgsource").empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
-                        $("div#idpreviewlogo div.logoinfo").empty().append(sizeinfo);
+                        $('div#idpreviewlogo div.imgsource').empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
+                        $('div#idpreviewlogo div.logoinfo').empty().append(sizeinfo);
                         logoreview.show();
                     }
                     else if (btnname === 'spgetlogo') {
                         hiddeninputtype = '<input type="hidden" name="logotype" value="idp">';
                         hiddeninputurl = '<input type="hidden" name="spinputurl" value="' + json.data.url + '">';
                         hiddeninputsize = '<input type="hidden" name="spinputsize" value="' + sizeinfo + '">';
-                        $("div#spreviewlogo div.imgsource").empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
-                        $("div#spreviewlogo div.logoinfo").empty().append(sizeinfo);
+                        $('div#spreviewlogo div.imgsource').empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
+                        $('div#spreviewlogo div.logoinfo').empty().append(sizeinfo);
 
                         logoreview.show();
                     }
@@ -3469,12 +3461,12 @@ $('button.getlogo').click(function () {
 
 var checkRegpol;
 
-$('input[type="radio"].withuncheck').hover(function () {
+$('input[type="radio"].withuncheck').hover(function() {
     checkRegpol = $(this).is(':checked');
 });
 
-$('input[type="radio"].withuncheck').click(function () {
+$('input[type="radio"].withuncheck').click(function() {
     checkRegpol = !checkRegpol;
-    $(this).attr("checked", checkRegpol);
+    $(this).attr('checked', checkRegpol);
 });
 
