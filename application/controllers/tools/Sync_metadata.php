@@ -111,7 +111,7 @@ class Sync_metadata extends CI_Controller {
         if(!empty($featenabled) && is_array($featenabled) && isset($featenabled['metasync']))
         {
            set_status_header(403);
-           echo 'Denied';
+           echo 'Denied'.PHP_EOL;
            return;
         }
 
@@ -153,7 +153,7 @@ class Sync_metadata extends CI_Controller {
         if (empty($metadata_body))
         {
             set_status_header(403);
-            echo 'could not retrieve data from '.$url ;
+            echo 'could not retrieve data from '.$url.PHP_EOL ;
             return;
         }
         $this->load->library(array('metadata_validator', 'curl', 'metadata2import'));
@@ -161,7 +161,7 @@ class Sync_metadata extends CI_Controller {
         if (empty($is_valid_metadata))
         {
              set_status_header(403);
-             echo 'Metadata from '.$url.' is not valid with Schema';
+             echo 'Metadata from '.$url.' is not valid with Schema'.PHP_EOL;
              return;
 
         }
