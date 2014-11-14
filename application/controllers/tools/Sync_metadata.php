@@ -152,13 +152,18 @@ class Sync_metadata extends CI_Controller {
         $metadata_body = $this->curl->simple_get($url);
         if (empty($metadata_body))
         {
-            show_error('empty metadata', 404);
+            set_status_header(403);
+            echo 'could not retrieve data from '.$url ;
+            return;
         }
         $this->load->library(array('metadata_validator', 'curl', 'metadata2import'));
         $is_valid_metadata = $this->metadata_validator->validateWithSchema($metadata_body);
         if (empty($is_valid_metadata))
         {
-            show_error('Metadata is not valid', 500);
+             set_status_header(403);
+             echo 'Metadata from '.$url.' is not valid with Schema';
+             return;
+
         }
 
         $type_of_entities = strtoupper($conditions['type']);
