@@ -190,7 +190,7 @@ class Attributepolicy extends MY_Controller
     {
         $data = array();
         $subtitle = "";
-
+   
         if (!is_numeric($idp_id) || !is_numeric($attr_id))
         {
             log_message('error', "Idp id or attr id is set incorectly");
@@ -208,6 +208,12 @@ class Attributepolicy extends MY_Controller
             log_message('error', 'IdP not found with id:' . $idp_id);
             show_error(lang('rerror_idpnotfound') . ' id:' . $idp_id);
         }
+        $lang = MY_Controller::getLang();
+        $idpInLangName = $idp->getNameToWebInLang($lang, 'idp');
+
+        $data['titlepage'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), lang('rr_provider').': '.$idpInLangName);
+        
+
         $resource = $idp->getId();
         $data['provider_entity'] = $idp->getEntityId();
         $group = 'idp';
@@ -265,15 +271,16 @@ class Attributepolicy extends MY_Controller
             if (!empty($sp))
             {
                 log_message('debug', 'SP found with id: ' . $requester);
-                $data['sp_name'] = $sp->getName();
+                $data['sp_name'] = $sp->getNameToWebInLang($lang, 'sp');
             }
             else
             {
                 log_message('debug', 'SP not found with id: ' . $requester);
                 show_error(lang('rerror_spnotfound') . ' id:' . $requester, 404);
             }
+            $link_sp = anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
             $action = base_url('manage/attributepolicy/submit_sp/' . $idp_id);
-            $subtitle = lang('rr_specarpforsp');
+            $data['subtitlepage'] = lang('rr_specarpforsp').' : <br />' .$link_sp  ;
             if ($locked)
             {
                 $subtitle .='<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
@@ -312,6 +319,7 @@ class Attributepolicy extends MY_Controller
         }
 
         $data['subtitle'] = $subtitle;
+        
         $data['content_view'] = 'manage/attribute_policy_detail_view';
         $this->load->view('page', $data);
     }

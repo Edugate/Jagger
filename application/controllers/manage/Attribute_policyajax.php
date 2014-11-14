@@ -32,10 +32,10 @@ class Attribute_policyajax extends MY_Controller {
             show_error('method not allowed',403);
         }
         $arpByInherit = $this->config->item('arpbyinherit');
-        if(!is_null($arpByInherit) || $arpByInherit === FALSE)
+        if(!is_null($arpByInherit) && $arpByInherit === FALSE)
         {
            set_status_header(403);
-           echo 'functionality disabled';
+           echo 'funcionality disabled';
            return;
         }
         $this->load->library('zacl');
@@ -189,7 +189,7 @@ class Attribute_policyajax extends MY_Controller {
             show_error('method not allowed',403);
         }
         $arpByInherit= $this->config->item('arpbyinherit');
-        if(!is_null($arpByInherit) || $arpByInherit === FALSE)
+        if(!is_null($arpByInherit) && $arpByInherit === FALSE)
         {
            set_status_header(403);
            echo 'functionality disabled';
