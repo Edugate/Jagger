@@ -21,7 +21,7 @@ if(!empty($sessform))
 
 <?php
     $action = current_url();
-    $attrs = array('id' => 'formver2');
+    $attrs = array('id' => 'providereditform');
     echo '<div class="tabs-content">';
     echo form_open($action, $attrs);
 

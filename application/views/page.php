@@ -305,7 +305,7 @@ foreach ($jsToLoad1 as $jsFile)
         }
 
         // load local final js
-        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v5.js"></script>' . PHP_EOL;
+        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v6.js"></script>' . PHP_EOL;
 
         // raw js from array
         if (!empty($rawJs) && is_array($rawJs))

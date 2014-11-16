@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <system systemId="urn:oasis:names:tc:SAML:2.0:assertion" uri="/usr/share/xml/opensaml/saml-schema-assertion-2.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:2.0:protocol" uri="/usr/share/xml/opensaml/saml-schema-protocol-2.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:2.0:metadata" uri="/usr/share/xml/opensaml/saml-schema-metadata-2.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:2.0:ac" uri="/usr/share/xml/opensaml/saml-schema-authn-context-2.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp" uri="/usr/share/xml/opensaml/saml-schema-ecp-2.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE" uri="/usr/share/xml/opensaml/saml-schema-dce-2.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:2.0:profiles:attribute:X500" uri="/usr/share/xml/opensaml/saml-schema-x500-2.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:2.0:profiles:attribute:XACML" uri="/usr/share/xml/opensaml/saml-schema-xacml-2.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:metadata:attribute" uri="/usr/share/xml/opensaml/sstc-metadata-attr.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:profiles:v1metadata" uri="/usr/share/xml/opensaml/sstc-saml1x-metadata.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:attribute:ext" uri="/usr/share/xml/opensaml/sstc-saml-attribute-ext.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:2.0:conditions:delegation" uri="/usr/share/xml/opensaml/sstc-saml-delegation.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:metadata:ext:query" uri="/usr/share/xml/opensaml/sstc-saml-metadata-ext-query.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:metadata:algsupport" uri="/usr/share/xml/opensaml/sstc-saml-metadata-algsupport-v1.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:metadata:ui" uri="/usr/share/xml/opensaml/sstc-saml-metadata-ui-v1.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:metadata:rpi" uri="/usr/share/xml/opensaml/saml-metadata-rpi-v1.0.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" uri="/usr/share/xml/opensaml/sstc-saml-idp-discovery.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:profiles:SSO:request-init" uri="/usr/share/xml/opensaml/sstc-request-initiation.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:protocol:ext:third-party" uri="/usr/share/xml/opensaml/sstc-saml-protocol-ext-thirdparty.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:2.0:protocol:ext:async-slo" uri="/usr/share/xml/opensaml/saml-async-slo-v1.0.xsd"/>
+</catalog>
