@@ -36,9 +36,7 @@ class Metadata_validator
                 {
                     return $mapping[$system];
                 }
-                $message = sprintf(
-                        "Failed to load external entity: Public: %s; System: %s; Context: %s", var_export($public, 1), var_export($system, 1), strtr(var_export($context, 1), [" (\n  " => '(', "\n " => '', "\n" => ''])
-                );
+                $message = "Failed to load external entity";
                 throw new RuntimeException($message);
             }
             );
