@@ -147,8 +147,11 @@ class Sync_metadata extends CI_Controller {
         $fed = $tmp_feds->getOneByUrn($federationurn);
         if (empty($fed))
         {
-            show_error('Federation not found', 404);
+            set_status_header(500);
+            echo 'Federation not found'.PHP_EOL ;
+            return;
         }
+        log_message('debug',__METHOD__.' downloading metadata from '.$url);
         $metadata_body = $this->curl->simple_get($url);
         if (empty($metadata_body))
         {

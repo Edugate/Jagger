@@ -19,6 +19,24 @@ if (!defined('BASEPATH'))
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 
+
+function j_schemasMapping($prefix = null)
+{
+   if(is_null($prefix))
+   {
+      $prefix = '';
+   }
+   $t = array(
+       
+       'http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd' => $prefix.'xmldsig-core-schema.xsd',
+       'http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd'=>$prefix.'xenc-schema.xsd',
+       'http://www.w3.org/2001/xml.xsd'=>$prefix.'xml.xsd',
+        
+   );
+   return $t;
+
+}
+
 function h_metadataNamespaces()
 {
     $t = array(
