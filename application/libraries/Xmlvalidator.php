@@ -7,6 +7,7 @@ class Xmlvalidator
 
     private $xmlDOM;
     private $pubKey;
+    private $rootSchemaFile;
 
     function __construct()
     {
@@ -18,6 +19,11 @@ class Xmlvalidator
         $this->xmlDOM = new \DOMDocument();
         $this->xmlDOM->strictErrorChecking = FALSE;
         $this->xmlDOM->WarningChecking = FALSE;
+        $this->rootSchemaFile = $this->ci->config->item('rootSchemaFile');
+        if(empty($this->rootSchemaFile))
+        {
+            $this->rootSchemaFile = 'saml-schema-metadata-2.0.xsd';
+        }
     }
 
     public function validateMetadata($xml, $signed = FALSE, $pubkey = FALSE)
@@ -48,7 +54,7 @@ class Xmlvalidator
         }
         if ($signed === FALSE)
         {
-            $result = $this->xmlDOM->schemaValidate('schemas/old/saml-schema-metadata-2.0.xsd');
+            $result = $this->xmlDOM->schemaValidate('schemas/old/'.$this->rootSchemaFile.'');
             $errors = libxml_get_errors();
             if ($result === TRUE)
             {
@@ -118,7 +124,7 @@ class Xmlvalidator
         }
         else
         {
-            $result = $this->xmlDOM->schemaValidate('schemas/old/saml-schema-metadata-2.0.xsd');
+            $result = $this->xmlDOM->schemaValidate('schemas/old/'.$this->rootSchemaFile.'');
             $errors = libxml_get_errors();
             if ($result === TRUE)
             {
