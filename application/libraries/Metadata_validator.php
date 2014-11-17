@@ -4,12 +4,18 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 class Metadata_validator
 {
+    protected $rootSchemaFile;
 
     function __construct()
     {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->helper('metadata_elements');
+        $this->rootSchemaFile = $this->ci->config->item('rootSchemaFile');
+        if(empty($this->rootSchemaFile))
+        {
+            $this->rootSchemaFile = 'saml-schema-metadata-2.0.xsd';
+        }
     }
 
     public function validateWithSchema($metadata = null)
@@ -40,11 +46,11 @@ class Metadata_validator
                 throw new RuntimeException($message);
             }
             );
-            $schemaLocation = 'schemas/new/saml-schema-metadata-2.0.xsd';
+            $schemaLocation = 'schemas/new/'.$this->rootSchemaFile;
         }
         else
         {
-            $schemaLocation = 'schemas/old/saml-schema-metadata-2.0.xsd';
+            $schemaLocation = 'schemas/old/'.$this->rootSchemaFile;
         }
 
 
