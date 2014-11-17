@@ -103,7 +103,7 @@ class Arp extends MY_Controller
                $data['out'] = $this->generateXml($idp,TRUE);
             }
             if (!empty($data['out'])) {
-                $this->cache->save($cacheid, $data['out'], 120);
+                $this->cache->save($cacheid, $data['out'], 2400);
             }
         }
         else {
