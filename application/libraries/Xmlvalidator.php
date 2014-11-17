@@ -48,7 +48,7 @@ class Xmlvalidator
         }
         if ($signed === FALSE)
         {
-            $result = $this->xmlDOM->schemaValidate('schemas/saml-schema-metadata-2.0.xsd');
+            $result = $this->xmlDOM->schemaValidate('schemas/old/saml-schema-metadata-2.0.xsd');
             $errors = libxml_get_errors();
             if ($result === TRUE)
             {
@@ -118,7 +118,7 @@ class Xmlvalidator
         }
         else
         {
-            $result = $this->xmlDOM->schemaValidate('schemas/saml-schema-metadata-2.0.xsd');
+            $result = $this->xmlDOM->schemaValidate('schemas/old/saml-schema-metadata-2.0.xsd');
             $errors = libxml_get_errors();
             if ($result === TRUE)
             {

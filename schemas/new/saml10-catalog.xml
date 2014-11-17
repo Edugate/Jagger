@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <system systemId="urn:oasis:names:tc:SAML:1.0:assertion" uri="/usr/share/xml/opensaml/cs-sstc-schema-assertion-01.xsd"/>
+    <system systemId="urn:oasis:names:tc:SAML:1.0:protocol" uri="/usr/share/xml/opensaml/cs-sstc-schema-protocol-01.xsd"/>
+</catalog>
