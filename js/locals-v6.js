@@ -567,12 +567,12 @@ var GINIT = {
                             $("span#fvreturncode").append(data.returncode);
                             $("div#fvresult").show();
                         }
-                        if (data.returncode == "success")
+                        if (data.returncode === "success")
                         {
                             document.getElementById(fvid).style.backgroundColor = "#00aa00";
                             document.getElementById(fvid).style.borderColor = "#00aa00";
                             document.getElementById(fvid).disabled = true;
-                        } else if (data.returncode == "error")
+                        } else if (data.returncode === "error")
                         {
                             document.getElementById(fvid).style.backgroundColor = "#aa0000";
                             document.getElementById(fvid).style.borderColor = "#aa0000";
@@ -1160,7 +1160,7 @@ $(document).ready(function () {
                         else if (json['data'])
                         {
 
-                            var img = new Image()
+                            var img = new Image();
                             img.onload = function () {
 
                             };

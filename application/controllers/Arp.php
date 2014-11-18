@@ -37,16 +37,10 @@ class Arp extends MY_Controller
      * @param models\Provider $idp
      * @return string|null
      */
-    private function generateXml($idp, $inherit=FALSE)
+    private function generateXml($idp)
     {
-        if($inherit)
-        {
-           $result1 = $this->arp_generator->arpToXML($idp,FALSE,TRUE);
-        }
-        else
-        {
-           $result1 = $this->arp_generator->arpToXML($idp,FALSE,FALSE);
-        }
+        $returnArray = FALSE;
+        $result1 = $this->arp_generator->arpToXML($idp,$returnArray);
         if (!empty($result1)) {
             $result = $result1->saveXML();
         }
@@ -80,36 +74,13 @@ class Arp extends MY_Controller
         $keyprefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
 
-        $inheritConf = $this->config->item('arpbyinherit');
-        if(is_null($inheritConf) || $inheritConf !== FALSE)
-        {
-            $inherit = TRUE;
-        } 
-        else
-        {
-            $inherit = FALSE;
-        }      
 
-        if($inherit)
-        { 
-           $cacheid = 'arp2_' . $idp->getId();
-        }
-        else
-        {
-           $cacheid = 'arp_' . $idp->getId();
-        }
+        $cacheid = 'arp_' . $idp->getId();
 
         $arpcached = $this->cache->get($cacheid);
         if (empty($arpcached)) {
             log_message('debug', 'not found in memcache');
-            if($inherit)
-            {
-               $data['out'] = $this->generateXml($idp,TRUE);
-            }
-            else
-            {
-               $data['out'] = $this->generateXml($idp,FALSE);
-            }
+            $data['out'] = $this->generateXml($idp);
             if (!empty($data['out'])) {
                 $this->cache->save($cacheid, $data['out'], 2400);
             }
@@ -151,99 +122,5 @@ class Arp extends MY_Controller
 
     }
 
-    /**
-     *
-     * @param string $idp_entityid
-     * @param string $m
-     * @return string 
-     */
-    public function devdefault($idp_entityid, $m = null)
-    {
-        $allowed = $this->config->item('arpdevshow');
-        if(empty($allowed))
-        {
-            show_error('Request not allowed', 403);
-        }
-        if (!empty($m) && $m != 'arp.xml') {
-            show_error('Request not allowed', 403);
-        }
-        $data = array();
-        $tmp_idp = new models\Providers;
-        $idp = new models\Provider;
-        $idp = $tmp_idp->getOneIdpByEntityId(base64url_decode($idp_entityid));
-        if (empty($idp)) {
-            log_message('debug', 'IdP not found with id:.' . $idp_entityid);
-            show_error("Identity Provider not found", 404);
-        }
-        $keyprefix = getCachePrefix();
-        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
-        $cacheid = 'arp_' . $idp->getId();
-
-        $arpcached = $this->cache->get($cacheid);
-        if (empty($arpcached)) {
-            log_message('debug', 'not found in memcache');
-            $data['out'] = $this->generateXml($idp,FALSE);
-            if (!empty($data['out'])) {
-                $this->cache->save($cacheid, $data['out'], 120);
-            }
-        }
-        else {
-            log_message('debug', 'got from memcache');
-            $data['out'] = $arpcached;
-        }
-        if (!empty($data['out'])) {
-            $this->load->view('metadata_view', $data);
-        }
-        else {
-            show_error('ARP cannot be generated because no policy had been set', 404);
-        }
-    }
-    /**
-     *
-     * @param string $idp_entityid
-     * @param string $m
-     * @return string 
-     */
-    public function devinherit($idp_entityid, $m = null)
-    {
-        $allowed = $this->config->item('arpdevshow');
-        if(empty($allowed))
-        {
-            show_error('Request not allowed', 403);
-        }
-        if (!empty($m) && $m != 'arp.xml') {
-            show_error('Request not allowed', 403);
-        }
-        $data = array();
-        $tmp_idp = new models\Providers;
-        $idp = new models\Provider;
-        $idp = $tmp_idp->getOneIdpByEntityId(base64url_decode($idp_entityid));
-        if (empty($idp)) {
-            log_message('debug', 'IdP not found with id:.' . $idp_entityid);
-            show_error("Identity Provider not found", 404);
-        }
-        $keyprefix = getCachePrefix();
-        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
-        $cacheid = 'arp2_' . $idp->getId();
-
-        $arpcached = $this->cache->get($cacheid);
-        if (empty($arpcached)) {
-            log_message('debug', 'not found in memcache');
-            $data['out'] = $this->generateXml($idp,TRUE);
-            if (!empty($data['out'])) {
-                $this->cache->save($cacheid, $data['out'], 120);
-            }
-        }
-        else {
-            log_message('debug', 'got from memcache');
-            $data['out'] = $arpcached;
-        }
-        if (!empty($data['out'])) {
-            $this->load->view('metadata_view', $data);
-        }
-        else {
-            show_error('ARP cannot be generated because no policy had been set', 404);
-        }
-    }
 
 }

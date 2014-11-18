@@ -42,7 +42,7 @@ class Idp_matrix extends MY_Controller {
 
     private function _get_members($idp)
     {
-        $members = $this->tmp_providers->getCircleMembersSP($idp);
+        $members = $this->tmp_providers->getCircleMembersLight($idp);
         return $members;
     }
 
@@ -88,16 +88,8 @@ class Idp_matrix extends MY_Controller {
         $data['entityid'] = $idp->getEntityId();
 
         $members = $this->_get_members($idp);
-        $arpinherit = $this->config->item('arpbyinherit');
-        if(is_null($arpinherit) || $arpinherit !== FALSE)
-        {
-           $arparray = $this->arp_generator->arpToXML($idp, TRUE, TRUE);
-        }
-        else
-        {
-           $arparray = $this->arp_generator->arpToXML($idp, TRUE, FALSE);
-
-        }
+        $returnArray = TRUE;
+        $arparray = $this->arp_generator->arpToXML($idp, $returnArray);
         $extends = $idp->getExtendMetadata();
         if (count($extends) > 0)
         {

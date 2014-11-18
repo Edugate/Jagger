@@ -166,15 +166,7 @@ class Attributepolicy extends MY_Controller
             $changes['attr: ' . $attribute->getName() . '']['after'] = 'policy removed';
         }
 
-        $arpByInherit = $this->config->item('arpbyinherit');
-        if (is_null($arpByInherit) || $arpByInherit !== FALSE)
-        {
-            $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpid), -1);
-        }
-        else
-        {
-            $this->j_cache->library('arp_generator', 'arpToArray', array($idpid), -1);
-        }
+        $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpid), -1);
         if (!empty($changes) && count($changes) > 0)
         {
             $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);

@@ -75,19 +75,9 @@ class Detail extends MY_Controller {
                 $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
                 $cache1 = 'mcircle_' . $id;
                 $this->cache->delete($cache1);
-                $arpByInherit = $this->config->item('arpbyinherit');
-                if (is_null($arpByInherit) || $arpByInherit !== FALSE)
-                {
-                    $cache2 = 'arp2_' . $id;
-                    $this->cache->delete($cache2);
-                    $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($id), -1);
-                }
-                else
-                {
-                    $cache2 = 'arp_' . $id;
-                    $this->cache->delete($cache2);
-                    $this->j_cache->library('arp_generator', 'arpToArray', array($id), -1);
-                }
+                $cache2 = 'arp_' . $id;
+                $this->cache->delete($cache2);
+                $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($id), -1);
                 echo 'OK';
                 return TRUE;
             }
