@@ -109,6 +109,13 @@ class Arp_generator {
 
         foreach ($release as $key => $value)
         {
+            // remove all  deny records from array and skip generating filterpolicy for sp if no attrs founs 
+            $value['attributes'] = array_filter($value['attributes']);
+            if (count($value['attributes']) == 0)
+            {
+                continue;
+            }
+            
             $AttributeFilterPolicy = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'AttributeFilterPolicy');
             $AttributeFilterPolicy->setAttribute('id', $key);
             $comment = "\n";
@@ -135,77 +142,77 @@ class Arp_generator {
                 foreach ($value['attributes'] as $attr_name => $attr_value)
                 {
                     log_message('debug', 'generating arpXML attr: ' . $attr_name . ' for:' . $key);
-                    if (array_key_exists($attr_name, $value['custom']) && $attr_value == 1)
+                    if ($attr_value == 1)
                     {
-                        log_message('debug', 'found custom for attr: ' . $attr_name . ' for:' . $key);
-                        $AttributeRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'AttributeRule');
-                        $AttributeRule->setAttribute('attributeID', $attr_name);
-                        if (array_key_exists('permit', $value['custom'][$attr_name]) && count($value['custom'][$attr_name]['permit']) > 0)
+                        if (array_key_exists($attr_name, $value['custom']))
                         {
-                            log_message('debug', 'Found custom permit for:' . $key);
-                            if (count($value['custom'][$attr_name]['permit']) > 1)
+                            log_message('debug', 'found custom for attr: ' . $attr_name . ' for:' . $key);
+                            $AttributeRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'AttributeRule');
+                            $AttributeRule->setAttribute('attributeID', $attr_name);
+                            if (array_key_exists('permit', $value['custom'][$attr_name]) && count($value['custom'][$attr_name]['permit']) > 0)
                             {
-                                $PermitValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'PermitValueRule');
-                                $PermitValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:OR');
-
-                                foreach ($value['custom'][$attr_name]['permit'] as $kvalue)
+                                log_message('debug', 'Found custom permit for:' . $key);
+                                if (count($value['custom'][$attr_name]['permit']) > 1)
                                 {
-                                    $value_permited = $docXML->CreateElement('basic:Rule');
-                                    $value_permited->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeValueString');
-                                    $value_permited->setAttribute('value', '' . $kvalue . '');
-                                    $value_permited->setAttribute('ignoreCase', 'true');
-                                    $PermitValueRule->appendChild($value_permited);
-                                }
+                                    $PermitValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'PermitValueRule');
+                                    $PermitValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:OR');
 
-                                $AttributeRule->appendChild($PermitValueRule);
-                                $AttributeFilterPolicy->appendChild($AttributeRule);
+                                    foreach ($value['custom'][$attr_name]['permit'] as $kvalue)
+                                    {
+                                        $value_permited = $docXML->CreateElement('basic:Rule');
+                                        $value_permited->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeValueString');
+                                        $value_permited->setAttribute('value', '' . $kvalue . '');
+                                        $value_permited->setAttribute('ignoreCase', 'true');
+                                        $PermitValueRule->appendChild($value_permited);
+                                    }
+
+                                    $AttributeRule->appendChild($PermitValueRule);
+                                    $AttributeFilterPolicy->appendChild($AttributeRule);
+                                }
+                                else
+                                {
+                                    $PermitValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'PermitValueRule');
+                                    $PermitValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeValueString');
+                                    $kvalue = $value['custom'][$attr_name]['permit'][0];
+                                    $PermitValueRule->setAttribute('value', '' . $kvalue . '');
+                                    $PermitValueRule->setAttribute('ignoreCase', 'true');
+                                    $AttributeRule->appendChild($PermitValueRule);
+                                    $AttributeFilterPolicy->appendChild($AttributeRule);
+                                }
                             }
-                            else
+                            if (array_key_exists('deny', $value['custom'][$attr_name]) && count($value['custom'][$attr_name]['deny']) > 0)
                             {
-                                $PermitValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'PermitValueRule');
-                                $PermitValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeValueString');
-                                $kvalue = $value['custom'][$attr_name]['permit'][0];
-                                $PermitValueRule->setAttribute('value', '' . $kvalue . '');
-                                $PermitValueRule->setAttribute('ignoreCase', 'true');
-                                $AttributeRule->appendChild($PermitValueRule);
-                                $AttributeFilterPolicy->appendChild($AttributeRule);
+                                log_message('debug', 'Found custom deny for:' . $key);
+                                if (count($value['custom'][$attr_name]['deny']) > 1)
+                                {
+                                    $DenyValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'DenyValueRule');
+                                    $DenyValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:OR');
+
+                                    foreach ($value['custom'][$attr_name]['deny'] as $kvalue)
+                                    {
+                                        $value_denied = $docXML->CreateElement('basic:Rule');
+                                        $value_denied->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeValueString');
+                                        $value_denied->setAttribute('value', '' . $kvalue . '');
+                                        $value_denied->setAttribute('ignoreCase', 'true');
+                                        $DenyValueRule->appendChild($value_denied);
+                                    }
+
+                                    $AttributeRule->appendChild($DenyValueRule);
+                                    $AttributeFilterPolicy->appendChild($AttributeRule);
+                                }
+                                else
+                                {
+                                    $DenyValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'DenyValueRule');
+                                    $DenyValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeValueString');
+                                    $kvalue = $value['custom'][$attr_name]['deny'][0];
+                                    $DenyValueRule->setAttribute('value', '' . $kvalue . '');
+                                    $DenyValueRule->setAttribute('ignoreCase', 'true');
+                                    $AttributeRule->appendChild($DenyValueRule);
+                                    $AttributeFilterPolicy->appendChild($AttributeRule);
+                                }
                             }
                         }
-                        if (array_key_exists('deny', $value['custom'][$attr_name]) && count($value['custom'][$attr_name]['deny']) > 0)
-                        {
-                            log_message('debug', 'Found custom deny for:' . $key);
-                            if (count($value['custom'][$attr_name]['deny']) > 1)
-                            {
-                                $DenyValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'DenyValueRule');
-                                $DenyValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:OR');
-
-                                foreach ($value['custom'][$attr_name]['deny'] as $kvalue)
-                                {
-                                    $value_denied = $docXML->CreateElement('basic:Rule');
-                                    $value_denied->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeValueString');
-                                    $value_denied->setAttribute('value', '' . $kvalue . '');
-                                    $value_denied->setAttribute('ignoreCase', 'true');
-                                    $DenyValueRule->appendChild($value_denied);
-                                }
-
-                                $AttributeRule->appendChild($DenyValueRule);
-                                $AttributeFilterPolicy->appendChild($AttributeRule);
-                            }
-                            else
-                            {
-                                $DenyValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'DenyValueRule');
-                                $DenyValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeValueString');
-                                $kvalue = $value['custom'][$attr_name]['deny'][0];
-                                $DenyValueRule->setAttribute('value', '' . $kvalue . '');
-                                $DenyValueRule->setAttribute('ignoreCase', 'true');
-                                $AttributeRule->appendChild($DenyValueRule);
-                                $AttributeFilterPolicy->appendChild($AttributeRule);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if ($attr_value == 1)
+                        else
                         {
                             $AttributeRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'AttributeRule');
                             $AttributeRule->setAttribute('attributeID', $attr_name);
@@ -214,22 +221,29 @@ class Arp_generator {
                             $AttributeFilterPolicy->appendChild($AttributeRule);
                             $AttributeRule->appendChild($PermitValueRule);
                         }
-                       /**
-                        else
-                        {
-                            $AttributeRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'AttributeRule');
-                            $AttributeRule->setAttribute('attributeID', $attr_name);
-                            $PermitValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'DenyValueRule');
-                            $PermitValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:ANY');
-                            $AttributeFilterPolicy->appendChild($AttributeRule);
-                            $AttributeRule->appendChild($PermitValueRule);
-                        }
-                       */
                     }
+                    /**
+                      else
+                      {
+                      $AttributeRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'AttributeRule');
+                      $AttributeRule->setAttribute('attributeID', $attr_name);
+                      $PermitValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'DenyValueRule');
+                      $PermitValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:ANY');
+                      $AttributeFilterPolicy->appendChild($AttributeRule);
+                      $AttributeRule->appendChild($PermitValueRule);
+                      }
+
+                     */
                 }
             }
         }
 
+        if (!$AttributeFilterPolicyGroup->hasAttribute('xmlns:xsi'))
+        {
+            $AttributeFilterPolicyGroup->setAttributeNS('http://www.w3.org/2000/xmlns/',
+            'xmlns:xsi',
+            'http://www.w3.org/2001/XMLSchema-instance');
+        }
         $docXML->appendChild($AttributeFilterPolicyGroup);
         return $docXML;
     }
@@ -802,7 +816,7 @@ class Arp_generator {
 
         foreach ($specific_attributes as $pkey => $pvalue)
         {
-            if (isset($attrs[''.$pkey.'']))
+            if (isset($attrs['' . $pkey . '']))
             {
                 $attrs[$pkey] = array_merge($attrs[$pkey], array_intersect_key($pvalue, $attrs[$pkey]));
             }
