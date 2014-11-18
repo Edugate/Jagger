@@ -42,15 +42,7 @@ class Supported_attributes extends MY_Controller {
 
     private function cleanArpCache($idpId)
     {
-        $arpByInherit = $this->config->item('arpbyinherit');
-        if (is_null($arpByInherit) || $arpByInherit !== FALSE)
-        {
-            $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpId), -1);
-        }
-        else
-        {
-            $this->j_cache->library('arp_generator', 'arpToArray', array($idpId), -1);
-        }
+        $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpId), -1);
         return true;
     }
 

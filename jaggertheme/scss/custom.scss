@@ -215,26 +215,17 @@ div.perm, td.perm {
     text-transform: uppercase;
     font-weight: bold;
 }
-div.perm:not(:empty){
-   cursor: pointer;
-}
-div.dis {
+div.dis, td.dis {
     background-color: #E3E5FF;
     text-transform: uppercase;
 
     font-weight: bold;
 }
-div.dis:not(:empty){
-   cursor: pointer;
-}
-div.spec {
+div.spec, td.spec {
     background-color: #FFFF00;
     text-transform: uppercase;
 
     font-weight: bold;
-}
-div.spec:not(:empty){
-   cursor: pointer;
 }
 div.den, td.den {
     background-color: red;
@@ -242,7 +233,7 @@ div.den, td.den {
 
     font-weight: bold;
 }
-div.den:not(:empty){
+div.perm:not(:empty),div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty),div.den:not(:empty){
    cursor: pointer;
 }
 

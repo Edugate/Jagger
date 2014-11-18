@@ -31,13 +31,6 @@ class Attribute_policyajax extends MY_Controller {
         {
             show_error('method not allowed',403);
         }
-        $arpByInherit = $this->config->item('arpbyinherit');
-        if(!is_null($arpByInherit) && $arpByInherit === FALSE)
-        {
-           set_status_header(403);
-           echo 'funcionality disabled';
-           return;
-        }
         $this->load->library('zacl');
         $tmp_arps = new models\AttributeReleasePolicies;
         $langdrop = array('0'=>lang('dropnever'),'1'=> lang('dropokreq'),'2'=>lang('dropokreqdes'),'100'=>lang('dropnotset'));
@@ -188,13 +181,6 @@ class Attribute_policyajax extends MY_Controller {
         {
             show_error('method not allowed',403);
         }
-        $arpByInherit= $this->config->item('arpbyinherit');
-        if(!is_null($arpByInherit) && $arpByInherit === FALSE)
-        {
-           set_status_header(403);
-           echo 'functionality disabled';
-           return;
-        }
         if(!is_numeric($idp_id))
         {
            set_status_header(404);
@@ -317,7 +303,7 @@ class Attribute_policyajax extends MY_Controller {
         }
         $keyPrefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
-        $cache2 = 'arp2_'.$idp_id;
+        $cache2 = 'arp_'.$idp_id;
         $this->cache->delete($cache2);
         $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idp_id), -1);
         if($custom)
