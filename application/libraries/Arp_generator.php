@@ -205,16 +205,7 @@ class Arp_generator {
                     }
                     else
                     {
-                        if ($attr_value == 0)
-                        {
-                            $AttributeRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'AttributeRule');
-                            $AttributeRule->setAttribute('attributeID', $attr_name);
-                            $PermitValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'DenyValueRule');
-                            $PermitValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:ANY');
-                            $AttributeFilterPolicy->appendChild($AttributeRule);
-                            $AttributeRule->appendChild($PermitValueRule);
-                        }
-                        elseif ($attr_value == 1)
+                        if ($attr_value == 1)
                         {
                             $AttributeRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'AttributeRule');
                             $AttributeRule->setAttribute('attributeID', $attr_name);
@@ -223,6 +214,17 @@ class Arp_generator {
                             $AttributeFilterPolicy->appendChild($AttributeRule);
                             $AttributeRule->appendChild($PermitValueRule);
                         }
+                       /**
+                        else
+                        {
+                            $AttributeRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'AttributeRule');
+                            $AttributeRule->setAttribute('attributeID', $attr_name);
+                            $PermitValueRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'DenyValueRule');
+                            $PermitValueRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:ANY');
+                            $AttributeFilterPolicy->appendChild($AttributeRule);
+                            $AttributeRule->appendChild($PermitValueRule);
+                        }
+                       */
                     }
                 }
             }
