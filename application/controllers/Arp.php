@@ -80,9 +80,17 @@ class Arp extends MY_Controller
         $keyprefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
 
-        $inherit = $this->config->item('arpbyinherit');
-       
-        if(is_null($inherit) || $inherit !== FALSE)
+        $inheritConf = $this->config->item('arpbyinherit');
+        if(is_null($inheritConf) || $inheritConf !== FALSE)
+        {
+            $inherit = TRUE;
+        } 
+        else
+        {
+            $inherit = FALSE;
+        }      
+
+        if($inherit)
         { 
            $cacheid = 'arp2_' . $idp->getId();
         }
@@ -94,13 +102,13 @@ class Arp extends MY_Controller
         $arpcached = $this->cache->get($cacheid);
         if (empty($arpcached)) {
             log_message('debug', 'not found in memcache');
-            if(empty($inherit))
+            if($inherit)
             {
-               $data['out'] = $this->generateXml($idp,FALSE);
+               $data['out'] = $this->generateXml($idp,TRUE);
             }
             else
             {
-               $data['out'] = $this->generateXml($idp,TRUE);
+               $data['out'] = $this->generateXml($idp,FALSE);
             }
             if (!empty($data['out'])) {
                 $this->cache->save($cacheid, $data['out'], 2400);
