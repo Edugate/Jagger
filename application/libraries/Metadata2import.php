@@ -224,8 +224,11 @@ class Metadata2import
         /**
          * end block
          */
+        $time_start = microtime(true);
         $this->metadata_in_array = $this->ci->metadata2array->rootConvert($metadata, $full);
-
+        $time_end = microtime(true);
+        $time_execution = $time_end-$time_start;
+        log_message('debug',__METHOD__.' time execution of converting metadata to array took: '.$time_execution);
         if (!(empty($this->metadata_in_array) || is_array($this->metadata_in_array) || count($this->metadata_in_array) == 0))
         {
             \log_message('warning', __METHOD__ . ' converting xml metadata 
@@ -257,8 +260,14 @@ class Metadata2import
                 $counter = 0;
                 foreach ($this->metadata_in_array as $ent)
                 {
-                    $counter++;
+                    $startTime = microtime(true);
                     // START if type matches 
+                    if(!isset($ent['type']))
+                    {
+                       log_message('error',__METHOD__." missing type for entity: ".$ent['entityid']);
+                       continue;
+                    }
+                    $counter++;
                     if ($ent['type'] === 'BOTH' ||
                             $ent['type'] === $type ||
                             $type == 'ALL')
@@ -547,6 +556,9 @@ class Metadata2import
                             $counter = 0;
                         }
                     } // END if type matches
+                    $endTime = microtime(true);
+                    $looptime = $endTime-$startTime;
+                    log_message('debug','running in loop time execution:: '.$looptime);
                 }
 
                 $currentMembershipList = array_keys($membershipByEnt);

@@ -218,6 +218,8 @@ class Metadata2array
             }
             elseif ($gnode->nodeName === 'md:AttributeAuthorityDescriptor' || $gnode->nodeName === 'AttributeAuthorityDescriptor')
             {
+                $isIdp = true;
+                $entity['type'] = 'IDP';
                 $entity['details']['aadescriptor'] = $this->attributeAuthorityDescriptorConvert($gnode);
             }
             elseif ($gnode->nodeName === 'Extensions' || $gnode->nodeName === 'md:Extensions')

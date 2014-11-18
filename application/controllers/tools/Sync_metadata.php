@@ -152,7 +152,11 @@ class Sync_metadata extends CI_Controller {
             return;
         }
         log_message('debug',__METHOD__.' downloading metadata from '.$url);
+        $time_start = microtime(true);
         $metadata_body = $this->curl->simple_get($url);
+        $time_end = microtime(true);
+        $exectime = $time_end - $time_start;
+        log_message('debug',__METHOD__.' time execustion of downloading metadata from '.$url.' :: '.$exectime.' seconds');
         if (empty($metadata_body))
         {
             set_status_header(403);
@@ -160,7 +164,11 @@ class Sync_metadata extends CI_Controller {
             return;
         }
         $this->load->library(array('metadata_validator', 'curl', 'metadata2import'));
+        $time_start = microtime(true);
         $is_valid_metadata = $this->metadata_validator->validateWithSchema($metadata_body);
+        $time_end = microtime(true);
+        $exectime = $time_end - $time_start;
+        log_message('debug',__METHOD__.' time execustion of validating metadata  :: '.$exectime.' seconds');
         if (empty($is_valid_metadata))
         {
              set_status_header(403);
@@ -189,7 +197,11 @@ class Sync_metadata extends CI_Controller {
             'email'=>$conditions['email'],
         );
         $other = null;
+        $time_start = microtime(true);
         $result = $this->metadata2import->import($metadata_body, $type_of_entities, $full, $defaults, $other);
+        $time_end = microtime(true);
+        $exectime = $time_end - $time_start;
+        log_message('debug',__METHOD__.' total time execution of running import metadata  :: '.$exectime.' seconds');
     }
 
 }
