@@ -25,8 +25,6 @@ echo form_textarea(array(
 ));
 echo '</div>';
 
-#echo '<div class="small-3 large-2 columns"><button  type="button" name="parsemetadatasp" id="parsemetadatasp" value="parsemetadatasp" class="savebuttoni tiny">' . lang('btnparsemeta') . '</button>';
-#echo '</div>';
 echo '</div>';
 
 echo '<button type="submit" name="next" class="advancedmode button" value="' . base_url() . 'providers/sp_registration/advanced">' . lang('nextstep') . '</button>';
