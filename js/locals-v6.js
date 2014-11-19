@@ -715,7 +715,7 @@ var GINIT = {
 
             $.ajax({
                 url: url,
-                timeout: 2500,
+                timeout: 22500,
                 cache: true,
                 success: function (json) {
                     $('#spinner').hide();
@@ -1254,6 +1254,113 @@ $(document).ready(function () {
 
         });
 
+    }
+
+    ////////////// new idpmatrix
+    if ($('#matrixloader').length > 0)
+    {
+        var matrixdiv = $('#idpmatrixdiv');
+        matrixdiv.on('click','td',function(event){
+            var spiddata = $(this).attr("jagger-data-spid");
+            var attrdata = $(this).attr("jagger-data-attrid");
+            //var attrclass = $(this).class();
+            if(spiddata != undefined && attrdata != undefined)
+            {
+                alert(spiddata + 'and '+attrdata);
+            }
+        });
+        var pid = $('#matrixloader').attr("data-jagger-link");
+        if (pid == undefined)
+        {
+            return false;
+        }
+        $.ajax({
+            type: "GET",
+            url: pid,
+            cache: false,
+            dataType: "json",
+            success: function (json) {
+                $('#spinner').hide();
+                if (json)
+                {
+                    var cl;
+                    var tbl = '<table class="table table-header-rotated"><thead><tr>';
+                    tbl += '<th></th>';
+                    var attrdefs = json.attributes;
+                    var policies = json.policies;
+
+                    $.each(attrdefs, function (a, p) {
+                        tbl += '<th class="rotate"><div><span>' + a + '</span></div></th>';
+
+                    });
+                    var cell, requiredAttr, pAttr;
+                    tbl += '</tr></thead>';
+                    $.each(policies, function (i, a) {
+
+                        tbl += '<tr><td jagger-data-entidlink="'+a.spid+'" title="'+i+'">' + a.name + '</td>';
+                        $.each(attrdefs, function (k, v) {
+                            if (a['attributes'][k] != undefined)
+                            {
+                                pAttr = a['attributes'][k];
+                            }
+                            else
+                            {
+                                pAttr = null;
+                            }
+                            requiredAttr = a['req'][k];
+                            if (requiredAttr != null)
+                            {
+                                cell = requiredAttr[0];
+                            }
+                            else
+                            {
+                                cell = '';
+                            }
+                            if (pAttr != null)
+                            {
+                                if (pAttr == 0)
+                                {
+                                    cl = 'den';
+                                }
+                                else if (pAttr == 1)
+                                {
+                                    if (a['custom'][k] != undefined)
+                                    {
+                                        cl = 'spec'
+                                    }
+                                    else
+                                    {
+                                        cl = 'perm';
+                                    }
+                                }
+                                else
+                                {
+                                    cl = 'dis';
+                                }
+                            }
+                            else
+                            {
+                                cl = 'dis';
+                            }
+
+
+
+                            tbl += '<td jagger-data-spid="' + a.spid + '" jagger-data-attrid="' + v + '" class="' + cl + '" title="'+k+'">';
+                            tbl += cell + '</td>';
+                        });
+                    });
+                    tbl += '</table>';
+                    $('#idpmatrixdiv').html(tbl);
+                }
+            },
+            beforeSend: function () {
+                $('#spinner').show();
+            },
+            error: function (xhr, status, error)
+            {
+                $('#spinner').hide();
+            }
+        });
     }
 ///////////////////
 
