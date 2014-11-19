@@ -87,7 +87,7 @@ class J_queue
             log_message('error', __METHOD__ . ' data doesnt contain information about username/email');
             return false;
         }
-        $checkuser = $this->em->createQuery("SELECT u FROM models\User u WHERE u.username = '{$objdata['username']}' OR u.email = '{$objdata['email']}'")->getResult();
+        $checkuser = $this->em->createQuery("SELECT u FROM models\User u WHERE u.username = '{$objdata['username']}'")->getResult();
 
 
         if ($checkuser)
