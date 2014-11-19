@@ -3179,6 +3179,10 @@ $("div#loginform form").submit(function () {
 
 });
 $("button.advancedmode").click(function () {
+    var metadata = $("textarea#metadatabody").val();
+    if(metadata.length === 0) {
+        alert("You did not inserted any metadata. You will have to fill in all the individual information manually.");
+    }
     var thisB = $(this);
     var postUrl = thisB.val();
     var csrfname = $("[name='csrfname']").val();
