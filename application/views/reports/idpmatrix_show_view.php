@@ -28,16 +28,18 @@ if (!empty($excluded) && is_array($excluded) && count($excluded) > 0)
     echo '</ol></div>';
 }
 ?>
+<div class="row">
 <div class="small-12 columns">
     <div class="medium-9 columns"></div>
     <div class="medium-3 columns">
         <label class="hide-for-small-only"><input id="tablesearchinput" type="text" placeholder="<?php echo lang('rr_filter');?>" /></label>
     </div>
 </div>
+</div>
 <?php
 
-echo '<div id="matrixloader" data-jagger-link="' . base_url() . 'reports/idpmatrix/getarpdata/' . $idpid . '" data-jagger-providerdetails="'.base_url().'providers/detail/show"  class="small-12 columns hidden"></div>';
-echo '<div id="idpmatrixdiv" class="small-12 columns"></div>';
+echo '<div id="matrixloader" data-jagger-link="' . base_url() . 'reports/idpmatrix/getarpdata/' . $idpid . '" data-jagger-providerdetails="'.base_url().'providers/detail/show"  class="row hidden"></div>';
+echo '<div id="idpmatrixdiv" class="row" style="margin-top: 20px"></div>';
 
 
 
