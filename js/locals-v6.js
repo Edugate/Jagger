@@ -1259,14 +1259,96 @@ $(document).ready(function () {
     ////////////// new idpmatrix
     if ($('#matrixloader').length > 0)
     {
+        var formupdater = $('#policyupdater');
+        var formupdaterUrl = formupdater.attr('jagger-data-link');
+        var formupdaterAction = $(formupdater).find('form').first();
+        var providerdetailurl = $('#matrixloader').attr('data-jagger-providerdetails');
+        var mrequester = $(formupdater).find("span.mrequester").first();
+        var mattribute = $(formupdater).find("span.mattribute").first();
+        var updatebutton = $(formupdater).find("div.yes").first();
+        var attrflow = $(formupdater).find("div.attrflow").first();
         var matrixdiv = $('#idpmatrixdiv');
-        matrixdiv.on('click','td',function(event){
+        var clickedcell;
+        formupdater.on('click', 'div.yes', function (event) {
+            event.preventDefault();
+
+            var actionUrl = formupdaterAction.attr('action');
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: formupdaterAction.serializeArray(),
+                success: function (data) {
+                    formupdater.foundation('reveal', 'close');
+                    if (!clickedcell.hasClass('dis'))
+                    {
+                        var cell = $.trim(clickedcell.text());
+                        if ((data === "2" && (cell === "R" || cell === "D")) || (data === "1" && cell === "R"))
+                        {
+                            clickedcell.attr('class', 'perm');
+                        }
+                        else if ((data === "2c" && (cell === "R" || cell === "D")) || (data === "1c" && cell === "R"))
+                        {
+                            clickedcell.attr('class', 'spec');
+                        }
+                        else if ((data === "1" && cell === "D") || (data === "0"))
+                        {
+                            clickedcell.attr('class', 'den');
+                        }
+                        else if ((data === "1c" && cell === "D") || (data === "0c"))
+                        {
+                            clickedcell.attr('class', 'den');
+                        }
+
+                    }
+                },
+            });
+        });
+        matrixdiv.on('click', 'td', function (event) {
+            clickedcell = $(this);
+
+            var splink = $(this).attr("jagger-data-entidlink");
+            if (splink != undefined)
+            {
+                var redurl = providerdetailurl + '/' + splink;
+                //    alert(redurl);
+                document.location.href = redurl;
+                return false;
+            }
+
             var spiddata = $(this).attr("jagger-data-spid");
             var attrdata = $(this).attr("jagger-data-attrid");
             //var attrclass = $(this).class();
-            if(spiddata != undefined && attrdata != undefined)
+            if (spiddata != undefined && attrdata != undefined)
             {
-                alert(spiddata + 'and '+attrdata);
+                //formupdater.foundation('reveal', 'open');
+                //alert(spiddata + 'and '+attrdata);
+                $.ajax({
+                    type: "GET",
+                    url: formupdaterUrl + '/' + spiddata + '/' + attrdata,
+                    cache: false,
+                    dataType: "json",
+                    success: function (json) {
+                        formupdaterAction.find("select[name='policy']").prop('selected', false).filter('[value=""]').prop('selected', true);
+                        formupdaterAction.find("input[name='attribute']").first().val(json.attributename);
+                        formupdaterAction.find("input[name='requester']").first().val(json.requester);
+                        mrequester.html(json.requester);
+                        mattribute.html(json.attributename);
+                        var tbody_data = $('<tbody></tbody>');
+                        var thdata = '<thead><th colspan="2">Current attribute flow</th></thead>';
+                        $.each(json.details, function (i, v) {
+                            var trdata = '<tr><td>' + v.name + '</td><td>' + v.value + '</td/></tr>';
+                            tbody_data.append(trdata);
+                        });
+                        var tbl = $('<table/>').css({'font-size': 'smaller'}).addClass('detailsnosort').addClass('small-12').addClass('columns');
+                        var pl = $('<div/>');
+                        tbl.append(thdata);
+                        tbl.append(tbody_data);
+                        pl.append(tbl);
+                        attrflow.html(pl.html());
+                        formupdater.foundation('reveal', 'open');
+
+                    }
+                });
             }
         });
         var pid = $('#matrixloader').attr("data-jagger-link");
@@ -1281,10 +1363,12 @@ $(document).ready(function () {
             dataType: "json",
             success: function (json) {
                 $('#spinner').hide();
+
                 if (json)
                 {
+                    var startTime = new Date();
                     var cl;
-                    var tbl = '<table class="table table-header-rotated"><thead><tr>';
+                    var tbl = '<table class="table table-header-rotated" id="idpmatrixresult"><thead><tr>';
                     tbl += '<th></th>';
                     var attrdefs = json.attributes;
                     var policies = json.policies;
@@ -1294,10 +1378,10 @@ $(document).ready(function () {
 
                     });
                     var cell, requiredAttr, pAttr;
-                    tbl += '</tr></thead>';
+                    tbl += '</tr></thead><tbody>';
                     $.each(policies, function (i, a) {
 
-                        tbl += '<tr><td jagger-data-entidlink="'+a.spid+'" title="'+i+'">' + a.name + '</td>';
+                        tbl += '<tr><td jagger-data-entidlink="' + a.spid + '" class="searchcol"><span data-tooltip aria-haspopup="true" class="has-tip" data-options="disable_for_touch:true" title="' + i + '" >' + a.name + '</span><span class="hidden">'+i+'</span></td>';
                         $.each(attrdefs, function (k, v) {
                             if (a['attributes'][k] != undefined)
                             {
@@ -1310,7 +1394,7 @@ $(document).ready(function () {
                             requiredAttr = a['req'][k];
                             if (requiredAttr != null)
                             {
-                                cell = requiredAttr[0];
+                                cell = requiredAttr[0].toUpperCase();
                             }
                             else
                             {
@@ -1345,12 +1429,27 @@ $(document).ready(function () {
 
 
 
-                            tbl += '<td jagger-data-spid="' + a.spid + '" jagger-data-attrid="' + v + '" class="' + cl + '" title="'+k+'">';
+                            tbl += '<td jagger-data-spid="' + a.spid + '" jagger-data-attrid="' + v + '" class="' + cl + '" title="' + k + '">';
                             tbl += cell + '</td>';
                         });
                     });
-                    tbl += '</table>';
+                    tbl += '</tbody></table>';
+
+
+
+
+
+                    var endTime = new Date();
+                    var durationTime = endTime - startTime;
+                    console.log('time of generating matrix: ' + durationTime)
                     $('#idpmatrixdiv').html(tbl);
+                    var end2Time = new Date();
+                    var durationTime = end2Time - endTime;
+                    console.log('time of input matrinx into DOM: ' + durationTime)
+                    $("#idpmatrixresult").searcher({
+                        inputSelector: "#tablesearchinput",
+                        textSelector: ".searchcol",
+                    });
                 }
             },
             beforeSend: function () {

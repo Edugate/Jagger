@@ -236,6 +236,13 @@ div.den, td.den {
 div.perm:not(:empty),div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty),div.den:not(:empty){
    cursor: pointer;
 }
+td.perm:not(:empty),div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty),div.den:not(:empty){
+   cursor: pointer;
+}
+#idpmatrixdiv td {
+  cursor: pointer;
+
+}
 
 fieldset {
 
@@ -639,5 +646,6 @@ pre.xml {
   th.row-header {
     padding: 0 10px;
     border-bottom: 1px solid #ccc;
+    font-size : smaller;
   }
 }
