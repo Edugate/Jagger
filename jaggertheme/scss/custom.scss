@@ -614,16 +614,16 @@ pre.xml {
 .table-header-rotated {
   border-collapse: collapse;
   .csstransforms & td {
-    width: 6px;
+    width: 2px;
   }
   .no-csstransforms & th {
-    padding: 2px 5px;
+    padding: 0px 0px;
   }
   td {
     text-align: center;
     padding: 0px 0px;
     border: 1px solid #ccc;
-    font-size: smaller;
+    font-size:0.7rem;
   }
   .csstransforms & th.rotate {
     height: 120px;
@@ -632,21 +632,21 @@ pre.xml {
     > div {
       transform: 
         // Magic Numbers
-        translate(3px, 47px)
+        translate(5px, 47px)
         // 45 is really 360-45
         rotate(315deg);
-      max-width: 7px;
+      max-width: 5px;
     }
     > div > span {
       border-bottom: 1px solid #ccc;
-      padding: 5px 5px;
-      text-size: smaller;
+      padding: 1px 1px;
+      text-size: 0.3rem;
       
     }
   }
   th.row-header {
     padding: 0 10px;
     border-bottom: 1px solid #ccc;
-    font-size : smaller;
+    font-size : 0.3rem;
   }
 }
