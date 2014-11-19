@@ -614,15 +614,16 @@ pre.xml {
 .table-header-rotated {
   border-collapse: collapse;
   .csstransforms & td {
-    width: 10px;
+    width: 6px;
   }
   .no-csstransforms & th {
     padding: 2px 5px;
   }
   td {
     text-align: center;
-    padding: 1px 2px;
+    padding: 0px 0px;
     border: 1px solid #ccc;
+    font-size: smaller;
   }
   .csstransforms & th.rotate {
     height: 120px;
@@ -634,7 +635,7 @@ pre.xml {
         translate(3px, 47px)
         // 45 is really 360-45
         rotate(315deg);
-      width: 7px;
+      max-width: 7px;
     }
     > div > span {
       border-bottom: 1px solid #ccc;

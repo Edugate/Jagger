@@ -1381,7 +1381,7 @@ $(document).ready(function () {
                     tbl += '</tr></thead><tbody>';
                     $.each(policies, function (i, a) {
 
-                        tbl += '<tr><td jagger-data-entidlink="' + a.spid + '" class="searchcol"><span data-tooltip aria-haspopup="true" class="has-tip" data-options="disable_for_touch:true" title="' + i + '" >' + a.name + '</span><span class="hidden">'+i+'</span></td>';
+                        tbl += '<tr><td jagger-data-entidlink="' + a.spid + '" class="searchcol"><span data-tooltip aria-haspopup="true" class="has-tip" data-options="disable_for_touch:true" title="' + i + '" >' + a.name + '</span><span class="hidden">' + i + '</span></td>';
                         $.each(attrdefs, function (k, v) {
                             if (a['attributes'][k] != undefined)
                             {
@@ -1437,12 +1437,21 @@ $(document).ready(function () {
 
 
 
+                    var tblObj = $.parseHTML(tbl);
+                    $(tblObj).find("th").each(function (i) {
+                        var tds = $(this).parents('table').find('tr td:nth-child(' + (i + 1) + ')');
+                        if (tds.length == tds.filter(':empty').length) {
+                            $(this).hide();
+                            tds.hide();
+                       }
+                    });
 
 
                     var endTime = new Date();
                     var durationTime = endTime - startTime;
                     console.log('time of generating matrix: ' + durationTime)
-                    $('#idpmatrixdiv').html(tbl);
+                    var oo = tblObj;
+                    $('#idpmatrixdiv').html(oo);
                     var end2Time = new Date();
                     var durationTime = end2Time - endTime;
                     console.log('time of input matrinx into DOM: ' + durationTime)

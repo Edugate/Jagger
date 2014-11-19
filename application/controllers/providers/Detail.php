@@ -1127,7 +1127,7 @@ class Detail extends MY_Controller {
                 }
             }
             $d[++$i]['name'] = lang('rr_arpoverview');
-            $d[$i]['value'] = anchor(base_url('reports/idp_matrix/show/' . $ent->getId()), 'matrix', 'class="editbutton"');
+            $d[$i]['value'] = anchor(base_url('reports/idpmatrix/show/' . $ent->getId()), 'matrix', 'class="editbutton"');
         }
         /**
          * supported attributes by IDP part
