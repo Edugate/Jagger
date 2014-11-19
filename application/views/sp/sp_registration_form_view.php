@@ -14,7 +14,7 @@ echo '<div class="small-12 columns">';
 echo '<div class="small-3 columns">';
 echo jform_label('Metadata <small>(' . lang('rr_optional') . ')</small>' . showBubbleHelp(lang('rhelp_regspparsemeta')), 'metadatabody');
 echo '</div>';
-echo '<div class="small-6 large-7 columns">';
+echo '<div class="small-9 large-9 columns">';
 echo form_textarea(array(
     'id' => 'metadatabody',
     'name' => 'metadatabody',
@@ -25,8 +25,6 @@ echo form_textarea(array(
 ));
 echo '</div>';
 
-echo '<div class="small-3 large-2 columns"><button  type="button" name="parsemetadatasp" id="parsemetadatasp" value="parsemetadatasp" class="savebuttoni tiny">' . lang('btnparsemeta') . '</button>';
-echo '</div>';
 echo '</div>';
 
 echo '<button type="submit" name="next" class="advancedmode button" value="' . base_url() . 'providers/sp_registration/advanced">' . lang('nextstep') . '</button>';
