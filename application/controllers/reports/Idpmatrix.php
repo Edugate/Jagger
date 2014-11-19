@@ -137,9 +137,7 @@ class Idpmatrix extends MY_Controller
         $data['idpid'] = $idp->getId();
         $data['entityid'] = $idp->getEntityId();
 
-        $members = $this->_get_members($idp);
-        $returnArray = TRUE;
-        $arparray = $this->arp_generator->arpToXML($idp, $returnArray);
+       
         $extends = $idp->getExtendMetadata();
         if (count($extends) > 0)
         {
@@ -158,128 +156,15 @@ class Idpmatrix extends MY_Controller
         $data['titlepage'] = lang('identityprovider') . ': ' . anchor('' . base_url() . 'providers/detail/show/' . $data['idpid'], $data['idpname']) . '<br />';
         $data['titlepage'] .= $data['entityid'];
         $data['subtitlepage'] = lang('rr_arpoverview');
-        if (empty($arparray))
-        {
-            $data['content_view'] = 'reports/idp_matrix_show_view';
-            $data['error_message'] = lang('errormatrixnoattrsormembers');
-            $this->load->view('page', $data);
-            return;
-        }
-        $attrs = $this->em->getRepository("models\Attribute")->findAll();
-        $attrmatrix_template = array();
-        foreach ($attrs as $a)
-        {
-            $attrmatrix_template[$a->getName()] = '';
-        }
+        
+   
 
-        foreach ($arparray as $entityid => $spv)
-        {
-            $mrows['' . $entityid . ''] = $attrmatrix_template;
-
-
-
-            if (array_key_exists('attributes', $spv))
-            {
-                foreach ($spv['attributes'] as $attrkey => $attrvalue)
-                {
-                    if (isset($attrvalue))
-                    {
-                        if ($attrvalue == 0)
-                        {
-                            $mrows[$entityid][$attrkey] = '<div class="den">&nbsp;</div>';
-                        }
-                        else
-                        {
-                            $mrows[$entityid][$attrkey] = '<div class="perm">&nbsp;</div>';
-                        }
-                    }
-                }
-            }
-            if (array_key_exists('req', $spv))
-            {
-                foreach ($spv['req'] as $rkey => $rvalue)
-                {
-                    if ($rvalue == 'required')
-                    {
-                        if (array_key_exists($rkey, $spv['attributes']))
-                        {
-                            if (!empty($spv['attributes'][$rkey]))
-                            {
-                                if (array_key_exists($rkey, $spv['custom']))
-                                {
-                                    $mrows[$entityid][$rkey] = '<div class="spec">R</div>';
-                                }
-                                else
-                                {
-                                    $mrows[$entityid][$rkey] = '<div class="perm">R</div>';
-                                }
-                            }
-                            else
-                            {
-                                $mrows[$entityid][$rkey] = '<div class="den">R</div>';
-                            }
-                        }
-                        else
-                        {
-                            $mrows[$entityid][$rkey] = '<div class="dis">R</div>';
-                        }
-                    }
-                    elseif ($rvalue == 'desired')
-                    {
-                        if (array_key_exists($rkey, $spv['attributes']))
-                        {
-                            if (!empty($spv['attributes'][$rkey]))
-                            {
-                                if (array_key_exists($rkey, $spv['custom']))
-                                {
-                                    $mrows[$entityid][$rkey] = '<div class="spec">D</div>';
-                                }
-                                else
-                                {
-                                    $mrows[$entityid][$rkey] = '<div class="perm">D</div>';
-                                }
-                            }
-                            else
-                            {
-                                $mrows[$entityid][$rkey] = '<div class="den">D</div>';
-                            }
-                        }
-                        else
-                        {
-                            $mrows[$entityid][$rkey] = '<div class="dis">D</div>';
-                        }
-                    }
-                }
-            }
-        }
-        foreach ($mrows as $key => $value)
-        {
-            $t = null;
-            if (!empty($arparray[$key]['name']))
-            {
-                $t = '<a href="' . base_url() . 'providers/detail/show/' . $arparray[$key]['spid'] . '" title="' . $key . '">' . substr($arparray[$key]['name'], 0, 30) . '</a>';
-            }
-            else
-            {
-                $t = '<a href="' . base_url() . 'providers/detail/show/' . $arparray[$key]['spid'] . '" title="' . $key . '">' . substr($key, 0, 30) . '</a>';
-            }
-            array_unshift($mrows[$key], $t);
-        }
-        foreach ($attrmatrix_template as $k => $v)
-        {
-            $thead[] = '
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="190">
-                  <text id="thetext" transform="rotate(270, 9, 0) translate(-180,3)">' . htmlentities($k) . '</text>
-                </svg>
-               ';
-        }
-        $corner = '<img src="' . base_url() . 'images/legend.png" />';
-        $corner .= lang('serviceprovider');
-        array_unshift($thead, $corner);
-        array_unshift($mrows, $thead);
+   
+    
+     
         $data['entityid'] = $idp->getEntityId();
         $data['idpid'] = $idp->getId();
-        $data['result'] = $mrows;
+      
 
         $data['content_view'] = 'reports/idpmatrix_show_view';
         $this->load->view('page', $data);
