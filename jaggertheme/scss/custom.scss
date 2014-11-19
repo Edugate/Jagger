@@ -604,3 +604,40 @@ pre.xml {
 .xml .ln-xtra, .xml li.ln-xtra, .xml div.ln-xtra {background-color: #ffc;}
 .xml span.xtra { display:block; }
 
+.table-header-rotated {
+  border-collapse: collapse;
+  .csstransforms & td {
+    width: 10px;
+  }
+  .no-csstransforms & th {
+    padding: 2px 5px;
+  }
+  td {
+    text-align: center;
+    padding: 1px 2px;
+    border: 1px solid #ccc;
+  }
+  .csstransforms & th.rotate {
+    height: 120px;
+    white-space: nowrap;
+    // Firefox needs the extra DIV for some reason, otherwise the text disappears if you rotate 
+    > div {
+      transform: 
+        // Magic Numbers
+        translate(3px, 47px)
+        // 45 is really 360-45
+        rotate(315deg);
+      width: 7px;
+    }
+    > div > span {
+      border-bottom: 1px solid #ccc;
+      padding: 5px 5px;
+      text-size: smaller;
+      
+    }
+  }
+  th.row-header {
+    padding: 0 10px;
+    border-bottom: 1px solid #ccc;
+  }
+}
