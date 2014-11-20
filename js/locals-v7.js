@@ -569,13 +569,13 @@ var GINIT = {
                         }
                         if (data.returncode === "success")
                         {
-                            document.getElementById(fvid).style.backgroundColor = "#00aa00";
-                            document.getElementById(fvid).style.borderColor = "#00aa00";
-                            document.getElementById(fvid).disabled = true;
+                            $("form").find("button:focus").css("background-color", "#00aa00");
+                            $("form").find("button:focus").data("passed", "true");
+                            $("form").find("button:focus").attr("disabled", "true");
                         } else if (data.returncode === "error")
                         {
-                            document.getElementById(fvid).style.backgroundColor = "#aa0000";
-                            document.getElementById(fvid).style.borderColor = "#aa0000";
+                            $("form").find("button:focus").css("background-color", "#aa0000");
+                            $("form").find("button:focus").data("passed", "false");
                         }
                         if (data.message)
                         {
@@ -610,6 +610,24 @@ var GINIT = {
             });
 
             //return false; 
+        });
+
+        $("form#approvequeue").submit(function(e) {
+            var result = 0;
+            var validators = 0;
+
+            $("button[name='mandatory']").each(function(i) {
+                if($(this).data("passed") == "true") {
+                    result += 1;
+                }
+
+                validators += 1;
+            });
+
+            if(validators != result) {
+                alert('All mandatory validations have to pass successfully!');
+                e.preventDefault();
+            }
         });
 
         $("a.fmembers").click(function () {
