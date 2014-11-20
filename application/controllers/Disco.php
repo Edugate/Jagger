@@ -97,7 +97,9 @@ class Disco extends MY_Controller {
         }
         if (!empty($m) && $m != 'metadata.json')
         {
-            show_error('Request not allowed', 403);
+            set_status_header(403);
+            echo 'Request not allowed';
+            return;
         }
         if (!empty($_GET['callback']))
         {
@@ -147,22 +149,19 @@ class Disco extends MY_Controller {
             foreach ($p1 as $ents)
             {
                 $allowed = true;
-                if ($ents->getAvailable())
+                if ($white)
                 {
-                    if ($white)
+                    if (!in_array($ents->getEntityId(), $this->wayflist))
                     {
-                        if (!in_array($ents->getEntityId(), $this->wayflist))
-                        {
-                            $allowed = false;
-                        }
-                    }
-                    if ($allowed)
-                    {
-
-                        $output[$oi] = $this->providerToDisco($ents);
-                        $oi++;
+                        $allowed = false;
                     }
                 }
+                if ($allowed)
+                {
+
+                   $output[$oi] = $this->providerToDisco($ents);
+                   $oi++;
+                 }
             }
             if (!empty($call_array) && is_array($call_array) && count($call_array) == 3 && $call_array['0'] == 'dj' && $call_array['1'] == 'md' && is_numeric($call_array['2']))
             {
