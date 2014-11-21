@@ -1464,6 +1464,12 @@ $(document).ready(function () {
                        }
                     });
 
+                    var cols = $(tblObj).find('tr:first th:not([style*="display: none"])').length;
+                    if(cols>52)
+                    {
+                        $("#container").css({"max-width":"100%"});
+                    }
+                    
 
                     var endTime = new Date();
                     var durationTime = endTime - startTime;
