@@ -1390,11 +1390,16 @@ $(document).ready(function () {
                     tbl += '<th></th>';
                     var attrdefs = json.attributes;
                     var policies = json.policies;
+                    var countAttr = 0;
 
                     $.each(attrdefs, function (a, p) {
                         tbl += '<th class="rotate"><div><span>' + a + '</span></div></th>';
-
+                        countAttr++;
                     });
+                    if(countAttr>52)
+                    {
+                        $("#container").css({"max-width":"100%"});
+                    }
                     var cell, requiredAttr, pAttr;
                     tbl += '</tr></thead><tbody>';
                     $.each(policies, function (i, a) {
@@ -1453,29 +1458,11 @@ $(document).ready(function () {
                     });
                     tbl += '</tbody></table>';
 
-
-
-                    var tblObj = $.parseHTML(tbl);
-                    $(tblObj).find("th").each(function (i) {
-                        var tds = $(this).parents('table').find('tr td:nth-child(' + (i + 1) + ')');
-                        if (tds.length == tds.filter(':empty').length) {
-                            $(this).hide();
-                            tds.hide();
-                       }
-                    });
-
-                    var cols = $(tblObj).find('tr:first th:not([style*="display: none"])').length;
-                    if(cols>52)
-                    {
-                        $("#container").css({"max-width":"100%"});
-                    }
-                    
-
                     var endTime = new Date();
                     var durationTime = endTime - startTime;
                     console.log('time of generating matrix: ' + durationTime)
-                    var oo = tblObj;
-                    matrixdiv.html(oo);
+
+                    matrixdiv.html(tbl);
                     var end2Time = new Date();
                     var durationTime = end2Time - endTime;
                     console.log('time of input matrinx into DOM: ' + durationTime)

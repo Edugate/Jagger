@@ -82,14 +82,27 @@ class Idpmatrix extends MY_Controller
             $attrdefs[$a->getName()] = $a->getId();
             $attrlist[$a->getName()] = 0;
         }
-      ksort($attrdefs);
-       // $members = $this->_get_members($idp);
+        $attrdedsCopy = $attrdefs;
         $returnArray = TRUE;
-        ksort($attrdefs);
-        ksort($attrlist);
         $arparray['policies'] = $this->arp_generator->arpToXML($idp, $returnArray);
+       
+        //$attrdedsCopy = array();
+        foreach($arparray['policies'] as $p)
+        {
+           foreach($p['attributes'] as $k => $v)
+           {
+               unset($attrdedsCopy[''.$k.'']);
+           }
+           foreach($p['req'] as $k => $v)
+           {
+               unset($attrdedsCopy[''.$k.'']);
+           }
+        }
+        $attrdefsLeft = array_diff_key($attrdefs,$attrdedsCopy);
+        ksort($attrdefsLeft);
+        ksort($attrlist);
         $arparray['total']= count($arparray['policies']);
-        $arparray['attributes'] = $attrdefs;
+        $arparray['attributes'] = $attrdefsLeft;
         $arparray['attrlist'] = $attrlist;
         echo json_encode($arparray);
         return;
