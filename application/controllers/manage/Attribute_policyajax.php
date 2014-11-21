@@ -31,6 +31,12 @@ class Attribute_policyajax extends MY_Controller {
         {
             show_error('method not allowed',403);
         }
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin) {
+            set_status_header(403);
+            echo 'lost session';
+            return;
+        }
         $this->load->library('zacl');
         $tmp_arps = new models\AttributeReleasePolicies;
         $langdrop = array('0'=>lang('dropnever'),'1'=> lang('dropokreq'),'2'=>lang('dropokreqdes'),'100'=>lang('dropnotset'));
@@ -179,6 +185,12 @@ class Attribute_policyajax extends MY_Controller {
         if(!$this->input->is_ajax_request())
         {
             show_error('method not allowed',403);
+        }
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin) {
+            set_status_header(403);
+            echo 'lost session';
+            return;
         }
         $this->load->library('zacl');
         $tmp_arps = new models\AttributeReleasePolicies;
