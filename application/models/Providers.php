@@ -97,8 +97,10 @@ class Providers {
 
     public function getIdPsForWayf(Provider $provider)
     {
+        $spid = $provider->getId();
+        $startTime = microtime(true);
         $query1 = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
-        $query1->setParameter(1, $provider->getId());
+        $query1->setParameter(1, $spid);
         $query1->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result1 = $query1->getResult();
         $feds = array();
@@ -110,11 +112,16 @@ class Providers {
         {
             return array();
         }
-        $query = $this->em->createQuery("SELECT p,e,m FROM models\Provider p LEFT JOIN p.extend e LEFT JOIN p.membership m LEFT JOIN m.federation f  WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != ?2 AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN ('IDP','BOTH')");
+        $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
+        $query = $this->em->createQuery("SELECT partial p.{id, entityid,type,ldisplayname,lname,validfrom, validto},e, partial m.{id} FROM models\Provider p LEFT JOIN p.extend e LEFT JOIN p.membership m LEFT JOIN m.federation f  WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != ?2 AND p.is_active = '1' AND p.is_approved = '1' AND (p.validto is null OR p.validto >= :now) AND (p.validfrom is null OR p.validfrom <= :now) AND p.type IN ('IDP','BOTH')");
         $query->setParameter('feds', $feds);
-        $query->setParameter(2, $provider->getId());
+        $query->setParameter(2, $spid);
+        $query->setParameter('now', $currentTime);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
+        $endTime = microtime(true);
+        $execTime = $endTime-$startTime;
+        \log_message('info',__METHOD__.' time execution: '.$execTime);
         return $result;
     }
 
