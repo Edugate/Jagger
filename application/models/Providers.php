@@ -66,10 +66,9 @@ class Providers {
         }
         return $feds;
     }
-
     public function getSPsForArp(Provider $provider)
     {
-        $query1 = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
+        $query1 = $this->em->createQuery("SELECT partial m.{id, federation},partial f.{id} FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
         $query1->setParameter(1, $provider->getId());
         $query1->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result1 = $query1->getResult();
@@ -82,9 +81,8 @@ class Providers {
         {
             return array();
         }
-        $query = $this->em->createQuery("SELECT p,e,m,f FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f LEFT JOIN p.extend e WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != ?2 AND p.is_active = '1' AND p.is_approved = '1' AND p.type IN ('SP','BOTH')");
+        $query = $this->em->createQuery("SELECT partial p.{id, entityid,type,ldisplayname,displayname,lname, name},e,partial m.{id, provider, federation},partial f.{id} FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f LEFT JOIN p.extend e WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND  p.type IN ('SP','BOTH') AND  p.is_active = '1' AND p.is_approved = '1'");
         $query->setParameter('feds', $feds);
-        $query->setParameter(2, $provider->getId());
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
         $r2 = new \Doctrine\Common\Collections\ArrayCollection;
@@ -113,7 +111,7 @@ class Providers {
             return array();
         }
         $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
-        $query = $this->em->createQuery("SELECT partial p.{id, entityid,type,ldisplayname,lname,validfrom, validto},e, partial m.{id} FROM models\Provider p LEFT JOIN p.extend e LEFT JOIN p.membership m LEFT JOIN m.federation f  WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != ?2 AND p.is_active = '1' AND p.is_approved = '1' AND (p.validto is null OR p.validto >= :now) AND (p.validfrom is null OR p.validfrom <= :now) AND p.type IN ('IDP','BOTH')");
+        $query = $this->em->createQuery("SELECT partial p.{id,entityid,type,ldisplayname,lname,name,displayname},e, partial m.{id} FROM models\Provider p LEFT JOIN p.extend e LEFT JOIN p.membership m LEFT JOIN m.federation f  WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.id != ?2 AND p.is_active = '1' AND p.is_approved = '1' AND (p.validto is null OR p.validto >= :now) AND (p.validfrom is null OR p.validfrom <= :now) AND p.type IN ('IDP','BOTH')");
         $query->setParameter('feds', $feds);
         $query->setParameter(2, $spid);
         $query->setParameter('now', $currentTime);
