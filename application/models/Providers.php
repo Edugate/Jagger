@@ -355,7 +355,6 @@ class Providers {
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
     }
-
     public function getIdpsLightLocal()
     {
         log_message('debug', 'run: models\Providers::getIdpsLightLocal()');
@@ -372,6 +371,17 @@ class Providers {
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
+    }
+
+    public function getProvidersListPartialInfo($type)
+    {
+        $dql = "SELECT partial p.{id,entityid,name,lname,displayname,ldisplayname,type,helpdeskurl,lhelpdeskurl,registerdate,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},a FROM models\Provider p LEFT JOIN p.extend a  WHERE p.type != :type";
+        $query = $this->em->createQuery($dql);
+        $query->setParameter('type', $type);
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();
+
+
     }
 
     /**

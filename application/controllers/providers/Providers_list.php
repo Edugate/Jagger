@@ -122,14 +122,8 @@ class Providers_list extends MY_Controller {
        {
           log_message('debug','list of '.$type.'(s) for lang ('.$lang.') not found in cache ... retriving from db');
           $tmpprovs = new models\Providers();
-          if(strcmp($type,'idp')==0)
-          {
-             $list = $tmpprovs->getIdpsLight();
-          }
-          else
-          {
-             $list = $tmpprovs->getSpsLight();
-          }
+          $typeToUpper = strtoupper($type);
+          $list = $tmpprovs->getProvidersListPartialInfo($typeToUpper);
           $i = 0;
           foreach($list as $v)
           {
