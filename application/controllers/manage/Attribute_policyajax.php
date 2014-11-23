@@ -25,161 +25,6 @@ class Attribute_policyajax extends MY_Controller {
         
     }
 
-    public function retrieveattrpath($idpid=null)
-    {
-        if(!$this->input->is_ajax_request() || (empty($idpid) || !is_numeric($idpid)))
-        {
-            show_error('method not allowed',403);
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            set_status_header(403);
-            echo 'lost session';
-            return;
-        }
-        $this->load->library('zacl');
-        $tmp_arps = new models\AttributeReleasePolicies;
-        $langdrop = array('0'=>lang('dropnever'),'1'=> lang('dropokreq'),'2'=>lang('dropokreqdes'),'100'=>lang('dropnotset'));
-
-        
- 
-        $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$idpid,'type'=>array('IDP','BOTH')));
-        if(empty($idp))
-        {
-          set_status_header(404);
-          echo 'idp not found';
-          return;
-        }
-        $has_write_access = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if(!$has_write_access)
-        {
-          set_status_header(403);
-          echo 'no permission';
-          return;
-        }
-
-        $requester = $this->input->post('requester');
-        $attrname = $this->input->post('attribute');
-        
-        if(empty($requester) || empty($attrname))
-        {
-           set_status_header(403);
-           echo 'missing params';
-           return;
-        }
-
-        $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('name'=>$attrname));
-        if(empty($attribute))
-        {
-           set_status_header(403);
-           echo 'missing attr';
-           return;
-        }
-        $sp = $this->em->getRepository("models\Provider")->findOneBy(array('entityid'=>$requester,'type'=>array('SP','BOTH')));
-        if(empty($sp))
-        {
-           set_status_header(403);
-           echo 'missing sp';
-           return;
-        }
-        $result = array('status'=>'ok','requester'=>$requester,'attributename'=>$attrname);
-        $result['details'] = array();
-        $supportedAttr = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute'=>$attribute,'idp'=>$idp,'type'=>'supported'));
-        $supported = false;
-        if(!empty($supportedAttr))
-        {
-            $result['supported'] = true;
-            $result['details'][] = array('name'=>'','value'=>lang('rr_supported'));
-            $supported = true;
-        }           
-        else
-        {
-            $result['supported'] = false;
-            $result['details'][] = array('name'=>'','value'=>lang('attrnotsupported'));
-        }
-        $globalPolicy =  $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute'=>$attribute,'idp'=>$idp,'type'=>'global'));
-        $global = 0;
-        if(empty($globalPolicy))
-        {
-            $result['global'] = null;
-            $val = ''.$langdrop['100'].' => deny';
-            $result['details'][] = array('name'=>lang('rr_defaultarp'),'value'=>$val);
-        }
-        else
-        {
-            $result['global'] = $globalPolicy->getPolicy();
-            $result['details'][] = array('name'=>lang('rr_default'),'value'=>$langdrop[$globalPolicy->getPolicy()]);
-        }
-        $idpfeds = $idp->getFederations();
-        $spfeds = $sp->getFederations();
-        $attrfed = null;
-        $fedsmerged = array();
-        foreach($spfeds as $s)
-        {
-            if($idpfeds->contains($s))
-            {
-                $tmpattrfed = $tmp_arps->getOneFedPolicyAttribute($idp,$s,$attribute->getId());
-                if(!empty($tmpattrfed))
-                {
-                    $tmpattrfedPolicy = $tmpattrfed->getPolicy();
-                    if($tmpattrfedPolicy !== null && $tmpattrfedPolicy >= $attrfed)
-                    {
-                        $attrfed = $tmpattrfedPolicy;
-                        $fedsmerged[] = $sp->getName();
-                    }
-                }
-            }
-        }
-        if($attrfed === null)
-        {
-            $result['details'][] = array('name'=>'federation','value'=>$langdrop['100'] .' => '.lang('rr_inheritfromparent'));
-        }
-        else
-        {
-            $fedsuffix = '';
-            if(count($fedsmerged)>1)
-            {
-               $fedsuffix = '<br />'.lang('rr_merged').':<br />';
-               $fedsuffix .= implode('<br />',$fedsmerged);
-            }
-            $result['details'][] = array('name'=>lang('rr_federation'),'value'=>$langdrop[''.$attrfed.''].$fedsuffix);
-        }
-        
-        $specificPolicy = $tmp_arps->getOneSPPolicy($idp->getId(), $attribute->getId(), $sp->getId());
-        $customPolicy = $tmp_arps->getOneSPCustomPolicy($idp->getId(), $attribute->getId(), $sp->getId());  
-        if(empty($specificPolicy))
-        {
-            $result['details'][] = array('name'=>lang('rr_requester'),'value'=>$langdrop['100'] .' => '.lang('rr_inheritfromparent'));
-        }
-        else
-        {
-            $result['details'][] = array('name'=>lang('rr_requester'),'value'=>$langdrop[$specificPolicy->getPolicy()] );
-        }
-        if(!empty($customPolicy))
-        {
-            $rawdata = $customPolicy->getRawdata();
-            if(is_array($rawdata))
-            {
-                $suffix = '';
-                if(isset($rawdata['permit']) && is_array($rawdata['permit']))
-                {
-                    $suffix = '<br />'.lang('rr_permvalues').':<br />';
-                    $suffix .= implode('<br />',$rawdata['permit']);
-                }
-                elseif(isset($rawdata['deny']) && is_array($rawdata['deny']))
-                {
-                    $suffix = '<br />'.lang('rr_denvalues').':<br />';
-                    $suffix .= implode('<br />',$rawdata['deny']);
-
-                }
-                $result['details'][] = array('name'=>lang('custompolicy'),'value'=>'<small>'.lang('customappliedifpermited').'</small>'.$suffix);
-            }
-        }
-        $this->output->set_content_type('application/json');
-        echo json_encode($result);
-  
-
-    }
     public function getattrpath($idpid,$spid,$attrid)
     {
         if(!$this->input->is_ajax_request())
@@ -245,7 +90,6 @@ class Attribute_policyajax extends MY_Controller {
         {
             $result['supported'] = true;
             $result['details'][] = array('name'=>'','value'=>lang('rr_supported'));
-            $supported = true;
         }           
         else
         {
@@ -253,7 +97,6 @@ class Attribute_policyajax extends MY_Controller {
             $result['details'][] = array('name'=>'','value'=>lang('attrnotsupported'));
         }
         $globalPolicy =  $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute'=>$attribute,'idp'=>$idp,'type'=>'global'));
-        $global = 0;
         if(empty($globalPolicy))
         {
             $result['global'] = null;

@@ -21,7 +21,6 @@ class Idpmatrix extends MY_Controller
 {
 
     private $tmp_providers;
-    private $logo_url;
 
     function __construct()
     {
@@ -40,11 +39,6 @@ class Idpmatrix extends MY_Controller
         $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
     }
 
-    private function _get_members($idp)
-    {
-        $members = $this->tmp_providers->getCircleMembersLight($idp);
-        return $members;
-    }
 
     public function getArpData($idpid)
     {
@@ -86,7 +80,6 @@ class Idpmatrix extends MY_Controller
         $returnArray = TRUE;
         $arparray['policies'] = $this->arp_generator->arpToXML($idp, $returnArray);
        
-        //$attrdedsCopy = array();
         foreach($arparray['policies'] as $p)
         {
            foreach($p['attributes'] as $k => $v)
@@ -154,7 +147,6 @@ class Idpmatrix extends MY_Controller
         $extends = $idp->getExtendMetadata();
         if (count($extends) > 0)
         {
-            $is_logo = false;
             foreach ($extends as $ex)
             {
                 $el = $ex->getElement();

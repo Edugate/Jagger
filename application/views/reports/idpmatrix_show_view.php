@@ -70,7 +70,6 @@ echo form_input(array('name' => 'requester', 'id' => 'requester', 'type' => 'hid
 <?php
 echo form_close();
 
-https://janul.no-ip.info/rr3/manage/attribute_policyajax/retrieveattrpath/2
 echo '
   <div id="policyupdater" class="reveal-modal small" data-reveal jagger-data-link="' . base_url() . 'manage/attribute_policyajax/getattrpath/' . $idpid . '">
   <h2>' . lang('confirmupdpolicy') . '</h2>
