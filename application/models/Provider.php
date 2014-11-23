@@ -1859,15 +1859,18 @@ class Provider
         {
             $type = $this->type;
         }
-        $e = $this->getExtendMetadata();
+        $doFilter = array('DisplayName');
+        $e = $this->getExtendMetadata()->filter(
+                function(ExtendMetadata $entry) use ($doFilter) {
+            return in_array($entry->getElement(), $doFilter);
+        });
         if (!empty($e))
         {
             foreach ($e as $p)
             {
-                $k = $p->getElement();
                 $t = $p->getType();
                 $a = $p->getAttributes();
-                if (strcmp($k, 'DisplayName') == 0 && strcasecmp($t, $type) == 0 && isset($a['xml:lang']))
+                if (strcasecmp($t, $type) == 0 && isset($a['xml:lang']))
                 {
                     if (strcasecmp($a['xml:lang'], $lang) == 0)
                     {

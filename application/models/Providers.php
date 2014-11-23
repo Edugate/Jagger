@@ -375,12 +375,12 @@ class Providers {
 
     public function getProvidersListPartialInfo($type)
     {
-        $dql = "SELECT partial p.{id,entityid,name,lname,displayname,ldisplayname,type,helpdeskurl,lhelpdeskurl,registerdate,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},a FROM models\Provider p LEFT JOIN p.extend a  WHERE p.type != :type";
+        $dql = "SELECT partial p.{id,entityid,name,lname,displayname,ldisplayname,type,helpdeskurl,lhelpdeskurl,registerdate,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},a FROM models\Provider p LEFT OUTER JOIN p.extend a  WHERE p.type IN (?1,?2)";
         $query = $this->em->createQuery($dql);
-        $query->setParameter('type', $type);
+        $query->setParameter(1, ''.$type.'');
+        $query->setParameter(2, 'BOTH');
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getResult();
-
 
     }
 
