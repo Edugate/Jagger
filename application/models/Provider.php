@@ -1860,18 +1860,20 @@ class Provider
             $type = $this->type;
         }
         $doFilter = array('DisplayName');
-        $e = $this->getExtendMetadata()->filter(
-                function(ExtendMetadata $entry) use ($doFilter) {
-            return in_array($entry->getElement(), $doFilter);
-        });
-        if (!empty($e))
+        if(!empty($this->extend))
         {
-            foreach ($e as $p)
-            {
-                $t = $p->getType();
-                $a = $p->getAttributes();
-                if (strcasecmp($t, $type) == 0 && isset($a['xml:lang']))
-                {
+           $e = $this->getExtendMetadata()->filter(
+                function(ExtendMetadata $entry) use ($doFilter) {
+              return in_array($entry->getElement(), $doFilter);
+           });
+           if (!empty($e))
+           {
+              foreach ($e as $p)
+              {
+                 $t = $p->getType();
+                 $a = $p->getAttributes();
+                 if (strcasecmp($t, $type) == 0 && isset($a['xml:lang']))
+                 {
                     if (strcasecmp($a['xml:lang'], $lang) == 0)
                     {
                         $result = $p->getEvalue();
@@ -1882,7 +1884,8 @@ class Provider
                         $backupname = $p->getEvalue();
                     }
                 }
-            }
+             }
+           }
         }
         if ($result === null)
         {
