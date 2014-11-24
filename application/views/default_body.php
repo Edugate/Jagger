@@ -13,7 +13,7 @@
         echo '<ul class="no-bullet">';
         foreach ($idps as $k => $i)
         {
-            echo '<li>' . $i . '  <a href="' . $entdelurl . $k . '" class="delbookentity" style="float: right" ><i class="fi-x-circle"></i></a></li>';
+            echo '<li>' . $i . '  <a href="' . $entdelurl . $k . '" class="delbookentity"><i class="fi-x-circle inline right"></i></a></li>';
         }
         echo '</ul>';
         ?>
@@ -27,7 +27,7 @@
         echo '<ul class="no-bullet">';
         foreach ($sps as $k => $i)
         {
-            echo '<li>' . $i . '<a href="' . $entdelurl . $k . '" class="delbookentity" style="float: right" ><i class="fi-x-circle"></i></a></li>';
+            echo '<li>' . $i . '<a href="' . $entdelurl . $k . '" class="delbookentity"><i class="fi-x-circle iniline right"></i></a></li>';
         }
         echo '</ul>';
         ?>
@@ -44,7 +44,7 @@
 <?php
 foreach ($feds as $k => $i)
 {
-    echo '<li>' . $i . '<a href="' . $feddelurl . $k . '" class="delbookfed" style="float: right" ><i class="fi-x-circle"></i></a></li>';
+    echo '<li>' . $i . '<a href="' . $feddelurl . $k . '" class="delbookfed"><i class="fi-x-circle inline right"></i></a></li>';
 }
 ?>
         </ul>
