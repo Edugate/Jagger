@@ -2113,7 +2113,6 @@ $(document).ready(function () {
             cache: false,
             type: "GET",
             url: baseurl + 'smanage/reports/vormversion',
-            timeout: 2500,
             success: function (data) {
                 $('#spinner').hide();
                 $("#rvormversion").show();
@@ -2134,7 +2133,6 @@ $(document).ready(function () {
             cache: false,
             type: "GET",
             url: baseurl + 'smanage/reports/vschema',
-            timeout: 2500,
             success: function (data) {
                 $('#spinner').hide();
                 $("#rvschema").show();
@@ -2155,7 +2153,6 @@ $(document).ready(function () {
             cache: false,
             type: "GET",
             url: baseurl + 'smanage/reports/vschemadb',
-            timeout: 2500,
             success: function (data) {
                 $('#spinner').hide();
                 $("#rvschemadb").show();
@@ -2176,7 +2173,6 @@ $(document).ready(function () {
             cache: false,
             type: "GET",
             url: baseurl + 'smanage/reports/vmigrate',
-            timeout: 2500,
             success: function (data) {
                 $('#spinner').hide();
                 $("#rvmigrate").show();
