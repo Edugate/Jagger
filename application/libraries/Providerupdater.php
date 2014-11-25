@@ -62,7 +62,6 @@ class Providerupdater
             $requestNew = false;
             foreach ($ch['regpol'] as $k => $v)
             {
-                log_message('debug', 'GKS assignign regpolicy id:' . $v);
                 if (!empty($v) && is_numeric($v))
                 {
                     $c = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $v, 'type' => 'regpol'));
@@ -158,18 +157,18 @@ class Providerupdater
             foreach ($trs as $tr)
             {
                 $keyid = $tr->getAttribute()->getId();
-                if(array_key_exists($keyid, $origAttrReqs))
+                if (array_key_exists($keyid, $origAttrReqs))
                 {
-                    log_error('warning',__METHOD__.' found duplicate in attr req for entityid:'.$ent->getEntityId());
-                     $trs->removeElement($tr);
-                     $this->em->remove($tr);
-                     continue;
+                    log_error('warning', __METHOD__ . ' found duplicate in attr req for entityid:' . $ent->getEntityId());
+                    $trs->removeElement($tr);
+                    $this->em->remove($tr);
+                    continue;
                 }
-                
-                $origAttrReqs[''.$keyid.''] = $tr;
+
+                $origAttrReqs['' . $keyid . ''] = $tr;
             }
-            
-            
+
+
             foreach ($ch['reqattr'] as $newAttrReq)
             {
                 $alreadyDefined = false;
@@ -184,7 +183,7 @@ class Providerupdater
                 }
                 if (array_key_exists($idCheck, $origAttrReqs))
                 {
-                   
+
                     if ($alreadyDefined)
                     {
                         $trs->removeElement($origAttrReqs['' . $idCheck . '']);
@@ -197,9 +196,8 @@ class Providerupdater
                         $this->em->persist($origAttrReqs['' . $idCheck . '']);
                         unset($origAttrReqs['' . $idCheck . '']);
                     }
-                    
                 }
-                elseif(!$alreadyDefined && isset($attributes['' . $idCheck . '']))
+                elseif (!$alreadyDefined && isset($attributes['' . $idCheck . '']))
                 {
                     log_message('debug', __METHOD__ . ' OKA: new reqattr');
                     $nreq = new models\AttributeRequirement;
@@ -215,7 +213,7 @@ class Providerupdater
             }
             foreach ($origAttrReqs as $orv)
             {
-               
+
                 $trs->removeElement($orv);
                 $this->em->remove($orv);
             }
@@ -226,7 +224,7 @@ class Providerupdater
             if (empty($idpMDUIparent))
             {
                 $idpMDUIparent = new models\ExtendMetadata;
-                $idpMDUIparent->setType('sp');
+                $idpMDUIparent->setType('idp');
                 $idpMDUIparent->setNamespace('mdui');
                 $idpMDUIparent->setElement('UIInfo');
                 $ent->setExtendMetadata($idpMDUIparent);
@@ -280,7 +278,7 @@ class Providerupdater
                 $origscopesso = null;
             }
         }
-        if ($type !== 'IDP')
+        if (($type !== 'IDP') && empty($spMDUIparent))
         {
             $spMDUIparent = new models\ExtendMetadata;
             $spMDUIparent->setType('sp');
@@ -289,6 +287,7 @@ class Providerupdater
             $ent->setExtendMetadata($spMDUIparent);
             $this->em->persist($spMDUIparent);
         }
+
         if (array_key_exists('entityid', $ch) && !empty($ch['entityid']))
         {
             if (!empty($entid))
@@ -1534,7 +1533,6 @@ class Providerupdater
                 {
                     foreach ($v1 as $k2 => $v2)
                     {
-                        log_message('debug', 'GG --- ncert spsso ' . serialize(array_keys($v2)));
                         $ncert = new models\Certificate();
                         $ncert->setType('spsso');
                         $ncert->setCertType();
@@ -1550,7 +1548,6 @@ class Providerupdater
                 {
                     foreach ($v1 as $k2 => $v2)
                     {
-                        log_message('debug', 'GG --- ncert idpsso ' . serialize(array_keys($v2)));
                         $ncert = new models\Certificate();
                         $ncert->setType('idpsso');
                         $ncert->setCertType();
@@ -1566,7 +1563,6 @@ class Providerupdater
                 {
                     foreach ($v1 as $k2 => $v2)
                     {
-                        log_message('debug', 'GG --- ncert aa ' . serialize(array_keys($v2)));
                         $ncert = new models\Certificate();
                         $ncert->setType('aa');
                         $ncert->setCertType();
@@ -1688,7 +1684,6 @@ class Providerupdater
             {
                 if (isset($ch['uii']['idpsso']['' . $elkey . '']) && is_array($ch['uii']['idpsso']['' . $elkey . '']))
                 {
-                    log_message('debug', 'PKS ' . $elkey);
                     $doFilter = array('' . $elvalue . '');
                     $collection = $ent->getExtendMetadata()->filter(
                             function(models\ExtendMetadata $entry) use ($doFilter) {
@@ -1698,10 +1693,8 @@ class Providerupdater
                     {
                         $attrs = $c->getAttributes();
                         $lang = $attrs['xml:lang'];
-                        log_message('debug', 'PKS check uii:idpsso:' . $elkey . ':' . $lang);
                         if (!isset($ch['uii']['idpsso']['' . $elkey . '']['' . $lang . '']))
                         {
-                            log_message('debug', 'PKS !isset uii:idpsso:' . $elkey . ':' . $lang);
                             $ent->getExtendMetadata()->removeElement($c);
                             $this->em->remove($c);
                         }
@@ -1749,7 +1742,6 @@ class Providerupdater
 
                 foreach ($collection as $c)
                 {
-                    log_message('debug', 'PKS collection');
                     $attrs = $c->getAttributes();
                     $lang = @$attrs['xml:lang'];
                     $url = $c->getEvalue();
@@ -2020,12 +2012,6 @@ class Providerupdater
                 }
             }
         }
-
-        if (array_key_exists('use_static', $ch) && $ch['usestatic'] === 'accept')
-        {
-            
-        }
-
         if (count($m) > 0 && !empty($entid))
         {
             $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($m), FALSE);

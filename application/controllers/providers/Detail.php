@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('Ni direct script access allowed');
+if (!defined('BASEPATH')) exit('Ni direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,7 +17,8 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Detail extends MY_Controller {
+class Detail extends MY_Controller
+{
 
     private
             $logo_url;
@@ -28,25 +28,16 @@ class Detail extends MY_Controller {
     function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if ($loggedin)
+        $this->logo_basepath = $this->config->item('rr_logouriprefix');
+        $this->logo_baseurl = $this->config->item('rr_logobaseurl');
+        if (empty($this->logo_baseurl))
         {
-            $this->load->library(array('table', 'geshilib', 'zacl', 'show_element','providertoxml'));
-            $this->logo_basepath = $this->config->item('rr_logouriprefix');
-            $this->logo_baseurl = $this->config->item('rr_logobaseurl');
-            if (empty($this->logo_baseurl))
-            {
-                $this->logo_baseurl = base_url();
-            }
-            $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
-            $this->tmp_attributes = new models\Attributes;
-            $this->tmp_attributes->getAttributes();
+            $this->logo_baseurl = base_url();
         }
-        elseif (!$this->input->is_ajax_request())
-        {
-            redirect('auth/login', 'location');
-        }
+        $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
+        $this->tmp_attributes = new models\Attributes;
+        $this->tmp_attributes->getAttributes();
     }
 
     function refreshentity($id)
@@ -65,6 +56,7 @@ class Detail extends MY_Controller {
                 echo 'received incorrect params';
                 return;
             }
+            $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
             $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
             log_message('debug', 'TEST access ' . $has_write_access);
             if ($has_write_access === TRUE)
@@ -104,58 +96,108 @@ class Detail extends MY_Controller {
                 echo 'no session';
                 return;
             }
+            $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
             $d = array();
             $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
-            if (!empty($ent))
+            if (empty($ent))
             {
-                $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
-                if ($has_write_access === TRUE)
+                $data['d'] = $d;
+                $this->load->view('providers/showlogs_view', $data);
+                return;
+            }
+
+            $has_write_access = $this->zacl->check_acl($id, 'write', 'entity', '');
+            if ($has_write_access === TRUE)
+            {
+                $i = 0;
+                $isactive = $ent->getActive();
+                $islocal = $ent->getLocal();
+                $isgearman = $this->config->item('gearman');
+                $isstats = $this->config->item('statistics');
+                if (($isactive === TRUE) && ($islocal === TRUE) && !empty($isgearman) && ($isgearman === TRUE) && !empty($isstats))
                 {
-                    $i = 0;
-                    $isactive = $ent->getActive();
-                    $islocal = $ent->getLocal();
-                    $isgearman = $this->config->item('gearman');
-                    $isstats = $this->config->item('statistics');
-                    if (($isactive === TRUE) && ($islocal === TRUE) && !empty($isgearman) && ($isgearman === TRUE) && !empty($isstats))
-                    {
-                        $d[++$i]['header'] = 'Statistics';
-                        $d[++$i]['name'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt'));
-                        $d[$i]['value'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<img src="' . base_url() . 'images/stats_bars.png">');
-                    }
-                    $d[++$i]['header'] = lang('rr_logs');
-                    $d[++$i]['name'] = lang('rr_variousreq');
-                    $d[$i]['value'] = $this->show_element->generateRequestsList($ent, 10);
-                    $d[++$i]['name'] = lang('rr_modifications');
-                    $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 10);
-                    if ((strcasecmp($ent->getType(), 'IDP') == 0) OR ( strcasecmp($ent->getType(), 'BOTH') == 0))
-                    {
-                        $tmp_logs = new models\Trackers;
-                        $arp_logs = $tmp_logs->getArpDownloaded($ent);
-                        $logg_tmp = '<ul class="no-bullet">';
-                        if (!empty($arp_logs))
-                        {
-                            foreach ($arp_logs as $l)
-                            {
-                                $logg_tmp .= '<li><b>' . date('Y-m-d H:i:s', $l->getCreated()->format('U') + j_auth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
-                            }
-                        }
-                        $logg_tmp .= '</ul>';
-                        $d[++$i]['name'] = lang('rr_recentarpdownload');
-                        $d[$i]['value'] = $logg_tmp;
-                    }
+                    $d[++$i]['name'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt'));
+                    $d[$i]['value'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>');
                 }
-                else
+                $d[++$i]['header'] = lang('rr_logs');
+                $d[++$i]['name'] = lang('rr_variousreq');
+                $d[$i]['value'] = $this->show_element->generateRequestsList($ent, 10);
+                $d[++$i]['name'] = lang('rr_modifications');
+                $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 10);
+                if ((strcasecmp($ent->getType(), 'IDP') == 0) OR ( strcasecmp($ent->getType(), 'BOTH') == 0))
                 {
-                    log_message('debug', 'no access to load logs tab');
+                    $tmp_logs = new models\Trackers;
+                    $arp_logs = $tmp_logs->getArpDownloaded($ent);
+                    $logg_tmp = '<ul class="no-bullet">';
+                    if (!empty($arp_logs))
+                    {
+                        foreach ($arp_logs as $l)
+                        {
+                            $logg_tmp .= '<li><b>' . date('Y-m-d H:i:s', $l->getCreated()->format('U') + j_auth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+                        }
+                    }
+                    $logg_tmp .= '</ul>';
+                    $d[++$i]['name'] = lang('rr_recentarpdownload');
+                    $d[$i]['value'] = $logg_tmp;
                 }
             }
+            else
+            {
+                log_message('debug', 'no access to load logs tab');
+            }
+
             $data['d'] = $d;
-            $this->load->view('providers/showlogs_view.php', $data);
+            $this->load->view('providers/showlogs_view', $data);
         }
         else
         {
             echo '';
         }
+    }
+
+    private function makeStatusLabels(\models\Provider $ent)
+    {
+        $entStatus = '';
+        $isValidTime = $ent->isValidFromTo();
+        $isActive = $ent->getActive();
+        $isLocal = $ent->getLocal();
+        $isPublicListed = $ent->getPublicVisible();
+        $isLocked = $ent->getLocked();
+        $isStatic = $ent->getStatic();
+        $lockicon = genIcon('locked', lang('rr_locked'));
+        if (empty($isPublicListed))
+        {
+            $entStatus .= ' ' . makeLabel('disabled', lang('lbl_publichidden'), lang('lbl_publichidden'));
+        }
+        if (empty($isActive))
+        {
+            $entStatus .= ' ' . makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
+        }
+        else
+        {
+            $entStatus .= ' ' . makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
+        }
+        if (!$isValidTime)
+        {
+            $entStatus .= ' ' . makeLabel('alert', lang('rr_validfromto_notmatched1'), strtolower(lang('rr_metadata')) . ' ' . lang('rr_expired'));
+        }
+        if ($isLocked)
+        {
+            $entStatus .= ' ' . makeLabel('locked', lang('rr_locked'), lang('rr_locked'));
+        }
+        if ($isLocal)
+        {
+            $entStatus .= ' ' . makeLabel('local', lang('rr_managedlocally'), lang('rr_managedlocally'));
+        }
+        else
+        {
+            $entStatus .= ' ' . makeLabel('local', lang('rr_external'), lang('rr_external'));
+        }
+        if ($isStatic)
+        {
+            $entStatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
+        }
+        return $entStatus;
     }
 
     function show($id)
@@ -166,6 +208,13 @@ class Detail extends MY_Controller {
             show_error(lang('error404'), 404);
             return;
         }
+        if (!$this->j_auth->logged_in())
+        {
+            redirect('auth/login', 'location');
+            return;
+        }
+        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
+
         $tmp_providers = new models\Providers();
         $ent = $tmp_providers->getOneById($id);
         if (empty($ent))
@@ -184,6 +233,8 @@ class Detail extends MY_Controller {
             $featdisable = array();
         }
         $alerts = array();
+
+
         $is_static = $ent->getStatic();
 
         $params = array(
@@ -192,8 +243,7 @@ class Detail extends MY_Controller {
         $sppart = FALSE;
         $idppart = FALSE;
         $type = strtolower($ent->getType());
-        $data['type'] = &$type;
-        $entStatus = '';
+        $data['type'] = $type;
         $edit_attributes = '';
         $edit_policy = '';
 
@@ -229,47 +279,19 @@ class Detail extends MY_Controller {
         // off canvas menu for provider
         $entmenu = array();
 
-        $isValidTime = $ent->isValidFromTo();
-        $isActive = $ent->getActive();
-        $isLocal = $ent->getLocal();
-        $isPublicListed = $ent->getPublicVisible();
-        $isLocked = $ent->getLocked();
-        $lockicon = genIcon('locked', lang('rr_locked'));
+
+
         $edit_link = '';
-        if (empty($isPublicListed))
-        {
-            $entStatus .= ' ' . makeLabel('disabled', lang('lbl_publichidden'), lang('lbl_publichidden'));
-        }
-        if (empty($isActive))
-        {
-            $entStatus .= ' ' . makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
-        }
-        else
-        {
-            $entStatus .= ' ' . makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
-        }
-        if (!$isValidTime)
-        {
-            $entStatus .= ' ' . makeLabel('alert', lang('rr_validfromto_notmatched1'), strtolower(lang('rr_metadata')) . ' ' . lang('rr_expired'));
-        }
-        if ($isLocked)
-        {
-            $entStatus .= ' ' . makeLabel('locked', lang('rr_locked'), lang('rr_locked'));
-        }
-        if ($isLocal)
-        {
-            $entStatus .= ' ' . makeLabel('local', lang('rr_managedlocally'), lang('rr_managedlocally'));
-        }
-        else
-        {
-            $entStatus .= ' ' . makeLabel('local', lang('rr_external'), lang('rr_external'));
-        }
+
         if ($is_static)
         {
-            $entStatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
+
             $alerts[] = lang('staticmeta_info');
         }
-
+        $isActive = $ent->getActive();
+        $isValidTime = $ent->isValidFromTo();
+        $isLocal = $ent->getLocal();
+        $isLocked = $ent->getLocked();
         if (!$hasWriteAccess)
         {
             $edit_link .= makeLabel('noperm', lang('rr_nopermission'), lang('rr_nopermission'));
@@ -293,8 +315,6 @@ class Detail extends MY_Controller {
         }
         $data['edit_link'] = $edit_link;
         $data['entmenu'] = &$entmenu;
-
-
         $extend = $ent->getExtendMetadata();
         /**
          * get first assinged logo to display on site 
@@ -312,11 +332,9 @@ class Detail extends MY_Controller {
                 $is_logo = TRUE;
             }
         }
-
-
         $data['entid'] = $ent->getId();
-        $lang = MY_Controller::getLang();
-        $data['name'] = $ent->getNameToWebInLang($lang, $type);
+        $guiLang = MY_Controller::getLang();
+        $data['name'] = $ent->getNameToWebInLang($guiLang, $type);
         $this->title = lang('rr_providerdetails') . ' :: ' . $data['name'];
         $b = $this->session->userdata('board');
         if (!empty($b) && is_array($b))
@@ -338,7 +356,7 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
         $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
-
+        $entStatus = $this->makeStatusLabels($ent);
         $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s', $ent->getLastModified()->format('U') + j_auth::$timeOffset) . '</b>';
@@ -574,7 +592,7 @@ class Detail extends MY_Controller {
         $d = array();
         $i = 0;
 
-        
+
         $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
 
         $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
@@ -1029,7 +1047,7 @@ class Detail extends MY_Controller {
          * end certs
          */
         $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
-        $xmldata = $this->providertoxml->entityConvertNewDocument($ent,array('attrs' => 1),TRUE);
+        $xmldata = $this->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), TRUE);
         if (!empty($xmldata))
         {
             $xmlToHtml = $xmldata;
@@ -1543,6 +1561,7 @@ class Detail extends MY_Controller {
             echo lang('error404');
             return;
         }
+        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
         $has_read_access = $this->zacl->check_acl($providerid, 'read', 'entity', '');
         if (!$has_read_access)
         {
