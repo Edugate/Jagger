@@ -991,7 +991,7 @@ $(document).ready(function () {
             var nfv = selected.text();
             var inputname = $(this).attr('value');
             selected.attr('disabled', true).attr('selected', false);
-            var rowinputname = 'f[prvurl][idppsso][' + nf + ']';
+            var rowinputname = 'f[prvurl][idpsso][' + nf + ']';
             var row = createRowWithLangRm(nf, nfv, rowinputname, rmbtn);
             row.insertBefore($(this).closest('span').parent());
         });
