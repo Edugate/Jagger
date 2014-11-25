@@ -248,7 +248,7 @@ class Providertoxml {
         $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
         foreach ($extendMeta as $v)
         {
-            if ((strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui'))
+            if ((strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui') && ($v->getElement() !== 'UIInfo'))
             {
                 $extarray['' . $v->getElement() . ''][] = $v;
             }
