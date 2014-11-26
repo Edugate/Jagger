@@ -39,7 +39,7 @@ function genIcon($type, $title=null)
     $preurl = base_url().'images/icons/';
     
     $icons = array(
-          'locked' => 'lock.png',
+          'locked' => 'fi-lock',
           'disabled' => 'minus-button.png',
           'expired' => 'calendar--minus.png',
           'mstatic' => 'ui-toolbar--arrow.png',
@@ -48,15 +48,21 @@ function genIcon($type, $title=null)
           'edit' => 'pencil-field.png',
           'bookmarkadd' => 'star--plus.png',
           );
-    if(array_key_exists($type,$icons))
+    if($type==="locked")
+    {
+        $result = '<i class="'.$icons[''.$type.''].'"></i>';
+        
+    }
+    else if(array_key_exists($type,$icons))
     {
          $result = '<img src="'.$preurl.$icons[$type].'" title="'.$title.'"/>';
-         return $result;
+         
     }
     else
     {
         return null;
     }
+    return $result;
 
 }
 
