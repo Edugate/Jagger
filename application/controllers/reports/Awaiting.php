@@ -386,6 +386,7 @@ class Awaiting extends MY_Controller
                 'error_message' => lang('rerror_qid_noexist')
             );
             $this->load->view('page', $dataview);
+            return;
         }
         $objType = $qObject->getObjType();
         $objAction = $qObject->getAction();
@@ -487,6 +488,7 @@ class Awaiting extends MY_Controller
             );
         }
         $this->load->view('page', $dataview);
+        return;
     }
 
     private function deleteFederation(\models\Queue $q)
