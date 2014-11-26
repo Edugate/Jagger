@@ -23,6 +23,8 @@ class Providerupdater
 
     protected $ci;
     protected $em;
+    protected $logtracks;
+    
 
     function __construct()
     {
@@ -30,6 +32,7 @@ class Providerupdater
         $this->em = $this->ci->doctrine->em;
 
         $this->ci->load->library('tracker');
+        $this->logtracks = array();
     }
 
     public function getChangeProposal(models\Provider $ent, $chg)
@@ -42,7 +45,6 @@ class Providerupdater
         $currentCocs = $ent->getCoc();
         if (array_key_exists('regpol', $ch))
         {
-            log_message('debug', 'GKS ' . __METHOD__ . ' ' . serialize($ch['regpol']) . '');
             $currentRegPol = &$currentCocs;
             $regPolToAssign = array();
             foreach ($currentRegPol as $k => $v)
@@ -54,7 +56,6 @@ class Providerupdater
                     $foundkey = array_search($cid, $ch['regpol']);
                     if ($foundkey === null || $foundkey === false)
                     {
-                        log_message('debug', 'GKS not found ' . $cid);
                         $ent->removeCoc($v);
                     }
                 }
@@ -210,6 +211,7 @@ class Providerupdater
                         $mk = 'PrivacyStatementURLs' . strtoupper($v);
                         $m['' . $mk . ''] = array('before' => arrayWithKeysToHtml($origs), 'after' => arrayWithKeysToHtml($newex));
                     }
+                    
                 }
             }
 
@@ -473,6 +475,7 @@ class Providerupdater
                 $this->em->persist($v);
             }
         }
+        $this->logtracks = array_merge($this->logtracks, $m);
         return $ent;
     }
 
@@ -1857,10 +1860,12 @@ class Providerupdater
                 }
             }
         }
-        if (count($m) > 0 && !empty($entid))
+        $this->logtracks = array_merge($this->logtracks, $m);
+        if (count($this->logtracks) > 0 && !empty($entid))
         {
-            $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($m), FALSE);
+            $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($this->logtracks), FALSE);
         }
+        $this->logtracks = array();
         return $ent;
     }
 
