@@ -164,7 +164,7 @@ class Detail extends MY_Controller
         $isPublicListed = $ent->getPublicVisible();
         $isLocked = $ent->getLocked();
         $isStatic = $ent->getStatic();
-        $lockicon = genIcon('locked', lang('rr_locked'));
+
         if (empty($isPublicListed))
         {
             $entStatus .= ' ' . makeLabel('disabled', lang('lbl_publichidden'), lang('lbl_publichidden'));
@@ -234,7 +234,7 @@ class Detail extends MY_Controller
         }
         $alerts = array();
 
-
+        $lockicon = genIcon('locked');
         $is_static = $ent->getStatic();
 
         $params = array(
@@ -1102,7 +1102,7 @@ class Detail extends MY_Controller
                 $d[++$i]['name'] = lang('rr_contactlastname');
                 $d[$i]['value'] = $c->getSurname();
                 $d[++$i]['name'] = lang('rr_contactemail');
-                $d[$i]['value'] = '<span jagger-data-contactmail="'.$c->getEmail().'">'.$c->getEmail().'</span>';
+                $d[$i]['value'] = '<span jagger-data-contactmail="' . $c->getEmail() . '">' . $c->getEmail() . '</span>';
             }
         }
         else
