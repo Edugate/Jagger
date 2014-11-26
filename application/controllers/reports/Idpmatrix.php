@@ -79,16 +79,20 @@ class Idpmatrix extends MY_Controller
         $attrdedsCopy = $attrdefs;
         $returnArray = TRUE;
         $arparray['policies'] = $this->arp_generator->arpToXML($idp, $returnArray);
-       
-        foreach($arparray['policies'] as $p)
+
+        if(isset($arparray['policies']) && is_array($arparray['policies']))
         {
-           foreach($p['attributes'] as $k => $v)
+       
+           foreach($arparray['policies'] as $p)
            {
-               unset($attrdedsCopy[''.$k.'']);
-           }
-           foreach($p['req'] as $k => $v)
-           {
-               unset($attrdedsCopy[''.$k.'']);
+              foreach($p['attributes'] as $k => $v)
+              {
+                 unset($attrdedsCopy[''.$k.'']);
+              }
+              foreach($p['req'] as $k => $v)
+              {
+                 unset($attrdedsCopy[''.$k.'']);
+              }
            }
         }
         $attrdefsLeft = array_diff_key($attrdefs,$attrdedsCopy);
