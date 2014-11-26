@@ -1102,7 +1102,7 @@ class Detail extends MY_Controller
                 $d[++$i]['name'] = lang('rr_contactlastname');
                 $d[$i]['value'] = $c->getSurname();
                 $d[++$i]['name'] = lang('rr_contactemail');
-                $d[$i]['value'] = $c->getEmail();
+                $d[$i]['value'] = '<span jagger-data-contactmail="'.$c->getEmail().'">'.$c->getEmail().'</span>';
             }
         }
         else
