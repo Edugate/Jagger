@@ -99,6 +99,7 @@ class Providerupdater
 
     private function updateProviderExtend(models\Provider $ent, array $ch)
     {
+        $m = array();
         $type = $ent->getType();
         if (strcasecmp($type, 'BOTH') == 0)
         {

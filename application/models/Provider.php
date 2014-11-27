@@ -1513,7 +1513,8 @@ class Provider
         foreach ($provider->getServiceLocations() as $r)
         {
             $this->setServiceLocation($r);
-            if (!$r->getOrder())
+            $order = $r->getOrder();
+            if(is_null($order))
             {
                 $r->setOrder(1);
             }
@@ -4085,8 +4086,7 @@ class Provider
                 }
                 if (array_key_exists('aadescriptor', $a['details']))
                 {
-                    \log_message('debug', 'GKL import aa');
-
+                   
                     $this->aaDescriptorFromArray($a['details']['aadescriptor']);
                 }
             }
