@@ -21,7 +21,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Metadata2import
 {
 
-    private $metadata_in_array;
+    private $metadataInArray;
     private $metadata;
     private $type;
     private $full;
@@ -91,6 +91,16 @@ class Metadata2import
         }
     }
 
+    private function getAttributesByNames()
+    {
+        $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
+        $attributes = array();
+        foreach ($attrsDefinitions as $v)
+        {
+            $attributes['' . $v->getOid() . ''] = $v;
+        }
+        return $attributes;
+    }
     public function import($metadata, $type, $full, array $defaults, $other = null)
     {
         $tmpProviders = new models\Providers;
@@ -105,9 +115,9 @@ class Metadata2import
         }
         $coclist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
         $regpollist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
-        $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
+        $attributes = $this->getAttributesByNames();
 
-        $attributes = array();
+        
         $report = array(
             'subject' => '',
             'body' => array(),
@@ -118,10 +128,7 @@ class Metadata2import
                 'leavefed' => array(),
             ),
         );
-        foreach ($attrsDefinitions as $v)
-        {
-            $attributes['' . $v->getOid() . ''] = $v;
-        }
+        
         $coclistconverted = array();
         $coclistarray = array();
         $regpollistconverted = array();
@@ -225,11 +232,11 @@ class Metadata2import
          * end block
          */
         $time_start = microtime(true);
-        $this->metadata_in_array = $this->ci->metadata2array->rootConvert($metadata, $full);
+        $this->metadataInArray = $this->ci->metadata2array->rootConvert($metadata, $full);
         $time_end = microtime(true);
         $time_execution = $time_end-$time_start;
         log_message('debug',__METHOD__.' time execution of converting metadata to array took: '.$time_execution);
-        if (!(empty($this->metadata_in_array) || is_array($this->metadata_in_array) || count($this->metadata_in_array) == 0))
+        if (!(empty($this->metadataInArray) || is_array($this->metadataInArray) || count($this->metadataInArray) == 0))
         {
             \log_message('warning', __METHOD__ . ' converting xml metadata 
                                into array resulted empty array or null value');
@@ -240,25 +247,26 @@ class Metadata2import
 
         foreach ($federations as $f)
         {
-            $membershipColl = $f->getMembership();
-            $membership = $membershipColl->toArray();
+            $fedMembershipCollection = $f->getMembership();
+            $membership = $fedMembershipCollection->toArray();
             $membershipByEnt = array();
             foreach ($membership as $k => $m)
             {
                 $membershipByEnt['' . $m->getProvider()->getEntityId() . ''] = array('mshipKey' => $k, 'mship' => &$m);
             }
 
+            // run sync
             if (empty($this->defaults['localimport']))
             {
                 \log_message('info', __METHOD__ . ' running as sync for ' . $f->getName());
-                foreach ($membershipColl as $m)
+                foreach ($fedMembershipCollection as $m)
                 {
                     $membershipByEnt['' . $m->getProvider()->getEntityId() . ''] = $m;
                 }
                 // list entities in the source 
-                $membersFromSync = array();
+                $membersFromRemoteSource = array();
                 $counter = 0;
-                foreach ($this->metadata_in_array as $ent)
+                foreach ($this->metadataInArray as $ent)
                 {
                     $startTime = microtime(true);
                     // START if type matches 
@@ -270,7 +278,7 @@ class Metadata2import
                     $counter++;
                     if ($ent['type'] === 'BOTH' ||
                             $ent['type'] === $type ||
-                            $type == 'ALL')
+                            $type === 'ALL')
                     {
 
                         $importedProvider = new models\Provider;
@@ -279,7 +287,7 @@ class Metadata2import
                         if (empty($existingProvider))
                         {
 
-                            $membersFromSync[] = $importedProvider->getEntityId();
+                            $membersFromRemoteSource[] = $importedProvider->getEntityId();
                             $importedProvider->setStatic($static);
                             $importedProvider->setLocal($local);
                             $importedProvider->setActive($active);
@@ -368,7 +376,7 @@ class Metadata2import
                         } // END for new provider
                         else
                         { // provider exist
-                            $membersFromSync[] = $existingProvider->getEntityId();
+                            $membersFromRemoteSource[] = $existingProvider->getEntityId();
                             $isLocal = $existingProvider->getLocal();
                             $isLocked = $existingProvider->getLocked();
                             $updateAllowed = (($isLocal && $overwritelocal && !$isLocked) OR ! $isLocal);
@@ -562,8 +570,7 @@ class Metadata2import
                 }
 
                 $currentMembershipList = array_keys($membershipByEnt);
-
-                $membersdiff = array_diff($currentMembershipList, $membersFromSync);
+                $membersdiff = array_diff($currentMembershipList, $membersFromRemoteSource);
                 if (count($membersdiff) > 0)
                 {
                     log_message('debug', __METHOD__ . ' found diff in membership, not existing members in external metadata ' . serialize($membersdiff));
@@ -575,12 +582,15 @@ class Metadata2import
                         $tmpprov = $mm2->getProvider();
 
                         $isLocal = $mm2->getProvider()->getLocal();
+                        
+                        log_message('debug', __METHOD__ .' current state of provider:: joinstate-'.$mm2joinstate.', islocal-'.$isLocal);
                         if (!($mm2joinstate == 0 || $mm2joinstate == 1))
                         {
 
                             log_message('debug', 'proceeding ' . $mm2->getProvider()->getEntityId() . ' joinstatus:' . $mm2joinstate);
                             if (!$isLocal && $removeexternal)
                             {
+                                
                                 $ff = $tmpprov->getFederations();
                                 $countFeds = $ff->count();
                                 if ($countFeds < 2 && $ff->contains($f))
@@ -633,7 +643,7 @@ class Metadata2import
                   - new entities will be created and added to federation(s)');
 
                 $counter = 0;
-                foreach ($this->metadata_in_array as $ent)
+                foreach ($this->metadataInArray as $ent)
                 {
                     $counter++;
                     if ($ent['type'] === 'BOTH' ||
