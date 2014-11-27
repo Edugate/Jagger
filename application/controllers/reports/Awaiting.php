@@ -161,7 +161,6 @@ class Awaiting extends MY_Controller
         foreach ($queueArray as $q)
         {
             $c_creator = 'anonymous';
-            $c_creatorCN = 'Anonymous';
             $creator = $q->getCreator();
             $access = $this->hasQAccess($q);
             if (!$access)
@@ -171,7 +170,6 @@ class Awaiting extends MY_Controller
             if (!empty($creator))
             {
                 $c_creator = $creator->getUsername();
-                $c_creatorCN = $creator->getFullname();
             }
             $recipientid = $q->getRecipient();
             $recipenttype = $q->getRecipientType();
@@ -189,7 +187,6 @@ class Awaiting extends MY_Controller
                 $result['q'][$kid++] = array(
                     'issubscription'=>0,
                     'requester' => $c_creator,
-                    'requesterCN' => $c_creatorCN,
                     'idate' => $q->getCreatedAt(),
                     'datei' => $q->getCreatedAt(),
                     'iname' => $q->getCN(),

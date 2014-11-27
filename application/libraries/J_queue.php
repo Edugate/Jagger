@@ -334,7 +334,7 @@ class J_queue
         $creator = $q->getCreator();
         if ($creator)
         {
-            $fedrows[] = array('name' => lang('requestor'), 'value' => $creator->getFullname() .' ('. $creator->getUsername() .')');
+            $fedrows[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
         }
         else
         {
@@ -434,10 +434,6 @@ class J_queue
         $i = 0;
         $feds = $objData->getFederations();
         $fedIdsCollection = array();
-
-        $dataRows[$i++]['header'] = lang('rr_details');
-        $dataRows[$i]['name'] = lang('requestor');
-        $dataRows[$i++]['value'] = $q->getCreator()->getFullname() ." (". $q->getCreator()->getUsername() .")";
 
         $dataRows[$i++]['header'] = lang('rr_fedstojoin');
         if ($feds->count() > 0)
@@ -672,7 +668,7 @@ class J_queue
         $this->ci->table->add_row($cell);
         $cell = array('data' => lang('rr_details'), 'class' => 'highlight', 'colspan' => 2);
         $this->ci->table->add_row($cell);
-        $cell = array(lang('requestor'), $queue->getCreator()->getFullname() . ' (' . $queue->getCreator()->getUsername() . ')');
+        $cell = array(lang('requestor'), $queue->getCreator()->getUsername() . ' (' . $queue->getCreator()->getFullname() . ') : email: ' . $queue->getCreator()->getEmail());
         $this->ci->table->add_row($cell);
         $validators = $federation->getValidators();
         $fedValidator = null;
