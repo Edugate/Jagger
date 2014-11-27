@@ -170,6 +170,7 @@ class Awaiting extends MY_Controller
             if (!empty($creator))
             {
                 $c_creator = $creator->getUsername();
+                $c_creatorCN = $creator->getFullname();
             }
             $recipientid = $q->getRecipient();
             $recipenttype = $q->getRecipientType();
@@ -187,6 +188,7 @@ class Awaiting extends MY_Controller
                 $result['q'][$kid++] = array(
                     'issubscription'=>0,
                     'requester' => $c_creator,
+                    'requesterCN' => $c_creatorCN,
                     'idate' => $q->getCreatedAt(),
                     'datei' => $q->getCreatedAt(),
                     'iname' => $q->getCN(),
