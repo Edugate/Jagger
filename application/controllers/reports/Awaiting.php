@@ -161,6 +161,7 @@ class Awaiting extends MY_Controller
         foreach ($queueArray as $q)
         {
             $c_creator = 'anonymous';
+            $c_creatorCN = 'Anonymous';
             $creator = $q->getCreator();
             $access = $this->hasQAccess($q);
             if (!$access)
