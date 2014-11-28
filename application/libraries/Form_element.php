@@ -131,22 +131,6 @@ class Form_element
         }
         $f_regauthority = set_value('f[regauthority]', $t_regauthority);
         $f_regdate = set_value('f[registrationdate]', $t_regdate);
-        if ($f_regauthority != $ent->getRegistrationAuthority())
-        {
-            $regauthority_notice = 'notice';
-        }
-        else
-        {
-            $regauthority_notice = '';
-        }
-        if ($f_regdate != $origregdate)
-        {
-            $regdate_notice = 'notice';
-        }
-        else
-        {
-            $regdate_notice = '';
-        }
         $result = array();
 
 
@@ -174,21 +158,8 @@ class Form_element
         $btnlangs = MY_Controller::$langselect;
         foreach ($slname as $key => $value)
         {
-            $lnamenotice = '';
             $lvalue = set_value('f[lname][' . $key . ']', $value);
-            if (array_key_exists($key, $origlname))
-            {
-                if ($origlname['' . $key . ''] != $value)
-                {
-                    $lnamenotice = 'notice';
-                }
-            }
-            else
-            {
-                $lnamenotice = 'notice';
-            }
-
-            $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, '' . $lnamenotice . '') . '</div>';
+            $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, '') . '</div>';
             unset($origlname['' . $key . '']);
             unset($lnamelangs['' . $key . '']);
         }
@@ -196,24 +167,16 @@ class Form_element
         {
             foreach ($origlname as $key => $value)
             {
-                $lnamenotice = '';
                 $lvalue = set_value('f[lname][' . $key . ']', $value);
                 if (empty($lvalue))
                 {
                     continue;
                 }
-                if ($lvalue != $value)
-                {
-                    $lnamenotice = 'notice';
-                }
-
-                $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, $lnamenotice) . '</div>';
+                $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, '') . '</div>';
                 unset($lnamelangs['' . $key . '']);
             }
         }
-
         $tmprows .= '<div class="small-12 columns">' . $this->_generateLangAddButton('lnameadd', 'lnamelangcode', $btnlangs, 'addlname', '' . lang('e_orgname') . '') . '</div>';
-
         $tmprows .= '</fieldset>';
         $result[] = $tmprows;
 
@@ -241,24 +204,11 @@ class Form_element
             {
                 continue;
             }
-            $ldisplaynamenotice = '';
-
             $lvalue = set_value('f[ldisplayname][' . $key . ']', $value);
-            if (array_key_exists($key, $origldisplayname))
-            {
-                if ($origldisplayname['' . $key . ''] != $value)
-                {
-                    $ldisplaynamenotice = 'notice';
-                }
-            }
-            else
-            {
-                $ldisplaynamenotice = 'notice';
-            }
             if (isset($ldisplaynamelangs['' . $key . '']))
             {
 
-                $tmprows .='<div class="small-12 columns">' . $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, $ldisplaynamenotice) . '</div>';
+                $tmprows .='<div class="small-12 columns">' . $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, '') . '</div>';
                 unset($origldisplayname['' . $key . '']);
                 unset($ldisplaynamelangs['' . $key . '']);
             }
@@ -267,17 +217,11 @@ class Form_element
         {
             foreach ($origldisplayname as $key => $value)
             {
-                $ldisplaynamenotice = '';
                 $lvalue = set_value('f[ldisplayname][' . $key . ']', $value);
-                if ($lvalue != $value)
-                {
-                    $ldisplaynamenotice = 'notice';
-                }
-                $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, $ldisplaynamenotice) . '</div>';
+                $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, '') . '</div>';
                 unset($ldisplaynamelangs['' . $key . '']);
             }
         }
-
         $tmprows .= '<div class="small-12 columns">' . $this->_generateLangAddButton('ldisplaynameadd', 'ldisplaynamelangcode', $btnlangs, 'addldisplayname', '' . lang('rr_displayname') . '') . '</div>';
 
 
@@ -318,20 +262,8 @@ class Form_element
             {
                 continue;
             }
-            $lhelpdesknotice = '';
             $lvalue = set_value('f[lhelpdesk][' . $key . ']', $value);
-            if (array_key_exists($key, $origlhelpdesk))
-            {
-                if ($origlhelpdesk['' . $key . ''] != $value)
-                {
-                    $lhelpdesknotice = 'notice';
-                }
-            }
-            else
-            {
-                $lhelpdesknotice = 'notice';
-            }
-            $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, $lhelpdesknotice) . '</div>';
+            $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, '') . '</div>';
             unset($origlhelpdesk['' . $key . '']);
             unset($lhelpdesklangs['' . $key . '']);
         }
@@ -339,13 +271,8 @@ class Form_element
         {
             foreach ($origlhelpdesk as $key => $value)
             {
-                $lhelpdesknotice = '';
                 $lvalue = set_value('f[lhelpdesk][' . $key . ']', $value);
-                if ($lvalue != $value)
-                {
-                    $lhelpdesknotice = 'notice';
-                }
-                $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, $lhelpdesknotice) . '</div>';
+                $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, '') . '</div>';
                 unset($lhelpdesklangs['' . $key . '']);
             }
         }
@@ -360,10 +287,10 @@ class Form_element
              */
             $result[] = '';
 
-            $result[] = jGenerateInput(lang('rr_regauthority'), 'f[regauthority]', $f_regauthority, $regauthority_notice);
+            $result[] = jGenerateInput(lang('rr_regauthority'), 'f[regauthority]', $f_regauthority, '');
 
 
-            $result[] = jGenerateInput(lang('rr_regdate'), 'f[registrationdate]', $f_regdate, 'datepicker' . $regdate_notice . '');
+            $result[] = jGenerateInput(lang('rr_regdate'), 'f[registrationdate]', $f_regdate, 'datepicker');
             $result[] = '';
         }
 
