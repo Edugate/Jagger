@@ -591,19 +591,19 @@ var GINIT = {
             //return false; 
         });
 
-        $("form#approvequeue").submit(function(e) {
+        $("form#approvequeue").submit(function (e) {
             var result = 0;
             var validators = 0;
 
-            $("button[name='mandatory']").each(function(i) {
-                if($(this).data("passed") == "true") {
+            $("button[name='mandatory']").each(function (i) {
+                if ($(this).data("passed") == "true") {
                     result += 1;
                 }
 
                 validators += 1;
             });
 
-            if(validators != result) {
+            if (validators != result) {
                 alert('All mandatory validations have to pass successfully!');
                 e.preventDefault();
             }
@@ -1365,19 +1365,26 @@ $(document).ready(function () {
                 {
                     var startTime = new Date();
                     var cl;
-                    var tbl = '<table class="table table-header-rotated" id="idpmatrixresult"><thead><tr>';
-                    tbl += '<th></th>';
                     var attrdefs = json.attributes;
                     var policies = json.policies;
+                    var countpolicies = json.total;
+                    var responsemsg = json.message;
+                    if(countpolicies != undefined && countpolicies == 0 && responsemsg != undefined)
+                    {
+                        var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box warning">'+responsemsg+'</div></div>'; 
+                        matrixdiv.html(alerthtml);
+                        return false;
+                    }
                     var countAttr = 0;
-
+                    var tbl = '<table class="table table-header-rotated" id="idpmatrixresult"><thead><tr>';
+                    tbl += '<th></th>';
                     $.each(attrdefs, function (a, p) {
                         tbl += '<th class="rotate"><div><span>' + a + '</span></div></th>';
                         countAttr++;
                     });
-                    if(countAttr>52)
+                    if (countAttr > 52)
                     {
-                        $("#container").css({"max-width":"100%"});
+                        $("#container").css({"max-width": "100%"});
                     }
                     var cell, requiredAttr, pAttr;
                     tbl += '</tr></thead><tbody>';
@@ -1457,6 +1464,9 @@ $(document).ready(function () {
             error: function (xhr, status, error)
             {
                 $('#spinner').hide();
+                 var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box error">'+error+'</div></div>'; 
+                        matrixdiv.html(alerthtml);
+                        return false;
             }
         });
     }
@@ -3157,7 +3167,7 @@ $("div#loginform form").submit(function () {
 });
 $("button.advancedmode").click(function () {
     var metadata = $("textarea#metadatabody").val();
-    if(metadata.length === 0) {
+    if (metadata.length === 0) {
         alert("You did not inserted any metadata. You will have to fill in all the individual information manually.");
     }
     var thisB = $(this);

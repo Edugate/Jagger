@@ -39,7 +39,6 @@ class Idpmatrix extends MY_Controller
         $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
     }
 
-
     public function getArpData($idpid)
     {
         if (!$this->input->is_ajax_request())
@@ -79,28 +78,33 @@ class Idpmatrix extends MY_Controller
         $attrdedsCopy = $attrdefs;
         $returnArray = TRUE;
         $arparray['policies'] = $this->arp_generator->arpToXML($idp, $returnArray);
-
-        if(isset($arparray['policies']) && is_array($arparray['policies']))
+        if (is_null($arparray['policies']))
         {
-       
-           foreach($arparray['policies'] as $p)
-           {
-              foreach($p['attributes'] as $k => $v)
-              {
-                 unset($attrdedsCopy[''.$k.'']);
-              }
-              foreach($p['req'] as $k => $v)
-              {
-                 unset($attrdedsCopy[''.$k.'']);
-              }
-           }
+            $arparray['policies'] = array();
         }
-        $attrdefsLeft = array_diff_key($attrdefs,$attrdedsCopy);
+
+        foreach ($arparray['policies'] as $p)
+        {
+            foreach ($p['attributes'] as $k => $v)
+            {
+                unset($attrdedsCopy['' . $k . '']);
+            }
+            foreach ($p['req'] as $k => $v)
+            {
+                unset($attrdedsCopy['' . $k . '']);
+            }
+        }
+
+        $attrdefsLeft = array_diff_key($attrdefs, $attrdedsCopy);
         ksort($attrdefsLeft);
         ksort($attrlist);
-        $arparray['total']= count($arparray['policies']);
+        $arparray['total'] = count($arparray['policies']);
         $arparray['attributes'] = $attrdefsLeft;
         $arparray['attrlist'] = $attrlist;
+        if($arparray['total']==0)
+        {
+            $arparray['message'] = lang('errormatrixnoattrsormembers');
+        }
         echo json_encode($arparray);
         return;
     }
@@ -147,7 +151,7 @@ class Idpmatrix extends MY_Controller
         $data['idpid'] = $idp->getId();
         $data['entityid'] = $idp->getEntityId();
 
-       
+
         $extends = $idp->getExtendMetadata();
         if (count($extends) > 0)
         {
@@ -165,15 +169,15 @@ class Idpmatrix extends MY_Controller
         $data['titlepage'] = lang('identityprovider') . ': ' . anchor('' . base_url() . 'providers/detail/show/' . $data['idpid'], $data['idpname']) . '<br />';
         $data['titlepage'] .= $data['entityid'];
         $data['subtitlepage'] = lang('rr_arpoverview');
-        
-   
 
-   
-    
-     
+
+
+
+
+
         $data['entityid'] = $idp->getEntityId();
         $data['idpid'] = $idp->getId();
-      
+
 
         $data['content_view'] = 'reports/idpmatrix_show_view';
         $this->load->view('page', $data);
