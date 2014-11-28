@@ -437,7 +437,14 @@ class J_queue
 
         $dataRows[$i++]['header'] = lang('rr_details');
         $dataRows[$i]['name'] = lang('requestor');
-        $dataRows[$i++]['value'] = $q->getCreator()->getFullname() ." (". $q->getCreator()->getUsername() .")";
+        $creatorUN = 'anonymous';
+        $creatorFN = 'Anonymous';
+        $creator = $q->getCreator();
+        if(!empty($creator)) {
+                $creatorUN = $creator->getUsername();
+                $creatorFN = $creator->getFullname();
+        }
+        $dataRows[$i++]['value'] = "$creatorFN ($creatorUN)";
 
         $dataRows[$i++]['header'] = lang('rr_fedstojoin');
         if ($feds->count() > 0)
