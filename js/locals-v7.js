@@ -807,6 +807,18 @@ $(document).ready(function () {
     var providerEditForm = $('#providereditform');
     if (providerEditForm.length)
     {
+        var langinputrmval ;
+        providerEditForm.find('div.group').each(function(){
+            var selectInside = $(this).find('select').first();
+             $(this).find('button.langinputrm').each(function(){
+                   langinputrmval = $(this).attr('value');
+                   selectInside.find("option[value="+langinputrmval+"]").each(function(){
+                       $(this).toggleOption(true);
+                       $(this).attr('disabled', true);
+                  });
+             });
+        });
+        
         var createRowWithLangRm = function (langCode, langString, inputName, rmbtn) {
             var result = $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline tiny left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
             return result;
@@ -1234,18 +1246,18 @@ $(document).ready(function () {
             var lrow = $(this).closest('div').parent();
             var bval = $(this).attr('value');
             var bname = $(this).attr('name');
+            var select = $(this).closest('div.group').find('select').first();
             lrow.find("input").each(function () {
                 $(this).attr('value', '');
             });
             lrow.find("textarea").each(function () {
                 $(this).val("");
             });
-            $(this).parent().parent().find("option[value=" + bval + "]").each(
+            select.find("option[value="+bval+"]").each(
                     function () {
                         $(this).toggleOption(true);
                         $(this).attr('disabled', false);
-
-                    }
+                      }
             );
             lrow.remove();
 
