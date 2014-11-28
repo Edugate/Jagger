@@ -1234,18 +1234,18 @@ $(document).ready(function () {
             var lrow = $(this).closest('div').parent();
             var bval = $(this).attr('value');
             var bname = $(this).attr('name');
+            var select = $(this).closest('div.group').find('select').first();
             lrow.find("input").each(function () {
                 $(this).attr('value', '');
             });
             lrow.find("textarea").each(function () {
                 $(this).val("");
             });
-            $(this).parent().parent().find("option[value=" + bval + "]").each(
+            select.find("option[value="+bval+"]").each(
                     function () {
                         $(this).toggleOption(true);
                         $(this).attr('disabled', false);
-
-                    }
+                      }
             );
             lrow.remove();
 
