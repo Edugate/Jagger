@@ -191,7 +191,6 @@ class Form_element
             $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, '' . $lnamenotice . '') . '</div>';
             unset($origlname['' . $key . '']);
             unset($lnamelangs['' . $key . '']);
-            unset($btnlangs['' . $key . '']);
         }
         if (!$sessform)
         {
@@ -210,7 +209,6 @@ class Form_element
 
                 $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lnamelangs[$key], 'f[lname][' . $key . ']', 'lname', $key, $lvalue, $lnamenotice) . '</div>';
                 unset($lnamelangs['' . $key . '']);
-                unset($btnlangs['' . $key . '']);
             }
         }
 
@@ -263,7 +261,6 @@ class Form_element
                 $tmprows .='<div class="small-12 columns">' . $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, $ldisplaynamenotice) . '</div>';
                 unset($origldisplayname['' . $key . '']);
                 unset($ldisplaynamelangs['' . $key . '']);
-                unset($btnlangs['' . $key . '']);
             }
         }
         if (!$sessform)
@@ -278,7 +275,6 @@ class Form_element
                 }
                 $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($ldisplaynamelangs['' . $key . ''], 'f[ldisplayname][' . $key . ']', 'ldisplayname', $key, $lvalue, $ldisplaynamenotice) . '</div>';
                 unset($ldisplaynamelangs['' . $key . '']);
-                unset($btnlangs['' . $key . '']);
             }
         }
 
@@ -338,7 +334,6 @@ class Form_element
             $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, $lhelpdesknotice) . '</div>';
             unset($origlhelpdesk['' . $key . '']);
             unset($lhelpdesklangs['' . $key . '']);
-            unset($btnlangs['' . $key . '']);
         }
         if (!$sessform)
         {
@@ -352,7 +347,6 @@ class Form_element
                 }
                 $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($lhelpdesklangs['' . $key . ''], 'f[lhelpdesk][' . $key . ']', 'lhelpdesk', $key, $lvalue, $lhelpdesknotice) . '</div>';
                 unset($lhelpdesklangs['' . $key . '']);
-                unset($btnlangs['' . $key . '']);
             }
         }
         $tmprows .= '<div class="small-12 columns">' . $this->_generateLangAddButton('lhelpdeskadd', 'lhelpdesklangcode', $btnlangs, 'addlhelpdesk', '' . lang('rr_helpdeskurl') . '') . '</div>';
