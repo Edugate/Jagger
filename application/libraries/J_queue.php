@@ -183,6 +183,7 @@ class J_queue
         {
             $r[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
         }
+        $r[] = array('name'=>lang('rr_sourceip'),'value'=>$q->getIP());
         $entityid = $q->getName();
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
 
@@ -236,6 +237,7 @@ class J_queue
         {
             $r[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
         }
+        $r[] = array('name'=>lang('rr_sourceip'),'value'=>$q->getIP());
         $entityid = $q->getName();
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
 
@@ -276,6 +278,7 @@ class J_queue
         $objdata = $q->getData();
         $r = array();
         $r[] = array('header' => lang('request'));
+	$r[] = array('name'=>lang('rr_sourceip'),'value'=>$q->getIP());
         $r[] = array('name' => lang('type'), 'value' => lang('req_userregistration'));
         $creator = $q->getCreator();
         if ($creator)
@@ -340,6 +343,7 @@ class J_queue
         {
             $fedrows[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
         }
+        $fedrows[] = array('name'=>lang('rr_sourceip'),'value'=>$q->getIP());
 
         $fedrows[] = array('name' => lang('rr_regdate'), 'value' => $q->getCreatedAt());
         $fedrows[] = array('header' => lang('rr_basicinformation'));
@@ -372,7 +376,7 @@ class J_queue
         {
             $fedrows[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
         }
-
+        $fedrows[] = array('name'=>lang('rr_sourceip'),'value'=>$q->getIP());
         $fedrows[] = array('name' => lang('rr_requestdate'), 'value' => $q->getCreatedAt());
         $fedrows[] = array('header' => lang('rr_basicinformation'));
         $fedrows[] = array('name' => lang('rr_fed_name'), 'value' => $objData->getName());
@@ -445,6 +449,7 @@ class J_queue
                 $creatorFN = $creator->getFullname();
         }
         $dataRows[$i++]['value'] = "$creatorFN ($creatorUN)";
+        $dataRows[$i++] = array('name'=>lang('rr_sourceip'),'value'=>$q->getIP());
 
         $dataRows[$i++]['header'] = lang('rr_fedstojoin');
         if ($feds->count() > 0)
@@ -639,6 +644,8 @@ class J_queue
         $this->ci->table->add_row($cell);
         $cell = array(lang('requestor'), $queue->getCreator()->getUsername() . ' (' . $queue->getCreator()->getFullname() . ') : email: ' . $queue->getCreator()->getEmail());
         $this->ci->table->add_row($cell);
+        $cell = array(lang('rr_sourceip'),''.$q->getIP().'');
+        $this->ci->table->add_row($cell);
         $cell = array(lang('rr_federation'), $queue->getName());
         $this->ci->table->add_row($cell);
         $cell = array(lang('rr_provider'), $provider->getName());
@@ -681,6 +688,9 @@ class J_queue
         $this->ci->table->add_row($cell);
         $cell = array(lang('requestor'), $queue->getCreator()->getFullname() . ' (' . $queue->getCreator()->getUsername() . ')');
         $this->ci->table->add_row($cell);
+        $cell = array(lang('rr_sourceip'), $queue->getIP());
+        $this->ci->table->add_row($cell);
+
         $validators = $federation->getValidators();
         $fedValidator = null;
         foreach ($validators as $v)

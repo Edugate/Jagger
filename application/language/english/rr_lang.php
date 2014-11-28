@@ -879,6 +879,7 @@ $lang['listavailableprov']          = 'List of available providers';
 $lang['rr_tbltitle_date']           = 'Date';
 $lang['rr_tbltitle_requester']      = 'Requester';
 $lang['fedrequester']               = 'Federation Requester';
+$lang['rr_sourceip']                = 'Source IP';
 $lang['rr_requester']               = 'Requester';
 $lang['rr_tbltitle_requesttype']    = 'Request Type';
 $lang['rr_tbltitle_primcontact']    = 'Primary contact';
