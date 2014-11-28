@@ -412,45 +412,7 @@ class Certificate
          return $c;
  
     }
-    public function getCertificateToXML(\DOMElement $parent)
-    {
-        $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:KeyDescriptor');
-
-        $certbody = $this->getCertDataNoHeaders();
-         
-        if(empty($this->keyname) && empty($certbody))
-        {
-           return null;
-        }
-        if (!empty($this->certusage))
-        {
-            $e->setAttribute('use', $this->certusage);
-        }
-        $KeyInfo_Node = $e->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:KeyInfo');
-        if (!empty($this->keyname))
-        {
-            $keynames = explode(',',$this->keyname);
-            foreach($keynames as $v)
-            {
-                $KeyName_Node = $KeyInfo_Node->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:KeyName', $v);
-                $KeyInfo_Node->appendChild($KeyName_Node);
-            }
-        }
-        if ($this->getCertType() === 'X509Certificate')
-        {
-            if(!empty($certbody))
-            {
-               $CertType_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Data');
-               $CertBody_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Certificate', $this->getCertDataNoHeaders());
-
-               $CertType_Node->appendChild($CertBody_Node);
-               $KeyInfo_Node->appendChild($CertType_Node);
-            }
-        }
-        $e->appendChild($KeyInfo_Node);
-        return $e;
-    }
-
+ 
     function getPEM($value, $raw = false)
     {
 
