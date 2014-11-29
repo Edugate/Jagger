@@ -2439,9 +2439,9 @@ $(document).ready(function () {
                         type: "GET",
                         url: baseurl + 'ajax/getproviders',
                         cache: false,
-                        //datatype: "json",
+                        datatype: "json",
                         success: function (json) {
-                            var data = $.parseJSON(json);
+                            var data = json;
                             $.each(data, function (key, value) {
                                 $('<option>').val(value.key).text(value.value).appendTo(selprovider);
                             });
