@@ -71,7 +71,7 @@ echo form_input(array('name' => 'requester', 'id' => 'requester', 'type' => 'hid
 echo form_close();
 
 echo '
-  <div id="policyupdater" class="reveal-modal small" data-reveal jagger-data-link="' . base_url() . 'manage/attribute_policyajax/getattrpath/' . $idpid . '">
+  <div id="policyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url() . 'manage/attribute_policyajax/getattrpath/' . $idpid . '">
   <h2>' . lang('confirmupdpolicy') . '</h2>
       
       <p class="message">' . lang('rr_tbltitle_requester') . ':  <span class="mrequester"></span><br />' . lang('attrname') . ': <span class="mattribute"></span></p>

@@ -1102,7 +1102,7 @@ class Detail extends MY_Controller
                 $d[++$i]['name'] = lang('rr_contactlastname');
                 $d[$i]['value'] = $c->getSurname();
                 $d[++$i]['name'] = lang('rr_contactemail');
-                $d[$i]['value'] = '<span jagger-data-contactmail="' . $c->getEmail() . '">' . $c->getEmail() . '</span>';
+                $d[$i]['value'] = '<span data-jagger-contactmail="' . $c->getEmail() . '">' . $c->getEmail() . '</span>';
             }
         }
         else
@@ -1433,19 +1433,19 @@ class Detail extends MY_Controller
             }
             else
             {
-                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<img src="' . base_url() . 'images/icons/prohibition.png"/> <div class="alert">' . lang('rmproviderdisablefirst') . '</div></div>';
+                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<span class="alert"><i class="fi-prohibited"></i></span> <div class="alert">' . lang('rmproviderdisablefirst') . '</div></div>';
             }
         }
         elseif ($hasWriteAccess)
         {
             $d[++$i]['name'] = lang('rr_managestatus');
-            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <img src="' . base_url() . 'images/icons/prohibition.png"/><div class="alert">' . lang('rerror_managepermneeded') . '</div>';
-            $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<img src="' . base_url() . 'images/icons/prohibition.png"/> <div class="alert">' . lang('rerror_managepermneeded') . '</div> </div>';
+            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <span class="alert"><i class="fi-prohibited"></i></span><div class="alert">' . lang('rerror_managepermneeded') . '</div>';
+            $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<i class="fi-prohibited"></i>div class="alert">' . lang('rerror_managepermneeded') . '</div> </div>';
         }
         else
         {
             $d[++$i]['name'] = lang('rr_managestatus');
-            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <img src="' . base_url() . 'images/icons/prohibition.png"/>';
+            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <span class="alert"><i class="fi-prohibited"></i></span>';
         }
         $d[++$i]['name'] = '';
         if ($hasManageAccess)
@@ -1454,9 +1454,9 @@ class Detail extends MY_Controller
         }
         else
         {
-            $d[$i]['value'] = lang('rr_displayaccess') . '<img src="' . base_url() . 'images/icons/prohibition.png"/>';
+            $d[$i]['value'] = lang('rr_displayaccess') . '';
         }
-        if ($hasManageAccess || $hasWriteAccess)
+        if (($hasManageAccess || $hasWriteAccess) && $isLocal )
         {
 
             $d[++$i] = array('name' => lang('regpols_menulink'), 'value' => '<a href="' . base_url() . 'manage/entitystate/regpolicies/' . $ent->getId() . '" class="button tiny">' . lang('rr_edit') . '');
