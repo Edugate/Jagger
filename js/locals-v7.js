@@ -107,6 +107,9 @@ var GINIT = {
             return false;
         });
 
+        $('button.modal-close').on('click', function (event) {
+            $(this).foundation('reveal', 'close');
+        });
 
         $('#providerlogtab').on('toggled', function (event, tab) {
             var domElement = tab;//.get(0);
@@ -415,6 +418,8 @@ var GINIT = {
             var result = $("div.uploadresult");
             var postdata = $("form#assignedlogos").serializeArray();
             var checkedObj = $('input[name=logoid]:radio:checked');
+            var messagereveal = $('#messagereveal');
+            var infomsg = messagereveal.find("p.infomsg");
             $.ajax({
                 type: 'POST',
                 url: $(this).attr('action'),
@@ -428,38 +433,17 @@ var GINIT = {
                 },
                 success: function (data) {
                     $('#spinner').hide();
-                    result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%", ],
-                        overlayId: 'simpledialog-overlay',
-                        minHeight: '200px',
-                        containerId: 'simpledialog-container',
-                        onShow: function (dialog) {
-                            var modal = this;
-                        }
-                    });
+                    infomsg.html(data);
+                    messagereveal.foundation('reveal', 'open');
                     checkedObj.parent().remove();
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     $('#spinner').hide();
-                    result.css('color', 'red');
-                    result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
-                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%", ],
-                        overlayId: 'simpledialog-overlay',
-                        minHeight: '200px',
-                        containerId: 'simpledialog-container',
-                        onShow: function (dialog) {
-                            var modal = this;
-                        }
-                    });
+                    infomsg.html(jqXHR.responseText);
+                    messagereveal.foundation('reveal', 'open');
+
                 }
-            }).done(function () {
-                $("form#assignedlogos").unbind();
-                $("form#availablelogos").unbind();
-                $("#uploadlogo").unbind();
-                GINIT.initialize();
             });
 
         }));
@@ -807,18 +791,18 @@ $(document).ready(function () {
     var providerEditForm = $('#providereditform');
     if (providerEditForm.length)
     {
-        var langinputrmval ;
-        providerEditForm.find('div.group').each(function(){
+        var langinputrmval;
+        providerEditForm.find('div.group').each(function () {
             var selectInside = $(this).find('select').first();
-             $(this).find('button.langinputrm').each(function(){
-                   langinputrmval = $(this).attr('value');
-                   selectInside.find("option[value="+langinputrmval+"]").each(function(){
-                       $(this).toggleOption(true);
-                       $(this).attr('disabled', true);
-                  });
-             });
+            $(this).find('button.langinputrm').each(function () {
+                langinputrmval = $(this).attr('value');
+                selectInside.find("option[value=" + langinputrmval + "]").each(function () {
+                    $(this).toggleOption(true);
+                    $(this).attr('disabled', true);
+                });
+            });
         });
-        
+
         var createRowWithLangRm = function (langCode, langString, inputName, rmbtn) {
             var result = $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline tiny left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
             return result;
@@ -1253,11 +1237,11 @@ $(document).ready(function () {
             lrow.find("textarea").each(function () {
                 $(this).val("");
             });
-            select.find("option[value="+bval+"]").each(
+            select.find("option[value=" + bval + "]").each(
                     function () {
                         $(this).toggleOption(true);
                         $(this).attr('disabled', false);
-                      }
+                    }
             );
             lrow.remove();
 
@@ -1381,9 +1365,9 @@ $(document).ready(function () {
                     var policies = json.policies;
                     var countpolicies = json.total;
                     var responsemsg = json.message;
-                    if(countpolicies != undefined && countpolicies == 0 && responsemsg != undefined)
+                    if (countpolicies != undefined && countpolicies == 0 && responsemsg != undefined)
                     {
-                        var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box warning">'+responsemsg+'</div></div>'; 
+                        var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box warning">' + responsemsg + '</div></div>';
                         matrixdiv.html(alerthtml);
                         return false;
                     }
@@ -1476,9 +1460,9 @@ $(document).ready(function () {
             error: function (xhr, status, error)
             {
                 $('#spinner').hide();
-                 var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box error">'+error+'</div></div>'; 
-                        matrixdiv.html(alerthtml);
-                        return false;
+                var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box error">' + error + '</div></div>';
+                matrixdiv.html(alerthtml);
+                return false;
             }
         });
     }
