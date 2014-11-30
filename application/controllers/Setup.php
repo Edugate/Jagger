@@ -39,54 +39,12 @@ class Setup extends MY_Controller {
 
     public function index() {
 
+        $this->title = 'JAGGER Setup';
+        $data['titlepage'] = 'JAGGER (Federation management tool) Setup'; 
         $this->load->helper('form');
-        $attributes = array('id'=>'formver2','class'=>'register');
-        $hidden = array('setupallowed'=>'dd');
-
-
-        $f =  form_open(base_url() . 'setup/submit',$attributes,$hidden);
-        $f .= form_fieldset('Administrator  details');
-
-        $f .= form_label('Username', 'username');
-        $f .= form_input('username') . "<br />";
-        $f .= form_label('Email', 'email');
-        $f .= form_input('email') . "<br />";
-        $f .= form_label('Password', 'password');
-        $f .= form_password('password') . "<br />";
-        $f .= form_label('Confirm password', 'passwordconf');
-        $f .= form_password('passwordconf') . "<br />";
-        $f .= form_label('First name','fname');
-        $f .= form_input('fname')."<br />";
-        $f .= form_label('Surname','sname');
-        $f .= form_input('sname')."<br />";
-
-        $f .= form_fieldset_close();
-        $f .= form_submit('submit', 'submit');
-
-        $f .= form_close();
-
         $data['content_view'] = 'setup_view';
-        $data['f'] = $f;
         $this->load->view('page',$data);
     }
-/*
-    public function exampleusers() {
-        $this->load->helper('form');
-        $submited = $this->input->post('populateusers');
-        if (!empty($submited) && $submited == "yes") {
-            $this->_populateExampleUsers();
-            $this->em->flush();
-            echo "done<br/>";
-            echo "go to " . anchor(base_url(), 'man page');
-        } else {
-            $hidden = array('populateusers' => 'yes');
-            echo form_open(current_url(), '', $hidden);
-
-            echo form_submit('populate', 'Populate');
-            echo form_close();
-        }
-    }
-*/
     private function _submit_validate()
     {
         $this->form_validation->set_rules('setupallowed','Setup','setup_allowed');
