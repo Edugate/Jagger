@@ -198,7 +198,7 @@ class Logomngmt extends MY_Controller
             $s=404;
             $msg =lang('error403');
         }
-        if($s)
+        if(!empty($s))
         {
             set_status_header($s);
             echo $msg;
