@@ -1269,7 +1269,7 @@ $(document).ready(function () {
     if ($('#matrixloader').length > 0)
     {
         var formupdater = $('#policyupdater');
-        var formupdaterUrl = formupdater.attr('jagger-data-link');
+        var formupdaterUrl = formupdater.attr('data-jagger-link');
         var formupdaterAction = $(formupdater).find('form').first();
         var providerdetailurl = $('#matrixloader').attr('data-jagger-providerdetails');
         var mrequester = $(formupdater).find("span.mrequester").first();
@@ -1315,7 +1315,7 @@ $(document).ready(function () {
         matrixdiv.on('click', 'td', function (event) {
             clickedcell = $(this);
 
-            var splink = $(this).attr("jagger-data-entidlink");
+            var splink = $(this).attr("data-jagger-entidlink");
             if (splink != undefined)
             {
                 var redurl = providerdetailurl + '/' + splink;
@@ -1324,8 +1324,8 @@ $(document).ready(function () {
                 return false;
             }
 
-            var spiddata = $(this).attr("jagger-data-spid");
-            var attrdata = $(this).attr("jagger-data-attrid");
+            var spiddata = $(this).attr("data-jagger-spid");
+            var attrdata = $(this).attr("data-jagger-attrid");
             //var attrclass = $(this).class();
             if (spiddata != undefined && attrdata != undefined)
             {
@@ -1402,7 +1402,7 @@ $(document).ready(function () {
                     tbl += '</tr></thead><tbody>';
                     $.each(policies, function (i, a) {
 
-                        tbl += '<tr><td jagger-data-entidlink="' + a.spid + '" class="searchcol"><span data-tooltip aria-haspopup="true" class="has-tip" data-options="disable_for_touch:true" title="' + i + '" >' + a.name + '</span><span class="hidden">' + i + '</span></td>';
+                        tbl += '<tr><td data-jagger-entidlink="' + a.spid + '" class="searchcol"><span data-tooltip aria-haspopup="true" class="has-tip" data-options="disable_for_touch:true" title="' + i + '" >' + a.name + '</span><span class="hidden">' + i + '</span></td>';
                         $.each(attrdefs, function (k, v) {
                             if (a['attributes'][k] != undefined)
                             {
@@ -1450,7 +1450,7 @@ $(document).ready(function () {
 
 
 
-                            tbl += '<td jagger-data-spid="' + a.spid + '" jagger-data-attrid="' + v + '" class="' + cl + '" title="' + k + '">';
+                            tbl += '<td data-jagger-spid="' + a.spid + '" data-jagger-attrid="' + v + '" class="' + cl + '" title="' + k + '">';
                             tbl += cell + '</td>';
                         });
                     });
@@ -2439,9 +2439,9 @@ $(document).ready(function () {
                         type: "GET",
                         url: baseurl + 'ajax/getproviders',
                         cache: false,
-                        //datatype: "json",
+                        datatype: "json",
                         success: function (json) {
-                            var data = $.parseJSON(json);
+                            var data = json;
                             $.each(data, function (key, value) {
                                 $('<option>').val(value.key).text(value.value).appendTo(selprovider);
                             });

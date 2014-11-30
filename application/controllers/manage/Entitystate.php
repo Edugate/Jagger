@@ -87,6 +87,7 @@ class Entitystate extends MY_Controller {
         }
         $lang = MY_Controller::getLang();
         $isLocked = $this->entity->getLocked();
+        $isLocal = $this->entity->getLocal();
         $titlename = $this->entity->getNameToWebInLang($lang, $this->entity->getType());
         $data['titlepage'] .= ' <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>';
         $data['subtitlepage'] = lang('title_regpols');
@@ -100,6 +101,11 @@ class Entitystate extends MY_Controller {
         elseif ($isLocked)
         {
             show_error('entity id locked', 403);
+            return;
+        }
+        elseif(!$isLocal)
+        {
+            show_error('external entity, cannot be modified',403);
             return;
         }
 

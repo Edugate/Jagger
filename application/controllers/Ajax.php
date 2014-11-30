@@ -49,6 +49,7 @@ class Ajax extends MY_Controller
         $p = new models\Providers();
         $providers = $p->getLocalIdsEntities();
         $this->output->set_content_type('application/json');
+        $result = array();
         foreach ($providers as $k)
         {
             $result[] = array('key' => $k['id'], 'value' => $k['entityid'], 'label' => $k['name']);
