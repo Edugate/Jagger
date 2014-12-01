@@ -165,7 +165,7 @@ class Metadata extends MY_Controller
         $this->load->view('metadata_view', $data);
     }
 
-    private function federationexport($federationName = NULL)
+    public function federationexport($federationName = NULL)
     {
         if (empty($federationName))
         {
