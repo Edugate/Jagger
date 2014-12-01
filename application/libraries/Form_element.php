@@ -111,12 +111,10 @@ class Form_element
         }
         $t_regauthority = $ent->getRegistrationAuthority();
         $t_regdate = '';
-        $origregdate = '';
         $tmpregdate = $ent->getRegistrationDate();
         if (!empty($tmpregdate))
         {
             $t_regdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
-            $origregdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
         }
         if ($sessform)
         {
@@ -132,7 +130,6 @@ class Form_element
         $f_regauthority = set_value('f[regauthority]', $t_regauthority);
         $f_regdate = set_value('f[registrationdate]', $t_regdate);
         $result = array();
-
 
         $tmprows = '';
 // providername group 
@@ -396,18 +393,6 @@ class Form_element
         $r .= form_label(lang('rr_url', 'f[privacyurl]')) . form_input(array('name' => 'f[privacyurl]', 'id' => 'f[privacyurl]', 'value' => $t_privacyurl, 'class' => $privaceurlnotice));
         $r .= '</div></fieldset>';
         $result[] = $r;
-
-
-
-
-
-        $langscodes = languagesCodes();
-        $e = $ent->getExtendMetadata();
-        $extend = array();
-        foreach ($e as $v)
-        {
-            $extend['' . $v->getType() . '']['' . $v->getNamespace() . '']['' . $v->getElement() . ''][] = $v;
-        }
 
         return $result;
     }

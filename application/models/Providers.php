@@ -532,23 +532,6 @@ class Providers {
         return $this->providers;
     }
 
-    public function test_getIdps()
-    {
-        $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('models\Provider', 'u');
-        $rsm->addFieldResult('u', 'id', 'id');
-        $rsm->addFieldResult('u', 'name', 'name');
-        $query = $this->em->createNativeQuery('SELECT id,name FROM provider WHERE type = ?', $rsm);
-        $query->setParameter(1, 'SP');
-
-        $users = $query->getResult();
-
-        return $users;
-    }
-
-
-
-
     public function getActiveFederationmembersForExport(Federation $federation, $excludeType=null)
     {
        if(is_null($excludeType))
@@ -682,10 +665,5 @@ class Providers {
         return $this->providers;
     }
 
-    public function getFromXML($metadata)
-    {
-        $doc = \DOMDocument::loadXML($metadata);
-        return $doc->saveXML($doc);
-    }
 
 }
