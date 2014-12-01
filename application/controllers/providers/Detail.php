@@ -116,15 +116,15 @@ class Detail extends MY_Controller
                 $isstats = $this->config->item('statistics');
                 if (($isactive === TRUE) && ($islocal === TRUE) && !empty($isgearman) && ($isgearman === TRUE) && !empty($isstats))
                 {
-                    $d[++$i]['name'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt'));
-                    $d[$i]['value'] = anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>');
+                    $d[++$i] = array('name'=> ''.anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')).'',
+                                    'value' => ''.anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>').'');
                 }
                 $d[++$i]['header'] = lang('rr_logs');
                 $d[++$i]['name'] = lang('rr_variousreq');
                 $d[$i]['value'] = $this->show_element->generateRequestsList($ent, 10);
                 $d[++$i]['name'] = lang('rr_modifications');
                 $d[$i]['value'] = $this->show_element->generateModificationsList($ent, 10);
-                if ((strcasecmp($ent->getType(), 'IDP') == 0) OR ( strcasecmp($ent->getType(), 'BOTH') == 0))
+                if ((strcasecmp($ent->getType(), 'IDP') == 0) || ( strcasecmp($ent->getType(), 'BOTH') == 0))
                 {
                     $tmp_logs = new models\Trackers;
                     $arp_logs = $tmp_logs->getArpDownloaded($ent);
@@ -137,8 +137,7 @@ class Detail extends MY_Controller
                         }
                     }
                     $logg_tmp .= '</ul>';
-                    $d[++$i]['name'] = lang('rr_recentarpdownload');
-                    $d[$i]['value'] = $logg_tmp;
+                    $d[++$i] = array('name' =>''. lang('rr_recentarpdownload').'','value' => ''.$logg_tmp.'');
                 }
             }
             else
