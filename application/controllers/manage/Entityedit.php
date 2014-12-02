@@ -32,7 +32,7 @@ class Entityedit extends MY_Controller {
     public function __construct()
     {
         parent::__construct();
-        $this->load->library(array('form_element', 'form_validation', 'approval'));
+        $this->load->library(array('form_element', 'form_validation', 'approval','providertoxml'));
         $this->tmp_providers = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmp_error = '';

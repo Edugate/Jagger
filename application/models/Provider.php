@@ -2296,14 +2296,6 @@ class Provider
     {
         $r = array();
         $r['id'] = $this->getId();
-        if ($addmeta === TRUE)
-        {
-            $m = $this->getProviderToXML()->saveXML();
-            if (!empty($m))
-            {
-                $r['metadata'] = base64_encode($m);
-            }
-        }
         $r['name'] = $this->getName();
         $r['displayname'] = $this->getDisplayname();
         $r['entityid'] = $this->getEntityId();
