@@ -65,7 +65,7 @@
                 {
                 ?>
                     <li class="has-form">
-                        <a href="<?php echo $base_url; ?>auth/" class="button alert logibutton"  data-reveal-id="loginform"><?php echo lang('toploginbtn'); ?></a>
+                        <a href="<?php echo $base_url; ?>auth/" class="button alert"  id="loginbtn" data-reveal-id="loginform"><?php echo lang('toploginbtn'); ?></a>
                     </li>
 
                     <?php

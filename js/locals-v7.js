@@ -90,6 +90,9 @@ var GINIT = {
             baseurl = '';
         }
 
+        $("#loginbtn").on('click',function(event){
+            $("#loginresponse").hide();
+        });
         $("a.bookentity").click(function () {
             var link = $(this), url = link.attr("href");
 
