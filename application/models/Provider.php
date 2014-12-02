@@ -2017,55 +2017,6 @@ class Provider
         }
     }
 
-    private function getServicePartsToArray($name)
-    {
-        $result = array();
-        $ext = $this->getExtendMetadata();
-        foreach ($ext as $e)
-        {
-            $t = $e->getType();
-            if ($t !== 'sp')
-            {
-                continue;
-            }
-            $n = $e->getElement();
-            $ns = $e->getNameSpace();
-            if ($n === $name && $ns === 'mdui')
-            {
-                $l = $e->getAttributes();
-                $v = $e->getEvalue();
-                if (isset($l['xml:lang']) && !empty($v))
-                {
-                    $result['' . $l['xml:lang'] . ''] = $v;
-                }
-            }
-        }
-        if (count($result) == 0)
-        {
-            if ($name === 'DisplayName')
-            {
-                $m = $this->getDisplayName();
-                if (empty($m))
-                {
-                    $m = $this->getName();
-                }
-                if (empty($m))
-                {
-                    $m = $this->getEntityId();
-                }
-                $result['en'] = $m;
-            }
-            elseif ($name === 'Description')
-            {
-                if (!empty($desc))
-                {
-                    $result['en'] = 'no description';
-                }
-            }
-        }
-        return $result;
-    }
-
     public function getDigest()
     {
         return $this->digest;
