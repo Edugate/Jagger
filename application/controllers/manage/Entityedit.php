@@ -533,7 +533,7 @@ class Entityedit extends MY_Controller {
         }
         // uii
         $uiitTypes = array('idpsso', 'spsso');
-        $uiiSubTypes = array('desc', 'logo', 'helpdesk', 'displayname');
+        $uiiSubTypes = array('desc', 'logo', 'helpdesk', 'displayname','iphint','domainhint');
         foreach ($uiitTypes as $t)
         {
             foreach ($uiiSubTypes as $p)
@@ -724,6 +724,10 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
+        if(strcasecmp($this->type, 'SP') != 0)
+        {
+           $menutabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => '');
+        }
         $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
         $menutabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
@@ -1086,6 +1090,10 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
+        if(strcasecmp($ent->getType(), 'SP') != 0)
+        {
+           $menutabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => '');
+        }
         $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
         if (strcasecmp($ent->getType(), 'IDP') != 0)

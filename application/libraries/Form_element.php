@@ -2438,6 +2438,11 @@ class Form_element
         return $result;
     }
 
+    public function NgenerateUiHintsForm(models\Provider $ent, $ses = null)
+    {
+
+    }
+
     public function NgenerateUiiForm(models\Provider $ent, $ses = null)
     {
         $logopart = $this->NgenerateLogoForm($ent, $ses);
