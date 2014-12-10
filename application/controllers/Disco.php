@@ -35,6 +35,8 @@ class Disco extends MY_Controller {
         }
         $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
         $this->wayflist = array();
+        $this->output->set_header("X-Frame-Options: SAMEORIGIN");
+        $this->output->set_header("Access-Control-Allow-Origin: *");
     }
 
     private function providerToDisco(models\Provider $ent)
