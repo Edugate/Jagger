@@ -700,7 +700,7 @@ class Providerdetails
             {
                 $d[++$i]['header'] = lang('rr_staticmetadataactive');
 
-                $d[++$i]['2cols'] = '<code>' . $this->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
+                $d[++$i]['2cols'] = '<code>' . $this->CI->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
             }
             $subresult[20] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
         }
