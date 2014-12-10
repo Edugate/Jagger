@@ -165,22 +165,31 @@ class Disco extends MY_Controller {
                    $oi++;
                  }
             }
+            $jsonoutput = json_encode($output);
+            $this->cache->save($cacheid, $jsonoutput, 600);
+            
             if (!empty($call_array) && is_array($call_array) && count($call_array) == 3 && $call_array['0'] == 'dj' && $call_array['1'] == 'md' && is_numeric($call_array['2']))
             {
-                $jsonoutput = $call . '(' . json_encode($output) . ')';
+               $data['result'] = $call . '(' .  $jsonoutput . ')';
             }
             else
             {
-                $jsonoutput = json_encode($output);
+                $data['result'] = $jsonoutput;
             }
-            $data['result'] = $jsonoutput;
 
-            $this->cache->save($cacheid, $jsonoutput, 600);
         }
         else
         {
             log_message('debug', 'Cache: Discojoice for entity ' . $me->getId() . ' found in cache id:' . $cacheid . ', retrieving...');
-            $data['result'] = $cachedDisco;
+            
+            if (!empty($call_array) && is_array($call_array) && count($call_array) == 3 && $call_array['0'] == 'dj' && $call_array['1'] == 'md' && is_numeric($call_array['2']))
+            {
+               $data['result'] = $call . '(' .  $cachedDisco . ')';
+            }
+            else
+            {
+                $data['result'] = $cachedDisco;
+            }
         }
         $this->load->view('disco_view', $data);
     }
