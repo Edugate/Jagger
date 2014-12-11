@@ -2455,12 +2455,14 @@ class Form_element {
         }
         $extendMetadata = $ent->getExtendMetadata();
         // BEGIN IDPSSO PART
+        $enid = 0;
         if (strcasecmp($type, 'SP') != 0)
         {
             $ipHints = array();
             $domainHints = array();
             if ($sessform)
             {
+                
                 if (isset($ses['uii']['idpsso']['iphint']) && is_array($ses['uii']['idpsso']['iphint']))
                 {
                     $ipHints = $ses['uii']['idpsso']['iphint'];
@@ -2471,12 +2473,17 @@ class Form_element {
                 }
             }
             else
-            {
+            {                
                 foreach ($extendMetadata as $e)
                 {
                     $etype = $e->getType();
                     $enamespace = $e->getNamespace();
-                
+                    $eid= $e->getId();
+                    if(empty($eid))
+                    {
+                        $eid = 'z'.$enid++;
+                    }
+                    
                     if (strcmp($etype, 'idp') == 0 && strcasecmp($enamespace, 'mdui')==0)
                     {
              
@@ -2486,12 +2493,12 @@ class Form_element {
                         if (strcasecmp($eelement, 'IPHint')==0)
                         {
                             
-                            $ipHints['' . $e->getId() . ''] = $evalue;
+                            $ipHints['' . $eid . ''] = $evalue;
                         }
                         elseif (strcasecmp($eelement, 'DomainHint')==0)
                         {
                            
-                            $domainHints['' . $e->getId() . ''] = $evalue;
+                            $domainHints['' . $eid . ''] = $evalue;
                         }
                     }
                 }

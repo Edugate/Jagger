@@ -1075,7 +1075,7 @@ class Provider
 
     public function setRegistrationDate(\DateTime $date = null)
     {
-        if(empty($date))
+        if (empty($date))
         {
             $this->registerdate = NULL;
         }
@@ -1514,7 +1514,7 @@ class Provider
         {
             $this->setServiceLocation($r);
             $order = $r->getOrder();
-            if(is_null($order))
+            if (is_null($order))
             {
                 $r->setOrder(1);
             }
@@ -1861,32 +1861,32 @@ class Provider
             $type = $this->type;
         }
         $doFilter = array('DisplayName');
-        if(!empty($this->extend))
+        if (!empty($this->extend))
         {
-           $e = $this->getExtendMetadata()->filter(
-                function(ExtendMetadata $entry) use ($doFilter) {
-              return in_array($entry->getElement(), $doFilter);
-           });
-           if (!empty($e))
-           {
-              foreach ($e as $p)
-              {
-                 $t = $p->getType();
-                 $a = $p->getAttributes();
-                 if (strcasecmp($t, $type) == 0 && isset($a['xml:lang']))
-                 {
-                    if (strcasecmp($a['xml:lang'], $lang) == 0)
+            $e = $this->getExtendMetadata()->filter(
+                    function(ExtendMetadata $entry) use ($doFilter) {
+                return in_array($entry->getElement(), $doFilter);
+            });
+            if (!empty($e))
+            {
+                foreach ($e as $p)
+                {
+                    $t = $p->getType();
+                    $a = $p->getAttributes();
+                    if (strcasecmp($t, $type) == 0 && isset($a['xml:lang']))
                     {
-                        $result = $p->getEvalue();
-                        break;
-                    }
-                    elseif ($backupname === null)
-                    {
-                        $backupname = $p->getEvalue();
+                        if (strcasecmp($a['xml:lang'], $lang) == 0)
+                        {
+                            $result = $p->getEvalue();
+                            break;
+                        }
+                        elseif ($backupname === null)
+                        {
+                            $backupname = $p->getEvalue();
+                        }
                     }
                 }
-             }
-           }
+            }
         }
         if ($result === null)
         {
@@ -2247,8 +2247,6 @@ class Provider
         return $result;
     }
 
-
-
     public function getWayfList()
     {
         $w = $this->wayflist;
@@ -2478,6 +2476,7 @@ class Provider
             }
         }
     }
+
     /**
      *
      * extensions inside IDPSSODEscriptor (idp) or SPSODescriptor (sp)
@@ -2491,8 +2490,50 @@ class Provider
         $parentUIInfo->setType($type);
         $parentUIInfo->setProvider($this);
         $this->setExtendMetadata($parentUIInfo);
-
-
+        if ($type === 'idp')
+        {
+            $parentDiscoHints = new ExtendMetadata;
+            $parentDiscoHints->setNamespace('mdui');
+            $parentDiscoHints->setElement('DiscoHints');
+            $parentDiscoHints->setAttributes(array());
+            $parentDiscoHints->setType($type);
+            $parentDiscoHints->setProvider($this);
+            $this->setExtendMetadata($parentDiscoHints);
+            if (isset($ext['geo']) && is_array($ext['geo']))
+            {
+                foreach ($ext['geo'] as $g)
+                {
+                    $geo = new ExtendMetadata;
+                    $geo->setGeoLocation('' . $g[0] . ',' . $g[1] . '', $this, $parentDiscoHints, $type);
+                    $geo->setProvider($this);
+                    $this->setExtendMetadata($geo);
+                }
+            }
+            foreach (array('iphint', 'domainhint') as $v)
+            {
+                if (isset($ext['' . $v . '']))
+                {
+                    foreach ($ext['' . $v . ''] as $w)
+                    {
+                        $we = new ExtendMetadata;
+                        $we->setProvider($this);
+                        $we->setType('idp');
+                        $we->setNamespace('mdui');
+                        $we->setValue($w);
+                        $we->setParent($parentDiscoHints);
+                        if($v === 'iphint')
+                        {
+                            $we->setElement('IPHint');
+                        }
+                        else
+                        {
+                            $we->setElement('DomainHint');
+                        }
+                        $this->setExtendMetadata($we);
+                    }
+                }
+            }
+        }
         if (array_key_exists('scope', $ext))
         {
             $this->setScope('idpsso', $ext['scope']);
@@ -2501,24 +2542,7 @@ class Provider
         {
             $this->setScope('aa', $ext['aascope']);
         }
-        if (array_key_exists('geo', $ext) && is_array($ext['geo']))
-        {
-            \log_message('debug', __METHOD__ . ': geo');
-            $parentgeo = new ExtendMetadata;
-            $parentgeo->setNamespace('mdui');
-            $parentgeo->setElement('DiscoHints');
-            $parentgeo->setAttributes(array());
-            $parentgeo->setType($type);
-            $parentgeo->setProvider($this);
-            $this->setExtendMetadata($parentgeo);
-            foreach ($ext['geo'] as $g)
-            {
-                $geo = new ExtendMetadata;
-                $geo->setGeoLocation('' . $g[0] . ',' . $g[1] . '', $this, $parentgeo, $type);
-                $geo->setProvider($this);
-                $this->setExtendMetadata($geo);
-            }
-        }
+
         if (array_key_exists('desc', $ext) && is_array($ext['desc']))
         {
             foreach ($ext['desc'] as $k => $p)
@@ -2911,14 +2935,14 @@ class Provider
             {
                 $p = explode("T", $a['regdate']);
                 $ptime = str_replace('Z', '', $p['1']);
-                $pdate = \DateTime::createFromFormat('Y-m-d H:i:s', $p[0] . ' ' . substr($ptime,0,8));
-                if($pdate instanceOf \DateTime)
+                $pdate = \DateTime::createFromFormat('Y-m-d H:i:s', $p[0] . ' ' . substr($ptime, 0, 8));
+                if ($pdate instanceOf \DateTime)
                 {
-                   $this->setRegistrationDate($pdate);
+                    $this->setRegistrationDate($pdate);
                 }
                 else
                 {
-                   \log_message('error',__METHOD__. ' couldnt create \DateTime object from string for entity:'.$this->entityid);
+                    \log_message('error', __METHOD__ . ' couldnt create \DateTime object from string for entity:' . $this->entityid);
                 }
             }
         }
@@ -3014,7 +3038,7 @@ class Provider
                 }
                 if (array_key_exists('aadescriptor', $a['details']))
                 {
-                   
+
                     $this->aaDescriptorFromArray($a['details']['aadescriptor']);
                 }
             }

@@ -24,7 +24,6 @@ class Providerupdater
     protected $ci;
     protected $em;
     protected $logtracks;
-    
 
     function __construct()
     {
@@ -111,26 +110,116 @@ class Providerupdater
         }
         $langCodes = languagesCodes();
         $extendsCollection = $ent->getExtendMetadata();
-        $mduiParent = array('idp' => null, 'sp' => null);
+        $uiinfoParent = array('idp' => null, 'sp' => null);
+        $discohintsParent = null;
         $extendsInArray = array();
         foreach ($extendsCollection as $e)
         {
             $extendsInArray['' . $e->getType() . '']['' . $e->getNamespace() . '']['' . $e->getElement() . ''][] = $e;
             if ($e->getElement() == 'UIInfo' && $e->getNamespace() == 'mdui')
             {
-                $mduiParent['' . $e->getType() . ''] = $e;
+                $uiinfoParent['' . $e->getType() . ''] = $e;
+            }
+            elseif ($e->getElement() == 'DiscoHints' && $e->getNamespace() == 'mdui' && $e->getType() == 'idp')
+            {
+                $discohintsParent = $e;
+            }
+        }
+        if (in_array('idp', $extypes))
+        {
+            if (empty($discohintsParent))
+            {
+                $discohintsParent = new models\ExtendMetadata;
+                $discohintsParent->setType('idp');
+                $discohintsParent->setNamespace('mdui');
+                $discohintsParent->setElement('DiscoHints');
+                $ent->setExtendMetadata($discohintsParent);
+            }
+            if (isset($ch['uii']['idpsso']['domainhint']) && is_array($ch['uii']['idpsso']['domainhint']))
+            {
+                $ch['uii']['idpsso']['domainhint'] = array_unique($ch['uii']['idpsso']['domainhint']);
+                if (isset($extendsInArray['idp']['mdui']['DomainHint']))
+                {
+                    foreach ($extendsInArray['idp']['mdui']['DomainHint'] as $k => $v)
+                    {
+                        $vId = $v->getId();
+                        if (array_key_exists($vId, $ch['uii']['idpsso']['domainhint']) && !empty($ch['uii']['idpsso']['domainhint']['' . $vId . '']))
+                        {
+                            $v->setValue($ch['uii']['idpsso']['domainhint']['' . $vId . '']);
+                            $this->em->persist($v);
+                        }
+                        else
+                        {
+                            $ent->getExtendMetadata()->removeElement($v);
+                            $this->em->remove($v);
+                        }
+                        unset($ch['uii']['idpsso']['domainhint']['' . $vId . '']);
+                    }
+                }
+                foreach ($ch['uii']['idpsso']['domainhint'] as $v)
+                {
+                    if (!empty($v))
+                    {
+                        $n = new models\ExtendMetadata;
+                        $n->setParent($discohintsParent);
+                        $n->setType('idp');
+                        $n->setNamespace('mdui');
+                        $n->setElement('DomainHint');
+                        $n->setValue($v);
+                        $n->setAttributes(array());
+                        $ent->setExtendMetadata($n);
+                        $this->em->persist($n);
+                    }
+                }
+            }
+            if (isset($ch['uii']['idpsso']['iphint']) && is_array($ch['uii']['idpsso']['iphint']))
+            {
+                $ch['uii']['idpsso']['iphint'] = array_unique($ch['uii']['idpsso']['iphint']);
+                if (isset($extendsInArray['idp']['mdui']['IPHint']))
+                {
+                    foreach ($extendsInArray['idp']['mdui']['IPHint'] as $k => $v)
+                    {
+                        $vId = $v->getId();
+                        if (array_key_exists($vId, $ch['uii']['idpsso']['iphint']) && !empty($ch['uii']['idpsso']['iphint']['' . $vId . '']))
+                        {
+                            $v->setValue($ch['uii']['idpsso']['iphint']['' . $vId . '']);
+                            $this->em->persist($v);
+                        }
+                        else
+                        {
+                            $ent->getExtendMetadata()->removeElement($v);
+                            $this->em->remove($v);
+                        }
+                        unset($ch['uii']['idpsso']['iphint']['' . $vId . '']);
+                    }
+                }
+                foreach ($ch['uii']['idpsso']['iphint'] as $v)
+                {
+                    if (!empty($v))
+                    {
+                        $n = new models\ExtendMetadata;
+                        $n->setParent($discohintsParent);
+                        $n->setType('idp');
+                        $n->setNamespace('mdui');
+                        $n->setElement('IPHint');
+                        $n->setValue($v);
+                        $n->setAttributes(array());
+                        $ent->setExtendMetadata($n);
+                        $this->em->persist($n);
+                    }
+                }
             }
         }
         foreach ($extypes as $v)
         {
-            if (empty($mduiParent['' . $v . '']))
+            if (empty($uiinfoParent['' . $v . '']))
             {
                 $vparent = new models\ExtendMetadata;
                 $vparent->setType('' . $v . '');
                 $vparent->setNamespace('mdui');
                 $vparent->setElement('UIInfo');
                 $ent->setExtendMetadata($vparent);
-                $mduiParent['' . $v . ''] = $vparent;
+                $uiinfoParent['' . $v . ''] = $vparent;
             }
 
             if (isset($ch['prvurl']) && is_array($ch['prvurl']))
@@ -189,7 +278,7 @@ class Providerupdater
                             $nprvurl->setAttributes(array('xml:lang' => $key2));
                             $nprvurl->setValue($value2);
                             $ent->setExtendMetadata($nprvurl);
-                            $nprvurl->setParent($mduiParent['' . $v . '']);
+                            $nprvurl->setParent($uiinfoParent['' . $v . '']);
                             $this->em->persist($nprvurl);
                         }
                     }
@@ -212,20 +301,19 @@ class Providerupdater
                         $mk = 'PrivacyStatementURLs' . strtoupper($v);
                         $m['' . $mk . ''] = array('before' => arrayWithKeysToHtml($origs), 'after' => arrayWithKeysToHtml($newex));
                     }
-                    
                 }
             }
 
             // logos not updatting value - just remove entry or add new one
-            if (isset($ch['uii'][''.$v.'sso']['logo']) && is_array($ch['uii'][''.$v.'sso']['logo']))
+            if (isset($ch['uii']['' . $v . 'sso']['logo']) && is_array($ch['uii']['' . $v . 'sso']['logo']))
             {
-                
+
                 $collection = array();
-                if(isset($extendsInArray[''.$v.'']['mdui']['Logo']))
+                if (isset($extendsInArray['' . $v . '']['mdui']['Logo']))
                 {
-                    $collection = &$extendsInArray[''.$v.'']['mdui']['Logo'];
+                    $collection = &$extendsInArray['' . $v . '']['mdui']['Logo'];
                 }
-                
+
 
                 foreach ($collection as $c)
                 {
@@ -242,25 +330,25 @@ class Providerupdater
                         $lang = 0;
                     }
 
-                    if (!isset($ch['uii'][''.$v.'sso']['logo']['' . $logoid . '']))
+                    if (!isset($ch['uii']['' . $v . 'sso']['logo']['' . $logoid . '']))
                     {
-                        log_message('debug', __METHOD__.'logo with id:' . $logoid . ' is removed');
+                        log_message('debug', __METHOD__ . 'logo with id:' . $logoid . ' is removed');
                         $ent->getExtendMetadata()->removeElement($c);
                         $this->em->remove($c);
                     }
                     else
                     {
-                        unset($ch['uii'][''.$v.'sso']['logo']['' . $logoid . '']);
+                        unset($ch['uii']['' . $v . 'sso']['logo']['' . $logoid . '']);
                     }
                 }
-                foreach ($ch['uii'][''.$v.'sso']['logo'] as $ke => $ve)
+                foreach ($ch['uii']['' . $v . 'sso']['logo'] as $ke => $ve)
                 {
                     if (isset($ve['url']) && isset($ve['lang']) && isset($ve['size']))
                     {
                         $canAdd = true;
                         $nlogo = new models\ExtendMetadata;
-                        $nlogo->setParent($mduiParent[''.$v.'']);
-                        $nlogo->setType(''.$v.'');
+                        $nlogo->setParent($uiinfoParent['' . $v . '']);
+                        $nlogo->setType('' . $v . '');
                         $nlogo->setNamespace('mdui');
                         $nlogo->setValue($ve['url']);
                         $nlogo->setElement('Logo');
@@ -361,7 +449,7 @@ class Providerupdater
                         if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $langCodes))
                         {
                             $newelement = new models\ExtendMetadata;
-                            $newelement->setParent($mduiParent['idp']);
+                            $newelement->setParent($uiinfoParent['idp']);
                             $newelement->setType('idp');
                             $newelement->setNamespace('mdui');
                             $newelement->setValue($value3);
@@ -439,7 +527,7 @@ class Providerupdater
                         if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $langCodes))
                         {
                             $newelement = new models\ExtendMetadata;
-                            $newelement->setParent($mduiParent['sp']);
+                            $newelement->setParent($uiinfoParent['sp']);
                             $newelement->setType('sp');
                             $newelement->setNamespace('mdui');
                             $newelement->setValue($value3);
@@ -464,12 +552,12 @@ class Providerupdater
                         }
                     }
                 }
-            }        
+            }
         }
         /**
          * end update UII
          */
-        foreach ($mduiParent as $v)
+        foreach ($uiinfoParent as $v)
         {
             if (!empty($v))
             {

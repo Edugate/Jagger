@@ -1131,6 +1131,7 @@ class Providerdetails
                     $uiiarray[$e->getElement()][] = $e;
                 }
             }
+            $discohintsarray = &$uiiarray;
             $d[++$i]['name'] = lang('e_idpservicename');
             if (isset($uiiarray['DisplayName']))
             {
@@ -1214,20 +1215,7 @@ class Providerdetails
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('rr_geolocation');
-            if (isset($uiiarray['GeolocationHint']))
-            {
-                $str = '';
-                foreach ($uiiarray['GeolocationHint'] as $v)
-                {
-                    $str .= $v->getElementValue() . '<br />';
-                }
-                $d[$i]['value'] = $str;
-            }
-            else
-            {
-                $d[$i]['value'] = lang('rr_notset');
-            }
+            
         }
         if ($sppart)
         {
@@ -1314,11 +1302,20 @@ class Providerdetails
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
+            
+        }
+
+        $subresult[4] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
+
+        if ($idppart)
+        {
+            $d = array();
+            $i = 0;
             $d[++$i]['name'] = lang('rr_geolocation');
-            if (isset($uiiarray['GeolocationHint']))
+            if (isset($discohintsarray['GeolocationHint']))
             {
                 $str = '';
-                foreach ($uiiarray['GeolocationHint'] as $v)
+                foreach ($discohintsarray['GeolocationHint'] as $v)
                 {
                     $str .= $v->getElementValue() . '<br />';
                 }
@@ -1328,9 +1325,38 @@ class Providerdetails
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
+            $d[++$i]['name'] = 'IPHint';
+            if (isset($discohintsarray['IPHint']))
+            {
+                $str = '';
+                foreach ($discohintsarray['IPHint'] as $v)
+                {
+                    $str .= $v->getElementValue() . '<br />';
+                }
+                $d[$i]['value'] = $str;
+            }
+            else
+            {
+                $d[$i]['value'] = lang('rr_notset');
+            }
+            $d[++$i]['name'] = 'DomainHint';
+            if (isset($discohintsarray['DomainHint']))
+            {
+                $str = '';
+                foreach ($discohintsarray['DomainHint'] as $v)
+                {
+                    $str .= $v->getElementValue() . '<br />';
+                }
+                $d[$i]['value'] = $str;
+            }
+            else
+            {
+                $d[$i]['value'] = lang('rr_notset');
+            }
+            
+            
+            $subresult[5] = array('section' => 'uiihints', 'title' => 'UI Hints', 'data' => $d);
         }
-
-        $subresult[4] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
         $d = array();
         $i = 0;
         if ($hasManageAccess)
