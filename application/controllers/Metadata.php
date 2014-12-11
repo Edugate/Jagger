@@ -127,7 +127,7 @@ class Metadata extends MY_Controller
             $mtype = $m->getType();
 
             $xmlOut->startComment();
-            $xmlOut->text(PHP_EOL.$m->getEntityId().PHP_EOL);
+            $xmlOut->text(PHP_EOL . $m->getEntityId() . PHP_EOL);
 
             if (strcmp($mtype, 'IDP') == 0)
             {
@@ -145,7 +145,7 @@ class Metadata extends MY_Controller
 
             if ($m->isStaticMetadata())
             {
-                $xmlOut->text('static'.PHP_EOL );
+                $xmlOut->text('static' . PHP_EOL);
                 $xmlOut->endComment();
                 $this->providertoxml->entityStaticConvert($xmlOut, $m);
             }
@@ -320,7 +320,6 @@ class Metadata extends MY_Controller
         }
     }
 
-
     private function isCircleFeatureEnabled()
     {
         $circlemetaFeature = $this->config->item('featdisable');
@@ -456,8 +455,8 @@ class Metadata extends MY_Controller
         $this->load->view('metadata_view', $data);
     }
 
-     private function queue($tokenid)
-     {
+    public function queue($tokenid)
+    {
         if (strlen($tokenid) > 100 || !ctype_alnum($tokenid))
         {
             show_error('Not found', 404);
@@ -477,6 +476,7 @@ class Metadata extends MY_Controller
             return;
         }
         $d = $q->getData();
+        $this->load->library('providertoxml');
         if (!isset($d['metadata']))
         {
             $entity = new models\Provider;
@@ -486,8 +486,8 @@ class Metadata extends MY_Controller
             {
                 show_error('Not found', 404);
             }
-            $y = $entity->getProviderToXML($parent = null, $options);
-            $data['out'] = $y->saveXML();
+            $y = $this->providertoxml->entityConvertNewDocument($entity, $options);
+            $data['out'] = $y->outputMemory();
         }
         else
         {
@@ -507,6 +507,7 @@ class Metadata extends MY_Controller
         }
         $this->load->view('metadata_view', $data);
     }
+
     private function checkAccess()
     {
         $permitPull = FALSE;
