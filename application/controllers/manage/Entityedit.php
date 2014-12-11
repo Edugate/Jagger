@@ -32,7 +32,7 @@ class Entityedit extends MY_Controller {
     public function __construct()
     {
         parent::__construct();
-        $this->load->library(array('form_element', 'form_validation', 'approval','providertoxml'));
+        $this->load->library(array('form_element', 'form_validation', 'approval', 'providertoxml'));
         $this->tmp_providers = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmp_error = '';
@@ -99,16 +99,13 @@ class Entityedit extends MY_Controller {
                 }
             }
 
-            if(isset($y['reqattr']))
+            if (isset($y['reqattr']))
             {
-               foreach($y['reqattr'] as $k=>$r)
-               {
-                  $this->form_validation->set_rules('f[reqattr]['.$k.'][reason]', 'Attribute requirement reason', 'trim|xss_clean');
-                  $this->form_validation->set_rules('f[reqattr]['.$k.'][attrid]', 'Attribute requirement - attribute id is missing', 'trim|required|integer|xss_clean');
-                  
-
-               }
-
+                foreach ($y['reqattr'] as $k => $r)
+                {
+                    $this->form_validation->set_rules('f[reqattr][' . $k . '][reason]', 'Attribute requirement reason', 'trim|xss_clean');
+                    $this->form_validation->set_rules('f[reqattr][' . $k . '][attrid]', 'Attribute requirement - attribute id is missing', 'trim|required|integer|xss_clean');
+                }
             }
 
             $this->form_validation->set_rules('f[regauthority]', lang('rr_regauthority'), 'trim|xss_clean');
@@ -152,6 +149,20 @@ class Entityedit extends MY_Controller {
                 foreach ($y['f']['uii']['idpsso']['helpdesk'] as $k => $v)
                 {
                     $this->form_validation->set_rules('f[uii][idpsso][helpdesk][' . $k . ']', 'UUI ' . lang('rr_helpdeskurl') . ' ' . lang('in') . ' ' . $k . '', 'trim|valid_url|min_length[5]|max_length[500]|xss_clean');
+                }
+            }
+            if (isset($y['f']['uii']['idpsso']['iphint']) && is_array($y['f']['uii']['idpsso']['iphint']))
+            {
+                foreach ($y['f']['uii']['idpsso']['iphint'] as $k => $v)
+                {
+                    $this->form_validation->set_rules('f[uii][idpsso][iphint][' . $k . ']', 'IPHint', 'trim|valid_ip_with_prefix|min_length[5]|max_length[500]');
+                }
+            }
+            if (isset($y['f']['uii']['idpsso']['domainhint']) && is_array($y['f']['uii']['idpsso']['domainhint']))
+            {
+                foreach ($y['f']['uii']['idpsso']['domainhint'] as $k => $v)
+                {
+                    $this->form_validation->set_rules('f[uii][idpsso][domainhint][' . $k . ']', 'DomainHint', 'trim|valid_domain|min_length[4]|max_length[500]');
                 }
             }
             if (array_key_exists('ldisplayname', $y['f']))
@@ -533,9 +544,14 @@ class Entityedit extends MY_Controller {
         }
         // uii
         $uiitTypes = array('idpsso', 'spsso');
-        $uiiSubTypes = array('desc', 'logo', 'helpdesk', 'displayname','iphint','domainhint');
+        $uiiSubTypes = array('desc', 'logo', 'helpdesk', 'displayname');
         foreach ($uiitTypes as $t)
         {
+            if ($t === 'idpsso')
+            {
+                $uiiSubTypes[] = 'iphint';
+                $uiiSubTypes[] = 'domainhint';
+            }
             foreach ($uiiSubTypes as $p)
             {
                 if (isset($data['uii']['' . $t . '']['' . $p . '']))
@@ -724,9 +740,9 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
-        if(strcasecmp($this->type, 'SP') != 0)
+        if (strcasecmp($this->type, 'SP') != 0)
         {
-           $menutabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => '');
+            $menutabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => $this->form_element->generateUIHintForm($ent, $entsession));
         }
         $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
@@ -878,9 +894,9 @@ class Entityedit extends MY_Controller {
                                                 $reqattr->setStatus('desired');
                                             }
                                             $reqattr->setReason('');
-                                            
+
                                             $ent->setAttributesRequirement($reqattr);
-                                          $this->em->persist($reqattr);
+                                            $this->em->persist($reqattr);
                                             $attrsset[] = $r['name'];
                                         }
                                     }
@@ -1007,7 +1023,6 @@ class Entityedit extends MY_Controller {
                             $q->addSP($convertedToArray);
                             $mailTemplateGroup = 'spregresquest';
                             $notificationGroup = 'gspregisterreq';
- 
                         }
                         if (empty($contactMail))
                         {
@@ -1024,35 +1039,35 @@ class Entityedit extends MY_Controller {
                             'orgname' => $ent->getName(),
                             'serviceentityid' => $ent->getEntityId(),
                         );
-                        if(!empty($u))
+                        if (!empty($u))
                         {
 
-                           $requsername = $u->getUsername();
-                           $reqfullname = $u->getFullname();
+                            $requsername = $u->getUsername();
+                            $reqfullname = $u->getFullname();
                         }
                         else
                         {
-                           $requsername = 'anonymous';
-                           $reqfullname  = '';
+                            $requsername = 'anonymous';
+                            $reqfullname = '';
                         }
-                        $nowUtc = new \DateTime( 'now',  new \DateTimeZone( 'UTC' ) );
-                  
+                        $nowUtc = new \DateTime('now', new \DateTimeZone('UTC'));
+
                         $messageTemplateArgs = array(
-                             'token'=>$q->getToken(),
-                             'srcip'=>$sourceIP,
-                             'entorgname'=>$ent->getName(),
-                             'entityid'=>$ent->getEntityId(),
-                             'reqemail'=>$contactMail,
-                             'requsername'=>''.$requsername.'',
-                             'reqfullname'=>$reqfullname,
-                             'datetimeutc'=>''.$nowUtc->format('Y-m-d h:i:s').' UTC',
-                                 'qurl'=>''.base_url().'reports/awaiting/detail/'.$q->getToken().'');
-                        
-		        		
-                        $messageTemplate = $this->email_sender->generateLocalizedMail($mailTemplateGroup,$messageTemplateArgs);
-                        if(empty($messageTemplate))
+                            'token' => $q->getToken(),
+                            'srcip' => $sourceIP,
+                            'entorgname' => $ent->getName(),
+                            'entityid' => $ent->getEntityId(),
+                            'reqemail' => $contactMail,
+                            'requsername' => '' . $requsername . '',
+                            'reqfullname' => $reqfullname,
+                            'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
+                            'qurl' => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '');
+
+
+                        $messageTemplate = $this->email_sender->generateLocalizedMail($mailTemplateGroup, $messageTemplateArgs);
+                        if (empty($messageTemplate))
                         {
-                           $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams, NULL);
+                            $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams, NULL);
                         }
                         if (!empty($messageTemplate))
                         {
@@ -1090,9 +1105,9 @@ class Entityedit extends MY_Controller {
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
-        if(strcasecmp($ent->getType(), 'SP') != 0)
+        if (strcasecmp($ent->getType(), 'SP') != 0)
         {
-           $menutabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => '');
+            $menutabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => $this->form_element->generateUIHintForm($ent, $entsession));
         }
         $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
         $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));

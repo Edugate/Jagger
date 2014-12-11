@@ -102,6 +102,68 @@ class MY_form_validation extends CI_form_validation {
         return false;
     }
 
+    function valid_domain($domain) 
+    {
+ 	$result =  preg_match('/^ (?: [a-z0-9] (?:[a-z0-9\-]* [a-z0-9])? \. )* [a-z0-9] (?:[a-z0-9\-]* [a-z0-9])?  \. [a-z]{2,6} $ /ix', $domain);
+        if($result)
+        {
+          return TRUE;
+        }
+        $this->set_message('valid_domain', "%s :  invalid domain: ".htmlentities($domain));
+        return FALSE;
+    
+    }
+   
+    function valid_ip_with_prefix($str)
+    {
+         $ip = substr($str,0,strpos($str.'/','/'));
+         $range = substr($str,strpos($str.'/','/')+1);
+         if(empty($range) || !ctype_digit($range))
+         {
+             $this->set_message('valid_ip_with_prefix', '%s: '. htmlentities($str) .' missing or invalid  prefix');          
+             return FALSE;
+         }
+
+         $isIPV4 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE);
+         $isIPV6 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE);
+         if($isIPV4 !== FALSE)
+         {
+              
+              if($range <= 32 && $range > 0)
+              {
+                 return TRUE;
+              } 
+              else
+              {
+                  $this->set_message('valid_ip_with_prefix','%s: '. htmlentities($str) .': incorrect  network prefix for IPV4');          
+                  return FALSE;
+              }
+         }        
+         elseif($isIPV6 !== FALSE)
+         {
+              if($range <= 64 && $range >= 24)
+              {
+                 return TRUE;
+              } 
+              else
+              {
+                  $this->set_message('valid_ip_with_prefix','%s: '. htmlentities($str) .': incorrect  network prefix IPV6');          
+                  return FALSE;
+              }
+
+
+         }         
+         else
+         {
+                  $this->set_message('valid_ip_with_prefix','%s: '. htmlentities($str) .': invalid IP or IP is from private network range');          
+                  return FALSE;
+
+         }
+ 
+         
+
+    }
+
     
     /**
      * Validates a date (yyyy-mm-dd)

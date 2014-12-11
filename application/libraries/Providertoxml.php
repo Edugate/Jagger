@@ -340,20 +340,24 @@ class Providertoxml {
         $extarray = array();
         foreach ($extMetada as $v)
         {
-            if (($v->getElement() === 'GeolocationHint') && (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui'))
+            $extElement = $v->getElement();
+            if ((($extElement === 'GeolocationHint') || ($extElement === 'IPHint') || ($extElement === 'DomainHint'))&& (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui'))
             {
-                $extarray[] = $v;
+                $extarray[''.$extElement.''][] = $v;
             }
         }
         if (count($extarray) > 0)
         {
             $xml->startElementNs('mdui', 'DiscoHints', null);
 
-            foreach ($extarray as $e)
+            foreach ($extarray as $g=> $groups)
             {
-                $xml->startElementNs('mdui', 'GeolocationHint', null);
-                $xml->text($e->getElementValue());
-                $xml->endElement();
+                foreach($groups as $e)
+                {
+                   $xml->startElementNs('mdui', ''.$g.'', null);
+                   $xml->text($e->getElementValue());
+                   $xml->endElement();
+                }
             }
 
             $xml->endElement();
