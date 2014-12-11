@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -18,8 +19,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Form_element
-{
+class Form_element {
 
     protected $ci;
     protected $em;
@@ -723,6 +723,12 @@ class Form_element
         return $r;
     }
 
+    private function _generateAddButton($spanclass, $buttonname, $buttonvalue, $buttontext)
+    {
+        $r = '<span class="' . $spanclass . '"><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . $buttontext . '</button></div></span>';
+        return $r;
+    }
+
     private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonname, $buttonvalue)
     {
         $r = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('' . $dropname . '', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div></span>';
@@ -1087,7 +1093,7 @@ class Form_element
                 $z .= form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $rstatus);
                 $z .='</div>';
                 $z .= '<div class="medium-6 columns">';
-                $z .='<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="'.lang('rrjustifyreqattr').'">' . $req->getReason() . '</textarea>';
+                $z .='<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="' . lang('rrjustifyreqattr') . '">' . $req->getReason() . '</textarea>';
 
                 $z .= '</div>';
                 $z .='<div class="medium-3 columns end"></div>';
@@ -2438,6 +2444,100 @@ class Form_element
         return $result;
     }
 
+    public function generateUIHintForm(models\Provider $ent, $ses = null)
+    {
+        $sessform = FALSE;
+        $type = $ent->getType();
+        $result = array();
+        if (!is_null($ses) && is_array($ses))
+        {
+            $sessform = TRUE;
+        }
+        $extendMetadata = $ent->getExtendMetadata();
+        // BEGIN IDPSSO PART
+        $enid = 0;
+        if (strcasecmp($type, 'SP') != 0)
+        {
+            $ipHints = array();
+            $domainHints = array();
+            if ($sessform)
+            {
+                
+                if (isset($ses['uii']['idpsso']['iphint']) && is_array($ses['uii']['idpsso']['iphint']))
+                {
+                    $ipHints = $ses['uii']['idpsso']['iphint'];
+                }
+                if (isset($ses['uii']['idpsso']['domainhint']) && is_array($ses['uii']['idpsso']['domainhint']))
+                {
+                    $domainHints = $ses['uii']['idpsso']['domainhint'];
+                }
+            }
+            else
+            {                
+                foreach ($extendMetadata as $e)
+                {
+                    $etype = $e->getType();
+                    $enamespace = $e->getNamespace();
+                    $eid= $e->getId();
+                    if(empty($eid))
+                    {
+                        $eid = 'z'.$enid++;
+                    }
+                    
+                    if (strcmp($etype, 'idp') == 0 && strcasecmp($enamespace, 'mdui')==0)
+                    {
+             
+                        
+                        $eelement = $e->getElement();
+                        $evalue = $e->getEvalue();
+                        if (strcasecmp($eelement, 'IPHint')==0)
+                        {
+                            
+                            $ipHints['' . $eid . ''] = $evalue;
+                        }
+                        elseif (strcasecmp($eelement, 'DomainHint')==0)
+                        {
+                           
+                            $domainHints['' . $eid . ''] = $evalue;
+                        }
+                    }
+                }
+            }
+            $r1 = '';
+            $r2 = '';
+            foreach ($domainHints as $k => $v)
+            {
+
+                $r1 .= '<div class="small-12 columns">';
+                $r1 .= $this->_generateLangInputWithRemove('DomainHint', 'f[uii][idpsso][domainhint][' . $k . ']', 'uiiidpssodomainhint', '' . $k . '', set_value('f[uii][idpsso][domainhint][' . $k . ']',$v), '');
+                $r1 .= '</div>';
+            }
+            $r1 .= '<div class="small-12 columns">';
+            $spanclass= '';
+            $r1.= $this->_generateAddButton($spanclass, 'idpssoadddomainhint', 'idpssoadddomainhint',lang('btnadddomainhint'));
+            $r1 .='</div>';
+            
+            foreach ($ipHints as $k => $v)
+            {
+
+                $r2 .= '<div class="small-12 columns">';
+                $r2 .= $this->_generateLangInputWithRemove('IPHint', 'f[uii][idpsso][iphint][' . $k . ']', 'uiiidpssoiphint', '' . $k . '', set_value('f[uii][idpsso][iphint][' . $k . ']',$v), '');
+                $r2 .= '</div>';
+            }
+            $r2 .= '<div class="small-12 columns">';
+            $spanclass= '';
+            $r2.= $this->_generateAddButton($spanclass, 'idpssoaddiphint', 'idpssoaddiphint',lang('btnaddiphint'));
+            $r2 .='</div>';
+            
+            $result[] = '';
+            $result[] = '<fieldset><legend>' . lang('e_idpdomainhint') . '</legend>' . $r1 . '</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('e_idpiphint') . '</legend>' . $r2 . '</fieldset>';
+            $result[] = '';
+        }
+        // END IDPSSO PART
+        return $result;
+    }
+
     public function NgenerateUiiForm(models\Provider $ent, $ses = null)
     {
         $logopart = $this->NgenerateLogoForm($ent, $ses);
@@ -3205,7 +3305,8 @@ class Form_element
         $tmp_providers = new models\Providers();
         $excluded = $idp->getExcarps();
         $members = $tmp_providers->getCircleMembersSP($idp);
-        if (is_array($excluded)) $rows = array();
+        if (is_array($excluded))
+            $rows = array();
         foreach ($excluded as $v)
         {
             $members->remove($v);

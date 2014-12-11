@@ -90,6 +90,9 @@ var GINIT = {
             baseurl = '';
         }
 
+        $("#loginbtn").on('click',function(event){
+            $("#loginresponse").hide();
+        });
         $("a.bookentity").click(function () {
             var link = $(this), url = link.attr("href");
 
@@ -807,6 +810,35 @@ $(document).ready(function () {
             var result = $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline tiny left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
             return result;
         };
+        
+        $("button#idpssoadddomainhint").click(function () {
+            var rname ='';
+            var possible = "0123456789";
+            for (var i = 0; i < 5; i++)
+                rname += possible.charAt(Math.floor(Math.random() * possible.length));
+            
+            
+            var rmbtn = $("button#helperbutttonrm").html();
+            var inputname = $(this).attr('value');
+           
+            var rowinputname = 'f[uii][idpsso][domainhint][n'+rname+']';
+            var row = createRowWithLangRm('DomainHint', 'DomainHint', rowinputname, rmbtn);
+            row.insertBefore($(this).closest('span').parent());
+        });
+        $("button#idpssoaddiphint").click(function () {
+            var rname ='';
+            var possible = "0123456789";
+            for (var i = 0; i < 5; i++)
+                rname += possible.charAt(Math.floor(Math.random() * possible.length));
+            
+            
+            var rmbtn = $("button#helperbutttonrm").html();
+            var inputname = $(this).attr('value');
+           
+            var rowinputname = 'f[uii][idpsso][iphint][n'+rname+']';
+            var row = createRowWithLangRm('IPHint', 'IPHint', rowinputname, rmbtn);
+            row.insertBefore($(this).closest('span').parent());
+        });
 
         $("button#addlhelpdesk").click(function () {
             var selected = $("span.lhelpdeskadd option:selected").first();
