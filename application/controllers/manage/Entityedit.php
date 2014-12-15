@@ -944,6 +944,9 @@ class Entityedit extends MY_Controller {
                         if (!empty($registrationAutority))
                         {
                             $ent->setRegistrationAuthority(trim($registrationAutority));
+                            $dateNow = new \DateTime("now");
+                            $ent->setRegistrationDate($dateNow);
+
                         }
                         $ent->setActive(TRUE);
                         /// create queue
