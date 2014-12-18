@@ -117,9 +117,11 @@ class Disco extends MY_Controller {
         $me = $tmp->getOneSpByEntityId($name);
         if (empty($me))
         {
-            log_message('error', 'Failed generating json  for provided entity:' . $name);
-            show_error('unknown provider', 404);
+              log_message('error', 'Failed generating json  for provided entity:' . $name);
+            set_status_header(404);
+            echo 'Unknown serivce provider';
             return;
+          
         }
         $keyprefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
@@ -191,6 +193,30 @@ class Disco extends MY_Controller {
                 $data['result'] = $cachedDisco;
             }
         }
+        $this->load->view('disco_view', $data);
+    }
+    
+    
+    public function requester($encodedEntity = null)
+    {
+        if(empty($encodedEntity))
+        {
+            set_status_header(404);
+            echo 'entityID not provided';
+            return;
+        }
+        $entityid = base64url_decode($encodedEntity);
+        $tmp = new models\Providers;
+        $me = $tmp->getOneSpByEntityId($entityid);
+        if (empty($me))
+        {
+            set_status_header(404);
+            echo 'Unknown serivce provider';
+            return;
+        }
+        $result = $this->providerToDisco($me);
+        $jsonoutput = json_encode($result);
+        $data['result'] = $jsonoutput;
         $this->load->view('disco_view', $data);
     }
 
