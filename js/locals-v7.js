@@ -90,7 +90,7 @@ var GINIT = {
             baseurl = '';
         }
 
-        $("#loginbtn").on('click',function(event){
+        $("#loginbtn").on('click', function (event) {
             $("#loginresponse").hide();
         });
         $("a.bookentity").click(function () {
@@ -142,6 +142,46 @@ var GINIT = {
 
         });
 
+        $("#confirmremover").on('click', 'div.yes', function (e) {
+            e.preventDefault();
+            var form = $(this).closest("form");
+            var actionUrl = form.attr('action');
+            var regid = form.attr('data-jagger-regpolicy');
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serializeArray(),
+                success: function (data) {
+                    $('a[data-jagger-regpolicy="'+regid+'"]').closest('tr').hide();
+                    $("#confirmremover").foundation('reveal', 'close');
+                },
+                error: function (xhr, status, error)
+                {              
+                    var alertmsg = '' + error + '';
+                    alert(alertmsg);
+                    return false;
+                }
+            });
+
+        });
+        $("a.withconfirm").on('click', function (e) {
+
+            e.preventDefault();
+            var url = $(this).attr('href');
+            var regid = $(this).attr('data-jagger-regpolicy');
+            if (url == undefined)
+            {
+                return false;
+            }
+            var formremover = $("#confirmremover");
+           
+            var form= formremover.find('form').first();
+            form.attr('action', url);
+            form.attr('data-jagger-regpolicy',regid);
+            
+            formremover.foundation('reveal', 'open');
+
+        });
         function notificationupdate(message, callback) {
             $("#notificationupdatemodal").foundation('reveal', 'open');
             $("#notificationupdatemodal").on('opened', function () {
@@ -180,6 +220,8 @@ var GINIT = {
             $(this).after($("form#availablelogos div.buttons").show());
 
         });
+
+
 
 
 
@@ -810,33 +852,33 @@ $(document).ready(function () {
             var result = $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline tiny left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
             return result;
         };
-        
+
         $("button#idpssoadddomainhint").click(function () {
-            var rname ='';
+            var rname = '';
             var possible = "0123456789";
             for (var i = 0; i < 5; i++)
                 rname += possible.charAt(Math.floor(Math.random() * possible.length));
-            
-            
+
+
             var rmbtn = $("button#helperbutttonrm").html();
             var inputname = $(this).attr('value');
-           
-            var rowinputname = 'f[uii][idpsso][domainhint][n'+rname+']';
-            var row = createRowWithLangRm('DomainHint', 'DomainHint', rowinputname, rmbtn);
+
+            var rowinputname = 'f[uii][idpsso][domainhint][n' + rname + ']';
+            var row = createRowWithLangRm('Domain Hint', 'Domain Hint', rowinputname, rmbtn);
             row.insertBefore($(this).closest('span').parent());
         });
         $("button#idpssoaddiphint").click(function () {
-            var rname ='';
+            var rname = '';
             var possible = "0123456789";
             for (var i = 0; i < 5; i++)
                 rname += possible.charAt(Math.floor(Math.random() * possible.length));
-            
-            
+
+
             var rmbtn = $("button#helperbutttonrm").html();
             var inputname = $(this).attr('value');
-           
-            var rowinputname = 'f[uii][idpsso][iphint][n'+rname+']';
-            var row = createRowWithLangRm('IPHint', 'IPHint', rowinputname, rmbtn);
+
+            var rowinputname = 'f[uii][idpsso][iphint][n' + rname + ']';
+            var row = createRowWithLangRm('IP Hint', 'IP Hint', rowinputname, rmbtn);
             row.insertBefore($(this).closest('span').parent());
         });
 
@@ -3430,4 +3472,4 @@ $('input[type="radio"].withuncheck').click(function () {
 });
 
 
-
+ 

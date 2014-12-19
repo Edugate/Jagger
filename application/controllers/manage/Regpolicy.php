@@ -49,16 +49,21 @@ class Regpolicy extends MY_Controller
        {
           foreach($obj_list as $c)
           {
+              $isEnabled = $c->getAvailable();
               if($has_write_access)
               {
                  $l = '<a href="'.base_url().'manage/regpolicy/edit/'.$c->getId().'" ><i class="fi-pencil"></i></a>';
+                 if(!$isEnabled)
+                 {
+                     $l .= '&nbsp;&nbsp;<a href="'.base_url().'manage/regpolicy/remove/'.$c->getId().'" class="withconfirm" data-jagger-regpolicy="'.$c->getId().'"><i class="fi-trash"></i></a>';
+                 }
               }
               else
               {
                  $l = '';
               }
-              $en = $c->getAvailable();
-              if($en)
+              
+              if($isEnabled)
               {
                   $lbl = '<span class="lbl lbl-active">'.lang('rr_enabled').'</span>';
               }
@@ -216,6 +221,46 @@ class Regpolicy extends MY_Controller
        $data['content_view'] = 'manage/regpol_edit_view';
        $this->load->view('page',$data);
        
+    }
+    function remove($id=null)
+    {
+        if(empty($id) || !ctype_digit($id))
+        {
+            set_status_header(404);
+            echo 'incorrect id or id not provided';
+            return;
+        }
+        if(!$this->input->is_ajax_request())
+        {
+            set_status_header(403);
+            echo 'access denied';
+            return;
+        }
+        $loggedin = $this->j_auth->logged_in();
+        if(!$loggedin)
+        {
+            set_status_header(403);
+            echo 'access denied';
+            return;
+        }
+        $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
+        if(!$has_write_access)
+        {
+            set_status_header(403);
+            echo 'access denied';
+            return;
+        }
+        $regpol = $this->em->getRepository("models\Coc")->findOneBy( array('id'=>''.$id.'','type'=>'regpol','is_enabled'=>false));
+        if(empty($regpol))
+        {
+            set_status_header(403);
+            echo 'Registration policy doesnt exist or is not disabled';
+            return;
+        }
+        $this->em->remove($regpol);
+        $this->em->flush();
+        echo "OK";
+        return;
     }
     
 }
