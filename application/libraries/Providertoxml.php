@@ -233,9 +233,8 @@ class Providertoxml {
                 $xml->endElement();
             }
             $xml->startElementNs('md', 'EmailAddress', null);
-            $xml->text($email);
+            $xml->text('mailto:' . $email);
             $xml->endElement();
-
             $xml->endElement();
         }
         return $xml;
@@ -341,22 +340,22 @@ class Providertoxml {
         foreach ($extMetada as $v)
         {
             $extElement = $v->getElement();
-            if ((($extElement === 'GeolocationHint') || ($extElement === 'IPHint') || ($extElement === 'DomainHint'))&& (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui'))
+            if ((($extElement === 'GeolocationHint') || ($extElement === 'IPHint') || ($extElement === 'DomainHint')) && (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui'))
             {
-                $extarray[''.$extElement.''][] = $v;
+                $extarray['' . $extElement . ''][] = $v;
             }
         }
         if (count($extarray) > 0)
         {
             $xml->startElementNs('mdui', 'DiscoHints', null);
 
-            foreach ($extarray as $g=> $groups)
+            foreach ($extarray as $g => $groups)
             {
-                foreach($groups as $e)
+                foreach ($groups as $e)
                 {
-                   $xml->startElementNs('mdui', ''.$g.'', null);
-                   $xml->text($e->getElementValue());
-                   $xml->endElement();
+                    $xml->startElementNs('mdui', '' . $g . '', null);
+                    $xml->text($e->getElementValue());
+                    $xml->endElement();
                 }
             }
 
@@ -581,8 +580,8 @@ class Providertoxml {
         $extXMLoutput = $extXML->outputMemory();
         if (!empty($extXMLoutput))
         {
-            $xml->startElementNs('md', 'Extensions', null);     
-            $xml->writeRaw(PHP_EOL.$extXMLoutput);
+            $xml->startElementNs('md', 'Extensions', null);
+            $xml->writeRaw(PHP_EOL . $extXMLoutput);
             $xml->endElement(); // end md:Extensions
         }
 
