@@ -147,16 +147,24 @@ var GINIT = {
             var form = $(this).closest("form");
             var actionUrl = form.attr('action');
             var regid = form.attr('data-jagger-regpolicy');
+            var ecid = form.attr('data-jagger-ec');
             $.ajax({
                 type: "POST",
                 url: actionUrl,
                 data: form.serializeArray(),
                 success: function (data) {
-                    $('a[data-jagger-regpolicy="'+regid+'"]').closest('tr').hide();
+                    if (regid != undefined && regid != null)
+                    {
+                        $('a[data-jagger-regpolicy="' + regid + '"]').closest('tr').hide();
+                    }
+                    else
+                    {
+                          $('a[data-jagger-ec="' + ecid + '"]').closest('tr').hide();
+                    }
                     $("#confirmremover").foundation('reveal', 'close');
                 },
                 error: function (xhr, status, error)
-                {              
+                {
                     var alertmsg = '' + error + '';
                     alert(alertmsg);
                     return false;
@@ -169,16 +177,23 @@ var GINIT = {
             e.preventDefault();
             var url = $(this).attr('href');
             var regid = $(this).attr('data-jagger-regpolicy');
+            var ecid = $(this).attr('data-jagger-ec');
             if (url == undefined)
             {
                 return false;
             }
             var formremover = $("#confirmremover");
-           
-            var form= formremover.find('form').first();
+
+            var form = formremover.find('form').first();
             form.attr('action', url);
-            form.attr('data-jagger-regpolicy',regid);
-            
+            if (ecid != undefined && ecid != null)
+            {
+                form.attr('data-jagger-ec', ecid);
+            }
+            else
+            {
+                form.attr('data-jagger-regpolicy', regid);
+            }
             formremover.foundation('reveal', 'open');
 
         });
