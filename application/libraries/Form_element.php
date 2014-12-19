@@ -2509,7 +2509,7 @@ class Form_element {
             {
 
                 $r1 .= '<div class="small-12 columns">';
-                $r1 .= $this->_generateLangInputWithRemove('DomainHint', 'f[uii][idpsso][domainhint][' . $k . ']', 'uiiidpssodomainhint', '' . $k . '', set_value('f[uii][idpsso][domainhint][' . $k . ']',$v), '');
+                $r1 .= $this->_generateLangInputWithRemove('Domain Hint', 'f[uii][idpsso][domainhint][' . $k . ']', 'uiiidpssodomainhint', '' . $k . '', set_value('f[uii][idpsso][domainhint][' . $k . ']',$v), '');
                 $r1 .= '</div>';
             }
             $r1 .= '<div class="small-12 columns">';
@@ -2521,7 +2521,7 @@ class Form_element {
             {
 
                 $r2 .= '<div class="small-12 columns">';
-                $r2 .= $this->_generateLangInputWithRemove('IPHint', 'f[uii][idpsso][iphint][' . $k . ']', 'uiiidpssoiphint', '' . $k . '', set_value('f[uii][idpsso][iphint][' . $k . ']',$v), '');
+                $r2 .= $this->_generateLangInputWithRemove('IP Hint', 'f[uii][idpsso][iphint][' . $k . ']', 'uiiidpssoiphint', '' . $k . '', set_value('f[uii][idpsso][iphint][' . $k . ']',$v), '');
                 $r2 .= '</div>';
             }
             $r2 .= '<div class="small-12 columns">';

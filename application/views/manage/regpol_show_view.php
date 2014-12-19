@@ -20,3 +20,21 @@ if(!empty($rows))
      $this->table->clear();    
 
 }
+
+echo '<div id="confirmremover" class="reveal-modal small" data-reveal>';
+echo form_open();
+
+echo '<h3>'.lang('douwanttoproceed').'</h3>';
+echo '<p><div class="buttons small-12 columns small-text-right">
+    <div class="small-6 columns">
+    <div class="no close-reveal-modal button">' . lang('rr_no') . '</div>
+        </div>
+    <div class="small-6 columns">
+    <div class="yes button">' . lang('rr_yes') . '</div>
+        </div>
+        
+</div></p>';
+
+echo form_close();
+    
+echo '</div>';
