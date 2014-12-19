@@ -39,11 +39,15 @@ class Disco extends MY_Controller {
         $this->output->set_header("Access-Control-Allow-Origin: *");
     }
 
-    private function providerToDisco(models\Provider $ent)
+    private function providerToDisco(models\Provider $ent, $type = null)
     {
+        if($type == null)
+        {
+            $type = 'idp';
+        }
         $r['entityID'] = $ent->getEntityId();
         $r['title'] = $ent->getNameToWebInLang('en');
-        $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('GeolocationHint', 'Logo'));
+        $doFilter = array('t' => array(''.$type.''), 'n' => array('mdui'), 'e' => array('GeolocationHint', 'Logo'));
         $extend = $ent->getExtendMetadata()->filter(
                 function(models\ExtendMetadata $entry) use ($doFilter)
         {
@@ -214,7 +218,7 @@ class Disco extends MY_Controller {
             echo 'Unknown serivce provider';
             return;
         }
-        $result = $this->providerToDisco($me);
+        $result = $this->providerToDisco($me,'sp');
         $jsonoutput = json_encode($result);
         $data['result'] = $jsonoutput;
         $this->load->view('disco_view', $data);
