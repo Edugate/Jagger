@@ -3243,7 +3243,7 @@ $("div#loginform form").submit(function () {
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            ("#loginresponse").html("Error").show();
+            $("#loginresponse").html(jqXHR.responseText).show();
 
         },
     });
