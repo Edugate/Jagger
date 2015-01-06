@@ -229,6 +229,9 @@ class Importer extends MY_Controller {
         $result = $this->metadata2import->import($this->xmlDOM, $type_of_entities, $full, $defaults, $other);
         if ($result)
         {
+            $this->load->library('j_ncache');
+            $this->j_ncache->cleanProvidersList('idp');
+            $this->j_ncache->cleanProvidersList('sp');
             $data['title'] = lang('titleimportmeta');
             $data['success_message'] = lang('okmetaimported');
             if (isset($this->globalnotices['metadataimportmessage']) && is_array($this->globalnotices['metadataimportmessage']))

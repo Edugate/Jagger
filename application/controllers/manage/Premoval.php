@@ -102,6 +102,10 @@ class Premoval extends MY_Controller {
                         $status = $this->providerremover->removeProvider($provider);
                         if ($status)
                         {
+                            $this->load->library('j_ncache');
+                            $this->j_ncache->cleanProvidersList('idp');
+                            $this->j_ncache->cleanProvidersList('sp');
+                            
                             $this->load->library('tracker');
                             $this->tracker->remove_ProviderTrack($data['entityid']);
                         
