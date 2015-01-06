@@ -1846,7 +1846,7 @@ class Providerupdater
                         $ent->setCertificate($ncert);
                         $ncert->setProvider($ent);
                         $ncert->setKeyname($v2['keyname']);
-                        $ncert->setCertData($v2['certdata']);
+                        $ncert->setCertData(getPem($v2['certdata']));
                         $this->em->persist($ncert);
                     }
                 }

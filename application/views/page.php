@@ -130,7 +130,17 @@ if (!empty($titlepage) || !empty($subtitlepage))
 }
 ?>
         </header>
-
+<?php
+if(!empty($breadcrumbs))
+{
+    echo '<ul class="breadcrumbs">';
+    foreach($breadcrumbs as $b)
+    {
+        echo '<li><a href="'.$b['url'].'" class="'.$b['class'].'">'.$b['name'].'</a></li>';
+    }
+    echo '</ul>';
+}
+?>
         <div id="container" class="row">
             <div class="header-container">
                 <header class="wrapper clearfix" role="banner">

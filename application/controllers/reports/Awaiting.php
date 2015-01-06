@@ -655,9 +655,12 @@ class Awaiting extends MY_Controller
             $additionalReceipents[] = $requester_recipient;
         }
         $this->email_sender->addToMailQueue(array('greqisterreq', 'gidpregisterreq'), null, $sbj, $body, $additionalReceipents, FALSE);
+        $this->load->library('j_ncache');
         try
         {
             $this->em->flush();
+            $this->j_ncache->cleanProvidersList('idp');
+            $this->j_ncache->cleanProvidersList('sp');
             return true;
         }
         catch (Exception $e)

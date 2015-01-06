@@ -153,7 +153,7 @@ class Providers_list extends MY_Controller {
           }
           if(count($data)>0)
           {
-             $this->cache->save($cachedid, $data, 720);
+             $this->cache->save($cachedid, $data, 3600);
           }
           $result['data'] = &$data;
           return $result;

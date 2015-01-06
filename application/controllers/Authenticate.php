@@ -69,15 +69,16 @@ class Authenticate extends MY_Controller {
                    if ($this->j_auth->login($this->input->post('username'), $this->input->post('password')))
                    {
                        echo 'OK';
+                       return;
                    }
                    else
                    {
-                         $auth_error = '<div id="notification_error">'.lang('error_authn').'</div>';
+                         $auth_error = ''.lang('error_authn').'';
                    }
                }
                else
                {
-                    $auth_error = '<div id="notification_error">'.lang('error_incorrectinput').'</div>';
+                    $auth_error = ''.lang('error_incorrectinput').'';
                }
 
            }
@@ -87,9 +88,11 @@ class Authenticate extends MY_Controller {
         else
         {
              set_status_header(401);
-             $auth_error = '<div id="notification_error">not ajax</div>';
+             $auth_error = 'not ajax';
         }
+        set_status_header(401);
         echo $auth_error;
+        return;
        
     }
     
