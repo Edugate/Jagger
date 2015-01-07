@@ -839,7 +839,7 @@ class Form_element {
         {
             $readonly = true;
         }
-        $certdata = set_value('' . $name . '[' . $crtid . '][certdata]', getPEM($sessionCert['certdata']));
+        $certdata = set_value(getPEM('' . $name . '[' . $crtid . '][certdata]'), getPEM($sessionCert['certdata']));
         if (!empty($certdata))
         {
             $keysize = getKeysize($certdata);
