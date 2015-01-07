@@ -111,10 +111,12 @@ class Form_element {
         }
         $t_regauthority = $ent->getRegistrationAuthority();
         $t_regdate = '';
+        $t_regtime = '';
         $tmpregdate = $ent->getRegistrationDate();
         if (!empty($tmpregdate))
         {
             $t_regdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
+            $t_regtime = date('H:i', $tmpregdate->format('U') + j_auth::$timeOffset);
         }
         if ($sessform)
         {
@@ -126,9 +128,14 @@ class Form_element {
             {
                 $t_regdate = $ses['registrationdate'];
             }
+            if (array_key_exists('registrationtime', $ses))
+            {
+                $t_regdate = $ses['registrationtime'];
+            }
         }
         $f_regauthority = set_value('f[regauthority]', $t_regauthority);
         $f_regdate = set_value('f[registrationdate]', $t_regdate);
+        $f_regtime = set_value('f[registrationtime]', $t_regtime);
         $result = array();
 
         $tmprows = '';
@@ -286,8 +293,11 @@ class Form_element {
 
             $result[] = jGenerateInput(lang('rr_regauthority'), 'f[regauthority]', $f_regauthority, '');
 
-
-            $result[] = jGenerateInput(lang('rr_regdate'), 'f[registrationdate]', $f_regdate, 'datepicker');
+            $tr = '<div class="medium-3 column medium-text-right"><label for="f[registrationdate]" class="inline">'.lang('rr_regdate').'</label></div><div class="medium-3 large-2 column">';
+            $tr .='<input id="f[registrationdate]" name="f[registrationdate]" type="text" class="datepicker" value="'.$f_regdate.'">';
+            $tr .='</div>';
+            $tr .='<div class="medium-2 large-1 column end"><input id="f[registrationtime]" name="f[registrationtime]" type="text" value="'.$f_regtime.'" placeholder="HH:mm"> <span class="inline"></div>';
+            $result[] = $tr;
             $result[] = '';
         }
 
