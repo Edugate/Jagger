@@ -345,7 +345,7 @@ class Providerdetails
         $regdate = $ent->getRegistrationDate();
         if (isset($regdate))
         {
-            $d[$i]['value'] = date('Y-m-d', $regdate->format('U') + j_auth::$timeOffset);
+            $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="'.date('Y-m-d H:i', $regdate->format('U')).' UTC">'.date('Y-m-d H:i', $regdate->format('U') + j_auth::$timeOffset).'</span>';
         }
         else
         {

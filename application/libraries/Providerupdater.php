@@ -840,21 +840,28 @@ class Providerupdater
             }
             if (array_key_exists('registrationdate', $ch))
             {
-                $prevregdate = $ent->getRegistrationDate();
+                $prevregistrationdate = $ent->getRegistrationDate();
                 if (isset($prevregdate))
                 {
-                    $prevregdate = date('Y-m-d', $prevregdate->format('U') + j_auth::$timeOffset);
+                    $prevregdate = date('Y-m-d', $prevregistrationdate->format('U') + j_auth::$timeOffset);
+                    $prevregtime = date('H:i', $prevregistrationdate->format('U') + j_auth::$timeOffset);
                 }
                 else
                 {
                     $prevregdate = '';
+                    $prevregtime = '';
                 }
-                if ($prevregdate !== $ch['registrationdate'])
+                if(!array_key_exists('registrationtime',$ch) || empty($ch['registrationtime']))
                 {
-                    $m['RegistrationDate'] = array('before' => $prevregdate, 'after' => $ch['registrationdate']);
+                    $tmpnow =  new \DateTime('now');
+                    $ch['registrationtime'] = $tmpnow->format('H:i');
+                }
+                if ($prevregdate !== $ch['registrationdate'] || $prevregtime !== $ch['registrationtime'])
+                {
+                    $m['RegistrationDate'] = array('before' => $prevregdate.' '.$prevregdate, 'after' => ''.$ch['registrationdate'].' '. $ch['registrationtime'].'' );
                     if (!empty($ch['registrationdate']))
                     {
-                        $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i:s', $ch['registrationdate'] . ' 00:00:00'));
+                        $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i', $ch['registrationdate'] . ' '.$ch['registrationtime']));
                     }
                     else
                     {
