@@ -170,10 +170,15 @@ var GINIT = {
                         {
                             targetelement.append(data);
                         }
+                        else
+                        {
+                            targetelement.append('no result');
+                        }
                     },
                     error:function (xhr, status, error) {
-                        var alertmsg = '' + error + '';
-                        alert(alertmsg);
+                        var alertmsg = '<div>' + error + '</div>';
+                        
+                        targetelement.append(alertmsg);
                         return false;
                     }
 
