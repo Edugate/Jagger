@@ -135,6 +135,22 @@ var GINIT = {
 
         });
 
+        $("button.cleartarget").on('click', function(e){
+         
+             e.preventDefault();
+             var targetname1 =  $(this).attr('data-jagger-textarea'); 
+             var targetname2 =  $(this).attr('data-jagger-input'); 
+             if(targetname1 !== undefined)
+             {
+                $("textarea[name='"+targetname1+"']").val('');
+             }
+             if(targetname2 !== undefined)
+             {
+                $("input[name='"+targetname2+"']").val('');
+             }
+             return false;  
+        });
+
         $("button.postajax").on('click', function (e) {
             e.preventDefault();
             var form = $(this).closest("form");
