@@ -144,6 +144,7 @@
                                 echo '<li><a href="' . $base_url . 'smanage/reports">' . lang('sys_menulink') . '</a></li>';
                             }
                             ?>
+                            <li><a href="<?php echo $base_url; ?>tools/addontools/show"><?php echo lang('addons_menulink'); ?></a></li>
                             <li><a href="<?php echo $base_url; ?>manage/fedcategory/show"><?php echo lang('rrfedcatslist'); ?></a></li>
                             <li class="divider"></li>
                             <li><a href="<?php echo $base_url; ?>manage/ec/show"><?php echo lang('entcats_menulink'); ?></a></li>
