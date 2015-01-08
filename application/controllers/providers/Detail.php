@@ -13,7 +13,6 @@ if (!defined('BASEPATH')) exit('Ni direct script access allowed');
 
 /**
  * Provider_detail Class
- * 
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
@@ -31,13 +30,14 @@ class Detail extends MY_Controller
     {
         parent::__construct();
         $this->current_site = current_url();
-        $this->logo_basepath = $this->config->item('rr_logouriprefix');
-        $this->logo_baseurl = $this->config->item('rr_logobaseurl');
-        if (empty($this->logo_baseurl))
+        $logo_basepath = $this->config->item('rr_logouriprefix');
+        $logo_baseurl = $this->config->item('rr_logobaseurl');
+
+        if (empty($logo_baseurl))
         {
-            $this->logo_baseurl = base_url();
+            $logo_baseurl = base_url();
         }
-        $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
+        $this->logo_url = $logo_baseurl . $logo_basepath;
         $this->tmp_attributes = new models\Attributes;
         $this->tmp_attributes->getAttributes();
         self::$alerts = array();
@@ -130,11 +130,11 @@ class Detail extends MY_Controller
                 if ((strcasecmp($ent->getType(), 'IDP') == 0) || ( strcasecmp($ent->getType(), 'BOTH') == 0))
                 {
                     $tmp_logs = new models\Trackers;
-                    $arp_logs = $tmp_logs->getArpDownloaded($ent);
+                    $arpLogs = $tmp_logs->getArpDownloaded($ent);
                     $logg_tmp = '<ul class="no-bullet">';
-                    if (!empty($arp_logs))
+                    if (!empty($arpLogs))
                     {
-                        foreach ($arp_logs as $l)
+                        foreach ($arpLogs as $l)
                         {
                             $logg_tmp .= '<li><b>' . date('Y-m-d H:i:s', $l->getCreated()->format('U') + j_auth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
                         }
@@ -230,6 +230,7 @@ class Detail extends MY_Controller
             return;
         }
 
+        $l = array();
         $tmp_providers = new models\Providers;
         $members = $tmp_providers->getTrustedServicesWithFeds($ent);
         if (empty($members))
