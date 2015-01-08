@@ -35,6 +35,40 @@ class Addontools extends MY_Controller
 				echo 'No imput';
 				return;
 			}
+
+                        $isurl = parse_url($encodedmsg, PHP_URL_QUERY);
+                        if(!empty($isurl))
+                        {
+                               $encodedmsg = $isurl;
+                        }
+                         
+                        $arr = array();
+                        $query = parse_str($encodedmsg, $arr);
+                        if (array_key_exists('SAMLResponse', $arr))
+                        {
+                               $encodedmsg = $arr['SAMLResponse'];
+                        }
+                        elseif (array_key_exists('SAMLRequest', $arr))
+                        {
+                               $encodedmsg = $arr['SAMLRequest'];
+                        }
+                        elseif (array_key_exists('LogoutRequest', $arr))
+                        {
+                               $encodedmsg = $arr['LogoutRequest'];
+                        }
+                        elseif (array_key_exists('LogoutResponse', $arr))
+                        {
+                             $encodedmsg = $arr['LogoutResponse'];
+                        }
+                        else
+                        {
+
+                        $encodedmsg = rawurldecode(stripslashes($encodedmsg));
+
+                        }
+                        
+
+ 
 			$decodedmsg = jSAMLDecoder($encodedmsg);
 			echo htmlspecialchars($decodedmsg);
 			return;
