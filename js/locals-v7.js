@@ -31,7 +31,6 @@ jQuery.fn.toggleOption = function (show) {
     }
 };
 
-
 var BINIT = {
     initFvalidators: function () {
 
@@ -78,6 +77,18 @@ var BINIT = {
 
 var GINIT = {
     initialize: function () {
+        
+
+        $("#password").on('keypress', function (e) {
+            kc = e.keyCode ? e.keyCode : e.which;
+            sk = e.shiftKey ? e.shiftKey : ((kc === 16) ? true : false);
+            if (((kc >= 65 && kc <= 90) && !sk) || ((kc >= 97 && kc <= 122) && sk)) {
+                $("div#capswarn").show();
+            }
+            else
+                $("div#capswarn").hide();
+        });
+
         $("table.sortable").tablesorter();
 
         var baseurl = $("[name='baseurl']").val();
@@ -135,54 +146,54 @@ var GINIT = {
 
         });
 
-        $("button.cleartarget").on('click', function(e){
-         
-             e.preventDefault();
-             var targetname1 =  $(this).attr('data-jagger-textarea'); 
-             var targetname2 =  $(this).attr('data-jagger-input'); 
-             if(targetname1 !== undefined)
-             {
-                $("textarea[name='"+targetname1+"']").val('');
-             }
-             if(targetname2 !== undefined)
-             {
-                $("input[name='"+targetname2+"']").val('');
-             }
-             return false;  
+        $("button.cleartarget").on('click', function (e) {
+
+            e.preventDefault();
+            var targetname1 = $(this).attr('data-jagger-textarea');
+            var targetname2 = $(this).attr('data-jagger-input');
+            if (targetname1 !== undefined)
+            {
+                $("textarea[name='" + targetname1 + "']").val('');
+            }
+            if (targetname2 !== undefined)
+            {
+                $("input[name='" + targetname2 + "']").val('');
+            }
+            return false;
         });
 
         $("button.postajax").on('click', function (e) {
             e.preventDefault();
             var form = $(this).closest("form");
             var targetresponseid = $(this).attr('data-jagger-response-msg');
-            var targetelement = $("div#"+targetresponseid);
+            var targetelement = $("div#" + targetresponseid);
             var url = form.attr('action');
 
             $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: form.serializeArray(),
-                    beforeSend: function () {
-                        targetelement.empty();
-                    },
-                    success: function(data){
-                        if(data)
-                        {
-                            targetelement.append(data);
-                        }
-                        else
-                        {
-                            targetelement.append('no result');
-                        }
-                    },
-                    error:function (xhr, status, error) {
-                        var alertmsg = '<div>' + error + '</div>';
-                        
-                        targetelement.append(alertmsg);
-                        return false;
+                type: "POST",
+                url: url,
+                data: form.serializeArray(),
+                beforeSend: function () {
+                    targetelement.empty();
+                },
+                success: function (data) {
+                    if (data)
+                    {
+                        targetelement.append(data);
                     }
+                    else
+                    {
+                        targetelement.append('no result');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var alertmsg = '<div>' + error + '</div>';
 
+                    targetelement.append(alertmsg);
+                    return false;
                 }
+
+            }
             );
 
             return false;
@@ -313,7 +324,7 @@ var GINIT = {
                     $('#spinner').hide();
                     result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%",],
+                        position: ["20%", ],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -329,7 +340,7 @@ var GINIT = {
                     result.css('color', 'red');
                     result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%",],
+                        position: ["20%", ],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -369,7 +380,7 @@ var GINIT = {
                     result.html(data1);
                     $("div.uploadresult").append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%",],
+                        position: ["20%", ],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -424,7 +435,7 @@ var GINIT = {
                             $("form#availablelogos input[name='filename']").unbind("click");
                             result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                                 closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                                position: ["20%",],
+                                position: ["20%", ],
                                 overlayId: 'simpledialog-overlay',
                                 minHeight: '200px',
                                 containerId: 'simpledialog-container',
@@ -441,7 +452,7 @@ var GINIT = {
                     $('#spinner').hide();
                     result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%",],
+                        position: ["20%", ],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -753,9 +764,9 @@ var GINIT = {
                         alert('problem with loading data');
                     }
                 }).done(function () {
-                        var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">' + value.html() + '</ul></td></tr>';
-                        $(nextrow).insertAfter(row);
-                    }
+                    var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">' + value.html() + '</ul></td></tr>';
+                    $(nextrow).insertAfter(row);
+                }
                 );
             }
 
@@ -1316,10 +1327,10 @@ $(document).ready(function () {
                 $(this).val("");
             });
             select.find("option[value=" + bval + "]").each(
-                function () {
-                    $(this).toggleOption(true);
-                    $(this).attr('disabled', false);
-                }
+                    function () {
+                        $(this).toggleOption(true);
+                        $(this).attr('disabled', false);
+                    }
             );
             lrow.remove();
 
@@ -1921,7 +1932,7 @@ $(function () {
 
     /*** REMOVE IF MOUSEOVER IS NOT REQUIRED ***/
 
-        //ADDS THE .OVER CLASS FROM THE STYLESHEET ON MOUSEOVER
+    //ADDS THE .OVER CLASS FROM THE STYLESHEET ON MOUSEOVER
 
     $('.accordionButton1').mouseover(function () {
         $(this).addClass('over');
@@ -2113,10 +2124,10 @@ $(document).ready(function () {
 
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal(
-            {
-                Height: '500px',
-                minHeight: '500px'
-            }
+                {
+                    Height: '500px',
+                    minHeight: '500px'
+                }
         );
     }
     $("button#vormversion").click(function () {
@@ -2236,12 +2247,12 @@ $(document).ready(function () {
                     if (msg === 'OK') // LOGIN OK?
                     {
                         var login_response = '<div id="logged_in">' +
-                            '<div style="width: 350px; float: left; margin-left: 70px;">' +
-                            '<div style="width: 40px; float: left;">' +
-                            '<img style="margin: 10px 0px 10px 0px;" align="absmiddle" src="' + baseurl + 'images/ajax-loader.gif">' +
-                            '</div>' +
-                            '<div style="margin: 10px 0px 0px 10px; float: right; width: 300px;">' +
-                            "You are successfully logged in! <br /> Please wait while you're redirected...</div></div>";
+                                '<div style="width: 350px; float: left; margin-left: 70px;">' +
+                                '<div style="width: 40px; float: left;">' +
+                                '<img style="margin: 10px 0px 10px 0px;" align="absmiddle" src="' + baseurl + 'images/ajax-loader.gif">' +
+                                '</div>' +
+                                '<div style="margin: 10px 0px 0px 10px; float: right; width: 300px;">' +
+                                "You are successfully logged in! <br /> Please wait while you're redirected...</div></div>";
                         $('a.modalCloseImg').hide();
                         $('#simplemodal-container').css("width", "auto").css("height", "auto").css("background", "transparent").css("box-shadow", "none").css("text-align", "center");
                         $(this).html(login_response); // Refers to 'status'
@@ -2311,9 +2322,9 @@ $(document).ready(function () {
         var fedname = $("span#fednameencoded").text();
         var url = baseurl + 'federations/manage/changestatus';
         var data = [{name: 'status', value: btnVal}, {name: csrfname, value: csrfhash}, {
-            name: 'fedname',
-            value: fedname
-        }];
+                name: 'fedname',
+                value: fedname
+            }];
         sconfirm('' + additionalMsg + '', function (ev) {
             $.ajax({
                 type: "POST",
@@ -2354,23 +2365,23 @@ $(document).ready(function () {
         var url = $("form#rmstatdef").attr('action');
         var serializedData = $("form#rmstatdef").serialize();
         sconfirm('', function (ev) {
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: serializedData,
-                    success: function (data) {
-                        $('#resultdialog').modal({
-                            position: ["20%",],
-                            overlayId: 'simpledialog-overlay',
-                            containerId: 'simpledialog-container',
-                            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        });
-                    },
-                    error: function (data) {
-                        alert('Error');
-                    }
-                });
-            }
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: serializedData,
+                success: function (data) {
+                    $('#resultdialog').modal({
+                        position: ["20%", ],
+                        overlayId: 'simpledialog-overlay',
+                        containerId: 'simpledialog-container',
+                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+                    });
+                },
+                error: function (data) {
+                    alert('Error');
+                }
+            });
+        }
         );
         ev.preventDefault();
     });
@@ -2479,7 +2490,7 @@ $(document).ready(function () {
     function notificationadd(message, callback) {
         $('#notificationaddform').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-            position: ["20%",],
+            position: ["20%", ],
             overlayId: 'simpledialog-overlay',
             minHeight: '400px',
             minWidth: '500px',
@@ -2563,7 +2574,7 @@ $(document).ready(function () {
     function sconfirm(message, callback) {
         $('#sconfirm').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-            position: ["20%",],
+            position: ["20%", ],
             minHeight: '300px',
             minWidth: '300px',
             overlayId: 'simpledialog-overlay',
@@ -3334,4 +3345,4 @@ $('input[type="radio"].withuncheck').click(function () {
 });
 
 
- 
+

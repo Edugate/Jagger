@@ -1121,6 +1121,7 @@ $lang['rr_nomembers']              = 'No members';
 $lang['errnoorgnames']             = 'Name of organization must be set at least for one language';
 $lang['errnoorgdisnames']             = 'Displayname of organization must be set at least for one language';
 $lang['errnoorgurls']             = 'URL to information about organization must be set at least for one language';
+$lang['rr_capslockon']           = 'Caps Lock is on';
 $lang['logo404']                    = 'Logo not found';
 $lang['error404']                   = 'Page not found';
 $lang['error403']                   = 'Access denied';
