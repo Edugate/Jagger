@@ -1,0 +1,655 @@
+$btn1bgcolor: #080808;
+
+$progressBarActiveBgColor: #080808;
+$progressBarActiveBgColor: $btn1bgcolor;
+$progressBarActiveColor: #fff;
+$warning-background: orange;
+
+
+
+body {
+height: 100%;
+
+}
+#footer {
+ min-height: 100px;
+ background-color: #014289  !important;
+ color: white;
+
+
+}
+$alert-background: red;
+
+.fullWidth {
+   width: 100%;
+   margin-left: auto;
+   margin-right: auto;
+   max-width: initial;
+}
+.hidden {
+  display: none;
+
+}
+div.zebramembers > div{
+ padding: 2px;
+
+}
+div.zebramembers > div.even
+{
+    background-color: white;
+}
+div.zebramembers > div.odd
+{
+    background-color: darken(white,10%);
+}
+
+article {
+  padding: 10px;
+  //padding-top: 15px;
+  min-height: 100%;
+  
+}
+.tabs-content {
+
+  //background-color: white;
+
+}
+#navbuttons1 {
+  @include sub-nav();
+}
+a.editbutton, a.addbutton  {
+ @include button;
+}
+
+
+.langinputrm {
+  background-color: red;
+
+}
+table {
+  width: 100%;
+}
+form ol, form ul {
+list-style-type: none
+
+}
+div.error {
+
+   @include alert(
+    $bg: red,
+    $radius: true
+  );
+}
+a#showhelps {
+  border: 0px;
+  position:fixed;
+  top:90px;
+  right:2px;
+  img {
+
+  width: 25px;
+  }
+  img.iconhelpshow {
+  -khtml-opacity:.50;
+ -moz-opacity:.50;
+ -ms-filter:"alpha(opacity=50)";
+  filter:alpha(opacity=50);
+  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.5);
+  opacity:.50;
+
+  }
+}
+a.bookentity {
+  padding: 5px;
+  background-color: lighten(black,40%);
+  width: 24px;
+  height: 24px;
+  border: 0px;
+  position:fixed;
+  top:120px;
+  right:2px;
+
+}
+.subtitle, #subtitle, #pagetitle {
+ text-align: center;
+  
+}
+
+#titlepage, .title-header {
+ background-color: #0098d8 !important;
+ color: white;
+ font-size: $h4-font-size;
+ padding: 10px 0;
+// min-height: 100px;
+ //margin-bottom: 25px;
+ a {
+   color: white;
+ }
+
+}
+#pagetitle {
+  font-size: large;
+
+}
+#container {
+ @include grid-row;
+ min-height: 100%;
+  background-color: lighten($body-bg, 5%);
+  border: 1px solid darken(white,10%);
+ 
+
+}
+.spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px; /* half width of the spinner gif */
+    margin-top: -50px; /* half height of the spinner gif */
+    text-align:center;
+    z-index:1234;
+    overflow: auto;
+    width: 158px; /* width of the spinner gif */
+    height: 158px; /*hight of the spinner gif +2px to fix IE8 issue */
+}
+.lbl {
+
+@include label();
+}
+
+.lbl-disabled, .lbl-pactive-0 {
+  background-color: $alert-background;
+}
+.lbl-locked, .lbl-static, .lbl-plocked-1, .lbl-pstatic-1 {
+   background-color: $warning-background;
+
+}
+.ui-tabs-nav li {
+    font-size: 70%;
+}
+.ui-tabs-nav li.ui-tabs-selected,
+.ui-tabs-nav li.ui-state-active { 
+    margin-top: 0em;
+    font-size: 70%;
+    background: grey;
+    background: black;
+    background-color: black;
+    border-top: 1px solid black;
+    .ui-tabs-anchor {
+        color: white;
+        font-weight: bolder;
+    }
+}
+
+
+#idpmatrix th {
+    padding: 1px;
+    border-left: 1px gray solid;
+    border-bottom: 1px gray solid;
+    border-top: 1px gray solid;
+}
+#idpmatrix tr th:last-child {
+    border-right: 1px gray solid;
+}
+#idpmatrix td {
+    padding: 0px;
+    text-align: center;
+    border-left: 0px gray solid;
+    border-bottom: 0px gray solid;
+    box-sizing: border-box;
+}
+#idpmatrix tr td:not(:first-child) {
+
+  text-transform: uppercase;
+}
+#idpmatrix td:first-child {
+    text-align: left;
+    padding-left: 5px;
+}
+#idpmatrix td:last-child {
+    border-right: 1px gray solid;
+}
+
+
+div.perm, td.perm {
+    background-color: #00FF00;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+div.dis, td.dis {
+    background-color: #E3E5FF;
+    text-transform: uppercase;
+
+    font-weight: bold;
+}
+div.spec, td.spec {
+    background-color: #FFFF00;
+    text-transform: uppercase;
+
+    font-weight: bold;
+}
+div.den, td.den {
+    background-color: red;
+   text-transform: uppercase;
+
+    font-weight: bold;
+}
+div.perm:not(:empty),div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty),div.den:not(:empty){
+   cursor: pointer;
+}
+td.perm:not(:empty),div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty),div.den:not(:empty){
+   cursor: pointer;
+}
+#idpmatrixdiv td {
+  cursor: pointer;
+
+}
+
+fieldset {
+
+}
+div.langgroup {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.certdata {
+
+  font-family: monospace;
+  height: 50px;
+}
+.metadata {
+  font-family: monospace;
+
+
+}
+div#wrapper {
+  // padding-top: 10px;
+
+}
+
+
+#simplemodal-overlay {background-color:#aaaaaa; cursor:wait;}
+.simplemodal-container {
+    min-width: 600px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: $body-bg;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+
+}
+
+
+ tr > td:first-child {
+
+   font-weight: bold;
+}
+#sconfirm {
+  display:none;
+}
+
+
+//multistep
+
+form#multistepform {
+        margin: 50px auto;
+        text-align: center;
+        position: relative;
+        padding: 10px;
+        margin: 0 0 0 0;
+}
+form#multistepform fieldset {
+        width: auto;
+        padding: 0;
+        position: absolute;
+        left: 10px;
+        right: 10px;
+    ol {
+    list-style:none;
+    padding-left:5px;
+    }
+    legend{
+      text-align: left;
+      font-weight: bolder;
+    }
+}
+form#multistepform label {
+    //  text-align: left;
+
+}
+#multistepform fieldset:not(:first-of-type) {
+        display: none;
+}
+#multistepform input, #multistepform textarea {
+        border-radius: 3px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        color: #2C3E50;
+        font-size: 13px;
+}
+#multistepform .action-button {
+        width: 100px;
+        background: #27AE60;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 1px;
+        cursor: pointer;
+        padding: 10px 5px;
+        margin: 10px 5px;
+}
+#multistepform .action-button:hover, #multistepform .action-button:focus {
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #27AE60;
+}
+.fs-subtitle {
+        font-weight: normal;
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 20px;
+}
+/*progressbar*/
+#progressbar {
+        margin-bottom: 30px;
+        overflow: hidden;
+        /*CSS counters to number the steps*/
+        counter-reset: step;
+}
+#progressbar li {
+        list-style-type: none;
+        color: white;
+        text-transform: uppercase;
+//        font-size: 9px;
+        float: left;
+        position: relative;
+}
+ul.freesteps li {
+       width: 33.33%;
+}
+ul.foursteps li {
+        width: 25%;
+}
+ul.fivesteps li {
+        width: 20%;
+}
+#progressbar li:before {
+        content: counter(step);
+        counter-increment: step;
+        width: 20px;
+        line-height: 20px;
+        display: block;
+  //      font-size: 10px;
+
+        color: #333;
+        background: white;
+        border-radius: 3px;
+        margin: 0 auto 5px auto;
+}
+/*progressbar connectors*/
+#progressbar li:after {
+        content: '';
+        width: 100%;
+        height: 2px;
+        background: white;
+        position: absolute;
+        left: -50%;
+        top: 9px;
+        z-index: -1; /*put it behind the numbers*/
+}
+#progressbar li:first-child:after {
+        /*connector not needed before the first step*/
+        content: none;
+}
+/*marking active/completed steps green*/
+/*The number of the step and the connector before it = green*/
+#progressbar li.active:before,  #progressbar li.active:after{
+        background: $progressBarActiveBgColor;
+        color: $progressBarActiveColor;
+}
+
+
+.box-header {
+  padding: 3px;
+  text-align: center;
+   background-color:  #0098d8; 
+   color: darken(white,20%) !important;
+   a {
+   color: darken(white,20%);
+
+    }
+
+}
+span.alert{
+
+  color:red;
+}
+
+.accordion-icon:before {
+  font-family: "foundation-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  text-decoration: inherit;
+  padding-right: 5px;
+
+ content: "\f199";
+    
+}
+.active > .accordion-icon:before {
+    content: "\f176 ";
+ }
+
+.accordionButton {
+ cursor: pointer;
+
+}
+
+td.highlight {
+
+        background-color: darken($body-bg,10%);
+        font-weight: bolder;
+        text-align: left;
+
+}
+ul.no-bullet {
+
+  list-style-type: none;
+
+}
+code {
+ white-space: pre;
+ font-size: smaller;
+
+}
+
+#map {
+    width: 100%;
+    //width: 500px;
+    height: 500px;
+    position: relative;
+    background-color: rgb(229, 227, 223);
+    overflow: hidden;
+}
+
+.help {
+
+@include panel();
+}
+.dhelp {
+ @include alert(
+       $bg : $info-color
+  );
+
+ width: 20rem;
+
+
+
+}
+.section , .groupradiosection{
+   background-color: $info-color;
+   font-size: bigger;
+   font-weight: bold;
+   padding: 5px;
+   margin-top: 5px;
+   margin-bottom: 5px;
+
+}
+
+div.alert {
+ color: red;
+
+}
+.buttons {
+
+  background-color: transparent;
+  border: 0px !important;
+}
+
+.buttons div.yes {
+
+ @include button;
+}
+.buttons div.no {
+
+ @include button(
+$button-med,
+    // Primary color set in settings file. Default: $primary-color.
+    $alert-color,
+    // If true, set to button radius which is $global-radius or explicitly set radius amount in px (ex. $radius:10px). Default:false.
+    false,
+    // We can set $full-width:true to remove side padding extend width. Default:false
+    false,
+    // We can set $disabled:true to create a disabled transparent button. Default:false
+    false,
+    // $is-input - <input>s and <button>s take on strange padding. We added this to help fix that. Default:false
+    false
+
+
+);
+}
+
+ul.tabs {
+  margin-bottom: 0px;
+
+}
+
+
+.tabs-content > .content {
+   padding: 0px;
+   margin-top: 10px;
+}
+.tabs-content > .content.subtab {
+   margin-top: 0px;
+}
+
+ul.subtab > .tab-title{
+  
+  a {
+
+  background-color: lighten($tabs-navigation-bg-color,10%) !important ;
+  padding:rem-calc(7);
+
+  }
+  a:hover {
+    background-color: red;
+  }
+  
+}
+ul.subtab > .tab-title:hover{
+  
+    background-color: red;
+  
+}
+ul.subtab > .tab-title.active{
+  a {
+  background-color: lighten($tabs-navigation-active-bg-color,5%) !important ;
+
+  }
+  
+}
+.imgsource > img {
+  max-height: 100px;
+}
+
+dd.accordion-navigation {
+  margin-top: 5px;
+
+}
+
+pre.xml {
+
+  
+  max-width: $row-width*(3/4);
+  overflow: auto;
+  line-height: 100%;
+
+}
+#xmlmeta pre.xml {
+    max-width: 100%;
+
+}
+.xml {
+    background-color: white;
+}
+.xml .de1, .xml .de2 {font: normal normal 1em/1.2em monospace; margin:0; padding:0; background:grey; vertical-align:top;}
+.xml  {font-family:monospace;}
+.xml .imp {font-weight: bold; color: red;}
+.xml li, .xml .li1 {font-weight: normal; vertical-align:top;}
+.xml .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
+.xml .li2 {font-weight: bold; vertical-align:top;}
+.xml .es0 {color: #000099; font-weight: bold;}
+.xml .br0 {color: #66cc66;}
+.xml .sy0 {color: #66cc66;}
+.xml .st0 {color: #ff0000;}
+.xml .nu0 {color: #cc66cc;}
+.xml .sc-1 {color: #808080; font-style: italic;}
+.xml .sc0 {color: #00bbdd;}
+.xml .sc1 {color: #ddbb00;}
+.xml .sc2 {color: #339933;}
+.xml .sc3 {color: #009900;}
+.xml .re0 {color: #000066;}
+.xml .re1 {color: #7f0055;; font-weight: bold;}
+.xml .re2 {color: #000000; font-weight: bold;}
+.xml .ln-xtra, .xml li.ln-xtra, .xml div.ln-xtra {background-color: #ffc;}
+.xml span.xtra { display:block; }
+
+.table-header-rotated {
+  border-collapse: collapse;
+  .csstransforms & td {
+    width: 2px;
+  }
+  .no-csstransforms & th {
+    padding: 0px 0px;
+  }
+  td {
+    text-align: center;
+    padding: 0px 0px;
+    border: 1px solid #ccc;
+    font-size:0.7rem;
+  }
+  .csstransforms & th.rotate {
+    height: 120px;
+    white-space: nowrap;
+    // Firefox needs the extra DIV for some reason, otherwise the text disappears if you rotate 
+    > div {
+      transform: 
+        // Magic Numbers
+        translate(5px, 47px)
+        // 45 is really 360-45
+        rotate(315deg);
+      max-width: 5px;
+    }
+    > div > span {
+      border-bottom: 1px solid #ccc;
+      padding: 1px 1px;
+      text-size: 0.3rem;
+      
+    }
+  }
+  th.row-header {
+    padding: 0 10px;
+    border-bottom: 1px solid #ccc;
+    font-size : 0.3rem;
+  }
+}
