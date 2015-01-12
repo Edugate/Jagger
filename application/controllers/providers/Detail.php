@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('Ni direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('Ni direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -16,14 +17,12 @@ if (!defined('BASEPATH')) exit('Ni direct script access allowed');
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Detail extends MY_Controller
-{
+class Detail extends MY_Controller {
 
     private
             $logo_url;
     private
             $tmp_attributes;
-    
     public static $alerts;
 
     function __construct()
@@ -89,6 +88,58 @@ class Detail extends MY_Controller
         }
     }
 
+    function status($id = null)
+    {
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request())
+        {
+            set_status_header(403);
+            echo 'request not valid';
+            return;
+        }
+
+        if (empty($id) || !ctype_digit($id))
+        {
+            set_status_header(403);
+            echo 'incorrect or missing arg ';
+            return;
+        }
+        if (!$this->j_auth->logged_in())
+        {
+            set_status_header(403);
+            echo 'no session';
+            return;
+        }
+
+        $providerid = $id;
+
+        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => '' . $providerid . ''));
+        if (empty($provider))
+        {
+            set_status_header(404);
+            echo 'not foud';
+            return;
+        }
+        $this->load->library('zacl', 'providertoxml');
+        $hasReadAccess = $this->zacl->check_acl($providerid, 'read', 'entity', '');
+        if (!$hasReadAccess)
+        {
+            set_status_header(403);
+            echo 'denied';
+            return;
+        }
+        $this->load->library('providerdetails');
+        $result = $this->providerdetails->generateAlertsDetails($provider);
+
+
+
+
+
+        echo json_encode($result);
+
+        return;
+    }
+
     function showlogs($id)
     {
         if ($this->input->is_ajax_request())
@@ -119,8 +170,8 @@ class Detail extends MY_Controller
                 $isstats = $this->config->item('statistics');
                 if (($isactive === TRUE) && ($islocal === TRUE) && !empty($isgearman) && ($isgearman === TRUE) && !empty($isstats))
                 {
-                    $d[++$i] = array('name'=> ''.anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')).'',
-                                    'value' => ''.anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>').'');
+                    $d[++$i] = array('name' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')) . '',
+                        'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>') . '');
                 }
                 $d[++$i]['header'] = lang('rr_logs');
                 $d[++$i]['name'] = lang('rr_variousreq');
@@ -140,7 +191,7 @@ class Detail extends MY_Controller
                         }
                     }
                     $logg_tmp .= '</ul>';
-                    $d[++$i] = array('name' =>''. lang('rr_recentarpdownload').'','value' => ''.$logg_tmp.'');
+                    $d[++$i] = array('name' => '' . lang('rr_recentarpdownload') . '', 'value' => '' . $logg_tmp . '');
                 }
             }
             else
@@ -170,7 +221,7 @@ class Detail extends MY_Controller
             redirect('auth/login', 'location');
             return;
         }
-        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml','providerdetails'));
+        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml', 'providerdetails'));
 
         $tmp_providers = new models\Providers();
         $ent = $tmp_providers->getOneById($id);
@@ -187,13 +238,13 @@ class Detail extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
-        
+
         $data = $this->providerdetails->generateForControllerProvidersDetail($ent);
         /**
          * @todo finish show alert block if some warnings realted to entity 
          */
         $data['alerts'] = self::$alerts;
-        
+
         $data['titlepage'] = $data['presubtitle'] . ': ' . $data['name'];
         $data['content_view'] = 'providers/detail_view.php';
         $this->load->view('page', $data);

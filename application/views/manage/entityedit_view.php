@@ -176,17 +176,19 @@ if(!empty($sessform))
     echo '</div>';
    if(empty($registerForm))
    {
-    echo '<div class="buttons">
-        <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('rr_cancel').'</button>
-        <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
-        <button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnupdate').'
-      </button></div>';
+    echo '<div class="small-12 column small-centered">
+       <ul class="button-group radius">
+        <li><button type="submit" name="discard" value="discard" class="resetbutton reseticon alert">'.lang('rr_cancel').'</button></li>
+        <li><button type="submit" name="modify" value="savedraft" class="savebutton saveicon secondary">'.lang('savedraft').'</button></li>
+        <li><button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnupdate').'
+      </button></li></ul></div>';
    }
    else
    {
-    echo '<div class="buttons">
-        <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('btnstartagain').'</button>
-        <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
+    echo '<div class="buttons center small-12 column text-center">
+        
+        <button type="submit" name="discard" value="discard" class="resetbutton reseticon alert">'.lang('btnstartagain').'</button>
+        <button type="submit" name="modify" value="savedraft" class="savebutton saveicon secondary">'.lang('savedraft').'</button>
         <button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnregister').'
       </button></div>';
 

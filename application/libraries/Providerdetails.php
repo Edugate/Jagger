@@ -7,7 +7,7 @@ if (!defined('BASEPATH')) exit('Ni direct script access allowed');
  * 
  * @package     JAGGER
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -28,6 +28,9 @@ class Providerdetails
         $this->CI = &get_instance();
         $this->em = $this->CI->doctrine->em;
     }
+    
+    
+    
 
     private function _genCertView($cert)
     {
@@ -125,6 +128,59 @@ class Providerdetails
             $entStatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
         }
         return $entStatus;
+    }
+    
+    public function generateAlertsDetails(\models\Provider $provider)
+    {
+        $result = array();
+        
+        $serviceLocation = $provider->getServiceLocations();
+        foreach ($serviceLocation as $s)
+        {
+            $surl = $s->getUrl();
+           
+            $parsedUrl = parse_url($surl);
+            if (array_key_exists('host', $parsedUrl))
+            {
+                $srvHost = $parsedUrl['host'];
+                if (!empty($srvHost) && filter_var($srvHost, FILTER_VALIDATE_IP))
+                {
+                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' -  contains IP address','level'=>'warning');
+                   
+                }
+                else
+                {
+                    $resolved = dns_get_record($srvHost, DNS_A + DNS_AAAA);
+                    if (!empty($resolved))
+                    {
+                        foreach ($resolved as $r)
+                        {
+                            if (array_key_exists('ip', $r))
+                            {
+                                if (!(filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) && filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE)))
+                                {
+                                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  result IP: ' . $r['ip'] . ' which is in private or reserved pool','level'=>'warning');
+                                }
+                            }
+                            if (array_key_exists('ipv6', $r))
+                            {
+                                if (!filter_var($r['ipv6'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE))
+                                {
+                                    $result[] =array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  results : ' . $r['ipv6'] . ' which is in private or reserved pool','level'=>'warning');
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $result[] =array('msg' =>  'Service URL: ' . htmlspecialchars($surl) . ' - Could not resolve a domain from service URL: ','level'=>'warning');
+                    }
+                }
+               
+            }
+        }
+
+        return $result;
     }
 
     public function generateForControllerProvidersDetail(\models\Provider $ent)

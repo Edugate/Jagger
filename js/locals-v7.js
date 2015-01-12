@@ -77,6 +77,62 @@ var BINIT = {
 
 var GINIT = {
     initialize: function () {
+
+        $('div[data-jagger-getmoreajax]').each(function(e){
+              var link = $(this).attr('data-jagger-getmoreajax');
+              var targetresponseid = $(this).attr('data-jagger-response-msg');  
+              if(targetresponseid === undefined || targetresponseid === null)
+              {
+                 console.log('attribute data-jagger-response-msg not found in element with data-jagger-getmoreajax="'+link+'" - exiting'); 
+                 return false;
+              }
+              else
+              {
+                 console.log('attribute data-jagger-response-msg="'+targetresponseid+'" in element data-jagger-getmoreajax="'+link+'"');
+              }
+              var targetelement = $("div#" + targetresponseid);
+              if(targetelement === undefined || targetelement === null || $(targetelement).length ===0 )
+              {
+                  console.log('div with id="'+targetresponseid+'" not found');
+                 
+                  return false;
+              }
+              else
+              {
+                  console.log('div with id="'+targetresponseid+'" found');
+
+              }
+
+              $.ajax({
+                dataType: "json",
+                type: "GET",
+                url: link,
+                cache: true,
+                success: function(data) {
+                   if(!data) 
+                   {
+                     console.log('no json got from '+link);
+                     return false;
+                   }
+                   var countresult = data.length;
+                   if(countresult < 1)
+                   {
+                       return false;
+                   }
+                   var result = $('<div/>');
+                   
+                   var div_data ;
+                   $.each(data, function(i,v) {
+                         div_data = '<div>'+v.msg+'</div>';
+                         result.append(div_data);
+                   });
+                   targetelement.empty().append(result).show();
+                   
+
+                } 
+              });
+              
+        });
         
 
         $("#password").on('keypress', function (e) {
@@ -1667,6 +1723,9 @@ $(function () {
     refreshId = setInterval(function () {
         $("#dashresponsecontainer").load(baseurl + 'reports/awaiting/dashajaxrefresh');
     }, 172000);
+
+
+    
 
 
     $.ajaxSetup({

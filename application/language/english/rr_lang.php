@@ -1157,4 +1157,5 @@ $lang['rr_langchange']           = 'Change language';
 $lang['metapublicationurl']      = 'Metadata publication URL';
 $lang['lblusejaggermetaurl']     = 'Show system generated metadata URL';
 $lang['lbluseothermetaurl']      = 'Show other metadata URL';
+$lang['rr_noentitywarnings']     = 'No warnings related to the service';
 $lang['metaalturlinput']         = 'Metadata publication URL';
