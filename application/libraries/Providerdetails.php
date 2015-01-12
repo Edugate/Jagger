@@ -957,7 +957,7 @@ class Providerdetails
                 }
             }
         }
-        $subresult[5] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
+        $subresult[6] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
         $d = array();
         $i = 0;
         $tcerts = $ent->getCertificates();
