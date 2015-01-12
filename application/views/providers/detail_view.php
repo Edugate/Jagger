@@ -1,3 +1,6 @@
+
+
+
 <?php
 if (empty($bookmarked))
 {
@@ -21,6 +24,10 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
     }
     echo '</div>';
 }
+
+echo '<div data-jagger-getmoreajax= "'.base_url().'providers/detail/status/'.$entid.'" data-jagger-response-msg="prdetails"></div>';
+
+echo '<div id="prdetails" data-alert class="alert-box info" style="display: none"></div>';
 ?>
 <div class="off-canvas-wrap" data-offcanvas>
     <div class="inner-wrap">
@@ -254,7 +261,7 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
         <a class="exit-off-canvas"></a>
 
     </div>
-    <?php echo '</div>'; //end offcan     ?>
+    <?php echo '</div>'; //end offcan      ?>
 
     <div class="metadataresult" style="display: none"></div>
 

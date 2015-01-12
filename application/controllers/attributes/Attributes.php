@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
@@ -17,9 +18,7 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
-class Attributes extends MY_Controller
-{
+class Attributes extends MY_Controller {
 
     function __construct()
     {
@@ -38,9 +37,7 @@ class Attributes extends MY_Controller
         $this->current_sp_name = $this->session->userdata('current_sp_name');
         $this->load->library('form_validation');
         MY_Controller::$menuactive = 'admins';
-
     }
-
 
     private function _add_submit_validate()
     {
@@ -57,55 +54,55 @@ class Attributes extends MY_Controller
         $this->title = lang('rr_newattr_title');
         $isAdmin = $this->j_auth->isAdministrator();
         $data['titlepage'] = lang('rr_newattr_title');
-        if(!$isAdmin)
+        if (!$isAdmin)
         {
-           show_error('Access Denied',401);
-           return;
+            show_error('Access Denied', 401);
+            return;
         }
-        
+
         $this->load->helper('form');
-        if($this->_add_submit_validate())
+        if ($this->_add_submit_validate())
         {
-           $attrname = $this->input->post('attrname');
-           $attroid = $this->input->post('attroidname');
-           $attrurn = $this->input->post('attrurnname');
-           $attrfullname = $this->input->post('attrfullname');
-           $description  = $this->input->post('description');
-           $attr = new models\Attribute;
-           $attr->setName($attrname);
-           $attr->setFullname($attrfullname);
-           $attr->setOid($attroid);
-           $attr->setUrn($attrurn);
-           $attr->setDescription($description);
-           $attr->setShowInmetadata(TRUE);
-           $this->em->persist($attr);
-           $data['content_view'] = 'attradd_success_view';
-           $data['success']= lang('attraddsuccess');
-           try{
-               $this->em->flush();
-               $this->load->view('page',$data);
-           }
-           catch(Exception $e)
-           {
-               log_message('error',__METHOD__. ' '.$e);
-               show_error('Couldnt store new attr in db',500);
-           }
+            $attrname = $this->input->post('attrname');
+            $attroid = $this->input->post('attroidname');
+            $attrurn = $this->input->post('attrurnname');
+            $attrfullname = $this->input->post('attrfullname');
+            $description = $this->input->post('description');
+            $attr = new models\Attribute;
+            $attr->setName($attrname);
+            $attr->setFullname($attrfullname);
+            $attr->setOid($attroid);
+            $attr->setUrn($attrurn);
+            $attr->setDescription($description);
+            $attr->setShowInmetadata(TRUE);
+            $this->em->persist($attr);
+            $data['content_view'] = 'attradd_success_view';
+            $data['success'] = lang('attraddsuccess');
+            try
+            {
+                $this->em->flush();
+                $this->load->view('page', $data);
+            }
+            catch (Exception $e)
+            {
+                log_message('error', __METHOD__ . ' ' . $e);
+                show_error('Couldnt store new attr in db', 500);
+            }
         }
         else
         {
-           $data['content_view'] = 'attribute_add_view';
-           $this->load->view('page',$data);
+            $data['content_view'] = 'attribute_add_view';
+            $this->load->view('page', $data);
         }
-
     }
 
     public function show()
     {
         $this->title = lang('attrsdeflist');
-		$attributes_tmp = new models\Attributes();
-		$attributes = $attributes_tmp->getAttributes();
+        $attributes_tmp = new models\Attributes();
+        $attributes = $attributes_tmp->getAttributes();
         $a_ar = array();
-        $excluded = '<span class="lbl lbl-alert" title="'.lang('rr_attronlyinarpdet').'">'.lang('rr_attronlyinarp').'</span>';
+        $excluded = '<span class="lbl lbl-alert" title="' . lang('rr_attronlyinarpdet') . '">' . lang('rr_attronlyinarp') . '</span>';
 
         $data['titlepage'] = lang('attrsdeflist');
 
@@ -113,20 +110,20 @@ class Attributes extends MY_Controller
         {
             $notice = '';
             $i = $a->showInMetadata();
-            if($i === FALSE)
+            if ($i === FALSE)
             {
-                $notice = '<br />'.$excluded;
+                $notice = '<br />' . $excluded;
             }
-            $a_ar[] = array(showBubbleHelp($a->getDescription()) . ' '. $a->getName().$notice, $a->getFullname(), $a->getOid(),$a->getUrn());
+            $a_ar[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn());
         }
         $isAdmin = $this->j_auth->isAdministrator();
-        if($isAdmin)
+        if ($isAdmin)
         {
-           $data['isadmin'] = true;
+            $data['isadmin'] = true;
         }
         else
         {
-           $data['isadmin'] = false;
+            $data['isadmin'] = false;
         }
         $data['attributes'] = $a_ar;
         $data['content_view'] = 'attribute_list_view';

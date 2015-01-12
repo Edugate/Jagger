@@ -51,7 +51,7 @@ if ($fedenabled)
     echo '</div>';
     echo '<div class="row">';
     echo '<div class="medium-3 columns medium-text-right"> <label for="password" class="inline">' . lang('rr_password') . '</label> </div> <div class="medium-9 columns"> 
-             <input type="password" id="password" name="password"></div>';
+             <input type="password" id="password" name="password" ><div id="capswarn" class="hidden"><small class="error" >'.lang('rr_capslockon').'</small></div></div>';
     echo '</div>';
     echo '<div class="row">';
     echo '<div class="small-12 large-9 end columns large-push-3 small-text-center large-text-left"><button type="submit" class="button small">' . lang('loginsubmit') . '</button></div>';

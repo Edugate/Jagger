@@ -745,6 +745,12 @@ class J_queue
         $data = $queue->getData();
         $cell = array(lang('rr_provider'), $data['name']);
         $this->ci->table->add_row($cell);
+        $cell = array(lang('rr_entityid'), $data['entityid']);
+        $this->ci->table->add_row($cell);
+        
+
+      $cell = array('Provider status','<div  data-jagger-getmoreajax= "'.base_url().'providers/detail/status/'.$data['id'].'" data-jagger-response-msg="providerstatus"></div><div id="providerstatus" data-alert class="alert-box info">'.lang('rr_noentitywarnings').'</div>');
+        $this->ci->table->add_row($cell);
         $cell = array(lang('request'), lang('acceptprovtofed'));
         $this->ci->table->add_row($cell);
 

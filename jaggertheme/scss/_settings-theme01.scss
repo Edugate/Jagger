@@ -1117,7 +1117,7 @@ $table-margin-bottom: rem-calc(20);
 $include-html-tabs-classes: $include-html-classes;
 
 $tabs-navigation-padding: rem-calc(8);
-$tabs-navigation-bg-color: #074E68  ;
+$tabs-navigation-bg-color: #0098d8;
 $tabs-navigation-active-bg-color: #2f2f2f;
 $tabs-navigation-hover-bg-color: scale-color($tabs-navigation-bg-color, $lightness: -6%);
 $tabs-navigation-font-color: #fff;
@@ -1181,7 +1181,7 @@ $tabs-vertical-navigation-margin-bottom: 1.25rem;
 // $include-html-top-bar-classes: $include-html-classes;
 
 // Background color for the top bar
-$topbar-bg-color: #333;
+$topbar-bg-color: #014289 ;
 $topbar-bg: $topbar-bg-color;
 
 // Height and margin
@@ -1193,9 +1193,9 @@ $topbar-title-weight: $font-weight-normal;
 $topbar-title-font-size: rem-calc(17);
 
 // Style the top bar dropdown elements
-$topbar-dropdown-bg: #333;
+$topbar-dropdown-bg: #014289;
 $topbar-dropdown-link-color: #fff;
-$topbar-dropdown-link-bg: #333;
+$topbar-dropdown-link-bg: #014289;
 $topbar-dropdown-link-weight: $font-weight-normal;
 $topbar-dropdown-toggle-size: 5px;
 $topbar-dropdown-toggle-color: #fff;
@@ -1212,7 +1212,7 @@ $topbar-link-hover-lightness: -10%; // Darken by 10%
 $topbar-link-bg: $topbar-bg;
 $topbar-link-bg-color-hover: #272727;
 $topbar-link-bg-hover: #272727;
-$topbar-link-bg-active: $primary-color;
+$topbar-link-bg-active: lighten($topbar-dropdown-bg,10%);
 $topbar-link-bg-active-hover: scale-color($primary-color, $lightness: -14%);
 $topbar-link-font-family: $body-font-family;
 $topbar-link-text-transform: none;

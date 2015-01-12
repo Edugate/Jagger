@@ -13,7 +13,7 @@ height: 100%;
 }
 #footer {
  min-height: 100px;
- background-color: darken(#074E68,10%) !important;
+ background-color: #014289  !important;
  color: white;
 
 
@@ -52,7 +52,6 @@ article {
 .tabs-content {
 
   //background-color: white;
-  min-height: 200px;
 
 }
 #navbuttons1 {
@@ -117,7 +116,7 @@ a.bookentity {
 }
 
 #titlepage, .title-header {
- background-color: #074E68 !important;
+ background-color: #0098d8 !important;
  color: white;
  font-size: $h4-font-size;
  padding: 10px 0;
@@ -409,7 +408,7 @@ ul.fivesteps li {
 .box-header {
   padding: 3px;
   text-align: center;
-   background-color:  #074E68; 
+   background-color:  #0098d8; 
    color: darken(white,20%) !important;
    a {
    color: darken(white,20%);
@@ -653,8 +652,4 @@ pre.xml {
     border-bottom: 1px solid #ccc;
     font-size : 0.3rem;
   }
-}
-.modal-close {
-
-position: relative !important;
 }
