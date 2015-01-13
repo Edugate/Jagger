@@ -61,8 +61,8 @@ class Authenticate extends MY_Controller {
            }
            else
            {
-               $this->form_validation->set_rules('username', lang('rr_username'), 'required|xss_clean');
-               $this->form_validation->set_rules('password', lang('rr_password'), 'required');
+               $this->form_validation->set_rules('username', lang('rr_username'), 'trim|required');
+               $this->form_validation->set_rules('password', lang('rr_password'), 'trim|required');
                $validated = $this->form_validation->run();
                if ($validated === TRUE)
                {

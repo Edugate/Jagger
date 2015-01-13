@@ -31,6 +31,12 @@ class MY_form_validation extends CI_form_validation {
     }
 
 
+    public function xss_clean($str)
+    {
+	return $this->CI->security->xss_clean($str);
+    }
+
+
 
     function str_matches_array( $str, $ar)
     {
