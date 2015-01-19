@@ -650,6 +650,7 @@ $lang['rr_lastmodification']        = 'Last modification';
 $lang['rr_descriptivename']         = 'Descriptive Name';
 $lang['rr_regauthority']            = 'Registration Authority';
 $lang['rr_regdate']                 = 'Registration Date';
+$lang['rr_regtime']                 = 'Registration Time';
 $lang['rr_requestdate']                 = 'Requested at';
 $lang['rr_lastrecent']              = 'last';
 
