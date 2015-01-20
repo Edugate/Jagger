@@ -131,8 +131,70 @@ class Providerdetails {
     {
         $result = array();
 
-        $serviceLocation = $provider->getServiceLocations();
 
+        $contacts = $provider->getContacts();
+        if (count($contacts) == 0)
+        {
+            $result[] = array('msg' => 'No contacts are defined', 'level' => 'warning');
+        }
+
+        $certificates = $provider->getCertificates();
+        $this->CI->load->helper('cert');
+        $minkeysize = $this->CI->config->item('entkeysizemin');
+        foreach ($certificates as $certificate)
+        {
+            $cert = $certificate->getCertData();
+            $i = explode("\n", $cert);
+            $c = count($i);
+            if ($c < 2)
+            {
+                $pem = chunk_split($cert, 64, PHP_EOL);
+                $cert = $pem;
+            }
+
+            $ncert = getPEM($cert);
+            $res = @openssl_x509_parse($ncert);
+            if (is_array($res))
+            {
+                if (!empty($minkeysize))
+                {
+                    $minkeysize = (int) $minkeysize;
+                }
+                else
+                {
+                    $minkeysize = 2048;
+                }
+                $r = openssl_pkey_get_public($ncert);
+                $keysize = 0;
+                if (!empty($r))
+                {
+                    $data = array();
+                    $data = openssl_pkey_get_details($r);
+                    if (isset($data['bits']))
+                    {
+                        $keysize = $data['bits'];
+                    }
+                    else
+                    {
+                        $result[] = array('msg'=>'Could not compute keysize','level'=>'warning');
+                      
+                    }
+                }
+           
+                if ($minkeysize > $keysize)
+                {
+                   
+                     $result[] = array('msg'=>'The keysize of one of the certificates is less than '.$minkeysize,'level'=>'warning');
+                   
+                }
+            }
+            else
+            {
+                $result[] = array('msg' => 'One of certs is not valid', 'level' => 'warning');
+            }
+        }
+
+        $serviceLocation = $provider->getServiceLocations();
         $srvsTcpChecked = array();
         foreach ($serviceLocation as $s)
         {
@@ -219,8 +281,8 @@ class Providerdetails {
                 {
                     foreach ($hostsByIP['ipv4'] as $ip)
                     {
-                       
-                        if (!in_array( '' . $ip . '_' . $urlPort,$srvsTcpChecked))
+
+                        if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked))
                         {
                             $fp = fsockopen($ip, $urlPort, $errno, $errstr, 2);
                             if (!$fp)
@@ -229,16 +291,15 @@ class Providerdetails {
                             }
                             $srvsTcpChecked[] = '' . $ip . '_' . $urlPort;
                         }
-                       
                     }
                 }
                 if (array_key_exists('ipv6', $hostsByIP))
                 {
 
-                    
+
                     foreach ($hostsByIP['ipv6'] as $ip)
                     {
-                        if (!in_array( '' . $ip . '_' . $urlPort,$srvsTcpChecked))
+                        if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked))
                         {
                             $fp = fsockopen('tcp://[' . $ip . ']', $urlPort, $errno, $errstr, 2);
                             if (!$fp)
@@ -247,17 +308,15 @@ class Providerdetails {
                             }
                             $srvsTcpChecked[] = '' . $ip . '_' . $urlPort;
                         }
-                        
-                     
                     }
                 }
             }
         }
-        
-        
-        if(count($result) == 0)
+
+
+        if (count($result) == 0)
         {
-            $result[] = array('msg'=>'No alerts','level'=>'info');
+            $result[] = array('msg' => 'No alerts', 'level' => 'info');
         }
 
         return $result;
