@@ -127,7 +127,7 @@ class Providerdetails {
         return $entStatus;
     }
 
-    public function generateAlertsDetails(\models\Provider $provider)
+    public function generateAlertsDetails(\models\Provider $provider, $msgprefix = null)
     {
         $result = array();
 
@@ -188,11 +188,17 @@ class Providerdetails {
                     continue;
                 }
 
-                if (isset($res['validTo_time_t']))
+                $dateTimeNow = new DateTime('now');
+                $dateTimeNowInTimeStamp = $dateTimeNow->format('U');
+
+                if (isset($res['validTo_time_t']) && ($dateTimeNowInTimeStamp>$res['validTo_time_t']))
                 {
 
-                    $validto = date('Y-m-d H:i:s', $res['validTo_time_t']);
-                   // $result[] = array('msg' => 'Valid to: ' . $validto, 'level' => 'info');
+                    $validto = new DateTime();
+                    $validto->setTimestamp($res['validTo_time_t']);
+                    $cfingerprint = generateFingerprint($ncert,'sha1');
+
+                    $result[] = array('msg' => 'Certificate (sha1: '.$cfingerprint.') expired on: ' . $validto->format('Y-m-d H:i:s') , 'level' => 'warning');
                 }
             }
             else
@@ -327,6 +333,13 @@ class Providerdetails {
             $result[] = array('msg' => 'No alerts', 'level' => 'info');
         }
 
+        if(!empty($msgprefix))
+        {
+            foreach($result as $k=>$v)
+            {
+                $result[''.$k.'']['msg'] = '('.$msgprefix.') '.$v['msg'];
+            }
+        }
         return $result;
     }
 

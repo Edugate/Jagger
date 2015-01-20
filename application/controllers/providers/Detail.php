@@ -113,6 +113,7 @@ class Detail extends MY_Controller {
 
         $providerid = $id;
 
+
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => '' . $providerid . ''));
         if (empty($provider))
         {
@@ -128,8 +129,10 @@ class Detail extends MY_Controller {
             echo 'denied';
             return;
         }
-        $this->load->library('providerdetails');
 
+
+
+        $this->load->library('providerdetails');
         $keyPrefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
         $cacheId = 'mstatus_' . trim($id);
