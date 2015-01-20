@@ -25,7 +25,7 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
     echo '</div>';
 }
 
-echo '<div data-jagger-getmoreajax= "'.base_url().'providers/detail/status/'.$entid.'" data-jagger-response-msg="prdetails"></div>';
+echo '<div data-jagger-getmoreajax= "'.base_url().'providers/detail/status/'.$entid.'" data-jagger-response-msg="prdetails" data-jagger-refreshurl="'.base_url().'providers/detail/status/'.$entid.'/1"></div>';
 
 echo '<div id="prdetails" data-alert class="alert-box info" style="display: none"></div>';
 ?>
