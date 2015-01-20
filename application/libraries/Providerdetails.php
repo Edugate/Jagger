@@ -176,21 +176,29 @@ class Providerdetails {
                     }
                     else
                     {
-                        $result[] = array('msg'=>'Could not compute keysize','level'=>'warning');
-                      
+                        $result[] = array('msg' => 'Could not compute keysize', 'level' => 'warning');
+                        continue;
                     }
                 }
-           
+
                 if ($minkeysize > $keysize)
                 {
-                   
-                     $result[] = array('msg'=>'The keysize of one of the certificates is less than '.$minkeysize,'level'=>'warning');
-                   
+
+                    $result[] = array('msg' => 'The keysize of one of the certificates is less than ' . $minkeysize, 'level' => 'warning');
+                    continue;
+                }
+
+                if (isset($res['validTo_time_t']))
+                {
+
+                    $validto = date('Y-m-d H:i:s', $res['validTo_time_t']);
+                   // $result[] = array('msg' => 'Valid to: ' . $validto, 'level' => 'info');
                 }
             }
             else
             {
                 $result[] = array('msg' => 'One of certs is not valid', 'level' => 'warning');
+                continue;
             }
         }
 
