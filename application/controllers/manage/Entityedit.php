@@ -696,12 +696,14 @@ class Entityedit extends MY_Controller {
                     if ($updateresult)
                     {
                         $cacheId = 'mcircle_' . $ent->getId();
+                        $cacheId2 = 'mstatus_'.$ent->getId();
                         $this->em->persist($ent);
                         $this->em->flush();
                         $this->discardDraft($id);
                         $keyPrefix = getCachePrefix();
                         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
                         $this->cache->delete($cacheId);
+                        $this->cache->delete($cacheId2);
                         $showsuccess = TRUE;
                     }
                 }

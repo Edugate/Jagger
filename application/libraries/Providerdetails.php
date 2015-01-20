@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('Ni direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('Ni direct script access allowed');
 
 /**
  * JAGGER
@@ -18,8 +19,7 @@ if (!defined('BASEPATH')) exit('Ni direct script access allowed');
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Providerdetails
-{
+class Providerdetails {
 
     protected $CI, $em;
 
@@ -28,9 +28,6 @@ class Providerdetails
         $this->CI = &get_instance();
         $this->em = $this->CI->doctrine->em;
     }
-    
-    
-    
 
     private function _genCertView($cert)
     {
@@ -129,24 +126,47 @@ class Providerdetails
         }
         return $entStatus;
     }
-    
+
     public function generateAlertsDetails(\models\Provider $provider)
     {
         $result = array();
-        
+
         $serviceLocation = $provider->getServiceLocations();
+
+        $srvsTcpChecked = array();
         foreach ($serviceLocation as $s)
         {
             $surl = $s->getUrl();
-           
             $parsedUrl = parse_url($surl);
+            $urlPort = null;
+            $isHostOK = true;
+            $hostsByIP = array();
+            if (array_key_exists('port', $parsedUrl) && !empty($parsedUrl['port']))
+            {
+                $urlPort = $parsedUrl['port'];
+            }
+            elseif (array_key_exists('scheme', $parsedUrl))
+            {
+                if ($parsedUrl['scheme'] === 'http')
+                {
+                    $urlPort = 80;
+                }
+                elseif ($parsedUrl['scheme'] === 'https')
+                {
+                    $urlPort = 443;
+                }
+                else
+                {
+                    $result[] = array('msg' => 'Incorrect protocol in service url :' . htmlspecialchars($surl), 'level' => 'error');
+                }
+            }
             if (array_key_exists('host', $parsedUrl))
             {
                 $srvHost = $parsedUrl['host'];
                 if (!empty($srvHost) && filter_var($srvHost, FILTER_VALIDATE_IP))
                 {
-                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' -  contains IP address','level'=>'warning');
-                   
+                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' -  contains IP address', 'level' => 'warning');
+                    $isHostOK = false;
                 }
                 else
                 {
@@ -157,27 +177,87 @@ class Providerdetails
                         {
                             if (array_key_exists('ip', $r))
                             {
+
                                 if (!(filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) && filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE)))
                                 {
-                                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  result IP: ' . $r['ip'] . ' which is in private or reserved pool','level'=>'warning');
+                                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  result IP: ' . $r['ip'] . ' which is in private or reserved pool', 'level' => 'warning');
+                                    $isHostOK = false;
+                                }
+                                else
+                                {
+                                    $hostsByIP['ipv4'][] = $r['ip'];
                                 }
                             }
                             if (array_key_exists('ipv6', $r))
                             {
                                 if (!filter_var($r['ipv6'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE))
                                 {
-                                    $result[] =array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  results : ' . $r['ipv6'] . ' which is in private or reserved pool','level'=>'warning');
+                                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  results : ' . $r['ipv6'] . ' which is in private or reserved pool', 'level' => 'warning');
+                                    $isHostOK = false;
+                                }
+                                else
+                                {
+                                    $hostsByIP['ipv6'][] = $r['ipv6'];
                                 }
                             }
                         }
                     }
                     else
                     {
-                        $result[] =array('msg' =>  'Service URL: ' . htmlspecialchars($surl) . ' - Could not resolve a domain from service URL: ','level'=>'warning');
+                        $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Could not resolve a domain from service URL: ', 'level' => 'warning');
+                        $isHostOK = false;
                     }
                 }
-               
             }
+            else
+            {
+                $isHostOK = false;
+            }
+            if ($isHostOK === true && !empty($urlPort))
+            {
+                if (array_key_exists('ipv4', $hostsByIP))
+                {
+                    foreach ($hostsByIP['ipv4'] as $ip)
+                    {
+                       
+                        if (!in_array( '' . $ip . '_' . $urlPort,$srvsTcpChecked))
+                        {
+                            $fp = fsockopen($ip, $urlPort, $errno, $errstr, 2);
+                            if (!$fp)
+                            {
+                                $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
+                            }
+                            $srvsTcpChecked[] = '' . $ip . '_' . $urlPort;
+                        }
+                       
+                    }
+                }
+                if (array_key_exists('ipv6', $hostsByIP))
+                {
+
+                    
+                    foreach ($hostsByIP['ipv6'] as $ip)
+                    {
+                        if (!in_array( '' . $ip . '_' . $urlPort,$srvsTcpChecked))
+                        {
+                            $fp = fsockopen('tcp://[' . $ip . ']', $urlPort, $errno, $errstr, 2);
+                            if (!$fp)
+                            {
+                                $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
+                            }
+                            $srvsTcpChecked[] = '' . $ip . '_' . $urlPort;
+                        }
+                        
+                     
+                    }
+                }
+            }
+        }
+        
+        
+        if(count($result) == 0)
+        {
+            $result[] = array('msg'=>'No alerts','level'=>'info');
         }
 
         return $result;
@@ -401,7 +481,7 @@ class Providerdetails
         $regdate = $ent->getRegistrationDate();
         if (isset($regdate))
         {
-            $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="'.date('Y-m-d H:i', $regdate->format('U')).' UTC">'.date('Y-m-d H:i', $regdate->format('U') + j_auth::$timeOffset).'</span>';
+            $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="' . date('Y-m-d H:i', $regdate->format('U')) . ' UTC">' . date('Y-m-d H:i', $regdate->format('U') + j_auth::$timeOffset) . '</span>';
         }
         else
         {
@@ -817,7 +897,7 @@ class Providerdetails
                     {
                         $def = '<i>(' . lang('rr_default') . ')</i>';
                     }
-                    $ssovalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
+                    $ssovalues .= '<li data-jagger-checkurlalive="' . $s->getUrl() . '"><b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
                 }
                 $d[$i]['value'] = '<ul class="no-bullet">' . $ssovalues . '</ul>';
             }
@@ -1271,7 +1351,6 @@ class Providerdetails
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            
         }
         if ($sppart)
         {
@@ -1358,7 +1437,6 @@ class Providerdetails
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            
         }
 
         $subresult[4] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
@@ -1409,8 +1487,8 @@ class Providerdetails
             {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            
-            
+
+
             $subresult[5] = array('section' => 'uiihints', 'title' => 'UI Hints', 'data' => $d);
         }
         $d = array();

@@ -88,7 +88,7 @@ class Detail extends MY_Controller {
         }
     }
 
-    function status($id = null)
+    function status($id = null, $refresh = null)
     {
         $this->output->set_content_type('application/json');
         if (!$this->input->is_ajax_request())
@@ -129,7 +129,33 @@ class Detail extends MY_Controller {
             return;
         }
         $this->load->library('providerdetails');
-        $result = $this->providerdetails->generateAlertsDetails($provider);
+
+        $keyPrefix = getCachePrefix();
+        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
+        $cacheId = 'mstatus_' . trim($id);
+
+
+        if (!empty($refresh) && $refresh === '1')
+        {
+            $result = $this->providerdetails->generateAlertsDetails($provider);
+            $this->cache->save($cacheId, $result, 3600);
+        }
+        else
+        {
+            $resultCache = $this->cache->get($cacheId);
+            if (is_null($resultCache) || !is_array($resultCache))
+            {
+                log_message('debug',__METHOD__.' cache empty refreshing');
+                $result = $this->providerdetails->generateAlertsDetails($provider);
+                $this->cache->save($cacheId, $result, 3600);
+            }
+            else
+            {
+                $result = $resultCache;
+            }
+        }
+
+
 
 
 
