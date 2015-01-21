@@ -644,7 +644,7 @@ class J_queue
         $this->ci->table->add_row($cell);
         $cell = array(lang('requestor'), $queue->getCreator()->getUsername() . ' (' . $queue->getCreator()->getFullname() . ') : email: ' . $queue->getCreator()->getEmail());
         $this->ci->table->add_row($cell);
-        $cell = array(lang('rr_sourceip'),''.$q->getIP().'');
+        $cell = array(lang('rr_sourceip'),''.$queue->getIP().'');
         $this->ci->table->add_row($cell);
         $cell = array(lang('rr_federation'), $queue->getName());
         $this->ci->table->add_row($cell);
