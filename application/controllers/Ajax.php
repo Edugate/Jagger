@@ -48,15 +48,13 @@ class Ajax extends MY_Controller
 
         $p = new models\Providers();
         $providers = $p->getLocalIdsEntities();
-        $this->output->set_content_type('application/json');
         $result = array();
         foreach ($providers as $k)
         {
             $result[] = array('key' => $k['id'], 'value' => $k['entityid'], 'label' => $k['name']);
         }
-        $y = json_encode($result);
+        $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
-        echo $y;
     }
 
     public function checklogourl()
@@ -74,7 +72,7 @@ class Ajax extends MY_Controller
         if (!$isvalid)
         {
             $result['error'] = $v_errors;
-            echo json_encode($result);
+            $this->output->set_content_type('application/json')->set_output(json_encode($result));
             return;
         }
         $logourl = trim($this->input->post('logourl'));
@@ -158,8 +156,8 @@ class Ajax extends MY_Controller
         }
         $p = new models\Federations();
         $feds = $p->getAllIdNames();
-        $this->output->set_content_type('application/json');
-        echo json_encode($feds);
+        $this->output->set_content_type('application/json')->set_output(json_encode($feds));
+
     }
 
     public function changelanguage($language)
