@@ -769,11 +769,10 @@ var GINIT = {
                 var value = $('<ul/>');
                 $.ajax({
                     url: url,
-                    timeout: 2500,
+                    timeout: 3500,
                     cache: true,
-                    success: function (json) {
-                        $('#spinner').hide();
-                        var data = $.parseJSON(json);
+                    success: function (data) {
+                        $('#spinner').hide();                     
                         var stitle;
                         var nlist;
                         var div_data;

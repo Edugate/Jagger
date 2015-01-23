@@ -225,7 +225,7 @@ class Manage extends MY_Controller
         }
 
         $result = $this->getMembers($federation, $lang);
-        echo json_encode($result);
+        $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
     function showcontactlist($fed_name, $type = NULL)
