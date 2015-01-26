@@ -59,12 +59,12 @@ class J_auth {
         if ($u)
         {
 //            log_message('debug', '::::::::::::::::::Authn: user found: ' . $identity);
-//            $salt = $u->getSalt();
+            $salt = $u->getSalt();
 //            log_message('debug', '::::::::::::::::::Authn: salt: ' . $salt);
-//            $encrypted_password = sha1($password . $salt);
+            $encrypted_password = sha1($password . $salt);
 //            log_message('debug', '::::::::::::::::::Authn: enc_fill_pass: ' . $encrypted_password);
-//            $pass = $u->getPassword();
-//            log_message('debug', '::::::::::::::::::Authn: enc_db_pass: ' . $pass);
+            $pass = $u->getPassword();
+            //log_message('debug', '::::::::::::::::::Authn: enc_db_pass: ' . $pass);
             if (strcmp($pass, $encrypted_password) == 0)
             {
                 $twofactorauthn = $this->ci->config->item('twofactorauthn');

@@ -160,7 +160,7 @@ var GINIT = {
                             loginform.foundation('reveal', 'open');
                             return false;
                         }
-                        if(data.twofactor == 1 && data.secondfactor !== null)
+                        if(data.twofactor === 1 && data.secondfactor !== null)
                         {
                             usernamerow.hide();
                             passwordrow.hide();
