@@ -56,6 +56,8 @@ if ($fedenabled)
     echo '<div class="row">';
     echo '<div class="small-12 large-9 end columns large-push-3 small-text-center large-text-left"><button type="submit" class="button small">' . lang('loginsubmit') . '</button></div>';
     echo '</div>';
+    echo '<div class="row secondfactorrow hidden">';
+    echo '</div>';
     echo form_close();
     echo '</div>';
 

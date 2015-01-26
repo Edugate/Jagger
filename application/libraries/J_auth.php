@@ -68,15 +68,26 @@ class J_auth {
             if (strcmp($pass, $encrypted_password) == 0)
             {
                 $twofactorauthn = $this->ci->config->item('twofactorauthn');
+                
                 if (!empty($twofactorauthn) && $twofactorauthn === TRUE)
                 {
-                    log_message('debug','GLOS sdfsd');
+                    $secondfactor = $this->ci->config->item('secondfactor');
+                    if($secondfactor === 'duo')
+                    {
+                        $sig_request = Duo::signRequest($this->ci->config->item('duo-ikey'),$this->ci->config->item('duo-skey'), $this->ci->config->item('duo-akey'), $u->getUsername());
+                        log_message('debug', 'GLOS: '.$sig_request);
+                    }
+                    else
+                    {
+                        log_message('debug','GLOS :: not duo');    
+                    }
+                    
                     $this->ci->session->set_userdata(
                             array('partiallogged' => 1,
                                 'logged' => 0,
                                 'username' => '' . $u->getUsername(). '',
                                 'user_id' => '' . $u->getId() . '',
-                                'secondfactor'=>$this->ci->config->item('secondfactor'))
+                                'secondfactor'=>$secondfactor)
                     );
                     return TRUE;
                 }

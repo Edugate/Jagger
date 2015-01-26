@@ -144,6 +144,7 @@ var GINIT = {
             var loginform = $("#loginform");
             var usernamerow = $(loginform).find("div.usernamerow").first();
             var passwordrow = $(loginform).find("div.passwordrow").first();
+            var secondfactorrow = $(loginform).find("div.secondfactorrow").first();
             $.ajax({
                 type: "GET",
                 url: url,
