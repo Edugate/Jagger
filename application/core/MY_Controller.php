@@ -1,7 +1,11 @@
 <?php
-
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
+
+
+
+
+
 /**
  * ResourceRegistry3
  * 
@@ -18,10 +22,40 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
+
+
+/**
+ * @property CI_Config $config
+ * @property CI_DB_active_record $db
+ * @property CI_DB_forge $dbforge
+ * @property CI_Email $email
+ * @property CI_Encrypt $encrypt
+ * @property CI_Form_validation $form_validation
+ * @property CI_FTP $ftp
+ * @property CI_Input $input
+ * @property CI_Loader $load
+ * @property CI_Parser $parser
+ * @property CI_Session $session
+ * @property CI_Table $table
+ * @property CI_URI $uri
+ * @property CI_Output $output
+ *
+ * @property Zacl $zacl
+ * @property J_cache $j_cache
+ * @property Show_element $show_element
+ * @property J_auth $j_auth
+ * @property Doctrine $doctrine
+ */
+
 class MY_Controller extends CI_Controller {
 
-    private $current_user;
-
+    public static $langselect = array();
+    public static $menuactive;
+    protected static $current_language = 'en';
+    private static $langs;
+    public $title;
+    public $globalerrors = array();
+    public $globalnotices = array();
     /**
      * Doctrine entity manager
      *
@@ -29,14 +63,8 @@ class MY_Controller extends CI_Controller {
      */
     protected $em;
     protected $authenticated;
-    protected static $current_language = 'en';
-    public $title;
     protected $inqueue;
-    public $globalerrors = array();
-    public $globalnotices = array();
-    public static $langselect = array();
-    public static $menuactive;
-    private static $langs;
+    private $current_user;
 
     public function __construct()
     {
@@ -45,6 +73,8 @@ class MY_Controller extends CI_Controller {
         $this->output->set_header("Pragma: no-cache"); 
         $this->output->set_header("X-Frame-Options: SAMEORIGIN"); 
         $this->em = $this->doctrine->em;
+
+
         $this->title = "";
         $this->lang->load('rr_lang', 'english');
         
