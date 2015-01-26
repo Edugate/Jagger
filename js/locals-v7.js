@@ -139,7 +139,53 @@ var GINIT = {
         }
 
         $("#loginbtn").on('click', function (event) {
-            $("#loginresponse").hide();
+            event.preventDefault();
+            var url = $(this).attr('href');
+            var loginform = $("#loginform");
+            var usernamerow = $(loginform).find("div.usernamerow").first();
+            var passwordrow = $(loginform).find("div.passwordrow").first();
+            $.ajax({
+                type: "GET",
+                url: url,
+                cache: false,
+                success: function (data) {
+                    if (data.logged !== 1)
+                    {
+                        if (data.partiallogged === 0)
+                        {
+                            usernamerow.show();
+                            passwordrow.show();
+                            $("#loginresponse").hide();
+                            loginform.foundation('reveal', 'open');
+                            return false;
+                        }
+                        if(data.twofactor == 1 && data.secondfactor !== null)
+                        {
+                            usernamerow.hide();
+                            passwordrow.hide();
+                             $("#loginresponse").hide();
+                            loginform.foundation('reveal', 'open');
+                            return false;
+                        }
+                    }
+                    else
+                    {                    
+                        var baseurl = $("[name='baseurl']").val();
+                        if (baseurl !== undefined) {
+                            window.location.href=baseurl;
+                        }
+                    }
+                    usernamerow.show();
+                    passwordrow.show();
+                    $("#loginresponse").hide();
+                    loginform.foundation('reveal', 'open');
+                }
+            })
+
+
+
+
+            return false;
         });
         $("a.bookentity").click(function () {
             var link = $(this), url = link.attr("href");
@@ -747,7 +793,7 @@ var GINIT = {
                     timeout: 3500,
                     cache: true,
                     success: function (data) {
-                        $('#spinner').hide();                     
+                        $('#spinner').hide();
                         var stitle;
                         var nlist;
                         var div_data;
@@ -934,8 +980,8 @@ $(document).ready(function () {
             var possible = "0123456789";
             for (var i = 0; i < 5; i++) {
 
-            rname += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
+                rname += possible.charAt(Math.floor(Math.random() * possible.length));
+            }
 
             var rmbtn = $("button#helperbutttonrm").html();
             var inputname = $(this).attr('value');
@@ -1251,7 +1297,7 @@ $(document).ready(function () {
         });
 
         $('button.getlogo').click(function () {
-            var alertlogoretrieve, imgdiv ;
+            var alertlogoretrieve, imgdiv;
             var btnname = $(this).attr('name');
             var logourl, logoreview;
             var link = $(this).attr("value");
@@ -2064,7 +2110,7 @@ $(document).on('click', 'a.refreshurl', function (e) {
             $.each(data, function (i, v) {
                 result.append('<div>' + v.msg + '</div>');
             });
-           
+
             targetelement.empty().append(refreshbtn).append(result).show();
 
 
@@ -2219,10 +2265,10 @@ $(document).ready(function () {
         baseurl = '';
     }
 // Preload Images
-   var img1 = new Image(16, 16);
+    var img1 = new Image(16, 16);
     img1.src = baseurl + 'images/spinner.gif';
 
-   var img2 = new Image(220, 19);
+    var img2 = new Image(220, 19);
     img2.src = baseurl + 'images/ajax-loader.gif';
 
     if ($("#eds2").is('*')) {
@@ -2724,8 +2770,8 @@ $("button#parsemetadataidp").click(function () {
 
     xml.find("md\\:IDPSSODescriptor,IDPSSODescriptor").each(function () {
         if ($(this).attr("protocolSupportEnumeration")) {
-          var  $entity = $(this).parent();
-          var  $idpssodescriptor = $(this);
+            var $entity = $(this).parent();
+            var $idpssodescriptor = $(this);
             return false;
         }
         return true;
@@ -2738,7 +2784,7 @@ $("button#parsemetadataidp").click(function () {
     var $orgname = null;
     $entity.find("md\\:OrganizationName,OrganizationName").each(function () {
         $orgname = $(this);
-       var $langname = $orgname.attr("xml:lang");
+        var $langname = $orgname.attr("xml:lang");
         if ($langname === "en") {
             return false;
         }
@@ -2769,14 +2815,14 @@ $("button#parsemetadataidp").click(function () {
         }
     });
     if ($contact !== null) {
-       var $contactname = '';
+        var $contactname = '';
         $contact.find("md\\:GivenName,GivenName").each(function () {
             $contactname = $(this).text();
         });
         $contact.find("md\\:SurName,SurName").each(function () {
             $contactname = $contactname + ' ' + $(this).text();
         });
-       var $contactemail = '';
+        var $contactemail = '';
         $contact.find("md\\:EmailAddress,EmailAddress").each(function () {
             $contactemail = $(this).text();
         });
@@ -3192,9 +3238,8 @@ $("form#notificationupdateform").submit(function (e) {
 
 });
 
-
-$("div#loginform form").submit(function () {
-    //e.preventDefault;
+$(document).on('submit', 'div#loginform form', function (e) {
+    e.preventDefault;
     var link = $("div#loginform form").attr('action');
     var str = $(this).serializeArray();
     var browsertime = new Date();
