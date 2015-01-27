@@ -57,7 +57,9 @@ if ($fedenabled)
     echo '<div class="small-12 large-9 end columns large-push-3 small-text-center large-text-left"><button type="submit" class="button small">' . lang('loginsubmit') . '</button></div>';
     echo '</div>';
     echo '<div class="row secondfactorrow hidden">';
+    
     echo '</div>';
+    echo '';
     echo form_close();
     echo '</div>';
 
@@ -67,7 +69,7 @@ if ($fedenabled)
     echo '<br /><br />';
     echo '<div class="small-12 columns end text-center"><a href="' . $shib_url . '" id="fedlogin" class="button small">' . lang('loginsubmit') . '</a></div>';
     echo '</div>';
-    echo '<a class="close-reveal-modal">&#215;</a>';
+    echo '<a id="resetloginform" class="close-reveal-modal">&#215;</a>';
     echo '</div>';
 }
 else
@@ -92,7 +94,8 @@ else
     echo '</div>';
     echo form_close();
     echo '</div>';
-    echo '<a class="close-reveal-modal">&#215;</a>';
+    echo '<a  id="resetloginform" class="close-reveal-modal">&#215;</a>';
     echo '<div class="small-12 column"><iframe id="duo_iframe" width="620" height="330" frameborder="0"></iframe></div>';
     echo '</div>';
 }
+

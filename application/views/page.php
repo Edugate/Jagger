@@ -281,7 +281,7 @@ $foundation = $base_url . 'foundation/';
             echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
         }
         ?>
-       
+
         <?php
         if (!empty($load_matrix_js))
         {
@@ -312,13 +312,15 @@ $foundation = $base_url . 'foundation/';
             {
                 $this->load->view('loginform_view');
             }
+            $t = 'id="duo_form"';
+            echo form_open(base_url() . 'authenticate/dologin', $t);
+            echo form_close();
         }
-?>
-       <script>
+        ?>
+        <script>
             $(document).foundation();
         </script>
         <?php
-
         // load local final js
         echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v7.js"></script>' . PHP_EOL;
 

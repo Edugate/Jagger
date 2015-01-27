@@ -319,6 +319,3 @@ var Duo = {
     }
 };
 
-D(document).ready(function() {
-    Duo.ready();
-});

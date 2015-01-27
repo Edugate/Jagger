@@ -1,6 +1,7 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  * 
@@ -17,8 +18,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Users extends MY_Controller
-{
+class Users extends MY_Controller {
 
     function __construct()
     {
@@ -161,6 +161,42 @@ class Users extends MY_Controller
         return;
     }
 
+    public function updateSecondFactor($encodeduser)
+    {
+        if (!$this->ajaxplusadmin())
+        {
+            set_status_header(403);
+            echo 'denied';
+            return;
+        }
+        $username = base64url_decode(trim($encodeduser));
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        if (empty($user))
+        {
+            set_status_header(404);
+            echo 'user not found';
+            return;
+        }
+        $secondfactor = $this->input->post('secondfactor');
+        $allowed2ef = $this->config->item('2fengines');
+        if (empty($allowed2ef) || !is_array($allowed2ef))
+        {
+            $allowed2ef = array();
+        }
+        if (in_array($secondfactor, $allowed2ef))
+        {
+            $user->setSecondFactor($secondfactor);
+        }
+        else
+        {
+            $user->setSecondFactor(null);
+        }
+        $this->em->persist($user);
+        $this->em->flush();
+        $result = array('secondfactor' => $secondfactor);
+        $this->output->set_content_type('application/json')->set_output(json_encode($result));
+    }
+
     public function updateRole($encodeduser)
     {
         if (!$this->ajaxplusadmin())
@@ -222,7 +258,7 @@ class Users extends MY_Controller
         }
         if (!$this->addSubmitValidate())
         {
-            
+
             $data['titlepage'] = lang('userregisterform');
             $data['content_view'] = 'manage/new_user_view';
             $this->load->view('page', $data);
@@ -290,11 +326,10 @@ class Users extends MY_Controller
                 $data['content_view'] = 'manage/adduser_success_view';
                 $this->load->view('page', $data);
             }
-            catch(Exception $e)
+            catch (Exception $e)
             {
-                log_message('error',__METHOD__.' '.$e);
-                show_error('Error occurred',500);
-
+                log_message('error', __METHOD__ . ' ' . $e);
+                show_error('Error occurred', 500);
             }
         }
     }
@@ -376,6 +411,9 @@ class Users extends MY_Controller
         $data['caption'] = $user->getUsername();
         $local_access = $user->getLocal();
         $federated_access = $user->getFederated();
+
+        $systemTwoFactorAuthn = $this->config->item('twofactorauthn');
+        $secondFactor = $user->getSecondFactor();
         $i = 0;
         $det = array();
         $det[$i++] = array('key' => lang('rr_username'), 'val' => $user->getUsername());
@@ -404,8 +442,27 @@ class Users extends MY_Controller
         {
             $manageBtn = '';
         }
+        $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_onlyforlocalauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
         $det[$i++] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
         $det[$i++] = array('key' => lang('rrnotifications'), 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encoded_username . '', lang('rrmynotifications')));
+        $bb = $this->manage2fBtn($encoded_username);
+        if ($secondFactor)
+        {
+            $secondFactortext = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_onlyforlocalauthn') . '">' . $secondFactor . '</span>';
+            if ($systemTwoFactorAuthn)
+            {
+                $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '' . $bb);
+            }
+            else
+            {
+                $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . ' <span class="label alert">Disabled</span>' . $bb);
+            }
+        }
+        elseif ($systemTwoFactorAuthn)
+        {
+            $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . lang('rr_notset') . '' . $bb);
+        }
+
         $det[$i++] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
         $bookmarks = '';
         $userpref = $user->getUserpref();
@@ -502,6 +559,42 @@ class Users extends MY_Controller
         $data['titlepage'] = lang('rr_detforuser') . ': ' . $data['caption'];
         $data['content_view'] = 'manage/userdetail_view';
         $this->load->view('page', $data);
+    }
+
+    private function manage2fBtn($encodeduser)
+    {
+        $formTarget = base_url() . 'manage/users/updatesecondfactor/' . $encodeduser;
+        $allowed2f = $this->config->item('2fengines');
+        if (empty($allowed2f) || !is_array($allowed2f))
+        {
+            $allowed2f = array();
+        }
+        $r = ' <button data-reveal-id="m2f" class="tiny" name="m2fbtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '"> ' . lang('btnupdate') . '</button>';
+        $r .= '<div id="m2f" class="reveal-modal tiny" data-reveal>';
+        $r .= '<h3>Update second factor authentication</h3>';
+        $r .= form_open($formTarget);
+        if (count($allowed2f) > 0)
+        {
+           $allowed2f[] = 'none';
+           
+           $dropdown = array();
+           foreach($allowed2f as $v)
+           {
+               $dropdown[''.$v.''] = $v;
+           }
+           
+           
+            $r .='<div class="small-12 column"><div class="small-6 column"></div><div class="small-6 column">'.  form_dropdown('secondfactor',$dropdown).'</div></div>';
+            foreach ($allowed2f as $v)
+            {
+                // $r .='<div class="small-12 column"><div class="small-6 column">' . $v->getName() . '</div><div class="small-6 column"><input type="checkbox" name="checkrole[]" value="' . $v->getName() . '"  /></div></div>';
+            }
+            $r .= '<button type="button" name="updaterole" class="button small">' . lang('btnupdate') . '</button>';
+        }
+        $r .= form_close();
+        $r .= '<a class="close-reveal-modal">&#215;</a>';
+        $r .= '</div>';
+        return $r;
     }
 
     private function manageRoleBtn($encodeuser)
@@ -714,7 +807,7 @@ class Users extends MY_Controller
             show_error('User not found', 404);
         }
 
-        
+
         $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
         $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
         if (!$write_access && !$manage_access)

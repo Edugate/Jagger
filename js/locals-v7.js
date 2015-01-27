@@ -160,20 +160,20 @@ var GINIT = {
                             loginform.foundation('reveal', 'open');
                             return false;
                         }
-                        if(data.twofactor === 1 && data.secondfactor !== null)
+                        if (data.twofactor === 1 && data.secondfactor !== null)
                         {
                             usernamerow.hide();
                             passwordrow.hide();
-                             $("#loginresponse").hide();
+                            $("#loginresponse").hide();
                             loginform.foundation('reveal', 'open');
                             return false;
                         }
                     }
                     else
-                    {                    
+                    {
                         var baseurl = $("[name='baseurl']").val();
                         if (baseurl !== undefined) {
-                            window.location.href=baseurl;
+                            window.location.href = baseurl;
                         }
                     }
                     usernamerow.show();
@@ -3241,6 +3241,8 @@ $("form#notificationupdateform").submit(function (e) {
 
 $(document).on('submit', 'div#loginform form', function (e) {
     e.preventDefault;
+    var loginform = $("#loginform");
+    var secondfactorrow = $(loginform).find("div.secondfactorrow").first();
     var link = $("div#loginform form").attr('action');
     var str = $(this).serializeArray();
     var browsertime = new Date();
@@ -3250,7 +3252,7 @@ $(document).on('submit', 'div#loginform form', function (e) {
     $.ajax({
         type: "POST",
         cache: false,
-        timeout: 2500,
+        timeout: 3500,
         url: link, // Send the login info to this page
         data: str,
         beforeSend: function () {
@@ -3258,9 +3260,19 @@ $(document).on('submit', 'div#loginform form', function (e) {
 
         },
         success: function (data) {
-            if (data === 'OK') {
-                $('#loginform').foundation('reveal', 'close');
-                setTimeout('go_to_private_page()', 1000);
+            if (data)
+            {
+                if (data.success === true && data.result === 'OK') {
+                    $('#loginform').foundation('reveal', 'close');
+                    setTimeout('go_to_private_page()', 1000);
+                }
+                else if (data.result === 'secondfactor')
+                {
+                    $('#password').val('');
+                    secondfactorrow.empty();
+                    secondfactorrow.append(data.html).show();
+
+                }
             }
             else {
                 $("#loginresponse").html(data).show();
@@ -3493,4 +3505,58 @@ $('input[type="radio"].withuncheck').click(function () {
 });
 
 
+$(document).on('click','#resetloginform',function(e){
+    e.preventDefault();
+    var baseurl = $("[name='baseurl']").val();
+    $.ajax({
+        type: 'GET',
+        url: baseurl+'authenticate/resetloginform',
+        cache: false,
+        success: function(data)
+        {
+            $(".secondfactorrow").empty();
+            $("#loginform").foundation('reveal','close');
+            return false;
+        }
+    })
+})
+$(document).on('submit', "#duo_form", function (e) {
+    e.preventDefault();
+    var link = $(this).attr('action');
+    $.ajax({
+        type: 'POST',
+        url: link,
+        cache: false,
+        data: $(this).serializeArray(),
+        beforeSend: function () {
+            $("#loginresponse").html("").hide();
 
+        },
+        success: function (data) {
+            if (data)
+            {
+                if (data.success === true && data.result === 'OK') {
+                    $('#loginform').foundation('reveal', 'close');
+                    setTimeout('go_to_private_page()', 1000);
+                }
+                else if (data.result === 'secondfactor')
+                {
+                    //secondfactorrow.empty();
+
+
+                    secondfactorrow.append(data.html).show();
+
+                }
+            }
+            else {
+                $("#loginresponse").html(data).show();
+
+            }
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            $("#loginresponse").html(jqXHR.responseText).show();
+
+        }
+    });
+});

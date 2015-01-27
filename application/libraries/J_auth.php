@@ -48,7 +48,7 @@ class J_auth {
          */
         try
         {
-            $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $identity));
+            $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $identity, 'local' => true));
         }
         catch (PDOException $e)
         {
@@ -68,26 +68,16 @@ class J_auth {
             if (strcmp($pass, $encrypted_password) == 0)
             {
                 $twofactorauthn = $this->ci->config->item('twofactorauthn');
-                
-                if (!empty($twofactorauthn) && $twofactorauthn === TRUE)
+                $secondfactor = $u->getSecondFactor();
+                if (!empty($twofactorauthn) && $twofactorauthn === TRUE && !empty($secondfactor) && $secondfactor === 'duo')
                 {
-                    $secondfactor = $this->ci->config->item('secondfactor');
-                    if($secondfactor === 'duo')
-                    {
-                        $sig_request = Duo::signRequest($this->ci->config->item('duo-ikey'),$this->ci->config->item('duo-skey'), $this->ci->config->item('duo-akey'), $u->getUsername());
-                        log_message('debug', 'GLOS: '.$sig_request);
-                    }
-                    else
-                    {
-                        log_message('debug','GLOS :: not duo');    
-                    }
-                    
+                    $sig_request = Duo::signRequest($this->ci->config->item('duo-ikey'), $this->ci->config->item('duo-skey'), $this->ci->config->item('duo-akey'), $u->getUsername());
                     $this->ci->session->set_userdata(
                             array('partiallogged' => 1,
                                 'logged' => 0,
-                                'username' => '' . $u->getUsername(). '',
+                                'username' => '' . $u->getUsername() . '',
                                 'user_id' => '' . $u->getId() . '',
-                                'secondfactor'=>$secondfactor)
+                                'secondfactor' => $secondfactor)
                     );
                     return TRUE;
                 }
@@ -165,7 +155,7 @@ class J_auth {
 
     public function current_user()
     {
-        if (!empty($_SESSION['logged']) && isset($_SESSION['username']) &&  isset($_SESSION['user_id']))
+        if (!empty($_SESSION['logged']) && isset($_SESSION['username']) && isset($_SESSION['user_id']))
         {
             return $_SESSION['username'];
         }
