@@ -62,24 +62,20 @@ var GINIT = {
             var targetresponseid = $(this).attr('data-jagger-response-msg');
             var refreshbtn = $(this).attr('data-jagger-refreshurl');
             var refreshbutton = '';
-            if (targetresponseid === undefined || targetresponseid === null)
-            {
+            if (targetresponseid === undefined || targetresponseid === null) {
                 console.log('attribute data-jagger-response-msg not found in element with data-jagger-getmoreajax="' + link + '" - exiting');
                 return false;
             }
-            else
-            {
+            else {
                 console.log('attribute data-jagger-response-msg="' + targetresponseid + '" in element data-jagger-getmoreajax="' + link + '"');
             }
             var targetelement = $("div#" + targetresponseid);
-            if (targetelement === undefined || targetelement === null || $(targetelement).length === 0)
-            {
+            if (targetelement === undefined || targetelement === null || $(targetelement).length === 0) {
                 console.log('div with id="' + targetresponseid + '" not found');
 
                 return false;
             }
-            else
-            {
+            else {
                 console.log('div with id="' + targetresponseid + '" found');
 
             }
@@ -90,14 +86,12 @@ var GINIT = {
                 url: link,
                 cache: true,
                 success: function (data) {
-                    if (!data)
-                    {
+                    if (!data) {
                         console.log('no json got from ' + link);
                         return false;
                     }
                     var countresult = data.length;
-                    if (countresult < 1)
-                    {
+                    if (countresult < 1) {
                         return false;
                     }
                     var result = $('<div/>');
@@ -107,8 +101,7 @@ var GINIT = {
                         div_data = '<div>' + v.msg + '</div>';
                         result.append(div_data);
                     });
-                    if (refreshbtn !== null)
-                    {
+                    if (refreshbtn !== null) {
                         refreshbutton = '<a class="refreshurl right" href="#"  data-jagger-getmoreajaxonclick= "' + refreshbtn + '" data-jagger-response-msg="prdetails"><i class="fi-refresh" ></i></a>';
                     }
                     targetelement.empty().append(refreshbutton).append(result).show();
@@ -138,10 +131,12 @@ var GINIT = {
             baseurl = '';
         }
 
+
         $("#loginbtn").on('click', function (event) {
             event.preventDefault();
             var url = $(this).attr('href');
             var loginform = $("#loginform");
+            var submitbutton = $(loginform).find(":submit").first();
             var usernamerow = $(loginform).find("div.usernamerow").first();
             var passwordrow = $(loginform).find("div.passwordrow").first();
             var secondfactorrow = $(loginform).find("div.secondfactorrow").first();
@@ -150,27 +145,30 @@ var GINIT = {
                 url: url,
                 cache: false,
                 success: function (data) {
-                    if (data.logged !== 1)
-                    {
-                        if (data.partiallogged === 0)
-                        {
+                    if (data.logged !== 1) {
+                        if (data.partiallogged === 0) {
+                            submitbutton.prop('disabled',false);
                             usernamerow.show();
                             passwordrow.show();
                             $("#loginresponse").hide();
                             loginform.foundation('reveal', 'open');
                             return false;
                         }
-                        if (data.twofactor === 1 && data.secondfactor !== null)
-                        {
-                            usernamerow.hide();
-                            passwordrow.hide();
+                        if (data.twofactor === 1 && data.secondfactor !== null) {
+                            submitbutton.prop('disabled', true);
+                            usernamerow.show();
+                            $("#password").val(null);
+                            passwordrow.show();
                             $("#loginresponse").hide();
+                            if(data.html)
+                            {
+                                secondfactorrow.html(data.html).show();
+                            }
                             loginform.foundation('reveal', 'open');
                             return false;
                         }
                     }
-                    else
-                    {
+                    else {
                         var baseurl = $("[name='baseurl']").val();
                         if (baseurl !== undefined) {
                             window.location.href = baseurl;
@@ -182,8 +180,6 @@ var GINIT = {
                     loginform.foundation('reveal', 'open');
                 }
             })
-
-
 
 
             return false;
@@ -240,12 +236,10 @@ var GINIT = {
             e.preventDefault();
             var targetname1 = $(this).attr('data-jagger-textarea');
             var targetname2 = $(this).attr('data-jagger-input');
-            if (targetname1 !== undefined)
-            {
+            if (targetname1 !== undefined) {
                 $("textarea[name='" + targetname1 + "']").val('');
             }
-            if (targetname2 !== undefined)
-            {
+            if (targetname2 !== undefined) {
                 $("input[name='" + targetname2 + "']").val('');
             }
             return false;
@@ -259,30 +253,28 @@ var GINIT = {
             var url = form.attr('action');
 
             $.ajax({
-                type: "POST",
-                url: url,
-                data: form.serializeArray(),
-                beforeSend: function () {
-                    targetelement.empty();
-                },
-                success: function (data) {
-                    if (data)
-                    {
-                        targetelement.append(data);
-                    }
-                    else
-                    {
-                        targetelement.append('no result');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    var alertmsg = '<div>' + error + '</div>';
+                    type: "POST",
+                    url: url,
+                    data: form.serializeArray(),
+                    beforeSend: function () {
+                        targetelement.empty();
+                    },
+                    success: function (data) {
+                        if (data) {
+                            targetelement.append(data);
+                        }
+                        else {
+                            targetelement.append('no result');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var alertmsg = '<div>' + error + '</div>';
 
-                    targetelement.append(alertmsg);
-                    return false;
+                        targetelement.append(alertmsg);
+                        return false;
+                    }
+
                 }
-
-            }
             );
 
             return false;
@@ -413,7 +405,7 @@ var GINIT = {
                     $('#spinner').hide();
                     result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%", ],
+                        position: ["20%",],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -429,7 +421,7 @@ var GINIT = {
                     result.css('color', 'red');
                     result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%", ],
+                        position: ["20%",],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -469,7 +461,7 @@ var GINIT = {
                     result.html(data1);
                     $("div.uploadresult").append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%", ],
+                        position: ["20%",],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -524,7 +516,7 @@ var GINIT = {
                             $("form#availablelogos input[name='filename']").unbind("click");
                             result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                                 closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                                position: ["20%", ],
+                                position: ["20%",],
                                 overlayId: 'simpledialog-overlay',
                                 minHeight: '200px',
                                 containerId: 'simpledialog-container',
@@ -541,7 +533,7 @@ var GINIT = {
                     $('#spinner').hide();
                     result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%", ],
+                        position: ["20%",],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -852,9 +844,9 @@ var GINIT = {
                         alert('problem with loading data');
                     }
                 }).done(function () {
-                    var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">' + value.html() + '</ul></td></tr>';
-                    $(nextrow).insertAfter(row);
-                }
+                        var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">' + value.html() + '</ul></td></tr>';
+                        $(nextrow).insertAfter(row);
+                    }
                 );
             }
 
@@ -1419,10 +1411,10 @@ $(document).ready(function () {
                 $(this).val("");
             });
             select.find("option[value=" + bval + "]").each(
-                    function () {
-                        $(this).toggleOption(true);
-                        $(this).attr('disabled', false);
-                    }
+                function () {
+                    $(this).toggleOption(true);
+                    $(this).attr('disabled', false);
+                }
             );
             lrow.remove();
 
@@ -1761,9 +1753,6 @@ $(function () {
     }, 172000);
 
 
-
-
-
     $.ajaxSetup({
         cache: false
     });
@@ -2027,7 +2016,7 @@ $(function () {
 
     /*** REMOVE IF MOUSEOVER IS NOT REQUIRED ***/
 
-    //ADDS THE .OVER CLASS FROM THE STYLESHEET ON MOUSEOVER
+        //ADDS THE .OVER CLASS FROM THE STYLESHEET ON MOUSEOVER
 
     $('.accordionButton1').mouseover(function () {
         $(this).addClass('over');
@@ -2070,24 +2059,20 @@ $(document).on('click', 'a.refreshurl', function (e) {
     var link = $(this).attr('data-jagger-getmoreajaxonclick');
     var targetresponseid = $(this).attr('data-jagger-response-msg');
     var refreshbtn = $(this);
-    if (targetresponseid === undefined || targetresponseid === null)
-    {
+    if (targetresponseid === undefined || targetresponseid === null) {
         console.log('attribute data-jagger-response-msg not found in element with data-jagger-getmoreajax="' + link + '" - exiting');
         return false;
     }
-    else
-    {
+    else {
         console.log('attribute data-jagger-response-msg="' + targetresponseid + '" in element data-jagger-getmoreajax="' + link + '"');
     }
     var targetelement = $("div#" + targetresponseid);
-    if (targetelement === undefined || targetelement === null || $(targetelement).length === 0)
-    {
+    if (targetelement === undefined || targetelement === null || $(targetelement).length === 0) {
         console.log('div with id="' + targetresponseid + '" not found');
 
         return false;
     }
-    else
-    {
+    else {
         console.log('div with id="' + targetresponseid + '" found');
 
     }
@@ -2097,14 +2082,12 @@ $(document).on('click', 'a.refreshurl', function (e) {
         url: link,
         cache: true,
         success: function (data) {
-            if (!data)
-            {
+            if (!data) {
                 console.log('no json got from ' + link);
                 return false;
             }
             var countresult = data.length;
-            if (countresult < 1)
-            {
+            if (countresult < 1) {
                 return false;
             }
             var result = $('<div/>');
@@ -2274,10 +2257,10 @@ $(document).ready(function () {
 
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal(
-                {
-                    Height: '500px',
-                    minHeight: '500px'
-                }
+            {
+                Height: '500px',
+                minHeight: '500px'
+            }
         );
     }
     $("button#vormversion").click(function () {
@@ -2397,12 +2380,12 @@ $(document).ready(function () {
                     if (msg === 'OK') // LOGIN OK?
                     {
                         var login_response = '<div id="logged_in">' +
-                                '<div style="width: 350px; float: left; margin-left: 70px;">' +
-                                '<div style="width: 40px; float: left;">' +
-                                '<img style="margin: 10px 0px 10px 0px;" align="absmiddle" src="' + baseurl + 'images/ajax-loader.gif">' +
-                                '</div>' +
-                                '<div style="margin: 10px 0px 0px 10px; float: right; width: 300px;">' +
-                                "You are successfully logged in! <br /> Please wait while you're redirected...</div></div>";
+                            '<div style="width: 350px; float: left; margin-left: 70px;">' +
+                            '<div style="width: 40px; float: left;">' +
+                            '<img style="margin: 10px 0px 10px 0px;" align="absmiddle" src="' + baseurl + 'images/ajax-loader.gif">' +
+                            '</div>' +
+                            '<div style="margin: 10px 0px 0px 10px; float: right; width: 300px;">' +
+                            "You are successfully logged in! <br /> Please wait while you're redirected...</div></div>";
                         $('a.modalCloseImg').hide();
                         $('#simplemodal-container').css("width", "auto").css("height", "auto").css("background", "transparent").css("box-shadow", "none").css("text-align", "center");
                         $(this).html(login_response); // Refers to 'status'
@@ -2471,9 +2454,9 @@ $(document).ready(function () {
         var fedname = $("span#fednameencoded").text();
         var url = baseurl + 'federations/manage/changestatus';
         var data = [{name: 'status', value: btnVal}, {name: csrfname, value: csrfhash}, {
-                name: 'fedname',
-                value: fedname
-            }];
+            name: 'fedname',
+            value: fedname
+        }];
         sconfirm('' + additionalMsg + '', function (ev) {
             $.ajax({
                 type: "POST",
@@ -2514,23 +2497,23 @@ $(document).ready(function () {
         var url = $("form#rmstatdef").attr('action');
         var serializedData = $("form#rmstatdef").serialize();
         sconfirm('', function (ev) {
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: serializedData,
-                success: function (data) {
-                    $('#resultdialog').modal({
-                        position: ["20%", ],
-                        overlayId: 'simpledialog-overlay',
-                        containerId: 'simpledialog-container',
-                        closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
-                    });
-                },
-                error: function (data) {
-                    alert('Error');
-                }
-            });
-        }
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: serializedData,
+                    success: function (data) {
+                        $('#resultdialog').modal({
+                            position: ["20%",],
+                            overlayId: 'simpledialog-overlay',
+                            containerId: 'simpledialog-container',
+                            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
+                        });
+                    },
+                    error: function (data) {
+                        alert('Error');
+                    }
+                });
+            }
         );
         ev.preventDefault();
     });
@@ -2639,7 +2622,7 @@ $(document).ready(function () {
     function notificationadd(message, callback) {
         $('#notificationaddform').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-            position: ["20%", ],
+            position: ["20%",],
             overlayId: 'simpledialog-overlay',
             minHeight: '400px',
             minWidth: '500px',
@@ -2723,7 +2706,7 @@ $(document).ready(function () {
     function sconfirm(message, callback) {
         $('#sconfirm').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-            position: ["20%", ],
+            position: ["20%",],
             minHeight: '300px',
             minWidth: '300px',
             overlayId: 'simpledialog-overlay',
@@ -3242,6 +3225,7 @@ $("form#notificationupdateform").submit(function (e) {
 $(document).on('submit', 'div#loginform form', function (e) {
     e.preventDefault;
     var loginform = $("#loginform");
+    var submitbutton = $(loginform).find(":submit").first();
     var secondfactorrow = $(loginform).find("div.secondfactorrow").first();
     var link = $("div#loginform form").attr('action');
     var str = $(this).serializeArray();
@@ -3260,17 +3244,16 @@ $(document).on('submit', 'div#loginform form', function (e) {
 
         },
         success: function (data) {
-            if (data)
-            {
+            if (data) {
                 if (data.success === true && data.result === 'OK') {
                     $('#loginform').foundation('reveal', 'close');
                     setTimeout('go_to_private_page()', 1000);
                 }
-                else if (data.result === 'secondfactor')
-                {
+                else if (data.result === 'secondfactor') {
                     $('#password').val('');
                     secondfactorrow.empty();
                     secondfactorrow.append(data.html).show();
+                    submitbutton.prop('disabled',true);
 
                 }
             }
@@ -3505,17 +3488,16 @@ $('input[type="radio"].withuncheck').click(function () {
 });
 
 
-$(document).on('click','#resetloginform',function(e){
+$(document).on('click', '#resetloginform', function (e) {
     e.preventDefault();
     var baseurl = $("[name='baseurl']").val();
     $.ajax({
         type: 'GET',
-        url: baseurl+'authenticate/resetloginform',
+        url: baseurl + 'authenticate/resetloginform',
         cache: false,
-        success: function(data)
-        {
+        success: function (data) {
             $(".secondfactorrow").empty();
-            $("#loginform").foundation('reveal','close');
+            $("#loginform").foundation('reveal', 'close');
             return false;
         }
     })
@@ -3533,17 +3515,12 @@ $(document).on('submit', "#duo_form", function (e) {
 
         },
         success: function (data) {
-            if (data)
-            {
+            if (data) {
                 if (data.success === true && data.result === 'OK') {
                     $('#loginform').foundation('reveal', 'close');
                     setTimeout('go_to_private_page()', 1000);
                 }
-                else if (data.result === 'secondfactor')
-                {
-                    //secondfactorrow.empty();
-
-
+                else if (data.result === 'secondfactor') {
                     secondfactorrow.append(data.html).show();
 
                 }
@@ -3560,3 +3537,15 @@ $(document).on('submit', "#duo_form", function (e) {
         }
     });
 });
+
+$(document).ready(
+function(){
+    var autoclick = $("a.autoclick");
+    if(autoclick !== undefined)
+    {
+        autoclick.click();
+    }
+  //  $("a.autoclick")[0].click();
+    }
+
+);

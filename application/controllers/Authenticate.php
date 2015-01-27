@@ -69,20 +69,17 @@ class Authenticate extends MY_Controller {
             'partiallogged' => (int) $isPartialLogged,
             'username' => $currentuser,
             'twofactor' => (int) $twofactoauthn,
-            'secondfactor' => $secondfactor,
-            'sess' => $_SESSION
+            'secondfactor' => $secondfactor
         );
+        if($isPartialLogged && !empty($currentuser) && $twofactoauthn && !empty($secondfactor))
+        {
+            if($secondfactor === 'duo')
+            {
+                $result['html'] = $this->genDuo();
+            }
+        }
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
         return;
-        if ($isPartialLogged && $currentuser && $twofactoauthn && $secondfactor)
-        {
-            $result = array('logged' => 0, 'partiallogged' => 1, 'username' => $currentuser, 'twofactor' => 1, 'secondfactor' => $secondfactor);
-        }
-        else
-        {
-            $result = array('logged' => 0, 'partiallogged' => 0, 'inputfields' => array('0' => array('name' => 'username', 'label' => lang('rr_username')), '1' => array('name' => 'password', 'label' => lang('rr_password'))));
-        }
-        $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
     private function genDuo()

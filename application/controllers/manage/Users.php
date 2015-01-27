@@ -569,7 +569,7 @@ class Users extends MY_Controller {
         {
             $allowed2f = array();
         }
-        $r = ' <button data-reveal-id="m2f" class="tiny" name="m2fbtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '"> ' . lang('btnupdate') . '</button>';
+        $r = ' <button data-reveal-id="m2f" class="tiny" name="m2fbtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeduser . '"> ' . lang('btnupdate') . '</button>';
         $r .= '<div id="m2f" class="reveal-modal tiny" data-reveal>';
         $r .= '<h3>Update second factor authentication</h3>';
         $r .= form_open($formTarget);
