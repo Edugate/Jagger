@@ -62,110 +62,110 @@ $foundation = $base_url . 'foundation/';
                     <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
                 <![endif]-->
         <header>
-<?php
-$iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
-if (isset($iscookieconsent['status']) && (boolean) $iscookieconsent['status'] === TRUE && isset($iscookieconsent['value']))
-{
-    $this->load->helper('cookie');
-    $cookieaccepted = get_cookie('cookieAccept');
-    if (empty($cookieaccepted) || $cookieaccepted != 'accepted')
-    {
-        $this->load->view('cookiesconsent', $iscookieconsent);
-    }
-}
-if (!empty($headerjs))
-{
-    echo $headerjs;
-}
-if (!empty($headermap))
-{
-    echo $headermap;
-}
-
-
-$this->load->view('toppanel', $args);
-if (!empty($titlepage) || !empty($subtitlepage))
-{
-
-    echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
-
-    echo '<div class="row">'; //start titlepage part
-
-    if (!empty($titlepage))
-    {
-        if (!empty($providerlogourl))
-        {
-            echo '<div class="small-12 columns"><div class="large-8 columns text-left">' . $titlepage . '</div><div class="large-4 columns show-for-medium-up end"><img src="' . $providerlogourl . '" class="right" style="max-height: 40px; background-color: white;"/></div></div>';
-        }
-        else
-        {
-            echo '<div class="small-12 columns end text-left">' . $titlepage . '</div>';
-        }
-    }
-    if (!empty($subtitlepage))
-    {
-        echo '<div class="small-12 columns text-center subtitle">' . $subtitlepage . '</div>';
-    }
-
-    ///////////// start submenupage
-    if (!empty($submenupage))
-    {
-        echo '<div><div class="small-12 columns text-right">';
-        echo '<dl class="subnav">';
-        echo '<dt></dt>';
-        foreach ($submenupage as $v)
-        {
-            if (isset($v['url']))
+            <?php
+            $iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
+            if (isset($iscookieconsent['status']) && (boolean) $iscookieconsent['status'] === TRUE && isset($iscookieconsent['value']))
             {
-                echo '<dd><a href="' . $v['url'] . '">' . $v['name'] . '</a></dd>';
+                $this->load->helper('cookie');
+                $cookieaccepted = get_cookie('cookieAccept');
+                if (empty($cookieaccepted) || $cookieaccepted != 'accepted')
+                {
+                    $this->load->view('cookiesconsent', $iscookieconsent);
+                }
             }
-        }
-        echo '</dl>';
-        echo '</div>';
-        echo '</div>';
-    }
-    /////////////// end submenupage
-    echo '</div>'; // end titlepage part
-    echo '</div>'; // end id="titlepage"
-}
-?>
+            if (!empty($headerjs))
+            {
+                echo $headerjs;
+            }
+            if (!empty($headermap))
+            {
+                echo $headermap;
+            }
+
+
+            $this->load->view('toppanel', $args);
+            if (!empty($titlepage) || !empty($subtitlepage))
+            {
+
+                echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
+
+                echo '<div class="row">'; //start titlepage part
+
+                if (!empty($titlepage))
+                {
+                    if (!empty($providerlogourl))
+                    {
+                        echo '<div class="small-12 columns"><div class="large-8 columns text-left">' . $titlepage . '</div><div class="large-4 columns show-for-medium-up end"><img src="' . $providerlogourl . '" class="right" style="max-height: 40px; background-color: white;"/></div></div>';
+                    }
+                    else
+                    {
+                        echo '<div class="small-12 columns end text-left">' . $titlepage . '</div>';
+                    }
+                }
+                if (!empty($subtitlepage))
+                {
+                    echo '<div class="small-12 columns text-center subtitle">' . $subtitlepage . '</div>';
+                }
+
+                ///////////// start submenupage
+                if (!empty($submenupage))
+                {
+                    echo '<div><div class="small-12 columns text-right">';
+                    echo '<dl class="subnav">';
+                    echo '<dt></dt>';
+                    foreach ($submenupage as $v)
+                    {
+                        if (isset($v['url']))
+                        {
+                            echo '<dd><a href="' . $v['url'] . '">' . $v['name'] . '</a></dd>';
+                        }
+                    }
+                    echo '</dl>';
+                    echo '</div>';
+                    echo '</div>';
+                }
+                /////////////// end submenupage
+                echo '</div>'; // end titlepage part
+                echo '</div>'; // end id="titlepage"
+            }
+            ?>
         </header>
-<?php
-if(!empty($breadcrumbs))
-{
-    echo '<ul class="breadcrumbs">';
-    foreach($breadcrumbs as $b)
-    {
-        echo '<li><a href="'.$b['url'].'" class="'.$b['class'].'">'.$b['name'].'</a></li>';
-    }
-    echo '</ul>';
-}
-?>
+        <?php
+        if (!empty($breadcrumbs))
+        {
+            echo '<ul class="breadcrumbs">';
+            foreach ($breadcrumbs as $b)
+            {
+                echo '<li><a href="' . $b['url'] . '" class="' . $b['class'] . '">' . $b['name'] . '</a></li>';
+            }
+            echo '</ul>';
+        }
+        ?>
         <div id="container" class="row">
             <div class="header-container">
                 <header class="wrapper clearfix" role="banner">
                     <div class="header-top clearfix hide-for-small-only" style="text-align: right;">
-<?php
-if (!empty($provider_logo_url))
-{
-    echo '<img src="' . $provider_logo_url . '" class="providerlogo" />';
-}
-?>
+                        <?php
+                        if (!empty($provider_logo_url))
+                        {
+                            echo '<img src="' . $provider_logo_url . '" class="providerlogo" />';
+                        }
+                        ?>
                     </div>
 
-                        <?php
-                        if ($loggedin)
+                    <?php
+                    if ($loggedin)
+                    {
+                        $showhelp = $this->session->userdata('showhelp');
+                        if (!empty($showhelp) && $showhelp === TRUE)
                         {
-                            $showhelp = $this->session->userdata('showhelp');
-                            if (!empty($showhelp) && $showhelp === TRUE)
-                            {
-                                echo '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpactive"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow" style="display:none"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpcross"></a>';
-                            }
-                            else
-                            {
-                                echo '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpinactive"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpcross" style="display:none"></a>';
-                            }
-                            ?>
+                            echo '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpactive"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow" style="display:none"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpcross"></a>';
+                        }
+                        else
+                        {
+                            echo '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpinactive"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpcross" style="display:none"></a>';
+                        }
+                        ?>
                         <!-- menu -->
                         <!-- end menu -->
                         <?php
@@ -174,33 +174,20 @@ if (!empty($provider_logo_url))
                 </header>
             </div>
             <article role="main" class="clearfix">
-                    <?php
-                    $height100 = '';
-                    if (!empty($loadGoogleMap))
-                    {
+                <?php
+                $height100 = '';
+                if (!empty($loadGoogleMap))
+                {
 
-                        $height100 = ' style="min-height: 300px;height: 100%" ';
-                    }
-                    ?>
+                    $height100 = ' style="min-height: 300px;height: 100%" ';
+                }
+                ?>
                 <div   <?php echo $height100 ?>>
 
                     <div id="wrapper"   <?php echo $height100 ?> >
-                <?php
-                if (!$loggedin)
-                {
-                    $datalogin = array();
-                    if (!empty($showloginform))
-                    {
-                        $datalogin['showloginform'] = $showloginform;
-                        $this->load->view('loginform_view', $datalogin);
-                    }
-                    else
-                    {
-                        $this->load->view('loginform_view');
-                    }
-                }
-                $this->load->view($content_view);
-                ?>
+                        <?php
+                        $this->load->view($content_view);
+                        ?>
 
                     </div>
                     <div id="navigation">
@@ -229,18 +216,18 @@ if (!empty($provider_logo_url))
 
             <footer class="row">
                 <div class="large-12 columns text-center">
-<?php
-$footer = $this->rrpreference->getPreferences('pageFooter');
-if (isset($footer['status']) && (boolean) $footer['status'] === TRUE && isset($footer['value']))
-{
-    echo '<div>' . $footer['value'] . '<div>';
-}
-$disp_mem = $this->rrpreference->getPreferences('rr_display_memory_usage');
-if (isset($disp_mem['status']) && (boolean) $disp_mem['status'] === TRUE)
-{
-    echo '<div>' . echo_memory_usage() . '</div>';
-}
-?>
+                    <?php
+                    $footer = $this->rrpreference->getPreferences('pageFooter');
+                    if (isset($footer['status']) && (boolean) $footer['status'] === TRUE && isset($footer['value']))
+                    {
+                        echo '<div>' . $footer['value'] . '<div>';
+                    }
+                    $disp_mem = $this->rrpreference->getPreferences('rr_display_memory_usage');
+                    if (isset($disp_mem['status']) && (boolean) $disp_mem['status'] === TRUE)
+                    {
+                        echo '<div>' . echo_memory_usage() . '</div>';
+                    }
+                    ?>
                 </div>
 
             </footer>
@@ -257,46 +244,44 @@ if (isset($disp_mem['status']) && (boolean) $disp_mem['status'] === TRUE)
 
 
         <div id="languageset" class="reveal-modal tiny" data-reveal>
-            <h4><?php echo lang('rr_langchange');?></h4>
+            <h4><?php echo lang('rr_langchange'); ?></h4>
             <form action="<?php echo $base_url . 'ajax/changelanguage/'; ?>" method="POST">
                 <label>
                     <select  name="changelanguage">
-<?php
-$selset = false;
-foreach ($langs as $key => $value)
-{
-    if ($key === MY_Controller::getLang())
-    {
-        echo '<option value="' . $value['path'] . '" selected="selected">' . strtoupper($key) . '</option>';
-    }
-    else
-    {
-        echo '<option value="' . $value['path'] . '">(' . $key . ') ' . $value['val'] . '</option>';
-    }
-}
-?>
+                        <?php
+                        $selset = false;
+                        foreach ($langs as $key => $value)
+                        {
+                            if ($key === MY_Controller::getLang())
+                            {
+                                echo '<option value="' . $value['path'] . '" selected="selected">' . strtoupper($key) . '</option>';
+                            }
+                            else
+                            {
+                                echo '<option value="' . $value['path'] . '">(' . $key . ') ' . $value['val'] . '</option>';
+                            }
+                        }
+                        ?>
                     </select>
                 </label>
             </form>
-         <a class="close-reveal-modal">&#215;</a>
+            <a class="close-reveal-modal">&#215;</a>
         </div>
 
 
 
-<?php
+        <?php
 // list js files to load 
-$jsToLoad1 = array(
-    'jquery.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.uitablefilter.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
-    'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js',
-    'foundation.min.js', 'foundation.topbar.js', 'foundation.tab.js', 'foundation.alert.js', 'foundation.reveal.js', 'jquery.simplemodal.js','foundation.tooltip.js');
-foreach ($jsToLoad1 as $jsFile)
-{
-    echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
-}
-?>
-        <script>
-            $(document).foundation();
-        </script>
+        $jsToLoad1 = array(
+            'jquery.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.uitablefilter.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
+            'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js',
+            'foundation.min.js', 'foundation.topbar.js', 'foundation.tab.js', 'foundation.alert.js', 'foundation.reveal.js', 'jquery.simplemodal.js', 'foundation.tooltip.js');
+        foreach ($jsToLoad1 as $jsFile)
+        {
+            echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
+        }
+        ?>
+
         <?php
         if (!empty($load_matrix_js))
         {
@@ -314,6 +299,28 @@ foreach ($jsToLoad1 as $jsFile)
             }
         }
 
+
+        if (!$loggedin)
+        {
+            $datalogin = array();
+            if (!empty($showloginform))
+            {
+                $datalogin['showloginform'] = $showloginform;
+                $this->load->view('loginform_view', $datalogin);
+            }
+            else
+            {
+                $this->load->view('loginform_view');
+            }
+            $t = 'id="duo_form"';
+            echo form_open(base_url() . 'authenticate/dologin', $t);
+            echo form_close();
+        }
+        ?>
+        <script>
+            $(document).foundation();
+        </script>
+        <?php
         // load local final js
         echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v7.js"></script>' . PHP_EOL;
 
