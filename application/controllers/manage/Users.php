@@ -442,13 +442,13 @@ class Users extends MY_Controller {
         {
             $manageBtn = '';
         }
-        $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_onlyforlocalauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
+        $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="'.lang('rr_twofactorauthn').'">' . lang('rr_twofactorauthn') . '</span>';
         $det[$i++] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
         $det[$i++] = array('key' => lang('rrnotifications'), 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encoded_username . '', lang('rrmynotifications')));
         $bb = $this->manage2fBtn($encoded_username);
         if ($secondFactor)
         {
-            $secondFactortext = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_onlyforlocalauthn') . '">' . $secondFactor . '</span>';
+            $secondFactortext = '<span data-tooltip aria-haspopup="true" class="has-tip" title="'.$secondFactor.' ">' . $secondFactor . '</span>';
             if ($systemTwoFactorAuthn)
             {
                 $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '' . $bb);
