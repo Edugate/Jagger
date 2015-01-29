@@ -131,14 +131,17 @@ $foundation = $base_url . 'foundation/';
             ?>
         </header>
         <?php
+
         if (!empty($breadcrumbs))
         {
+            echo '<div class="row fullWidth">';
             echo '<ul class="breadcrumbs">';
             foreach ($breadcrumbs as $b)
             {
                 echo '<li><a href="' . $b['url'] . '" class="' . $b['class'] . '">' . $b['name'] . '</a></li>';
             }
             echo '</ul>';
+            echo '</div>';
         }
         ?>
         <div id="container" class="row">
@@ -166,8 +169,6 @@ $foundation = $base_url . 'foundation/';
                             echo '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpinactive"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpcross" style="display:none"></a>';
                         }
                         ?>
-                        <!-- menu -->
-                        <!-- end menu -->
                         <?php
                     }
                     ?>

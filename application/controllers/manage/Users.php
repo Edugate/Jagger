@@ -408,7 +408,7 @@ class Users extends MY_Controller {
 
         $action_logs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
 
-        $data['caption'] = $user->getUsername();
+        $data['caption'] = htmlspecialchars($user->getUsername());
         $local_access = $user->getLocal();
         $federated_access = $user->getFederated();
 
@@ -416,13 +416,13 @@ class Users extends MY_Controller {
         $secondFactor = $user->getSecondFactor();
         $i = 0;
         $det = array();
-        $det[$i++] = array('key' => lang('rr_username'), 'val' => $user->getUsername());
+        $det[$i++] = array('key' => lang('rr_username'), 'val' => htmlspecialchars($user->getUsername()));
         if ($write_access)
         {
             $det[$i++] = array('key' => lang('rr_password'), 'val' => $passedit_link);
         }
-        $det[$i++] = array('key' => '' . lang('rr_userfullname') . '', 'val' => $user->getFullname());
-        $det[$i++] = array('key' => '' . lang('rr_uemail') . '', 'val' => $user->getEmail());
+        $det[$i++] = array('key' => '' . lang('rr_userfullname') . '', 'val' => htmlspecialchars($user->getFullname()));
+        $det[$i++] = array('key' => '' . lang('rr_uemail') . '', 'val' => htmlspecialchars($user->getEmail()));
         $access_type_str = array();
         if ($local_access)
         {
