@@ -408,7 +408,7 @@ class Users extends MY_Controller {
 
         $action_logs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
 
-        $data['caption'] = $user->getUsername();
+        $data['caption'] = htmlspecialchars($user->getUsername());
         $local_access = $user->getLocal();
         $federated_access = $user->getFederated();
 
@@ -416,13 +416,13 @@ class Users extends MY_Controller {
         $secondFactor = $user->getSecondFactor();
         $i = 0;
         $det = array();
-        $det[$i++] = array('key' => lang('rr_username'), 'val' => $user->getUsername());
+        $det[$i++] = array('key' => lang('rr_username'), 'val' => htmlspecialchars($user->getUsername()));
         if ($write_access)
         {
             $det[$i++] = array('key' => lang('rr_password'), 'val' => $passedit_link);
         }
-        $det[$i++] = array('key' => '' . lang('rr_userfullname') . '', 'val' => $user->getFullname());
-        $det[$i++] = array('key' => '' . lang('rr_uemail') . '', 'val' => $user->getEmail());
+        $det[$i++] = array('key' => '' . lang('rr_userfullname') . '', 'val' => htmlspecialchars($user->getFullname()));
+        $det[$i++] = array('key' => '' . lang('rr_uemail') . '', 'val' => htmlspecialchars($user->getEmail()));
         $access_type_str = array();
         if ($local_access)
         {
@@ -442,13 +442,13 @@ class Users extends MY_Controller {
         {
             $manageBtn = '';
         }
-        $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_onlyforlocalauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
+        $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="'.lang('rr_twofactorauthn').'">' . lang('rr_twofactorauthn') . '</span>';
         $det[$i++] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
         $det[$i++] = array('key' => lang('rrnotifications'), 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encoded_username . '', lang('rrmynotifications')));
         $bb = $this->manage2fBtn($encoded_username);
         if ($secondFactor)
         {
-            $secondFactortext = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_onlyforlocalauthn') . '">' . $secondFactor . '</span>';
+            $secondFactortext = '<span data-tooltip aria-haspopup="true" class="has-tip" title="'.$secondFactor.' ">' . $secondFactor . '</span>';
             if ($systemTwoFactorAuthn)
             {
                 $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '' . $bb);

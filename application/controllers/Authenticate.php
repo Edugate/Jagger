@@ -94,17 +94,17 @@ class Authenticate extends MY_Controller {
         $html .= "<script>
                                    
                                      $(document).ready(function() {
+                                     $('#spinner').show();
                                      Duo.init({
                                    'host': '" . $this->config->item('duo-host') . "',
                                    
                                      'post_action': '" . base_url() . "authenticate/dologin',
-                                    'sig_request': '" . $sig_request . "',
-                                  
+                                    'sig_request': '" . $sig_request . "'
                                      });
                                       Duo.ready();
                                       });
                               </script>  ";
-        $html .= '<iframe id="duo_iframe" width="600" height="250" frameborder="0" allowtransparency="true" style="background: transparent;"></iframe>';
+        $html .= '<iframe id="duo_iframe" width="600" height="250" frameborder="0" allowtransparency="true" style="background: transparent;" onload="document.getElementById(\'spinner\').style.display=\'none\';"></iframe>';
         
         return $html;
     }
