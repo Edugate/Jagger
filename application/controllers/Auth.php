@@ -60,7 +60,7 @@ class Auth extends MY_Controller
 		}
 
 		$fedidentity = $this->session->userdata('fedidentity');
-		log_message('debug', __METHOD__ . ' fedregistration in post received' . serialize($this->session->all_userdata()));
+		log_message('debug', __METHOD__ . ' fedregistration in post received' . serialize($this->session->userdata()));
 		if (!empty($fedidentity) && is_array($fedidentity)) {
 			if (isset($fedidentity['fedusername'])) {
 				$username = $fedidentity['fedusername'];
@@ -464,6 +464,7 @@ class Auth extends MY_Controller
 		if (!$shibb_valid) {
 			log_message('error', 'This location should be protected by shibboleth in apache');
 			show_error('Internal server error', 500);
+			return;
 		}
 		if ($this->j_auth->logged_in()) {
 			redirect('' . base_url() . '', 'location');
@@ -471,7 +472,7 @@ class Auth extends MY_Controller
 		$userValue = $this->getShibUsername();
 		if (empty($userValue)) {
 			log_message('error', 'IdP didnt provide username');
-			show_error('Internal server error: missing attribute from IdP', 500);
+			show_error('Internal server error: missing required attribute in SAML response from Identity Provider', 500);
 		}
 
 		$user = $this->em->getRepository("models\User")->findOneBy(array('username' => $userValue));
