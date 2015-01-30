@@ -571,7 +571,7 @@ class Users extends MY_Controller {
         }
         $r = ' <button data-reveal-id="m2f" class="tiny" name="m2fbtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeduser . '"> ' . lang('btnupdate') . '</button>';
         $r .= '<div id="m2f" class="reveal-modal tiny" data-reveal>';
-        $r .= '<h3>Update second factor authentication</h3>';
+        $r .= '<h3>Update 2F authentication</h3>';
         $r .= form_open($formTarget);
         if (count($allowed2f) > 0)
         {
@@ -585,10 +585,7 @@ class Users extends MY_Controller {
            
            
             $r .='<div class="small-12 column"><div class="small-6 column"></div><div class="small-6 column">'.  form_dropdown('secondfactor',$dropdown).'</div></div>';
-            foreach ($allowed2f as $v)
-            {
-                // $r .='<div class="small-12 column"><div class="small-6 column">' . $v->getName() . '</div><div class="small-6 column"><input type="checkbox" name="checkrole[]" value="' . $v->getName() . '"  /></div></div>';
-            }
+
             $r .= '<button type="button" name="updaterole" class="button small">' . lang('btnupdate') . '</button>';
         }
         $r .= form_close();

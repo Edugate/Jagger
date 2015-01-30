@@ -49,6 +49,7 @@ $lang['title_mailtemplates']        = 'Mails Templates';
 $lang['title_mailtmpledit']         = 'Edit mail template';
 $lang['title_mailtmplnew']         = 'New mail template';
 $lang['title_translator']          = 'Translation';
+$lang['title_sysprefs']            = 'System preferences';
 $lang['rr_title']                   = 'Title';
 $lang['fedvalidator']               = 'Federation validator';
 $lang['rr_federation'] =             'Federation';
