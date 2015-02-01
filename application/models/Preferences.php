@@ -47,7 +47,7 @@ class Preferences
 	protected $name;
 
 	/**
-	 * allowed values are: multicheck, singlecheck,text,settings
+	 * allowed values are: multicheck, singlecheck,text,settings,bool
 	 * @Column(type="string",length=12,nullable=false)
 	 */
 	protected $stype;
@@ -86,6 +86,11 @@ class Preferences
 	{
 		$this->scategory = 'default';
 	}
+
+        public function getId()
+        {
+                return $this->id;
+        }
 
 	public function getName()
 	{
@@ -141,7 +146,7 @@ class Preferences
 	public function setType($type)
 	{
 		$ptype = trim($type);
-		$allowed = array('multicheck','singlecheck','text','settings');
+		$allowed = array('multicheck','singlecheck','text','settings','bool');
 		if(!in_array($ptype,$allowed))
 		{
 			\log_message('error',__METHOD__.' value:'.$ptype.' not allwed');

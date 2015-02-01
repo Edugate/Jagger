@@ -50,6 +50,12 @@ class Rrpreference {
      
     }
 
+    public function cleanFromCache()
+    {
+        $this->ci->j_cache->library('rrpreference', 'prefToArray', array('global'),-1);
+        return true;
+    }
+
     public function getTextValueByName($name)
     {
         $r = $this->getPreferences($name);
@@ -61,7 +67,17 @@ class Rrpreference {
             return null;
         }
     }
-
+    public function getStatusByName($name)
+    {
+        $r = $this->getPreferences($name);
+        if(array_key_exists('status',$r) )
+        {
+            return $r['status'];
+        }
+        else {
+            return false;
+        }
+    }
 
     public function prefToArray($type)
     {
@@ -72,7 +88,7 @@ class Rrpreference {
              foreach($y as $r)
              {
 
-               $result[''.$r->getName().''] = array('descname'=>$r->getDescname(), 'value'=>$r->getValue(), 'status'=>$r->getEnabled(),'type'=>$r->getType(),'servalue'=>$r->getSerializedValue());
+               $result[''.$r->getName().''] = array('name'=>$r->getName(), 'descname'=>$r->getDescname(), 'value'=>$r->getValue(), 'status'=>$r->getEnabled(),'type'=>$r->getType(),'servalue'=>$r->getSerializedValue());
              }
      
         }

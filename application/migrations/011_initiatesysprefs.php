@@ -27,7 +27,7 @@ class Migration_initiatesysprefs extends CI_Migration {
 		{
 			$cookieConsent->setCategory('general');
 			$cookieConsent->setType('text');
-			$this->em->persist($c);
+			$this->em->persist($cookieConsent);
 		}
 
 		$pageFooter = $this->em->getRepository("models\Preferences")->findOneBy(array('name'=>'pageFooter'));
@@ -88,6 +88,20 @@ class Migration_initiatesysprefs extends CI_Migration {
 			}
 		}
 		$this->em->persist($pageTitlePref);
+
+
+		$user2fset =  $this->em->getRepository("models\Preferences")->findOneBy(array('name'=>'user2fset'));
+		if(empty($user2fset)) {
+			$s = new models\Preferences();
+			$s->setName('user2fset');
+			$s->setDescription('If enabled then any user can enable/disable 2F authentication otherwise only Administrator can do it');
+			$s->setDescname('Allow ordinary user set 2F');
+			$s->setCategory('authn');
+			$s->setType('bool');
+			$s->setDisabled();
+			$s->setValue('');
+			$this->em->persist($s);
+		}
 
 		try{
 			$this->em->flush();
