@@ -9,7 +9,7 @@ if ($loggedin)
 }
 $langs = MY_Controller::guiLangs();
 
-$pageTitle = $this->config->item('pageTitlePref');
+$pageTitle = $this->rrpreference->getTextValueByName('pageTitlePref');
 $colorTheme = $this->config->item('colortheme');
 if (empty($colorTheme))
 {
