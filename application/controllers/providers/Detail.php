@@ -275,6 +275,7 @@ class Detail extends MY_Controller {
         $data['alerts'] = self::$alerts;
 
         $data['titlepage'] = $data['presubtitle'] . ': ' . $data['name'];
+        $this->title = &$data['titlepage'];
         $data['content_view'] = 'providers/detail_view.php';
         $this->load->view('page', $data);
     }

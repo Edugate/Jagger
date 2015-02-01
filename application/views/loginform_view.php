@@ -38,6 +38,7 @@ if (empty($fedloginbtn))
 if ($fedenabled)
 {
     echo '<div id="loginform" class="reveal-modal row medium" data-reveal>';
+    
     echo '<div id="loginresponse" class="alert-box alert hidden" ></div>';
 
     echo '<div class="large-6 columns">';
@@ -45,17 +46,21 @@ if ($fedenabled)
     echo '<div class="row">';
     echo '<h4 class="small-12 columns end text-center loginheader">' . lang('loginwithlocal') . '</h4>';
     echo '</div>';
-    echo '<div class="row">';
+    echo '<div class="row usernamerow hidden">';
     echo '<div class="medium-3 columns medium-text-right"> <label for="username" class="inline">' . lang('rr_username') . '</label> </div> <div class="medium-9 columns"> 
              <input type="text" id="username" name="username"></div>';
     echo '</div>';
-    echo '<div class="row">';
+    echo '<div class="row passwordrow hidden" >';
     echo '<div class="medium-3 columns medium-text-right"> <label for="password" class="inline">' . lang('rr_password') . '</label> </div> <div class="medium-9 columns"> 
              <input type="password" id="password" name="password" ><div id="capswarn" class="hidden"><small class="error" >'.lang('rr_capslockon').'</small></div></div>';
     echo '</div>';
     echo '<div class="row">';
     echo '<div class="small-12 large-9 end columns large-push-3 small-text-center large-text-left"><button type="submit" class="button small">' . lang('loginsubmit') . '</button></div>';
     echo '</div>';
+    echo '<div class="row secondfactorrow hidden">';
+    
+    echo '</div>';
+    echo '';
     echo form_close();
     echo '</div>';
 
@@ -65,7 +70,8 @@ if ($fedenabled)
     echo '<br /><br />';
     echo '<div class="small-12 columns end text-center"><a href="' . $shib_url . '" id="fedlogin" class="button small">' . lang('loginsubmit') . '</a></div>';
     echo '</div>';
-    echo '<a class="close-reveal-modal">&#215;</a>';
+    echo '<a id="resetloginform" class="close-reveal-modal small  has-tip" data-tooltip aria-haspopup="true"  title="Close and reset form">&#215;</a>';
+   
     echo '</div>';
 }
 else
@@ -90,6 +96,8 @@ else
     echo '</div>';
     echo form_close();
     echo '</div>';
-    echo '<a class="close-reveal-modal">&#215;</a>';
+    echo '<a id="resetloginform" class="close-reveal-modal small  has-tip" data-tooltip aria-haspopup="true"  title="Close and reset form">&#215;</a>';
+    echo '<div class="small-12 column"><iframe id="duo_iframe" width="620" height="330" frameborder="0"></iframe></div>';
     echo '</div>';
 }
+

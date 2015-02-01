@@ -434,6 +434,43 @@ class User {
         }
         $pref['board']['fed'][$fedid] = array('name' => $fedname, 'url' => $fedencoded);
         $this->setUserpref($pref);
+        return $this;
+    }
+
+    public function getSecondFactor()
+    {
+       $pref = $this->getUserpref();
+       if(!empty($pref) && is_array($pref))
+       {
+           if(isset($pref['2f']) && !empty($pref['2f']))
+           {
+              return $pref['2f'];
+           }
+       }
+       return null;
+       
+    }
+    public function setSecondFactor($f=null)
+    {
+       if(!empty($f) && strcmp($f,'duo') == 0)
+       {
+          $factor = $f;
+       }   
+       else
+       {
+          $factor = null;
+       }
+
+       $pref = $this->getUserpref();
+       if (empty($pref) || !is_array($pref))
+       {
+           $pref = array();
+       }
+       $pref['2f'] = $factor;
+       $this->setUserpref($pref);
+       return $this;
+
+
     }
 
     public function setValid()

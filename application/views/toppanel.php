@@ -65,7 +65,21 @@
                 {
                 ?>
                     <li class="has-form">
-                        <a href="<?php echo $base_url; ?>auth/" class="button alert"  id="loginbtn" data-reveal-id="loginform"><?php echo lang('toploginbtn'); ?></a>
+                        <?php
+                           if(((array_key_exists('logged',$_SESSION) && $_SESSION['logged'] === 0)  || !array_key_exists('logged',$_SESSION) ) && isset($_SESSION['partiallogged']) && $_SESSION['partiallogged'] === 1 )
+                           {
+                              ?>
+                               <a href="<?php echo $base_url; ?>authenticate/getloginform" class="button alert autoclick"  id="loginbtn" ><?php echo lang('toploginbtn'); ?></a>
+                        <?php
+                           }
+                        else {
+                            ?>
+                            <a href="<?php echo $base_url; ?>authenticate/getloginform" class="button alert"
+                               id="loginbtn"><?php echo lang('toploginbtn'); ?></a>
+                        <?php
+                        }
+                        ?>
+
                     </li>
 
                     <?php
@@ -142,6 +156,8 @@
                             if ($isAdministrator)
                             {
                                 echo '<li><a href="' . $base_url . 'smanage/reports">' . lang('sys_menulink') . '</a></li>';
+                                echo '<li><a href="' . $base_url . 'smanage/sysprefs/show">' . lang('globalconf_menulink') . '</a></li>';
+
                             }
                             ?>
                             <li><a href="<?php echo $base_url; ?>tools/addontools/show"><?php echo lang('addons_menulink'); ?></a></li>
