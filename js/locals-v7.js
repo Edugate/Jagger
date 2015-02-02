@@ -1542,20 +1542,25 @@ $(document).ready(function () {
                     if (countAttr > 52) {
                         $("#container").css({"max-width": "100%"});
                     }
+                  
                     var cell, requiredAttr, pAttr;
                     tbl += '</tr></thead><tbody>';
                     $.each(policies, function (i, a) {
 
                         tbl += '<tr><td data-jagger-entidlink="' + a.spid + '" class="searchcol"><span data-tooltip aria-haspopup="true" class="has-tip" data-options="disable_for_touch:true" title="' + i + '" >' + a.name + '</span><span class="hidden">' + i + '</span></td>';
                         $.each(attrdefs, function (k, v) {
+                            requiredAttr = null;
                             if (a['attributes'][k] !== undefined) {
                                 pAttr = a['attributes'][k];
                             }
                             else {
                                 pAttr = null;
                             }
-                            requiredAttr = a['req'][k];
-                            if (requiredAttr !== null) {
+                            if(a['req'][k] !== undefined)
+                            {
+                              requiredAttr = a['req'][k];
+                            }
+                            if (requiredAttr !== null ) {
                                 cell = requiredAttr[0].toUpperCase();
                             }
                             else {
@@ -2221,8 +2226,8 @@ $("#nattrreqbtn").click(function (ev) {
 
 });
 
-
-$("a.pCookieAccept").click(function () {
+$(document).on('click','a.pCookieAccept', function(e) {
+    e.preventDefault();
     var link = $(this), url = link.attr("href");
 
     $.ajax({
