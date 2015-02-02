@@ -105,7 +105,8 @@ class Idpmatrix extends MY_Controller
         {
             $arparray['message'] = lang('errormatrixnoattrsormembers');
         }
-        echo json_encode($arparray);
+      //  echo json_encode($arparray);
+        $this->output->set_content_type('application/json')->set_output(json_encode($arparray));
         return;
     }
 
