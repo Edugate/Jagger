@@ -639,6 +639,20 @@ pre.xml {
         translate(5px, 47px)
         // 45 is really 360-45
         rotate(315deg);
+
+      -webkit-transform:
+        translate(5px, 47px)
+        rotate(315deg);
+
+      -ms-transform:
+        translate(5px, 47px)
+        rotate(315deg);
+
+      -moz-transform:
+        translate(5px, 47px)
+        rotate(315deg);
+      
+
       max-width: 5px;
     }
     > div > span {
