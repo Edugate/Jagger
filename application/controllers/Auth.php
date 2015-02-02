@@ -19,6 +19,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  */
 class Auth extends MY_Controller
 {
+	private $data;
 
 	function __construct()
 	{

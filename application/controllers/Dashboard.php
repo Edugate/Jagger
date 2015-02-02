@@ -48,8 +48,6 @@ class Dashboard extends MY_Controller {
         $this->load->library('table');
         $q = $this->em->getRepository("models\Queue")->findAll();
         $this->inqueue = count($q);
-
-        $acc = FALSE;
         $acc = $this->zacl->check_acl('dashboard', 'read', 'default', '');
         $data['inqueue'] = $this->inqueue;
 

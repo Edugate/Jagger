@@ -125,10 +125,9 @@ class Authenticate extends MY_Controller {
         {
             J_auth::$timeOffset = (int) $this->input->post('browsertimeoffset');
             log_message('debug', 'client browser timeoffset: ' . J_auth::$timeOffset);
-            $_SESSION['timeoffset'] = J_auth::$timeOffset;
+            $this->session->set_userdata('timeoffset',''.J_auth::$timeOffset.'');
             if ($this->j_auth->logged_in())
             {
-                log_message('debug', 'GLO User loggedin');
                 $result = array('success' => true, 'result' => 'OK');
                 $this->output->set_content_type('application/json')->set_output(json_encode($result));
                 return;

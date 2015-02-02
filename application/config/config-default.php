@@ -247,7 +247,7 @@ $config['encryption_key'] = 'jhiufhi34hfhewhfsdfhsd';
 | 'sess_time_to_update'		= how many seconds between CI refreshing Session Information
 |
 */
-$config['sess_driver']                  = 'native';
+$config['sess_driver']                  = 'files';
 $config['sess_valid_drivers']   = array();
 $config['sess_cookie_name']		= 'rr3sess';
 $config['sess_expiration']		= 3600;

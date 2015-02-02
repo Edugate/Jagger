@@ -26,8 +26,6 @@ if (!defined('BASEPATH'))
 
 /**
  * @property CI_Config $config
- * @property CI_DB_active_record $db
- * @property CI_DB_forge $dbforge
  * @property CI_Email $email
  * @property CI_Encrypt $encrypt
  * @property CI_Form_validation $form_validation
@@ -39,7 +37,7 @@ if (!defined('BASEPATH'))
  * @property CI_Table $table
  * @property CI_URI $uri
  * @property CI_Output $output
- *
+ * @property CI_Lang $lang
  * @property Zacl $zacl
  * @property J_cache $j_cache
  * @property Show_element $show_element
@@ -56,15 +54,9 @@ class MY_Controller extends CI_Controller {
     public $title;
     public $globalerrors = array();
     public $globalnotices = array();
-    /**
-     * Doctrine entity manager
-     *
-     * @var EntityManager
-     */
     protected $em;
     protected $authenticated;
     protected $inqueue;
-    private $current_user;
 
     public function __construct()
     {
@@ -73,8 +65,6 @@ class MY_Controller extends CI_Controller {
         $this->output->set_header("Pragma: no-cache"); 
         $this->output->set_header("X-Frame-Options: SAMEORIGIN"); 
         $this->em = $this->doctrine->em;
-
-
         $this->title = "";
         $this->lang->load('rr_lang', 'english');
         
