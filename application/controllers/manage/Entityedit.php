@@ -73,11 +73,11 @@ class Entityedit extends MY_Controller {
             {
                 if (in_array('entityid', $this->disallowedparts))
                 {
-                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|matches_value[' . $this->entityid . ']');
+                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|valid_urnorurl|min_length[4]|max_length[255]|matches_value[' . $this->entityid . ']');
                 }
                 else
                 {
-                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entityid_unique_update[' . $id . ']');
+                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|valid_urnorurl|min_length[4]|max_length[255]|entityid_unique_update[' . $id . ']');
                 }
                 if (in_array('scope', $this->disallowedparts))
                 {
@@ -92,10 +92,10 @@ class Entityedit extends MY_Controller {
             }
             else
             {
-                $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|no_white_spaces|required|min_length[5]|max_length[255]|entity_unique');
+                $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|valid_urnorurl|min_length[5]|max_length[255]|entity_unique');
                 if (!$loggedin)
                 {
-                    $this->form_validation->set_rules('f[primarycnt][mail]', lang('rr_youcntmail'), 'trim|required|valid_email|xss_clean');
+                    $this->form_validation->set_rules('f[primarycnt][mail]', lang('rr_youcntmail'), 'trim|required|valid_email');
                 }
             }
 
@@ -103,7 +103,7 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['reqattr'] as $k => $r)
                 {
-                    $this->form_validation->set_rules('f[reqattr][' . $k . '][reason]', 'Attribute requirement reason', 'trim|xss_clean');
+                    $this->form_validation->set_rules('f[reqattr][' . $k . '][reason]', 'Attribute requirement reason', 'trim||htmlspecialchars');
                     $this->form_validation->set_rules('f[reqattr][' . $k . '][attrid]', 'Attribute requirement - attribute id is missing', 'trim|required|integer|xss_clean');
                 }
             }
@@ -135,7 +135,8 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['uii']['idpsso']['displayname'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'), $k) . '', 'trim|min_length[3]|max_length[255]|xss_clean');
+                   $this->form_validation->set_rules('f[uii][idpsso][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'), $k) . '', 'trim|min_length[3]|max_length[255]|xss_clean');
+                   
                 }
             }
             if (isset($y['f']['uii']['idpsso']['desc']) && is_array($y['f']['uii']['idpsso']['desc']))
@@ -437,7 +438,7 @@ class Entityedit extends MY_Controller {
                     {
                         $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][url]', 'DiscoveryResponse URL', 'trim|required|max_length[254]|valid_url');
                         $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][bind]', 'DiscoveryResponse Binding protocol', 'trim|required|xss_clean');
-                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][order]', 'DiscoveryResponse Index', 'trim|required|numeric|xss_clean');
+                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][order]', 'DiscoveryResponse Index', 'trim|required|numeric');
                         $tmpurl = trim($y['f']['srv']['DiscoveryResponse']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['DiscoveryResponse']['' . $k . '']['order']);
 

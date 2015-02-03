@@ -298,7 +298,7 @@ class Providerdetails {
 
                         if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked))
                         {
-                            $fp = fsockopen($ip, $urlPort, $errno, $errstr, 2);
+                            $fp = @fsockopen($ip, $urlPort, $errno, $errstr, 2);
                             if (!$fp)
                             {
                                 $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
@@ -315,7 +315,7 @@ class Providerdetails {
                     {
                         if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked))
                         {
-                            $fp = fsockopen('tcp://[' . $ip . ']', $urlPort, $errno, $errstr, 2);
+                            $fp = @fsockopen('tcp://[' . $ip . ']', $urlPort, $errno, $errstr, 2);
                             if (!$fp)
                             {
                                 $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');

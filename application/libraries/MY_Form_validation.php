@@ -170,7 +170,26 @@ class MY_form_validation extends CI_form_validation {
 
     }
 
-    
+    /**
+     * validates str if is urn or url - for example: validation of entityid
+     * 
+     */
+    public function valid_urnorurl($str)
+    {
+        $urnRegex = '/^urn:[a-z0-9][a-z0-9-]{1,31}:([a-z0-9()+,-.:=@;$_!*\']|%(0[1-9a-f]|[1-9a-f][0-9a-f]))+$/i';
+        $isUrnValid = (bool) preg_match($urnRegex, $str);
+        if($isUrnValid) 
+        {
+            return TRUE;
+        }
+        $isValidUrl = parent::valid_url($str);
+        if($isValidUrl)
+        {
+            return TRUE;
+        }
+        $this->set_message('valid_urnorurl', "%s : contains invalid URI");
+        return FALSE;
+    }
     /**
      * Validates a date (yyyy-mm-dd)
      * 
