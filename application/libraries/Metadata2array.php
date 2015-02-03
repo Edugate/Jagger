@@ -337,7 +337,7 @@ class Metadata2array
             }
             elseif ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat')
             {
-                $result['nameid'][] = $child->nodeValue;
+                $result['nameid'][] = trim($child->nodeValue);
             }
             elseif ($child->nodeName === 'AttributeService' || $child->nodeName === 'md:AttributeService')
             {
@@ -363,7 +363,7 @@ class Metadata2array
             }
             elseif ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat')
             {
-                $result['nameid'][] = $child->nodeValue;
+                $result['nameid'][] = trim($child->nodeValue);
             }
             elseif ($child->nodeName === 'SingleSignOnService' || $child->nodeName === 'md:SingleSignOnService')
             {

@@ -274,7 +274,7 @@ $foundation = $base_url . 'foundation/';
         <?php
 // list js files to load 
         $jsToLoad1 = array(
-            'jquery.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.uitablefilter.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
+            'jquery-2.1.3.min.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.uitablefilter.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
             'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js',
             'foundation.min.js', 'foundation.topbar.js', 'foundation.tab.js', 'foundation.alert.js', 'foundation.reveal.js', 'jquery.simplemodal.js', 'foundation.tooltip.js');
         foreach ($jsToLoad1 as $jsFile)
@@ -323,7 +323,7 @@ $foundation = $base_url . 'foundation/';
         </script>
         <?php
         // load local final js
-        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v7.js"></script>' . PHP_EOL;
+        echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v7.min.js"></script>' . PHP_EOL;
 
         // raw js from array
         if (!empty($rawJs) && is_array($rawJs))
