@@ -134,8 +134,8 @@ class Ajax extends MY_Controller
             'mime' => $mimeType,
             'url' => $logourl,
         );
-        echo json_encode($result);
-
+        
+        $this->output->set_content_type('application/json')->set_output(json_encode($result));
         return;
     }
 
@@ -260,7 +260,7 @@ class Ajax extends MY_Controller
                 'labels' => $lbs,
             );
         }
-        echo json_encode($result);
+        $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
     public function showhelpstatus($n = null)
