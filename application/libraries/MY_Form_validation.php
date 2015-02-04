@@ -335,7 +335,7 @@ class MY_form_validation extends CI_form_validation {
     {
         if(isset($this->_field_data[$field], $this->_field_data[$field]['postdata']))
         {
-            $lang = $this->_field_data[$field]['postdata'];
+            $jlang = $this->_field_data[$field]['postdata'];
         }
         else
         {
@@ -343,7 +343,7 @@ class MY_form_validation extends CI_form_validation {
 
         }
 
-        $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup'=>$group,'lang'=>$lang));
+        $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup'=>$group,'lang'=>$jlang));
         if(!empty($l))
         {
             $this->set_message('mailtemplate_unique', 'Templeate with specidi lang exist for ');

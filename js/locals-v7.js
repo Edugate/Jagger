@@ -1651,10 +1651,11 @@ $(document).ready(function () {
             url: url,
             timeout: 2500,
             cache: true,
+            dataType: "json",
             value: $('table.fedistpercat'),
-            success: function (json) {
+            success: function (data) {
                 $('#spinner').hide();
-                data = $.parseJSON(json);
+
                 if (!data) {
                     alert('no data in federation category');
                 }
