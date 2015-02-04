@@ -2329,11 +2329,11 @@ class Form_element {
                 $attrs = $v->getAttributes();
                 if (isset($attrs['xml:lang']))
                 {
-                    $lang = $attrs['xml:lang'];
+                    $jlang = $attrs['xml:lang'];
                 }
                 else
                 {
-                    $lang = 0;
+                    $jlang = 0;
                 }
                 $eid = $v->getId();
                 if (empty($eid))
@@ -2342,7 +2342,7 @@ class Form_element {
                 }
                 $logos[$v->getType()]['' . $eid . ''] = array(
                     'url' => '' . $v->getLogoValue() . '',
-                    'lang' => '' . $lang . '',
+                    'lang' => '' . $jlang . '',
                     'width' => $attrs['width'],
                     'height' => $attrs['height'],
                 );
@@ -2603,16 +2603,16 @@ class Form_element {
                     $l = $v1->getAttributes();
                     if (isset($l['xml:lang']))
                     {
-                        $lang = $l['xml:lang'];
-                        if (!array_key_exists($lang, $langs))
+                        $jlang = $l['xml:lang'];
+                        if (!array_key_exists($jlang, $langs))
                         {
-                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                            $langtxt = $lang;
+                            log_message('error', 'Language code ' . $jlang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $jlang;
                         }
                         else
                         {
-                            $langtxt = $langs['' . $lang . ''];
-                            unset($langsdisplaynames['' . $lang . '']);
+                            $langtxt = $langs['' . $jlang . ''];
+                            unset($langsdisplaynames['' . $jlang . '']);
                         }
                     }
                     else
@@ -2622,14 +2622,14 @@ class Form_element {
                     }
                     $origval = $v1->getEvalue();
                     $nval = $origval;
-                    if ($sessform && isset($ses['uii']['idpsso']['displayname']['' . $lang . '']))
+                    if ($sessform && isset($ses['uii']['idpsso']['displayname']['' . $jlang . '']))
                     {
-                        $nval = $ses['uii']['idpsso']['displayname']['' . $lang . ''];
-                        unset($ses['uii']['idpsso']['displayname']['' . $lang . '']);
+                        $nval = $ses['uii']['idpsso']['displayname']['' . $jlang . ''];
+                        unset($ses['uii']['idpsso']['displayname']['' . $jlang . '']);
                     }
-                    $currval = set_value('f[uii][idpsso][displayname][' . $lang . ']', $nval);
+                    $currval = set_value('f[uii][idpsso][displayname][' . $jlang . ']', $nval);
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][displayname][' . $lang . ']', 'uiiidpssodisplayname', '' . $lang . '', $currval, '');
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][displayname][' . $jlang . ']', 'uiiidpssodisplayname', '' . $jlang . '', $currval, '');
                     $r .= '</div>';
                 }
             }
@@ -2676,16 +2676,16 @@ class Form_element {
                     $l = $v1->getAttributes();
                     if (isset($l['xml:lang']))
                     {
-                        $lang = $l['xml:lang'];
-                        if (!array_key_exists($lang, $langs))
+                        $jlang = $l['xml:lang'];
+                        if (!array_key_exists($jlang, $langs))
                         {
-                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                            $langtxt = $lang;
+                            log_message('error', 'Language code ' . $jlang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $jlang;
                         }
                         else
                         {
-                            $langtxt = $langs['' . $lang . ''];
-                            unset($langsdisplaynames['' . $lang . '']);
+                            $langtxt = $langs['' . $jlang . ''];
+                            unset($langsdisplaynames['' . $jlang . '']);
                         }
                     }
                     else
@@ -2695,14 +2695,14 @@ class Form_element {
                     }
                     $origval = $v1->getEvalue();
                     $nval = $origval;
-                    if ($sessform && isset($ses['uii']['idpsso']['desc']['' . $lang . '']))
+                    if ($sessform && isset($ses['uii']['idpsso']['desc']['' . $jlang . '']))
                     {
-                        $nval = $ses['uii']['idpsso']['desc']['' . $lang . ''];
-                        unset($ses['uii']['idpsso']['desc']['' . $lang . '']);
+                        $nval = $ses['uii']['idpsso']['desc']['' . $jlang . ''];
+                        unset($ses['uii']['idpsso']['desc']['' . $jlang . '']);
                     }
-                    $currval = set_value('f[uii][idpsso][desc][' . $lang . ']', $nval);
+                    $currval = set_value('f[uii][idpsso][desc][' . $jlang . ']', $nval);
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][idpsso][desc][' . $lang . ']', 'lhelpdesk', $lang, $currval, '');
+                    $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][idpsso][desc][' . $jlang . ']', 'lhelpdesk', $jlang, $currval, '');
                     $r .= '</div>';
                 }
             }
@@ -2737,16 +2737,16 @@ class Form_element {
                     $l = $v1->getAttributes();
                     if (isset($l['xml:lang']))
                     {
-                        $lang = $l['xml:lang'];
-                        if (!array_key_exists($lang, $langs))
+                        $jlang = $l['xml:lang'];
+                        if (!array_key_exists($jlang, $langs))
                         {
-                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                            $langtxt = $lang;
+                            log_message('error', 'Language code ' . $jlang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $jlang;
                         }
                         else
                         {
-                            $langtxt = $langs['' . $lang . ''];
-                            unset($langsdisplaynames['' . $lang . '']);
+                            $langtxt = $langs['' . $jlang . ''];
+                            unset($langsdisplaynames['' . $jlang . '']);
                         }
                     }
                     else
@@ -2756,14 +2756,14 @@ class Form_element {
                     }
                     $origval = $v1->getEvalue();
                     $nval = $origval;
-                    if ($sessform && isset($ses['uii']['idpsso']['helpdesk']['' . $lang . '']))
+                    if ($sessform && isset($ses['uii']['idpsso']['helpdesk']['' . $jlang . '']))
                     {
-                        $nval = $ses['uii']['idpsso']['helpdesk']['' . $lang . ''];
-                        unset($ses['uii']['idpsso']['helpdesk']['' . $lang . '']);
+                        $nval = $ses['uii']['idpsso']['helpdesk']['' . $jlang . ''];
+                        unset($ses['uii']['idpsso']['helpdesk']['' . $jlang . '']);
                     }
-                    $currval = set_value('f[uii][idpsso][helpdesk][' . $lang . ']', $nval);
+                    $currval = set_value('f[uii][idpsso][helpdesk][' . $jlang . ']', $nval);
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][helpdesk][' . $lang . ']', 'uiiidpssohelpdesk', $lang, $currval, '');
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][helpdesk][' . $jlang . ']', 'uiiidpssohelpdesk', $jlang, $currval, '');
                     $r .= '</div>';
                 }
             }
@@ -2879,16 +2879,16 @@ class Form_element {
                     $l = $v1->getAttributes();
                     if (isset($l['xml:lang']))
                     {
-                        $lang = $l['xml:lang'];
-                        if (!array_key_exists($lang, $langs))
+                        $jlang = $l['xml:lang'];
+                        if (!array_key_exists($jlang, $langs))
                         {
-                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                            $langtxt = $lang;
+                            log_message('error', 'Language code ' . $jlang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $jlang;
                         }
                         else
                         {
-                            $langtxt = $langs['' . $lang . ''];
-                            unset($langsdisplaynames['' . $lang . '']);
+                            $langtxt = $langs['' . $jlang . ''];
+                            unset($langsdisplaynames['' . $jlang . '']);
                         }
                     }
                     else
@@ -2898,14 +2898,14 @@ class Form_element {
                     }
                     $origval = $v1->getEvalue();
                     $nval = $origval;
-                    if ($sessform && isset($ses['uii']['spsso']['displayname']['' . $lang . '']))
+                    if ($sessform && isset($ses['uii']['spsso']['displayname']['' . $jlang . '']))
                     {
-                        $nval = $ses['uii']['spsso']['displayname']['' . $lang . ''];
-                        unset($ses['uii']['spsso']['displayname']['' . $lang . '']);
+                        $nval = $ses['uii']['spsso']['displayname']['' . $jlang . ''];
+                        unset($ses['uii']['spsso']['displayname']['' . $jlang . '']);
                     }
-                    $currval = set_value('f[uii][spsso][displayname][' . $lang . ']', $nval);
+                    $currval = set_value('f[uii][spsso][displayname][' . $jlang . ']', $nval);
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][displayname][' . $lang . ']', 'uiispssodisplayname', $lang, $currval, '');
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][displayname][' . $jlang . ']', 'uiispssodisplayname', $jlang, $currval, '');
                     $r .= '</div>';
                 }
             }
@@ -2950,16 +2950,16 @@ class Form_element {
                     $l = $v1->getAttributes();
                     if (isset($l['xml:lang']))
                     {
-                        $lang = $l['xml:lang'];
-                        if (!array_key_exists($lang, $langs))
+                        $jlang = $l['xml:lang'];
+                        if (!array_key_exists($jlang, $langs))
                         {
-                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                            $langtxt = $lang;
+                            log_message('error', 'Language code ' . $jlang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $jlang;
                         }
                         else
                         {
-                            $langtxt = $langs['' . $lang . ''];
-                            unset($langsdisplaynames['' . $lang . '']);
+                            $langtxt = $langs['' . $jlang . ''];
+                            unset($langsdisplaynames['' . $jlang . '']);
                         }
                     }
                     else
@@ -2969,14 +2969,14 @@ class Form_element {
                     }
                     $origval = $v1->getEvalue();
                     $nval = $origval;
-                    if ($sessform && isset($ses['uii']['spsso']['helpdesk']['' . $lang . '']))
+                    if ($sessform && isset($ses['uii']['spsso']['helpdesk']['' . $jlang . '']))
                     {
-                        $nval = $ses['uii']['spsso']['helpdesk']['' . $lang . ''];
-                        unset($ses['uii']['spsso']['helpdesk']['' . $lang . '']);
+                        $nval = $ses['uii']['spsso']['helpdesk']['' . $jlang . ''];
+                        unset($ses['uii']['spsso']['helpdesk']['' . $jlang . '']);
                     }
-                    $currval = set_value('f[uii][spsso][helpdesk][' . $lang . ']', $nval);
+                    $currval = set_value('f[uii][spsso][helpdesk][' . $jlang . ']', $nval);
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][helpdesk][' . $lang . ']', 'uiispssohelpdesk', $lang, $currval, '');
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][spsso][helpdesk][' . $jlang . ']', 'uiispssohelpdesk', $jlang, $currval, '');
                     $r .= '</div>';
                 }
             }
@@ -3020,16 +3020,16 @@ class Form_element {
                     $l = $v1->getAttributes();
                     if (isset($l['xml:lang']))
                     {
-                        $lang = $l['xml:lang'];
-                        if (!array_key_exists($lang, $langs))
+                        $jlang = $l['xml:lang'];
+                        if (!array_key_exists($jlang, $langs))
                         {
-                            log_message('error', 'Language code ' . $lang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
-                            $langtxt = $lang;
+                            log_message('error', 'Language code ' . $jlang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $jlang;
                         }
                         else
                         {
-                            $langtxt = $langs['' . $lang . ''];
-                            unset($langsdisplaynames['' . $lang . '']);
+                            $langtxt = $langs['' . $jlang . ''];
+                            unset($langsdisplaynames['' . $jlang . '']);
                         }
                     }
                     else
@@ -3039,14 +3039,14 @@ class Form_element {
                     }
                     $origval = $v1->getEvalue();
                     $nval = $origval;
-                    if ($sessform && isset($ses['uii']['spsso']['desc']['' . $lang . '']))
+                    if ($sessform && isset($ses['uii']['spsso']['desc']['' . $jlang . '']))
                     {
-                        $nval = $ses['uii']['spsso']['desc']['' . $lang . ''];
-                        unset($ses['uii']['spsso']['desc']['' . $lang . '']);
+                        $nval = $ses['uii']['spsso']['desc']['' . $jlang . ''];
+                        unset($ses['uii']['spsso']['desc']['' . $jlang . '']);
                     }
-                    $currval = set_value('f[uii][spsso][desc][' . $lang . ']', $nval);
+                    $currval = set_value('f[uii][spsso][desc][' . $jlang . ']', $nval);
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][spsso][desc][' . $lang . ']', 'uiispssodesc', $lang, $currval, '');
+                    $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][spsso][desc][' . $jlang . ']', 'uiispssodesc', $jlang, $currval, '');
                     $r .= '</div>';
                 }
             }

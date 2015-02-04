@@ -43,6 +43,7 @@ if (!defined('BASEPATH'))
  * @property Show_element $show_element
  * @property J_auth $j_auth
  * @property Doctrine $doctrine
+ * @property CI_Cache $cache
  */
 
 class MY_Controller extends CI_Controller {
