@@ -338,28 +338,6 @@ var GINIT = {
             formremover.foundation('reveal', 'open');
 
         });
-        function notificationupdate(message, callback) {
-            $("#notificationupdatemodal").foundation('reveal', 'open');
-            $("#notificationupdatemodal").on('opened', function () {
-
-                alert("o");
-                //var modal = this;
-                $(".no").click(function () {
-                    $("#notificationupdatemodal").foundation('reveal', 'close');
-                });
-
-                $('.message').append(message);
-                $('.yes').click(function () {
-                    if ($.isFunction(callback)) {
-                        callback.apply();
-                        $("#notificationupdatemodal").foundation('reveal', 'close');
-                    }
-                });
-
-            });
-
-
-        }
 
         $(".dhelp").click(function () {
             var curSize = parseInt($(this).css('font-size'));
@@ -641,16 +619,17 @@ var GINIT = {
             });
 
         }));
-        $("button.updatenotifactionstatus").click(function () {
+        $("button.updatenotifactionstatus").click(function (e) {
+            var notificationupdateform = $("#notificationupdateform");
             var related;
             var notid = $(this).attr('value');
             var ctbl = $(this).closest("tbody");
             var ctr = $(this).closest("tr");
             var subsriptionstatus = ctr.find('div.subscrstatus:first');
             var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
-            $("form#notificationupdateform").attr('action', posturl);
-            $("form#notificationupdateform #noteid").val(notid);
-            // $('#notificationupdateform').foundation('reveal', 'open'); 
+            notificationupdateform.attr('action', posturl);
+            notificationupdateform.find("#noteid").first().val(notid);
+
         });
 
 
@@ -956,6 +935,7 @@ var GINIT = {
 };
 
 $(document).ready(function () {
+
     GINIT.initialize();
 
 
@@ -1298,25 +1278,26 @@ $(document).ready(function () {
         });
 
         $('button.getlogo').click(function () {
+
             var alertlogoretrieve, imgdiv;
             var btnname = $(this).attr('name');
             var logourl, logoreview;
             var link = $(this).attr("value");
             if (btnname === 'idpgetlogo') {
-                logoreview = $('div#idpreviewlogo');
+                logoreview = $('#idpreviewlogo');
                 logoreview.hide();
                 alertlogoretrieve = $("small.idplogoretrieve");
                 alertlogoretrieve.empty().hide();
                 logourl = $("[name='idplogoretrieve']").val();
-                imgdiv = $("div#idpreviewlogo div.imgsource");
+                imgdiv = $("#idpreviewlogo").find("div.imgsource").first();
             }
             else {
-                logoreview = $('div#spreviewlogo');
+                logoreview = $('#spreviewlogo');
                 logoreview.hide();
                 alertlogoretrieve = $("small.splogoretrieve");
                 alertlogoretrieve.empty().hide();
                 logourl = $("[name='splogoretrieve']").val();
-                imgdiv = $("div#spreviewlogo div.imgsource");
+                imgdiv = $("#spreviewlogo").find("div.imgsource").first();
 
             }
 
@@ -1334,14 +1315,15 @@ $(document).ready(function () {
                         if (json.error) {
                             alertlogoretrieve.append(json.error).show();
                         }
-                        else if (json['data']) {
+                        else if (json.data) {
 
+                            var jsondata = json.data;
                             var img = new Image();
                             img.onload = function () {
 
                             };
-                            img.src = json.data.url;
-                            var sizeinfo = json.data.width + 'x' + json.data.height;
+                            img.src = jsondata.url;
+                            var sizeinfo = jsondata.width + 'x' + json.data.height;
                             var hiddeninputurl, hiddeninputsize, hiddeninputtype;
                             var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
                             var rname = '';
@@ -1353,7 +1335,7 @@ $(document).ready(function () {
                                 hiddeninputurl = '<input type="hidden" name="idpinputurl" value="' + json.data.url + '">';
                                 hiddeninputsize = '<input type="hidden" name="idpinputsize" value="' + sizeinfo + '">';
 
-                                $('div#idpreviewlogo div.imgsource').empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
+                                imgdiv.empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
                                 $('div#idpreviewlogo div.logoinfo').empty().append(sizeinfo);
                                 logoreview.show();
                             }
@@ -1361,7 +1343,7 @@ $(document).ready(function () {
                                 hiddeninputtype = '<input type="hidden" name="logotype" value="idp">';
                                 hiddeninputurl = '<input type="hidden" name="spinputurl" value="' + json.data.url + '">';
                                 hiddeninputsize = '<input type="hidden" name="spinputsize" value="' + sizeinfo + '">';
-                                $('div#spreviewlogo div.imgsource').empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
+                                imgdiv.empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
                                 $('div#spreviewlogo div.logoinfo').empty().append(sizeinfo);
                                 logoreview.show();
                             }
@@ -2437,9 +2419,9 @@ $(document).ready(function () {
             });
         });
     });
-    $("#rmstatdef button").click(function (ev) {
+    $("#rmstatdef").on('click','button',function (ev) {
         var url = $("form#rmstatdef").attr('action');
-        var serializedData = $("form#rmstatdef").serialize();
+        var serializedData = $(this).serialize();
         sconfirm('', function (ev) {
                 $.ajax({
                     type: "POST",
@@ -2684,7 +2666,7 @@ $(".submit").click(function () {
     return false;
 });
 
-$('#joinfed select#fedid').on('change', function () {
+$('#joinfed').on('change','#fedid' ,function (e) {
     $("div.validaronotice").hide();
     $("ul.validatorbuttons").replaceWith('<ul class="button-group validatorbuttons"></ul>');
     var csrfname = $("[name='csrfname']").val();
@@ -2700,7 +2682,7 @@ $('#joinfed select#fedid').on('change', function () {
     var jsurl = $('div#retrfvalidatorjson').text();
     var postdata = {};
     postdata[csrfname] = csrfhash;
-    postdata['fedid'] = soption;
+    postdata.fedid = soption;
     if (soption !== 0) {
         $.ajax({
             type: "POST",
@@ -2708,12 +2690,13 @@ $('#joinfed select#fedid').on('change', function () {
             timeout: 2500,
             cache: true,
             data: postdata,
-            success: function (json) {
+            dataType: "json",
+            success: function (data) {
                 $('#spinner').hide();
-                var data = $.parseJSON(json);
                 if (data) {
+                    var validatorButtons = $("ul.validatorbuttons");
                     $.each(data, function (i, v) {
-                        $("ul.validatorbuttons").append('<li><button  value="' + jsurl + '/' + v.fedid + '/' + v.id + '" class="small button">' + v.name + '</button></li>');
+                        validatorButtons.append('<li><button  value="' + jsurl + '/' + v.fedid + '/' + v.id + '" class="small">' + v.name + '</button></li>');
                     });
                     $("div.validaronotice").show();
                 }
@@ -2760,34 +2743,44 @@ $("#showhelps").click(function (e) {
 $("div.section").parent().addClass("section");
 
 
-$("form#notificationupdateform").submit(function (e) {
+$("#notificationupdateform").on('submit',function (e) {
 
     e.preventDefault();
     var serializedData = $(this).serializeArray();
     var posturl = $(this).attr('action');
-    var notid = $("input[name=noteid]").val();
+    var notid = parseInt($("input[name=noteid]").val());
+
     var buttonwithval = $('button[type="button"][value="' + notid + '"]');
+
     var ctr = $(buttonwithval).closest("tr");
     var subsriptionstatus = ctr.find('div.subscrstatus:first');
     $.ajax({
         type: "POST",
         url: posturl,
         data: serializedData,
+        dataType: "json",
         success: function (data) {
+
             if (data) {
+
+
                 var foundrecord = false;
 
                 $.each(data, function (i, v) {
-                    if (v.id === notid) {
+
+                    if (foundrecord === false && parseInt(v.id) === notid) {
+
                         foundrecord = true;
 
                         subsriptionstatus.text(v.langstatus);
                     }
+                    if(foundrecord === false)
+                    {
+                        ctr.hide();
+                    }
 
                 });
-                if (!foundrecord) {
-                    ctr.hide();
-                }
+
             }
 
             $('#notificationupdatemodal').foundation('reveal', 'close');
@@ -2868,9 +2861,9 @@ $("button.advancedmode").click(function () {
 
 
 // get list providers with dynamic list columns: in progress
-$("a.afilter").click(function () {
+$(".afilter").click(function () {
     var url = $(this).attr("href");
-    $('a.initiated').removeClass('initiatied');
+
     var filter;
     if ($(this).hasClass('filterext')) {
         filter = 1;
@@ -2881,13 +2874,14 @@ $("a.afilter").click(function () {
     else {
         filter = 0;
     }
+    $('a.initiated').removeClass('initiatied');
     $.ajax({
         type: "GET",
         url: url,
         timeout: 9500,
         cache: true,
         dataType: "json",
-        success: function (json) {
+        success: function (result) {
             $('#spinner').hide();
             if (filter === 1) {
                 $('dd.filterext').addClass('active');
@@ -2898,7 +2892,7 @@ $("a.afilter").click(function () {
             else {
                 $('dd.filterall').addClass('active');
             }
-            var result = json;
+
             if (result) {
                 var table = $('<table/>');
                 table.attr('id', 'details');
@@ -2908,14 +2902,14 @@ $("a.afilter").click(function () {
                 var theadtr = $('<tr/>');
                 thead.append(theadtr);
 
-                var Columns = new Array();
+                var Columns =[];
                 var tmpcolumns = result.columns;
                 var colstatus;
                 var counter = 0;
                 $.each(tmpcolumns, function (i, v) {
                     colstatus = v.status;
                     if (colstatus) {
-                        var nar = new Array();
+                        var nar = [];
                         $.each(v.cols, function (l, n) {
                             nar.push(n);
                         });
@@ -3008,7 +3002,7 @@ $('button[name="mrolebtn"]').click(function (e) {
         cache: false,
         dataType: "json",
         success: function (json) {
-            var rarray = new Array();
+            var rarray =[];
             $.each(json, function (ig, vg) {
                 rarray.push(vg);
 

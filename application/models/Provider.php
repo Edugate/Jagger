@@ -781,10 +781,10 @@ class Provider
         return $this;
     }
 
-    public function setRegistrationPolicy($lang, $url)
+    public function setRegistrationPolicy($jlang, $url)
     {
         $s = $this->getRegistrationPolicy();
-        $s['' . $lang . ''] = $url;
+        $s['' . $jlang . ''] = $url;
         $this->regpolicy = serialize($s);
         return $this;
     }
@@ -1852,7 +1852,7 @@ class Provider
         return $r;
     }
 
-    public function getNameToWebInLang($lang, $type = null)
+    public function getNameToWebInLang($jlang, $type = null)
     {
         $result = null;
         $backupname = null;
@@ -1875,7 +1875,7 @@ class Provider
                     $a = $p->getAttributes();
                     if (strcasecmp($t, $type) == 0 && isset($a['xml:lang']))
                     {
-                        if (strcasecmp($a['xml:lang'], $lang) == 0)
+                        if (strcasecmp($a['xml:lang'], $jlang) == 0)
                         {
                             $result = $p->getEvalue();
                             break;
@@ -1896,10 +1896,10 @@ class Provider
             }
             else
             {
-                $result = $this->getDisplayNameInLang($lang);
+                $result = $this->getDisplayNameInLang($jlang);
                 if (empty($result))
                 {
-                    $result = $this->getNameInLang($lang);
+                    $result = $this->getNameInLang($jlang);
                 }
             }
         }
@@ -1928,12 +1928,12 @@ class Provider
         return $p;
     }
 
-    public function getDisplayNameInLang($lang)
+    public function getDisplayNameInLang($jlang)
     {
         $r = $this->getDisplayNameLocalized();
-        if (isset($r['' . $lang . '']))
+        if (isset($r['' . $jlang . '']))
         {
-            return $r['' . $lang . ''];
+            return $r['' . $jlang . ''];
         }
         else
         {
@@ -1941,12 +1941,12 @@ class Provider
         }
     }
 
-    public function getNameInLang($lang)
+    public function getNameInLang($jlang)
     {
         $r = $this->getNameLocalized();
-        if (isset($r['' . $lang . '']))
+        if (isset($r['' . $jlang . '']))
         {
-            return $r['' . $lang . ''];
+            return $r['' . $jlang . ''];
         }
         else
         {
