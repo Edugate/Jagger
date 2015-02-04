@@ -1,4 +1,6 @@
+
 jQuery.fn.toggleOption = function (show) {
+
     jQuery(this).toggle(show);
     if (show) {
         while (jQuery(this).parent('span.toggleOption').length) {
@@ -8,6 +10,12 @@ jQuery.fn.toggleOption = function (show) {
         jQuery(this).wrap('<span class="toggleOption" style="display: none;" />');
     }
 };
+var createRowWithLangRm = function (langCode, langString, inputName, rmbtn) {
+    console.log('createRowWithLangRm fired');
+    return $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline tiny left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
+};
+
+
 
 var BINIT = {
     initFvalidators: function () {
@@ -115,7 +123,7 @@ var GINIT = {
 
         $("#password").on('keypress', function (e) {
             var kc = e.keyCode ? e.keyCode : e.which;
-            var sk = e.shiftKey ? e.shiftKey : ((kc === 16) ? true : false);
+            var sk = e.shiftKey ? e.shiftKey : (kc === 16);
             if (((kc >= 65 && kc <= 90) && !sk) || ((kc >= 97 && kc <= 122) && sk)) {
                 $("#capswarn").show();
             }
@@ -140,9 +148,11 @@ var GINIT = {
             var usernamerow = $(loginform).find("div.usernamerow").first();
             var passwordrow = $(loginform).find("div.passwordrow").first();
             var secondfactorrow = $(loginform).find("div.secondfactorrow").first();
+            var loginresponse = $("#loginresponse");
             $.ajax({
                 type: "GET",
                 url: url,
+                dataType: "json",
                 cache: false,
                 success: function (data) {
                     if (data.logged !== 1) {
@@ -150,7 +160,7 @@ var GINIT = {
                             submitbutton.prop('disabled', false);
                             usernamerow.show();
                             passwordrow.show();
-                            $("#loginresponse").hide();
+                            loginresponse.hide();
                             loginform.foundation('reveal', 'open');
                             return false;
                         }
@@ -159,7 +169,7 @@ var GINIT = {
                             usernamerow.show();
                             $("#password").val(null);
                             passwordrow.show();
-                            $("#loginresponse").hide();
+                            loginresponse.hide();
                             if (data.html) {
                                 secondfactorrow.html(data.html).show();
                             }
@@ -175,7 +185,7 @@ var GINIT = {
                     }
                     usernamerow.show();
                     passwordrow.show();
-                    $("#loginresponse").hide();
+                    loginresponse.hide();
                     loginform.foundation('reveal', 'open');
                 }
             });
@@ -205,8 +215,8 @@ var GINIT = {
         });
 
         $('#providerlogtab').on('toggled', function (event, tab) {
-            var domElement = tab;//.get(0);
-            var oko = domElement.find("[data-reveal-ajax-tab]");
+
+            var oko = tab.find("[data-reveal-ajax-tab]");
             var link = oko.attr("data-reveal-ajax-tab");
             if (link !== undefined) {
                 //$('#providerlogtab').empty();
@@ -394,8 +404,8 @@ var GINIT = {
                         cache: false,
                         success: function (data) {
                             $('#uploadlogo').unbind();
-                            $("div#t1").empty();
-                            $("div#t1").append(data);
+                            $("div#t1").empty().append(data);
+
                             $("#assignedlogos").unbind();
                             $("#availablelogos").unbind();
                             GINIT.initialize();
@@ -688,11 +698,12 @@ var GINIT = {
             return false;
         });
 
-        $('form#fvform').submit(function (e) {
+        $('#fvform').submit(function (e) {
             e.preventDefault();
-            var str = $(this).serializeArray();
-            var url = $("form#fvform").attr('action');
-            var fvid = $(this).find("button:focus").attr('id');
+            var fvform = $(this);
+            var str = fvform.serializeArray();
+            var url = fvform.attr('action');
+            var fvid = fvform.find("button:focus").attr('id');
 
             $.ajax({
                 type: "POST",
@@ -712,12 +723,12 @@ var GINIT = {
                             $("div#fvresult").show();
                         }
                         if (data.returncode === "success") {
-                            $("form").find("button:focus").css("background-color", "#00aa00");
-                            $("form").find("button:focus").data("passed", "true");
-                            $("form").find("button:focus").attr("disabled", "true");
+                            fvform.find("button:focus").css("background-color", "#00aa00");
+                            fvform.find("button:focus").data("passed", "true");
+                            fvform.find("button:focus").attr("disabled", "true");
                         } else if (data.returncode === "error") {
-                            $("form").find("button:focus").css("background-color", "#aa0000");
-                            $("form").find("button:focus").data("passed", "false");
+                           fvform.find("button:focus").css("background-color", "#aa0000");
+                           fvform.find("button:focus").data("passed", "false");
                         }
                         if (data.message) {
                             var msgdata;
@@ -780,6 +791,7 @@ var GINIT = {
             }
             else {
                 var value = $('<ul/>');
+
                 $.ajax({
                     url: url,
                     timeout: 3500,
@@ -906,7 +918,6 @@ var GINIT = {
             return false;
         });
         $('.accordionButton').addClass('off');
-        $('.accordionButton1').addClass('on');
 
         $('.accordionButton').mouseover(function () {
             $(this).addClass('over');
@@ -963,9 +974,7 @@ $(document).ready(function () {
             });
         });
 
-        var createRowWithLangRm = function (langCode, langString, inputName, rmbtn) {
-            return $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline tiny left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
-        };
+
 
         $("button#idpssoadddomainhint").click(function () {
             var rname = '';
@@ -1467,9 +1476,7 @@ $(document).ready(function () {
 
             var splink = $(this).attr("data-jagger-entidlink");
             if (splink !== undefined) {
-                var redurl = providerdetailurl + '/' + splink;
-                //    alert(redurl);
-                document.location.href = redurl;
+                document.location.href = providerdetailurl + '/' + splink;
                 return false;
             }
 
@@ -1746,13 +1753,13 @@ $(function () {
     if (baseurl === undefined) {
         baseurl = '';
     }
-    var refreshId;
+
     $("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
-    refreshId = setInterval(function () {
+    setInterval(function () {
         $("#responsecontainer").load(baseurl + 'reports/awaiting/ajaxrefresh');
     }, 172000);
     $("#dashresponsecontainer").load(baseurl + "reports/awaiting/dashajaxrefresh");
-    refreshId = setInterval(function () {
+    setInterval(function () {
         $("#dashresponsecontainer").load(baseurl + 'reports/awaiting/dashajaxrefresh');
     }, 172000);
 
@@ -1761,12 +1768,12 @@ $(function () {
         cache: false
     });
     $("#qcounter").load(baseurl + 'reports/awaiting/counterqueue');
-    refreshId = setInterval(function () {
+    setInterval(function () {
         $("#qcounter").load(baseurl + 'reports/awaiting/counterqueue');
     }, 86000);
 
 
-    $('#languageset select').on('change', function () {
+    $('#languageset').on('change','select' ,function (e) {
         var link = $("div#languageset form").attr('action');
         var url = link + this.value;
         $.ajax({
@@ -1775,7 +1782,11 @@ $(function () {
             cache: false
         }).done(function () {
             $('#languageset').foundation('reveal', 'close');
-            setTimeout('go_to_private_page()', 1000);
+
+            setTimeout(function(){
+                go_to_private_page();
+            },1000);
+
         });
         return false;
 
@@ -1860,11 +1871,13 @@ $(function () {
     $("a.lateststat").click(function () {
         var link = $(this), url = link.attr("href");
         var value = $('<div id="#statisticdiag">');
+        var i;
         $.ajax({
             url: url,
             timeout: 2500,
             cache: true,
             success: function (json) {
+                i = null;
                 $('#spinner').hide();
                 var data = $.parseJSON(json);
                 if (!data) {
@@ -1880,7 +1893,7 @@ $(function () {
 
                     });
                 }
-                i = null;
+
             },
             beforeSend: function () {
                 $('#spinner').show();
@@ -2349,80 +2362,6 @@ $(document).ready(function () {
     });
 
 
-// When the form is submitted
-    $("#status form").submit(function () {
-
-// Hide 'Submit' Button
-        $('#submit').hide();
-
-// Show Gif Spinning Rotator
-        $('#ajax_loading').show();
-
-// get timeoffset
-        var browsertime = new Date();
-        var browsertimezone = -browsertime.getTimezoneOffset();
-// 'this' refers to the current submitted form  
-        var str = $(this).serializeArray();
-        str.push({name: 'browsertimeoffset', value: '' + browsertimezone + ''});
-
-// -- Start AJAX Call --
-
-        $.ajax({
-            type: "POST",
-            url: baseurl + 'authenticate/dologin', // Send the login info to this page
-            data: str,
-            success: function (msg) {
-
-                $("#status").ajaxComplete(function (event, request, settings) {
-
-                    // Show 'Submit' Button
-                    $('#submit').show();
-
-                    // Hide Gif Spinning Rotator
-                    $('#ajax_loading').hide();
-
-                    if (msg === 'OK') // LOGIN OK?
-                    {
-                        var login_response = '<div id="logged_in">' +
-                            '<div style="width: 350px; float: left; margin-left: 70px;">' +
-                            '<div style="width: 40px; float: left;">' +
-                            '<img style="margin: 10px 0px 10px 0px;" align="absmiddle" src="' + baseurl + 'images/ajax-loader.gif">' +
-                            '</div>' +
-                            '<div style="margin: 10px 0px 0px 10px; float: right; width: 300px;">' +
-                            "You are successfully logged in! <br /> Please wait while you're redirected...</div></div>";
-                        $('a.modalCloseImg').hide();
-                        $('#simplemodal-container').css("width", "auto").css("height", "auto").css("background", "transparent").css("box-shadow", "none").css("text-align", "center");
-                        $(this).html(login_response); // Refers to 'status'
-
-                        // After 3 seconds redirect the 
-                        setTimeout('go_to_private_page()', 1000);
-                    }
-                    else // ERROR?
-                    {
-                        $('#login_response').html(msg);
-                    }
-
-                });
-
-            },
-            error: function () {
-                $("#status").ajaxComplete(function (event, request, settings) {
-                    $('#submit').show();
-                    $('#ajax_loading').hide();
-                    var login_response = "Invalid token, please refresh page and try again";
-                    $('#login_response').html(login_response).css("color", "red").css("font-weight", "bold");
-                });
-            }
-
-
-        });
-
-// -- End AJAX Call --
-
-        return false;
-
-    }); // end submit event
-
     $("button#registernotification2").click(function (ev) {
         ev.preventDefault();
         var notiform = $("form#notificationaddform");
@@ -2592,8 +2531,7 @@ $(document).ready(function () {
                         url: baseurl + 'ajax/getproviders',
                         cache: false,
                         datatype: "json",
-                        success: function (json) {
-                            var data = json;
+                        success: function (data) {
                             $.each(data, function (key, value) {
                                 $('<option>').val(value.key).text(value.value).appendTo(selprovider);
                             });
@@ -2740,370 +2678,6 @@ function go_to_private_page() {
     window.location.reload();
 }
 
-// parsemetadata
-$("button#parsemetadataidp").click(function () {
-    var xmlsource = $('textarea#metadatabody').val();
-    var xmlDoc;
-    try {
-        xmlDoc = $.parseXML(xmlsource);
-    }
-    catch (err) {
-        alert(err);
-        return false;
-    }
-
-    var xml = $(xmlDoc);
-    var $entity = null;
-    var $spssodescriptor = null;
-
-
-    xml.find("md\\:IDPSSODescriptor,IDPSSODescriptor").each(function () {
-        if ($(this).attr("protocolSupportEnumeration")) {
-            var $entity = $(this).parent();
-            var $idpssodescriptor = $(this);
-            return false;
-        }
-        return true;
-    });
-    if ($entity === null) {
-        alert("IDPSSODescriptor element not found");
-        return false;
-    }
-    $("#entityid").val($entity.attr("entityID"));
-    var $orgname = null;
-    $entity.find("md\\:OrganizationName,OrganizationName").each(function () {
-        $orgname = $(this);
-        var $langname = $orgname.attr("xml:lang");
-        if ($langname === "en") {
-            return false;
-        }
-    });
-    var $orgdisname = null;
-    $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName").each(function () {
-        $orgdisname = $(this);
-        var $langname = $orgdisname.attr("xml:lang");
-        if ($langname === "en") {
-            return false;
-        }
-
-    });
-    var $helpdeskurl = null;
-    $entity.find("md\\:OrganizationURL,OrganizationURL").each(function () {
-        $helpdeskurl = $(this);
-        var $langname = $helpdeskurl.attr("xml:lang");
-        if ($langname === "en") {
-            return false;
-        }
-    });
-    var $contact = null;
-    $entity.find("md\\:ContactPerson,ContactPerson").each(function () {
-        $contact = $(this);
-        var $contacttype = $contact.attr("contactType");
-        if ($contacttype === "administrative") {
-            return false;
-        }
-    });
-    if ($contact !== null) {
-        var $contactname = '';
-        $contact.find("md\\:GivenName,GivenName").each(function () {
-            $contactname = $(this).text();
-        });
-        $contact.find("md\\:SurName,SurName").each(function () {
-            $contactname = $contactname + ' ' + $(this).text();
-        });
-        var $contactemail = '';
-        $contact.find("md\\:EmailAddress,EmailAddress").each(function () {
-            $contactemail = $(this).text();
-        });
-        $("#contact\_name").val($contactname);
-        $("#contact\_mail").val($contactemail);
-    }
-    var $nameids = '';
-    $idpssodescriptor.find("md\\:NameIDFormat,NameIDFormat").each(function () {
-        $nameids = $nameids + ' ' + $(this).text();
-    });
-    var $scopes = '';
-    $idpssodescriptor.find("shibmd\\:Scope,Scope").each(function () {
-        if ($(this).attr("regexp") && $(this).attr("regexp") === 'false') {
-            if ($scopes !== '') {
-                $scopes = $scopes + ',' + $(this).text();
-            }
-            else {
-                $scopes = $(this).text();
-            }
-        }
-    });
-    $("#idpssoscope").val($.trim($scopes));
-
-    $idpssodescriptor.find("md\\:SingleSignOnService,SingleSignOnService").each(function () {
-        var $binprot = $(this).attr("Binding");
-        var $ssourl = $(this).attr("Location");
-        if ($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect") {
-            $("#sso\\[saml2httpredirect\\]").val($.trim($ssourl));
-        }
-        else if ($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") {
-            $("#sso\\[saml2httppost\\]").val($.trim($ssourl));
-        }
-        else if ($binprot === "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign") {
-            $("#sso\\[saml2httppostsimplesign\\]").val($.trim($ssourl));
-
-        }
-        else {
-            $("#sso\\[" + $binprot + "\\]").val($.trim($ssourl));
-        }
-    });
-
-    var certsign = false;
-    var certenc = false;
-    var cert;
-    $idpssodescriptor.find("md\\:KeyDescriptor, KeyDescriptor").each(function () {
-        if (!certsign || !certenc) {
-            if ($(this).attr("use") === "signing") {
-                if (!certsign) {
-                    cert = $(this).find("ds\\:X509Certificate,X509Certificate");
-                    $("#sign_cert_body").val($.trim(cert.text()));
-                    certsign = true;
-                }
-            }
-            else if ($(this).attr("use") === "encryption") {
-                if (!certenc) {
-                    cert = $(this).find("ds\\:X509Certificate,X509Certificate");
-                    $("#encrypt_cert_body").val($.trim(cert.text()));
-                    certenc = true;
-                }
-            }
-            else {
-                var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
-                if (!certenc) {
-                    $("#encrypt_cert_body").val($.trim(cert.text()));
-                    certenc = true;
-                }
-                if (!certsign) {
-                    $("#sign_cert_body").val($.trim(cert.text()));
-                    certsign = true;
-                }
-            }
-
-        }
-        else {
-            return false;
-        }
-
-    });
-
-    if ($orgname === null) {
-        $("#homeorg").val("");
-    }
-    else {
-        $("#homeorg").val($orgname.text());
-    }
-    if ($orgdisname === null) {
-        $("#deschomeorg").val("");
-    }
-    else {
-        $("#deschomeorg").val($orgdisname.text());
-    }
-    if ($helpdeskurl === null) {
-        $("#helpdeskurl").val("");
-    }
-    else {
-        $("#helpdeskurl").val($helpdeskurl.text());
-    }
-
-    $("#nameids").val($.trim($nameids));
-
-    alert("Success");
-    GINIT.initialize();
-
-});
-$("button#parsemetadatasp").click(function () {
-    $("div.spregacsopt").remove();
-    var xmlsource = $('textarea#metadatabody').val();
-    var xmlDoc;
-    try {
-        xmlDoc = $.parseXML(xmlsource);
-    }
-    catch (err) {
-        alert(err);
-        return false;
-    }
-
-    var xml = $(xmlDoc);
-    var $entity = null;
-
-    xml.find("md\\:SPSSODescriptor,SPSSODescriptor").each(function () {
-        if ($(this).attr("protocolSupportEnumeration")) {
-            $entity = $(this).parent();
-            return false;
-        }
-        return true;
-    });
-    if ($entity === null) {
-        alert("SPSSODescriptor not found");
-        return false;
-    }
-    $("div.optspregacs").remove();
-    $("#entityid").val($entity.attr("entityID"));
-    var $orgname = $entity.find("md\\:OrganizationName,OrganizationName").first();
-    var $orgdisname = $entity.find("md\\:OrganizationDisplayName,OrganizationDisplayName").first();
-    var $helpdeskurl = $entity.find("md\\:OrganizationURL,OrganizationURL").first();
-    $("#resource").val($orgname.text());
-    $("#descresource").val($orgdisname.text());
-    $("#helpdeskurl").val($helpdeskurl.text());
-    var rname = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
-    var defaultacs = false;
-
-    $entity.find("md\\:AssertionConsumerService,AssertionConsumerService").each(function () {
-        rname = "";
-        for (var i = 0; i < 5; i++) {
-            rname += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-        if (defaultacs != true) {
-            $("#acs_url\\[0\\]").val($(this).attr("Location"));
-            $("#acs_order\\[0\\]").val($(this).attr("index"));
-            $('#acs_bind\\[0\\]').val($(this).attr('Binding'));
-            defaultacs = true;
-        }
-        else {
-            var nelement = $("div.spregacs").first().clone().removeAttr("class").addClass("spregacsopt");
-
-            $("#acs_url\\[0\\]", nelement).removeAttr("name").attr("name", "acs_url\[" + rname + "\]").attr("id", "acs_url\[" + rname + "\]").val($(this).attr("Location"));
-            $("#acs_order\\[0\\]", nelement).removeAttr("name").attr("name", "acs_order\[" + rname + "\]").attr("id", "acs_order\[" + rname + "\]").val($(this).attr("index"));
-            var acsbind = $("#acs_bind\\[0\\]", nelement).removeAttr("name").attr("name", "acs_bind\[" + rname + "\]").attr("id", "acs_bind\[" + rname + "\]");
-            $('option', acsbind).removeAttr('selected').filter('[value="' + $(this).attr('Binding') + '"]').attr('selected', true);
-            $("div.spregacs").after(nelement);
-        }
-    });
-
-    var nameids = '';
-    $entity.find("md\\:NameIDFormat, NameIDFormat").each(function () {
-        nameids = nameids + ' ' + $(this).text();
-    });
-
-    $("#nameids").val(nameids);
-
-    var certsign = false;
-    var certenc = false;
-    $entity.find("md\\:KeyDescriptor, KeyDescriptor").each(function () {
-        if (!certsign || !certenc) {
-            if ($(this).attr("use") === "signing") {
-                if (!certsign) {
-                    var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
-                    $("#sign_cert_body").val(cert.text());
-                    certsign = true;
-                }
-            }
-            else if ($(this).attr("use") === "encryption") {
-                if (!certenc) {
-                    var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
-                    $("#encrypt_cert_body").val(cert.text());
-                    certenc = true;
-                }
-            }
-            else {
-                var cert = $(this).find("ds\\:X509Certificate,X509Certificate");
-                if (!certenc) {
-                    $("#encrypt_cert_body").val(cert.text());
-                    certenc = true;
-                }
-                if (!certsign) {
-                    $("#sign_cert_body").val(cert.text());
-                    certsign = true;
-                }
-            }
-        }
-        else {
-            return false;
-        }
-    });
-    alert("Success");
-    GINIT.initialize();
-
-});
-
-//  spregister
-
-var current_fs, next_fs, previous_fs;
-var left, opacity, scale;
-var animating;
-var addheight = $("#progressbar").height() + 30;
-var fieldsetheight = $("#multistepform fieldset").height() + addheight;
-$("form#multistepform").css({'height': fieldsetheight});
-$(".next").click(function () {
-    var canproceed = true;
-    $(this).parent().find('input.required').each(function () {
-        if (!$.trim($(this).val())) {
-            alert("Missing input");
-            canproceed = false;
-            return false;
-        }
-    });
-    if (!canproceed) {
-        return false;
-    }
-    if (animating)
-        return false;
-    animating = true;
-    current_fs = $(this).parent();
-    next_fs = $(this).parent().next();
-    fieldsetheight = next_fs.height() + addheight;
-    $("form#multistepform").css({'height': fieldsetheight});
-    $("#progressbar li").eq($("#multistepform fieldset").index(next_fs)).addClass("active");
-    next_fs.show();
-    current_fs.animate({opacity: 0}, {
-        step: function (now, mx) {
-            scale = 1 - (1 - now) * 0.2;
-            left = (now * 50) + "%";
-            opacity = 1 - now;
-            current_fs.css({'transform': 'scale(' + scale + ')'});
-            next_fs.css({'left': left, 'opacity': opacity});
-        },
-        duration: 200,
-        complete: function () {
-            current_fs.hide();
-            animating = false;
-        }
-    });
-});
-
-$(".previous").click(function () {
-    if (animating)
-        return false;
-    animating = true;
-
-    current_fs = $(this).parent();
-    previous_fs = $(this).parent().prev();
-    fieldsetheight = previous_fs.height() + addheight;
-    $("form#multistepform").css({'height': fieldsetheight});
-
-    //de-activate current step on progressbar
-    $("#progressbar li").eq($("#multistepform fieldset").index(current_fs)).removeClass("active");
-
-    //show the previous fieldset
-    previous_fs.show();
-    //hide the current fieldset with style
-    current_fs.animate({opacity: 0}, {
-        step: function (now, mx) {
-            //as the opacity of current_fs reduces to 0 - stored in "now"
-            //1. scale previous_fs from 80% to 100%
-            scale = 0.8 + (1 - now) * 0.2;
-            //2. take current_fs to the right(50%) - from 0%
-            left = ((1 - now) * 50) + "%";
-            //3. increase opacity of previous_fs to 1 as it moves in
-            opacity = 1 - now;
-            current_fs.css({'left': left});
-            previous_fs.css({'transform': 'scale(' + scale + ')', 'opacity': opacity});
-        },
-        duration: 200,
-        complete: function () {
-            current_fs.hide();
-            animating = false;
-        }
-        //this comes from the custom easing plugin
-        //easing: 'easeInOutBack'
-    });
-});
 
 $(".submit").click(function () {
     return false;
@@ -3126,7 +2700,7 @@ $('#joinfed select#fedid').on('change', function () {
     var postdata = {};
     postdata[csrfname] = csrfhash;
     postdata['fedid'] = soption;
-    if (soption != 0) {
+    if (soption !== 0) {
         $.ajax({
             type: "POST",
             url: jsurl,
@@ -3139,7 +2713,7 @@ $('#joinfed select#fedid').on('change', function () {
                 if (data) {
                     $.each(data, function (i, v) {
                         $("ul.validatorbuttons").append('<li><button  value="' + jsurl + '/' + v.fedid + '/' + v.id + '" class="small button">' + v.name + '</button></li>');
-                    })
+                    });
                     $("div.validaronotice").show();
                 }
             },
@@ -3153,7 +2727,7 @@ $('#joinfed select#fedid').on('change', function () {
             }
         }).done(function () {
             BINIT.initFvalidators();
-        })
+        });
     }
 });
 
@@ -3214,9 +2788,7 @@ $("form#notificationupdateform").submit(function (e) {
                     ctr.hide();
                 }
             }
-            else {
 
-            }
             $('#notificationupdatemodal').foundation('reveal', 'close');
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -3229,7 +2801,7 @@ $("form#notificationupdateform").submit(function (e) {
 });
 
 $(document).on('submit', 'div#loginform form', function (e) {
-    e.preventDefault;
+    e.preventDefault();
     var loginform = $("#loginform");
     var submitbutton = $(loginform).find(":submit").first();
     var secondfactorrow = $(loginform).find("div.secondfactorrow").first();
@@ -3253,7 +2825,10 @@ $(document).on('submit', 'div#loginform form', function (e) {
             if (data) {
                 if (data.success === true && data.result === 'OK') {
                     $('#loginform').foundation('reveal', 'close');
-                    setTimeout('go_to_private_page()', 1000);
+                    setTimeout(function(){
+                        go_to_private_page();
+                    },1000);
+
                 }
                 else if (data.result === 'secondfactor') {
                     $('#password').val('');
@@ -3368,7 +2943,7 @@ $("a.afilter").click(function () {
                                         cell = cell + '<a href="' + w.phelpurl + '">' + w.phelpurl + '</a>';
                                     }
                                     else if (s === 'plocked' || s === 'pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable') {
-                                        if (result['statedefs'][s][w[s]] != undefined) {
+                                        if (result['statedefs'][s][w[s]] !== undefined) {
                                             cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
                                         }
                                     }
@@ -3379,7 +2954,7 @@ $("a.afilter").click(function () {
                             });
                             tbodyToInsert[a++] = '<td>' + cell + '</td>';
 
-                        })
+                        });
                         counter++;
                         tbodyToInsert[a++] = '</tr>';
 
@@ -3439,7 +3014,7 @@ $('button[name="mrolebtn"]').click(function (e) {
             });
             $("input[name='checkrole[]']").each(function () {
                 var val = $(this).attr('value');
-                var cc = $(this).attr('checked')
+                var cc = $(this).attr('checked');
 
 
                 if ($.inArray(val, rarray) === -1) {
@@ -3538,11 +3113,12 @@ $(document).on('click', '#resetloginform', function (e) {
             $("#loginform").foundation('reveal', 'close');
             return false;
         }
-    })
-})
+    });
+});
 $(document).on('submit', "#duo_form", function (e) {
     e.preventDefault();
     var link = $(this).attr('action');
+    var secondfactorrow = $('.secondfactorrow');
     $.ajax({
         type: 'POST',
         url: link,
@@ -3556,7 +3132,11 @@ $(document).on('submit', "#duo_form", function (e) {
             if (data) {
                 if (data.success === true && data.result === 'OK') {
                     $('#loginform').foundation('reveal', 'close');
-                    setTimeout('go_to_private_page()', 1000);
+
+                    setTimeout(function(){
+                        go_to_private_page();
+                    },1000);
+
                 }
                 else if (data.result === 'secondfactor') {
                     secondfactorrow.append(data.html).show();
@@ -3686,7 +3266,7 @@ $(document).on('click', 'a.updateprefs', function (e) {
         }
 
 
-    })
+    });
 
 
     modal.foundation('reveal', 'open');
