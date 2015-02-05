@@ -1942,7 +1942,8 @@ class Providerupdater
             {
                 $exmeta = new models\StaticMetadata;
             }
-            $exmeta->setMetadata($ch['static']);
+            $ch['static'] =  jXMLFilter($ch['static']);
+            $exmeta->setMetadata(trim($ch['static']));
             $exmeta->setProvider($ent);
             $ent->setStaticMetadata($exmeta);
             $this->em->persist($exmeta);

@@ -978,6 +978,7 @@ class MY_form_validation extends CI_form_validation {
         }
         libxml_use_internal_errors(true);
          $this->CI->load->library('metadata_validator');
+         
          $xmls = simplexml_load_string($metadata);
          $namespases =  h_metadataNamespaces();
          if(!empty($xmls))
@@ -990,6 +991,8 @@ class MY_form_validation extends CI_form_validation {
                     $xpath->registerNamespace(''.$k.'',''.$v.'');
                 }
                 $y = $docxml->saveXML();
+                
+                log_message('debug',$y);
                 $first_attempt = $this->CI->metadata_validator->validateWithSchema($metadata);
                 if(empty($first_attempt))
                 {
