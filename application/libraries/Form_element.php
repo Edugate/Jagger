@@ -1026,7 +1026,15 @@ class Form_element {
 
             $svalue = $static_metadata;
         }
-        $value = set_value('f[static]', $svalue);
+        if($this->ci->input->post('f[static]'))
+        {
+            $value = $this->ci->input->post('f[static]');
+        }
+        else
+        {
+            $value =  $svalue;
+        }
+      //  $value = set_value('f[static]', $svalue);
         $result = array();
 
         $result[] = '<div class="small-3 columns"><label for="f[usestatic]" class="right">' . lang('rr_usestaticmetadata') . '</label></div><div class="small-6 large-7 columns">' . form_checkbox(array(
@@ -1042,7 +1050,7 @@ class Form_element {
                     'cols' => 65,
                     'rows' => 20,
                     'class' => 'metadata',
-                    'value' => $value
+                    'value' => trim($value),
                 )) . '</div><div class="small-3 large-2 columns"></div>';
 
 
@@ -2446,9 +2454,9 @@ class Form_element {
 
             $langselection = form_dropdown($t . 'logolang', $btnlangs);
             $reviewlogo = '<div class="small-3 column"><div class="logolangselect">' . $langselection . '</div><div class="logosizeinfo"></div></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button tiny addnewlogo" type="button" name="addnewlogo">' . lang('rr_add') . '</button></div>';
-            $dupa = '<fieldset><legend>' . lang('rr_newlogosection') . '</legend>' . $inlabel . $in . $in2 . '<div id="' . $t . 'reviewlogo" class="small-12 column reviewlogo" style="display: none; max-height: 100px">' . $reviewlogo . '</div></fieldset>';
+            $da = '<fieldset><legend>' . lang('rr_newlogosection') . '</legend>' . $inlabel . $in . $in2 . '<div id="' . $t . 'reviewlogo" class="small-12 column reviewlogo" style="display: none; max-height: 100px">' . $reviewlogo . '</div></fieldset>';
 
-            $result[$k1][] = '<fieldset><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $dupa . '</fieldset>';
+            $result[$k1][] = '<fieldset><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $da . '</fieldset>';
             $result[$k1][] = '';
         }
         return $result;
