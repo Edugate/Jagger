@@ -1028,12 +1028,14 @@ class Form_element {
         }
         if($this->ci->input->post('f[static]'))
         {
-            $value = $this->ci->input->post('f[static]');
+            $value = jXMLFilter($this->ci->input->post('f[static]'));
         }
         else
         {
             $value =  $svalue;
         }
+       
+
       //  $value = set_value('f[static]', $svalue);
         $result = array();
 

@@ -36,6 +36,16 @@ function getCachePrefix()
 
 }
 
+
+function jXMLFilter($str)
+{
+     $remove_php_regex = '/(<\?{1}[pP\s]{1}.+\?>)/Us';
+     $remove_php_replacement = ''; 
+     $result = preg_replace($remove_php_regex, $remove_php_replacement, $str);
+     return $result;
+
+}
+
 function jSAMLDecoder($encoded)
 {
 	$str1 = rawurldecode(stripslashes($encoded));
