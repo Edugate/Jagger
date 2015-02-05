@@ -113,11 +113,13 @@ class Providertoxml {
 
     private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent)
     {
+        
         $registrar = $ent->getRegistrationAuthority();
         if (empty($registrar) && $ent->getLocal() && $this->useGlobalRegistrar)
         {
             $registrar = $this->globalRegistrar;
         }
+        log_message('debug', 'DUPA' .$this->globalRegistrar );
         $doFilter = array(TRUE);
         $cocs = $ent->getCoc()->filter(
                 function(models\Coc $entry) use ($doFilter)
@@ -139,8 +141,9 @@ class Providertoxml {
                 $cocsByGroups['' . $v->getType() . ''][] = $v;
             }
         }
-
-        if (!empty($registrar) || count($cocs) > 0)
+       
+        
+        if (!empty($registrar) || count($cocsByGroups['entcat']) > 0)
         {
 
             $xml->startElementNs('md', 'Extensions', null);
@@ -184,6 +187,7 @@ class Providertoxml {
 
             if (count($cocsByGroups['entcat']) > 0)
             {
+               
                 $xml->startElementNs('mdattr', 'EntityAttributes', null);
                 foreach ($cocsByGroups['entcat'] as $k => $v)
                 {
