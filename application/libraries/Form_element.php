@@ -2454,9 +2454,9 @@ class Form_element {
 
             $langselection = form_dropdown($t . 'logolang', $btnlangs);
             $reviewlogo = '<div class="small-3 column"><div class="logolangselect">' . $langselection . '</div><div class="logosizeinfo"></div></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button tiny addnewlogo" type="button" name="addnewlogo">' . lang('rr_add') . '</button></div>';
-            $dupa = '<fieldset><legend>' . lang('rr_newlogosection') . '</legend>' . $inlabel . $in . $in2 . '<div id="' . $t . 'reviewlogo" class="small-12 column reviewlogo" style="display: none; max-height: 100px">' . $reviewlogo . '</div></fieldset>';
+            $da = '<fieldset><legend>' . lang('rr_newlogosection') . '</legend>' . $inlabel . $in . $in2 . '<div id="' . $t . 'reviewlogo" class="small-12 column reviewlogo" style="display: none; max-height: 100px">' . $reviewlogo . '</div></fieldset>';
 
-            $result[$k1][] = '<fieldset><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $dupa . '</fieldset>';
+            $result[$k1][] = '<fieldset><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $da . '</fieldset>';
             $result[$k1][] = '';
         }
         return $result;

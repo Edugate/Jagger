@@ -119,7 +119,6 @@ class Providertoxml {
         {
             $registrar = $this->globalRegistrar;
         }
-        log_message('debug', 'DUPA' .$this->globalRegistrar );
         $doFilter = array(TRUE);
         $cocs = $ent->getCoc()->filter(
                 function(models\Coc $entry) use ($doFilter)
