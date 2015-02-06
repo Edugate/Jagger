@@ -1035,8 +1035,6 @@ class Form_element {
             $value =  $svalue;
         }
        
-
-      //  $value = set_value('f[static]', $svalue);
         $result = array();
 
         $result[] = '<div class="small-3 columns"><label for="f[usestatic]" class="right">' . lang('rr_usestaticmetadata') . '</label></div><div class="small-6 large-7 columns">' . form_checkbox(array(

@@ -53,49 +53,41 @@ class Joinfed extends MY_Controller {
              show_error(lang('error_incorrectprovid'),404);
              return;
         }
-        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$providerid));
-        if(empty($provider))
+        $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$providerid));
+        if(empty($ent))
         {
             show_error(lang('rerror_provnotfound'),404);
             return;
         }
-        $icon ='';
-        if($provider->getType() == 'IDP')
-        {
-           $icon = 'home.png'; 
-        } 
-        else 
-        {
-           $icon = 'block-share.png';
-        }
         $lang = MY_Controller::getLang();
-        $enttype = $provider->getType();
+        $entType = strtolower($ent->getType());
         
-        $data['name'] = $provider->getNameToWebInLang($lang,$enttype);
+        $data['name'] = $ent->getNameToWebInLang($lang,$entType);
         if(empty($data['name']))
         {
-           $data['name'] = $provider->getEntityId();
+           $data['name'] = $ent->getEntityId();
         }
-        $data['entityid'] = $provider->getEntityId();
-        $data['providerid'] = $provider->getId();
+        $data['entityid'] = $ent->getEntityId();
+        $data['providerid'] = $ent->getId();
 
-        $has_write_access = $this->zacl->check_acl($provider->getId(),'write',strtolower($enttype),'');
+        $has_write_access = $this->zacl->check_acl($ent->getId(),'write','entity');
         if(!$has_write_access)
         {
            show_error('No access',403);
            return;
         }
-        if($provider->getLocked())
+        if($ent->getLocked())
         {
            show_error(lang('error_lockednoedit'),403);
            return;
         }
 
+        $this->title = $data['name'] .':'.lang('joinfederation');
         
-        $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$provider->getId().'">'.$data['name'].'</a>';
+        $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$ent->getId().'">'.$data['name'].'</a>';
         $data['subtitlepage'] = lang('fedejoinform');
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
-        $federations = $provider->getFederations();
+        $federations = $ent->getFederations();
         
         $available_federations = array();
         foreach ($all_federations as $ff)
@@ -125,7 +117,7 @@ class Joinfed extends MY_Controller {
                   */
                  
                   $this->load->library('approval');
-                  $add_to_queue = $this->approval->invitationFederationToQueue($provider ,$federation,'Join',$message);
+                  $add_to_queue = $this->approval->invitationFederationToQueue($ent ,$federation,'Join',$message);
                   if($add_to_queue)
                   {
                                $this->load->library('tracker');
@@ -133,12 +125,12 @@ class Joinfed extends MY_Controller {
                                $mail_sbj = "Request  to join federation: ".$federation->getName();
                                 
                             
-                               $providername = $provider->getName();
+                               $providername = $ent->getName();
                                if(empty($providername))
                                {
-                                  $providername = $provider->getEntityId();
+                                  $providername = $ent->getEntityId();
                                }
-                               $providerentityid = $provider->getEntityId();
+                               $providerentityid = $ent->getEntityId();
                                $awaitingurl = base_url().'reports/awaiting';
                                $fedname = $federation->getName();
                                if(empty($message))
@@ -146,7 +138,7 @@ class Joinfed extends MY_Controller {
                                   $message = '';
                                }                               
                                $mail_body = '';
-                               $this->tracker->save_track(strtolower($provider->getType()), 'request', $provider->getEntityId(), 'requested to join federation: '.$federation->getName().'. Message attached: '.htmlspecialchars($message).'', false);
+                               $this->tracker->save_track(strtolower($ent->getType()), 'request', $ent->getEntityId(), 'requested to join federation: '.$federation->getName().'. Message attached: '.htmlspecialchars($message).'', false);
                              
                                $overrideconfig = $this->config->item('defaultmail');
                                if(!empty($overrideconfig) && is_array($overrideconfig) && array_key_exists('joinfed',$overrideconfig) && !empty($overrideconfig['joinfed']))
@@ -214,6 +206,7 @@ class Joinfed extends MY_Controller {
                if(count($feds_dropdown) > 0)
              {
                   $n['']=lang('selectfed');
+                  asort($feds_dropdown,SORT_NATURAL | SORT_FLAG_CASE);
                   $feds_dropdown = $n + $feds_dropdown; 
                   $this->load->helper('form');
                   $buttons = '<div class="buttons small-9 columns text-right end"><button type="submit" name="modify" value="submit" class="savebutton saveicon">'.lang('rr_apply').'</button></div>';
