@@ -1572,7 +1572,7 @@ class Form_element {
                     foreach ($ses['nameids']['idpsso'] as $pv)
                     {
                         $supportednameids[] = $pv;
-                        $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $pv, 'checked' => TRUE);
+                        $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => trim($pv), 'checked' => TRUE);
                     }
                 }
             }
@@ -1582,14 +1582,14 @@ class Form_element {
                 {
                     $supportednameids[] = $v;
                     $chp[] = array(
-                        'name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $v, 'checked' => TRUE);
+                        'name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => trim($v), 'checked' => TRUE);
                 }
             }
             foreach ($allowednameids as $v)
             {
                 if (!in_array($v, $supportednameids))
                 {
-                    $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $v, 'checked' => FALSE);
+                    $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => trim($v), 'checked' => FALSE);
                 }
             }
             $r = '';
@@ -1761,7 +1761,7 @@ class Form_element {
                     foreach ($ses['nameids']['idpaa'] as $pv)
                     {
                         $supportednameids[] = $pv;
-                        $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $pv, 'checked' => TRUE);
+                        $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => trim($pv), 'checked' => TRUE);
                     }
                 }
             }
@@ -1771,14 +1771,14 @@ class Form_element {
                 {
                     $supportednameids[] = $v;
                     $chp[] = array(
-                        'name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $v, 'checked' => TRUE);
+                        'name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => trim($v), 'checked' => TRUE);
                 }
             }
             foreach ($allowednameids as $v)
             {
                 if (!in_array($v, $supportednameids))
                 {
-                    $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $v, 'checked' => FALSE);
+                    $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => trim($v), 'checked' => FALSE);
                 }
             }
             $r = '<div class="small-12 columns">';
@@ -2308,8 +2308,7 @@ class Form_element {
 
     private function NgenerateLogoForm(models\Provider $ent, $ses = null)
     {
-        $btnlangs = MY_Controller::$langselect;
-        $btnlangs = array('0' => lang('rr_unspecified')) + $btnlangs;
+        $btnlangs = array('0' => lang('rr_unspecified')) + MY_Controller::$langselect ;
         $type = $ent->getType();
         $sessform = FALSE;
         if (is_array($ses))

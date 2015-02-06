@@ -35,7 +35,8 @@ $foundation = $base_url . 'foundation/';
 <!--[if lt IE 7]> <html lang="<?php echo MY_Controller::getLang(); ?>" class="no-js ie6 oldie"> <![endif]-->
 <!--[if IE 7]>    <html lang="<?php echo MY_Controller::getLang(); ?>" class="no-js ie7 oldie"> <![endif]-->
 <!--[if IE 8]>    <html lang="<?php echo MY_Controller::getLang(); ?>" class="no-js ie8 oldie"> <![endif]-->
-<!--[if gt IE 8]><!-->
+<!--[if IE 9]>    <html lang="<?php echo MY_Controller::getLang(); ?>" class="no-js ie9 oldie"> <![endif]-->
+<!--[if gt IE 9]><!-->
 <html class='no-js' lang='<?php echo MY_Controller::getLang(); ?>'>
     <!--<![endif]-->
     <head>     
@@ -58,8 +59,8 @@ $foundation = $base_url . 'foundation/';
 
     </head>
     <body>
-        <!--[if lt IE 7]>
-                    <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <!--[if lt IE 10]>
+                    <div data-alert class="alert-box alert"><p>You are using an <strong>outdated</strong> browser. Please <a href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p></div>
                 <![endif]-->
         <header>
             <?php
@@ -138,7 +139,7 @@ $foundation = $base_url . 'foundation/';
             echo '<ul class="breadcrumbs">';
             foreach ($breadcrumbs as $b)
             {
-                echo '<li><a href="' . $b['url'] . '" class="' . $b['class'] . '">' . $b['name'] . '</a></li>';
+                echo '<li><a href="'. $b['url'] .'" class="' . $b['class'] . '">' . $b['name'] . '</a></li>';
             }
             echo '</ul>';
             echo '</div>';
@@ -339,13 +340,5 @@ $foundation = $base_url . 'foundation/';
             echo '</script>';
         }
         ?>
-
-
-        <!--[if lt IE 7]>
-           <script src='//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js'></script>
-           <script>
-             window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})});
-           </script>
-           <![endif]-->
     </body>
 </html>
