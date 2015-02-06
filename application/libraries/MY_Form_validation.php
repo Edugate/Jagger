@@ -1067,7 +1067,7 @@ class MY_form_validation extends CI_form_validation {
                 $result = TRUE;
                 if(!empty($str))
                 {
-                    $s = explode(',',$str);
+                    $s= preg_split("/[\s,]+/", $str);
                     foreach($s as $v)
                     {
                           if(!(preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $v) && preg_match("/^.{1,253}$/", $v) && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $v)))
