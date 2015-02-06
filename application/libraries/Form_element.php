@@ -3,11 +3,11 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
- * ResourceRegistry3
+ * Jagger
  * 
- * @package     RR3
+ * @package     Jagger
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -15,7 +15,7 @@ if (!defined('BASEPATH'))
 /**
  * Form_element Class
  * 
- * @package     RR3
+ * @package     Jagger
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
@@ -130,7 +130,7 @@ class Form_element {
             }
             if (array_key_exists('registrationtime', $ses))
             {
-                $t_regdate = $ses['registrationtime'];
+                $t_regtime = $ses['registrationtime'];
             }
         }
         $f_regauthority = set_value('f[regauthority]', $t_regauthority);
@@ -406,8 +406,7 @@ class Form_element {
     {
         $result = array();
         $sessform = FALSE;
-        $enttype = $ent->getType();
-        $allowedCategories = attrsEntCategoryList($enttype);
+        $allowedCategories = attrsEntCategoryList($ent->getType());
         if (!empty($ses) && is_array($ses))
         {
             $sessform = TRUE;

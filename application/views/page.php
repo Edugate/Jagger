@@ -54,7 +54,7 @@ $foundation = $base_url . 'foundation/';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/foundation-icons.css" />';
         echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />';
-        echo '<script src="' . $base_url . 'js/modernizr.js"></script>';
+        echo '<script src="' . $base_url . 'js/modernizr.min.js"></script>';
         ?>
 
     </head>
@@ -340,5 +340,6 @@ $foundation = $base_url . 'foundation/';
             echo '</script>';
         }
         ?>
+
     </body>
 </html>

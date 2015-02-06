@@ -28,6 +28,8 @@ class Metadata2array
     private $regpollist;
     private $nameidsattrs = array();
     private $newNameSpaces = array();
+    protected $ci;
+    protected $em;
 
     function __construct()
     {
@@ -520,34 +522,34 @@ class Metadata2array
             {
                 $ext['scope'][] = $enode->nodeValue;
             }
-            elseif ($enode->nodeName == 'idpdisc:DiscoveryResponse' || $enode->nodeName == 'DiscoveryResponse')
+            elseif ($enode->nodeName === 'idpdisc:DiscoveryResponse')
             {
                 $ext['idpdisc'][] = array('binding' => $enode->getAttribute('Binding'), 'url' => $enode->getAttribute('Location'), 'order' => $enode->getAttribute('index'));
             }
-            elseif ($enode->nodeName == 'init:RequestInitiator' || $enode->nodeName == 'RequestInitiator')
+            elseif ($enode->nodeName === 'init:RequestInitiator')
             {
                 $ext['init'][] = array('binding' => $enode->getAttribute('Binding'), 'url' => $enode->getAttribute('Location'));
             }
-            elseif ($enode->nodeName == 'mdui:UIInfo' && $enode->hasChildNodes())
+            elseif ($enode->nodeName === 'mdui:UIInfo' && $enode->hasChildNodes())
             {
                 foreach ($enode->childNodes as $gnode)
                 {
                     /**
                      * @todo finish  
                      */
-                    if ($gnode->nodeName == 'mdui:Description' || $gnode->nodeName == 'Description')
+                    if ($gnode->nodeName === 'mdui:Description')
                     {
                         $ext['desc'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => $gnode->nodeValue);
                     }
-                    elseif ($gnode->nodeName == 'mdui:DisplayName' || $gnode->nodeName == 'DisplayName')
+                    elseif ($gnode->nodeName === 'mdui:DisplayName')
                     {
                         $ext['displayname'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => $gnode->nodeValue);
                     }
-                    elseif ($gnode->nodeName == 'mdui:PrivacyStatementURL' || $gnode->nodeName == 'PrivacyStatementURL')
+                    elseif ($gnode->nodeName === 'mdui:PrivacyStatementURL')
                     {
                         $ext['privacyurl'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => $gnode->nodeValue);
                     }
-                    elseif ($gnode->nodeName == 'mdui:InformationURL' || $gnode->nodeName == 'InformationURL')
+                    elseif ($gnode->nodeName === 'mdui:InformationURL')
                     {
                         $ext['informationurl'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => $gnode->nodeValue);
                     }
@@ -566,7 +568,7 @@ class Metadata2array
                 foreach ($enode->childNodes as $agnode)
                 {
                     $geovalue = array();
-                    if ($agnode->nodeName == 'mdui:GeolocationHint')
+                    if ($agnode->nodeName === 'mdui:GeolocationHint')
                     {
                         $geovalue = explode(',', str_ireplace('geo:', '', $agnode->nodeValue));
                         if (count($geovalue) == 2)
@@ -585,11 +587,11 @@ class Metadata2array
                             }
                         }
                     }
-                    elseif ($agnode->nodeName == 'mdui:IPHint')
+                    elseif ($agnode->nodeName === 'mdui:IPHint')
                     {
                         $ext['iphint'][] = $agnode->nodeValue;
                     }
-                    elseif($agnode->nodeName == 'mdui:DomainHint')
+                    elseif($agnode->nodeName === 'mdui:DomainHint')
                     {
                         $ext['domainhint'][] = $agnode->nodeValue;
                     }
