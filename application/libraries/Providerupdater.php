@@ -686,7 +686,7 @@ class Providerupdater
                 $origscopeaa = implode(',', $ent->getScope('aa'));
                 if (array_key_exists('idpsso', $ch['scopes']) && !empty($ch['scopes']['idpsso']))
                 {
-                    $idpssoscopes = array_filter(explode(',', $ch['scopes']['idpsso']));
+                    $idpssoscopes = array_filter(preg_split("/[\s,]+/",$ch['scopes']['idpsso']));
                     $ent->setScope('idpsso', array_unique($idpssoscopes));
                     if ($origscopesso != implode(',', $idpssoscopes))
                     {
@@ -695,7 +695,7 @@ class Providerupdater
                 }
                 else
                 {
-                    $ent->setScope('idpsso', array());
+                    $ent->setScope('idpsso', array(preg_split("/[\s,]+/",$ch['scopes']['aa'])));
                     if (!empty($origscopesso))
                     {
                         $m['Scope IDPSSO'] = array('before' => $origscopesso, 'after' => '');
@@ -703,9 +703,7 @@ class Providerupdater
                 }
                 if (array_key_exists('aa', $ch['scopes']) && !empty($ch['scopes']['aa']))
                 {
-                    log_message('debug', 'GKS SCOPE AA yes');
-
-                    $aascopes = array_filter(explode(',', $ch['scopes']['aa']));
+                    $aascopes = array_filter();
                     $ent->setScope('aa', array_unique($aascopes));
                     if ($origscopeaa != implode(',', $aascopes))
                     {
@@ -714,7 +712,6 @@ class Providerupdater
                 }
                 else
                 {
-                    log_message('debug', 'GKS SCOPE AA no');
                     $ent->setScope('aa', array());
                     if (!empty($origscopeaa))
                     {
@@ -724,8 +721,6 @@ class Providerupdater
                 $origscopesso = null;
             }
         }
-
-
         if (array_key_exists('entityid', $ch) && !empty($ch['entityid']))
         {
             if (!empty($entid))
@@ -734,7 +729,7 @@ class Providerupdater
                 {
                     $m['EntityID'] = array('before' => $ent->getEntityId(), 'after' => $ch['entityid']);
                     $this->ci->tracker->renameProviderResourcename($ent->getEntityId(), $ch['entityid']);
-                    $ent->setEntityId($ch['entityid']);
+                    $ent->setEntityId(trim($ch['entityid']));
                 }
             }
             else

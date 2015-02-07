@@ -41,7 +41,7 @@ class Disco extends MY_Controller {
 
     private function providerToDisco(models\Provider $ent, $type = null)
     {
-        if($type == null)
+        if($type === null)
         {
             $type = 'idp';
         }

@@ -3,11 +3,11 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
- * ResourceRegistry3
+ * Jagger
  * 
- * @package     RR3
+ * @package     Jagger
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -15,7 +15,7 @@ if (!defined('BASEPATH'))
 /**
  * Form_element Class
  * 
- * @package     RR3
+ * @package     Jagger
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
@@ -130,7 +130,7 @@ class Form_element {
             }
             if (array_key_exists('registrationtime', $ses))
             {
-                $t_regdate = $ses['registrationtime'];
+                $t_regtime = $ses['registrationtime'];
             }
         }
         $f_regauthority = set_value('f[regauthority]', $t_regauthority);
@@ -406,8 +406,7 @@ class Form_element {
     {
         $result = array();
         $sessform = FALSE;
-        $enttype = $ent->getType();
-        $allowedCategories = attrsEntCategoryList($enttype);
+        $allowedCategories = attrsEntCategoryList($ent->getType());
         if (!empty($ses) && is_array($ses))
         {
             $sessform = TRUE;
@@ -1035,8 +1034,6 @@ class Form_element {
             $value =  $svalue;
         }
        
-
-      //  $value = set_value('f[static]', $svalue);
         $result = array();
 
         $result[] = '<div class="small-3 columns"><label for="f[usestatic]" class="right">' . lang('rr_usestaticmetadata') . '</label></div><div class="small-6 large-7 columns">' . form_checkbox(array(
@@ -1572,7 +1569,7 @@ class Form_element {
                     foreach ($ses['nameids']['idpsso'] as $pv)
                     {
                         $supportednameids[] = $pv;
-                        $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $pv, 'checked' => TRUE);
+                        $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => trim($pv), 'checked' => TRUE);
                     }
                 }
             }
@@ -1582,14 +1579,14 @@ class Form_element {
                 {
                     $supportednameids[] = $v;
                     $chp[] = array(
-                        'name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $v, 'checked' => TRUE);
+                        'name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => trim($v), 'checked' => TRUE);
                 }
             }
             foreach ($allowednameids as $v)
             {
                 if (!in_array($v, $supportednameids))
                 {
-                    $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => $v, 'checked' => FALSE);
+                    $chp[] = array('name' => 'f[nameids][idpsso][]', 'id' => 'f[nameids][idpsso][]', 'value' => trim($v), 'checked' => FALSE);
                 }
             }
             $r = '';
@@ -1761,7 +1758,7 @@ class Form_element {
                     foreach ($ses['nameids']['idpaa'] as $pv)
                     {
                         $supportednameids[] = $pv;
-                        $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $pv, 'checked' => TRUE);
+                        $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => trim($pv), 'checked' => TRUE);
                     }
                 }
             }
@@ -1771,14 +1768,14 @@ class Form_element {
                 {
                     $supportednameids[] = $v;
                     $chp[] = array(
-                        'name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $v, 'checked' => TRUE);
+                        'name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => trim($v), 'checked' => TRUE);
                 }
             }
             foreach ($allowednameids as $v)
             {
                 if (!in_array($v, $supportednameids))
                 {
-                    $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => $v, 'checked' => FALSE);
+                    $chp[] = array('name' => 'f[nameids][idpaa][]', 'id' => 'f[nameids][idpaa][]', 'value' => trim($v), 'checked' => FALSE);
                 }
             }
             $r = '<div class="small-12 columns">';
@@ -2308,8 +2305,7 @@ class Form_element {
 
     private function NgenerateLogoForm(models\Provider $ent, $ses = null)
     {
-        $btnlangs = MY_Controller::$langselect;
-        $btnlangs = array('0' => lang('rr_unspecified')) + $btnlangs;
+        $btnlangs = array('0' => lang('rr_unspecified')) + MY_Controller::$langselect ;
         $type = $ent->getType();
         $sessform = FALSE;
         if (is_array($ses))

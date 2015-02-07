@@ -52,6 +52,7 @@ class Entityedit extends MY_Controller {
             $register = true;
             $this->type = strtoupper($id);
         }
+        $optValidationsPassed = TRUE;
         $result = false;
         $y = $this->input->post();
 
@@ -59,7 +60,7 @@ class Entityedit extends MY_Controller {
         if (isset($y['f']))
         {
             $loggedin = $this->j_auth->logged_in();
-            $this->saveToDraft($id, $y['f']);
+            
 
             $this->form_validation->set_rules('f[usestatic]', 'use metadata', "valid_static[" . base64_encode($this->input->post('f[static]')) . ":::" . $this->input->post('f[entityid]') . " ]");
 
@@ -81,13 +82,13 @@ class Entityedit extends MY_Controller {
                 }
                 if (in_array('scope', $this->disallowedparts))
                 {
-                    $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope') . ' (IDPSSO)', 'trim|xss_clean|valid_scopes|max_length[2500]|str_matches_array[' . serialize($this->idpssoscope) . ']');
-                    $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope') . ' (AA)', 'trim|xss_clean|valid_scopes|max_length[2500]|str_matches_array[' . serialize($this->aascope) . ']');
+                    $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope') . ' (IDPSSOdescriptor)', 'trim|valid_scopes|strtolower|max_length[2500]|str_matches_array[' . serialize($this->idpssoscope) . ']');
+                    $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope') . ' (AuttributeAuthorityDescriptor)', 'trim|strtolower|valid_scopes|max_length[2500]|str_matches_array[' . serialize($this->aascope) . ']');
                 }
                 else
                 {
-                    $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[2500]');
-                    $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|xss_clean|valid_scopes|max_length[2500]');
+                    $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|strtolower|valid_scopes|max_length[2500]');
+                    $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|strtolower|valid_scopes|max_length[2500]');
                 }
             }
             else
@@ -104,14 +105,13 @@ class Entityedit extends MY_Controller {
                 foreach ($y['reqattr'] as $k => $r)
                 {
                     $this->form_validation->set_rules('f[reqattr][' . $k . '][reason]', 'Attribute requirement reason', 'trim||htmlspecialchars');
-                    $this->form_validation->set_rules('f[reqattr][' . $k . '][attrid]', 'Attribute requirement - attribute id is missing', 'trim|required|integer|xss_clean');
+                    $this->form_validation->set_rules('f[reqattr][' . $k . '][attrid]', 'Attribute requirement - attribute id is missing', 'trim|required|');
                 }
             }
-
-            $this->form_validation->set_rules('f[regauthority]', lang('rr_regauthority'), 'trim|xss_clean');
-            $this->form_validation->set_rules('f[registrationdate]', lang('rr_regdate'), 'trim|xss_clean|valid_date_past');
+            $this->form_validation->set_rules('f[regauthority]', lang('rr_regauthority'), 'trim|htmlspecialchars');       
+            $this->form_validation->set_rules('f[registrationdate]', lang('rr_regdate'), 'trim|valid_date_past');
             $this->form_validation->set_rules('f[registrationtime]', lang('rr_regtime'), 'trim|valid_time_hhmm');
-            $this->form_validation->set_rules('f[privacyurl]', lang('rr_defaultprivacyurl'), 'trim|xss_clean|valid_url');
+            $this->form_validation->set_rules('f[privacyurl]', lang('rr_defaultprivacyurl'), 'trim|valid_url');
             $this->form_validation->set_rules('f[validfrom]', lang('rr_validfrom'), 'trim|xss_clean');
             $this->form_validation->set_rules('f[validto]', lang('rr_validto'), 'trim|xss_clean');
             if (array_key_exists('lname', $y['f']))
@@ -123,13 +123,13 @@ class Entityedit extends MY_Controller {
                 if (count($y['f']['lname']) == 0)
                 {
                     $this->tmp_error = lang('errnoorgnames');
-                    return false;
+                    $optValidationsPassed = FALSE;
                 }
             }
             else
             {
                 $this->tmp_error = lang('errnoorgnames');
-                return false;
+                $optValidationsPassed = FALSE;
             }
             if (isset($y['f']['uii']['idpsso']['displayname']) && is_array($y['f']['uii']['idpsso']['displayname']))
             {
@@ -177,7 +177,7 @@ class Entityedit extends MY_Controller {
             else
             {
                 $this->tmp_error = lang('errnoorgdisnames');
-                return false;
+                $optValidationsPassed = FALSE;
             }
             if (array_key_exists('lhelpdesk', $y['f']))
             {
@@ -189,7 +189,7 @@ class Entityedit extends MY_Controller {
             else
             {
                 $this->tmp_error = lang('errnoorgurls');
-                return false;
+                $optValidationsPassed= FALSE;
             }
 
 
@@ -333,7 +333,7 @@ class Entityedit extends MY_Controller {
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in ACS is not numeric';
-                                return false;
+                                $optValidationsPassed = FALSE;
                             }
                             if (array_key_exists('default', $y['f']['srv']['AssertionConsumerService']['' . $k . '']))
                             {
@@ -347,19 +347,19 @@ class Entityedit extends MY_Controller {
                         {
 
                             $this->tmp_error = 'Not unique indexes found for ACS';
-                            return false;
+                            $optValidationsPassed = FALSE;
                         }
                         if (count($acsurls) < 1 && empty($staticisdefault))
                         {
 
                             $this->tmp_error = lang('rr_acsurlatleastone');
-                            return false;
+                            $optValidationsPassed = FALSE;
                         }
                         if (count($acsdefault) > 1)
                         {
 
                             $this->tmp_error = lang('rr_acsurlonlyonedefault');
-                            return false;
+                            $optValidationsPassed = FALSE;
                         }
                     }
                 }
@@ -383,7 +383,7 @@ class Entityedit extends MY_Controller {
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in SP ArtifactResolutionService is not numeric';
-                                return false;
+                                $optValidationsPassed = FALSE;
                             }
                         }
                     }
@@ -393,7 +393,7 @@ class Entityedit extends MY_Controller {
                         {
 
                             $this->tmp_error = 'Not unique indexes found for SP ArtifactResolutionService';
-                            return false;
+                            $optValidationsPassed = FALSE;
                         }
                     }
                 }
@@ -416,7 +416,7 @@ class Entityedit extends MY_Controller {
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in IDP ArtifactResolutionService is not numeric';
-                                return false;
+                               $optValidationsPassed = FALSE;
                             }
                         }
                     }
@@ -426,7 +426,7 @@ class Entityedit extends MY_Controller {
                         {
 
                             $this->tmp_error = 'Not unique indexes found for IDP ArtifactResolutionService';
-                            return false;
+                            $optValidationsPassed = FALSE;
                         }
                     }
                 }
@@ -451,7 +451,7 @@ class Entityedit extends MY_Controller {
                             if (!empty($tmporder) && !is_numeric($tmporder))
                             {
                                 $this->tmp_error = 'One of the index order in DiscoveryResponse is not numeric';
-                                return false;
+                                $optValidationsPassed = FALSE;
                             }
                         }
                     }
@@ -460,7 +460,7 @@ class Entityedit extends MY_Controller {
                         if (count($drindexes) != count(array_unique($drindexes)))
                         {
                             $this->tmp_error = 'Not unique indexes found for DiscoveryResponse';
-                            return false;
+                            $optValidationsPassed = FALSE;
                         }
                     }
                 }
@@ -484,21 +484,28 @@ class Entityedit extends MY_Controller {
                 if (!empty($nossobindings) && is_array($nossobindings) && count($nossobindings) > 0 && count(array_unique($nossobindings)) < count($nossobindings))
                 {
                     $this->tmp_error = 'duplicate binding protocols for SSO found in sent form';
-                    return false;
+                    $optValidationsPassed = FALSE;
                 }
                 if (!empty($noidpslo) && is_array($noidpslo) && count($noidpslo) > 0 && count(array_unique($noidpslo)) < count($noidpslo))
                 {
                     $this->tmp_error = 'duplicate binding protocols for IDP SLO found in sent form';
-                    return false;
+                    $optValidationsPassed = FALSE;
                 }
                 if (!empty($nosplo) && is_array($nosplo) && count($nosplo) > 0 && count(array_unique($nospslo)) < count($nospslo))
                 {
                     $this->tmp_error = 'duplicate binding protocols for SP SLO found in sent form';
-                    return false;
+                    $optValidationsPassed = FALSE;
                 }
             }
         }
-        return $result;
+        
+        $r = $this->input->post();
+        if(isset($r['f']))
+        {
+           $this->saveToDraft($id, $this->input->post('f'));
+        }
+        
+        return ($result && $optValidationsPassed);
     }
 
     private function saveToDraft($id, $data)
