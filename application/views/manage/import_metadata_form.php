@@ -127,7 +127,7 @@
     echo '<label for="cert" class="right inline">'.lang('certsigner').'<br /><small><i>'.lang('overwritecerturl').'</i></small></label>';
     echo '</div>';
     echo '<div class="small-6 large-7 columns end">';
-    echo form_textarea(array('name' => 'cert', 'id' => 'cert', 'cols' => 30, 'rows' => 15, 'value' => set_value('cert')));
+    echo form_textarea(array('name' => 'cert', 'id' => 'cert', 'cols' => 30, 'rows' => 15, 'value' => set_value('cert','',FALSE)));
     echo '</div>';
     echo '</div>';
     echo form_fieldset_close();

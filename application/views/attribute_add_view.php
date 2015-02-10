@@ -12,7 +12,7 @@ echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrname',
      'name'=>'attrname',
-     'value'=>set_value('attrname'),
+     'value'=>set_value('attrname','',FALSE),
      'max-length'=>'128',
      'class'=>'required' 
     ));
@@ -25,7 +25,7 @@ echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrfullname',
      'name'=>'attrfullname',
-     'value'=>set_value('attrfullname'),
+     'value'=>set_value('attrfullname','',FALSE),
      'max-length'=>'128',
      'class'=>'required' 
     ));
@@ -37,7 +37,7 @@ echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attroidname',
      'name'=>'attroidname',
-     'value'=>set_value('attroidname'),
+     'value'=>set_value('attroidname','',FALSE),
      'max-length'=>'128',
      'class'=>'required' 
     ));
@@ -49,7 +49,7 @@ echo '<div class="small-6 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrurnname',
      'name'=>'attrurnname',
-     'value'=>set_value('attrurnname'),
+     'value'=>set_value('attrurnname','',FALSE),
      'max-length'=>'128',
      'class'=>'required' 
     ));
@@ -61,7 +61,7 @@ echo '<div class="small-6 large-7 columns end">';
 echo form_textarea(array(
     'id' => 'description',
     'name' => 'description',
-    'value' => set_value('description'),
+    'value' => set_value('description','',FALSE),
     'cols' => 30,
     'rows' => 10,
     'style' => 'font-family: monospace; font-size: smaller'
