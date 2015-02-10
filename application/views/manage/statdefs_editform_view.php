@@ -45,13 +45,12 @@ elseif(!empty($showpredefined) && $showpredefined === TRUE)
 <?php
       echo '<div>'.lang('youcanshoose').':<br />'.$workersdescriptions.'</div>';
 ?>
-       <div class="small-12 columns">
-
-      <div class="small-3 columns"><label for="usepredefined" class="right inline"><?php echo lang('plsusepredefstat') ;?></label></div>
-             <div class="small-6 large-7 columns end"><input type="checkbox" name="usepredefined" id="usepredefined" value="yes" <?php echo set_checkbox('usepredefined', 'yes',$statdefpredef); ?> style="margin:10px" /></div>
-      </div>
-      <div class="small-12 columns">
-           <div class="small-3 columns"><label for="gworker" class="right inline"><?php echo lang('listavailableprestats');?></label></div>
+          <div class="small-12 columns">
+              <div class="small-3 columns"><label for="usepredefined" class="right inline"><?php echo lang('plsusepredefstat') ;?></label></div>
+              <div class="small-6 large-7 columns end"><input type="checkbox" name="usepredefined" id="usepredefined" value="yes" <?php echo set_checkbox('usepredefined', 'yes',$statdefpredef); ?> style="margin:10px" /></div>
+          </div>
+          <div class="small-12 columns">
+              <div class="small-3 columns"><label for="gworker" class="right inline"><?php echo lang('listavailableprestats');?></label></div>
     <?php
  if(empty($statdefpredefworker))
  {
@@ -75,8 +74,7 @@ elseif(!empty($showpredefined) && $showpredefined === TRUE)
     }
  }
 ?>
-</li>
-</ol>
+</div>
 </fieldset>
 <?php
 }

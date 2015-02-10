@@ -187,7 +187,7 @@ class Manage extends MY_Controller
                 'mdisabled' => (int) $m->isDisabled(),
                 'mbanned' => (int) $m->isBanned(),
                 'entityid' => $p->getEntityId(),
-                'pname' => $name,
+                'pname' => html_escape($name),
                 'penabled' => $p->getAvailable(),
             );
         }
@@ -415,10 +415,10 @@ class Manage extends MY_Controller
         }
 
         $data['bookmarked'] = $bookmarked;
-        $data['federation_name'] = $federation->getName();
-        $data['federation_sysname'] = $federation->getSysname();
-        $data['federation_urn'] = $federation->getUrn();
-        $data['federation_desc'] = $federation->getDescription();
+        $data['federation_name'] = html_escape($federation->getName());
+        $data['federation_sysname'] = html_escape($federation->getSysname());
+        $data['federation_urn'] = html_escape($federation->getUrn());
+        $data['federation_desc'] = html_escape($federation->getDescription());
         $data['federation_is_active'] = $federation->getActive();
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
         $data['titlepage'] = lang('rr_feddetail') . ': ' . $data['federation_name'];
@@ -447,13 +447,13 @@ class Manage extends MY_Controller
                 'data' => array('data' => '<div data-alert class="alert-box alert">' . lang('rr_fed_inactive_full') . '</div>', 'class' => 'fedstatusinactive', 'style' => 'display: none', 'colspan' => 2)
             );
         }
-        $data['result']['general'][] = array(lang('rr_fed_name'), $federation->getName());
-        $data['result']['general'][] = array(lang('fednameinmeta'), $federation->getUrn());
-        $data['result']['general'][] = array(lang('rr_fed_sysname'), $federation->getSysname());
+        $data['result']['general'][] = array(lang('rr_fed_name'), html_escape($federation->getName()));
+        $data['result']['general'][] = array(lang('fednameinmeta'), html_escape($federation->getUrn()));
+        $data['result']['general'][] = array(lang('rr_fed_sysname'), html_escape($federation->getSysname()));
 
-        $data['result']['general'][] = array(lang('rr_fed_publisher'), $federation->getPublisher());
-        $data['result']['general'][] = array(lang('rr_fed_desc'), $federation->getDescription());
-        $data['result']['general'][] = array(lang('rr_fed_tou'), $federation->getTou());
+        $data['result']['general'][] = array(lang('rr_fed_publisher'), html_escape($federation->getPublisher()));
+        $data['result']['general'][] = array(lang('rr_fed_desc'), html_escape($federation->getDescription()));
+        $data['result']['general'][] = array(lang('rr_fed_tou'), html_escape($federation->getTou()));
         $idp_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/idp', lang('rr_fed_cntidps_list'));
         $sp_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/sp', lang('rr_fed_cntisps_list'));
         $all_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '', lang('rr_fed_cnt_list'));
@@ -473,7 +473,7 @@ class Manage extends MY_Controller
         }
         foreach ($requiredAttributes as $key)
         {
-            $data['result']['attrs'][] = array($key->getAttribute()->getName(), $key->getStatus() . "<br /><i>(" . $key->getReason() . ")</i>");
+            $data['result']['attrs'][] = array($key->getAttribute()->getName(), $key->getStatus() . "<br /><i>(" . html_escape($key->getReason()) . ")</i>");
         }
 
 
@@ -507,19 +507,19 @@ class Manage extends MY_Controller
             $data['hiddenspan'] = '<span id="fednameencoded" style="display:none">' . $fed_name . '</span>';
             if ($federation->getActive())
             {
-                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" title="' . lang('btn_deactivatefed') . ': ' . $federation->getName() . '">' . lang('btn_deactivatefed') . '</button>';
+                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" title="' . lang('btn_deactivatefed') . ': ' . html_escape($federation->getName()) . '">' . lang('btn_deactivatefed') . '</button>';
                 $data['result']['management'][] = array('data' => array('data' => '' . $b . '', 'colspan' => 2));
                 $b = '<br /><button type="button" name="fedstatus" value="enablefed" class="savebutton staricon small" style="display:none">' . lang('btn_activatefed') . '</button>';
                 $data['result']['management'][] = array('data' => array('data' => '' . $b . '', 'colspan' => 2));
-                $b = '<br /><button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon alert small" style="display: none" title="' . lang('btn_applytodelfed') . ': ' . $federation->getName() . '">' . lang('btn_applytodelfed') . '</button>';
+                $b = '<br /><button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon alert small" style="display: none" title="' . lang('btn_applytodelfed') . ': ' . html_escape($federation->getName()) . '">' . lang('btn_applytodelfed') . '</button>';
                 $data['result']['management'][] = array('data' => array('data' => '' . $b . '', 'colspan' => 2));
             }
             else
             {
-                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" style="display: none" title="' . lang('btn_deactivatefed') . ': ' . $federation->getName() . '">' . lang('btn_deactivatefed') . '</button>';
+                $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" style="display: none" title="' . lang('btn_deactivatefed') . ': ' . html_escape($federation->getName()) . '">' . lang('btn_deactivatefed') . '</button>';
                 $b .= '<br /><button type="button" name="fedstatus" value="enablefed" class="savebutton staricon small">' . lang('btn_activatefed') . '</button>';
                 $data['result']['management'][] = array('data' => array('data' => '' . $b . '', 'colspan' => 2));
-                $b = '<button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon alert small" title="' . lang('btn_applytodelfed') . ': ' . $federation->getName() . '">' . lang('btn_applytodelfed') . '</button>';
+                $b = '<button type="button" name="fedstatus"  value="delfed" class="resetbutton reseticon alert small" title="' . lang('btn_applytodelfed') . ': ' . html_escape($federation->getName()) . '">' . lang('btn_applytodelfed') . '</button>';
                 $data['result']['management'][] = array('data' => array('data' => '' . $b . '', 'colspan' => 2));
             }
         }
@@ -604,7 +604,7 @@ class Manage extends MY_Controller
                     {
                         $d['fvalidators'][] = array('data' => array('data' => makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional')), 'colspan' => 2));
                     }
-                    $d['fvalidators'][] = array('data' => lang('Description'), 'value' => $f->getDescription());
+                    $d['fvalidators'][] = array('data' => lang('Description'), 'value' => html_escape($f->getDescription()));
                     $d['fvalidators'][] = array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType());
                     $d['fvalidators'][] = array('data' => lang('fvalid_url'), 'value' => $f->getUrl());
                     $d['fvalidators'][] = array('data' => lang('rr_httpmethod'), 'value' => $method);
@@ -770,7 +770,7 @@ class Manage extends MY_Controller
         $data['form_elements'] = $form_elements;
         $data['fed_encoded'] = $fed_name;
         $data['message'] = $message;
-        $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $data['fed_encoded'] . '">' . $federation->getName() . '</a>';
+        $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $data['fed_encoded'] . '">' . html_escape($federation->getName()) . '</a>';
         $this->load->view('page', $data);
     }
 
