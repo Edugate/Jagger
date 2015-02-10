@@ -191,6 +191,7 @@ class Entityedit extends MY_Controller {
                 {
                     $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', lang('localizedhelpdeskin') . ' ' . $k, 'strip_tags|trim|required|valid_url');
                 }
+
             }
             else
             {
