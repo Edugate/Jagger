@@ -280,6 +280,13 @@ class Entityedit extends MY_Controller {
             $noidpslo = array();
             if (array_key_exists('srv', $y['f']))
             {
+                if(array_key_exists('IDPAttributeService', $y['f']['srv']))
+                {
+                    foreach($y['f']['srv']['IDPAttributeService'] as $k => $v)
+                    {
+                        $this->form_validation->set_rules('f[srv][IDPAttributeService][' . $k . '][url]', 'AttributeAuthorityDescriptor/AttributeService: ' . html_escape($y['f']['srv']['SingleSignOnService']['' . $k . '']['bind']), 'strip_tags|trim|max_length[254]|valid_url');
+                    }
+                }
                 if (!array_key_exists('SingleSignOnService', $y['f']['srv']))
                 {
                     $y['f']['srv']['SingleSignOnService'] = array();
@@ -309,7 +316,7 @@ class Entityedit extends MY_Controller {
                     foreach ($y['f']['srv']['SPSingleLogoutService'] as $k => $v)
                     {
                         $nospslo[] = $y['f']['srv']['SPSingleLogoutService']['' . $k . '']['bind'];
-                        $this->form_validation->set_rules('f[srv][SPSingleLogoutService][' . $k . '][url]', 'SP SingleLogoutService URL for: ' . $y['f']['srv']['SPSingleLogoutService']['' . $k . '']['bind'], 'htmlspecialchars|trim|max_length[254]|valid_url');
+                        $this->form_validation->set_rules('f[srv][SPSingleLogoutService][' . $k . '][url]', 'SP SingleLogoutService URL for: ' . $y['f']['srv']['SPSingleLogoutService']['' . $k . '']['bind'], 'strip_tags|trim|max_length[254]|valid_url');
                         $this->form_validation->set_rules('f[srv][SPSingleLogoutService][' . $k . '][bind]', 'SP SingleLogoutService Binding protocol', 'required|htmlspecialchars');
                     }
                 }
@@ -412,7 +419,7 @@ class Entityedit extends MY_Controller {
                     foreach ($y['f']['srv']['IDPArtifactResolutionService'] as $k => $v)
                     {
                         $this->form_validation->set_rules('f[srv][IDPArtifactResolutionService][' . $k . '][url]', 'IDP ArtifactResolutionService URL', 'strip_tags|trim|max_length[254]|valid_url');
-                        $this->form_validation->set_rules('f[srv][IDPArtifactResolutionService][' . $k . '][bind]', 'IDP ArtifactResolutionService Binding protocol', 'htmlspeciachars|trim');
+                        $this->form_validation->set_rules('f[srv][IDPArtifactResolutionService][' . $k . '][bind]', 'IDP ArtifactResolutionService Binding protocol', 'strip_tags|trim');
 
                         $tmpurl = trim($y['f']['srv']['IDPArtifactResolutionService']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['IDPArtifactResolutionService']['' . $k . '']['order']);
