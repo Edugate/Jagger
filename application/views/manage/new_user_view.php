@@ -13,12 +13,12 @@ $action = base_url() . "manage/users/add";
 $form = form_open($action, $form_attributes);
 $form .= '<div class="small-12 columns">';
 $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_username') . '', 'username') . '</div>';
-$form .= '<div class="small-6 large-7 columns end">' . form_input('username', set_value('username')) . '</div>';
+$form .= '<div class="small-6 large-7 columns end">' . form_input('username', set_value('username','',FALSE)) . '</div>';
 $form .= '</div>';
 
 $form .= '<div class="small-12 columns">';
 $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_uemail') . '', 'email') . '</div>';
-$form .= '<div class="small-6 large-7 columns end">' . form_input('email', set_value('email')) . '</div>';
+$form .= '<div class="small-6 large-7 columns end">' . form_input('email', set_value('email','',FALSE)) . '</div>';
 $form .= '</div>';
 $form .= '<div class="small-12 columns passwordrow">';
 $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_password') . '', 'password') . '</div>';
@@ -30,11 +30,11 @@ $form .= '<div class="small-6 large-7 columns end">' . form_password('passwordco
 $form .= '</div>';
 $form .= '<div class="small-12 columns">';
 $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_fname') . '', 'fname') . '</div>';
-$form .= '<div class="small-6 large-7 columns end">' . form_input('fname', set_value('fname')) . '</div>';
+$form .= '<div class="small-6 large-7 columns end">' . form_input('fname', set_value('fname','',FALSE)) . '</div>';
 $form .= '</div>';
 $form .= '<div class="small-12 columns">';
 $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_lname') . '', 'sname') . '</div>';
-$form .= '<div class="small-6 large-7 columns end">' . form_input('sname', set_value('sname')) . '</div>';
+$form .= '<div class="small-6 large-7 columns end">' . form_input('sname', set_value('sname','',FALSE)) . '</div>';
 $form .= '</div>';
 $form .= '<div class="small-12 columns">';
 $form .= '<div class="small-3 columns">' . jform_label('' . lang('rr_typeaccess') . '', 'access') . '</div>';

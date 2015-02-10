@@ -50,7 +50,7 @@ echo '<div class="medium-8 large-7 columns end">' . form_checkbox('msgenabled', 
 echo $rowEnd;
 
 echo $rowStart;
-echo jGenerateInput(lang('mtmplsbj'), 'msgsubj', set_value('msgsubj', $msgsubj), '', null);
+echo jGenerateInput(lang('mtmplsbj'), 'msgsubj', set_value('msgsubj', $msgsubj,FALSE), '', null);
 echo $rowEnd;
 echo $rowStart;
 echo '<div class="medium-8 columns medium-centered  panel callout" style="font-size: smaller">';
@@ -68,7 +68,7 @@ echo '</div>';
 echo $rowEnd;
 
 echo $rowStart;
-echo jGenerateTextarea(lang('mtmplbody'), 'msgbody', set_value('msgbody', $msgbody), '');
+echo jGenerateTextarea(lang('mtmplbody'), 'msgbody', set_value('msgbody', $msgbody,FALSE), '');
 
 echo $rowEnd;
 

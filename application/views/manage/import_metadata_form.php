@@ -42,7 +42,7 @@
     echo '</div>';
     echo '<div class="small-12 columns">';
     echo '<div class="small-3 columns"><label for="metadataurl" class="right inline">'.lang('metalocation').'</label></div>';
-    echo '<div class="small-6 large-7 columns end">'.form_input(array('name' => 'metadataurl', 'id' => 'metadataurl', 'placeholder' => 'http://example.com/example-metadata.xml', 'value' => set_value('metadataurl'), 'required' => 'required')).'</div>';
+    echo '<div class="small-6 large-7 columns end">'.form_input(array('name' => 'metadataurl', 'id' => 'metadataurl', 'placeholder' => 'http://example.com/example-metadata.xml', 'value' => set_value('metadataurl','',FALSE), 'required' => 'required')).'</div>';
     echo '</div>';
     echo '<div class="small-12 columns">';
     echo '<div class="small-3 columns"><label for="sslcheck" class="right inline">'.lang('importsslcheck').'</label></div>';
@@ -119,7 +119,7 @@
     echo '<label for="certurl" class="right inline">'.lang('urlofcertsigner').'</label>';
     echo '</div>';
     echo '<div class="small-6 large-7 columns end">';
-    echo form_input(array('name' => 'certurl', 'id' => 'certurl', 'value' => set_value('certurl'), 'placeholder' => 'http://example.com/metadata-signer.crt'));
+    echo form_input(array('name' => 'certurl', 'id' => 'certurl', 'value' => set_value('certurl','',FALSE), 'placeholder' => 'http://example.com/metadata-signer.crt'));
     echo '</div>';
     echo '</div>';
     echo '<div class="small-12 columns">';
@@ -127,7 +127,7 @@
     echo '<label for="cert" class="right inline">'.lang('certsigner').'<br /><small><i>'.lang('overwritecerturl').'</i></small></label>';
     echo '</div>';
     echo '<div class="small-6 large-7 columns end">';
-    echo form_textarea(array('name' => 'cert', 'id' => 'cert', 'cols' => 30, 'rows' => 15, 'value' => set_value('cert')));
+    echo form_textarea(array('name' => 'cert', 'id' => 'cert', 'cols' => 30, 'rows' => 15, 'value' => set_value('cert','',FALSE)));
     echo '</div>';
     echo '</div>';
     echo form_fieldset_close();
