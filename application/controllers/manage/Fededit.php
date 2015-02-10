@@ -47,22 +47,22 @@ class Fededit extends MY_Controller {
         }
         $allowedDigests = array('SHA-1','SHA-256');
         $ar1 = array('attr'=>'name','fedid'=>''.$fedid.'');
-        $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'trim|required|min_length[5]|max_length[128]|xss_clean|federation_updateunique['.serialize($ar1).']');
+        $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'strip_tags|trim|required|min_length[5]|max_length[128]|federation_updateunique['.serialize($ar1).']');
         $ar2 = array('attr'=>'urn','fedid'=>''.$fedid.'');
-        $this->form_validation->set_rules('urn', lang('fednameinmeta'), 'trim|required|min_length[5]|max_length[128]|xss_clean|federation_updateunique['.serialize($ar2).']');
-        $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[2000]|xss_clean');
-        $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'trim|min_length[5]|max_length[1000]|xss_clean');
-        $this->form_validation->set_rules('incattrs',lang('rr_include_attr_in_meta'),'trim|xss_clean|max_length[10]');
-        $this->form_validation->set_rules('ispublic',lang('rr_isfedpublic'),'trim|xss_clean|max_length[10]');
-        $this->form_validation->set_rules('lexport',lang('rr_lexport_enabled'),'trim|xss_clean|max_length[10]');
-        $this->form_validation->set_rules('publisher',lang('rr_fed_publisher'),'trim|xss_clean|max_length[500]');
-        $this->form_validation->set_rules('digestmethod',lang('digestmethodsign'),'trim|xss_clean|matches_inarray['.serialize($allowedDigests).']');
-        $this->form_validation->set_rules('digestmethodext',lang('digestmethodexportsign'),'trim|xss_clean|matches_inarray['.serialize($allowedDigests).']');
-        $this->form_validation->set_rules('usealtmeta',lang('metaalturlinput').' radio','trim|required|xss_clean');
+        $this->form_validation->set_rules('urn', lang('fednameinmeta'), 'strip_tags|trim|required|min_length[5]|max_length[128]|federation_updateunique['.serialize($ar2).']');
+        $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[2000]');
+        $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'strip_tags|trim|min_length[5]|max_length[1000]');
+        $this->form_validation->set_rules('incattrs',lang('rr_include_attr_in_meta'),'strip_tags|trim|max_length[10]');
+        $this->form_validation->set_rules('ispublic',lang('rr_isfedpublic'),'strip_tags|trim|max_length[10]');
+        $this->form_validation->set_rules('lexport',lang('rr_lexport_enabled'),'strip_tags|trim|max_length[10]');
+        $this->form_validation->set_rules('publisher',lang('rr_fed_publisher'),'strip_tags|trim|max_length[500]');
+        $this->form_validation->set_rules('digestmethod',lang('digestmethodsign'),'trim|matches_inarray['.serialize($allowedDigests).']');
+        $this->form_validation->set_rules('digestmethodext',lang('digestmethodexportsign'),'trim|matches_inarray['.serialize($allowedDigests).']');
+        $this->form_validation->set_rules('usealtmeta',lang('metaalturlinput').' radio','strip_tags|trim|required');
         $usealtmeta = $this->input->post('usealtmeta');
         if(!empty($usealtmeta) && $usealtmeta === 'ext')
         {
-            $this->form_validation->set_rules('altmetaurl',lang('metaalturlinput'),'trim|required|valid_url');
+            $this->form_validation->set_rules('altmetaurl',lang('metaalturlinput'),'strip_tags|trim|required|valid_url');
         }
 
         return $this->form_validation->run();
@@ -160,7 +160,7 @@ class Fededit extends MY_Controller {
               $this->em->flush();
               log_message('info','Basic information for federation '.$fedname.' has been updated');
               $data['success_message'] = sprintf(lang('rr_fedinfo_updated'),$fedname);
-              $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.htmlspecialchars($fedname).'</a>';
+              $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.html_escape($fedname).'</a>';
             }
             catch(Exception $e)
             {
@@ -191,7 +191,7 @@ class Fededit extends MY_Controller {
             $f .=$tf;
             $data['form'] = $f;
             $data['form'] .= form_close();
-            $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.htmlspecialchars($fedname).'</a>';
+            $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.html_escape($fedname).'</a>';
         
         }
             $data['subtitlepage'] =  lang('rr_fededitform').'';
