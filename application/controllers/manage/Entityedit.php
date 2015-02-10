@@ -453,7 +453,7 @@ class Entityedit extends MY_Controller {
                     foreach ($y['f']['srv']['DiscoveryResponse'] as $k => $v)
                     {
                         $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][url]', 'DiscoveryResponse URL', 'strip_tags|trim|required|max_length[254]|valid_url');
-                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][bind]', 'DiscoveryResponse Binding protocol', 'trim|htmlcpecialchars|required');
+                        $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][bind]', 'DiscoveryResponse Binding protocol', 'trim|required');
                         $this->form_validation->set_rules('f[srv][DiscoveryResponse][' . $k . '][order]', 'DiscoveryResponse Index', 'trim|required|numeric');
                         $tmpurl = trim($y['f']['srv']['DiscoveryResponse']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['DiscoveryResponse']['' . $k . '']['order']);
