@@ -2674,7 +2674,7 @@ class Form_element {
                         $nval = $ses['uii']['idpsso']['desc']['' . $jlang . ''];
                         unset($ses['uii']['idpsso']['desc']['' . $jlang . '']);
                     }
-                    $currval = set_value('f[uii][idpsso][desc][' . $jlang . ']', $nval,FALSE);
+                    $currval = set_value('f[uii][idpsso][desc][' . $jlang . ']', $nval);
                     $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][idpsso][desc][' . $jlang . ']', 'lhelpdesk', $jlang, $currval, '');
                     $r .= '</div>';
@@ -2685,7 +2685,7 @@ class Form_element {
                 foreach ($ses['uii']['idpsso']['desc'] as $key => $value)
                 {
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][idpsso][desc][' . $key . ']', 'lhelpdesk', $key, set_value('f[uii][idpsso][desc][' . $key . ']', $value,FALSE), '');
+                    $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][idpsso][desc][' . $key . ']', 'lhelpdesk', $key, set_value('f[uii][idpsso][desc][' . $key . ']', $value), '');
                     $r .= '</div>';
                     unset($langsdisplaynames['' . $key . '']);
                 }
@@ -2729,15 +2729,11 @@ class Form_element {
                         continue;
                     }
                     $origval = $v1->getEvalue();
-                    $nval = $origval;
-                    if ($sessform && isset($ses['uii']['idpsso']['helpdesk']['' . $jlang . '']))
-                    {
-                        $nval = $ses['uii']['idpsso']['helpdesk']['' . $jlang . ''];
-                        unset($ses['uii']['idpsso']['helpdesk']['' . $jlang . '']);
-                    }
-                    $currval = set_value('f[uii][idpsso][helpdesk][' . $jlang . ']', $nval,FALSE);
+
+
+
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][helpdesk][' . $jlang . ']', 'uiiidpssohelpdesk', $jlang, $currval, '');
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][helpdesk][' . $jlang . ']', 'uiiidpssohelpdesk', $jlang, $origval, '');
                     $r .= '</div>';
                 }
             }
@@ -2755,7 +2751,7 @@ class Form_element {
                         $langtxt = $langs['' . $key . ''];
                     }
                     $r .= '<div class="small-12 columns">';
-                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][helpdesk][' . $key . ']', 'uiiidpssohelpdesk', $key, set_value('f[uii][idpsso][helpdesk][' . $key . ']', $value,FALSE), '');
+                    $r .= $this->_generateLangInputWithRemove($langtxt, 'f[uii][idpsso][helpdesk][' . $key . ']', 'uiiidpssohelpdesk', $key, set_value('f[uii][idpsso][helpdesk][' . $key . ']', $value), '');
                     $r .= '</div>';
                     unset($langsdisplaynames['' . $key . '']);
                 }

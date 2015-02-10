@@ -160,7 +160,7 @@ class Entityedit extends MY_Controller {
             {
                 foreach ($y['f']['uii']['idpsso']['desc'] as $k => $v)
                 {
-                    $this->form_validation->set_rules('f[uii][idpsso][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' ' . lang('in') . ' ' . $k . '', 'strip_tags|trim|min_length[3]|max_length[500]');
+                    $this->form_validation->set_rules('f[uii][idpsso][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[3]|max_length[500]');
                 }
             }
             if (isset($y['f']['uii']['idpsso']['helpdesk']) && is_array($y['f']['uii']['idpsso']['helpdesk']))

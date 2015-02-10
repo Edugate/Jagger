@@ -496,7 +496,7 @@ class Providerdetails {
         {
             foreach ($lname as $k => $v)
             {
-                $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
+                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
             }
             $d[$i]['value'] = $lvalues;
         }
@@ -511,7 +511,7 @@ class Providerdetails {
         {
             foreach ($ldisplayname as $k => $v)
             {
-                $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
+                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
             }
             $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
         }
@@ -526,7 +526,7 @@ class Providerdetails {
             $lvalues = '';
             foreach ($localizedHelpdesk as $k => $v)
             {
-                $lvalues .= '<div><b>' . $k . ':</b> <a href="' . $v . '"  target="_blank">' . $v . '</a></div>';
+                $lvalues .= '<div><b>' . $k . ':</b> <a href="' . html_escape($v) . '"  target="_blank">' . html_escape($v) . '</a></div>';
             }
             $d[$i]['value'] = $lvalues;
         }
@@ -550,11 +550,11 @@ class Providerdetails {
             {
                 $regauthoritytext = lang('rr_notset');
             }
-            $d[$i]['value'] = $regauthoritytext;
+            $d[$i]['value'] =$regauthoritytext;
         }
         else
         {
-            $d[$i]['value'] = $regauthority;
+            $d[$i]['value'] =$regauthority;
         }
 
         $d[++$i]['name'] = lang('rr_regdate');
@@ -582,13 +582,13 @@ class Providerdetails {
                 }
                 if (strcasecmp($vtype, 'regpol') == 0)
                 {
-                    $regpolicy_value .='<div><b>' . $v->getLang() . '</b>: <a href="' . $v->getUrl() . '" target="_blank">' . $v->getName() . '</a> ' . $l . '</div>';
+                    $regpolicy_value .='<div><b>' . $v->getLang() . '</b>: <a href="' . $v->getUrl() . '" target="_blank">' . html_escape($v->getName()) . '</a> ' . $l . '</div>';
                 }
             }
         }
         elseif (!empty($confRegistrationPolicy) && !empty($confRegLoad))
         {
-            $regpolicy_value .= '<b>en:</b> ' . $confRegistrationPolicy . ' <div data-alert class="alert-box info">' . lang('loadedfromglobalcnf') . '</div>';
+            $regpolicy_value .= '<b>en:</b> ' .$confRegistrationPolicy . ' <div data-alert class="alert-box info">' . lang('loadedfromglobalcnf') . '</div>';
         }
         $d[++$i]['name'] = lang('rr_regpolicy');
         $d[$i]['value'] = $regpolicy_value;
@@ -597,7 +597,7 @@ class Providerdetails {
         if (!empty($defaultprivacyurl))
         {
             $d[++$i]['name'] = lang('rr_defaultprivacyurl');
-            $d[$i]['value'] = $ent->getPrivacyUrl();
+            $d[$i]['value'] = html_escape($defaultprivacyurl);
         }
 
         $entityCategories = array();
@@ -612,7 +612,7 @@ class Providerdetails {
                 $coctype = $v->getType();
                 if ($coctype === 'entcat')
                 {
-                    $cocvalue = '<a href="' . $v->getUrl() . '"  target="_blank" title="' . $v->getDescription() . '">' . $v->getName() . '</a>';
+                    $cocvalue = '<a href="' . html_escape($v->getUrl()) . '"  target="_blank" title="' . html_escape($v->getDescription()) . '">' . html_escape($v->getName()) . '</a>';
                     if (!$v->getAvailable())
                     {
                         $cocvalue .= makeLabel('disabled', lang('rr_disabled'), lang('rr_disabled'));
@@ -668,7 +668,7 @@ class Providerdetails {
         {
             foreach ($lname as $k => $v)
             {
-                $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
+                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
             }
             $d[$i]['value'] = $lvalues;
         }
@@ -683,7 +683,7 @@ class Providerdetails {
         {
             foreach ($ldisplayname as $k => $v)
             {
-                $lvalues .= '<b>' . $k . ':</b> ' . $v . '<br />';
+                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
             }
             $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
         }
@@ -698,7 +698,7 @@ class Providerdetails {
             $lvalues = '';
             foreach ($localizedHelpdesk as $k => $v)
             {
-                $lvalues .= '<div><b>' . $k . ':</b> ' . $v . '</div>';
+                $lvalues .= '<div><b>' . $k . ':</b> ' . html_escape($v) . '</div>';
             }
             $d[$i]['value'] = $lvalues;
         }
@@ -846,7 +846,7 @@ class Providerdetails {
                 {
                     if ($fedActive)
                     {
-                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' </li>';
+                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName())) . ' </li>';
                     }
                     else
                     {
@@ -952,7 +952,7 @@ class Providerdetails {
             $scopeString = '<ul class="no-bullet">';
             foreach ($scopes as $key => $value)
             {
-                $scopeString .= '<li>' . $value . '</li>';
+                $scopeString .= '<li>' . html_escape($value) . '</li>';
             }
             $scopeString .= '</ul>';
             $d[$i]['value'] = $scopeString;
@@ -961,7 +961,7 @@ class Providerdetails {
             $nameids = '<ul class="no-bullet">';
             foreach ($ent->getNameIds('idpsso') as $r)
             {
-                $nameids .= '<li>' . $r . '</li>';
+                $nameids .= '<li>' . html_escape($r) . '</li>';
             }
             $nameids .='</ul>';
             $d[$i]['value'] = trim($nameids);
@@ -977,7 +977,7 @@ class Providerdetails {
                     {
                         $def = '<i>(' . lang('rr_default') . ')</i>';
                     }
-                    $ssovalues .= '<li data-jagger-checkurlalive="' . $s->getUrl() . '"><b>' . $def . ' ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
+                    $ssovalues .= '<li data-jagger-checkurlalive="' . html_escape($s->getUrl()) . '"><b>' . $def . ' ' . html_escape($s->getUrl()) . '</b><br /><small>' . html_escape($s->getBindingName()) . '</small></li>';
                 }
                 $d[$i]['value'] = '<ul class="no-bullet">' . $ssovalues . '</ul>';
             }
@@ -987,7 +987,7 @@ class Providerdetails {
                 $slvalues = '';
                 foreach ($services['IDPSingleLogoutService'] as $s)
                 {
-                    $slvalues .= '<b> ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small><br />';
+                    $slvalues .= '<b> ' . html_escape($s->getUrl()) . '</b><br /><small>' . html_escape($s->getBindingName()) . '</small><br />';
                 }
                 $d[$i]['value'] = $slvalues;
             }
@@ -997,7 +997,7 @@ class Providerdetails {
                 $slvalues = '';
                 foreach ($services['IDPArtifactResolutionService'] as $s)
                 {
-                    $slvalues .= '<b>' . $s->getUrl() . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . '</small><br />';
+                    $slvalues .= '<b>' . html_escape($s->getUrl()) . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . html_escape($s->getBindingName()) . '</small><br />';
                 }
                 $d[$i]['value'] = $slvalues;
             }
@@ -1010,7 +1010,7 @@ class Providerdetails {
             $scopeString = '<ul class="no-bullet">';
             foreach ($scopes as $key => $value)
             {
-                $scopeString .= '<li>' . $value . '</li>';
+                $scopeString .= '<li>' . html_escape($value) . '</li>';
             }
             $scopeString .= '</ul>';
             $d[$i]['value'] = $scopeString;
@@ -1021,10 +1021,10 @@ class Providerdetails {
                 $aanameid = '<ul class="no-bullet">';
                 foreach ($aanameids as $r)
                 {
-                    $aanameid .= '<li>' . $r . '</li>';
+                    $aanameid .= '<li>' . html_escape($r) . '</li>';
                 }
                 $aanameid .= '</ul>';
-                $d[$i]['value'] = trim($aanameid);
+                $d[$i]['value'] = $aanameid;
             }
 
             if (array_key_exists('IDPAttributeService', $services))
@@ -1033,7 +1033,7 @@ class Providerdetails {
                 $slvalues = '';
                 foreach ($services['IDPAttributeService'] as $s)
                 {
-                    $slvalues .= '<b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small><br />';
+                    $slvalues .= '<b>' . html_escape($s->getUrl()) . '</b><br /><small>' . html_escape($s->getBindingName()) . '</small><br />';
                 }
                 $d[$i]['value'] = $slvalues;
             }
@@ -1048,10 +1048,10 @@ class Providerdetails {
             $d[++$i]['name'] = lang('rr_supportednameids');
             foreach ($ent->getNameIds('spsso') as $r)
             {
-                $nameids .= '<li>' . $r . '</li>';
+                $nameids .= '<li>' . html_escape($r) . '</li>';
             }
             $nameids .='</ul>';
-            $d[$i]['value'] = trim($nameids);
+            $d[$i]['value'] = $nameids;
             if (array_key_exists('AssertionConsumerService', $services))
             {
                 $acsvalues = '';
@@ -1063,7 +1063,7 @@ class Providerdetails {
                     {
                         $def = '<i>(' . lang('rr_default') . ')</i>';
                     }
-                    $acsvalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . ' </small></li>';
+                    $acsvalues .= '<li><b>' . $def . ' ' . html_escape($s->getUrl()) . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . html_escape($s->getBindingName()) . ' </small></li>';
                 }
                 $d[$i]['value'] = '<ul class="no-bullet">' . $acsvalues . '</ul>';
             }
@@ -1078,7 +1078,7 @@ class Providerdetails {
                     {
                         $def = '<i>(' . lang('rr_default') . ')</i>';
                     }
-                    $acsvalues .= '<li><b>' . $def . ' ' . $s->getUrl() . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . ' </small></li>';
+                    $acsvalues .= '<li><b>' . $def . ' ' . html_escape($s->getUrl()) . '</b> <small><i>index: ' . $s->getOrder() . '</i></small><br /><small>' . html_escape($s->getBindingName()) . ' </small></li>';
                 }
                 $d[$i]['value'] = '<ul class="no-bullet">' . $acsvalues . '</ul>';
             }
@@ -1088,7 +1088,7 @@ class Providerdetails {
                 $slvalues = '';
                 foreach ($services['SPSingleLogoutService'] as $s)
                 {
-                    $slvalues .= '<li><b> ' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
+                    $slvalues .= '<li><b> ' . html_escape($s->getUrl()) . '</b><br /><small>' . html_escape($s->getBindingName()) . '</small></li>';
                 }
                 $d[$i]['value'] = '<ul class="no-bullet">' . $slvalues . '</ul>';
             }
@@ -1101,7 +1101,7 @@ class Providerdetails {
                     $rivalues = '';
                     foreach ($services['RequestInitiator'] as $s)
                     {
-                        $rivalues .= '<li><b>' . $s->getUrl() . '</b><br /><small>' . $s->getBindingName() . '</small></li>';
+                        $rivalues .= '<li><b>' . html_escape($s->getUrl()) . '</b><br /><small>' . html_escape($s->getBindingName()) . '</small></li>';
                     }
                     $d[$i]['value'] = '<ul class="no-bullet">' . $rivalues . '</ul>';
                 }
@@ -1111,7 +1111,7 @@ class Providerdetails {
                     $drvalues = '';
                     foreach ($services['DiscoveryResponse'] as $s)
                     {
-                        $drvalues .= '<li><b>' . $s->getUrl() . '</b>&nbsp;&nbsp;<small><i>index:' . $s->getOrder() . '</i></small><br /><small>' . $s->getBindingName() . '</small></li>';
+                        $drvalues .= '<li><b>' . html_escape($s->getUrl()) . '</b>&nbsp;&nbsp;<small><i>index:' . $s->getOrder() . '</i></small><br /><small>' . html_escape($s->getBindingName()) . '</small></li>';
                     }
                     $d[$i]['value'] = '<ul class="no-bullet">' . $drvalues . '</ul>';
                 }
@@ -1191,10 +1191,10 @@ class Providerdetails {
             foreach ($entityCategories as $entcat)
             {
                 $d[]['header'] = lang('title_entcat');
-                $d[] = array('name' => lang('entcat_displayname'), 'value' => $entcat->getName());
+                $d[] = array('name' => lang('entcat_displayname'), 'value' => html_escape($entcat->getName()));
                 $d[] = array('name' => lang('rr_attr_name'), 'value' => $entcat->getSubtype());
-                $d[] = array('name' => lang('entcat_value'), 'value' => $entcat->getUrl());
-                $d[] = array('name' => lang('entcat_description'), 'value' => $entcat->getDescription());
+                $d[] = array('name' => lang('entcat_value'), 'value' => html_escape($entcat->getUrl()));
+                $d[] = array('name' => lang('entcat_description'), 'value' => html_escape($entcat->getDescription()));
                 $entcatStatus = $entcat->getAvailable();
                 if (!$entcatStatus)
                 {
@@ -1224,11 +1224,11 @@ class Providerdetails {
                 $d[++$i]['name'] = lang('type');
                 $d[$i]['value'] = $contactsTypeToTranslate['' . strtolower($c->getType()) . ''];
                 $d[++$i]['name'] = lang('rr_contactfirstname');
-                $d[$i]['value'] = $c->getGivenname();
+                $d[$i]['value'] = html_escape($c->getGivenname());
                 $d[++$i]['name'] = lang('rr_contactlastname');
-                $d[$i]['value'] = $c->getSurname();
+                $d[$i]['value'] = html_escape($c->getSurname());
                 $d[++$i]['name'] = lang('rr_contactemail');
-                $d[$i]['value'] = '<span data-jagger-contactmail="' . $c->getEmail() . '">' . $c->getEmail() . '</span>';
+                $d[$i]['value'] = '<span data-jagger-contactmail="' . html_escape($c->getEmail()) . '">' . html_escape($c->getEmail()) . '</span>';
             }
         }
         else
@@ -1327,7 +1327,7 @@ class Providerdetails {
                 foreach ($requiredAttributes as $v)
                 {
                     $d[++$i]['name'] = $v->getAttribute()->getName();
-                    $d[$i]['value'] = '<b>' . $v->getStatus() . '</b>: <i>(' . $v->getReason() . ')</i>';
+                    $d[$i]['value'] = '<b>' . $v->getStatus() . '</b>: <i>(' . html_escape($v->getReason()) . ')</i>';
                 }
             }
         }
@@ -1355,7 +1355,7 @@ class Providerdetails {
                 foreach ($uiiarray['DisplayName'] as $v)
                 {
                     $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
+                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
                 }
                 $d[$i]['value'] = $str;
             }
@@ -1370,7 +1370,7 @@ class Providerdetails {
                 foreach ($uiiarray['Description'] as $v)
                 {
                     $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
+                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
                 }
                 $d[$i]['value'] = $str;
             }
@@ -1385,7 +1385,7 @@ class Providerdetails {
                 foreach ($uiiarray['InformationURL'] as $v)
                 {
                     $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
+                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
                 }
                 $d[$i]['value'] = $str;
             }
@@ -1400,7 +1400,7 @@ class Providerdetails {
                 foreach ($uiiarray['PrivacyStatementURL'] as $v)
                 {
                     $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
+                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
                 }
                 $d[$i]['value'] = $str;
             }
@@ -1450,7 +1450,7 @@ class Providerdetails {
                 foreach ($uiiarray['DisplayName'] as $v)
                 {
                     $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
+                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
                 }
                 $d[$i]['value'] = $str;
             }
@@ -1465,7 +1465,7 @@ class Providerdetails {
                 foreach ($uiiarray['Description'] as $v)
                 {
                     $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
+                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
                 }
                 $d[$i]['value'] = $str;
             }
@@ -1480,7 +1480,7 @@ class Providerdetails {
                 foreach ($uiiarray['PrivacyStatementURL'] as $v)
                 {
                     $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
+                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
                 }
                 $d[$i]['value'] = $str;
             }
@@ -1495,7 +1495,7 @@ class Providerdetails {
                 foreach ($uiiarray['InformationURL'] as $v)
                 {
                     $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . $v->getEvalue() . '<br />';
+                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
                 }
                 $d[$i]['value'] = $str;
             }
