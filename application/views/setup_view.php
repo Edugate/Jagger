@@ -9,12 +9,12 @@ echo form_open(base_url() . 'setup/submit',$attributes,$hidden);
 echo form_fieldset('Administrator  details');
 echo '<div class="small-12 columns">';
 echo '<div class="medium-3 columns medium-text-right">'.form_label('Username', 'username').'</div>';
-echo '<div class="medium-7 end columns">'.form_input('username',set_value('username')).form_error('username', '<span class="error">', '</span>').'</div>';
+echo '<div class="medium-7 end columns">'.form_input('username',set_value('username','',FALSE)).form_error('username', '<span class="error">', '</span>').'</div>';
 echo '</div>';
 
 echo '<div class="small-12 columns">';
 echo '<div class="medium-3 columns medium-text-right">'.form_label('email', 'email').'</div>';
-echo '<div class="medium-7 end columns">'.form_input('email',set_value('email')). form_error('email', '<span class="error">', '</span>').'</div>';
+echo '<div class="medium-7 end columns">'.form_input('email',set_value('email','',FALSE)). form_error('email', '<span class="error">', '</span>').'</div>';
 echo '</div>';
 
 echo '<div class="small-12 columns">';

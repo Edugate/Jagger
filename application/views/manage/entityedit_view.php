@@ -82,19 +82,19 @@ if(!empty($sessform))
             echo '<div class="small-12 columns"><div class="section">'.lang('yourcontactdetails').'</div></div>';
             echo '<div class="small-12 columns">';
             echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactfirstname'),'f[primarycnt][fname]').'</div>'; 
-            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][fname]','name'=>'f[primarycnt][fname]','value'=>set_value('f[primarycnt][fname]'))).'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][fname]','name'=>'f[primarycnt][fname]','value'=>set_value('f[primarycnt][fname]','',FALSE))).'</div>';
             echo '</div>';
             echo '<div class="small-12 columns">';
             echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactlastname'),'f[primarycnt][lname]').'</div>'; 
-            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][lname]','name'=>'f[primarycnt][lname]','value'=>set_value('f[primarycnt][lname]'))).'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][lname]','name'=>'f[primarycnt][lname]','value'=>set_value('f[primarycnt][lname]','',FALSE))).'</div>';
             echo '</div>';
             echo '<div class="small-12 columns">';
             echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactemail'),'f[primarycnt][mail]').'</div>'; 
-            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][mail]','name'=>'f[primarycnt][mail]','value'=>set_value('f[primarycnt][mail]'))).'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][mail]','name'=>'f[primarycnt][mail]','value'=>set_value('f[primarycnt][mail]','',FALSE))).'</div>';
             echo '</div>';
             echo '<div class="small-12 columns">';
             echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactphone'),'f[primarycnt][phone]').'</div>'; 
-            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][phone]','name'=>'f[primarycnt][phone]','value'=>set_value('f[primarycnt][phone]'))).'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][phone]','name'=>'f[primarycnt][phone]','value'=>set_value('f[primarycnt][phone]','',FALSE))).'</div>';
             echo '</div>';
          }
          else
