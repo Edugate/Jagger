@@ -1,20 +1,11 @@
-
-
-
 <?php
-if (empty($bookmarked))
-{
-    echo '<a href="' . base_url() . 'ajax/bookentity/' . $entid . '" class="bookentity notbooked"><img src="' . base_url() . 'images/icons/star--plus.png" style="float:right"/></a>';
-    echo '<a href="' . base_url() . 'ajax/delbookentity/' . $entid . '" class="bookentity booked" style="display:none"><img src="' . base_url() . 'images/icons/star--minus.png" style="float:right"/></a>';
-}
-else
-{
-    echo '<a href="' . base_url() . 'ajax/bookentity/' . $entid . '" class="bookentity notbooked" style="display:none"><img src="' . base_url() . 'images/icons/star--plus.png" style="float:right"/></a>';
-    echo '<a href="' . base_url() . 'ajax/delbookentity/' . $entid . '" class="bookentity booked"><img src="' . base_url() . 'images/icons/star--minus.png" style="float:right"/></a>';
-}
-?>
 
-<?php
+if(empty($bookmarked))
+{
+    echo '<span data-jagger-onsuccess="hide" class="hide-for-small-only"><a href="' . base_url() . 'ajax/bookmarkentity/' . $entid . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus" style="color: white"></i></a></span>';
+}
+
+
 if (!empty($alerts) && is_array($alerts) && count($alerts) > 0)
 {
     echo '<div  data-alert class="alert-box warning" >';

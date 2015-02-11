@@ -1,16 +1,10 @@
 <?php
-if (!$bookmarked)
-{
-    $blink = '<a href="' . base_url() . 'ajax/bookfed/' . $federation_id . '" class="bookentity"><img src="' . base_url() . 'images/icons/star--plus.png" /></a>';
-}
-else
-{
-    $blink = '<a href="' . base_url() . 'ajax/delbookfed/' . $federation_id . '" class="bookentity"><img src="' . base_url() . 'images/icons/star--minus.png" /></a>';
-}
-?>
-<div><?php echo  $blink; ?></div>
 
-<?php
+if(empty($bookmarked))
+{
+    echo '<span data-jagger-onsuccess="hide" class="hide-for-small-only"><a href="' . base_url() . 'ajax/bookfed/' . $federation_id . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus" style="color: white"></i></a></span>';
+}
+
 echo '<div id="ifedtabs">';
 echo '<ul class="tabs" data-tab>
  <li class="tab-title active"><a href="#general">' . lang('tabgeneral') . '</a></li>

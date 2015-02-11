@@ -1,4 +1,3 @@
-
 jQuery.fn.toggleOption = function (show) {
 
     jQuery(this).toggle(show);
@@ -14,7 +13,6 @@ var createRowWithLangRm = function (langCode, langString, inputName, rmbtn) {
     console.log('createRowWithLangRm fired');
     return $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline tiny left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
 };
-
 
 
 var BINIT = {
@@ -191,22 +189,6 @@ var GINIT = {
             });
 
 
-            return false;
-        });
-        $("a.bookentity").click(function () {
-            var link = $(this), url = link.attr("href");
-
-            $.ajax({
-                type: "GET",
-                url: url,
-                timeout: 2500,
-                cache: false,
-                success: function (data) {
-                    $("a.bookentity").show();
-                    $(this).hide();
-                    GINIT.initialize();
-                }
-            });
             return false;
         });
 
@@ -696,8 +678,8 @@ var GINIT = {
                             fvform.find("button:focus").data("passed", "true");
                             fvform.find("button:focus").attr("disabled", "true");
                         } else if (data.returncode === "error") {
-                           fvform.find("button:focus").css("background-color", "#aa0000");
-                           fvform.find("button:focus").data("passed", "false");
+                            fvform.find("button:focus").css("background-color", "#aa0000");
+                            fvform.find("button:focus").data("passed", "false");
                         }
                         if (data.message) {
                             var msgdata;
@@ -749,7 +731,7 @@ var GINIT = {
             }
         });
 
-        $(document).on('click','.fmembers','a',function () {
+        $(document).on('click', '.fmembers', 'a', function () {
 
             var link = $(this), url = link.attr("href");
             var row = $(this).parent().parent();
@@ -943,7 +925,6 @@ $(document).ready(function () {
                 });
             });
         });
-
 
 
         $("button#idpssoadddomainhint").click(function () {
@@ -1521,7 +1502,7 @@ $(document).ready(function () {
                     if (countAttr > 52) {
                         $("#container").css({"max-width": "100%"});
                     }
-                  
+
                     var cell, requiredAttr, pAttr;
                     tbl += '</tr></thead><tbody>';
                     $.each(policies, function (i, a) {
@@ -1535,11 +1516,10 @@ $(document).ready(function () {
                             else {
                                 pAttr = null;
                             }
-                            if(a['req'][k] !== undefined)
-                            {
-                              requiredAttr = a['req'][k];
+                            if (a['req'][k] !== undefined) {
+                                requiredAttr = a['req'][k];
                             }
-                            if (requiredAttr !== null ) {
+                            if (requiredAttr !== null) {
                                 cell = requiredAttr[0].toUpperCase();
                             }
                             else {
@@ -1638,7 +1618,7 @@ $(document).ready(function () {
                         value.append(tr_data);
                     });
                 }
-        //        GINIT.initialize();
+                //        GINIT.initialize();
             }
         });
     }
@@ -1746,7 +1726,7 @@ $(function () {
     }, 86000);
 
 
-    $('#languageset').on('change','select' ,function (e) {
+    $('#languageset').on('change', 'select', function (e) {
         var link = $("div#languageset form").attr('action');
         var url = link + this.value;
         $.ajax({
@@ -1756,9 +1736,9 @@ $(function () {
         }).done(function () {
             $('#languageset').foundation('reveal', 'close');
 
-            setTimeout(function(){
+            setTimeout(function () {
                 go_to_private_page();
-            },1000);
+            }, 1000);
 
         });
         return false;
@@ -1892,25 +1872,39 @@ $(function () {
         return false;
     });
 
-    $("a.delbookentity").click(function () {
-        var link = $(this), url = link.attr("href");
 
+    $(".updatebookmark").on('click', function (e) {
+        e.preventDefault();
+        var link = $(this).attr("href");
+        var action = $(this).attr("data-jagger-bookmark");
+        var postsuccess = $(this).closest("[data-jagger-onsuccess]");
+        var postaction = postsuccess.attr('data-jagger-onsuccess');
+        if(link === undefined || action === undefined)
+        {
+            return false;
+        }
         $.ajax({
-            url: url,
-            timeout: 2500,
-            cache: false,
-            success: $(this).parent().remove()
-        });
-        return false;
-    });
-    $("a.delbookfed").click(function () {
-        var link = $(this), url = link.attr("href");
+            url: link+'/'+action,
+            type: 'GET',
+            success: function(data){
 
-        $.ajax({
-            url: url,
-            timeout: 2500,
-            cache: false,
-            success: $(this).parent().remove()
+                if(data && data ==='ok')
+                {
+
+                    if(postaction!==undefined)
+                    {
+                        if(postaction === 'hide')
+                        {
+                            postsuccess.hide();
+                        }
+                    }
+                    else
+                    {
+                        alert('sdf');
+                    }
+                }
+
+            }
         });
         return false;
     });
@@ -2176,11 +2170,9 @@ $("#nattrreqbtn").click(function (ev) {
     $(this).parent().parent().before(newelement);
 
 
-
-
 });
 
-$(document).on('click','a.pCookieAccept', function(e) {
+$(document).on('click', 'a.pCookieAccept', function (e) {
     e.preventDefault();
     var link = $(this), url = link.attr("href");
 
@@ -2377,7 +2369,7 @@ $(document).ready(function () {
             });
         });
     });
-    $("#rmstatdef").on('click','button',function (ev) {
+    $("#rmstatdef").on('click', 'button', function (ev) {
         var url = $("form#rmstatdef").attr('action');
         var serializedData = $(this).serialize();
         sconfirm('', function (ev) {
@@ -2624,7 +2616,7 @@ $(".submit").click(function () {
     return false;
 });
 
-$('#joinfed').on('change','#fedid' ,function (e) {
+$('#joinfed').on('change', '#fedid', function (e) {
     $("div.validaronotice").hide();
     $("ul.validatorbuttons").replaceWith('<ul class="button-group validatorbuttons"></ul>');
     var csrfname = $("[name='csrfname']").val();
@@ -2701,7 +2693,7 @@ $("#showhelps").click(function (e) {
 $("div.section").parent().addClass("section");
 
 
-$("#notificationupdateform").on('submit',function (e) {
+$("#notificationupdateform").on('submit', function (e) {
 
     e.preventDefault();
     var serializedData = $(this).serializeArray();
@@ -2732,8 +2724,7 @@ $("#notificationupdateform").on('submit',function (e) {
 
                         subsriptionstatus.text(v.langstatus);
                     }
-                    if(foundrecord === false)
-                    {
+                    if (foundrecord === false) {
                         ctr.hide();
                     }
 
@@ -2777,9 +2768,9 @@ $(document).on('submit', 'div#loginform form', function (e) {
             if (data) {
                 if (data.success === true && data.result === 'OK') {
                     $('#loginform').foundation('reveal', 'close');
-                    setTimeout(function(){
+                    setTimeout(function () {
                         go_to_private_page();
-                    },1000);
+                    }, 1000);
 
                 }
                 else if (data.result === 'secondfactor') {
@@ -2860,7 +2851,7 @@ $(".afilter").click(function () {
                 var theadtr = $('<tr/>');
                 thead.append(theadtr);
 
-                var Columns =[];
+                var Columns = [];
                 var tmpcolumns = result.columns;
                 var colstatus;
                 var counter = 0;
@@ -2960,7 +2951,7 @@ $('button[name="mrolebtn"]').click(function (e) {
         cache: false,
         dataType: "json",
         success: function (json) {
-            var rarray =[];
+            var rarray = [];
             $.each(json, function (ig, vg) {
                 rarray.push(vg);
 
@@ -3086,9 +3077,9 @@ $(document).on('submit', "#duo_form", function (e) {
                 if (data.success === true && data.result === 'OK') {
                     $('#loginform').foundation('reveal', 'close');
 
-                    setTimeout(function(){
+                    setTimeout(function () {
                         go_to_private_page();
-                    },1000);
+                    }, 1000);
 
                 }
                 else if (data.result === 'secondfactor') {
@@ -3132,22 +3123,20 @@ $("#updateprefsmodal").on('submit', function (e) {
         success: function (data) {
             if (data) {
                 if (data.result === 'OK') {
-                    var sRecord = $(document).find('[data-jagger-record="'+data.confname+'"]').first();
+                    var sRecord = $(document).find('[data-jagger-record="' + data.confname + '"]').first();
 
 
                     var rowRecord = sRecord.closest('tr');
                     var type = data.type;
-                    if(type === 'text') {
+                    if (type === 'text') {
 
                         rowRecord.find('span[data-jagger-name="vtext"]').first().html(data.vtext);
                     }
                     var sStatus = rowRecord.find('span[data-jagger-name="status"]').first();
-                    if(data.status)
-                    {
+                    if (data.status) {
                         sStatus.removeClass('alert').html(data.statusstring);
                     }
-                    else
-                    {
+                    else {
                         sStatus.addClass('alert').html(data.statusstring);
                     }
 

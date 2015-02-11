@@ -1,8 +1,7 @@
 <div class="row">
     <?php
-    $entdelurl = base_url() . 'ajax/delbookentity/';
-    $feddelurl = base_url() . 'ajax/delbookfed/';
-    $image = base_url() . 'images/icons/star--minus.png';
+    $entdelurl = base_url() . 'ajax/bookmarkentity/';
+    $feddelurl = base_url() . 'ajax/bookfed/';
     ?>
  
     <div class="small-12 columns" data-equalizer>
@@ -13,7 +12,7 @@
         echo '<ul class="no-bullet">';
         foreach ($idps as $k => $i)
         {
-            echo '<li>' . $i . '  <a href="' . $entdelurl . $k . '" class="delbookentity"><i class="fi-x-circle inline right"></i></a></li>';
+            echo '<li data-jagger-onsuccess="hide">' . $i . '  <a href="' . $entdelurl . $k . '" class="updatebookmark" data-jagger-bookmark="del"><i class="fi-x-circle inline right"></i></a></li>';
         }
         echo '</ul>';
         ?>
@@ -27,7 +26,7 @@
         echo '<ul class="no-bullet">';
         foreach ($sps as $k => $i)
         {
-            echo '<li>' . $i . '<a href="' . $entdelurl . $k . '" class="delbookentity"><i class="fi-x-circle iniline right"></i></a></li>';
+            echo '<li data-jagger-onsuccess="hide">' . $i . '<a href="' . $entdelurl . $k . '" class="updatebookmark" data-jagger-bookmark="del"><i class="fi-x-circle iniline right"></i></a></li>';
         }
         echo '</ul>';
         ?>
@@ -44,7 +43,7 @@
 <?php
 foreach ($feds as $k => $i)
 {
-    echo '<li>' . $i . '<a href="' . $feddelurl . $k . '" class="delbookfed"><i class="fi-x-circle inline right"></i></a></li>';
+    echo '<li data-jagger-onsuccess="hide">' . $i . '<a href="' . $feddelurl . $k . '" class="updatebookmark" data-jagger-bookmark="del"><i class="fi-x-circle inline right"></i></a></li>';
 }
 ?>
         </ul>
