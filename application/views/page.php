@@ -276,8 +276,8 @@ $foundation = $base_url . 'foundation/';
 // list js files to load 
         $jsToLoad1 = array(
             'jquery-2.1.3.min.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.uitablefilter.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
-            'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js',
-            'foundation.min.js', 'foundation.topbar.js', 'foundation.tab.js', 'foundation.alert.js', 'foundation.reveal.js', 'jquery.simplemodal.js', 'foundation.tooltip.js');
+            'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js','fastclick.js',
+            'foundation.min.js',  'jquery.simplemodal.js');
         foreach ($jsToLoad1 as $jsFile)
         {
             echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;

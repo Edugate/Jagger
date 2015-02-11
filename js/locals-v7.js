@@ -20,6 +20,7 @@ var createRowWithLangRm = function (langCode, langString, inputName, rmbtn) {
 var BINIT = {
     initFvalidators: function () {
 
+        console.log('BININT');
         $("ul.validatorbuttons button").on('click', function (e) {
             var link = $(this).attr("value");
             $.ajax({
@@ -63,8 +64,7 @@ var BINIT = {
 
 var GINIT = {
     initialize: function () {
-
-
+        console.log('GINIT');
         $('div[data-jagger-getmoreajax]').each(function (e) {
             var link = $(this).attr('data-jagger-getmoreajax');
             var targetresponseid = $(this).attr('data-jagger-response-msg');
@@ -215,29 +215,19 @@ var GINIT = {
         });
 
         $('#providerlogtab').on('toggled', function (event, tab) {
-
-            var oko = tab.find("[data-reveal-ajax-tab]");
+            var oko = tab.find("[data-reveal-ajax-tab]").first();
             var link = oko.attr("data-reveal-ajax-tab");
             if (link !== undefined) {
-                //$('#providerlogtab').empty();
                 $.ajax({
                     cache: true,
                     type: 'GET',
                     url: link,
                     success: function (data) {
                         $('#providerlogtab').empty().append(data);
-                        $(document).foundation('reflow');
-                        $('.accordionButton').unbind();
-                        $('#editprovider').unbind();
-
-                        GINIT.initialize();
-
+                        $(document).foundation('accordion', 'reflow');
                     }
-
                 });
             }
-
-
         });
 
         $("button.cleartarget").on('click', function (e) {
@@ -759,7 +749,7 @@ var GINIT = {
             }
         });
 
-        $("a.fmembers").click(function () {
+        $(document).on('click','.fmembers','a',function () {
 
             var link = $(this), url = link.attr("href");
             var row = $(this).parent().parent();
@@ -773,7 +763,7 @@ var GINIT = {
 
                 $.ajax({
                     url: url,
-                    timeout: 3500,
+                    timeout: 9500,
                     cache: true,
                     success: function (data) {
                         $('#spinner').hide();
@@ -1648,7 +1638,7 @@ $(document).ready(function () {
                         value.append(tr_data);
                     });
                 }
-                GINIT.initialize();
+        //        GINIT.initialize();
             }
         });
     }
@@ -1679,7 +1669,7 @@ $(document).ready(function () {
                         value.append(tr_data);
                     });
                 }
-                GINIT.initialize();
+
             },
             beforeSend: function () {
                 $('#spinner').show();
@@ -2141,38 +2131,6 @@ $(function () {
     $(".userlist#details").tablesorter({sortList: [[3, 1], [0, 0]], widgets: ['zebra']});
     $("#options").tablesorter({sortList: [[0, 0]], headers: {3: {sorter: false}, 4: {sorter: false}}});
 
-    $("#formtabs").tabs({
-        cache: false,
-        activate: function (event, ui) {
-            GINIT.initialize();
-        }
-    });
-
-    $(".mytabs").tabs({
-        cache: false,
-        activate: function (event, ui) {
-            GINIT.initialize();
-        }
-    });
-
-
-    $("#fedtabs").tabs({
-        cache: true,
-        load: function (event, ui) {
-            $('.accordionButton').unbind();
-            GINIT.initialize();
-        }
-
-    });
-    $("#arptabs").tabs({
-        cache: true,
-        load: function (event, ui) {
-            $('.accordionButton').unbind();
-            $('.tablesorter').unbind();
-            GINIT.initialize();
-        }
-
-    });
     $("#logotabs").tabs({
         load: function (event, ui) {
             $('#availablelogos').unbind();
@@ -2217,7 +2175,7 @@ $("#nattrreqbtn").click(function (ev) {
     var newelement = '<fieldset><legend>' + attrname + '</legend><div class="small-12 columns"><div class="medium-3 columns medium-text-right"><select name="f[reqattr][' + rname + '][status]"><option value="required">required</option><option value="desired">desired</option></select><input type="hidden" name="f[reqattr][' + rname + '][attrname]" value="' + attrname + '"><input type="hidden" name="f[reqattr][' + rname + '][attrid]" value="' + attrid + '"></div><div class="medium-6 collumns end"><textarea name="f[reqattr][' + rname + '][reason]"></textarea></div></div></fieldset>';
     $(this).parent().parent().before(newelement);
 
-    GINIT.initialize();
+
 
 
 });
@@ -2263,7 +2221,7 @@ $(document).ready(function () {
             }
         );
     }
-    $("button#vormversion").click(function () {
+    $("#vormversion").click(function () {
         $.ajax({
             cache: false,
             type: "GET",
@@ -2283,7 +2241,7 @@ $(document).ready(function () {
         });
         return false;
     });
-    $("button#vschema").click(function () {
+    $("#vschema").click(function () {
         $.ajax({
             cache: false,
             type: "GET",
@@ -2303,7 +2261,7 @@ $(document).ready(function () {
         });
         return false;
     });
-    $("button#vschemadb").click(function () {
+    $("#vschemadb").click(function () {
         $.ajax({
             cache: false,
             type: "GET",
@@ -2323,7 +2281,7 @@ $(document).ready(function () {
         });
         return false;
     });
-    $("button#vmigrate").click(function () {
+    $("#vmigrate").click(function () {
         $.ajax({
             cache: false,
             type: "GET",
