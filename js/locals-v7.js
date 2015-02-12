@@ -19,6 +19,8 @@ var BINIT = {
     initFvalidators: function () {
 
         console.log('BININT');
+
+
         $("ul.validatorbuttons button").on('click', function (e) {
             var link = $(this).attr("value");
             $.ajax({
@@ -63,6 +65,107 @@ var BINIT = {
 var GINIT = {
     initialize: function () {
         console.log('GINIT');
+        var membership2 = $("#membership2").first();
+        console.log(membership2.length)
+        if (membership2 !== undefined && membership2.length > 0) {
+            var link = $(membership2).attr('data-jagger-link');
+            $.ajax({
+                url: link,
+                type: 'GET',
+                cache: 'false',
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        var preurl = data.definitions.preurl;
+                        var out = [], o = -1;
+                        var nr, oddeven;
+                        out[++o] = '<table><tbody>';
+                        if (data.idp !== undefined) {
+                            out[++o] = '<tr><td colspan="2" class="highlight">' + data.definitions.idps + '</td></tr>';
+                            out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
+                            nr = 0;
+                            $.each(data.idp, function (i, v) {
+                                ++nr;
+
+                                if(nr % 2)
+                                {
+                                    out[++o] = '<div class="small-12 column odd">';
+                                }
+                                else
+                                {
+                                    out[++o] = '<div class="small-12 column even">';
+                                }
+
+                                out[++o] = '<div class="large-5 column">'+nr+'. <a href="' + preurl + v.pid + '">' + v.pname + '<a/></div>';
+                                out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
+                                out[++o] = '<div class="large-2 column"></div>';
+
+                                out[++o] = '</div>';
+
+                            });
+                            out[++o] = '</div></td></tr>';
+
+
+                        }
+                        if (data.sp !== undefined) {
+                            out[++o] = '<tr><td colspan="2" class="highlight">' + data.definitions.sps + '</td></tr>';
+                            out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
+                            nr = 0;
+
+                            $.each(data.sp, function (i, v) {
+                                ++nr;
+
+                                if(nr % 2)
+                                {
+                                    out[++o] = '<div class="small-12 column odd">';
+                                }
+                                else
+                                {
+                                    out[++o] = '<div class="small-12 column even">';
+                                }
+
+                                out[++o] = '<div class="large-5 column">'+nr+'. <a href="' + preurl + v.pid + '">' + v.pname + '<a/></div>';
+                                out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
+                                out[++o] = '<div class="large-2 column"></div>';
+
+                                out[++o] = '</div>';
+
+                            });
+                            out[++o] = '</div></td></tr>';
+
+
+                        }
+                        if (data.both !== undefined) {
+                            out[++o] = '<tr><td colspan="2" class="highlight">' + data.definitions.both + '</td></tr>';
+                            out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
+                            nr = 0;
+                            $.each(data.both, function (i, v) {
+                                ++nr;
+                                if(nr % 2)
+                                {
+                                    out[++o] = '<div class="small-12 column odd">';
+                                }
+                                else
+                                {
+                                    out[++o] = '<div class="small-12 column even">';
+                                }
+
+                                out[++o] = '<div class="large-5 column">'+nr+'. <a href="' + preurl + v.pid + '">' + v.pname + '<a/></div>';
+                                out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
+                                out[++o] = '<div class="large-2 column"></div>';
+
+                                out[++o] = '</div>';
+
+                            });
+                            out[++o] = '</div></td></tr>';
+
+                        }
+                        out[++o] = '</tbody></table>';
+                        $(membership2).html(out.join(''));
+                    }
+                }
+            });
+        }
         $('div[data-jagger-getmoreajax]').each(function (e) {
             var link = $(this).attr('data-jagger-getmoreajax');
             var targetresponseid = $(this).attr('data-jagger-response-msg');
@@ -730,6 +833,7 @@ var GINIT = {
                 e.preventDefault();
             }
         });
+
 
         $(document).on('click', '.fmembers', 'a', function () {
 
@@ -1879,27 +1983,22 @@ $(function () {
         var action = $(this).attr("data-jagger-bookmark");
         var postsuccess = $(this).closest("[data-jagger-onsuccess]");
         var postaction = postsuccess.attr('data-jagger-onsuccess');
-        if(link === undefined || action === undefined)
-        {
+        if (link === undefined || action === undefined) {
             return false;
         }
         $.ajax({
-            url: link+'/'+action,
+            url: link + '/' + action,
             type: 'GET',
-            success: function(data){
+            success: function (data) {
 
-                if(data && data ==='ok')
-                {
+                if (data && data === 'ok') {
 
-                    if(postaction!==undefined)
-                    {
-                        if(postaction === 'hide')
-                        {
+                    if (postaction !== undefined) {
+                        if (postaction === 'hide') {
                             postsuccess.hide();
                         }
                     }
-                    else
-                    {
+                    else {
                         alert('sdf');
                     }
                 }

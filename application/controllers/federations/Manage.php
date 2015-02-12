@@ -540,25 +540,8 @@ class Manage extends MY_Controller
 
         if (!empty($data['federation_is_active']))
         {
-
-
-            $membersInArray = array('idp' => array(), 'sp' => array(), 'both' => array());
-            $lang = MY_Controller::getLang();
-
-            $membersInArray2 = $this->getMembers($federation, $lang);
-            $membersInArray = array_merge($membersInArray, $membersInArray2);
-
-            $IDPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['idp']);
-            $SPmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['sp']);
-            $BOTHmembersInArrayToHtml = $this->show_element->MembersToHtml($membersInArray['both']);
-
-
-            $data['result']['membership'][] = array('data' => array('data' => lang('identityprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
-            $data['result']['membership'][] = array('data' => array('data' => $IDPmembersInArrayToHtml, 'colspan' => 2));
-            $data['result']['membership'][] = array('data' => array('data' => lang('serviceprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
-            $data['result']['membership'][] = array('data' => array('data' => $SPmembersInArrayToHtml, 'colspan' => 2));
-            $data['result']['membership'][] = array('data' => array('data' => lang('bothprovidersmembers'), 'class' => 'highlight', 'colspan' => 2));
-            $data['result']['membership'][] = array('data' => array('data' => $BOTHmembersInArrayToHtml, 'colspan' => 2));
+            $data['result']['membership'][] = array('data' => array('data' => '<div id="membership2" data-jagger-link="'.base_url().'federations/manage/showmembers/'.$federation->getId().'"><div data-alert class="alert-box info center">Loading....<a href="#" class="close">&times;</a>
+</div></div>', 'colspan' => 2));
         }
 
         $fvalidators = $federation->getValidators();

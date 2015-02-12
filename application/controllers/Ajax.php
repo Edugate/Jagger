@@ -298,7 +298,6 @@ class Ajax extends MY_Controller
 			return;
 
 		}
-		$result = 'ok';
 		if (strcmp($action, 'add') == 0) {
 			$ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
 			if (empty($ent)) {
@@ -314,21 +313,17 @@ class Ajax extends MY_Controller
 			$this->em->persist($u);
 			$userprefs = $u->getUserpref();
 			$this->session->set_userdata(array('board' => $userprefs['board']));
-			//$result = 'added';
-
 		}
 		if (strcmp($action, 'del') == 0) {
 			$u->delEntityFromBookmark($id);
 			$this->em->persist($u);
 			$userprefs = $u->getUserpref();
 			$this->session->set_userdata(array('board' => $userprefs['board']));
-			//$result = 'deleted';
-
 		}
 		try {
 			$this->em->flush();
 			set_status_header(200);
-			echo $result;
+			echo 'ok';
 			return;
 		} catch (Exception $e) {
 			log_message('error', __METHOD__ . ' : ' . $e);
