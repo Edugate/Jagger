@@ -12,7 +12,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *
  * @author janul
  */
-class Providertoxml {
+class Providertoxml
+{
 
     private $ci;
     private $em;
@@ -25,7 +26,7 @@ class Providertoxml {
 
     function __construct()
     {
-        $this->ci = & get_instance();
+        $this->ci = &get_instance();
 
         $this->srvMap = array(
             'SingleSignOnService' => array(
@@ -74,30 +75,23 @@ class Providertoxml {
                 'ns' => 'md',
             ),
         );
-        if (function_exists('customGenerateEntityDescriptorID'))
-        {
+        if (function_exists('customGenerateEntityDescriptorID')) {
             $this->isGenIdFnExist = true;
-        }
-        else
-        {
+        } else {
             $this->isGenIdFnExist = false;
         }
         $registrationAutority = $this->ci->config->item('registrationAutority');
         $load_registrationAutority = $this->ci->config->item('load_registrationAutority');
-        if (!empty($registrationAutority) && !empty($load_registrationAutority))
-        {
+        if (!empty($registrationAutority) && !empty($load_registrationAutority)) {
             $this->useGlobalRegistrar = true;
             $this->globalRegistrar = $this->ci->config->item('registrationAutority');
             $this->globalRegpolicy = $this->ci->config->item('registrationPolicy');
-        }
-        else
-        {
+        } else {
             $this->useGlobalRegistrar = false;
         }
         $logoPrefixURI = $this->ci->config->item('rr_logouriprefix');
         $logoBaseUrl = $this->ci->config->item('rr_logobaseurl');
-        if (empty($logoBaseUrl))
-        {
+        if (empty($logoBaseUrl)) {
             $logoBaseUrl = base_url();
         }
         $this->logoPrefixUrl = $logoBaseUrl . $logoPrefixURI;
@@ -108,61 +102,49 @@ class Providertoxml {
 
     public function providerConvertToXML(\models\Provider $ent)
     {
-        
+
     }
 
     private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent)
     {
-        
+
         $registrar = $ent->getRegistrationAuthority();
-        if (empty($registrar) && $ent->getLocal() && $this->useGlobalRegistrar)
-        {
+        if (empty($registrar) && $ent->getLocal() && $this->useGlobalRegistrar) {
             $registrar = $this->globalRegistrar;
         }
         $doFilter = array(TRUE);
         $cocs = $ent->getCoc()->filter(
-                function(models\Coc $entry) use ($doFilter)
-        {
-            return in_array($entry->getAvailable(), $doFilter);
-        }
+            function (models\Coc $entry) use ($doFilter) {
+                return in_array($entry->getAvailable(), $doFilter);
+            }
         );
 
         $cocsByGroups = array('entcat' => array(), 'regpol' => array());
-        foreach ($cocs as $v)
-        {
+        foreach ($cocs as $v) {
             $cocsSubtype = $v->getSubtype();
-            if (!empty($cocsSubtype))
-            {
+            if (!empty($cocsSubtype)) {
                 $cocsByGroups['' . $v->getType() . ''][$cocsSubtype][] = $v;
-            }
-            else
-            {
+            } else {
                 $cocsByGroups['' . $v->getType() . ''][] = $v;
             }
         }
-       
-        
-        if (!empty($registrar) || count($cocsByGroups['entcat']) > 0)
-        {
+
+
+        if (!empty($registrar) || count($cocsByGroups['entcat']) > 0) {
 
             $xml->startElementNs('md', 'Extensions', null);
-            if (!empty($registrar))
-            {
+            if (!empty($registrar)) {
                 $xml->startElementNs('mdrpi', 'RegistrationInfo', null);
                 $xml->writeAttribute('registrationAuthority', $registrar);
                 $registerDate = $ent->getRegistrationDate();
-                if (!empty($registerDate))
-                {
+                if (!empty($registerDate)) {
                     $xml->writeAttribute('registrationInstant', $registerDate->format('Y-m-d') . 'T' . $registerDate->format('H:i:s') . 'Z');
-                    if (count($cocsByGroups['regpol']) > 0)
-                    {
+                    if (count($cocsByGroups['regpol']) > 0) {
 
                         $langsset = array();
-                        foreach ($cocsByGroups['regpol'] as $v)
-                        {
+                        foreach ($cocsByGroups['regpol'] as $v) {
                             $vlang = $v->getLang();
-                            if (in_array($vlang, $langsset))
-                            {
+                            if (in_array($vlang, $langsset)) {
                                 \log_message('error', __METHOD__ . ' multiple registration policies are set for lang:' . $vlang . ' for entityId: ' . $ent->getEntityId());
                                 continue;
                             }
@@ -172,9 +154,7 @@ class Providertoxml {
                             $xml->text($v->getUrl());
                             $xml->endElement();
                         }
-                    }
-                    elseif (!empty($this->globalRegpolicy))
-                    {
+                    } elseif (!empty($this->globalRegpolicy)) {
                         $xml->startElementNs('mdrpi', 'RegistrationPolicy', null);
                         $xml->writeAttribute('xml:lang', 'en');
                         $xml->text($this->globalRegpolicy);
@@ -184,18 +164,15 @@ class Providertoxml {
                 $xml->endElement();
             }
 
-            if (count($cocsByGroups['entcat']) > 0)
-            {
-               
+            if (count($cocsByGroups['entcat']) > 0) {
+
                 $xml->startElementNs('mdattr', 'EntityAttributes', null);
-                foreach ($cocsByGroups['entcat'] as $k => $v)
-                {
+                foreach ($cocsByGroups['entcat'] as $k => $v) {
 
                     $xml->startElementNs('saml', 'Attribute', null);
                     $xml->writeAttribute('Name', $k);
                     $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-                    foreach ($v as $k1 => $v1)
-                    {
+                    foreach ($v as $k1 => $v1) {
 
                         $xml->startElementNs('saml', 'AttributeValue', null);
                         $xml->text($v1->getUrl());
@@ -209,28 +186,24 @@ class Providertoxml {
         }
 
 
-
         return $xml;
     }
 
     private function createContacts(\XMLWriter $xml, \models\Provider $ent)
     {
         $contacts = $ent->getContacts();
-        foreach ($contacts as $c)
-        {
+        foreach ($contacts as $c) {
             $givenName = $c->getGivenname();
             $surName = $c->getSurname();
             $email = $c->getEmail();
             $xml->startElementNs('md', 'ContactPerson', null);
             $xml->writeAttribute('contactType', $c->getType());
-            if (!empty($givenName))
-            {
+            if (!empty($givenName)) {
                 $xml->startElementNs('md', 'GivenName', null);
                 $xml->text($givenName);
                 $xml->endElement();
             }
-            if (!empty($surName))
-            {
+            if (!empty($surName)) {
                 $xml->startElementNs('md', 'SurName', null);
                 $xml->text($surName);
                 $xml->endElement();
@@ -248,40 +221,31 @@ class Providertoxml {
         $toGenerate = FALSE;
         $extendMeta = $ent->getExtendMetadata();
         $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
-        foreach ($extendMeta as $v)
-        {
-            if ((strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui') && ($v->getElement() !== 'UIInfo'))
-            {
+        foreach ($extendMeta as $v) {
+            if ((strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui') && ($v->getElement() !== 'UIInfo')) {
                 $extarray['' . $v->getElement() . ''][] = $v;
             }
         }
-        foreach ($extarray as $e)
-        {
-            if (count($e) > 0)
-            {
+        foreach ($extarray as $e) {
+            if (count($e) > 0) {
                 $toGenerate = TRUE;
                 break;
             }
         }
-        if ($toGenerate === FALSE)
-        {
+        if ($toGenerate === FALSE) {
             return $xml;
         }
         $xml->startElementNs('mdui', 'UIInfo', null);
 
         $enLang = array();
-        foreach (array('DisplayName', 'Description', 'InformationURL', 'PrivacyStatementURL') as $mduiElement)
-        {
+        foreach (array('DisplayName', 'Description', 'InformationURL', 'PrivacyStatementURL') as $mduiElement) {
             $enLang['' . $mduiElement . ''] = FALSE;
 
 
-            foreach ($extarray['' . $mduiElement . ''] as $value)
-            {
+            foreach ($extarray['' . $mduiElement . ''] as $value) {
                 $lang = $value->getAttributes();
-                if (isset($lang['xml:lang']))
-                {
-                    if (strcmp($lang['xml:lang'], 'en') == 0)
-                    {
+                if (isset($lang['xml:lang'])) {
+                    if (strcmp($lang['xml:lang'], 'en') == 0) {
                         $enLang['' . $mduiElement . ''] = TRUE;
                     }
                     $xml->startElementNs('mdui', '' . $mduiElement . '', null);
@@ -291,19 +255,14 @@ class Providertoxml {
                 }
             }
 
-            if (!$enLang['' . $mduiElement . ''])
-            {
-                if (strcmp('PrivacyStatementURL', $mduiElement) == 0)
-                {
+            if (!$enLang['' . $mduiElement . '']) {
+                if (strcmp('PrivacyStatementURL', $mduiElement) == 0) {
                     $t = $ent->getPrivacyUrl();
-                }
-                elseif (strcmp('InformationURL', $mduiElement) == 0)
-                {
+                } elseif (strcmp('InformationURL', $mduiElement) == 0) {
                     $t = $ent->getHelpdeskURL();
                 }
 
-                if (!empty($t))
-                {
+                if (!empty($t)) {
                     $xml->startElementNs('mdui', '' . $mduiElement . '', null);
                     $xml->writeAttribute('xml:lang', 'en');
                     $xml->text($t);
@@ -311,20 +270,15 @@ class Providertoxml {
                 }
             }
         }
-        foreach ($extarray['Logo'] as $l)
-        {
+        foreach ($extarray['Logo'] as $l) {
             $xml->startElementNs('mdui', 'Logo', null);
             $logoAttrs = array_filter($l->getAttributes());
-            foreach ($logoAttrs as $lk => $lv)
-            {
+            foreach ($logoAttrs as $lk => $lv) {
                 $xml->writeAttribute($lk, $lv);
             }
-            if (!filter_var($l->getElementValue(), FILTER_VALIDATE_URL))
-            {
+            if (!filter_var($l->getElementValue(), FILTER_VALIDATE_URL)) {
                 $xml->text($this->logoPrefixUrl . $l->getElementValue());
-            }
-            else
-            {
+            } else {
                 $xml->text($l->getElementValue());
             }
             $xml->endElement();
@@ -340,22 +294,17 @@ class Providertoxml {
         // @todo filtering collection
         $extMetada = $ent->getExtendMetadata();
         $extarray = array();
-        foreach ($extMetada as $v)
-        {
+        foreach ($extMetada as $v) {
             $extElement = $v->getElement();
-            if ((($extElement === 'GeolocationHint') || ($extElement === 'IPHint') || ($extElement === 'DomainHint')) && (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui'))
-            {
+            if ((($extElement === 'GeolocationHint') || ($extElement === 'IPHint') || ($extElement === 'DomainHint')) && (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui')) {
                 $extarray['' . $extElement . ''][] = $v;
             }
         }
-        if (count($extarray) > 0)
-        {
+        if (count($extarray) > 0) {
             $xml->startElementNs('mdui', 'DiscoHints', null);
 
-            foreach ($extarray as $g => $groups)
-            {
-                foreach ($groups as $e)
-                {
+            foreach ($extarray as $g => $groups) {
+                foreach ($groups as $e) {
                     $xml->startElementNs('mdui', '' . $g . '', null);
                     $xml->text($e->getElementValue());
                     $xml->endElement();
@@ -370,22 +319,17 @@ class Providertoxml {
     private function createServiceLocations(\XMLWriter $xml, $serviceCollection)
     {
         $discrespindex = array('-1');
-        foreach ($serviceCollection as $srv)
-        {
+        foreach ($serviceCollection as $srv) {
             $srvType = $srv->getType();
             $xml->startElementNs($this->srvMap['' . $srvType . '']['ns'], '' . $this->srvMap['' . $srvType . '']['name'] . '', null);
             $xml->writeAttribute('Binding', $srv->getBindingName());
             $xml->writeAttribute('Location', $srv->getUrl());
-            if ($this->srvMap['' . $srvType . '']['isorder'])
-            {
+            if ($this->srvMap['' . $srvType . '']['isorder']) {
                 $discorder = $srv->getOrder();
-                if (is_null($discorder) || in_array($discorder, $discrespindex))
-                {
+                if (is_null($discorder) || in_array($discorder, $discrespindex)) {
                     $discorder = max($discrespindex) + 20;
                     $discrespindex[] = $discorder;
-                }
-                else
-                {
+                } else {
                     $discrespindex[] = $discorder;
                 }
                 $xml->writeAttribute('index', $discorder);
@@ -397,34 +341,28 @@ class Providertoxml {
 
     private function createCerts(\XMLWriter $xml, $certCollection)
     {
-        foreach ($certCollection as $cert)
-        {
+        foreach ($certCollection as $cert) {
             $certBody = $cert->getCertDataNoHeaders();
             $keyName = $cert->getKeyname();
             $certUse = $cert->getCertUse();
-            if (empty($certBody) && empty($keyName))
-            {
+            if (empty($certBody) && empty($keyName)) {
                 continue;
             }
 
             $xml->startElementNs('md', 'KeyDescriptor', null);
-            if (!empty($certUse))
-            {
+            if (!empty($certUse)) {
                 $xml->writeAttribute('use', $certUse);
             }
             $xml->startElementNs('ds', 'KeyInfo', null);
-            if (!empty($keyName))
-            {
+            if (!empty($keyName)) {
                 $keynames = explode(',', $keyName);
-                foreach ($keynames as $vk)
-                {
+                foreach ($keynames as $vk) {
                     $xml->startElementNs('ds', 'KeyName', null);
                     $xml->text($vk);
                     $xml->endElement();
                 }
             }
-            if (!empty($certBody))
-            {
+            if (!empty($certBody)) {
                 $xml->startElementNs('ds', 'X509Data', null);
                 $xml->startElementNs('ds', 'X509Certificate', null);
                 $xml->text($certBody);
@@ -442,16 +380,13 @@ class Providertoxml {
     {
         $reqColl = $ent->getAttributesRequirement();
         $requiredAttributes = array();
-        foreach ($reqColl as $reqAttr)
-        {
+        foreach ($reqColl as $reqAttr) {
             $toShow = $reqAttr->getAttribute()->showInMetadata();
-            if ($toShow)
-            {
+            if ($toShow) {
                 $requiredAttributes['' . $reqAttr->getAttribute()->getId() . ''] = $reqAttr;
             }
         }
-        if (count($requiredAttributes) == 0 && (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0))
-        {
+        if (count($requiredAttributes) == 0 && (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0)) {
             return $xml;
         }
 
@@ -459,30 +394,23 @@ class Providertoxml {
         $xml->writeAttribute('index', '0');
         $doFilter1 = array('DisplayName', 'Description');
         $extendMeta = $ent->getExtendMetadata()->filter(
-                function(models\ExtendMetadata $entry) use ($doFilter1)
-        {
-            return in_array($entry->getElement(), $doFilter1);
-        }
+            function (models\ExtendMetadata $entry) use ($doFilter1) {
+                return in_array($entry->getElement(), $doFilter1);
+            }
         );
         $extArray = array('DisplayName' => array(), 'Description' => array());
-        foreach ($extendMeta as $v)
-        {
+        foreach ($extendMeta as $v) {
             $l = $v->getAttributes();
-            if (!empty($l['xml:lang']))
-            {
+            if (!empty($l['xml:lang'])) {
                 $extArray['' . $v->getElement() . '']['' . $l['xml:lang'] . ''] = $v->getEvalue();
             }
         }
         // set 
-        if (count($extArray['DisplayName']) == 0)
-        {
+        if (count($extArray['DisplayName']) == 0) {
             $ldorgnames = array_filter($ent->getMergedLocalDisplayName());
-            if (count($ldorgnames) == 0)
-            {
+            if (count($ldorgnames) == 0) {
                 $extArray['DisplayName']['en'] = $ent->getEntityId();
-            }
-            else
-            {
+            } else {
                 $extArray['DisplayName'] = $ldorgnames;
             }
         }
@@ -490,31 +418,24 @@ class Providertoxml {
             'ServiceName' => $extArray['DisplayName'],
             'ServiceDescription' => $extArray['Description']
         );
-        foreach ($cArray as $keyElement => $element)
-        {
-            foreach ($element as $extKey => $extValue)
-            {
+        foreach ($cArray as $keyElement => $element) {
+            foreach ($element as $extKey => $extValue) {
                 $xml->startElementNs('md', $keyElement, null);
                 $xml->writeAttribute('xml:lang', $extKey);
                 $xml->text($extValue);
                 $xml->endElement();
             }
         }
-        if (count($requiredAttributes) > 0)
-        {
-            foreach ($requiredAttributes as $attr)
-            {
+        if (count($requiredAttributes) > 0) {
+            foreach ($requiredAttributes as $attr) {
 
                 $xml->startElementNs('md', 'RequestedAttribute', null);
                 $xml->writeAttribute('FriendlyName', $attr->getAttribute()->getName());
                 $xml->writeAttribute('Name', $attr->getAttribute()->getOid());
                 $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-                if (strcmp($attr->getStatus(), 'required') == 0)
-                {
+                if (strcmp($attr->getStatus(), 'required') == 0) {
                     $xml->writeAttribute('isRequired', 'true');
-                }
-                else
-                {
+                } else {
                     $xml->writeAttribute('isRequired', 'false');
                 }
                 $xml->endElement();
@@ -531,18 +452,15 @@ class Providertoxml {
         $protocolEnum = implode(" ", $protocol);
         $doFilter = array('SingleSignOnService', 'IDPSingleLogoutService', 'IDPArtifactResolutionService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter)
-        {
-            return in_array($entry->getType(), $doFilter);
-        }
+            function (models\ServiceLocation $entry) use ($doFilter) {
+                return in_array($entry->getType(), $doFilter);
+            }
         );
         $srvsByType = array('SingleSignOnService' => array(), 'IDPSingleLogoutService' => array(), 'IDPArtifactResolutionService' => array());
-        foreach ($serviceLocations as $s)
-        {
+        foreach ($serviceLocations as $s) {
             $srvsByType['' . $s->getType() . ''][] = $s;
         }
-        if (empty($protocolEnum))
-        {
+        if (empty($protocolEnum)) {
             $protocolEnum = 'urn:oasis:names:tc:SAML:2.0:protocol';
         }
         /**
@@ -550,10 +468,9 @@ class Providertoxml {
          */
         $doCertFilter = array('idpsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter)
-        {
-            return in_array($entry->getType(), $doCertFilter);
-        }
+            function (models\Certificate $entry) use ($doCertFilter) {
+                return in_array($entry->getType(), $doCertFilter);
+            }
         );
 
         /**
@@ -570,9 +487,7 @@ class Providertoxml {
         $extXML->setIndentString(' ');
 
 
-
-        foreach ($scopes as $scope)
-        {
+        foreach ($scopes as $scope) {
             $extXML->startElementNs('shibmd', 'Scope', null);
             $extXML->writeAttribute('regexp', 'false');
             $extXML->text($scope);
@@ -581,8 +496,7 @@ class Providertoxml {
         $this->createUIIInfo($extXML, $ent, 'idp');
         $this->createDiscoHints($extXML, $ent, 'idp');
         $extXMLoutput = $extXML->outputMemory();
-        if (!empty($extXMLoutput))
-        {
+        if (!empty($extXMLoutput)) {
             $xml->startElementNs('md', 'Extensions', null);
             $xml->writeRaw(PHP_EOL . $extXMLoutput);
             $xml->endElement(); // end md:Extensions
@@ -593,8 +507,7 @@ class Providertoxml {
         $this->createServiceLocations($xml, $srvsByType['IDPArtifactResolutionService']);
         $this->createServiceLocations($xml, $srvsByType['IDPSingleLogoutService']);
         $nameids = $ent->getNameIds('idpsso');
-        foreach ($nameids as $nameid)
-        {
+        foreach ($nameids as $nameid) {
             $xml->startElementNs('md', 'NameIDFormat', null);
             $xml->text($nameid);
             $xml->endElement();
@@ -610,24 +523,20 @@ class Providertoxml {
     {
         $doFilter = array('IDPAttributeService');
         $services = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter)
-        {
-            return in_array($entry->getType(), $doFilter);
-        });
+            function (models\ServiceLocation $entry) use ($doFilter) {
+                return in_array($entry->getType(), $doFilter);
+            });
         $doCertFilter = array('aa');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter)
-        {
-            return in_array($entry->getType(), $doCertFilter);
-        });
-        if (count($certificates) == 0 || count($services) == 0)
-        {
+            function (models\Certificate $entry) use ($doCertFilter) {
+                return in_array($entry->getType(), $doCertFilter);
+            });
+        if (count($certificates) == 0 || count($services) == 0) {
             return $xml;
         }
         $protocol = $ent->getProtocolSupport('aa');
         $protocolEnum = implode(" ", $protocol);
-        if (empty($protocolEnum))
-        {
+        if (empty($protocolEnum)) {
             $protocolEnum = 'urn:oasis:names:tc:SAML:2.0:protocol';
         }
         $scopes = $ent->getScope('aa');
@@ -635,21 +544,21 @@ class Providertoxml {
         $xml->startElementNs('md', 'AttributeAuthorityDescriptor', null);
         $xml->writeAttribute('protocolSupportEnumeration', $protocolEnum);
 
-        $xml->startElementNs('md', 'Extensions', null);
-        foreach ($scopes as $scope)
-        {
-            $xml->startElementNs('shibmd', 'Scope', null);
-            $xml->writeAttribute('regexp', 'false');
-            $xml->text($scope);
-            $xml->endElement();
+        if (count($scopes) > 0) {
+            $xml->startElementNs('md', 'Extensions', null);
+            foreach ($scopes as $scope) {
+                $xml->startElementNs('shibmd', 'Scope', null);
+                $xml->writeAttribute('regexp', 'false');
+                $xml->text($scope);
+                $xml->endElement();
+            }
+            $xml->endElement(); // end md:Extensions
         }
-        $xml->endElement(); // end md:Extensions
         $this->createCerts($xml, $certificates);
         $this->createServiceLocations($xml, $services);
 
         $nameids = $ent->getNameIds('aa');
-        foreach ($nameids as $nameid)
-        {
+        foreach ($nameids as $nameid) {
             $xml->startElementNs('md', 'NameIDFormat', null);
             $xml->text($nameid);
             $xml->endElement();
@@ -664,8 +573,7 @@ class Providertoxml {
     {
         $protocol = $ent->getProtocolSupport('spsso');
         $protocolEnum = implode(" ", $protocol);
-        if (empty($protocolEnum))
-        {
+        if (empty($protocolEnum)) {
             $protocolEnum = 'urn:oasis:names:tc:SAML:2.0:protocol';
         }
 
@@ -677,20 +585,17 @@ class Providertoxml {
             'SPArtifactResolutionService' => array());
         $doFilter = array_keys($srvsByType);
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter)
-        {
-            return in_array($entry->getType(), $doFilter);
-        }
+            function (models\ServiceLocation $entry) use ($doFilter) {
+                return in_array($entry->getType(), $doFilter);
+            }
         );
         $doCertFilter = array('spsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter)
-        {
-            return in_array($entry->getType(), $doCertFilter);
-        }
+            function (models\Certificate $entry) use ($doCertFilter) {
+                return in_array($entry->getType(), $doCertFilter);
+            }
         );
-        foreach ($serviceLocations as $s)
-        {
+        foreach ($serviceLocations as $s) {
             $srvsByType['' . $s->getType() . ''][] = $s;
         }
 
@@ -701,16 +606,14 @@ class Providertoxml {
         $extXML = new XMLWriter();
         $extXML->openMemory();
 
-        foreach (array('RequestInitiator', 'DiscoveryResponse') as $srvtype)
-        {
+        foreach (array('RequestInitiator', 'DiscoveryResponse') as $srvtype) {
             $this->createServiceLocations($extXML, $srvsByType[$srvtype]);
         }
 
         $this->createUIIInfo($extXML, $ent, 'sp');
 
         $extXMLoutput = $extXML->outputMemory();
-        if (!empty($extXMLoutput))
-        {
+        if (!empty($extXMLoutput)) {
             $xml->startElementNs('md', 'Extensions', null);
             $xml->writeRaw($extXMLoutput);
             $xml->endElement(); //Extensions
@@ -720,8 +623,7 @@ class Providertoxml {
         $this->createServiceLocations($xml, $srvsByType['SPArtifactResolutionService']);
         $this->createServiceLocations($xml, $srvsByType['SPSingleLogoutService']);
         $nameids = $ent->getNameIds('spsso');
-        foreach ($nameids as $nameid)
-        {
+        foreach ($nameids as $nameid) {
             $xml->startElementNs('md', 'NameIDFormat', null);
             $xml->text($nameid);
             $xml->endElement(); //NameIDFormat
@@ -729,8 +631,7 @@ class Providertoxml {
         $this->createServiceLocations($xml, $srvsByType['AssertionConsumerService']);
 
 
-        if ($options['attrs'] != 0)
-        {
+        if ($options['attrs'] != 0) {
             $this->createAttributeConsumingService($xml, $ent, $options);
         }
         $xml->endElement(); //SPSSODescriptor
@@ -742,27 +643,23 @@ class Providertoxml {
         $lorgnames = array_filter($ent->getMergedLocalName());
         $ldorgnames = array_filter($ent->getMergedLocalDisplayName());
         $lurls = array_filter($ent->getHelpdeskUrlLocalized());
-        if (count($lurls) == 0 || count($lorgnames) == 0 || count($ldorgnames) == 0)
-        {
+        if (count($lurls) == 0 || count($lorgnames) == 0 || count($ldorgnames) == 0) {
             return $xml;
         }
         $xml->startElementNs('md', 'Organization', null);
-        foreach ($lorgnames as $k => $v)
-        {
+        foreach ($lorgnames as $k => $v) {
             $xml->startElementNs('md', 'OrganizationName', null);
             $xml->writeAttribute('xml:lang', $k);
             $xml->text($v);
             $xml->endElement();
         }
-        foreach ($ldorgnames as $k => $v)
-        {
+        foreach ($ldorgnames as $k => $v) {
             $xml->startElementNs('md', 'OrganizationDisplayName', null);
             $xml->writeAttribute('xml:lang', $k);
             $xml->text($v);
             $xml->endElement();
         }
-        foreach ($lurls as $k => $v)
-        {
+        foreach ($lurls as $k => $v) {
             $xml->startElementNs('md', 'OrganizationURL', null);
             $xml->writeAttribute('xml:lang', $k);
             $xml->text($v);
@@ -776,13 +673,11 @@ class Providertoxml {
     {
         $doFilter = array('AssertionConsumerService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter)
-        {
-            return in_array($entry->getType(), $doFilter);
-        }
+            function (models\ServiceLocation $entry) use ($doFilter) {
+                return in_array($entry->getType(), $doFilter);
+            }
         );
-        if (count($serviceLocations) == 0)
-        {
+        if (count($serviceLocations) == 0) {
             log_message('error', __METHOD__ . ' missing AssertionConsumerService for entity:' . $ent->getEntityId());
             return FALSE;
         }
@@ -793,25 +688,21 @@ class Providertoxml {
     {
         $doFilter = array('SingleSignOnService');
         $serviceLocations = $ent->getServiceLocations()->filter(
-                function(models\ServiceLocation $entry) use ($doFilter)
-        {
-            return in_array($entry->getType(), $doFilter);
-        }
+            function (models\ServiceLocation $entry) use ($doFilter) {
+                return in_array($entry->getType(), $doFilter);
+            }
         );
-        if (count($serviceLocations) == 0)
-        {
+        if (count($serviceLocations) == 0) {
             log_message('error', __METHOD__ . ' missing SingleSignOnService for entity:' . $ent->getEntityId());
             return FALSE;
         }
         $doCertFilter = array('idpsso');
         $certificates = $ent->getCertificates()->filter(
-                function(models\Certificate $entry) use ($doCertFilter)
-        {
-            return in_array($entry->getType(), $doCertFilter);
-        }
+            function (models\Certificate $entry) use ($doCertFilter) {
+                return in_array($entry->getType(), $doCertFilter);
+            }
         );
-        if (count($certificates) == 0)
-        {
+        if (count($certificates) == 0) {
             log_message('error', __METHOD__ . ' missing cert for IDP : entity:' . $ent->getEntityId());
             return FALSE;
         }
@@ -823,12 +714,9 @@ class Providertoxml {
     public function entityConvert(\XMLWriter $xmlOut, \models\Provider $ent, $options, $doCacheId = null)
     {
 
-        if (!$doCacheId)
-        {
+        if (!$doCacheId) {
             $xml = $xmlOut;
-        }
-        else
-        {
+        } else {
             $xml = new XMLWriter();
             $xml->openMemory();
             $xml->setIndent(true);
@@ -837,18 +725,13 @@ class Providertoxml {
         $type = $ent->getType();
         $hasIdpRole = FALSE;
         $hasSpRole = FALSE;
-        if (strcasecmp($type, 'IDP') == 0)
-        {
+        if (strcasecmp($type, 'IDP') == 0) {
             $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor');
             $hasIdpRole = TRUE;
-        }
-        elseif (strcasecmp($type, 'SP') == 0)
-        {
+        } elseif (strcasecmp($type, 'SP') == 0) {
             $hasSpRole = TRUE;
             $rolesFns = array('createSPSSODescriptor');
-        }
-        else
-        {
+        } else {
             $hasIdpRole = TRUE;
             $hasSpRole = TRUE;
             $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor', 'createSPSSODescriptor');
@@ -856,50 +739,39 @@ class Providertoxml {
         $islocal = $ent->getLocal();
         $valiUntil = $ent->getValidTo();
 
-        if ($hasIdpRole)
-        {
+        if ($hasIdpRole) {
             $canProceed = $this->verifyIdP($ent);
-            if (!$canProceed)
-            {
+            if (!$canProceed) {
                 return $xml;
             }
         }
-        if ($hasSpRole)
-        {
+        if ($hasSpRole) {
             $canProceed = $this->verifySP($ent);
-            if (!$canProceed)
-            {
+            if (!$canProceed) {
                 return $xml;
             }
         }
 
         $xml->startElementNs('md', 'EntityDescriptor', null);
-        if ($islocal && $this->isGenIdFnExist)
-        {
+        if ($islocal && $this->isGenIdFnExist) {
             $genId = customGenerateEntityDescriptorID(array('id' => '' . $ent->getId() . '', 'entityid' => '' . $ent->getEntityId() . ''));
-            if (!empty($genId))
-            {
+            if (!empty($genId)) {
 
                 $xml->writeAttribute('ID', $genId);
             }
         }
         $xml->writeAttribute('entityID', $ent->getEntityId());
-        if (!empty($valiUntil))
-        {
+        if (!empty($valiUntil)) {
             $xml->writeAttribute('validUntil', $valiUntil->format('Y-m-d\TH:i:s\Z'));
         }
         // entity exitension start
         $this->createEntityExtensions($xml, $ent);
         // entity ext end
 
-        foreach ($rolesFns as $fn)
-        {
-            if (strcmp($fn, 'createSPSSODescriptor') == 0)
-            {
+        foreach ($rolesFns as $fn) {
+            if (strcmp($fn, 'createSPSSODescriptor') == 0) {
                 $this->$fn($xml, $ent, $options);
-            }
-            else
-            {
+            } else {
                 $this->$fn($xml, $ent);
             }
         }
@@ -908,12 +780,9 @@ class Providertoxml {
         $this->createContacts($xml, $ent);
 
         $xml->endElement();
-        if (!$doCacheId)
-        {
+        if (!$doCacheId) {
             return $xml;
-        }
-        else
-        {
+        } else {
             $entityPart = $xml->outputMemory();
 
             $this->ci->cache->save($doCacheId, $entityPart, 600);
@@ -937,18 +806,13 @@ class Providertoxml {
         $type = $ent->getType();
         $hasIdpRole = FALSE;
         $hasSpRole = FALSE;
-        if (strcasecmp($type, 'IDP') == 0)
-        {
+        if (strcasecmp($type, 'IDP') == 0) {
             $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor');
             $hasIdpRole = TRUE;
-        }
-        elseif (strcasecmp($type, 'SP') == 0)
-        {
+        } elseif (strcasecmp($type, 'SP') == 0) {
             $hasSpRole = TRUE;
             $rolesFns = array('createSPSSODescriptor');
-        }
-        else
-        {
+        } else {
             $hasIdpRole = TRUE;
             $hasSpRole = TRUE;
             $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor', 'createSPSSODescriptor');
@@ -956,19 +820,15 @@ class Providertoxml {
         $islocal = $ent->getLocal();
         $valiUntil = $ent->getValidTo();
 
-        if ($hasIdpRole)
-        {
+        if ($hasIdpRole) {
             $canProceed = $this->verifyIdP($ent);
-            if (!$canProceed)
-            {
+            if (!$canProceed) {
                 return null;
             }
         }
-        if ($hasSpRole)
-        {
+        if ($hasSpRole) {
             $canProceed = $this->verifySP($ent);
-            if (!$canProceed)
-            {
+            if (!$canProceed) {
                 return null;
             }
         }
@@ -976,36 +836,28 @@ class Providertoxml {
         $xml->startElementNs('md', 'EntityDescriptor', null);
         $xml->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
         $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v)
-        {
+        foreach ($regNamespaces as $k => $v) {
             $xml->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
-        if ($islocal && $this->isGenIdFnExist)
-        {
+        if ($islocal && $this->isGenIdFnExist) {
             $genId = customGenerateEntityDescriptorID(array('id' => '' . $ent->getId() . '', 'entityid' => '' . $ent->getEntityId() . ''));
-            if (!empty($genId))
-            {
+            if (!empty($genId)) {
 
                 $xml->writeAttribute('ID', $genId);
             }
         }
         $xml->writeAttribute('entityID', $ent->getEntityId());
-        if (!empty($valiUntil))
-        {
+        if (!empty($valiUntil)) {
             $xml->writeAttribute('validUntil', $valiUntil->format('Y-m-d\TH:i:s\Z'));
         }
 // entity exitension start
         $this->createEntityExtensions($xml, $ent);
 // entity ext end
 
-        foreach ($rolesFns as $fn)
-        {
-            if (strcmp($fn, 'createSPSSODescriptor') == 0)
-            {
+        foreach ($rolesFns as $fn) {
+            if (strcmp($fn, 'createSPSSODescriptor') == 0) {
                 $this->$fn($xml, $ent, $options);
-            }
-            else
-            {
+            } else {
                 $this->$fn($xml, $ent);
             }
         }
@@ -1015,12 +867,9 @@ class Providertoxml {
 
         $xml->endElement();
         $xml->endDocument();
-        if ($outputXML)
-        {
+        if ($outputXML) {
             return $xml->outputMemory();
-        }
-        else
-        {
+        } else {
             return $xml;
         }
     }
@@ -1028,8 +877,7 @@ class Providertoxml {
     public function entityStaticConvert(\XMLWriter $xml, \models\Provider $ent)
     {
         $s = $ent->getStaticMetadata();
-        if (!empty($s))
-        {
+        if (!empty($s)) {
             $meta = $s->getMetadata();
             $xml->writeRaw($meta);
         }
