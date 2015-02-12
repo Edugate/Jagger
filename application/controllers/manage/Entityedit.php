@@ -55,7 +55,6 @@ class Entityedit extends MY_Controller {
         $optValidationsPassed = TRUE;
         $result = false;
         $y = $this->input->post();
-
         $staticisdefault = FALSE;
         if (isset($y['f']))
         {

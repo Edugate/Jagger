@@ -703,7 +703,7 @@ class Providerupdater
                 }
                 if (array_key_exists('aa', $ch['scopes']) && !empty($ch['scopes']['aa']))
                 {
-                    $aascopes = array_filter();
+                    $aascopes = array_filter(preg_split("/[\s,]+/",$ch['scopes']['aa']));
                     $ent->setScope('aa', array_unique($aascopes));
                     if ($origscopeaa != implode(',', $aascopes))
                     {
