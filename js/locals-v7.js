@@ -66,7 +66,6 @@ var GINIT = {
     initialize: function () {
         console.log('GINIT');
         var membership2 = $("#membership2").first();
-        console.log(membership2.length)
         if (membership2 !== undefined && membership2.length > 0) {
             var link = $(membership2).attr('data-jagger-link');
             $.ajax({
