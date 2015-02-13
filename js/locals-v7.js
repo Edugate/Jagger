@@ -385,7 +385,7 @@ var GINIT = {
                 },
                 error: function (xhr, status, error) {
                     var alertmsg = '' + error + '';
-                    alert(alertmsg);
+                    window.alert(alertmsg);
                     return false;
                 }
             });
@@ -746,7 +746,7 @@ var GINIT = {
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     $('#spinner').hide();
-                    alert(jqXHR.responseText);
+                    window.alert(jqXHR.responseText);
                 }
             });
             return false;
@@ -805,15 +805,15 @@ var GINIT = {
                 error: function (x, t, m) {
                     $('#spinner').hide();
                     if (t === 'timeout') {
-                        alert('got timeout from validation server');
+                        window.alert('got timeout from validation server');
                     }
                     else {
-                        alert("unknown problem with receiving data");
+                        window.alert("unknown problem with receiving data");
                     }
                 }
             });
 
-            //return false; 
+            //return false;
         });
 
         $("form#approvequeue").submit(function (e) {
@@ -829,7 +829,7 @@ var GINIT = {
             });
 
             if (validators !== result) {
-                alert('All mandatory validations have to pass successfully!');
+                window.alert('All mandatory validations have to pass successfully!');
                 e.preventDefault();
             }
         });
@@ -858,7 +858,7 @@ var GINIT = {
                         var div_data;
                         $(row).addClass('opened').addClass('highlight');
                         if (!data) {
-                            alert('no data');
+                            window.alert('no data');
                         }
                         else {
                             if (!data.idp && !data.sp && !data.both) {
@@ -907,7 +907,7 @@ var GINIT = {
                     },
                     error: function () {
                         $('#spinner').hide();
-                        alert('problem with loading data');
+                        window.alert('problem with loading data');
                     }
                 }).done(function () {
                         var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">' + value.html() + '</ul></td></tr>';
@@ -932,7 +932,7 @@ var GINIT = {
                     $('#spinner').hide();
                     var data = $.parseJSON(json);
                     if (!data) {
-                        alert('no data');
+                        window.alert('no data');
                     }
                     else {
                         var nlist = $('<div/>');
@@ -961,7 +961,7 @@ var GINIT = {
                 },
                 error: function () {
                     $('#spinner').hide();
-                    alert('problem with loading data');
+                    window.alert('problem with loading data');
                 }
 
             }).done(function () {
@@ -1713,7 +1713,7 @@ $(document).ready(function () {
                 $('#spinner').hide();
 
                 if (!data) {
-                    alert('no data in federation category');
+                    window.alert('no data in federation category');
                 }
                 else {
                     $("table.fedistpercat tbody tr").remove();
@@ -1744,7 +1744,7 @@ $(document).ready(function () {
             success: function (data) {
                 $('#spinner').hide();
                 if (!data) {
-                    alert('no data in federation category');
+                    window.alert('no data in federation category');
                 }
                 else {
                     $("table.fedistpercat tbody tr").remove();
@@ -1760,7 +1760,7 @@ $(document).ready(function () {
             },
             error: function () {
                 $('#spinner').hide();
-                alert('problem with loading data');
+                window.alert('problem with loading data');
             }
         }).done(function () {
             var nextrow = value.html();
@@ -1898,7 +1898,7 @@ $(function () {
             timeout: 2500,
             cache: false,
             success: function (data) {
-                alert(data);
+                window.alert(data);
             }
         });
         return false;
@@ -1915,10 +1915,10 @@ $(function () {
             success: function (json) {
                 data = $.parseJSON(json);
                 if (!data) {
-                    alert('no data');
+                    window.alert('no data');
                 }
                 else {
-                    alert(data.status);
+                    window.alert(data.status);
                 }
 
             }
@@ -1938,7 +1938,7 @@ $(function () {
                 $('#spinner').hide();
                 var data = $.parseJSON(json);
                 if (!data) {
-                    alert('no data');
+                    window.alert('no data');
                 }
                 else {
                     $("div#statisticdiag").replaceWith('<div id="statisticdiag"></div>');
@@ -1957,7 +1957,7 @@ $(function () {
             },
             error: function () {
                 $('#spinner').hide();
-                alert('problem with loading data');
+                window.alert('problem with loading data');
             }
 
         });
@@ -1999,7 +1999,7 @@ $(function () {
                         }
                     }
                     else {
-                        alert('sdf');
+                        window.alert('sdf');
                     }
                 }
 
@@ -2020,7 +2020,7 @@ $(function () {
                 $('#spinner').hide();
                 var data = $.parseJSON(json);
                 if (!data) {
-                    alert('no data');
+                    window.alert('no data');
                 }
                 else {
                     var nlist = $('<ul/>');
@@ -2037,7 +2037,7 @@ $(function () {
             },
             error: function () {
                 $('#spinner').hide();
-                alert('problem with loading data');
+                window.alert('problem with loading data');
             }
 
         }).done(function () {
@@ -2287,7 +2287,7 @@ $(document).on('click', 'a.pCookieAccept', function (e) {
 $("[id='f[entityid]']").change(function () {
     if ($(this).hasClass("alertonchange")) {
         var entalert = $("div#entitychangealert").text();
-        alert(entalert);
+        window.alert(entalert);
     }
 });
 
@@ -2327,7 +2327,7 @@ $(document).ready(function () {
             },
             error: function () {
                 $('#spinner').hide();
-                alert('Error occurred');
+                window.alert('Error occurred');
             }
         });
         return false;
@@ -2347,7 +2347,7 @@ $(document).ready(function () {
             },
             error: function () {
                 $('#spinner').hide();
-                alert('Error ocured');
+                window.alert('Error ocured');
             }
         });
         return false;
@@ -2367,7 +2367,7 @@ $(document).ready(function () {
             },
             error: function () {
                 $('#spinner').hide();
-                alert('Error ocured');
+                window.alert('Error ocured');
             }
         });
         return false;
@@ -2387,7 +2387,7 @@ $(document).ready(function () {
             },
             error: function () {
                 $('#spinner').hide();
-                alert('Error ocured');
+                window.alert('Error ocured');
             }
         });
         return false;
@@ -2411,7 +2411,7 @@ $(document).ready(function () {
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert('Error occured: ' + errorThrown);
+                    window.alert('Error occured: ' + errorThrown);
                 }
             });
 
@@ -2462,7 +2462,7 @@ $(document).ready(function () {
                     }
                 },
                 error: function (data) {
-                    alert('Error  ocurred');
+                    window.alert('Error  ocurred');
                 }
 
             });
@@ -2485,7 +2485,7 @@ $(document).ready(function () {
                         });
                     },
                     error: function (data) {
-                        alert('Error');
+                        window.alert('Error');
                     }
                 });
             }
@@ -2834,7 +2834,7 @@ $("#notificationupdateform").on('submit', function (e) {
             $('#notificationupdatemodal').foundation('reveal', 'close');
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            alert('Error occured: ' + errorThrown);
+            window.alert('Error occured: ' + errorThrown);
         }
 
 
@@ -2897,7 +2897,7 @@ $(document).on('submit', 'div#loginform form', function (e) {
 $("button.advancedmode").click(function () {
     var metadata = $("textarea#metadatabody").val();
     if (metadata.length === 0) {
-        alert("You did not inserted any metadata. You will have to fill in all the individual information manually.");
+        window.alert("You did not inserted any metadata. You will have to fill in all the individual information manually.");
     }
     var thisB = $(this);
     var postUrl = thisB.val();
@@ -3001,7 +3001,7 @@ $(".afilter").click(function () {
                         counter++;
                         tbodyToInsert[a++] = '</tr>';
 
-                    } //end filter condtion 
+                    } //end filter condtion
                 });
                 tbody.append(tbodyToInsert.join(''));
                 var endTime = new Date();
@@ -3273,7 +3273,7 @@ $(document).on('click', 'a.updateprefs', function (e) {
 
 
     if (eText === null) {
-        alert("d");
+        window.alert("d");
     }
     $.ajax({
         'url': geturl,
