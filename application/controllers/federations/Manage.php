@@ -191,7 +191,7 @@ class Manage extends MY_Controller
                 'penabled' => $p->getAvailable(),
             );
         }
-        if ($this->cache->save($cachedid, $membersInArray, 180))
+        if ($this->cache->save($cachedid, $membersInArray, 720))
         {
             log_message('debug', __METHOD__ . ' cacheid stored ' . $cachedid);
         }

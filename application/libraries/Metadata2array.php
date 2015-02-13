@@ -419,7 +419,7 @@ class Metadata2array
             }
             elseif ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat')
             {
-                $result['nameid'][] = $child->nodeValue;
+                $result['nameid'][] = trim($child->nodeValue);
             }
             elseif ($child->nodeName === 'md:AssertionConsumerService' || $child->nodeName === 'AssertionConsumerService')
             {
