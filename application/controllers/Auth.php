@@ -46,10 +46,11 @@ class Auth extends MY_Controller
 
 	function fedregister()
 	{
+		$method = $this->input->method(TRUE);
 		if (!$this->input->is_ajax_request()) {
 			show_error('Permission denied', 403);
 		}
-		if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+		if ($method !== 'POST') {
 			set_status_header(403);
 			echo 'permission denied';
 			return;
@@ -243,13 +244,14 @@ class Auth extends MY_Controller
 			if (!empty($userprefs) && array_key_exists('board', $userprefs)) {
 				$this->session->set_userdata(array('board' => $userprefs['board']));
 			}
-			$_SESSION['username'] = $session_data['username'];
-			$_SESSION['user_id'] = $session_data['user_id'];
-			$_SESSION['logged'] = 1;
+			$this->session->set_userdata('username', '' . $session_data['username'] . '');
+			$this->session->set_userdata('user_id', '' . $session_data['user_id'] . '');
+
+			$this->session->set_userdata('logged', 1);
 			if (!empty($timeoffset) && is_numeric($timeoffset)) {
-				$_SESSION['timeoffset'] = (int)$timeoffset;
+				$this->session->set_userdata('timeoffset', (int)$timeoffset);
 			}
-			$ip = $_SERVER['REMOTE_ADDR'];
+			$ip = $this->input->ip_address();
 			$user->setIP($ip);
 			$user->updated();
 			$this->em->persist($user);
@@ -278,66 +280,16 @@ class Auth extends MY_Controller
 
 	function login()
 	{
-		$this->title = lang('title_login');
-
-		$shib = $this->config->item('Shibboleth');
-		if ($shib['enabled'] === TRUE) {
-			$this->data['shib_url'] = base_url() . $shib['loginapp_uri'];
-		} else {
-			$this->data['shib_url'] = null;
-		}
-		$this->data['title'] = 'Login';
-		/**
-		 * @todo check if no looping
-		 */
-		$cu = $this->session->flashdata('target');
-		$this->session->set_flashdata('target', $cu);
 
 		if ($this->j_auth->logged_in()) {
-//already logged in so no need to access this page
 			redirect($this->config->item('base_url'), 'location');
 		}
+		$this->data['dontshowsigning'] = true;
+		$this->data['title'] = lang('authn_form');
+		$this->data['showloginform'] = TRUE;
+		$this->data['content_view'] = 'auth/empty_view';
+		$this->load->view('page', $this->data);
 
-//validate form input
-		$this->form_validation->set_rules('username', lang('rr_username'), 'required|xss_clean');
-		$this->form_validation->set_rules('password', lang('rr_password'), 'required');
-		$validated = $this->form_validation->run();
-		if ($validated === TRUE) {
-			if ($this->j_auth->login($this->input->post('username'), $this->input->post('password'))) {
-				$cu = $this->session->flashdata('target');
-				$this->session->set_flashdata('message', $this->j_auth->messages());
-				if (!empty($cu)) {
-					redirect($cu, 'location');
-				} else {
-					redirect($this->config->item('base_url'), 'location');
-				}
-			} else {
-				$this->session->set_flashdata('message', $this->j_auth->errors());
-
-				redirect('auth/login', 'location'); //use redirects instead of loading views for compatibility with MY_Controller libraries
-			}
-		} else {  //the user is not logging in so display the login page
-//set the flash data error message if there is one
-			$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
-
-			$this->data['username'] = array(
-				'name' => 'username',
-				'id' => 'username',
-				'type' => 'text',
-				'value' => $this->form_validation->set_value('username'),
-			);
-			$this->data['password'] = array('name' => 'password',
-				'id' => 'password',
-				'type' => 'password',
-			);
-
-
-			$this->data['dontshowsigning'] = true;
-			$this->data['title'] = lang('authn_form');
-			$this->data['showloginform'] = TRUE;
-			$this->data['content_view'] = 'auth/empty_view';
-			$this->load->view('page', $this->data);
-		}
 	}
 
 	private function getShibUsername()
@@ -500,13 +452,10 @@ class Auth extends MY_Controller
 					$_SESSION['secondfactor'] = trim($userSecondFactor);
 					$_SESSION['twofactor'] = 1;
 					$_SESSION['logged'] = 0;
-				}
-				else{
+				} else {
 					$_SESSION['logged'] = 1;
 				}
-			}
-			else
-			{
+			} else {
 				$_SESSION['logged'] = 1;
 			}
 			$this->session->set_userdata($session_data);

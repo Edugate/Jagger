@@ -2270,22 +2270,18 @@ $("#nattrreqbtn").click(function (ev) {
 
 });
 
-$(document).on('click', 'a.pCookieAccept', function (e) {
-    e.preventDefault();
-    var link = $(this), url = link.attr("href");
-
+$(".pCookieAccept").on('click', function () {
+    var link = $(this).attr("href");
     $.ajax({
-        url: url,
-        timeout: 2500,
-        cache: false
+        url: link,
+        timeout: 2500
     });
     $('#cookiesinfo').hide();
-
     return false;
 });
 $("[id='f[entityid]']").change(function () {
     if ($(this).hasClass("alertonchange")) {
-        var entalert = $("div#entitychangealert").text();
+        var entalert = $("#entitychangealert").text();
         window.alert(entalert);
     }
 });
