@@ -105,7 +105,6 @@ class Idpmatrix extends MY_Controller
         {
             $arparray['message'] = lang('errormatrixnoattrsormembers');
         }
-      //  echo json_encode($arparray);
         $this->output->set_content_type('application/json')->set_output(json_encode($arparray));
         return;
     }
@@ -151,8 +150,6 @@ class Idpmatrix extends MY_Controller
         ;
         $data['idpid'] = $idp->getId();
         $data['entityid'] = $idp->getEntityId();
-
-
         $extends = $idp->getExtendMetadata();
         if (count($extends) > 0)
         {
@@ -166,19 +163,10 @@ class Idpmatrix extends MY_Controller
                 }
             }
         }
-
-        $data['titlepage'] = lang('identityprovider') . ': ' . anchor('' . base_url() . 'providers/detail/show/' . $data['idpid'], $data['idpname']) . '<br />';
-        $data['titlepage'] .= $data['entityid'];
-        $data['subtitlepage'] = lang('rr_arpoverview');
-
-
-
-
-
-
         $data['entityid'] = $idp->getEntityId();
         $data['idpid'] = $idp->getId();
-
+	    $data['titlepage'] = lang('identityprovider') . ': ' . anchor('' . base_url() . 'providers/detail/show/' . $data['idpid'], $data['idpname']) . '<br />' . $data['entityid'];
+	    $data['subtitlepage'] = lang('rr_arpoverview');
 
         $data['content_view'] = 'reports/idpmatrix_show_view';
         $this->load->view('page', $data);

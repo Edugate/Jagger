@@ -29,7 +29,7 @@ class Providerdetails {
         $this->em = $this->CI->doctrine->em;
     }
 
-    private function _genCertView($cert)
+    private function _genCertView(models\Certificate $cert)
     {
         $certusage = $cert->getCertuse();
         if ($certusage === 'signing')

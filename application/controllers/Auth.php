@@ -462,10 +462,6 @@ class Auth extends MY_Controller
 			if (!empty($userprefs) && array_key_exists('board', $userprefs)) {
 				$this->session->set_userdata(array('board' => $userprefs['board']));
 			}
-
-
-			// $_SESSION['partiallogged'] = 1;
-			// $_SESSION['secondfactor'] = 'duo';
 			if (!empty($timeoffset) && is_numeric($timeoffset)) {
 				$_SESSION['timeoffset'] = (int)$timeoffset;
 			}
