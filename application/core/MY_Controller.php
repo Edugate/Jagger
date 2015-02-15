@@ -73,7 +73,7 @@ class MY_Controller extends CI_Controller {
             'en' => array('path' => 'english', 'val' => 'english'),
             'cs' => array('path' => 'cs', 'val' => 'čeština'),
             'es' => array('path' => 'es', 'val' => 'español'),
-            'fr-ca' => array('path' => 'fr-ca', 'val' => 'français'),
+            'fr' => array('path' => 'fr', 'val' => 'français'),
             'ga' => array('path' => 'ga', 'val' => 'gaeilge'),
             'it' => array('path' => 'it', 'val' => 'italiano'),
             'lt' => array('path' => 'lt', 'val' => 'lietuvos'),
