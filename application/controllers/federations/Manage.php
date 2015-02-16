@@ -45,7 +45,6 @@ class Manage extends MY_Controller
 		} else {
 			$this->load->library('zacl');
 			$this->title = lang('title_fedlist');
-			$resource = 'fed_list';
 			$federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
 			$data['categories'] = array();
 			foreach ($federationCategories as $v) {
@@ -145,7 +144,6 @@ class Manage extends MY_Controller
 		));
 		foreach ($membership as $p) {
 			$m = $p->getMembership()->first();
-			$joinstate = $m->getJoinState();
 			$ptype = strtolower($p->getType());
 			if ($ptype === 'idp') {
 				$name = $p->getNameToWebInLang($lang, 'idp');
@@ -235,9 +233,9 @@ class Manage extends MY_Controller
 		$this->output->set_content_type('text/plain');
 		$result = "";
 		foreach ($cont_array as $key => $value) {
-			$result .= $key . "    <" . trim($value) . ">\n";
+			$result .= $key . ';' . trim($value) . ';'.PHP_EOL;
 		}
-		$data['contactlist'] = $result;
+
 		$this->load->helper('download');
 		$filename = 'federationcontactlist.txt';
 		force_download($filename, $result, 'text/plain');
@@ -391,7 +389,7 @@ class Manage extends MY_Controller
 		$data['result']['general'][] = array(lang('rr_downcontactsintxt'), $idp_contactlist . '<br />' . $sp_contactlist . '<br />' . $all_contactlist);
 		$data['result']['general'][] = array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '" class="button secondary">Diagram</a>');
 
-		$imageLink = '<i class="fi-pencil"></i>';
+
 		$edit_attributes_link = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
 		if (!$hasWriteAccess) {
 			$edit_attributes_link = '';
