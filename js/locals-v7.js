@@ -64,10 +64,11 @@ var BINIT = {
 
 var GINIT = {
     initialize: function () {
-        console.log('GINIT');
         var membership2 = $("#membership2").first();
         if (membership2 !== undefined && membership2.length > 0) {
             var link = $(membership2).attr('data-jagger-link');
+            var entgroups = ['idp', 'sp', 'both'];
+            var entgroupkey;
             $.ajax({
                 url: link,
                 type: 'GET',
@@ -79,84 +80,34 @@ var GINIT = {
                         var out = [], o = -1;
                         var nr, oddeven;
                         out[++o] = '<table><tbody>';
-                        if (data.idp !== undefined) {
-                            out[++o] = '<tr><td colspan="2" class="highlight">' + data.definitions.idps + '</td></tr>';
-                            out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
-                            nr = 0;
-                            $.each(data.idp, function (i, v) {
-                                ++nr;
+                        for (var i = 0, total = entgroups.length; i < total; i++) {
+                            entgroupkey = entgroups[i];
 
-                                if(nr % 2)
-                                {
-                                    out[++o] = '<div class="small-12 column odd">';
-                                }
-                                else
-                                {
-                                    out[++o] = '<div class="small-12 column even">';
-                                }
+                            if (data[entgroupkey]) {
+                                out[++o] = '<tr><td colspan="2" class="highlight">' + data.definitions[entgroupkey] + '</td></tr>';
+                                out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
+                                nr = 0;
+                                $.each(data[entgroupkey], function (i, v) {
+                                    ++nr;
 
-                                out[++o] = '<div class="large-5 column">'+nr+'. <a href="' + preurl + v.pid + '">' + v.pname + '<a/></div>';
-                                out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
-                                out[++o] = '<div class="large-2 column"></div>';
+                                    if (nr % 2) {
+                                        out[++o] = '<div class="small-12 column odd">';
+                                    }
+                                    else {
+                                        out[++o] = '<div class="small-12 column even">';
+                                    }
 
-                                out[++o] = '</div>';
+                                    out[++o] = '<div class="large-5 column">' + nr + '. <a href="' + preurl + v.pid + '">' + v.pname + '</a></div>';
+                                    out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
+                                    out[++o] = '<div class="large-2 column"></div>';
 
-                            });
-                            out[++o] = '</div></td></tr>';
+                                    out[++o] = '</div>';
 
-
-                        }
-                        if (data.sp !== undefined) {
-                            out[++o] = '<tr><td colspan="2" class="highlight">' + data.definitions.sps + '</td></tr>';
-                            out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
-                            nr = 0;
-
-                            $.each(data.sp, function (i, v) {
-                                ++nr;
-
-                                if(nr % 2)
-                                {
-                                    out[++o] = '<div class="small-12 column odd">';
-                                }
-                                else
-                                {
-                                    out[++o] = '<div class="small-12 column even">';
-                                }
-
-                                out[++o] = '<div class="large-5 column">'+nr+'. <a href="' + preurl + v.pid + '">' + v.pname + '<a/></div>';
-                                out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
-                                out[++o] = '<div class="large-2 column"></div>';
-
-                                out[++o] = '</div>';
-
-                            });
-                            out[++o] = '</div></td></tr>';
+                                });
+                                out[++o] = '</div></td></tr>';
 
 
-                        }
-                        if (data.both !== undefined) {
-                            out[++o] = '<tr><td colspan="2" class="highlight">' + data.definitions.both + '</td></tr>';
-                            out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
-                            nr = 0;
-                            $.each(data.both, function (i, v) {
-                                ++nr;
-                                if(nr % 2)
-                                {
-                                    out[++o] = '<div class="small-12 column odd">';
-                                }
-                                else
-                                {
-                                    out[++o] = '<div class="small-12 column even">';
-                                }
-
-                                out[++o] = '<div class="large-5 column">'+nr+'. <a href="' + preurl + v.pid + '">' + v.pname + '<a/></div>';
-                                out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
-                                out[++o] = '<div class="large-2 column"></div>';
-
-                                out[++o] = '</div>';
-
-                            });
-                            out[++o] = '</div></td></tr>';
+                            }
 
                         }
                         out[++o] = '</tbody></table>';
@@ -1693,10 +1644,11 @@ $(document).ready(function () {
     }
 
 
-    var fedloginurl = $('a#fedlogin').attr('href');
+    var fedlogin = $('#fedlogin').first();
+    var fedloginurl = fedlogin.attr('href');
     var browsertime = new Date();
     var browsertimezone = -browsertime.getTimezoneOffset();
-    $('a#fedlogin').attr('href', '' + fedloginurl + '/' + browsertimezone + '');
+    fedlogin.attr('href', '' + fedloginurl + '/' + browsertimezone + '');
 
     if ($('#fedcategories dd.active').length) {
         var url = $('dd.active').find('a').first().attr('href');

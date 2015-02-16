@@ -136,8 +136,8 @@ class Manage extends MY_Controller
 		$membership = $tmpProviders->getFederationMembersInLight($federation);
 
 		$membersInArray = array('idp' => array(), 'sp' => array(), 'definitions' => array(
-			'idps' => lang('identityproviders'),
-			'sps' => lang('serviceproviders'),
+			'idp' => lang('identityproviders'),
+			'sp' => lang('serviceproviders'),
 			'both' => lang('identityserviceproviders'),
 			'preurl' => base_url() . 'providers/detail/show/',
 			'nomembers' => lang('rr_nomembers'),
