@@ -69,6 +69,10 @@ var GINIT = {
             var link = $(membership2).attr('data-jagger-link');
             var entgroups = ['idp', 'sp', 'both'];
             var entgroupkey;
+            var countGroups = [];
+            countGroups['idp'] =0;
+            countGroups['sp'] =0;
+            countGroups['both'] =0 ;
             $.ajax({
                 url: link,
                 type: 'GET',
@@ -87,6 +91,7 @@ var GINIT = {
                                 out[++o] = '<tr><td colspan="2" class="highlight">' + data.definitions[entgroupkey] + '</td></tr>';
                                 out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
                                 nr = 0;
+                                countGroups[entgroupkey] = data[entgroupkey].length;
                                 $.each(data[entgroupkey], function (i, v) {
                                     ++nr;
 
@@ -112,6 +117,37 @@ var GINIT = {
                         }
                         out[++o] = '</tbody></table>';
                         $(membership2).html(out.join(''));
+
+                        var data2 = [
+                            {
+                                value: countGroups.idp,
+                                color: "#F7464A",
+                                highlight: "#FF5A5E",
+                                label: data.definitions.idp
+                            },
+                            {
+                                value: countGroups.sp,
+                                color: "#46BFBD",
+                                highlight: "#5AD3D1",
+                                label: data.definitions.sp
+                            },
+                            {
+                                value: countGroups.both,
+                                color: "#FDB45C",
+                                highlight: "#FFC870",
+                                label: data.definitions.both
+                            }
+                        ];
+
+
+                        var ctx = document.getElementById("fedpiechart").getContext("2d");
+                        if(ctx && (countGroups.idp > 0 || countGroups.sp > 0 ||countGroups.both > 0 )) {
+                            var myPieChart = new Chart(ctx).Pie(data2, {responsive: true, legendTemplate: "<div class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><div><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;&nbsp;&nbsp;</span> <%if(segments[i].label){%><%=segments[i].label%><%}%></div><%}%></div>"});
+                            var legend = myPieChart.generateLegend();
+                            $("#fedpiechartlegend").html(legend);
+                        }
+
+
                     }
                 }
             });

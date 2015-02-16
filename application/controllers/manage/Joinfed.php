@@ -38,7 +38,7 @@ class Joinfed extends MY_Controller
     private function submit_validate()
     {
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('fedid', 'Federation', 'trim|required|numeric|xss_clean');
+        $this->form_validation->set_rules('fedid', 'Federation', 'trim|required|numeric');
         $this->form_validation->set_rules('formmessage', 'Message', 'trim|required|xss_clean');
         return $this->form_validation->run();
 

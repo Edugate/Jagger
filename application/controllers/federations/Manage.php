@@ -388,6 +388,7 @@ class Manage extends MY_Controller
 		$all_contactlist = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '', lang('rr_fed_cnt_list'));
 		$data['result']['general'][] = array(lang('rr_downcontactsintxt'), $idp_contactlist . '<br />' . $sp_contactlist . '<br />' . $all_contactlist);
 		$data['result']['general'][] = array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '" class="button secondary">Diagram</a>');
+        $data['fedpiechart'] = '<div class="row"><div><canvas id="fedpiechart" ></canvas></div><div id="fedpiechartlegend"></div></div>';
 
 
 		$edit_attributes_link = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
