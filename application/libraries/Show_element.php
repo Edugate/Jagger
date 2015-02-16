@@ -463,73 +463,7 @@ class Show_element {
         }
     }
 
-    /**
-     * it's based on IdPMembersToTable 
-     * @todo finish
-     */
-    public function membersToTable(array $members, $style = null)
-    {
-        $cell_with_idps = "";
-        $cell_with_sps = "";
-        $cell_with_both = "";
 
-
-
-        $result['IDP'] = $cell_with_idps;
-        $result['SP'] = $cell_with_sps;
-        $result['BOTH'] = $cell_with_both;
-        return $result;
-    }
-
-    public function MembersToHtml($members)
-    {
-        $urlprefix = base_url().'providers/detail/show/';
-        $meminactive = makeLabel('disabled',lang('membership_inactive'),lang('membership_inactive'));
-        $membanned = makeLabel('disabled',lang('membership_banned'),lang('membership_banned'));
-        $providerdisabled = makeLabel('disabled',lang('rr_inactive'),lang('rr_inactive'));
-        
-        $result = '<div  class="zebramembers">';
-        $pname = array();
-        $pentity = array();
-        foreach($members as $key => $row)
-        {
-             $pname[$key]  = $row['pname'];
-             $pentity[$key] = $row['entityid'];
-        }
-        array_multisort($pname, SORT_STRING, $pentity, SORT_STRING, $members);
-        $nr = 1;
-        foreach($members as $m)
-        {
-           
-           $t1 = '';
-           $t2 = '';
-           $t3 = '';
-           if(!empty($m['mdisabled']))
-           {
-              $t1 = $meminactive;
-           }
-           if(!empty($m['mbanned']))
-           {
-              $t2 = $membanned;
-           }
-           if(empty($m['penabled']))
-           {
-              $t3 = $providerdisabled;
-           }
-           if($nr%2)
-           {
-              $rowclass = 'odd';
-           }
-           else
-           {
-              $rowclass = 'even';
-           }
-           $result .= '<div class="small-12 columns '.$rowclass.'"><div class="large-5 columns">'.$nr++.'. <a href="'.$urlprefix.$m['pid'].'">'.$m['pname'].'</a></div><div class="large-5 columns">'.$m['entityid'].'</div><div class="large-2 columns text-right">'.$t1.' '.$t2.' '.$t3.'</div></div>';
-        }
-        $result .='</div>';
-
-        return $result;
-    }
 
     public function generateRequestsList(models\Provider $idp, $count = null)
     {
