@@ -558,7 +558,7 @@ class Metadata2import
                             }
                             $this->em->persist($existingProvider);
                         }
-                        if ($counter > 50)
+                        if ($counter > 300)
                         {
                             $this->em->flush();
                             $counter = 0;
