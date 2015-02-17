@@ -76,7 +76,7 @@ var GINIT = {
             $.ajax({
                 url: link,
                 type: 'GET',
-                cache: 'false',
+                cache: true,
                 dataType: 'json',
                 success: function (data) {
                     if (data) {
@@ -854,7 +854,7 @@ var GINIT = {
                             else {
                                 var preurl = data.definitions.preurl;
                                 if (data.idp) {
-                                    stitle = $('<div>' + data.definitions.idps + '</div>');
+                                    stitle = $('<div>' + data.definitions.idp + '</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.idp, function (i, v) {
                                         div_data = '<li class="homeorg"><a href="' + preurl + v.pid + '">' + v.pname + '</a> (' + v.entityid + ') </li>';
@@ -864,7 +864,7 @@ var GINIT = {
                                     value.append(stitle);
                                 }
                                 if (data.sp) {
-                                    stitle = $('<div>' + data.definitions.sps + '</div>');
+                                    stitle = $('<div>' + data.definitions.sp + '</div>');
                                     nlist = $('<ol/>');
                                     $.each(data.sp, function (i, v) {
                                         div_data = '<li class="resource"><a href="' + preurl + v.pid + '">' + v.pname + '</a> (' + v.entityid + ') </li>';

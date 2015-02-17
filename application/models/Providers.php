@@ -534,7 +534,7 @@ class Providers
 	public function getFederationMembersInLight(Federation $federation)
 	{
 
-		$query = $this->em->createQuery("SELECT PARTIAL p.{id,entityid,name,lname,displayname,ldisplayname,type,validfrom,validto,is_approved,is_active,is_locked,is_local},m,e FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN p.extend e WHERE m.federation = ?1  AND m.joinstate != '2'");
+		$query = $this->em->createQuery("SELECT PARTIAL p.{id,entityid,name,lname,displayname,ldisplayname,type,validfrom,validto,is_approved,is_active,is_locked,is_local,registerdate},m,e FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN p.extend e WHERE m.federation = ?1  AND m.joinstate != '2' AND p.is_approved = '1'");
 		$query->setParameter(1, $federation->getId());
 		$query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
 		return $query->getResult();

@@ -4,6 +4,8 @@ if (empty($bookmarked)) {
     echo '<span data-jagger-onsuccess="hide" class="hide-for-small-only"><a href="' . base_url() . 'ajax/bookfed/' . $federation_id . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus" style="color: white"></i></a></span>';
 }
 
+
+
 echo '<div id="ifedtabs">';
 echo '<ul class="tabs" data-tab>
  <li class="tab-title active"><a href="#general">' . lang('tabgeneral') . '</a></li>
@@ -13,9 +15,9 @@ echo '<ul class="tabs" data-tab>
 if (!empty($fvalidator)) {
     echo '<li class="tab-title"><a href="#fvalidators">' . lang('tabFvalidators') . '</a></li>';
 }
-echo '<li class="tab-title"><a href="#management">' . lang('tabMngt') . '</a></li>
- </ul>
- ';
+echo '<li class="tab-title"><a href="#management">' . lang('tabMngt') . '</a></li>';
+
+echo  '</ul>';
 
 $tmpl = array('table_open' => '<table id="detailsnosort" >');
 $tmpl2= array('table_open' => '<table style="border: 0px">');
