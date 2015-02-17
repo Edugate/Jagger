@@ -763,7 +763,12 @@ class Entityedit extends MY_Controller {
         $data['error_messages2'] = $this->tmp_error;
         $this->session->set_flashdata('entformerror', '');
 
-        $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
+
+        $this->load->library('providerformelements',array('provider'=>$ent,'session'=>$entsession));
+
+
+
+        $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral());
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
         if (strcasecmp($this->type, 'SP') != 0)
@@ -778,7 +783,10 @@ class Entityedit extends MY_Controller {
             $menutabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
         }
         $menutabs[] = array('id' => 'staticmetadata', 'value' => '' . lang('tabstaticmeta') . '', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
-        $menutabs[] = array('id' => 'other', 'value' => '' . lang('tabotherforms') . '', 'form' => $this->form_element->NgenerateOtherFormLinks($ent));
+
+
+
+        $menutabs[] = array('id' => 'other', 'value' => '' . lang('tabotherforms') . '', 'form' => $this->providerformelements->generateOtherLinksTab());
 
         $data['menutabs'] = $menutabs;
         $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['entdetail']['id'] . '">' . $data['entdetail']['displayname'] . '</a>';
@@ -1131,7 +1139,8 @@ class Entityedit extends MY_Controller {
         $data['error_messages'] = validation_errors('<div>', '</div>');
         $data['error_messages2'] = $this->tmp_error;
         $this->session->set_flashdata('entformerror', '');
-        $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->form_element->NgenerateEntityGeneral($ent, $entsession));
+        $this->load->library('providerformelements',array('provider'=>$ent,'session'=>$entsession));
+        $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral());
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
         $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
         if (strcasecmp($ent->getType(), 'SP') != 0)

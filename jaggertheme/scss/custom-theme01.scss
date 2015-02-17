@@ -210,24 +210,24 @@ a.bookentity {
 }
 
 
-div.perm, td.perm {
+div.perm, td.perm, span.perm {
     background-color: #00FF00;
     text-transform: uppercase;
     font-weight: bold;
 }
-div.dis, td.dis {
+div.dis, td.dis, span.dis {
     background-color: #E3E5FF;
     text-transform: uppercase;
 
     font-weight: bold;
 }
-div.spec, td.spec {
+div.spec, td.spec, span.spec {
     background-color: #FFFF00;
     text-transform: uppercase;
 
     font-weight: bold;
 }
-div.den, td.den {
+div.den, td.den, span.den {
     background-color: red;
    text-transform: uppercase;
 
