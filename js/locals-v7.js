@@ -1144,6 +1144,7 @@ $(document).ready(function () {
             $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiispdescrm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         });
 
+
         $("button#addlname").click(function () {
             var selected = $("span.lnameadd option:selected").first();
             var nf = selected.val();
@@ -1158,6 +1159,54 @@ $(document).ready(function () {
             var row = createRowWithLangRm(nf, nfv, rowinputname, rmbtn);
             row.insertBefore($(this).closest('span').parent());
         });
+
+
+        var btnNewLang = $("button[name='addinnewlang']");
+        btnNewLang.on('click',function(e){
+            var el = $(this);
+            var group = el.closest('fieldset');
+
+            var langDropdown = el.closest('span');
+            if(langDropdown.length === 0)
+            {
+                console.log('sdfsdf');
+
+                return false;
+            }
+            var selected = langDropdown.find(':selected').first();
+            if(selected.length === 0)
+            {
+                console.log('selected length 0');
+                return false;
+            }
+            var isdisabled = selected.attr('disabled');
+            if(isdisabled !== null && isdisabled ==='disabled')
+            {
+                console.log('sdfsdf');
+
+                return false;
+            }
+            var langselected = selected.val();
+            var langselectedStr = selected.text();
+            if(typeof langselected === 'undefined' || langselected === '')
+            {
+                console.log('empty langselected');
+                return false;
+            }
+            var rmbtn = $("button#helperbutttonrm").html();
+            var inputname = el.attr('value').replace('XXX',langselected);
+            selected.attr('disabled', true).attr('selected', false);
+            var rowinputname = inputname;
+            var row = createRowWithLangRm(langselected, langselectedStr, rowinputname, rmbtn);
+            row.insertBefore($(this).closest('span').parent());
+
+
+
+
+        });
+
+
+
         $("button#idpadduiidesc").click(function () {
             var selected = $("span.idpuiidescadd option:selected").first();
             var nf = selected.val();
@@ -1538,6 +1587,7 @@ $(document).ready(function () {
                         formupdaterAction.find("select[name='policy']").prop('selected', false).filter('[value=""]').prop('selected', true);
                         formupdaterAction.find("input[name='attribute']").first().val(json.attributename);
                         formupdaterAction.find("input[name='requester']").first().val(json.requester);
+
                         mrequester.html(json.requester);
                         mattribute.html(json.attributename);
                         var tbody_data = $('<tbody></tbody>');
@@ -1573,6 +1623,11 @@ $(document).ready(function () {
                 if (json) {
                     var startTime = new Date();
                     var cl;
+                    var mlegend = '<div><span class="den">&nbsp;&nbsp;&nbsp;</span> <span>denied</span></div>' +
+                            '<div><span class="perm">&nbsp;&nbsp;&nbsp;</span> <span>permitted</span></div>'+
+                            '<div><span class="dis">&nbsp;&nbsp;&nbsp;</span> <span>not supported</span></div>'+
+                        '<div><span>R</span> <span>required</span></div>'+
+                        '<div><span>D</span> <span>desired</span></div>';
                     var attrdefs = json.attributes;
                     var policies = json.policies;
                     var countpolicies = json.total;
@@ -1584,7 +1639,7 @@ $(document).ready(function () {
                     }
                     var countAttr = 0;
                     var tbl = '<table class="table table-header-rotated" id="idpmatrixresult"><thead><tr>';
-                    tbl += '<th></th>';
+                    tbl += '<th style="background: white">'+mlegend+'</th>';
                     $.each(attrdefs, function (a, p) {
                         tbl += '<th class="rotate"><div><span>' + a + '</span></div></th>';
                         countAttr++;

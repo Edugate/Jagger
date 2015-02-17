@@ -34,9 +34,9 @@ class Providerformelements
         $this->disallowedparts = $disallowedparts;
     }
 
-    private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonname, $buttonvalue)
+    private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonvalue)
     {
-        $r = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('' . $dropname . '', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div></span>';
+        $r = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('langcodes', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" name="addinnewlang" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div></span>';
         return $r;
     }
 
@@ -139,7 +139,8 @@ class Providerformelements
                 'addbtn' => array(
                     'a1' => 'lnameadd',
                     'a2' => 'lnamelangcode',
-                    'a3' => 'addlname',
+                    'a3'=>'f[lname][XXX]',
+
                     'a4' => lang('e_orgname')
                 ),
             ),
@@ -150,7 +151,7 @@ class Providerformelements
                 'addbtn' => array(
                     'a1' => 'ldisplaynameadd',
                     'a2' => 'ldisplaynamelangcode',
-                    'a3' => 'addldisplayname',
+                    'a3' => 'f[ldisplayname][XXX]',
                     'a4' => lang('rr_displayname')
                 ),
             ),
@@ -161,7 +162,8 @@ class Providerformelements
                 'addbtn' => array(
                     'a1' => 'lhelpdeskadd',
                     'a2' => 'lhelpdesklangcode',
-                    'a3' => 'addlhelpdesk',
+                    'a3' => 'f[lhelpdesk][XXX]',
+
                     'a4' => lang('rr_helpdeskurl')
                 ),
             ),
@@ -196,10 +198,9 @@ class Providerformelements
                     unset($gnamesLang['' . $key . '']);
                 }
             }
-            $tmprows .= '<div class="small-12 columns">' . $this->_generateLangAddButton('' . $g['addbtn']['a1'] . '', '' . $g['addbtn']['a2'], $btnlangs, $g['addbtn']['a3'], '' . $g['addbtn']['a4'] . '') . '</div>';
+            $tmprows .= '<div class="small-12 columns">' . $this->_generateLangAddButton('' . $g['addbtn']['a1'] . '', '' . $g['addbtn']['a2'], $btnlangs,'' . $g['addbtn']['a3'] . '') . '</div>';
             $tmprows .= '</fieldset>';
             $result[] = $tmprows;
-
             $result[] = '';
         }
 
