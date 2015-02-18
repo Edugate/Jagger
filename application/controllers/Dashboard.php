@@ -36,7 +36,7 @@ class Dashboard extends MY_Controller {
             $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode'=>'front_page','enabled'=>true, 'ispublic'=>true));
             if (!empty($frontpage))
             {
-                $data['pcontent'] = $frontpage->getContent();
+                $data['pcontent'] = jaggerTagsReplacer($frontpage->getContent());
                 $data['ptitle'] = $frontpage->getTitle();
             }
             $this->load->view('page',$data);

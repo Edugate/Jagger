@@ -51,7 +51,7 @@ class P extends MY_Controller {
        }
        $this->title = $page->getTitle(); 
        $data['ptitle'] = $page->getTitle();
-       $data['pcontent'] = $page->getContent();
+       $data['pcontent'] = jaggerTagsReplacer($page->getContent());
        $data['content_view'] = 'staticpages_view';
        $this->load->view('page',$data);
     }
