@@ -81,36 +81,8 @@ div.error {
     $radius: true
   );
 }
-a#showhelps {
-  border: 0px;
-  position:fixed;
-  top:90px;
-  right:2px;
-  img {
 
-  width: 25px;
-  }
-  img.iconhelpshow {
-  -khtml-opacity:.50;
- -moz-opacity:.50;
- -ms-filter:"alpha(opacity=50)";
-  filter:alpha(opacity=50);
-  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.5);
-  opacity:.50;
 
-  }
-}
-a.bookentity {
-  padding: 5px;
-  background-color: lighten(black,40%);
-  width: 24px;
-  height: 24px;
-  border: 0px;
-  position:fixed;
-  top:120px;
-  right:2px;
-
-}
 .subtitle, #subtitle, #pagetitle {
  text-align: center;
   

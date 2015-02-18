@@ -1,6 +1,9 @@
 <?php
 $loggedin = $this->j_auth->logged_in();
-
+if(empty($sideicons))
+{
+	$sideicons = array();
+}
 $isAdministrator = FALSE;
 if ($loggedin) {
 	$isAdministrator = (boolean)$this->j_auth->isAdministrator();
@@ -147,9 +150,9 @@ if (!empty($breadcrumbs)) {
 			if ($loggedin) {
 				$showhelp = $this->session->userdata('showhelp');
 				if (!empty($showhelp) && $showhelp === TRUE) {
-					echo '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpactive"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow" style="display:none"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpcross"></a>';
+					$sideicons[] = '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpactive alert active"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow" style="display:none"><i class="fi-info"></i></a>';
 				} else {
-					echo '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpinactive"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpcross" style="display:none"></a>';
+					$sideicons[]= '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpinactive"><i class="fi-info"></i></a>';
 				}
 				?>
 			<?php
@@ -244,7 +247,13 @@ if (!empty($breadcrumbs)) {
 	<a class="close-reveal-modal">&#215;</a>
 </div>
 
+<div id="sideicons">
+	<?php
 
+	echo implode('',$sideicons);
+
+	?>
+</div>
 
 <?php
 // list js files to load 

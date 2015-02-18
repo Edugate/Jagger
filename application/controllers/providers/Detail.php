@@ -269,6 +269,13 @@ class Detail extends MY_Controller {
         }
 
         $data = $this->providerdetails->generateForControllerProvidersDetail($ent);
+	    if(empty($data['bookmarked']))
+	    {
+
+			   // $data['sideicons'][] = '<span data-jagger-onsuccess="hide" class="hide-for-small-only"><a href="' . base_url() . 'ajax/bookmarkentity/' . $data['entid'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus" style="color: white"></i></a></span>';
+		    $data['sideicons'][] = '<a href="' . base_url() . 'ajax/bookmarkentity/' . $data['entid'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus" style="color: white"></i></a>';
+
+	    }
         /**
          * @todo finish show alert block if some warnings realted to entity 
          */

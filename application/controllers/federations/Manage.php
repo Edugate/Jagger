@@ -542,6 +542,9 @@ class Manage extends MY_Controller
 				$data['result']['fvalidators'][] = array('data' => array('data' => '<div class="alert">' . lang('rr_noperm') . '</div>', 'colspan' => 2));
 			}
 		}
+		if (empty($data['bookmarked'])) {
+			$data['sideicons'][] =  '<a href="' . base_url() . 'ajax/bookfed/' . $data['federation_id'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus"></i></a>';
+		}
 
 		$this->load->view('page', $data);
 	}

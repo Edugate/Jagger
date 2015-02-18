@@ -1169,20 +1169,20 @@ $(document).ready(function () {
             var langDropdown = el.closest('span');
             if(langDropdown.length === 0)
             {
-                console.log('sdfsdf');
+
 
                 return false;
             }
             var selected = langDropdown.find(':selected').first();
             if(selected.length === 0)
             {
-                console.log('selected length 0');
+
                 return false;
             }
             var isdisabled = selected.attr('disabled');
             if(isdisabled !== null && isdisabled ==='disabled')
             {
-                console.log('sdfsdf');
+
 
                 return false;
             }
@@ -1190,7 +1190,7 @@ $(document).ready(function () {
             var langselectedStr = selected.text();
             if(typeof langselected === 'undefined' || langselected === '')
             {
-                console.log('empty langselected');
+
                 return false;
             }
             var rmbtn = $("button#helperbutttonrm").html();
@@ -2020,8 +2020,9 @@ $(function () {
 
 
     $(".updatebookmark").on('click', function (e) {
-        e.preventDefault();
+
         var link = $(this).attr("href");
+        var thisobj = $(this);
         var action = $(this).attr("data-jagger-bookmark");
         var postsuccess = $(this).closest("[data-jagger-onsuccess]");
         var postaction = postsuccess.attr('data-jagger-onsuccess');
@@ -2035,13 +2036,12 @@ $(function () {
 
                 if (data && data === 'ok') {
 
-                    if (postaction !== undefined) {
-                        if (postaction === 'hide') {
-                            postsuccess.hide();
-                        }
+                    if(postaction !== undefined && postaction === 'hide')
+                    {
+                        postsuccess.hide();
                     }
                     else {
-                        window.alert('sdf');
+                        thisobj.remove();
                     }
                 }
 
@@ -2819,10 +2819,9 @@ $("#showhelps").click(function (e) {
         type: 'GET',
         url: url + '/' + param,
         success: function () {
-            $("#showhelps").toggleClass('helpinactive').toggleClass('helpactive');
+            $("#showhelps").toggleClass('helpinactive').toggleClass('helpactive').toggleClass('active');
             $(".dhelp").toggle();
-            $("img.iconhelpshow").toggle();
-            $("img.iconhelpcross").toggle();
+
         }
     });
 });

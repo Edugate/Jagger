@@ -1,8 +1,6 @@
 <?php
 
-if (empty($bookmarked)) {
-    echo '<span data-jagger-onsuccess="hide" class="hide-for-small-only"><a href="' . base_url() . 'ajax/bookfed/' . $federation_id . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus" style="color: white"></i></a></span>';
-}
+
 
 
 
