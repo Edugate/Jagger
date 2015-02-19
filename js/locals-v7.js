@@ -64,15 +64,74 @@ var BINIT = {
 
 var GINIT = {
     initialize: function () {
+        "use strict";
+        var pJagger = $(".pjagger");
+        if (pJagger.length > 0) {
+            var pElement;
+            var srclink;
+            pJagger.each(function () {
+                pElement = $(this);
+                if (pElement.hasClass('piegraph') && pElement.hasClass('fedgraph')) {
+                    srclink = pElement.attr('data-jagger-link');
+                    var entgroups = ['idp', 'sp', 'both'];
+                    var entgroupkey;
+                    var countGroups = [];
+                    countGroups['idp'] = 0;
+                    countGroups['sp'] = 0;
+                    countGroups['both'] = 0;
+                     $.ajax({
+                         url: srclink,
+                         type: 'GET',
+                         cache: true,
+                         dataType: 'json',
+                         success: function(data){
+                             if(data)
+                             {
+                                 var data2 = [
+                                     {
+                                         value: data.idp,
+                                         color: "#F7464A",
+                                         highlight: "#FF5A5E",
+                                         label: data.definitions.idp
+                                     },
+                                     {
+                                         value: data.sp,
+                                         color: "#46BFBD",
+                                         highlight: "#5AD3D1",
+                                         label: data.definitions.sp
+                                     },
+                                     {
+                                         value: data.both,
+                                         color: "#FDB45C",
+                                         highlight: "#FFC870",
+                                         label: data.definitions.both
+                                     }
+                                 ];
+                                 var ctx = pElement.find('canvas').get(0).getContext("2d");;
+                                 if(ctx)
+                                 {
+                                     var myPieChart = new Chart(ctx).Pie(data2, {
+                                         responsive: true,
+                                         legendTemplate: "<div class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><div><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;&nbsp;&nbsp;</span> <%if(segments[i].label){%><%=segments[i].label%><%}%></div><%}%></div>"
+                                     });
+                                     var legend = myPieChart.generateLegend();
+                                     pElement.find('div.plegend').first().html(legend);
+                                 }
+                             }
+                         }
+                     });
+                }
+            });
+        }
         var membership2 = $("#membership2").first();
         if (membership2 !== undefined && membership2.length > 0) {
             var link = $(membership2).attr('data-jagger-link');
             var entgroups = ['idp', 'sp', 'both'];
             var entgroupkey;
             var countGroups = [];
-            countGroups['idp'] =0;
-            countGroups['sp'] =0;
-            countGroups['both'] =0 ;
+            countGroups['idp'] = 0;
+            countGroups['sp'] = 0;
+            countGroups['both'] = 0;
             $.ajax({
                 url: link,
                 type: 'GET',
@@ -80,6 +139,7 @@ var GINIT = {
                 dataType: 'json',
                 success: function (data) {
                     if (data) {
+
                         var preurl = data.definitions.preurl;
                         var out = [], o = -1;
                         var nr, oddeven;
@@ -116,7 +176,9 @@ var GINIT = {
 
                         }
                         out[++o] = '</tbody></table>';
-                        $(membership2).html(out.join(''));
+                        if (!membership2.hasClass('fake')) {
+                            $(membership2).html(out.join(''));
+                        }
 
                         var data2 = [
                             {
@@ -141,8 +203,11 @@ var GINIT = {
 
 
                         var ctx = document.getElementById("fedpiechart").getContext("2d");
-                        if(ctx && (countGroups.idp > 0 || countGroups.sp > 0 ||countGroups.both > 0 )) {
-                            var myPieChart = new Chart(ctx).Pie(data2, {responsive: true, legendTemplate: "<div class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><div><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;&nbsp;&nbsp;</span> <%if(segments[i].label){%><%=segments[i].label%><%}%></div><%}%></div>"});
+                        if (ctx && (countGroups.idp > 0 || countGroups.sp > 0 || countGroups.both > 0 )) {
+                            var myPieChart = new Chart(ctx).Pie(data2, {
+                                responsive: true,
+                                legendTemplate: "<div class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><div><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;&nbsp;&nbsp;</span> <%if(segments[i].label){%><%=segments[i].label%><%}%></div><%}%></div>"
+                            });
                             var legend = myPieChart.generateLegend();
                             $("#fedpiechartlegend").html(legend);
                         }
@@ -1162,49 +1227,42 @@ $(document).ready(function () {
 
 
         var btnNewLang = $("button[name='addinnewlang']");
-        btnNewLang.on('click',function(e){
+        btnNewLang.on('click', function (e) {
             var el = $(this);
             var group = el.closest('fieldset');
 
             var langDropdown = el.closest('span');
-            if(langDropdown.length === 0)
-            {
+            if (langDropdown.length === 0) {
 
 
                 return false;
             }
             var selected = langDropdown.find(':selected').first();
-            if(selected.length === 0)
-            {
+            if (selected.length === 0) {
 
                 return false;
             }
             var isdisabled = selected.attr('disabled');
-            if(isdisabled !== null && isdisabled ==='disabled')
-            {
+            if (isdisabled !== null && isdisabled === 'disabled') {
 
 
                 return false;
             }
             var langselected = selected.val();
             var langselectedStr = selected.text();
-            if(typeof langselected === 'undefined' || langselected === '')
-            {
+            if (typeof langselected === 'undefined' || langselected === '') {
 
                 return false;
             }
             var rmbtn = $("button#helperbutttonrm").html();
-            var inputname = el.attr('value').replace('XXX',langselected);
+            var inputname = el.attr('value').replace('XXX', langselected);
             selected.attr('disabled', true).attr('selected', false);
             var rowinputname = inputname;
             var row = createRowWithLangRm(langselected, langselectedStr, rowinputname, rmbtn);
             row.insertBefore($(this).closest('span').parent());
 
 
-
-
         });
-
 
 
         $("button#idpadduiidesc").click(function () {
@@ -1624,9 +1682,9 @@ $(document).ready(function () {
                     var startTime = new Date();
                     var cl;
                     var mlegend = '<div><span class="den">&nbsp;&nbsp;&nbsp;</span> <span>denied</span></div>' +
-                            '<div><span class="perm">&nbsp;&nbsp;&nbsp;</span> <span>permitted</span></div>'+
-                            '<div><span class="dis">&nbsp;&nbsp;&nbsp;</span> <span>not supported</span></div>'+
-                        '<div><span>R</span> <span>required</span></div>'+
+                        '<div><span class="perm">&nbsp;&nbsp;&nbsp;</span> <span>permitted</span></div>' +
+                        '<div><span class="dis">&nbsp;&nbsp;&nbsp;</span> <span>not supported</span></div>' +
+                        '<div><span>R</span> <span>required</span></div>' +
                         '<div><span>D</span> <span>desired</span></div>';
                     var attrdefs = json.attributes;
                     var policies = json.policies;
@@ -1639,7 +1697,7 @@ $(document).ready(function () {
                     }
                     var countAttr = 0;
                     var tbl = '<table class="table table-header-rotated" id="idpmatrixresult"><thead><tr>';
-                    tbl += '<th style="background: white">'+mlegend+'</th>';
+                    tbl += '<th style="background: white">' + mlegend + '</th>';
                     $.each(attrdefs, function (a, p) {
                         tbl += '<th class="rotate"><div><span>' + a + '</span></div></th>';
                         countAttr++;
@@ -2036,8 +2094,7 @@ $(function () {
 
                 if (data && data === 'ok') {
 
-                    if(postaction !== undefined && postaction === 'hide')
-                    {
+                    if (postaction !== undefined && postaction === 'hide') {
                         postsuccess.hide();
                     }
                     else {

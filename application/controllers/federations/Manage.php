@@ -134,7 +134,7 @@ class Manage extends MY_Controller
 		$tmpProviders = new models\Providers();
 		$membership = $tmpProviders->getFederationMembersInLight($federation);
 
-		$membersInArray = array('idp' => array(), 'sp' => array(), 'definitions' => array(
+		$membersInArray = array('idp' => array(), 'sp' => array(),'both'=>array(), 'definitions' => array(
 			'idp' => lang('identityproviders'),
 			'sp' => lang('serviceproviders'),
 			'both' => lang('identityserviceproviders'),
@@ -204,6 +204,25 @@ class Manage extends MY_Controller
 		$result = $this->getMembers($federation, $lang);
 		$this->output->set_content_type('application/json')->set_output(json_encode($result));
 	}
+
+    function fedmemberscount($fedid)
+    {
+        if (!$this->input->is_ajax_request()) {
+			set_status_header(404);
+			echo 'Request not allowed';
+			return;
+		}
+        $lang = MY_Controller::getLang();
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
+        if (empty($federation)) {
+			set_status_header(404);
+			echo 'Federarion not found';
+			return;
+		}
+        $preresult = $this->getMembers($federation, $lang);
+        $result = array('idp' => count($preresult['idp']), 'sp' => count($preresult['sp']),'both'=>count($preresult['both']), 'definitions'=>$preresult['definitions']);
+        $this->output->set_content_type('application/json')->set_output(json_encode($result));
+    }
 
 	function showcontactlist($fed_name, $type = NULL)
 	{

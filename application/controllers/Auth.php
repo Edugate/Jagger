@@ -246,11 +246,10 @@ class Auth extends MY_Controller
 			}
 			$this->session->set_userdata('username', '' . $session_data['username'] . '');
 			$this->session->set_userdata('user_id', '' . $session_data['user_id'] . '');
-
-			$this->session->set_userdata('logged', 1);
 			if (!empty($timeoffset) && is_numeric($timeoffset)) {
 				$this->session->set_userdata('timeoffset', (int)$timeoffset);
 			}
+			$this->session->set_userdata('logged', 1);
 			$ip = $this->input->ip_address();
 			$user->setIP($ip);
 			$user->updated();
@@ -424,7 +423,7 @@ class Auth extends MY_Controller
 		}
 		$userValue = $this->getShibUsername();
 		if (empty($userValue)) {
-			log_message('error', 'IdP didnt provide username');
+			log_message('error', 'IdP:: '.$this->getShibIdp().' didnt provide username');
 			show_error('Internal server error: missing required attribute in SAML response from Identity Provider', 500);
 		}
 
@@ -436,8 +435,9 @@ class Auth extends MY_Controller
 			}
 			$session_data = $user->getBasic();
 			$userprefs = $user->getUserpref();
-			$_SESSION['username'] = $session_data['username'];
-			$_SESSION['user_id'] = $session_data['user_id'];
+			$this->session->set_userdata('username',''.$session_data['username'].'');
+			$this->session->set_userdata('user_id',''.$session_data['user_id'].'');
+			$this->session->set_userdata('authntype','federated');
 
 			$systemTwoFactor = $this->config->item('twofactorauthn');
 			if (!empty($systemTwoFactor) && $systemTwoFactor === true) {
@@ -448,22 +448,25 @@ class Auth extends MY_Controller
 				}
 				if (!empty($userSecondFactor) && in_array($userSecondFactor, $systemAllowed2Factors)) {
 
-					$_SESSION['partiallogged'] = 1;
-					$_SESSION['secondfactor'] = trim($userSecondFactor);
-					$_SESSION['twofactor'] = 1;
-					$_SESSION['logged'] = 0;
+					$this->session->set_userdata('partiallogged',1);
+					$this->session->set_userdata('secondfactor',trim($userSecondFactor));
+					$this->session->set_userdata('twofactor',1);
+					$this->session->set_userdata('logged',0);
 				} else {
-					$_SESSION['logged'] = 1;
+
+					$this->session->set_userdata('logged',1);
 				}
 			} else {
-				$_SESSION['logged'] = 1;
+
+				$this->session->set_userdata('logged',1);
 			}
 			$this->session->set_userdata($session_data);
 			if (!empty($userprefs) && array_key_exists('board', $userprefs)) {
-				$this->session->set_userdata(array('board' => $userprefs['board']));
+				$this->session->set_userdata('board' ,$userprefs['board']);
 			}
 			if (!empty($timeoffset) && is_numeric($timeoffset)) {
-				$_SESSION['timeoffset'] = (int)$timeoffset;
+
+				$this->session->set_userdata('timeoffset',(int)$timeoffset);
 			}
 			$updatefullname = $this->config->item('shibb_updatefullname');
 			if (!empty($updatefullname) && $updatefullname === TRUE) {
@@ -476,14 +479,18 @@ class Auth extends MY_Controller
 					$user->setSurname('' . $sname . '');
 				}
 			}
-			$ip = $_SERVER['REMOTE_ADDR'];
-			$user->setIP($ip);
-			$user->updated();
-			$this->em->persist($user);
-			$this->load->library('tracker');
-			$track_details = 'Authn from ' . $ip . '  with federated access';
-			$this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
-			$this->em->flush();
+			$islogged = $this->session->userdata('logged');
+			if(!empty($islogged)) {
+
+				$ip = $this->input->ip_address();
+				$user->setIP($ip);
+				$user->updated();
+				$this->em->persist($user);
+				$this->load->library('tracker');
+				$track_details = 'Authn from ' . $ip . '  with federated access';
+				$this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
+				$this->em->flush();
+			}
 		} else {
 			$fnameVarName = $this->getShibFname();
 			$snameVarName = $this->getShibSname();
