@@ -66,7 +66,7 @@ class Providerformelements
         $id = $this->ent->getId();
         if ($t === 'IDP') {
             $result = array(
-                anchor($base . 'geolocation/show/' . $id . '/idp', '' . lang('rr_geolocation') . ''),
+             //   anchor($base . 'geolocation/show/' . $id . '/idp', '' . lang('rr_geolocation') . ''),
                 anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . ''),
                 anchor($base . 'manage/supported_attributes/idp/' . $id . '', '' . lang('rr_supportedattributes') . ''),
                 anchor($base . 'manage/attributepolicy/globals/' . $id . '', '' . lang('rr_attributepolicy') . ''),
@@ -74,14 +74,14 @@ class Providerformelements
             );
         } elseif ($result === 'SP') {
             $l = array(
-                anchor($base . 'geolocation/show/' . $id . '/sp', '' . lang('rr_geolocation') . ''),
+           //     anchor($base . 'geolocation/show/' . $id . '/sp', '' . lang('rr_geolocation') . ''),
                 anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . ''),
                 anchor($base . 'manage/attribute_requirement/sp/' . $id . '', '' . lang('rr_requiredattributes') . '')
             );
         } else {
             $result = array(
-                anchor($base . 'geolocation/show/' . $id . '/sp', '' . lang('rr_geolocation') . ' (' . lang('serviceprovider') . ')'),
-                anchor($base . 'geolocation/show/' . $id . '/idp', '' . lang('rr_geolocation') . ' (' . lang('identityprovider') . ')'),
+              //  anchor($base . 'geolocation/show/' . $id . '/sp', '' . lang('rr_geolocation') . ' (' . lang('serviceprovider') . ')'),
+              //  anchor($base . 'geolocation/show/' . $id . '/idp', '' . lang('rr_geolocation') . ' (' . lang('identityprovider') . ')'),
                 anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('identityprovider') . ')'),
                 anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('serviceprovider') . ')'),
                 anchor($base . 'manage/supported_attributes/idp/' . $id . '', '' . lang('rr_supportedattributes') . ''),
@@ -214,6 +214,9 @@ class Providerformelements
             $result[] = $tr;
             $result[] = '';
         }
+
+
+
         return $result;
     }
 

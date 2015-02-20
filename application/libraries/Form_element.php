@@ -2199,6 +2199,7 @@ class Form_element {
         {
             $ipHints = array();
             $domainHints = array();
+	        $geo = array();
             if ($sessform)
             {
                 
@@ -2210,6 +2211,10 @@ class Form_element {
                 {
                     $domainHints = $ses['uii']['idpsso']['domainhint'];
                 }
+	            if(isset($ses['uii']['idpsso']['geo']) && is_array($ses['uii']['idpsso']['geo']))
+	            {
+		            $geo = $ses['uii']['idpsso']['geo'];
+	            }
             }
             else
             {                
@@ -2232,12 +2237,17 @@ class Form_element {
                         if (strcasecmp($eelement, 'IPHint')==0)
                         {
                             
-                            $ipHints['' . $eid . ''] = $evalue;
+                            $ipHints['' . $eid . ''] = trim($evalue);
                         }
                         elseif (strcasecmp($eelement, 'DomainHint')==0)
                         {
                            
-                            $domainHints['' . $eid . ''] = $evalue;
+                            $domainHints['' . $eid . ''] = trim($evalue);
+                        }
+                        elseif (strcasecmp($eelement, 'GeolocationHint')==0)
+                        {
+
+	                        $geo['' . $eid . ''] = trim($evalue);
                         }
                     }
                 }
@@ -2272,6 +2282,21 @@ class Form_element {
             $result[] = '<fieldset><legend>' . lang('e_idpdomainhint') . '</legend>' . $r1 . '</fieldset>';
             $result[] = '<fieldset><legend>' . lang('e_idpiphint') . '</legend>' . $r2 . '</fieldset>';
             $result[] = '';
+	        // start geolocation
+	        // $result[] = '';
+	        $geosinputs = '';
+	        foreach($geo as $k => $g)
+	        {
+		        $geosinputs .= '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo]['.$k.']" type="text" value="'.html_escape($g).'" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
+	        }
+	        $r = '';
+	        $r .= '<div class="small-12 column">';
+	        $r .= '<div class="large-8 column" ><div class="row"><div class="small-10 column"><input id="latlng" type="text" placeholder="click on map to get geo"></div><div class="small-2 column"><a href="#" class="button tiny postfix" id="addlatlng">'.lang('rr_add').'</a></div></div><div id="map-canvas" class="small-12 column" style="height: 400px;"></div></div>';
+	        $r .='<div class="large-4 column"><input id="map-search" type="text" placeholder="'.lang('rrsearchonmap').'"/><div id="geogroup">'.$geosinputs.'</div></div>';
+	        $r .= '</div>';
+	        $result[] = '<fieldset><legend>Geolocation</legend>' . $r . '</fieldset>';
+	        // $result[] ='';
+	        // end geolocation
         }
         // END IDPSSO PART
         return $result;
@@ -2582,6 +2607,9 @@ class Form_element {
             {
                 $result[] = $v;
             }
+
+
+
         }
         if ($type != 'IDP')
         {
