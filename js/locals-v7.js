@@ -1,3 +1,75 @@
+var map;
+var mapSearchInput;
+function mapInitialize() {
+
+    window.console.log('map init');
+    var markers = [];
+    var mapOptions = {
+        zoom: 4,
+        center: new google.maps.LatLng(50.019036, 13.007813),
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControl: true,
+        mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DEFAULT}
+    };
+    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    // var dymek = new google.maps.InfoWindow();
+    google.maps.event.addListener(map, 'click', function (event) {
+        //  dymek.setContent('Location :<br />' + event.latLng);
+        $('#latlng').val(event.latLng.lat().toFixed(6) + ',' + event.latLng.lng().toFixed(6));
+        //  dymek.setPosition(event.latLng);
+        //  dymek.open(map);
+    });
+
+    mapSearchInput = (document.getElementById('map-search'));
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(mapSearchInput);
+    var searchBox = new google.maps.places.SearchBox((mapSearchInput));
+    google.maps.event.addListener(searchBox, 'places_changed', function () {
+
+        var places = searchBox.getPlaces();
+        if (places.length === 0) {
+            return;
+        }
+        for (var i = 0, marker; marker = markers[i]; i++) {
+            marker.setMap(null);
+        }
+        markers = [];
+        var bounds = new google.maps.LatLngBounds();
+        for (var i = 0, place; place = places[i]; i++) {
+            var image = {
+                url: place.icon,
+                size: new google.maps.Size(71, 71),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(17, 34),
+                scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            var marker = new google.maps.Marker({
+                map: map,
+                icon: image,
+                title: place.name,
+                position: place.geometry.location
+            });
+
+            markers.push(marker);
+            bounds.extend(place.geometry.location);
+        }
+
+        map.fitBounds(bounds);
+        var listener = google.maps.event.addListener(map, "idle", function () {
+            if (map.getZoom() > 16) map.setZoom(16);
+            google.maps.event.removeListener(listener);
+        });
+
+    });
+    google.maps.event.addListener(map, 'bounds_changed', function () {
+        var bounds = map.getBounds();
+        searchBox.setBounds(bounds);
+    });
+
+}
+
+
 jQuery.fn.toggleOption = function (show) {
 
     jQuery(this).toggle(show);
@@ -65,6 +137,8 @@ var BINIT = {
 var GINIT = {
     initialize: function () {
         "use strict";
+
+
         var pJagger = $(".pjagger");
         if (pJagger.length > 0) {
             var pElement;
@@ -79,47 +153,46 @@ var GINIT = {
                     countGroups['idp'] = 0;
                     countGroups['sp'] = 0;
                     countGroups['both'] = 0;
-                     $.ajax({
-                         url: srclink,
-                         type: 'GET',
-                         cache: true,
-                         dataType: 'json',
-                         success: function(data){
-                             if(data)
-                             {
-                                 var data2 = [
-                                     {
-                                         value: data.idp,
-                                         color: "#F7464A",
-                                         highlight: "#FF5A5E",
-                                         label: data.definitions.idp
-                                     },
-                                     {
-                                         value: data.sp,
-                                         color: "#46BFBD",
-                                         highlight: "#5AD3D1",
-                                         label: data.definitions.sp
-                                     },
-                                     {
-                                         value: data.both,
-                                         color: "#FDB45C",
-                                         highlight: "#FFC870",
-                                         label: data.definitions.both
-                                     }
-                                 ];
-                                 var ctx = pElement.find('canvas').get(0).getContext("2d");;
-                                 if(ctx)
-                                 {
-                                     var myPieChart = new Chart(ctx).Pie(data2, {
-                                         responsive: true,
-                                         legendTemplate: "<div class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><div><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;&nbsp;&nbsp;</span> <%if(segments[i].label){%><%=segments[i].label%><%}%></div><%}%></div>"
-                                     });
-                                     var legend = myPieChart.generateLegend();
-                                     pElement.find('div.plegend').first().html(legend);
-                                 }
-                             }
-                         }
-                     });
+                    $.ajax({
+                        url: srclink,
+                        type: 'GET',
+                        cache: true,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data) {
+                                var data2 = [
+                                    {
+                                        value: data.idp,
+                                        color: "#F7464A",
+                                        highlight: "#FF5A5E",
+                                        label: data.definitions.idp
+                                    },
+                                    {
+                                        value: data.sp,
+                                        color: "#46BFBD",
+                                        highlight: "#5AD3D1",
+                                        label: data.definitions.sp
+                                    },
+                                    {
+                                        value: data.both,
+                                        color: "#FDB45C",
+                                        highlight: "#FFC870",
+                                        label: data.definitions.both
+                                    }
+                                ];
+                                var ctx = pElement.find('canvas').get(0).getContext("2d");
+                                ;
+                                if (ctx) {
+                                    var myPieChart = new Chart(ctx).Pie(data2, {
+                                        responsive: true,
+                                        legendTemplate: "<div class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><div><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;&nbsp;&nbsp;</span> <%if(segments[i].label){%><%=segments[i].label%><%}%></div><%}%></div>"
+                                    });
+                                    var legend = myPieChart.generateLegend();
+                                    pElement.find('div.plegend').first().html(legend);
+                                }
+                            }
+                        }
+                    });
                 }
             });
         }
@@ -1067,8 +1140,114 @@ $(document).ready(function () {
 
 
 // idp/sp editform
+    var latlngVal = /^-?([0-8]?[0-9]|90)\.[0-9]{1,6},-?((1?[0-7]?|[0-9]?)[0-9]|180)\.[0-9]{1,6}$/;
     var providerEditForm = $('#providereditform');
     if (providerEditForm.length) {
+
+        var tabMap = $("#uihints");
+
+        var addGeoBtn = $("#addlatlng");
+        var markers = [];
+        var gMarkers = [];
+
+        var mapCanvas = providerEditForm.find("#map-canvas");
+        if (mapCanvas.length) {
+            google.maps.event.addDomListener(window, 'load', mapInitialize);
+
+
+            var georows = $("#geogroup").first();
+
+
+            markers = [];
+
+            georows.find('input').each(function (e) {
+                var geoLatLng = $(this).val().split(',');
+                markers.push(geoLatLng);
+            });
+
+
+            var markersSet = false;
+            tabMap.on('toggled', function (event, tab) {
+
+                if (markersSet === false) {
+                    var bounds = new google.maps.LatLngBounds();
+                    for (var i = 0, tot = markers.length; i < tot; i++) {
+                        var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);
+                        var marker = new google.maps.Marker({
+                            position: myLatlng,
+                            map: map,
+                            title: ''
+                        });
+
+                        marker.setMap(map);
+                        gMarkers.push(marker);
+                        bounds.extend(marker.position);
+                    }
+                    markersSet = true;
+
+                    var center = map.getCenter();
+                    google.maps.event.trigger(map, "resize");
+                    map.setCenter(center);
+                    if (markers.length > 0) {
+                        map.fitBounds(bounds);
+                    }
+                }
+                var listener = google.maps.event.addListener(map, "idle", function () {
+                    if (map.getZoom() > 16) map.setZoom(16);
+                    google.maps.event.removeListener(listener);
+                });
+            });
+
+        }
+        providerEditForm.on('click', 'a.rmgeo', function (e) {
+
+            var inputtorm = $(this).closest('div.georow').find('input').first().val();
+            var geoLatLngToRm = inputtorm.split(',');
+            for (var i = 0, tot = gMarkers.length; i < tot; i++) {
+                var gmark = gMarkers[i];
+                console.log(gmark.position.lat() + ' ?? ' + geoLatLngToRm[0]);
+                if (parseFloat(gmark.position.lat()) === parseFloat(geoLatLngToRm[0])) {
+                    gmark.setMap(null);
+                    gMarkers.splice(i, 1);
+                }
+            }
+            $(this).closest('div.georow').remove();
+            return false;
+        });
+
+        addGeoBtn.on('click', function (e) {
+
+            e.preventDefault();
+            var inputgeo = $("#latlng").val();
+            if (!latlngVal.test(inputgeo)) {
+                window.alert('incorrect value');
+            }
+            else {
+                var bounds = new google.maps.LatLngBounds();
+                var rname = 'z';
+                var possible = "0123456789";
+                for (var i = 0; i < 5; i++) {
+                    rname += possible.charAt(Math.floor(Math.random() * possible.length));
+                }
+                var html = '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' + rname + ']" type="text" value="' + inputgeo + '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
+                $(html).appendTo($('#geogroup'));
+                var geoLatLng = inputgeo.split(',');
+                var myLatlng = new google.maps.LatLng(geoLatLng[0], geoLatLng[1]);
+
+                var marker = new google.maps.Marker({
+                    position: myLatlng,
+                    map: map,
+                    title: ''
+                });
+                marker.setMap(map);
+                gMarkers.push(marker);
+
+                bounds.extend(marker.position);
+
+
+            }
+        });
+
         var langinputrmval;
         providerEditForm.find('div.group').each(function () {
             var selectInside = $(this).find('select').first();
@@ -3408,3 +3587,33 @@ $(document).on('click', 'a.updateprefs', function (e) {
     return false;
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

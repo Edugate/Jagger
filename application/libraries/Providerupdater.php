@@ -135,6 +135,43 @@ class Providerupdater
                 $discohintsParent->setElement('DiscoHints');
                 $ent->setExtendMetadata($discohintsParent);
             }
+            if (isset($ch['uii']['idpsso']['geo']) && is_array($ch['uii']['idpsso']['geo']))
+            {
+                $ch['uii']['idpsso']['geo'] = array_unique($ch['uii']['idpsso']['geo']);
+                if (isset($extendsInArray['idp']['mdui']['GeolocationHint']))
+                {
+                    foreach ($extendsInArray['idp']['mdui']['GeolocationHint'] as $k => $v)
+                    {
+                        $vId = $v->getId();
+                        if (array_key_exists($vId, $ch['uii']['idpsso']['geo']) && !empty($ch['uii']['idpsso']['geo']['' . $vId . '']))
+                        {
+                            $v->setValue($ch['uii']['idpsso']['geo']['' . $vId . '']);
+                            $this->em->persist($v);
+                        }
+                        else
+                        {
+                            $ent->getExtendMetadata()->removeElement($v);
+                            $this->em->remove($v);
+                        }
+                        unset($ch['uii']['idpsso']['geo']['' . $vId . '']);
+                    }
+                }
+                foreach ($ch['uii']['idpsso']['geo'] as $v)
+                {
+                    if (!empty($v))
+                    {
+                        $n = new models\ExtendMetadata;
+                        $n->setParent($discohintsParent);
+                        $n->setType('idp');
+                        $n->setNamespace('mdui');
+                        $n->setElement('GeolocationHint');
+                        $n->setValue($v);
+                        $n->setAttributes(array());
+                        $ent->setExtendMetadata($n);
+                        $this->em->persist($n);
+                    }
+                }
+            }
             if (isset($ch['uii']['idpsso']['domainhint']) && is_array($ch['uii']['idpsso']['domainhint']))
             {
                 $ch['uii']['idpsso']['domainhint'] = array_unique($ch['uii']['idpsso']['domainhint']);
