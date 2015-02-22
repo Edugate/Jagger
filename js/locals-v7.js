@@ -6,7 +6,7 @@ function mapInitialize() {
     var markers = [];
     var mapOptions = {
         zoom: 4,
-        center: new google.maps.LatLng(50.019036,13.007813),
+        center: new google.maps.LatLng(50.019036, 13.007813),
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         mapTypeControl: true,
         mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DEFAULT}
@@ -52,25 +52,20 @@ function mapInitialize() {
             });
 
             markers.push(marker);
-
             bounds.extend(place.geometry.location);
         }
 
         map.fitBounds(bounds);
-        var listener = google.maps.event.addListener(map, "idle", function() {
+        var listener = google.maps.event.addListener(map, "idle", function () {
             if (map.getZoom() > 16) map.setZoom(16);
             google.maps.event.removeListener(listener);
         });
-
 
     });
     google.maps.event.addListener(map, 'bounds_changed', function () {
         var bounds = map.getBounds();
         searchBox.setBounds(bounds);
     });
-
-
-    console.log('map init finished');
 
 }
 
@@ -1171,31 +1166,33 @@ $(document).ready(function () {
             });
 
 
-
+            var markersSet = false;
             tabMap.on('toggled', function (event, tab) {
-                var bounds = new google.maps.LatLngBounds();
-                for (var i = 0, tot = markers.length; i < tot; i++) {
 
+                if (markersSet === false) {
+                    var bounds = new google.maps.LatLngBounds();
+                    for (var i = 0, tot = markers.length; i < tot; i++) {
+                        var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);
+                        var marker = new google.maps.Marker({
+                            position: myLatlng,
+                            map: map,
+                            title: ''
+                        });
 
-                    var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);
-                    var marker = new google.maps.Marker({
-                        position: myLatlng,
-                        map: map,
-                        title: 'kkk'
-                    });
+                        marker.setMap(map);
+                        gMarkers.push(marker);
+                        bounds.extend(marker.position);
+                    }
+                    markersSet = true;
 
-                    marker.setMap(map);
-                    gMarkers.push(marker);
-                    console.log('POSITION:'+marker.position);
-                    bounds.extend(marker.position);
+                    var center = map.getCenter();
+                    google.maps.event.trigger(map, "resize");
+                    map.setCenter(center);
+                    if (markers.length > 0) {
+                        map.fitBounds(bounds);
+                    }
                 }
-                var center = map.getCenter();
-                google.maps.event.trigger(map, "resize");
-                map.setCenter(center);
-                if(markers.length > 0) {
-                    map.fitBounds(bounds);
-                }
-                var listener = google.maps.event.addListener(map, "idle", function() {
+                var listener = google.maps.event.addListener(map, "idle", function () {
                     if (map.getZoom() > 16) map.setZoom(16);
                     google.maps.event.removeListener(listener);
                 });
@@ -1208,9 +1205,10 @@ $(document).ready(function () {
             var geoLatLngToRm = inputtorm.split(',');
             for (var i = 0, tot = gMarkers.length; i < tot; i++) {
                 var gmark = gMarkers[i];
-                if(gmark.position.lat() == geoLatLngToRm[0])
-                {
+                console.log(gmark.position.lat() + ' ?? ' + geoLatLngToRm[0]);
+                if (parseFloat(gmark.position.lat()) === parseFloat(geoLatLngToRm[0])) {
                     gmark.setMap(null);
+                    gMarkers.splice(i, 1);
                 }
             }
             $(this).closest('div.georow').remove();
@@ -1239,10 +1237,8 @@ $(document).ready(function () {
                 var marker = new google.maps.Marker({
                     position: myLatlng,
                     map: map,
-                    title: 'Hello World!'
+                    title: ''
                 });
-                console.log(myLatlng);
-                console.log('CLICK' + map);
                 marker.setMap(map);
                 gMarkers.push(marker);
 
