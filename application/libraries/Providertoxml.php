@@ -378,6 +378,7 @@ class Providertoxml
 
     private function createAttributeConsumingService(\XMLWriter $xml, \models\Provider $ent, $options)
     {
+
         $reqColl = $ent->getAttributesRequirement();
         $requiredAttributes = array();
         foreach ($reqColl as $reqAttr) {
@@ -426,8 +427,10 @@ class Providertoxml
                 $xml->endElement();
             }
         }
+
         if (count($requiredAttributes) > 0) {
             foreach ($requiredAttributes as $attr) {
+
 
                 $xml->startElementNs('md', 'RequestedAttribute', null);
                 $xml->writeAttribute('FriendlyName', $attr->getAttribute()->getName());
@@ -441,6 +444,21 @@ class Providertoxml
                 $xml->endElement();
             }
         }
+	    else
+	    {
+		    foreach ($options['fedreqattrs'] as $attr) {
+			    $xml->startElementNs('md', 'RequestedAttribute', null);
+			    $xml->writeAttribute('FriendlyName', $attr->getAttribute()->getName());
+			    $xml->writeAttribute('Name', $attr->getAttribute()->getOid());
+			    $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+			    if (strcmp($attr->getStatus(), 'required') == 0) {
+				    $xml->writeAttribute('isRequired', 'true');
+			    } else {
+				    $xml->writeAttribute('isRequired', 'false');
+			    }
+			    $xml->endElement();
+		    }
+	    }
 
         $xml->endElement();
         return $xml;

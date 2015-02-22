@@ -116,6 +116,7 @@ $lang['advancedmode']              = 'Advanced mode';
 $lang['btnlogout']                 = 'Sign out';
 $lang['rr_search']                 = 'Search';
 $lang['rrsearchonmap']             = 'Search on map';
+$lang['rrclconmap1']               = 'click on map to get lat/lng';
 $lang['nameid']                    = 'NameIDFormat';
 $lang['clearcache']                 = 'Clear cache';
 $lang['btnsynch']                   = 'Synchronize';

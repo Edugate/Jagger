@@ -129,7 +129,7 @@ class Entityedit extends MY_Controller
 			        /**
 			         * @todo GEO validation
 			         */
-			        $this->form_validation->set_rules('f[uii][idpsso][geo][' . $k . ']', 'Geolocation ' , 'strip_tags|trim|min_length[3]|max_length[255]');
+			        $this->form_validation->set_rules('f[uii][idpsso][geo][' . $k . ']', 'Geolocation ' , 'strip_tags|trim|min_length[3]|max_length[40]|valid_latlng');
 		        }
 	        }
 
