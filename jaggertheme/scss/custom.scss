@@ -49,12 +49,6 @@ article {
   min-height: 100%;
   
 }
-.tabs-content {
-
-  //background-color: white;
-  min-height: 200px;
-
-}
 #navbuttons1 {
   @include sub-nav();
 }
