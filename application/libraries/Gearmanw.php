@@ -225,8 +225,16 @@ class Gearmanw
 
     private function registerCollectorWorkers()
     {
+        $gearmanConfig = $this->ci->config->item('gearmanconf');
+        if(empty($gearmanConfig) || !isset($gearmanConfig['jobserver']))
+        {
+            log_message('error','config[gearmanconf][jobserver] not found in config_rr file');
+            return false;
+        }
         $gm = new GearmanWorker();
-        $gm->addServer('127.0.0.1', 4730);
+        foreach($gearmanConfig['jobserver'] as $j) {
+            $gm->addServer(''.$j['ip'], $j['port']);
+        }
         $gm->addFunction('externalstatcollection', 'Gearmanw::fn_externalstatcollection');
         $predifend = $this->ci->config->item('predefinedstats');
         if (!empty($predifend) && is_array($predifend))
