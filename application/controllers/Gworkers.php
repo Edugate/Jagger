@@ -97,46 +97,106 @@ class Gworkers extends MY_Controller
     public function jcronmonitor()
     {
         if (!is_cli()) {
+            log_message('error', __METHOD__ . ' called not via cli');
             set_status_header('403');
             echo 'denied';
             return;
         }
-        while(TRUE)
-        {
-            $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled'=>true));
-            echo count($cronEntries).PHP_EOL;
-            foreach($cronEntries as $c)
-            {
-                $cron = Cron\CronExpression::factory($c->getCronToStr());
-                if($cron->isDue())
-                {
 
+        $gearmanConf = $this->config->item('gearmanconf');
+
+        $runJobs = array();
+        while (TRUE) {
+
+
+
+            $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled' => true));
+            echo count($cronEntries) . PHP_EOL;
+            $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
+            foreach ($cronEntries as $c) {
+                $cron = Cron\CronExpression::factory($c->getCronToStr());
+                if ($cron->isDue()) {
+
+                    $didRunInRange = $c->isLastRunMatchRange($currentTime, 60);
+                    if (!$didRunInRange) {
+                        $r = $this->jcronRun($c);
+                        if(!empty($r))
+                        {
+                            $runJobs[] = $r;
+                        }
+                    }
+                }
+            }
+            $this->em->flush();
+
+            $gclient = new GearmanClient();
+            foreach ($gearmanConf['jobserver'] as $gs) {
+                try {
+                    $gclient->addServer('' . $gs['ip'] . '', $gs['port']);
+                }
+                catch (Exception $e)
+                {
+                    echo 'Exception : '.$e.PHP_EOL;
+                }
+            }
+
+            foreach($runJobs as $k=>$j)
+            {
+                $jstatus = $gclient->jobStatus($j);
+                if(array_key_exists('0', $jstatus) && empty($jstatus[0]))
+                {
+                    log_message('info','JCRON:: '.$j.' not known (already finished or removed from jobserver)');
+                    unset($runJobs[$k]);
+                }
+                elseif(array_key_exists('1', $jstatus) && !empty($jstatus[1]) )
+                {
+                    log_message('info','JCRON:: '.$j.' is still running on jobserver');
+                }
+                elseif(array_key_exists('1', $jstatus) && empty($jstatus[1]))
+                {
+                    log_message('info','JCRON:: '.$j.' is on jobserver but it is waiting for worker');
                 }
             }
             sleep(15);
         }
-
     }
 
     private function jcronRun(\models\Jcrontab $c)
     {
         $gearmanConf = $this->config->item('gearmanconf');
-
-        $gclient =  new GearmanClient();
-        foreach($gearmanConf['jobserver'] as $gs)
-        {
-            $gclient->addServer(''.$gs['ip'].'',$gs['port']);
+        $jobOwnServers = $c->getJservers();
+        $gclient = new GearmanClient();
+        if (!empty($jobOwnServers) && is_array($jobOwnServers)) {
+            foreach ($jobOwnServers as $gs) {
+                $gclient->addServer('' . $gs['ip'] . '', $gs['port']);
+            }
+        } else {
+            foreach ($gearmanConf['jobserver'] as $gs) {
+                try {
+                    $gclient->addServer('' . $gs['ip'] . '', $gs['port']);
+                }
+                catch(Exception $e)
+                {
+                    echo 'Errrpr: '.$e;
+                }
+            }
         }
-
         $jcommand = $c->getJcommand();
         $jparams = $c->getJparams();
+        $jparams['cronid'] = $c->getId();
 
-        $job = $gclient->doBackground($jcommand,json_encode($jparams));
-
-
-
-
-
+        try {
+            $jobhandle = $gclient->doBackground($jcommand, json_encode($jparams));
+            $c->setLastRun();
+            $this->em->persist($c);
+            return $jobhandle;
+        }
+        catch(Exception $e)
+        {
+            echo 'Err...'.$e;
+        }
+        return false;
+        
 
     }
 

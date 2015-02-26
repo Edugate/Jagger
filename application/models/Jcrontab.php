@@ -73,9 +73,14 @@ class Jcrontab
     protected $jcommand;
 
     /**
-     * @Column(type="string", length=512, nullable = false);
+     * @Column(type="string", length=512, nullable = false)
      */
     protected $jparams;
+
+	/**
+	 * @Column(type="string",length=512, nullable = true)
+	 */
+	protected $jservers;
 
     /**
      * @Column(type="boolean", nullable=false)
@@ -92,6 +97,12 @@ class Jcrontab
      * @Column(type="boolean", nullable=false)
      */
     protected $isenabled;
+
+
+    /**
+     * @Column(type="datetime", nullable=true)
+     */
+    protected $lastrun;
 
 
     function __construct()
@@ -189,15 +200,6 @@ class Jcrontab
         return $result;
     }
 
-    public function getNextSched($currentTime = 'now')
-    {
-        if ($currentTime == 'now') {
-            $currentDate = new \DateTime('now');
-        }
-        $currentMin = $currentDate->format('i');
-
-    }
-
     public function  getJcommand()
     {
         return $this->jcommand;
@@ -215,14 +217,47 @@ class Jcrontab
         }
     }
 
-    public function isDue($currentTime = 'now')
+	public function getJservers()
+	{
+		if(!empty($this->jservers))
+		{
+			return unserialize($this->jservers);
+		}
+		return null;
+	}
+
+
+    public function getToNotify()
     {
-        if ($currentTime === 'now') {
-            $currentDate = date('Y-m-d H:i');
-            $currentTime = strtotime($currentDate);
-        }
+        return $this->tonotify;
     }
 
+    public function getJcomment()
+    {
+        return $this->jcomment;
+    }
+
+    public function getLastRun()
+    {
+        return $this->lastrun;
+    }
+
+    public function isLastRunMatchRange(\DateTime $arg1, $range = 60 )
+    {
+        if(empty($this->lastrun))
+        {
+            return false;
+        }
+        $lastrunU = $this->lastrun->format('U');
+        $arg1U = $arg1->format('U');
+        if(abs($lastrunU-$arg1U) <= $range)
+        {
+            return true;
+        }
+        return false;
+
+
+    }
 
     public function setJcommand($job)
     {
@@ -235,6 +270,35 @@ class Jcrontab
         $this->jparams = serialize($params);
         return $this;
     }
+	public function addJserver($ar)
+	{
+		if(empty($ar) || !is_array($ar) || !isset($ar['ip']) || !isset($ar['port']))
+		{
+			\log_message('error',__METHOD__.' invalid param provided');
+		    return null;
+		}
+		$current = $this->getJservers();
+		$isExist = false;
+		if(is_array($current))
+		{
+			foreach($current as $v)
+			{
+				if(strcasecmp($v['ip'],$ar['ip']) == 0 && strcasecmp($v['port'],$ar['port']) == 0 )
+				{
+					$isExist = true;
+					break;
+				}
+			}
+			if(!$isExist)
+			{
+				$current[] = $ar;
+				$this->jservers = serialize($current);
+			}
+		}
+		return $this;
+
+
+	}
 
     public function setJcomment($comment)
     {
@@ -243,9 +307,22 @@ class Jcrontab
 
     }
 
+    public function setToNotify($a)
+    {
+        $this->tonotify = (bool) $a;
+        return $this;
+    }
+
     public function setEnabled($b)
     {
         $this->isenabled = $b;
+        return $this;
+    }
+
+    public function setLastRun()
+    {
+        $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
+        $this->lastrun = $currentTime;
         return $this;
     }
 
