@@ -10,7 +10,7 @@ class Gworkertemplates
     function __construct()
     {
         $this->ci = &get_instance();
-        $this->em = $this->ci->em;
+        $this->em = $this->ci->doctrine->em;
         $this->digestmethod = $this->ci->config->item('signdigest');
         if (empty($this->digestmethod)) {
             $this->digestmethod = 'SHA-1';
