@@ -9,15 +9,15 @@ class Taskscheduler extends MY_Controller
         parent::__construct();
         MY_Controller::$menuactive = 'admins';
     }
+	
+	private function submit_validate()
+	{
 
-    private function hasAccess()
+	}
+
+    public function taskedit($id=null)
     {
-
-    }
-
-    public function taskedit($id)
-    {
-        if(!ctype_digit($id))
+        if(!empty($id) && !ctype_digit($id))
         {
             show_error('Incorrect param provided', 403);
             return;
@@ -34,12 +34,22 @@ class Taskscheduler extends MY_Controller
         }
 
         $featureEnabled = $this->config->item('featenable');
-        if (!isset($featureEnabled['tasksmngmt']) || $featureEnabled['tasksmngmt'] !== TRUE) {
+        if (!isset($featureEnabled['tasks']) || $featureEnabled['tasks'] !== TRUE) {
             show_error('Feature is not enabled', 403);
             return;
         }
-        $this->title='Task Scheduler edit';
-        $data['titlepage'] = $this->title;
+
+
+	    if(empty($id))
+	    {
+		    $title = 'New task';
+	    }
+	    else
+	    {
+		    $title = 'Task Scheduler edit';
+	    }
+	    $this->title=$title;
+	    $data['titlepage'] = $title;
 
         $data['content_view'] = 'smanage/taskedit_view';
         $data['breadcrumbs'] = array(
@@ -47,7 +57,7 @@ class Taskscheduler extends MY_Controller
             array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>'#','name'=>lang('rr_administration'),'type'=>'unavailable'),
             array('url'=>base_url('smanage/taskscheduler/tasklist'),'name'=>lang('tasks_menulink')),
-            array('url'=>'#','name'=>lang('task_edit'),'type'=>'current')
+            array('url'=>'#','name'=>$title,'type'=>'current')
         );
         $this->load->view('page',$data);
 
@@ -67,11 +77,12 @@ class Taskscheduler extends MY_Controller
         }
 
         $featureEnabled = $this->config->item('featenable');
-        if (!isset($featureEnabled['tasksmngmt']) || $featureEnabled['tasksmngmt'] !== TRUE) {
+        if (!isset($featureEnabled['tasks']) || $featureEnabled['tasks'] !== TRUE) {
             show_error('Feature is not enabled', 403);
             return;
         }
 
+	    $this->load->library('table');
         $this->title='Tasks Scheduler';
         $data['titlepage'] = $this->title;
 
