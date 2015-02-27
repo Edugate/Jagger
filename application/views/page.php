@@ -70,6 +70,7 @@ $foundation = $base_url . 'foundation/';
 <header>
 	<?php
 	$iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
+    $isBreadcrumbs = $this->rrpreference->getPreferences('breadcrumbs');
 	if (isset($iscookieconsent['status']) && (boolean)$iscookieconsent['status'] === TRUE && isset($iscookieconsent['value'])) {
 		$this->load->helper('cookie');
 		$cookieaccepted = get_cookie('cookieAccept');
@@ -125,7 +126,7 @@ $foundation = $base_url . 'foundation/';
 </header>
 <?php
 
-if (!empty($breadcrumbs)) {
+if (!empty($breadcrumbs) && !empty($isBreadcrumbs['status'])) {
 	echo '<div class="row fullWidth">';
 	echo '<ul class="breadcrumbs">';
 	foreach ($breadcrumbs as $b) {
