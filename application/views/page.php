@@ -131,6 +131,11 @@ if (!empty($breadcrumbs) && !empty($isBreadcrumbs['status'])) {
 	echo '<ul class="breadcrumbs">';
 	foreach ($breadcrumbs as $b) {
         $rawAttrs ='';
+		$aClass ='';
+		if(isset($b['class']))
+		{
+			$aClass = $b['class'];
+		}
         if(isset($b['type']))
         {
             if($b['type'] === 'current')
@@ -144,7 +149,7 @@ if (!empty($breadcrumbs) && !empty($isBreadcrumbs['status'])) {
 
         }
 
-		echo '<li '.$rawAttrs.'><a href="' . $b['url'] . '" class="' . $b['class'] . '">' . $b['name'] . '</a></li>';
+		echo '<li '.$rawAttrs.'><a href="' . $b['url'] . '" class="' . $aClass . '">' . $b['name'] . '</a></li>';
 	}
 	echo '</ul>';
 	echo '</div>';
