@@ -249,6 +249,12 @@ class Access_manage extends MY_Controller {
         $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $ent->getId() . '">' . $data['resourcename'] . '</a>';
         $data['subtitlepage'] = lang('rr_accessmngmt');
         $data['content_view'] = 'manage/access_manage_view';
+	    $data['breadcrumbs'] = array(
+		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+		    array('url'=>base_url(),'name'=>lang('dashboard')),
+		    array('url'=>base_url('providers/detail/show/'.$ent->getId().''),'name'=>''.html_escape($data['resourcename']).''),
+		    array('url'=>'#','name'=>lang('rr_accessmngmt'),'type'=>'current'),
+	    );
         $this->load->view('page', $data);
     }
 

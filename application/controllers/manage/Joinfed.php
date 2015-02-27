@@ -38,8 +38,8 @@ class Joinfed extends MY_Controller
     private function submit_validate()
     {
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('fedid', 'Federation', 'trim|required|numeric');
-        $this->form_validation->set_rules('formmessage', 'Message', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('fedid', 'Federation', 'trim|numeric');
+        $this->form_validation->set_rules('formmessage', 'Message', 'strip_tags|trim|required');
         return $this->form_validation->run();
 
     }
@@ -79,6 +79,12 @@ class Joinfed extends MY_Controller
 
         $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $ent->getId() . '">' . $data['name'] . '</a>';
         $data['subtitlepage'] = lang('fedejoinform');
+	    $data['breadcrumbs'] = array(
+		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+		    array('url'=>base_url(),'name'=>lang('dashboard')),
+		    array('url'=>base_url('providers/detail/show/'.$ent->getId().''),'name'=>''.html_escape($data['name']).''),
+		    array('url'=>'#','name'=>lang('fedejoinform'),'type'=>'current'),
+	    );
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
         $federations = $ent->getFederations();
 
