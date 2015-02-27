@@ -129,7 +129,21 @@ if (!empty($breadcrumbs)) {
 	echo '<div class="row fullWidth">';
 	echo '<ul class="breadcrumbs">';
 	foreach ($breadcrumbs as $b) {
-		echo '<li><a href="' . $b['url'] . '" class="' . $b['class'] . '">' . $b['name'] . '</a></li>';
+        $rawAttrs ='';
+        if(isset($b['type']))
+        {
+            if($b['type'] === 'current')
+            {
+                $rawAttrs='class="current"';
+            }
+            elseif($b['type'] === 'unavailable')
+            {
+                $rawAttrs='class="unavailable" aria-disabled="true"';
+            }
+
+        }
+
+		echo '<li '.$rawAttrs.'><a href="' . $b['url'] . '" class="' . $b['class'] . '">' . $b['name'] . '</a></li>';
 	}
 	echo '</ul>';
 	echo '</div>';

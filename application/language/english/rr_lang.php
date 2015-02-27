@@ -67,6 +67,7 @@ $lang['coc_menulink']               = 'Data protection CoC';
 $lang['entcats_menulink']           = 'Entity Categories';
 $lang['regpols_menulink']           = 'Registration Policies';
 $lang['tasks_menulink']             = 'Task Scheduler';
+$lang['task_edit']                  = 'Task edit';
 $lang['entcat']                     = 'Entity Category';
 $lang['sys_menulink']               = 'System';
 $lang['addons_menulink']            = 'Addons';

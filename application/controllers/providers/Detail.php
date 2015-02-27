@@ -284,6 +284,11 @@ class Detail extends MY_Controller {
         $data['titlepage'] = $data['presubtitle'] . ': ' . $data['name'];
         $this->title = &$data['titlepage'];
         $data['content_view'] = 'providers/detail_view.php';
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+
+        );
         $this->load->view('page', $data);
     }
 

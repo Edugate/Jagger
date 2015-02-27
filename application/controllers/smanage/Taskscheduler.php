@@ -15,6 +15,44 @@ class Taskscheduler extends MY_Controller
 
     }
 
+    public function taskedit($id)
+    {
+        if(!ctype_digit($id))
+        {
+            show_error('Incorrect param provided', 403);
+            return;
+        }
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin) {
+            redirect('auth/login', 'location');
+            return;
+        }
+
+        if (!$this->j_auth->isAdministrator()) {
+            show_error('no permission', 403);
+            return;
+        }
+
+        $featureEnabled = $this->config->item('featenable');
+        if (!isset($featureEnabled['tasksmngmt']) || $featureEnabled['tasksmngmt'] !== TRUE) {
+            show_error('Feature is not enabled', 403);
+            return;
+        }
+        $this->title='Task Scheduler edit';
+        $data['titlepage'] = $this->title;
+
+        $data['content_view'] = 'smanage/taskedit_view';
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>'#','name'=>lang('rr_administration'),'type'=>'unavailable'),
+            array('url'=>base_url('smanage/taskscheduler/tasklist'),'name'=>lang('tasks_menulink')),
+            array('url'=>'#','name'=>lang('task_edit'),'type'=>'current')
+        );
+        $this->load->view('page',$data);
+
+    }
+
     public function tasklist()
     {
         $loggedin = $this->j_auth->logged_in();
@@ -87,7 +125,7 @@ class Taskscheduler extends MY_Controller
                 $lastRunHtml,
                 $nextrun,
                 $isEnabledHtml,
-                '<i class="fi-pencil"></i>',
+                '<a href="'.base_url('smanage/taskscheduler/taskedit/'.$t->getId().'').'"<i class="fi-pencil"></i></a>',
 
             );
 

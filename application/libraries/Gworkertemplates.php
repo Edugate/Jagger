@@ -35,6 +35,8 @@ class Gworkertemplates
     }
 
 
+
+
     private function resolveProvider(\models\Provider $provider)
     {
         $digest1 = $provider->getDigest();
