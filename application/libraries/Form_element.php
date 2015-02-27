@@ -2945,43 +2945,6 @@ class Form_element {
         return $result;
     }
 
-    /**
-     * return form elements:
-     * select box if you want to use static metadata
-     * textarea for metadata
-     */
-
-    /**
-     * @todo add to main function generating form
-     */
-    private function staticMetadata(models\Provider $provider)
-    {
-        $is_static = $provider->getStatic();
-        $static_mid = $provider->getStaticMetadata();
-        $static_metadata = '';
-        if ($static_mid)
-        {
-            $static_metadata = $static_mid->getMetadataToDecoded();
-        }
-
-        $tform = '<fieldset><legend class="accordionButton">' . lang('rr_staticmetadata') . '</legend><ol class="accordionContent"><li>';
-        $tform .= form_label(lang('rr_usestaticmetadata'), 'usestatic');
-        $tform .= form_checkbox(array(
-            'name' => 'usestatic',
-            'id' => 'usestatic',
-            'value' => 'accept',
-            'checked' => set_value('usestatic', $is_static)
-        ));
-        $tform .='</li><li>';
-        $tform .= form_label(lang('rr_staticmetadataxml'), 'staticmetadatabody');
-        $tform .= form_textarea(array(
-            'name' => 'staticmetadatabody',
-            'id' => 'staticmetadatabody',
-            'value' => set_value('staticmetadatabody', $static_metadata,FALSE)
-        ));
-        $tform .='</li></ol>' . form_fieldset_close();
-        return $tform;
-    }
 
     public function generateFederationEditForm(models\Federation $federation)
     {
