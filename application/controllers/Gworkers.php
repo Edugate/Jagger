@@ -151,6 +151,7 @@ class Gworkers extends MY_Controller
                     log_message('info', 'JCRON:: ' . $j . ' is on jobserver but it is waiting for worker');
                 }
             }
+            $this->em->clear();
             sleep(15);
         }
     }
