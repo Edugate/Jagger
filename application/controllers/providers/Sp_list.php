@@ -62,6 +62,7 @@ class Sp_list extends MY_Controller
         $data['breadcrumbs'] = array(
             array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
             array('url' => base_url(), 'name' => lang('dashboard')),
+            array('url' => '#', 'name' => lang('rr_tbltitle_listsps'),'type'=>'current'),
 
         );
 

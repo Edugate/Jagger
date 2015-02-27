@@ -130,7 +130,13 @@ class Taskscheduler extends MY_Controller
             );
 
         }
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>'#','name'=>lang('rr_administration'),'type'=>'unavailable'),
+            array('url'=>base_url('smanage/taskscheduler/tasklist'),'name'=>lang('tasks_menulink'),'type'=>'current'),
 
+        );
         $data['rows'] = &$rows;
         $data['content_view'] = 'smanage/tasklist_view';
         $this->load->view('page', $data);

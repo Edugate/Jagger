@@ -51,6 +51,13 @@ class Dashboard extends MY_Controller {
         $acc = $this->zacl->check_acl('dashboard', 'read', 'default', '');
         $data['inqueue'] = $this->inqueue;
 
+         $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard'),'type'=>'current'),
+
+
+        );
+
         if (empty($acc))
         {
             $this->title = lang('title_accessdenied');

@@ -640,12 +640,15 @@ class Entityedit extends MY_Controller
         $data['menutabs'] = $menutabs;
         $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['entdetail']['id'] . '">' . $data['entdetail']['displayname'] . '</a>';
         $data['content_view'] = 'manage/entityedit_view.php';
-        $data['rawJs'][] = "
 
+        $data['rawJs'][] = "";
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>base_url('providers/detail/show/'.$data['entdetail']['id'].''),'name'=>''.$data['entdetail']['displayname'].''),
+            array('url'=>'#','name'=>lang('rr_edit'),'type'=>'current'),
 
-
-
-";
+        );
         $this->load->view('page', $data);
     }
 
