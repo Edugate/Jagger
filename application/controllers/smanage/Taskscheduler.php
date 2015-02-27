@@ -51,6 +51,15 @@ class Taskscheduler extends MY_Controller
 
 
             $isEnabled = $t->getEnabled();
+            $isTemplate = $t->getTemplate();
+            if($isTemplate)
+            {
+                $isTemplateHtml = '<span class="label">template</span>';
+            }
+            else
+            {
+                $isTemplateHtml = '';
+            }
             if ($isEnabled) {
                 $isEnabledHtml = '<span class="label">'.lang('rr_enabled').'</span>';
             } else {
@@ -72,7 +81,7 @@ class Taskscheduler extends MY_Controller
 
                 html_escape($t->getCronToStr()),
                 html_escape($t->getJcomment()),
-                html_escape($t->getJcommand()),
+                html_escape($t->getJcommand()).' '.$isTemplateHtml,
                 $paramsToHtml,
                 $isDue,
                 $lastRunHtml,

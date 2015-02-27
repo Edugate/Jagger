@@ -100,6 +100,12 @@ class Jcrontab
 
 
     /**
+     * @Column(type="boolean", nullable=false)
+     */
+    protected $istemplate;
+
+
+    /**
      * @Column(type="datetime", nullable=true)
      */
     protected $lastrun;
@@ -125,6 +131,11 @@ class Jcrontab
     public function getEnabled()
     {
         return $this->isenabled;
+    }
+
+    public function getTemplate()
+    {
+        return $this->istemplate;
     }
 
     public function getMinutes()
@@ -316,6 +327,12 @@ class Jcrontab
     public function setEnabled($b)
     {
         $this->isenabled = $b;
+        return $this;
+    }
+
+    public function setTemplate($b)
+    {
+        $this->istemplate = $b;
         return $this;
     }
 
