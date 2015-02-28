@@ -32,18 +32,9 @@ class Zacl {
         // Get the instance
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
-
-        // Set the include path and require the needed files
-        //set_include_path(get_include_path() . PATH_SEPARATOR . FCPATH . "application/libraries");
-        //require_once(APPPATH . '/libraries/Zend/Acl.php');
      
         $this->acl = new Zend\Permissions\Acl\Acl();
 	    $this->acl->addRole(new Zend\Permissions\Acl\Role\GenericRole('default_role'));
-        //$this->acl->addRole(new Zend_Acl_Role('default_role'));
-
-       
-
-
         $defined_roles = $this->em->getRepository("models\AclRole")->findAll();
 
 
