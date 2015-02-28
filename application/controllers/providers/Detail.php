@@ -2,6 +2,8 @@
 
 if (!defined('BASEPATH'))
 	exit('Ni direct script access allowed');
+
+
 /**
  * ResourceRegistry3
  *
@@ -191,7 +193,6 @@ class Detail extends MY_Controller
 
 	function show($id)
 	{
-
 		if (empty($id) || !ctype_digit($id)) {
 			show_error(lang('error404'), 404);
 			return;
