@@ -363,6 +363,8 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
+$config['standardize_newlines'] = TRUE;
+$config['composer_autoload'] = TRUE;
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */
