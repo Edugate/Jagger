@@ -5,7 +5,7 @@ LIBRARYPATH="application/libraries"
 command -v ${MKTEMPTOOL} >/dev/null 2>&1 || { echo >&2 "${MKTEMPTOOL}  is required but it's not installed.  Some distributions have tempfile. If so pls edit this file and change line containing MKTEMPTOOL def. Aborting."; exit 1; }
 command -v tar >/dev/null 2>&1 || { echo >&2 "tar is required but it's not installed.  Aborting."; exit 1; }
 command -v wget >/dev/null 2>&1 || { echo >&2 "wget is required but it's not installed.  Aborting."; exit 1; }
-WELCOMEMSG="Script will create additional folders and downloads additional software. After script is finished please run composer (https://getcomposer.org/) on composer.json - it will install Doctrine 2.4.x"
+WELCOMEMSG="Script will create additional folders and downloads additional software. After script is finished please run composer (https://getcomposer.org/) on composer.json - it will install Doctrine 2.4.x and Zend-ACL"
 echo -e ${WELCOMEMSG}
 install(){
    TMPDIR=`${MKTEMPTOOL} -d`
@@ -17,19 +17,6 @@ install(){
      echo "done"
    fi
  
-
-   ZENDACL="Zend"
-   if [ ! -d "${LIBRARYPATH}/${ZENDACL}" ]
-   then
-     wget http://packages.zendframework.com/releases/ZendFramework-1.12.0/ZendFramework-1.12.0.tar.gz -O ${TMPDIR}/ZendFramework-1.12.0.tar.gz
-     tar zxf ${TMPDIR}/ZendFramework-1.12.0.tar.gz  -C ${TMPDIR}/
-     SRCZENDLIB="${TMPDIR}/ZendFramework-1.12.0/library/Zend"
-     mkdir ${LIBRARYPATH}/${ZENDACL}
-     cp -r ${SRCZENDLIB}/Acl.php ${SRCZENDLIB}/Exception.php ${SRCZENDLIB}/Acl  ${LIBRARYPATH}/${ZENDACL}/
-   else
-     echo -e "${LIBRARYPATH}/${ZENDACL} already exists"
-   fi
-
    GESHI="geshi"
    if [ ! -d "${LIBRARYPATH}/${GESHI}" ]
    then

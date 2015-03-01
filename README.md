@@ -4,7 +4,7 @@ Jagger
 
 Jagger (http://jagger.heanet.ie) is developed by HEAnet to manage the Edugate multiparty SAML federation. Other organisations use Jagger to manage their federations but it can be used to manage the web-of-trust for a single entity. It can also be used a a GUI for the Shibboleth SAML Identity Provider (www.shibboleth.net)
 
-Features ;
+Features: 
 1. Synchronise SAML metadata from another federation.
 2. Create and manage a federation
 3. Create a single circle of trust containing metadata of all entities that your organisation particpates via multiple federations.
