@@ -15,6 +15,7 @@ application/config/database.php
 application/config/email.php
 application/config/memcached.php
 application/controllers/c/*.php
+application/vendor/*
 logos/*
 vendor/*
 !index.html

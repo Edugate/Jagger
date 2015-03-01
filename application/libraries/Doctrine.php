@@ -2,20 +2,6 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-
-if(file_exists(APPPATH."../vendor/autoload.php"))
-{
-   require_once APPPATH."../vendor/autoload.php";
-   define('NOTVENDOR',FALSE);
-}
-else
-{
-
-   define('NOTVENDOR',TRUE);
-
-}
-
-
 use Doctrine\ORM\EntityManager,
     Doctrine\ORM\Configuration;
 
@@ -45,16 +31,6 @@ class Doctrine {
     public function __construct() {
         // load database configuration and custom config from CodeIgniter
         require APPPATH . 'config/database.php';
-
-        if(NOTVENDOR)
-        {
-        // Set up class loading.
-           require_once APPPATH . 'libraries/Doctrine/Common/ClassLoader.php';
-           $doctrineClassLoader = new \Doctrine\Common\ClassLoader('Doctrine', APPPATH . 'libraries');
-           $doctrineClassLoader->register();
-           $symfonyClassLoader = new \Doctrine\Common\ClassLoader('Symfony', APPPATH . 'libraries/Doctrine');
-           $symfonyClassLoader->register();
-        }
 
         $entitiesClassLoader = new \Doctrine\Common\ClassLoader('models', rtrim(APPPATH, '/'));
         $entitiesClassLoader->register();
