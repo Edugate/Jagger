@@ -5,7 +5,7 @@ define('ENVIRONMENT', 'development');
 define('ATTR_DEFAULT_TABLE_COLLATE', 'utf8_general_ci');
 define('ATTR_DEFAULT_TABLE_CHARSET', 'utf8');
 chdir(APPPATH);
-
+require_once(APPPATH.'vendor/autoload.php');
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 
 $configFile = getcwd() . '/libraries/Doctrine.php';
