@@ -291,7 +291,7 @@ class Arp_generator {
 
         $members = $tmp_providers->getSPsForArp($idp);
         $feds_collection = array();
-        if ($members->count() == 0)
+        if (count($members) == 0)
         {
             return null;
         }

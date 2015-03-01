@@ -93,6 +93,16 @@ class Entitystate extends MY_Controller {
         $data['subtitlepage'] = lang('title_regpols');
         $data['providerid'] = $this->entity->getId();
         $has_write_access = $this->zacl->check_acl($this->entity->getId(), 'write', 'entity', '');
+
+	    $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>base_url('providers/detail/show/'.$this->entity->getId().''),'name'=>''.html_escape($titlename).''),
+            array('url'=>'#','name'=>lang('title_regpols'),'type'=>'current'),
+
+
+	    );
+
         if (!$has_write_access)
         {
             show_error('No sufficient permision to edit entity', 403);
@@ -203,6 +213,14 @@ class Entitystate extends MY_Controller {
         $data['current_active'] = $this->entity->getActive();
         $data['current_extint'] = $this->entity->getLocal();
         $data['current_publicvisible'] = (int) $this->entity->getPublicVisible();
+	    $data['breadcrumbs'] = array(
+		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+		    array('url'=>base_url(),'name'=>lang('dashboard')),
+		    array('url'=>base_url('providers/detail/show/'.$this->entity->getId().''),'name'=>''.html_escape($titlename).''),
+		    array('url'=>'#','name'=>lang('rr_status_mngmt'),'type'=>'current'),
+
+
+	    );
         $validfrom = $this->entity->getValidFrom();
         if (!empty($validfrom))
         {

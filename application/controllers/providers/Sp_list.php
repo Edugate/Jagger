@@ -4,29 +4,29 @@ if (!defined('BASEPATH'))
 
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Sp_list Class
- * 
+ *
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Sp_list extends MY_Controller {
+class Sp_list extends MY_Controller
+{
 
     function __construct()
     {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
@@ -49,8 +49,7 @@ class Sp_list extends MY_Controller {
         $action = 'read';
         $group = 'default';
         $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
-        if (!$has_read_access)
-        {
+        if (!$has_read_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rerror_nopermtolistidps');
             $this->load->view('page', $data);
@@ -60,30 +59,35 @@ class Sp_list extends MY_Controller {
         $data['entitytype'] = 'sp';
         $data['titlepage'] = lang('rr_tbltitle_listsps');
         $data['subtitlepage'] = ' ';
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
+            array('url' => base_url(), 'name' => lang('dashboard')),
+            array('url' => '#', 'name' => lang('rr_tbltitle_listsps'),'type'=>'current'),
+
+        );
 
         $data['content_view'] = 'providers/providers_list_view';
-        $this->load->view('page',$data);
+        $this->load->view('page', $data);
 
     }
-   
+
     // depreacted to be removed
-    private function show($limit=null)
+    private function show($limit = null)
     {
         MY_Controller::$menuactive = 'sps';
         $this->title = lang('title_splist');
         $this->load->helper('iconhelp');
-        $lockicon = '<span class="lbl lbl-locked">'.lang('rr_locked').'</span>';
-        $disabledicon = '<span class="lbl lbl-disabled">'.lang('rr_disabled').'</span>';
-        $expiredicon = '<span class="lbl lbl-disabled">'.lang('rr_expired').'</span>';
-        $staticon = '<span class="lbl lbl-static">'.lang('rr_static').'</span>';
-        $exticon = '<span class="lbl lbl-external">'.lang('rr_external').'</span>';
-        $hiddenicon = '<span class="lbl lbl-disabled">'.lang('lbl_publichidden').'</span>';
+        $lockicon = '<span class="lbl lbl-locked">' . lang('rr_locked') . '</span>';
+        $disabledicon = '<span class="lbl lbl-disabled">' . lang('rr_disabled') . '</span>';
+        $expiredicon = '<span class="lbl lbl-disabled">' . lang('rr_expired') . '</span>';
+        $staticon = '<span class="lbl lbl-static">' . lang('rr_static') . '</span>';
+        $exticon = '<span class="lbl lbl-external">' . lang('rr_external') . '</span>';
+        $hiddenicon = '<span class="lbl lbl-disabled">' . lang('lbl_publichidden') . '</span>';
         $resource = 'sp_list';
         $action = 'read';
         $group = 'default';
         $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
-        if (!$has_read_access)
-        {
+        if (!$has_read_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rerror_nopermtolistisps');
             $this->load->view('page', $data);
@@ -91,79 +95,62 @@ class Sp_list extends MY_Controller {
         }
         $sprows = array();
         $tmp_providers = new models\Providers;
-        if(empty($limit))
-        {
+        if (empty($limit)) {
             $data['typesps'] = 'local';
             $t = lang('rr_tbltitle_listlocalsps');
             $sps = $tmp_providers->getSpsLightLocal();
-        }
-        elseif($limit === 'ext')
-        {
-           $t = lang('rr_tbltitle_listextsps');
-           $data['typesps'] = 'external';
-           $sps = $tmp_providers->getSpsLightExternal();
-        }
-        else
-        {
-            $t =  lang('rr_tbltitle_listsps');
+        } elseif ($limit === 'ext') {
+            $t = lang('rr_tbltitle_listextsps');
+            $data['typesps'] = 'external';
+            $sps = $tmp_providers->getSpsLightExternal();
+        } else {
+            $t = lang('rr_tbltitle_listsps');
             $data['typesps'] = 'all';
             $sps = $tmp_providers->getSpsLight();
         }
 
-      
+
         $data['sps_count'] = count($sps);
-        $data['titlepage'] = $t. ' (' . lang('rr_found') . ' ' . $data['sps_count'] . ')';
+        $data['titlepage'] = $t . ' (' . lang('rr_found') . ' ' . $data['sps_count'] . ')';
         $linktitle_disexp = lang('rr_disexp_link_title');
         $lang = MY_Controller::getLang();
-        foreach ($sps as $i)
-        {
+        foreach ($sps as $i) {
             $iconsblock = '';
-            
-            if($i->getLocked())
-            {
-               $iconsblock .= $lockicon .' '; 
+
+            if ($i->getLocked()) {
+                $iconsblock .= $lockicon . ' ';
             }
-            if(!($i->getActive()))
-            {
-               $iconsblock .= $disabledicon .' ';
+            if (!($i->getActive())) {
+                $iconsblock .= $disabledicon . ' ';
             }
-            if(!($i->isValidFromTo()))
-            {
-               $iconsblock .= $expiredicon .' ';
+            if (!($i->isValidFromTo())) {
+                $iconsblock .= $expiredicon . ' ';
             }
-            if(!($i->getLocal()))
-            {
-              $iconsblock .= $exticon .' ';
+            if (!($i->getLocal())) {
+                $iconsblock .= $exticon . ' ';
             }
-            if($i->getStatic())
-            {
-               $iconsblock .= $staticon .' ';
+            if ($i->getStatic()) {
+                $iconsblock .= $staticon . ' ';
             }
-            if(!$i->getPublicVisible())
-            {
-               $iconsblock .= $hiddenicon .' ';
+            if (!$i->getPublicVisible()) {
+                $iconsblock .= $hiddenicon . ' ';
             }
             $regdate = $i->getRegistrationDate();
-            if (isset($regdate))
-            {
-                $regcol = date('Y-m-d',$regdate->format('U')+j_auth::$timeOffset);
-            } else
-            {
+            if (isset($regdate)) {
+                $regcol = date('Y-m-d', $regdate->format('U') + j_auth::$timeOffset);
+            } else {
                 $regcol = '';
             }
             $i_link = base_url() . "providers/detail/show/" . $i->getId();
             $is_available = $i->getAvailable();
-            $displayname = $i->getNameToWebInLang($lang,'sp');
-            if(empty($displayname))
-            {
+            $displayname = $i->getNameToWebInLang($lang, 'sp');
+            if (empty($displayname)) {
                 $displayname = $i->getEntityId();
             }
-            if ($is_available)
-            {
-                $sprows[] = array(anchor($i_link, $displayname . '', 'title="' . $displayname . '"') . '<div class="additions s2">' . $i->getEntityId() . '</div>',$iconsblock,$regcol, '<div class="squiz s2"><a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' .$i->getHelpdeskUrl().'</a></div>');
-            } else
-            {
-                $sprows[] = array('<span class="alert" title="'.$linktitle_disexp.'">' . anchor($i_link, $displayname , 'title="' . $displayname . '"') . '</span><div class="additions s2">' . $i->getEntityId() . '</div>',$iconsblock,$regcol, '<div class="squiz s2"><a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">'.$i->getHelpdeskUrl().'</a></div>');
+            if ($is_available) {
+                $sprows[] = array(anchor($i_link, $displayname . '', 'title="' . $displayname . '"') . '<div class="additions s2">' . $i->getEntityId() . '</div>', $iconsblock, $regcol, '<div class="squiz s2"><a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . $i->getHelpdeskUrl() . '</a></div>');
+            } else {
+                $sprows[] = array('<span class="alert" title="' . $linktitle_disexp . '">' . anchor($i_link, $displayname, 'title="' . $displayname . '"') . '</span><div class="additions s2">' . $i->getEntityId() . '</div>', $iconsblock, $regcol, '<div class="squiz s2"><a href="' . $i->getHelpdeskUrl() . '" title="' . $i->getHelpdeskUrl() . '">' . $i->getHelpdeskUrl() . '</a></div>');
             }
         }
         $data['sprows'] = $sprows;

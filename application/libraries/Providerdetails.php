@@ -1590,7 +1590,7 @@ class Providerdetails {
         {
             $d[++$i]['name'] = lang('rr_managestatus');
             $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <span class="alert"><i class="fi-prohibited"></i></span><div class="alert">' . lang('rerror_managepermneeded') . '</div>';
-            $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<i class="fi-prohibited"></i>div class="alert">' . lang('rerror_managepermneeded') . '</div> </div>';
+            $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<i class="fi-prohibited"></i><div class="alert">' . lang('rerror_managepermneeded') . '</div> </div>';
         }
         else
         {

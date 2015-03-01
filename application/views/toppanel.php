@@ -118,7 +118,6 @@
                   $regactive = 'active';
                }
 
-
                $divider = '<li class="divider"></li>';
             ?>
             <ul class="left">
@@ -157,7 +156,11 @@
                             {
                                 echo '<li><a href="' . $base_url . 'smanage/reports">' . lang('sys_menulink') . '</a></li>';
                                 echo '<li><a href="' . $base_url . 'smanage/sysprefs/show">' . lang('globalconf_menulink') . '</a></li>';
-
+                                $featenabled = $this->config->item('featenable');
+                                if($featenabled && isset($featenabled['tasks']) &&  $featenabled['tasks'] === TRUE)
+                                {
+                                    echo '<li><a href="' . $base_url . 'smanage/taskscheduler/tasklist">'.lang('tasks_menulink').'</a></li>';
+                                }
                             }
                             ?>
                             <li><a href="<?php echo $base_url; ?>tools/addontools/show"><?php echo lang('addons_menulink'); ?></a></li>
@@ -183,7 +186,6 @@
                                 <?php
                                 echo '<li><a href="' . $base_url . 'manage/spage/showall">' . lang('rr_articlesmngmt') . '</a></li>';
                                 echo '<li><a href="' . $base_url . 'manage/mailtemplates/showlist">' . lang('rr_mailtemplmngmt') . '</a></li>';
-                                
                             }
                             ?>
 
@@ -191,7 +193,6 @@
 
                     </li>
                     <li class="divider"></li>
-
                     <?php
                 }
                 ?>

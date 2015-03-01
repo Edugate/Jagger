@@ -70,6 +70,7 @@ $foundation = $base_url . 'foundation/';
 <header>
 	<?php
 	$iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
+    $isBreadcrumbs = $this->rrpreference->getPreferences('breadcrumbs');
 	if (isset($iscookieconsent['status']) && (boolean)$iscookieconsent['status'] === TRUE && isset($iscookieconsent['value'])) {
 		$this->load->helper('cookie');
 		$cookieaccepted = get_cookie('cookieAccept');
@@ -125,11 +126,30 @@ $foundation = $base_url . 'foundation/';
 </header>
 <?php
 
-if (!empty($breadcrumbs)) {
+if (!empty($breadcrumbs) && !empty($isBreadcrumbs['status'])) {
 	echo '<div class="row fullWidth">';
 	echo '<ul class="breadcrumbs">';
 	foreach ($breadcrumbs as $b) {
-		echo '<li><a href="' . $b['url'] . '" class="' . $b['class'] . '">' . $b['name'] . '</a></li>';
+        $rawAttrs ='';
+		$aClass ='';
+		if(isset($b['class']))
+		{
+			$aClass = $b['class'];
+		}
+        if(isset($b['type']))
+        {
+            if($b['type'] === 'current')
+            {
+                $rawAttrs='class="current"';
+            }
+            elseif($b['type'] === 'unavailable')
+            {
+                $rawAttrs='class="unavailable" aria-disabled="true"';
+            }
+
+        }
+
+		echo '<li '.$rawAttrs.'><a href="' . $b['url'] . '" class="' . $aClass . '">' . $b['name'] . '</a></li>';
 	}
 	echo '</ul>';
 	echo '</div>';
@@ -161,16 +181,9 @@ if (!empty($breadcrumbs)) {
 		</header>
 	</div>
 	<article role="main" class="clearfix">
-		<?php
-		$height100 = '';
-		if (!empty($loadGoogleMap)) {
+		<div>
 
-			$height100 = ' style="min-height: 300px;height: 100%" ';
-		}
-		?>
-		<div   <?php echo $height100 ?>>
-
-			<div id="wrapper"   <?php echo $height100 ?> >
+			<div id="wrapper">
 				<?php
 				$this->load->view($content_view);
 				?>
@@ -196,7 +209,7 @@ if (!empty($breadcrumbs)) {
 	<div id="inpre_footer"></div>
 </div>
 
-<div id="footer">
+<div id="footer" >
 
 	<footer class="row">
 		<div class="large-12 columns text-center">
@@ -258,7 +271,7 @@ if (!empty($breadcrumbs)) {
 <?php
 // list js files to load 
 $jsToLoad1 = array(
-	'jquery-2.1.3.min.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.uitablefilter.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
+	'jquery-2.1.3.min.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
 	'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js', 'fastclick.js',
 	'foundation.min.js', 'jquery.simplemodal.js','Chart.min.js');
 foreach ($jsToLoad1 as $jsFile) {

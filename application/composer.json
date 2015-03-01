@@ -4,6 +4,7 @@
     "license": "MIT",
     "require": {
         "doctrine/orm": "2.4.4",
-        "zendframework/zend-permissions-acl": "2.0.*"
+        "zendframework/zend-permissions-acl": "2.0.*",
+        "mtdowling/cron-expression": "1.0.4"
     }
 }
