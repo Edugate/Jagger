@@ -100,7 +100,7 @@ class Metadata extends MY_Controller
         $now = new \DateTime('now', new \DateTimeZone('UTC'));
         // EntitiesDescriptor
         $xmlOut->startComment();
-        $xmlOut->text('nMetadata was generated on: ' . $now->format('Y-m-d H:i') . ' UTC' . PHP_EOL . 'TERMS OF USE' . PHP_EOL . $federation->getTou() . PHP_EOL);
+        $xmlOut->text('Metadata was generated on: ' . $now->format('Y-m-d H:i') . ' UTC' . PHP_EOL . 'TERMS OF USE' . PHP_EOL . $federation->getTou() . PHP_EOL);
         $xmlOut->endComment();
         $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
         $xmlOut->writeAttribute('ID', '' . $idprefix . $idsuffix . '');
