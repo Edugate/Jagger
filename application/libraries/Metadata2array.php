@@ -89,7 +89,6 @@ class Metadata2array
         }
         foreach ($this->regpollist as $k => $v)
         {
-            $reducedList = array_unique($v);
             foreach ($reducedList as $c)
             {
                 $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $c, 'type' => 'regpol', 'lang' => $k));
@@ -122,7 +121,7 @@ class Metadata2array
             foreach ($lxpath->query('namespace::*', $doc) as $pnode)
             {
                 $prefix = $pnode->prefix;
-                $val = $pnode->nodeValue;
+                $val = trim($pnode->nodeValue);
                 if (!empty($prefix) && (strcmp($prefix, 'xml') != 0))
                 {
                     $this->newNameSpaces['' . $prefix . ''] = $val;
@@ -241,7 +240,7 @@ class Metadata2array
                                     if ($ch->nodeName == 'mdrpi:RegistrationPolicy')
                                     {
                                         $chlang = strtolower($ch->getAttribute('xml:lang'));
-                                        $chvalue = $ch->nodeValue;
+                                        $chvalue = trim($ch->nodeValue);
                                         if (!empty($chlang) && !empty($chvalue))
                                         {
                                             $entity['regpol'][] = array('lang' => $chlang, 'url' => $chvalue);
@@ -259,8 +258,8 @@ class Metadata2array
                                 {
                                     foreach ($enode2->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue') as $enode3)
                                     {
-                                        $entity['coc']['' . $enode2->getAttribute('Name') . ''][] = $enode3->nodeValue;
-                                        $this->coclist['' . $enode2->getAttribute('Name') . ''][] = $enode3->nodeValue;
+                                        $entity['coc']['' . $enode2->getAttribute('Name') . ''][] = trim($enode3->nodeValue);
+                                        $this->coclist['' . $enode2->getAttribute('Name') . ''][] = trim($enode3->nodeValue);
                                     }
                                 }
                             }
@@ -507,7 +506,7 @@ class Metadata2array
         {
             if ($enode->nodeName === 'shibmd:Scope' || $enode->nodeName === 'Scope' || $enode->nodeName === 'saml1md:Scope')
             {
-                $result['aascope'][] = $enode->nodeValue;
+                $result['aascope'][] = trim($enode->nodeValue);
             }
         }
         return $result;
@@ -520,7 +519,7 @@ class Metadata2array
         {
             if ($enode->nodeName === 'shibmd:Scope' || $enode->nodeName === 'Scope' || $enode->nodeName === 'saml1md:Scope')
             {
-                $ext['scope'][] = $enode->nodeValue;
+                $ext['scope'][] = trim($enode->nodeValue);
             }
             elseif ($enode->nodeName === 'idpdisc:DiscoveryResponse')
             {
@@ -539,23 +538,23 @@ class Metadata2array
                      */
                     if ($gnode->nodeName === 'mdui:Description')
                     {
-                        $ext['desc'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => $gnode->nodeValue);
+                        $ext['desc'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
                     }
                     elseif ($gnode->nodeName === 'mdui:DisplayName')
                     {
-                        $ext['displayname'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => $gnode->nodeValue);
+                        $ext['displayname'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
                     }
                     elseif ($gnode->nodeName === 'mdui:PrivacyStatementURL')
                     {
-                        $ext['privacyurl'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => $gnode->nodeValue);
+                        $ext['privacyurl'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
                     }
                     elseif ($gnode->nodeName === 'mdui:InformationURL')
                     {
-                        $ext['informationurl'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => $gnode->nodeValue);
+                        $ext['informationurl'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
                     }
                     elseif ($gnode->nodeName === 'mdui:Logo')
                     {
-                        $logoval = $gnode->nodeValue;
+                        $logoval = trim($gnode->nodeValue);
                         if (substr($logoval, 0, 4) === "http")
                         {
                             $ext['logo'][] = array('height' => $gnode->getAttribute('height'), 'width' => $gnode->getAttribute('width'), 'xml:lang' => $gnode->getAttribute('xml:lang'), 'val' => $logoval);
@@ -589,11 +588,11 @@ class Metadata2array
                     }
                     elseif ($agnode->nodeName === 'mdui:IPHint')
                     {
-                        $ext['iphint'][] = $agnode->nodeValue;
+                        $ext['iphint'][] = trim($agnode->nodeValue);
                     }
                     elseif($agnode->nodeName === 'mdui:DomainHint')
                     {
-                        $ext['domainhint'][] = $agnode->nodeValue;
+                        $ext['domainhint'][] = trim($agnode->nodeValue);
                     }
                 }
             }
@@ -628,15 +627,15 @@ class Metadata2array
         {
             if ($cnode->nodeName == "SurName" || $cnode->nodeName == "md:SurName")
             {
-                $cnt['surname'] = $cnode->nodeValue;
+                $cnt['surname'] = trim($cnode->nodeValue);
             }
             if ($cnode->nodeName == "GivenName" || $cnode->nodeName == "md:GivenName")
             {
-                $cnt['givenname'] = $cnode->nodeValue;
+                $cnt['givenname'] = trim($cnode->nodeValue);
             }
             if ($cnode->nodeName == "EmailAddress" || $cnode->nodeName == "md:EmailAddress")
             {
-                $cnt['email'] = $cnode->nodeValue;
+                $cnt['email'] = trim($cnode->nodeValue);
             }
         }
         return $cnt;
