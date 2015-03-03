@@ -276,6 +276,32 @@ class Jcrontab
         return $this;
     }
 
+    public function setMinutes($a=null)
+    {
+        $this->jminute = $a;
+        return $this;
+    }
+    public function setHours($a=null)
+    {
+        $this->jhour = $a;
+        return $this;
+    }
+    public function setDayofweek($a=null)
+    {
+        $this->jdayofweek = $a;
+        return $this;
+    }
+    public function setMonths($a=null)
+    {
+        $this->jmonth = $a;
+        return $this;
+    }
+    public function setDayofmonth($a=null)
+    {
+        $this->jdayofmonth = $a;
+        return $this;
+    }
+
     public function setJparams($params)
     {
         $this->jparams = serialize($params);

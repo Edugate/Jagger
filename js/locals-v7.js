@@ -21,60 +21,73 @@
  *     column to limit search too (the column title in the table header)
  *     ifHidden - callback to execute if one or more elements was hidden
  */
-jQuery.uiTableFilter = function(jq, phrase, column, ifHidden){
-  var new_hidden = false;
-  if( this.last_phrase === phrase ) return false;
+jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
+    var new_hidden = false;
+    if (this.last_phrase === phrase) return false;
 
-  var phrase_length = phrase.length;
-  var words = phrase.toLowerCase().split(" ");
+    var phrase_length = phrase.length;
+    var words = phrase.toLowerCase().split(" ");
 
-  // these function pointers may change
-  var matches = function(elem) { elem.show() }
-  var noMatch = function(elem) { elem.hide(); new_hidden = true }
-  var getText = function(elem) { return elem.text() }
-
-  if( column ) {
-    var index = null;
-    jq.find("thead > tr:last > th").each( function(i){
-      if( $(this).text() == column ){
-        index = i; return false;
-      }
-    });
-    if( index == null ) throw("given column: " + column + " not found")
-
-    getText = function(elem){ return jQuery(elem.find(
-      ("td:eq(" + index + ")")  )).text()
+    // these function pointers may change
+    var matches = function (elem) {
+        elem.show()
     }
-  }
+    var noMatch = function (elem) {
+        elem.hide();
+        new_hidden = true
+    }
+    var getText = function (elem) {
+        return elem.text()
+    }
 
-  // if added one letter to last time,
-  // just check newest word and only need to hide
-  if( (words.size > 1) && (phrase.substr(0, phrase_length - 1) ===
-        this.last_phrase) ) {
+    if (column) {
+        var index = null;
+        jq.find("thead > tr:last > th").each(function (i) {
+            if ($(this).text() == column) {
+                index = i;
+                return false;
+            }
+        });
+        if (index == null) throw("given column: " + column + " not found")
 
-    if( phrase[-1] === " " )
-    { this.last_phrase = phrase; return false; }
+        getText = function (elem) {
+            return jQuery(elem.find(
+                ("td:eq(" + index + ")"))).text()
+        }
+    }
 
-    var words = words[-1]; // just search for the newest word
+    // if added one letter to last time,
+    // just check newest word and only need to hide
+    if ((words.size > 1) && (phrase.substr(0, phrase_length - 1) ===
+        this.last_phrase)) {
 
-    // only hide visible rows
-    matches = function(elem) {;}
-    var elems = jq.find("tbody > tr:visible")
-  }
-  else {
-    new_hidden = true;
-    var elems = jq.find("tbody > tr")
-  }
+        if (phrase[-1] === " ") {
+            this.last_phrase = phrase;
+            return false;
+        }
 
-  elems.each(function(){
-    var elem = jQuery(this);
-    jQuery.uiTableFilter.has_words( getText(elem), words, false ) ?
-      matches(elem) : noMatch(elem);
-  });
+        var words = words[-1]; // just search for the newest word
 
-  last_phrase = phrase;
-  if( ifHidden && new_hidden ) ifHidden();
-  return jq;
+        // only hide visible rows
+        matches = function (elem) {
+            ;
+        }
+        var elems = jq.find("tbody > tr:visible")
+    }
+    else {
+        new_hidden = true;
+        var elems = jq.find("tbody > tr")
+    }
+
+    elems.each(function () {
+        var elem = jQuery(this);
+        jQuery.uiTableFilter.has_words(getText(elem), words, false) ?
+            matches(elem) : noMatch(elem);
+    });
+
+    last_phrase = phrase;
+    if (ifHidden && new_hidden) ifHidden();
+    return jq;
 };
 
 // caching for speedup
@@ -83,17 +96,13 @@ jQuery.uiTableFilter.last_phrase = ""
 // not jQuery dependent
 // "" [""] -> Boolean
 // "" [""] Boolean -> Boolean
-jQuery.uiTableFilter.has_words = function( str, words, caseSensitive )
-{
-  var text = caseSensitive ? str : str.toLowerCase();
-  for (var i=0; i < words.length; i++) {
-    if (text.indexOf(words[i]) === -1) return false;
-  }
-  return true;
+jQuery.uiTableFilter.has_words = function (str, words, caseSensitive) {
+    var text = caseSensitive ? str : str.toLowerCase();
+    for (var i = 0; i < words.length; i++) {
+        if (text.indexOf(words[i]) === -1) return false;
+    }
+    return true;
 }
-
-
-
 
 
 //////////////////////////////////
@@ -183,6 +192,17 @@ jQuery.fn.toggleOption = function (show) {
 var createRowWithLangRm = function (langCode, langString, inputName, rmbtn) {
     console.log('createRowWithLangRm fired');
     return $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline tiny left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
+};
+
+var createRowTaskParams = function (label1, label2) {
+    var rname = 'z';
+    var possible = "0123456789";
+    for (var i = 0; i < 5; i++) {
+        rname += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    ;
+    return  $('<div class=\"row\"><div class=\"small-6 column\"><label>' + label1 + '<input name=\"params[' + rname + '][name]\" type=\"text\" value=\"\"/></label></div>' +
+    '<div class=\"small-6 column\"><label>' + label2 + '<input name=\"params[' + rname + '][value]\" type="text"  value=\"\"/></label></div></div>');
 };
 
 
@@ -445,6 +465,13 @@ var GINIT = {
         });
 
 
+        $("#taskformaddparam").on('click', function(e){
+            var currentRow = $(this).closest('div.row');
+            var row = createRowTaskParams('','');
+            row.insertBefore(currentRow);
+            return false;
+
+        });
         $("#password").on('keypress', function (e) {
             var kc = e.keyCode ? e.keyCode : e.which;
             var sk = e.shiftKey ? e.shiftKey : (kc === 16);

@@ -34,14 +34,16 @@ class Taskscheduler extends MY_Controller
 
             }
         }
-        $this->form_validation->set_rules('isenabled', 'Id enab', 'trim');
-        $this->form_validation->set_rules('cron[minute]', 'Minute', 'trim|required');
-        $this->form_validation->set_rules('cron[hour]', 'Hour', 'trim|required');
-        $this->form_validation->set_rules('cron[dom]', 'Day of month', 'trim|required');
-        $this->form_validation->set_rules('cron[month]', 'Month', 'trim|required');
-        $this->form_validation->set_rules('cron[dow]', 'Day of week', 'trim|required');
-        $this->form_validation->set_rules('comment', 'Comment', 'trim|required');
-        $this->form_validation->set_rules('istemplate', 'Template', 'trim');
+        $this->form_validation->set_rules('isenabled', lang('taskenabled'), 'trim');
+        $this->form_validation->set_rules('cron[minute]', lang('cronminute'), 'trim|required|valid_cronminute');
+        $this->form_validation->set_rules('cron[hour]', lang('cronhour'), 'trim|required|valid_cronhour');
+        $this->form_validation->set_rules('cron[dom]', lang('crondom'), 'trim|required|valid_crondom');
+        $this->form_validation->set_rules('cron[month]', lang('cronmonth'), 'trim|required|valid_cronmonth');
+        $this->form_validation->set_rules('cron[dow]', lang('crondow'), 'trim|required|valid_crondow');
+        $this->form_validation->set_rules('comment', lang('rr_description'), 'trim|required|alpha_numeric_spaces');
+        $this->form_validation->set_rules('istemplate', lang('tasktemplate'), 'trim');
+        $this->form_validation->set_rules('fnname','Fn name','trim|required|alpha_dash');
+
         return $this->form_validation->run();
 
     }
@@ -98,6 +100,78 @@ class Taskscheduler extends MY_Controller
         $data['content_view'] = 'smanage/taskedit_view';
         if ($this->submit_validate() === TRUE) {
 
+            $task->setMinutes($this->input->post('cron[minute]'));
+            $task->setHours($this->input->post('cron[hour]'));
+            $task->setDayofweek($this->input->post('cron[dow]'));
+            $task->setDayofmonth($this->input->post('cron[dom]'));
+            $task->setMonths($this->input->post('cron[month]'));
+
+            $task->setJcomment($this->input->post('comment'));
+            $task->setJcommand($this->input->post('fnname'));
+            $isenabeld = $this->input->post('isenabled');
+            $istemplate = $this->input->post('istemplate');
+            if(!empty($isenabeld))
+            {
+                $task->setEnabled(true);
+            }
+            else{
+                $task->setEnabled(false);
+            }
+            if(!empty($istemplate))
+            {
+                $task->setTemplate(true);
+            }
+            else
+            {
+                $task->setTemplate(false);
+            }
+
+            $parameters = $this->input->post('params');
+            $paramsToSet = array();
+            if(is_array($parameters))
+            {
+                foreach($parameters as $k=>$v)
+                {
+                    if(!array_key_exists('name',$v) || strlen($v['name']) ==0)
+                    {
+                        unset($parameters[$k]);
+                        continue;
+                    }
+
+                    if(array_key_exists('value', $v)) {
+                        $paramsToSet['' . $v['name'] . ''] = $v['value'];
+                    }
+                    else
+                    {
+                        $paramsToSet['' . $v['name'] . ''] = null;
+                    }
+
+                }
+            }
+
+            $task->setJparams($paramsToSet);
+
+            try{
+                $cronToTest = Cron\CronExpression::factory($task->getCronToStr());
+                $this->em->persist($task);
+                $this->em->flush();
+                $data['msg'] = html_escape(lang('taskupsuccess'));
+            }
+            catch(Exception $e)
+            {
+                log_message('error',__METHOD__.' '.$e);
+                $data['errormsg'] = html_escape('One of the value (minutes,hours,etc) is invalid');
+
+            }
+
+
+
+            $data['content_view'] = 'smanage/taskupdatesuccess_view';
+
+            $this->load->view('page',$data);
+
+
+
         } else {
 
             if($this->input->post()) {
@@ -111,7 +185,7 @@ class Taskscheduler extends MY_Controller
             else
             {
                 $data['paramssubmit'] = null;
-             
+
             }
 
             $data['formdata'] = 'sf';
