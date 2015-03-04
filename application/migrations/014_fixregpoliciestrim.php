@@ -9,7 +9,7 @@ class Migration_fixregpoliciestrim extends CI_Migration
 	function up()
 	{
 		$this->em = $this->doctrine->em;
-		$types = array('regpol', 'entcat');
+		$types = array('entcat');
 
 		foreach ($types as $type) {
 
