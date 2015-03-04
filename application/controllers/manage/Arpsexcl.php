@@ -44,7 +44,18 @@ class Arpsexcl extends MY_Controller {
             log_message('error', __METHOD__ . "IdP edit: Identity Provider with id=" . $id . " not found");
             show_error(lang('rerror_idpnotfound'), 404);
             return;
-        }     
+        }
+
+        $myLang =  MY_Controller::getLang();
+        $providerNameInLang = $idp->getNameToWebInLang($myLang, 'IDP');
+
+
+
+
+
+
+
+
         $locked = $idp->getLocked();
         $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
         if (!$hasWriteAccess)
@@ -52,6 +63,14 @@ class Arpsexcl extends MY_Controller {
             $data = array(
                 'content_view'=>'nopermission',
                 'error'=> ''.lang('rrerror_noperm_provedit').': ' . $idp->getEntityid().'',
+            );
+            $data['breadcrumbs'] = array(
+                array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+                array('url'=>base_url(),'name'=>lang('dashboard')),
+                array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
+                array('url'=>base_url('providers/detail/show/'.$idp->getId().''),'name'=>''.$providerNameInLang.''),
+                array('url'=>'#','name'=>lang('rr_arpexcl1'),'type'=>'current'),
+
             );
             $this->load->view('page', $data);
             return;
@@ -61,6 +80,14 @@ class Arpsexcl extends MY_Controller {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_lockedentity') . $idp->getEntityid();
             log_message('debug',$idp->getEntityid(). ': is locked and cannot be edited');
+            $data['breadcrumbs'] = array(
+                array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+                array('url'=>base_url(),'name'=>lang('dashboard')),
+                array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
+                array('url'=>base_url('providers/detail/show/'.$idp->getId().''),'name'=>''.$providerNameInLang.''),
+                array('url'=>'#','name'=>lang('rr_arpexcl1'),'type'=>'current'),
+
+            );
             $this->load->view('page', $data);
             return;
         }
@@ -69,6 +96,14 @@ class Arpsexcl extends MY_Controller {
         {
             $data['error'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), $idp->getName()) .' ' . lang('rerror_cannotmanageexternal');
             $data['content_view'] = "nopermission";
+            $data['breadcrumbs'] = array(
+                array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+                array('url'=>base_url(),'name'=>lang('dashboard')),
+                array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
+                array('url'=>base_url('providers/detail/show/'.$idp->getId().''),'name'=>''.$providerNameInLang.''),
+                array('url'=>'#','name'=>lang('rr_arpexcl1'),'type'=>'current'),
+
+            );
             $this->load->view('page', $data);
             return;
         }     
@@ -104,6 +139,14 @@ class Arpsexcl extends MY_Controller {
            'titlepage'=>anchor(base_url().'providers/detail/show/'.$idp->getId(),  $displayname ),
            'subtitlepage'=>lang('rr_arpexcl1')
        );
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
+            array('url'=>base_url('providers/detail/show/'.$idp->getId().''),'name'=>''.$providerNameInLang.''),
+            array('url'=>'#','name'=>lang('rr_arpexcl1'),'type'=>'current'),
+
+        );
         $this->load->view('page', $data);
 
     }

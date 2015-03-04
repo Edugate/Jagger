@@ -79,9 +79,18 @@ class Joinfed extends MY_Controller
 
         $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $ent->getId() . '">' . $data['name'] . '</a>';
         $data['subtitlepage'] = lang('fedejoinform');
+        if(strcasecmp($entType,'SP')==0)
+        {
+            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
+        }
+        else
+        {
+            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
+        }
 	    $data['breadcrumbs'] = array(
 		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
 		    array('url'=>base_url(),'name'=>lang('dashboard')),
+            $plist,
 		    array('url'=>base_url('providers/detail/show/'.$ent->getId().''),'name'=>''.html_escape($data['name']).''),
 		    array('url'=>'#','name'=>lang('fedejoinform'),'type'=>'current'),
 	    );

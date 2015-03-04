@@ -168,11 +168,11 @@ class Statdefs extends MY_Controller
             {
                 show_error('Provider not found', 404);
             }
-            $t = $provider->getType();
-            $t = strtolower($t);
-            if (strcasecmp($t, 'both'))
+            $providerType = $provider->getType();
+            $providerType = strtolower($providerType);
+            if (strcasecmp($providerType, 'both'))
             {
-                $t = 'idp';
+                $providerType = 'idp';
             }
             $islocal = $provider->getLocal();
             if (!$islocal)
@@ -188,7 +188,7 @@ class Statdefs extends MY_Controller
                 show_error(lang('rr_noperm'), 403);
             }
             $ed = $this->getExistingStatsDefs($provider->getId());
-            $langname = $provider->getNameToWebInLang($lang, $t);
+            $langname = $provider->getNameToWebInLang($lang, $providerType);
             $data = array(
                 'providerid' => $provider->getId(),
                 'providerentity' => $provider->getEntityId(),
@@ -196,6 +196,24 @@ class Statdefs extends MY_Controller
                 'titlepage' => '<a href="' . base_url() . 'providers/detail/show/' . $provider->getId() . '">' . $langname . '</a>',
                 'subtitlepage' => lang('statsmngmt'),
             );
+
+            if(strcasecmp($providerType,'SP')==0)
+            {
+                $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
+            }
+            else
+            {
+                $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
+            }
+            $data['breadcrumbs'] = array(
+                array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+                array('url'=>base_url(),'name'=>lang('dashboard')),
+                $plist,
+                array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.$langname.''),
+                array('url'=>'#','name'=>lang('statsmngmt'),'type'=>'current'),
+
+            );
+
             if (empty($defid))
             {
                 $this->title = lang('title_statdefs');
@@ -387,6 +405,9 @@ class Statdefs extends MY_Controller
         }
 
         $provider = $statdef->getProvider();
+        $myLang = MY_Controller::getLang();
+        $providerType = $provider->getType();
+        $providerLangName = $provider->getNameToWebInLang($myLang, $providerType);
         $islocal = $provider->getLocal();
         if (!$islocal)
         {
@@ -466,6 +487,26 @@ class Statdefs extends MY_Controller
                 $data['statdefpostparam'] .= $key . '$:$' . $value . '$$';
             }
         }
+        if(strcasecmp($providerType,'SP')==0)
+        {
+            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
+        }
+        else
+        {
+            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
+        }
+
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            $plist,
+            array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.$providerLangName.''),
+            array('url'=>base_url('manage/statdefs/show/'.$provider->getId().''),'name'=>''.lang('statsmngmt').''),
+            array('url'=>'#','name'=>lang('title_editform'),'type'=>'current'),
+
+        );
+
+
         $data['content_view'] = 'manage/statdefs_editform_view';
         if ($this->newStatDefSubmitValidate() === FALSE)
         {
@@ -541,6 +582,7 @@ class Statdefs extends MY_Controller
             $this->em->persist($statdef);
             $this->em->flush();
             $data['message'] = lang('updated');
+            $data['providerid'] = $provider->getId();
             $data['content_view'] = 'manage/updatestatdefsuccess';
             $this->load->view('page', $data);
         }
@@ -553,6 +595,7 @@ class Statdefs extends MY_Controller
         {
             show_error('Page not found', 404);
         }
+        $myLang = MY_Controller::getLang();
         $isgearman = $this->config->item('gearman');
         $isstatistics = $this->config->item('statistics');
         if (empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
@@ -572,6 +615,8 @@ class Statdefs extends MY_Controller
             {
                 show_error('Provider not found', 404);
             }
+            $providerType = $provider->getType();
+            $providerLangName = $provider->getNameToWebInLang($myLang, $providerType);
             $islocal = $provider->getLocal();
             if (!$islocal)
             {
@@ -585,11 +630,12 @@ class Statdefs extends MY_Controller
             {
                 show_error(lang('rr_noperm'), 403);
             }
+
             $this->title = lang('title_newstatdefs');
             $data['providerid'] = $provider->getId();
             $data['providerentity'] = $provider->getEntityId();
-            $data['providername'] = $provider->getName();
-            $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['providerid'] . '">' . $data['providername'] . '</a>';
+            $data['providername'] = $providerLangName;
+            $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['providerid'] . '">' . $providerLangName . '</a>';
             $data['subtitlepage'] = lang('title_newstatdefs');
             $data['submenupage'][] = array('name' => lang('statdeflist'), 'link' => '' . base_url() . 'manage/statdefs/show/' . $data['providerid'] . '');
             $ispreworkers = $this->config->item('predefinedstats');
@@ -621,6 +667,23 @@ class Statdefs extends MY_Controller
             {
                 $data['providername'] = $data['providerentity'];
             }
+            if(strcasecmp($providerType,'SP')==0)
+            {
+                $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
+            }
+            else
+            {
+                $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
+            }
+            $data['breadcrumbs'] = array(
+                array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+                array('url'=>base_url(),'name'=>lang('dashboard')),
+                $plist,
+                array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.$providerLangName.''),
+                array('url'=>base_url('manage/statdefs/show/'.$provider->getId().''),'name'=>''.lang('statsmngmt').''),
+                array('url'=>'#','name'=>lang('title_editform'),'type'=>'current'),
+
+            );
             $data['content_view'] = 'manage/statdefs_newform_view';
 
             if ($this->newStatDefSubmitValidate() === FALSE)
@@ -691,6 +754,26 @@ class Statdefs extends MY_Controller
                 $this->em->persist($s);
                 $this->em->persist($provider);
                 $this->em->flush();
+
+                if(strcasecmp($providerType,'SP')==0)
+                {
+                    $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
+                }
+                else
+                {
+                    $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
+                }
+
+                $data['breadcrumbs'] = array(
+                    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+                    array('url'=>base_url(),'name'=>lang('dashboard')),
+                    $plist,
+                    array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.$providerLangName.''),
+                    array('url'=>base_url('manage/statdefs/show/'.$provider->getId().''),'name'=>''.lang('statsmngmt').''),
+                    array('url'=>'#','name'=>lang('title_editform'),'type'=>'current'),
+
+                );
+                $data['providerid'] = $provider->getId();
 
                 $data['content_view'] = 'manage/newstatdefsuccess';
                 $data['message'] = lang('stadefadded');

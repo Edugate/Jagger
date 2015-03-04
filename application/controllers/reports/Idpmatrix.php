@@ -149,6 +149,7 @@ class Idpmatrix extends MY_Controller
 		$data['breadcrumbs'] = array(
 			array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
 			array('url' => base_url(), 'name' => lang('dashboard')),
+            array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
 			array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . html_escape($data['idpname']) . ''),
 			array('url' => '#', 'name' => lang('rr_arpoverview'), 'type' => 'current'),
 

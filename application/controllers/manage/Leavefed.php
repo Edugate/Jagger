@@ -92,9 +92,18 @@ class Leavefed extends MY_Controller {
         $data['name'] = $provider->getNameToWebInLang($lang,$enttype);
         $data['titlepage'] = anchor(base_url().'providers/detail/show/'.$provider->getId().'',$data['name']);
         $data['subtitlepage']=lang('leavefederation');
+        if(strcasecmp($enttype,'SP')==0)
+        {
+            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
+        }
+        else
+        {
+            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
+        }
 	    $data['breadcrumbs'] = array(
 		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
 		    array('url'=>base_url(),'name'=>lang('dashboard')),
+            $plist,
 		    array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.html_escape($data['name']).''),
 		    array('url'=>'#','name'=>lang('leavefederation'),'type'=>'current'),
 	    );

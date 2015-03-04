@@ -251,11 +251,11 @@ class Access_manage extends MY_Controller {
         $data['content_view'] = 'manage/access_manage_view';
         if(strcasecmp($ent->getType(),'SP')==0)
         {
-            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('title_splist'));
+            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
         }
         else
         {
-            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('title_idplist'));
+            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
         }
 	    $data['breadcrumbs'] = array(
 		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
