@@ -1308,13 +1308,13 @@ class Providerdetails {
 
             if ($hasWriteAccess)
             {
-                $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
                 $d[++$i]['name'] = lang('rr_attrsoverview');
                 $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'), 'class="button small editbutton"');
-
-                $image_link = '<i class="fi-pencil"></i>';
-                $edit_req_attrs_link = '<span style="float: right;"><a href="' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '" class="editbutton editicon" title="edit" >' . lang('rr_edit') . '</a></span>';
-                $entmenu[24] = array('name' => '' . lang('rr_requiredattributes') . '', 'link' => '' . base_url() . 'manage/attribute_requirement/sp/' . $ent->getId() . '', 'class' => '');
+	            $logoUploadEnabled = $this->CI->config->item('rr_logoupload');
+	            if(!empty($logoUploadEnabled) && $logoUploadEnabled === TRUE)
+	            {
+		            $entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/sp/'.$ent->getId().'') , 'class' => '');
+	            }
             }
             $requiredAttributes = $ent->getAttributesRequirement();
             if ($requiredAttributes->count() === 0)

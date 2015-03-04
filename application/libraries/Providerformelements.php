@@ -74,7 +74,6 @@ class Providerformelements
         } elseif ($t === 'SP') {
             $result = array(
                 anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . ''),
-          //      anchor($base . 'manage/attribute_requirement/sp/' . $id . '', '' . lang('rr_requiredattributes') . '')
             );
         } else {
             $result = array(
@@ -83,7 +82,6 @@ class Providerformelements
                 anchor($base . 'manage/supported_attributes/idp/' . $id . '', '' . lang('rr_supportedattributes') . ''),
                 anchor($base . 'manage/attributepolicy/globals/' . $id . '', '' . lang('rr_attributepolicy') . ''),
                 anchor($base . 'manage/arpsexcl/idp/' . $id . '', '' . lang('srvs_excluded_from_arp') . ''),
-           //     anchor($base . 'manage/attribute_requirement/sp/' . $id . '', '' . lang('rr_requiredattributes') . '')
             );
         }
 

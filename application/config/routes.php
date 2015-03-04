@@ -44,8 +44,6 @@ $route['404_override'] = '';
 
 $route['providers/sp/registration'] = 'providers/sp_registration';
 $route['providers/sp/registration/(:any)'] = 'providers/sp_registration/$1';
-$route['manage/attribute_requirement/sp'] = 'manage/attribute_requirement/sp';
-$route['manage/attribute_requirement/sp/(:any)'] = 'manage/attribute_requirement/sp/$1';
 $route['metadata/federatation/(:any)/metadata.xml'] = 'federations/manage/show/$1';
 $route['reports/awaiting'] = 'reports/awaiting/alist';
 // for advanced sp/idp registration form
