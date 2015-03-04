@@ -125,19 +125,6 @@ class Attribute_requirement extends MY_Controller
         }
     }
 
-    private function submitValidate()
-    {
-        $this->load->library('form_validation');
-        $this->form_validation->set_rules('attribute', 'attribute', 'trim|xss_clean');
-        $this->form_validation->set_rules('requirement', 'requirement', 'trim|xss_clean|valid_requirement_attr');
-        $this->form_validation->set_rules('reason', 'reason', 'trim|xss_clean');
-        $this->form_validation->set_rules('submit', 'submit', 'trim|xss_clean');
-        $this->form_validation->set_rules('spid', 'spid', 'trim|numeric|xss_clean');
-
-        return $this->form_validation->run();
-    }
-
-
     public function fedsubmit()
     {
         log_message('debug', __METHOD__ . "fed-submited");

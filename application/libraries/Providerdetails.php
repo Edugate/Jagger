@@ -1119,7 +1119,6 @@ class Providerdetails {
         }
         $subresult[6] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
         $d = array();
-        $i = 0;
         $tcerts = $ent->getCertificates();
         $certs = array();
         foreach ($tcerts as $c)
@@ -1304,7 +1303,6 @@ class Providerdetails {
          */
         if ($sppart)
         {
-            $edit_req_attrs_link = '';
 
             if ($hasWriteAccess)
             {
@@ -1617,8 +1615,7 @@ class Providerdetails {
         $finalsubtab = &$subresult;
         $result[] = array('section' => 'samlmetadata', 'title' => 'Metadata', 'subtab' => $finalsubtab);
         $result[] = array('section' => 'mngt', 'title' => '' . lang('tabMngt') . '', 'data' => $d);
-        $d = array();
-        $i = 0;
+
 
 
 
