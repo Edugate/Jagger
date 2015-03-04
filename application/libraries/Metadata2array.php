@@ -89,6 +89,7 @@ class Metadata2array
         }
         foreach ($this->regpollist as $k => $v)
         {
+	        $reducedList = array_unique($v);
             foreach ($reducedList as $c)
             {
                 $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $c, 'type' => 'regpol', 'lang' => $k));
