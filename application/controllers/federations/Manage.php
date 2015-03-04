@@ -43,6 +43,13 @@ class Manage extends MY_Controller
 		if (!$this->j_auth->logged_in()) {
 			redirect('auth/login', 'location');
 		} else {
+            $data['breadcrumbs'] = array(
+                array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
+                array('url' => base_url(), 'name' => lang('dashboard')),
+                array('url' => base_url('federations/manage'), 'name' => lang('rr_federations'),'type'=>'current'),
+
+
+            );
 			$this->load->library('zacl');
 			$this->title = lang('title_fedlist');
 			$federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
@@ -350,6 +357,14 @@ class Manage extends MY_Controller
 		$hasManageAccess = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
 		$canEdit = (boolean)($hasManageAccess OR $hasWriteAccess);
 		$this->title = lang('rr_federation_detail');
+
+        $data['breadcrumbs'] = array(
+			array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
+			array('url' => base_url(), 'name' => lang('dashboard')),
+            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+			array('url' => '#', 'name' => '' . $federation->getName() . '', 'type' => 'current'),
+
+		);
 
 		if (!$hasReadAccess && ($federation->getPublic() === FALSE)) {
 			$data['content_view'] = 'nopermission';

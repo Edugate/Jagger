@@ -276,6 +276,16 @@ class Access_manage extends MY_Controller {
             show_error(lang('error_fednotfound'), 404);
             return;
         }
+        $fedurl= base64url_encode($fed->getName());
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
+            array('url' => base_url(), 'name' => lang('dashboard')),
+            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+            array('url' => base_url('federations/manage/show/'.$fedurl.''), 'name' => '' . $fed->getName() . ''),
+            array('url'=>'#','type'=>'current','name'=>lang('rr_accessmngmt'))
+
+        );
+
         $group = 'federation';
         $has_manage_access = $this->zacl->check_acl('f_' . $fed->getId(), 'manage', $group, '');
         if (!$has_manage_access)

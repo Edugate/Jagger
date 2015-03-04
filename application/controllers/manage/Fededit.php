@@ -87,6 +87,14 @@ class Fededit extends MY_Controller {
         $fedname = $fed->getName();
         $fedurl= base64url_encode($fed->getName());
         $group = "federation";
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
+            array('url' => base_url(), 'name' => lang('dashboard')),
+            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+            array('url' => base_url('federations/manage/show/'.$fedurl.''), 'name' => '' . $fed->getName() . ''),
+            array('url'=>'#','type'=>'current','name'=>lang('title_editform'))
+
+        );
         $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
         $has_manage_access = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
         if (($has_write_access || $has_manage_access) === FALSE)
