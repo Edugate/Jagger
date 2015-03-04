@@ -8,6 +8,7 @@ class Migration_fixregpoliciestrim extends CI_Migration
 
 	function up()
 	{
+
 		$this->em = $this->doctrine->em;
 		$types = array('regpol');
 
@@ -36,12 +37,12 @@ class Migration_fixregpoliciestrim extends CI_Migration
 			$providersToPersist = array();
 			if (count($p) > 0) {
 				foreach ($p as $langkey => $col) {
-					if (is_array($col) and count($col) > 1) {
+					if (is_array($col)) {
+
 						foreach ($col as $kcol => $vcol) {
 							$elemIdToLeave = array_shift($vcol);
 							$objToLeave = $res2[$elemIdToLeave];
 							$objToLeave->setUrl(trim($objToLeave->getUrl()));
-
 							if (is_array($vcol) && count($vcol) > 0) {
 								foreach ($vcol as $vids) {
 									$objToMerge = $res2[$vids];
@@ -65,7 +66,6 @@ class Migration_fixregpoliciestrim extends CI_Migration
 
 						}
 					}
-
 				}
 			}
 			foreach ($providersToPersist as $pr) {
@@ -75,7 +75,6 @@ class Migration_fixregpoliciestrim extends CI_Migration
 		}
 		try {
 			$this->em->flush();
-			
 		} catch (Exception $e) {
 			log_message('error', __METHOD__ . ' :: ' . $e);
 			return false;
