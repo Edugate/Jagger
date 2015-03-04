@@ -642,9 +642,18 @@ class Entityedit extends MY_Controller
         $data['content_view'] = 'manage/entityedit_view.php';
 
         $data['rawJs'][] = "";
+        if(strcasecmp($this->type,'SP')==0)
+        {
+            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('title_splist'));
+        }
+        else
+        {
+            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('title_idplist'));
+        }
         $data['breadcrumbs'] = array(
             array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
             array('url'=>base_url(),'name'=>lang('dashboard')),
+            $plist,
             array('url'=>base_url('providers/detail/show/'.$data['entdetail']['id'].''),'name'=>''.$data['entdetail']['displayname'].''),
             array('url'=>'#','name'=>lang('rr_edit'),'type'=>'current'),
 

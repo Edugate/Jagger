@@ -77,7 +77,7 @@ class Coc {
     protected $lang;
 
     /**
-     * @ManyToMany(targetEntity="Provider",mappedBy="coc")
+     * @ManyToMany(targetEntity="Provider",mappedBy="coc",fetch="EXTRA_LAZY")
      */
     protected $provider;
  
@@ -129,6 +129,10 @@ class Coc {
     public function getProviders()
     {
        return $this->provider;
+    }
+    public function  getProvidersCount()
+    {
+        return $this->provider->count();
     }
     
     public function setName($name)

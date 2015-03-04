@@ -176,6 +176,12 @@ class Ec extends MY_Controller {
             $f .= form_close();
             $data['form'] = $f;
         }
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>base_url('manage/ec/show'),'name'=>lang('title_entcats')),
+            array('url'=>'#','name'=>lang('title_addentcat'),'type'=>'current'),
+        );
         $data['content_view'] = 'manage/coc_add_view';
         $this->load->view('page', $data);
     }
@@ -237,6 +243,12 @@ class Ec extends MY_Controller {
         $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
         $f .= form_close();
         $data['form'] = $f;
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>base_url('manage/ec/show'),'name'=>lang('title_entcats')),
+            array('url'=>'#','name'=>lang('title_editform'),'type'=>'current'),
+        );
         $data['content_view'] = 'manage/coc_edit_view';
         $this->load->view('page', $data);
     }

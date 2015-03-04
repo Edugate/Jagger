@@ -230,9 +230,18 @@ class Detail extends MY_Controller
 		$data['titlepage'] = $data['presubtitle'] . ': ' . $data['name'];
 		$this->title = &$data['titlepage'];
 		$data['content_view'] = 'providers/detail_view.php';
+        if(strcasecmp($ent->getType(),'SP')==0)
+        {
+            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('title_splist'));
+        }
+        else
+        {
+            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('title_idplist'));
+        }
 		$data['breadcrumbs'] = array(
 			array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
 			array('url' => base_url(), 'name' => lang('dashboard')),
+            $plist,
 			array('url' => '#', 'name' => '' . $data['name'] . '', 'type' => 'current'),
 
 		);

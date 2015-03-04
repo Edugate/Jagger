@@ -94,9 +94,18 @@ class Entitystate extends MY_Controller {
         $data['providerid'] = $this->entity->getId();
         $has_write_access = $this->zacl->check_acl($this->entity->getId(), 'write', 'entity', '');
 
+        if(strcasecmp($this->entity->getType(),'SP')==0)
+        {
+            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('title_splist'));
+        }
+        else
+        {
+            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('title_idplist'));
+        }
 	    $data['breadcrumbs'] = array(
             array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
             array('url'=>base_url(),'name'=>lang('dashboard')),
+            $plist,
             array('url'=>base_url('providers/detail/show/'.$this->entity->getId().''),'name'=>''.html_escape($titlename).''),
             array('url'=>'#','name'=>lang('title_regpols'),'type'=>'current'),
 
@@ -213,9 +222,18 @@ class Entitystate extends MY_Controller {
         $data['current_active'] = $this->entity->getActive();
         $data['current_extint'] = $this->entity->getLocal();
         $data['current_publicvisible'] = (int) $this->entity->getPublicVisible();
+        if(strcasecmp($this->entity->getType(),'SP')==0)
+        {
+            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('title_splist'));
+        }
+        else
+        {
+            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('title_idplist'));
+        }
 	    $data['breadcrumbs'] = array(
 		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
 		    array('url'=>base_url(),'name'=>lang('dashboard')),
+            $plist,
 		    array('url'=>base_url('providers/detail/show/'.$this->entity->getId().''),'name'=>''.html_escape($titlename).''),
 		    array('url'=>'#','name'=>lang('rr_status_mngmt'),'type'=>'current'),
 
