@@ -330,7 +330,7 @@ class Providerdetails {
 
         if (count($result) == 0)
         {
-            $result[] = array('msg' => 'No alerts', 'level' => 'info');
+            $result = array();
         }
 
         if(!empty($msgprefix))
