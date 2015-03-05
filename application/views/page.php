@@ -71,6 +71,7 @@ $foundation = $base_url . 'foundation/';
 	<?php
 	$iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
     $isBreadcrumbs = $this->rrpreference->getPreferences('breadcrumbs');
+    $showPagetitles = $this->rrpreference->getPreferences('titleheader');
 	if (isset($iscookieconsent['status']) && (boolean)$iscookieconsent['status'] === TRUE && isset($iscookieconsent['value'])) {
 		$this->load->helper('cookie');
 		$cookieaccepted = get_cookie('cookieAccept');
@@ -87,7 +88,8 @@ $foundation = $base_url . 'foundation/';
 
 
 	$this->load->view('toppanel', $args);
-	if (!empty($titlepage) || !empty($subtitlepage)) {
+
+	if (!empty($showPagetitles) && !empty($showPagetitles['status'])&& (!empty($titlepage) || !empty($subtitlepage))) {
 
 		echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
 
