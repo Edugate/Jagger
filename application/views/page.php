@@ -89,7 +89,7 @@ $foundation = $base_url . 'foundation/';
 
 	$this->load->view('toppanel', $args);
 
-	if (!empty($showPagetitles) && (!empty($titlepage) || !empty($subtitlepage))) {
+	if (!empty($showPagetitles) && !empty($showPagetitles['status'])&& (!empty($titlepage) || !empty($subtitlepage))) {
 
 		echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
 
