@@ -200,10 +200,12 @@ class Attributepolicy extends MY_Controller
             log_message('error', 'IdP not found with id:' . $idp_id);
             show_error(lang('rerror_idpnotfound') . ' id:' . $idp_id);
         }
-        $lang = MY_Controller::getLang();
-        $idpInLangName = $idp->getNameToWebInLang($lang, 'idp');
 
-        $data['titlepage'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), lang('rr_provider').': '.$idpInLangName);
+
+        $myLang = MY_Controller::getLang();
+        $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
+
+        $data['titlepage'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), lang('rr_provider').': '.$providerNameInLang);
         
 
         $resource = $idp->getId();
@@ -263,7 +265,7 @@ class Attributepolicy extends MY_Controller
             if (!empty($sp))
             {
                 log_message('debug', 'SP found with id: ' . $requester);
-                $data['sp_name'] = $sp->getNameToWebInLang($lang, 'sp');
+                $data['sp_name'] = $sp->getNameToWebInLang($myLang, 'sp');
             }
             else
             {
@@ -347,6 +349,17 @@ class Attributepolicy extends MY_Controller
             show_error(lang('rerror_idpnotfound'), 404);
             return;
         }
+
+        $myLang = MY_Controller::getLang();
+        $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
+            array('url'=>base_url('providers/detail/show/'.$idp->getId().''),'name'=>''.$providerNameInLang.''),
+            array('url'=>'#','name'=>lang('rr_attributereleasepolicy'),'type'=>'current'),
+
+        );
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
         if (!$has_write_access)
         {

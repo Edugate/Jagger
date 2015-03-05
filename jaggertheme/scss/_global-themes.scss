@@ -66,3 +66,20 @@
 .tabs-content {
   min-height: 300px;
 }
+
+
+
+table#details th.header.headerSortDown:before {
+content: "\25BE\00a0\00a0";
+}
+table#details th.header.headerSortUp:before {
+content: "\25B4\00a0\00a0";
+}
+
+table#details th.header:before {
+//content: "\25B4\25BE\00a0\00a0";
+}
+table#details th {
+white-space: nowrap;
+
+}

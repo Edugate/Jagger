@@ -92,6 +92,11 @@ class Ec extends MY_Controller {
 
         $data['titlepage'] = lang('ent_list_title');
 
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>'#','name'=>lang('entcats_menulink'),'type'=>'current'),
+        );
         $data['content_view'] = 'manage/coc_show_view';
         $this->load->view('page', $data);
     }

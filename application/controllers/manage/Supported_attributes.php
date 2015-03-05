@@ -145,7 +145,8 @@ class Supported_attributes extends MY_Controller {
         {
             show_error(lang('error_noattrdefs'), 503);
         }
-        $lang = MY_Controller::getLang();
+        $myLang = MY_Controller::getLang();
+        $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
         $data = array();
         $buttons = form_submit(array('name' => 'submit', 'value' => 'submit'));
         $buttons = '<div class="buttons"><button type="submit" value="submit" name="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
@@ -156,9 +157,21 @@ class Supported_attributes extends MY_Controller {
         $data['idp_id'] = $idp->getId();
         $data['idp_name'] = $idp->getName();
         $data['idp_entityid'] = $idp->getEntityId();
-        $data['titlepage'] = lang('identityprovider') . ': ' . anchor(base_url() . "providers/detail/show/" . $idp->getId(), $idp->getNameToWebInLang($lang, 'idp'));
+        $data['titlepage'] = lang('identityprovider') . ': ' . anchor(base_url() . "providers/detail/show/" . $idp->getId(), $providerNameInLang);
         $data['subtitlepage'] = lang('rr_supportedattributes');
-        $data['submenupage'] = array(array('name' => '' . lang('rr_attributereleasepolicy') . '', 'url' => '' . base_url() . 'manage/attributepolicy/globals/' . $idp_id . ''));
+
+
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
+            array('url'=>base_url('providers/detail/show/'.$idp->getId().''),'name'=>''.$providerNameInLang.''),
+            array('url'=>base_url('manage/attributepolicy/globals/'.$idp->getId().''),'name'=>''.lang('rr_attributereleasepolicy').''),
+            array('url'=>'#','name'=>lang('rr_supportedattributes'),'type'=>'current'),
+
+        );
+
+
         $data['content_view'] = 'manage/supported_attributes_view.php';
         $this->load->view('page', $data);
 
