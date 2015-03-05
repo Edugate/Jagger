@@ -1272,17 +1272,21 @@ class Providerdetails {
             $d[++$i]['name'] = lang('rr_arpoverview');
             $d[$i]['value'] = anchor(base_url('reports/idpmatrix/show/' . $ent->getId()), 'matrix', 'class="editbutton"');
         }
+	    $logoUploadEnabled = $this->CI->config->item('rr_logoupload');
         /**
          * supported attributes by IDP part
          */
         if ($idppart)
         {
-            $image_link = '<i class="fi-pencil"></i>';
             if ($hasWriteAccess)
             {
                 $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
                 $entmenu[22] = array('name' => '' . lang('rr_supportedattributes') . '', 'link' => '' . base_url() . 'manage/supported_attributes/idp/' . $id . '', 'class' => '');
                 $entmenu[23] = array('name' => '' . lang('rr_attributepolicy') . '', 'link' => '' . base_url() . 'manage/attributepolicy/globals/' . $id . '', 'class' => '');
+	            if(!empty($logoUploadEnabled) && $logoUploadEnabled === TRUE)
+	            {
+		            $entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/idp/'.$ent->getId().'') , 'class' => '');
+	            }
             }
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;
@@ -1298,6 +1302,7 @@ class Providerdetails {
             $disable_caption = true;
             $d[++$i]['2cols'] = $this->CI->show_element->generateTableDefaultArp($ent, $disable_caption);
         }
+
         /**
          * required attributes by SP part
          */
@@ -1308,7 +1313,7 @@ class Providerdetails {
             {
                 $d[++$i]['name'] = lang('rr_attrsoverview');
                 $d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'), 'class="button small editbutton"');
-	            $logoUploadEnabled = $this->CI->config->item('rr_logoupload');
+
 	            if(!empty($logoUploadEnabled) && $logoUploadEnabled === TRUE)
 	            {
 		            $entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/sp/'.$ent->getId().'') , 'class' => '');
@@ -1615,10 +1620,7 @@ class Providerdetails {
         $finalsubtab = &$subresult;
         $result[] = array('section' => 'samlmetadata', 'title' => 'Metadata', 'subtab' => $finalsubtab);
         $result[] = array('section' => 'mngt', 'title' => '' . lang('tabMngt') . '', 'data' => $d);
-
-
-
-
+	    
         $data['tabs'] = $result;
         Detail::$alerts = $alerts;
         return $data;

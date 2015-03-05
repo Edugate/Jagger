@@ -55,39 +55,6 @@ class Providerformelements
     }
 
 
-
-
-
-    public function generateOtherLinksTab()
-    {
-        $result = array();
-        $base = base_url();
-        $t = $this->ent->getType();
-        $id = $this->ent->getId();
-        if ($t === 'IDP') {
-            $result = array(
-                anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . ''),
-                anchor($base . 'manage/supported_attributes/idp/' . $id . '', '' . lang('rr_supportedattributes') . ''),
-                anchor($base . 'manage/attributepolicy/globals/' . $id . '', '' . lang('rr_attributepolicy') . ''),
-                anchor($base . 'manage/arpsexcl/idp/' . $id . '', '' . lang('srvs_excluded_from_arp') . '')
-            );
-        } elseif ($t === 'SP') {
-            $result = array(
-                anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . ''),
-            );
-        } else {
-            $result = array(
-                anchor($base . 'manage/logomngmt/provider/idp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('identityprovider') . ')'),
-                anchor($base . 'manage/logomngmt/provider/sp/' . $id . '', '' . lang('rr_logos') . ' (' . lang('serviceprovider') . ')'),
-                anchor($base . 'manage/supported_attributes/idp/' . $id . '', '' . lang('rr_supportedattributes') . ''),
-                anchor($base . 'manage/attributepolicy/globals/' . $id . '', '' . lang('rr_attributepolicy') . ''),
-                anchor($base . 'manage/arpsexcl/idp/' . $id . '', '' . lang('srvs_excluded_from_arp') . ''),
-            );
-        }
-
-        return $result;
-    }
-
     public function generateGeneral()
     {
         $ent = &$this->ent;

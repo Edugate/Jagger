@@ -633,11 +633,6 @@ class Entityedit extends MY_Controller
             $menutabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
         }
         $menutabs[] = array('id' => 'staticmetadata', 'value' => '' . lang('tabstaticmeta') . '', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
-
-
-	    if(strcasecmp($this->type,'SP')!=0) {
-		    $menutabs[] = array('id' => 'other', 'value' => '' . lang('tabotherforms') . '', 'form' => $this->providerformelements->generateOtherLinksTab());
-	    }
         $data['menutabs'] = $menutabs;
         $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['entdetail']['id'] . '">' . $data['entdetail']['displayname'] . '</a>';
         $data['content_view'] = 'manage/entityedit_view.php';
