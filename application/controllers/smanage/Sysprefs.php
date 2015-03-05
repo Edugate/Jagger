@@ -186,6 +186,13 @@ class Sysprefs extends MY_Controller
 
 		$data['datas'] = $sprefs;
 
+		$data['breadcrumbs'] = array(
+			array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
+			array('url' => base_url(), 'name' => lang('dashboard')),
+			array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
+			array('url' => '#', 'name' => lang('title_sysprefs'), 'type' => 'current'),
+
+		);
 
 		$data['content_view'] = 'manage/sysprefs_view';
 		$this->load->view('page', $data);

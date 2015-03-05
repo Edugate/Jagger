@@ -101,7 +101,7 @@ class Attributes extends MY_Controller {
         $this->title = lang('attrsdeflist');
         $attributes_tmp = new models\Attributes();
         $attributes = $attributes_tmp->getAttributes();
-        $a_ar = array();
+        $dataRows = array();
         $excluded = '<span class="lbl lbl-alert" title="' . lang('rr_attronlyinarpdet') . '">' . lang('rr_attronlyinarp') . '</span>';
 
         $data['titlepage'] = lang('attrsdeflist');
@@ -114,7 +114,7 @@ class Attributes extends MY_Controller {
             {
                 $notice = '<br />' . $excluded;
             }
-            $a_ar[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn());
+            $dataRows[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn());
         }
         $isAdmin = $this->j_auth->isAdministrator();
         if ($isAdmin)
@@ -125,7 +125,13 @@ class Attributes extends MY_Controller {
         {
             $data['isadmin'] = false;
         }
-        $data['attributes'] = $a_ar;
+	    $data['breadcrumbs'] = array(
+            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
+            array('url'=>base_url(),'name'=>lang('dashboard')),
+            array('url'=>'#','name'=>lang('attrsdeflist'),'type'=>'current'),
+
+        );
+        $data['attributes'] = $dataRows;
         $data['content_view'] = 'attribute_list_view';
         $this->load->view('page', $data);
     }

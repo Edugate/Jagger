@@ -1191,3 +1191,4 @@ $lang['rr_noentitywarnings']     = 'No warnings related to the service';
 $lang['metaalturlinput']         = 'Metadata publication URL';
 $lang['fieldnotusedbystt']            = 'This field is not used the setting';
 $lang['2fupdatetitle'] = 'Update 2F authentication' ;
+$lang['rrtools'] = 'Tools';
