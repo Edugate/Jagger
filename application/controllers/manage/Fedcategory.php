@@ -226,9 +226,10 @@ class Fedcategory extends MY_Controller {
                 $editlink = '<a href="' . $baseurl . 'manage/fedcategory/edit/' . $c->getId() . '"><i class="fi-pencil"></i></a>';
             }
             $result[] = array(
-                'name' => $c->getName() . ' ' . $editlink . ' ' . $default,
+                'name' => $c->getName() . '  ' . $default,
                 'full' => $c->getFullName(),
                 'desc' => $c->getDescription(),
+                'act'  => $editlink
             );
         }
         $data['titlepage'] = lang('rrfedcatslist');

@@ -11,7 +11,7 @@ if (!empty($msg1) && !empty($msg2))
 }
 if ($addbtn)
 {
-    echo '<div class="small-12 column right"><div class="right"><a href="' . base_url() . 'manage/spage/editarticle/new" class="button small">' . lang('rr_add') . '</a></div></div>';
+    echo '<div class="small-12 column right"><div class="right"><a href="' . base_url() . 'manage/spage/editarticle/new" class="button small">' . lang('addpage_btn') . '</a></div></div>';
 }
 
 

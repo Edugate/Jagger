@@ -61,7 +61,7 @@ class Spage extends MY_Controller
             }
             if ($this->isEnabled)
             {
-                $editlink = '<a href="' . base_url() . 'manage/spage/editarticle/' . $a->getName() . '" class="button tiny">' . lang('rr_edit') . '</a>';
+                $editlink = '<a href="' . base_url() . 'manage/spage/editarticle/' . $a->getName() . '" ><span class="fi-pencil"></span></a>';
             }
             else
             {
