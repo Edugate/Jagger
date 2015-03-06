@@ -18,7 +18,7 @@ class Migration_upconfigtitlehead extends CI_Migration {
 			$c->setCategory('page');
 			$c->setDescname('show title/subtitle on page');
 			$c->setDescription('option allows to show/hide title on the page');
-			$c->setDisabled();
+			$c->setEnabled();
 			$c->setType('bool');
 			$c->setValue('');
 			$this->em->persist($c);

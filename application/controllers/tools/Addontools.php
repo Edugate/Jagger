@@ -26,6 +26,12 @@ class Addontools extends MY_Controller {
         }
         $data['titlepage'] = 'Tools';
         $data['content_view'] = 'tools/list_view';
+	    $data['breadcrumbs'] = array(
+		    array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
+		    array('url' => base_url(), 'name' => lang('dashboard')),
+		    array('url' => '#', 'name' => lang('rrtools'), 'type' => 'current'),
+
+	    );
         $this->load->view('page', $data);
     }
 

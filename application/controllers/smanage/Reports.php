@@ -52,6 +52,13 @@ class Reports extends MY_Controller {
         $this->title = lang('title_sysreports');
         $data['titlepage'] =lang('title_sysreports') ;
         $data['content_view']= 'smanage/index_view';
+	    $data['breadcrumbs'] = array(
+		    array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
+		    array('url' => base_url(), 'name' => lang('dashboard')),
+		    array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
+		    array('url' => '#', 'name' => lang('title_sysreports'), 'type' => 'current'),
+
+	    );
         $this->load->view('page',$data);
 
 
