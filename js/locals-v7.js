@@ -952,7 +952,8 @@ var GINIT = {
             });
 
         }));
-        $("button.updatenotifactionstatus").click(function (e) {
+        $(".updatenotifactionstatus").click(function (e) {
+            e.preventDefault()
             var notificationupdateform = $("#notificationupdateform");
             var related;
             var notid = $(this).attr('value');
@@ -962,6 +963,7 @@ var GINIT = {
             var posturl = baseurl + 'notifications/subscriber/updatestatus/' + notid;
             notificationupdateform.attr('action', posturl);
             notificationupdateform.find("#noteid").first().val(notid);
+
 
         });
 

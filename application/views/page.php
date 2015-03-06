@@ -218,7 +218,7 @@ if (!empty($breadcrumbs) && !empty($isBreadcrumbs['status'])) {
 			<?php
 			$footer = $this->rrpreference->getPreferences('pageFooter');
 			if (isset($footer['status']) && (boolean)$footer['status'] === TRUE && isset($footer['value'])) {
-				echo '<div>' . $footer['value'] . '<div>';
+				echo '<div>' . nl2br($footer['value']) . '<div>';
 			}
 			$disp_mem = $this->rrpreference->getPreferences('rr_display_memory_usage');
 			if (isset($disp_mem['status']) && (boolean)$disp_mem['status'] === TRUE) {

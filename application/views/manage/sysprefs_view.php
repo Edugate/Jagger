@@ -65,28 +65,12 @@ echo $this->table->generate();
 	echo '<div class="medium-3 column medium-text-right"><label for="vtext" class="">' . lang('label_text') . '</label></div>';
 	echo '<div class="medium-9 column"><textarea name="vtext" data-jagger-name="vtext" rows="5"></textarea></div>';
 	echo '</div>';
-
-	//echo '<div class="row">';
-	//echo '<div class="medium-3 column medium-text-right"><label for="vtext" class="">Options</label></div>';
-
-	//echo '<div class="medium-9 column">';
-
-	//echo '</div>';
-
-	//echo '</div>';
-
-
 	echo '<div class="rows">';
-	echo '<div class="column small-12">';
-	echo '<ul class="button-group right">';
-	echo '<li>';
-	echo '<button type="reset" name="cansel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>';
-	echo '</li>';
-	echo '<li>';
-	echo '<button type="submit" name="update" value="updateprefs" class="button">' . lang('btnupdate') . '</button>';
-	echo '</li>';
-	echo '</ul>';
-	echo '</div>';
+    $btns = array(
+        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<button type="submit" name="update" value="updateprefs" class="button">' . lang('btnupdate') . '</button>'
+    );
+    echo revealBtnsRow($btns);
 	echo '</div>';
 	echo form_close();
 

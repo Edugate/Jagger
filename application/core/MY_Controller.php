@@ -132,6 +132,17 @@ class MY_Controller extends CI_Controller {
             $this->load->helper('custom');
             log_message('debug', __METHOD__ . ' custom_helper loaded');
         }
+
+        try {
+            $this->em->getConnection()->connect();
+        }
+        catch(Exception $e)
+        {
+            log_message('error',$e);
+            set_status_header(500);
+            echo 'Internal server error - DB access';
+            return;
+        }
     }
 
     public static function getLang()

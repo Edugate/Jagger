@@ -2,6 +2,15 @@
 
 
 
+function revealBtnsRow($btns)
+{
+    $r = '<ul class="button-group text-right">';
+    foreach($btns as $btn)
+    {
+        $r .= '<li>'.$btn.'</li>';
+    }
+    return $r;
+}
 
 function jaggerTagsReplacer($str)
 {

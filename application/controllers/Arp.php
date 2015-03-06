@@ -65,7 +65,16 @@ class Arp extends MY_Controller
         $data = array();
         $tmp_idp = new models\Providers;
         $idp = new models\Provider;
-        $idp = $tmp_idp->getOneIdpByEntityId(base64url_decode($idp_entityid));
+        try {
+            $idp = $tmp_idp->getOneIdpByEntityId(base64url_decode($idp_entityid));
+        }
+        catch(Exception $e)
+        {
+            log_message('error',$e);
+            set_status_header(500);
+            echo 'Internal server error';
+            return;
+        }
         if (empty($idp)) {
             log_message('debug', 'IdP not found with id:.' . $idp_entityid);
             show_error("Identity Provider not found", 404);
