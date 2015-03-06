@@ -732,7 +732,7 @@ class Providerupdater
                 }
                 else
                 {
-                    $ent->setScope('idpsso', array(preg_split("/[\s,]+/",$ch['scopes']['aa'])));
+                    $ent->setScope('idpsso', array());
                     if (!empty($origscopesso))
                     {
                         $m['Scope IDPSSO'] = array('before' => $origscopesso, 'after' => '');
