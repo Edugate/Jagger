@@ -129,10 +129,32 @@ class Providertoxml
             }
         }
 
+        $doFilter1 = array('DigestMethod', 'SigningMethod');
+        $extendMeta = $ent->getExtendMetadata()->filter(
+            function (models\ExtendMetadata $entry) use ($doFilter1) {
+                return in_array($entry->getElement(), $doFilter1);
+            }
+        );
 
-        if (!empty($registrar) || count($cocsByGroups['entcat']) > 0) {
+        $algs = array();
+        foreach($extendMeta as $e)
+        {
+            $type = $e->getType();
+            if($type==='ent')
+            {
+                $algs[] = $e;
+            }
+        }
 
+        $algsCount = count($algs);
+
+        if (!empty($registrar) || count($cocsByGroups['entcat']) || $algsCount > 0) {
             $xml->startElementNs('md', 'Extensions', null);
+            if($algsCount>0)
+            {
+                $xml->writeAttribute('xmlns:alg','urn:oasis:names:tc:SAML:metadata:algsupport');
+            }
+
             if (!empty($registrar)) {
                 $xml->startElementNs('mdrpi', 'RegistrationInfo', null);
                 $xml->writeAttribute('registrationAuthority', $registrar);
@@ -179,6 +201,20 @@ class Providertoxml
                         $xml->endElement();
                     }
                     $xml->endElement();
+                }
+                $xml->endElement();
+            }
+
+            foreach($algs as $alg)
+            {
+                $algElement = $alg->getElement();
+                $algAlgorithm = $alg->getEvalue();
+                $xml->startElementNs('alg',$algElement,null);
+                $xml->writeAttribute('Algorithm',$algAlgorithm);
+                $algattrs = $alg->getAttributes();
+                foreach($algattrs as $k=>$a)
+                {
+                    $xml->writeAttribute($k,$a);
                 }
                 $xml->endElement();
             }
@@ -370,6 +406,14 @@ class Providertoxml
                 $xml->endElement(); //X509Data
             }
             $xml->endElement(); // KeyInfo
+            $encMethods = $cert->getEncryptMethods();
+            foreach($encMethods as $enc)
+            {
+                $xml->startElementNs('md','EncryptionMethod',null);
+                $xml->writeAttribute('Algorithm',$enc);
+                $xml->endElement();
+            }
+
             $xml->endElement(); //KeyDescriptor
         }
 

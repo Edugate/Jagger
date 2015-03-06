@@ -63,6 +63,11 @@ class Certificate
      */
     protected $certdata;
 
+    /**
+     * @Column(type="text", nullable=true)
+     */
+    protected $encmethods;
+
 
     /**
      * @todo add automatic generate subject
@@ -206,6 +211,29 @@ class Certificate
         return $this;
     }
 
+    public function setEncryptMethods($enc=null)
+    {
+
+        if(!empty($enc) && is_array($enc))
+        {
+            $this->encmethods = serialize(array_unique($enc));
+        }
+        else
+        {
+            $this->encmethods = null;
+        }
+        return $this;
+
+    }
+
+    public  function addEncryptionMethod($str)
+    {
+        $r = $this->getEncryptMethods();
+        $r[] = trim($str);
+        $this->setEncryptMethods($r);
+        return $this;
+    }
+
     /**
      * set default as false
      */
@@ -271,6 +299,19 @@ class Certificate
     public function getCertData()
     {
         return $this->certdata;
+    }
+
+    public function getEncryptMethods()
+    {
+        $result = $this->encmethods;
+        if($result !== null)
+        {
+            return unserialize($result);
+        }
+        else
+        {
+            return array();
+        }
     }
 
     public function getKeyname()
