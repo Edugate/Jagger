@@ -761,21 +761,20 @@ class Providerdetails
 				$algvalue = '';
 				foreach($val as $entry)
 				{
-					$algvalue .=$entry->getEvalue();
-					$algvalueattr = $entry->getAttributes();
-					if(count($algvalueattr)>0)
-					{
-						$algvalue .= ' (';
-						if(isset($algvalueattr['MinKeySize']))
-						{
-							$algvalue .='MinKeySize: '.$algvalueattr['MinKeySize'].' ';
-						}
-						if(isset($algvalueattr['MaxKeySize']))
-						{
-							$algvalue .='MaxKeySize: '.$algvalueattr['MaxKeySize'].' ';
-						}
-						$algvalue .=')';
+					$algvalue .= $entry->getEvalue();
+					if($key === 'SigningMethod') {
+						$algvalueattr = $entry->getAttributes();
+						if (count($algvalueattr) > 0) {
+							$algvalue .= ' (';
+							if (isset($algvalueattr['MinKeySize'])) {
+								$algvalue .= 'MinKeySize: ' . $algvalueattr['MinKeySize'] . ' ';
+							}
+							if (isset($algvalueattr['MaxKeySize'])) {
+								$algvalue .= 'MaxKeySize: ' . $algvalueattr['MaxKeySize'] . ' ';
+							}
+							$algvalue .= ')';
 
+						}
 					}
 					$algvalue .= '<br />';
 
