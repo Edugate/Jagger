@@ -2334,8 +2334,13 @@ class Provider
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
+	            if(array_key_exists('encmethods',$c) && count($c['encmethods'])>0)
+	            {
+		            $cert->setEncryptMethods($c['encmethods']);
+	            }
 
-                $cert->setType('aa');
+
+	            $cert->setType('aa');
                 $cert->setCertUse($c['use']);
                 if (!empty($c['keyname'])) {
                     if (is_array($c['keyname'])) {
@@ -2388,6 +2393,10 @@ class Provider
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
+	            if(array_key_exists('encmethods',$c) && count($c['encmethods'])>0)
+	            {
+		            $cert->setEncryptMethods($c['encmethods']);
+	            }
 
                 $cert->setType('idpsso');
                 $cert->setCertUse($c['use']);
@@ -2472,7 +2481,12 @@ class Provider
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
-                $cert->setType('spsso');
+	            if(array_key_exists('encmethods',$c) && count($c['encmethods'])>0)
+	            {
+		            $cert->setEncryptMethods($c['encmethods']);
+	            }
+
+	            $cert->setType('spsso');
                 $cert->setCertUse($c['use']);
                 if (!empty($c['keyname'])) {
                     if (is_array($c['keyname'])) {
@@ -2548,19 +2562,19 @@ class Provider
         }
         if ($full & !empty($a['regpol'])) {
             foreach ($a['regpol'] as $v) {
-                \log_message('debug', 'GKS SS regpollll');
                 $b = $this->em->getRepository("models\Coc")->findOneBy(array('type' => 'regpol', 'is_enabled' => true, 'lang' => $v['lang'], 'url' => $v['url']));
                 if (!empty($b)) {
                     $this->setCoc($b);
                 }
             }
         }
-        if ($full & !empty($a['algs'])) {
+        if ($full && !empty($a['algs'])) {
+
             foreach ($a['algs'] as $alg) {
                 $e = new ExtendMetadata();
                 $e->setElement($alg['name']);
                 $e->setNamespace('alg');
-                $e->setValue($a['algorithm']);
+                $e->setValue($alg['algorithm']);
                 $e->setType('ent');
                 if (!empty($alg['minkeysize'])) {
                     $algattr['MinKeySize'] = $alg['minkeysize'];

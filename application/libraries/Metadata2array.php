@@ -219,14 +219,14 @@ class Metadata2array
                         } elseif ($enode->nodeName === 'alg:DigestMethod') {
                             $entity['algs'][] = array(
                                 'name' => 'DigestMethod',
-                                'algorithm' => $enode2->getAttribute('Algorithm'),
+                                'algorithm' => $enode->getAttribute('Algorithm'),
                             );
                         } elseif ($enode->nodeName === 'alg:SigningMethod') {
                             $tmlentry = array(
                                 'name' => 'SigningMethod',
-                                'algorithm' => $enode2->getAttribute('Algorithm'),
-                                'minkeysize' => $enode2->getAttribute('MinKeySize'),
-                                'maxkeysize'=>$enode2->getAttribute('MaxKeySize'),
+                                'algorithm' => $enode->getAttribute('Algorithm'),
+                                'minkeysize' => $enode->getAttribute('MinKeySize'),
+                                'maxkeysize'=>$enode->getAttribute('MaxKeySize'),
 
                             );
                             $entity['algs'][] = $tmlentry;
@@ -401,7 +401,7 @@ class Metadata2array
             }
             elseif($child->nodeName === 'md:EncryptionMethod' || $child->nodeName === 'EncryptionMethod')
             {
-                $cert['encmethods'][] = $child->nodeName->getAttribute('Algorithm');
+                $cert['encmethods'][] = $child->getAttribute('Algorithm');
             }
         }
         return $cert;

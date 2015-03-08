@@ -212,10 +212,11 @@ class Providertoxml
                 $xml->startElementNs('alg',$algElement,null);
                 $xml->writeAttribute('Algorithm',$algAlgorithm);
                 $algattrs = $alg->getAttributes();
-                foreach($algattrs as $k=>$a)
-                {
-                    $xml->writeAttribute($k,$a);
-                }
+	            if(is_array($algattrs)) {
+		            foreach ($algattrs as $k => $a) {
+			            $xml->writeAttribute($k, $a);
+		            }
+	            }
                 $xml->endElement();
             }
             $xml->endElement(); //end extensions element

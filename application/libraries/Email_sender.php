@@ -98,7 +98,7 @@ class Email_sender {
                         }
                     }
                 }
-                elseif ($v instanceOf models\Federation)
+                elseif ($obj instanceOf models\Federation)
                 {
                     $objId = $obj->getId();
                     $fed = $s->getFederation();
