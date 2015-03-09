@@ -63,7 +63,7 @@ class Regpolicy extends MY_Controller
                 /**
                  * @todo add extracting row to show providers connected to policy
                  */
-                $data['rows'][] = array($c->getName(), $c->getLang(), $lbl, anchor($c->getUrl(), $c->getUrl(), array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(), $l);
+                $data['rows'][] = array($c->getName(), $c->getLang(),  anchor($c->getUrl(), $c->getUrl(), array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(),$lbl, $l);
 
             }
         } else {
