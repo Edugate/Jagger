@@ -96,8 +96,11 @@ class Entityedit extends MY_Controller
 			$this->form_validation->set_rules('f[registrationdate]', lang('rr_regdate'), 'trim|valid_date_past');
 			$this->form_validation->set_rules('f[registrationtime]', lang('rr_regtime'), 'trim|valid_time_hhmm');
 			$this->form_validation->set_rules('f[privacyurl]', lang('rr_defaultprivacyurl'), 'trim|valid_url');
-			$this->form_validation->set_rules('f[algs][digest]','Algs digest','trim');
-			$this->form_validation->set_rules('f[algs][sign]','Algs sign','trim');
+            $allowedDigestMethods = j_DigestMethods();
+            $allowedSigningMethods = j_SignatureAlgorithms();
+
+            $this->form_validation->set_rules('f[algs][digest][]','DigestMethod','trim|in_list['.implode(",",$allowedDigestMethods).']');
+            $this->form_validation->set_rules('f[algs][digest][]','SigningMethod','trim|in_list['.implode(",",$allowedSigningMethods).']');
 
 			if (array_key_exists('lname', $y['f'])) {
 				foreach ($y['f']['lname'] as $k => $v) {
@@ -189,6 +192,8 @@ class Entityedit extends MY_Controller
 			/**
 			 * certificates
 			 */
+            $allowedEnryptionMethods = j_KeyEncryptionAlgorithms();
+            $allowedEnryptionMethodsInList = implode(",",$allowedEnryptionMethods);
 			if (array_key_exists('crt', $y['f'])) {
 				if (array_key_exists('spsso', $y['f']['crt'])) {
 					foreach ($y['f']['crt']['spsso'] as $k => $v) {
@@ -198,7 +203,8 @@ class Entityedit extends MY_Controller
 							$this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|getPEM|verify_cert');
 						}
 						$this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
-						$this->form_validation->set_rules('f[crt][spsso][' . $k . '][encmethods][]', 'EncryptionMethod', 'trim');
+						$this->form_validation->set_rules('f[crt][spsso][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list['.$allowedEnryptionMethodsInList.']');
+
 					}
 				}
 				if (array_key_exists('idpsso', $y['f']['crt'])) {
@@ -209,6 +215,7 @@ class Entityedit extends MY_Controller
 							$this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|getPEM|verify_cert');
 						}
 						$this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
+                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list['.$allowedEnryptionMethodsInList.']');
 					}
 				}
 				if (array_key_exists('aa', $y['f']['crt'])) {
@@ -219,6 +226,7 @@ class Entityedit extends MY_Controller
 							$this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|getPEM|verify_cert');
 						}
 						$this->form_validation->set_rules('f[crt][aa][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
+                        $this->form_validation->set_rules('f[crt][aa][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list['.$allowedEnryptionMethodsInList.']');
 					}
 				}
 			}
