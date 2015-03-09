@@ -127,10 +127,11 @@ $foundation = $base_url . 'foundation/';
 </header>
 <?php
 
-if (!empty($isBreadcrumbs['status'])) {
+if ($loggedin && !empty($isBreadcrumbs['status'])) {
     echo '<div class="row fullWidth">';
     echo '<ul class="breadcrumbs">';
-    $prefBreadcrumbs =  array(array('url' => base_url(), 'name' => lang('dashboard')));
+    $prefBreadcrumbs = array(array('url' => base_url(), 'name' => lang('dashboard')));
+
     if(empty($breadcrumbs))
     {
         $breadcrumbs  = array();
