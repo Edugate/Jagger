@@ -147,8 +147,6 @@ class Idpmatrix extends MY_Controller
 		$data['titlepage'] = lang('identityprovider') . ': ' . anchor('' . base_url() . 'providers/detail/show/' . $data['idpid'], $data['idpname']) . '<br />' . $data['entityid'];
 		$data['subtitlepage'] = lang('rr_arpoverview');
 		$data['breadcrumbs'] = array(
-			array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
-			array('url' => base_url(), 'name' => lang('dashboard')),
             array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
 			array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . html_escape($data['idpname']) . ''),
 			array('url' => '#', 'name' => lang('rr_arpoverview'), 'type' => 'current'),

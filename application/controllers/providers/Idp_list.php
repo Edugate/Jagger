@@ -187,8 +187,6 @@ class Idp_list extends MY_Controller {
         $data['titlepage'] = lang('rr_tbltitle_listidps');
         $data['subtitlepage'] = ' ';
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url' => '#', 'name' => lang('identityproviders'),'type'=>'current'),
 
 

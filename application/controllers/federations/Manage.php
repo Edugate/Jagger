@@ -44,8 +44,6 @@ class Manage extends MY_Controller
 			redirect('auth/login', 'location');
 		} else {
             $data['breadcrumbs'] = array(
-                array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
-                array('url' => base_url(), 'name' => lang('dashboard')),
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations'),'type'=>'current'),
 
 
@@ -359,8 +357,6 @@ class Manage extends MY_Controller
 		$this->title = lang('rr_federation_detail');
 
         $data['breadcrumbs'] = array(
-			array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
-			array('url' => base_url(), 'name' => lang('dashboard')),
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
 			array('url' => '#', 'name' => '' . $federation->getName() . '', 'type' => 'current'),
 

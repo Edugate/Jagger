@@ -93,8 +93,6 @@ class Ec extends MY_Controller {
         $data['titlepage'] = lang('ent_list_title');
 
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>'#','name'=>lang('entcats_menulink'),'type'=>'current'),
         );
         $data['content_view'] = 'manage/coc_show_view';
@@ -182,8 +180,6 @@ class Ec extends MY_Controller {
             $data['form'] = $f;
         }
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>base_url('manage/ec/show'),'name'=>lang('title_entcats')),
             array('url'=>'#','name'=>lang('title_addentcat'),'type'=>'current'),
         );
@@ -249,8 +245,6 @@ class Ec extends MY_Controller {
         $f .= form_close();
         $data['form'] = $f;
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>base_url('manage/ec/show'),'name'=>lang('title_entcats')),
             array('url'=>'#','name'=>lang('title_editform'),'type'=>'current'),
         );

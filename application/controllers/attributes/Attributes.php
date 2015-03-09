@@ -126,8 +126,6 @@ class Attributes extends MY_Controller {
             $data['isadmin'] = false;
         }
 	    $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>'#','name'=>lang('attrsdeflist'),'type'=>'current'),
 
         );

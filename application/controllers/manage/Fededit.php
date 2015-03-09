@@ -88,8 +88,6 @@ class Fededit extends MY_Controller {
         $fedurl= base64url_encode($fed->getName());
         $group = "federation";
         $data['breadcrumbs'] = array(
-            array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
-            array('url' => base_url(), 'name' => lang('dashboard')),
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
             array('url' => base_url('federations/manage/show/'.$fedurl.''), 'name' => '' . $fed->getName() . ''),
             array('url'=>'#','type'=>'current','name'=>lang('title_editform'))

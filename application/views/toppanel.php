@@ -10,7 +10,13 @@
                 {
                    $siteLogo = 'logo-default.png';
                 }
-                echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $siteLogo . '" alt="Logo" style="max-height: 40px; margin-top: 2px; padding-right: 5px;"/></a>';
+                if($loggedin) {
+                    echo '<a href="' . $base_url . 'home"><img src="' . $base_url . 'images/' . $siteLogo . '" alt="Logo" style="max-height: 40px; margin-top: 2px; padding-right: 5px;"/></a>';
+                }
+                else
+                {
+                    echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $siteLogo . '" alt="Logo" style="max-height: 40px; margin-top: 2px; padding-right: 5px;"/></a>';
+                }
                 ?>
 
             </li>
