@@ -100,7 +100,7 @@ class Entityedit extends MY_Controller
             $allowedSigningMethods = j_SignatureAlgorithms();
 
             $this->form_validation->set_rules('f[algs][digest][]','DigestMethod','trim|in_list['.implode(",",$allowedDigestMethods).']');
-            $this->form_validation->set_rules('f[algs][digest][]','SigningMethod','trim|in_list['.implode(",",$allowedSigningMethods).']');
+            $this->form_validation->set_rules('f[algs][signing][]','SigningMethod','trim|in_list['.implode(",",$allowedSigningMethods).']');
 
 			if (array_key_exists('lname', $y['f'])) {
 				foreach ($y['f']['lname'] as $k => $v) {
