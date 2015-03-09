@@ -1114,7 +1114,7 @@ class Form_element
 				if (in_array($a, $selected_options)) {
 					$is = TRUE;
 				}
-				$r .= '<div>' . form_checkbox(array('name' => 'f[prot][idpsso][]', 'id' => 'f[prot][idpsso][]', 'value' => $a, 'checked' => $is)) . $a . '</div>';
+				$r .= '<div><label>' . form_checkbox(array('name' => 'f[prot][idpsso][]', 'id' => 'f[prot][idpsso][]', 'value' => $a, 'checked' => $is)) .' '. $a . '</label></div>';
 			}
 			$r .= '</div></div></div>';
 			$result[] = '';
@@ -1155,7 +1155,7 @@ class Form_element
 			$r .= '<div class="small-3 large-3 columns">&nbsp;</div>';
 			$r .= '<div class="small-8 large-7 columns nsortable end">';
 			foreach ($chp as $n) {
-				$r .= '<div>' . form_checkbox($n) . $n['value'] . '</div>';
+				$r .= '<div><label>' . form_checkbox($n) .' '. $n['value'] . '</label></div>';
 			}
 			$r .= '</div>';
 			$r .= '</div>';
@@ -1273,7 +1273,7 @@ class Form_element
 				if (in_array($a, $selected_options)) {
 					$is = TRUE;
 				}
-				$r .= '<div>' . form_checkbox(array('name' => 'f[prot][aa][]', 'id' => 'f[prot][aa][]', 'value' => $a, 'checked' => $is)) . $a . '</div>';
+				$r .= '<div><label>' . form_checkbox(array('name' => 'f[prot][aa][]', 'id' => 'f[prot][aa][]', 'value' => $a, 'checked' => $is)) .' '. $a . '</label></div>';
 			}
 			$r .= '</div>';
 			$r .= '</div>';
@@ -1314,7 +1314,7 @@ class Form_element
 			$r .= '<div class="small-3 large-3 columns">&nbsp;</div>';
 			$r .= '<div class="small-8 large-7 columns nsortable end">';
 			foreach ($chp as $n) {
-				$r .= '<div>' . form_checkbox($n) . $n['value'] . '</div>';
+				$r .= '<div><label>' . form_checkbox($n) .' '. $n['value'] . '</label></div>';
 			}
 			$r .= '</div></div>';
 			$result[] = '';
@@ -1699,7 +1699,7 @@ class Form_element
 				if (in_array($a, $selected_options)) {
 					$is = TRUE;
 				}
-				$r .= '<div>' . form_checkbox(array('name' => 'f[prot][spsso][]', 'id' => 'f[prot][spsso][]', 'value' => $a, 'checked' => $is)) . $a . '</div>';
+				$r .= '<div><label>' . form_checkbox(array('name' => 'f[prot][spsso][]', 'id' => 'f[prot][spsso][]', 'value' => $a, 'checked' => $is)) .' '. $a . '</label></div>';
 			}
 			$r .= '</div>';
 			$r .= '</div>';
@@ -1741,7 +1741,7 @@ class Form_element
 			$r .= '<div class="small-3 large-3 columns">&nbsp;</div>';
 			$r .= '<div class="small-8 large-7 columns nsortable">';
 			foreach ($chp as $n) {
-				$r .= '<div>' . form_checkbox($n) . $n['value'] . '</div>';
+				$r .= '<div><label>' . form_checkbox($n) .' '. $n['value'] . '</label></div>';
 			}
 			$r .= '</div>';
 			$r .= '<div class="columns"></div>';
