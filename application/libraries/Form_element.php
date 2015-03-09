@@ -829,77 +829,7 @@ class Form_element
 		$result[] = jGenerateInput(lang('rr_entityid'), 'f[entityid]', $t1, $class_ent, FALSE, $addargs);
 
 		$result[] = '';
-		// algs global
-		$result[] = '';
-		$result[] = '<div class="section">Algorithms support</div>';
-		$templatesDigest = j_DigestMethods();
-		$templateSign = j_SignatureAlgorithms();
-		$sesdigests = array();
-		$sessignings = array();
-		if ($sessform) {
 
-			if (isset($ses['algs']['digest']) && is_array($ses['algs']['digest'])) {
-				$sesdigests = $ses['algs']['digest'];
-			}
-
-			if (isset($ses['algs']['signing']) && is_array($ses['algs']['signing'])) {
-				$sessignings = $ses['algs']['signing'];
-			}
-		} else {
-			$extend = $ent->getExtendMetadata();
-			if (!empty($extend)) {
-				foreach ($extend as $ex) {
-					if ($ex->getType() === 'ent' && $ex->getNamespace() === 'alg') {
-
-						if ($ex->getElement() === 'DigestMethod') {
-							$sesdigests[] = $ex->getEvalue();
-						} elseif ($ex->getElement() === 'SigningMethod') {
-							$sessignings[] = $ex->getEvalue();
-						}
-					}
-				}
-			}
-		}
-
-		$digestmethods = '<div class="small-12 column"><div class="small-3 column"></div><div class="small-9 column">';
-
-		foreach ($templatesDigest as $tmpdigest) {
-			if (in_array($tmpdigest, $sesdigests)) {
-				$digestmethods .= '<label><input type="checkbox" name="f[algs][digest][]" value="' . $tmpdigest . '" checked="checked"> ' . $tmpdigest . '</label>';
-			} else {
-				$digestmethods .= '<label><input type="checkbox" name="f[algs][digest][]" value="' . $tmpdigest . '" > ' . $tmpdigest . '</label>';
-			}
-		}
-
-		$digestmethods .= '</div></div>';
-		$result[] = '';
-
-		$result[] = '<fieldset><legend>DigestMethods</legend>' . $digestmethods . '</fieldset>';
-		$result[] = '';
-
-
-		$signingmethods = '<div class="small-12 column"><div class="small-3 column"></div><div class="small-9 column">';
-		foreach ($templateSign as $tmpsign) {
-			if (in_array($tmpsign, $sessignings)) {
-				$signingmethods .= '<label><input type="checkbox" name="f[algs][signing][]" value="' . $tmpsign . '" checked="checked"> ' . $tmpsign . '</label>';
-			} else {
-				$signingmethods .= '<label><input type="checkbox" name="f[algs][signing][]" value="' . $tmpsign . '" > ' . $tmpsign . '</label>';
-			}
-		}
-
-		$signingmethods .= '</div></div>';
-
-
-		$result[] = '';
-
-		$result[] = '<fieldset><legend>SigningMethod</legend>' . $signingmethods . '</fieldset>';
-		$result[] = '';
-
-
-		$result[] = '';
-
-
-		// end algs global
 
 		$ssotmpl = array();
 		$acsbindprotocols = array();
@@ -930,9 +860,9 @@ class Form_element
 
 
 		if ($idppart) {
-			if ($sppart) {
-				$result[] = '<div class="section">' . lang('identityprovider') . '</div>';
-			}
+
+			$result[] = '<div class="section">IDPSSODescriptor</div>';
+
 			/**
 			 * generate SSO part
 			 */
@@ -1259,7 +1189,7 @@ class Form_element
 			/**
 			 * start AttributeAuthorityDescriptor Locations
 			 */
-			$result[] = '<div class="section">Attribute Authority</div>';
+			$result[] = '<div class="section">AttributeAuthorityDescriptor</div>';
 			$aabinds = getAllowedSOAPBindings();
 			$aalo = array();
 
@@ -1412,9 +1342,9 @@ class Form_element
 			$result[] = '';
 		}
 		if ($sppart) {
-			if ($idppart) {
-				$result[] = '<div class="section">' . lang('serviceprovider') . '</div>';
-			}
+
+			$result[] = '<div class="section">SPSSODescriptor</div>';
+
 
 			/**
 			 * generate ACS part
@@ -1826,6 +1756,78 @@ class Form_element
 			 */
 		}
 
+
+        // algs global
+        $result[] = '';
+        $result[] = '<div class="section">Algorithms support</div>';
+        $templatesDigest = j_DigestMethods();
+        $templateSign = j_SignatureAlgorithms();
+        $sesdigests = array();
+        $sessignings = array();
+        if ($sessform) {
+
+            if (isset($ses['algs']['digest']) && is_array($ses['algs']['digest'])) {
+                $sesdigests = $ses['algs']['digest'];
+            }
+
+            if (isset($ses['algs']['signing']) && is_array($ses['algs']['signing'])) {
+                $sessignings = $ses['algs']['signing'];
+            }
+        } else {
+            $extend = $ent->getExtendMetadata();
+            if (!empty($extend)) {
+                foreach ($extend as $ex) {
+                    if ($ex->getType() === 'ent' && $ex->getNamespace() === 'alg') {
+
+                        if ($ex->getElement() === 'DigestMethod') {
+                            $sesdigests[] = $ex->getEvalue();
+                        } elseif ($ex->getElement() === 'SigningMethod') {
+                            $sessignings[] = $ex->getEvalue();
+                        }
+                    }
+                }
+            }
+        }
+
+        $digestmethods = '<div class="small-12 column"><div class="small-3 column"></div><div class="small-9 column">';
+
+        foreach ($templatesDigest as $tmpdigest) {
+            if (in_array($tmpdigest, $sesdigests)) {
+                $digestmethods .= '<label><input type="checkbox" name="f[algs][digest][]" value="' . $tmpdigest . '" checked="checked"> ' . $tmpdigest . '</label>';
+            } else {
+                $digestmethods .= '<label><input type="checkbox" name="f[algs][digest][]" value="' . $tmpdigest . '" > ' . $tmpdigest . '</label>';
+            }
+        }
+
+        $digestmethods .= '</div></div>';
+        $result[] = '';
+
+        $result[] = '<fieldset><legend>DigestMethods</legend>' . $digestmethods . '</fieldset>';
+        $result[] = '';
+
+
+        $signingmethods = '<div class="small-12 column"><div class="small-3 column"></div><div class="small-9 column">';
+        foreach ($templateSign as $tmpsign) {
+            if (in_array($tmpsign, $sessignings)) {
+                $signingmethods .= '<label><input type="checkbox" name="f[algs][signing][]" value="' . $tmpsign . '" checked="checked"> ' . $tmpsign . '</label>';
+            } else {
+                $signingmethods .= '<label><input type="checkbox" name="f[algs][signing][]" value="' . $tmpsign . '" > ' . $tmpsign . '</label>';
+            }
+        }
+
+        $signingmethods .= '</div></div>';
+
+
+        $result[] = '';
+
+        $result[] = '<fieldset><legend>SigningMethod</legend>' . $signingmethods . '</fieldset>';
+        $result[] = '';
+
+
+        $result[] = '';
+
+
+        // end algs global
 
 		return $result;
 	}
