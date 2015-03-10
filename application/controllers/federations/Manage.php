@@ -840,6 +840,12 @@ class Manage extends MY_Controller
 
 		$data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()) . '">' . $federation->getName() . '</a>';
 
+        $data['fedurl'] = base_url('federations/manage/show/'.base64url_encode($federation->getName()).'');
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+            array('url' => base_url('federations/manage/show/'.base64url_encode($federation->getName()).''), 'name' => html_escape($federation->getName())),
+            array('url' => base_url('#'), 'name' => 'Invitation','type'=>'current'),
+        );
 		$data['content_view'] = 'federation/invite_provider_view';
 		$this->load->view('page', $data);
 	}
