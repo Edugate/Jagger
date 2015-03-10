@@ -162,8 +162,6 @@ class Supported_attributes extends MY_Controller {
 
 
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
             array('url'=>base_url('providers/detail/show/'.$idp->getId().''),'name'=>''.$providerNameInLang.''),
             array('url'=>base_url('manage/attributepolicy/globals/'.$idp->getId().''),'name'=>''.lang('rr_attributereleasepolicy').''),

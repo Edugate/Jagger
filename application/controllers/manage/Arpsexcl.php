@@ -56,8 +56,6 @@ class Arpsexcl extends MY_Controller
                 'error' => '' . lang('rrerror_noperm_provedit') . ': ' . $idp->getEntityid() . '',
             );
             $data['breadcrumbs'] = array(
-                array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
-                array('url' => base_url(), 'name' => lang('dashboard')),
                 array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
                 array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
                 array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
@@ -72,8 +70,6 @@ class Arpsexcl extends MY_Controller
             $data['error'] = lang('rr_lockedentity') . $idp->getEntityid();
             log_message('debug', $idp->getEntityid() . ': is locked and cannot be edited');
             $data['breadcrumbs'] = array(
-                array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
-                array('url' => base_url(), 'name' => lang('dashboard')),
                 array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
                 array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
                 array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
@@ -88,8 +84,6 @@ class Arpsexcl extends MY_Controller
             $data['error'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), $idp->getName()) . ' ' . lang('rerror_cannotmanageexternal');
             $data['content_view'] = "nopermission";
             $data['breadcrumbs'] = array(
-                array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
-                array('url' => base_url(), 'name' => lang('dashboard')),
                 array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
                 array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
                 array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
@@ -128,8 +122,6 @@ class Arpsexcl extends MY_Controller
             'subtitlepage' => lang('rr_arpexcl1')
         );
         $data['breadcrumbs'] = array(
-            array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
-            array('url' => base_url(), 'name' => lang('dashboard')),
             array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
             array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
             array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),

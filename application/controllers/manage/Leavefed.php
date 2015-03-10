@@ -101,8 +101,6 @@ class Leavefed extends MY_Controller {
             $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
         }
 	    $data['breadcrumbs'] = array(
-		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-		    array('url'=>base_url(),'name'=>lang('dashboard')),
             $plist,
 		    array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.html_escape($data['name']).''),
 		    array('url'=>'#','name'=>lang('leavefederation'),'type'=>'current'),

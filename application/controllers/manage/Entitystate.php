@@ -103,8 +103,6 @@ class Entitystate extends MY_Controller {
             $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
         }
 	    $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             $plist,
             array('url'=>base_url('providers/detail/show/'.$this->entity->getId().''),'name'=>''.html_escape($titlename).''),
             array('url'=>'#','name'=>lang('title_regpols'),'type'=>'current'),
@@ -231,8 +229,6 @@ class Entitystate extends MY_Controller {
             $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
         }
 	    $data['breadcrumbs'] = array(
-		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-		    array('url'=>base_url(),'name'=>lang('dashboard')),
             $plist,
 		    array('url'=>base_url('providers/detail/show/'.$this->entity->getId().''),'name'=>''.html_escape($titlename).''),
 		    array('url'=>'#','name'=>lang('rr_status_mngmt'),'type'=>'current'),

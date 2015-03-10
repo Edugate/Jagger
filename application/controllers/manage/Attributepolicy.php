@@ -353,8 +353,6 @@ class Attributepolicy extends MY_Controller
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
             array('url'=>base_url('providers/detail/show/'.$idp->getId().''),'name'=>''.$providerNameInLang.''),
             array('url'=>'#','name'=>lang('rr_attributereleasepolicy'),'type'=>'current'),

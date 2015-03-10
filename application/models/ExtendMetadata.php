@@ -167,6 +167,10 @@ class ExtendMetadata {
 
     public function getAttributes()
     {
+	    if(is_null($this->attrs))
+	    {
+		    return array();
+	    }
         return unserialize($this->attrs);
     }
 

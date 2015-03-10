@@ -6,16 +6,16 @@ use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 /**
  * Provider Class
- * 
+ *
  * @package     RR3
  * @subpackage  Models
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
@@ -25,7 +25,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * Provider Model
  *
  * This model for Identity and Service Providers definitions
- * 
+ *
  * @Entity
  * @HasLifecycleCallbacks
  * @Table(name="provider",indexes={@Index(name="type_idx", columns={"type"}),@Index(name="pname_idx", columns={"name"}),@Index(name="islocal_idx", columns={"is_local"})})
@@ -95,7 +95,7 @@ class Provider
     protected $protocol;
 
     /**
-     * new of all values from protocolSupportEnumeration in idpsso,spsso,aa 
+     * new of all values from protocolSupportEnumeration in idpsso,spsso,aa
      * @Column(type="text",nullable=true)
      */
     protected $protocolsupport;
@@ -331,146 +331,112 @@ class Provider
         $this->is_approved = TRUE;
         $this->hidepublic = FALSE;
         $this->is_locked = FALSE;
-        $this->ci = & get_instance();
+        $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
 
     public function diffProviderToArray(Provider $provider)
     {
         $differ = array();
-        if ($provider->getName() != $this->getName())
-        {
+        if ($provider->getName() != $this->getName()) {
             $differ['Name']['before'] = $provider->getName();
             $differ['Name']['after'] = $this->getName();
         }
-        if ($provider->getDisplayName() != $this->getDisplayName())
-        {
+        if ($provider->getDisplayName() != $this->getDisplayName()) {
             $differ['Displayname']['before'] = $provider->getDisplayName();
             $differ['Displayname']['after'] = $this->getDisplayName();
         }
-        if ($provider->getHelpdeskUrl() != $this->getHelpdeskUrl())
-        {
+        if ($provider->getHelpdeskUrl() != $this->getHelpdeskUrl()) {
             $differ['Helpdesk URL']['before'] = $provider->getHelpdeskUrl();
             $differ['Helpdesk URL']['after'] = $this->getHelpdeskUrl();
         }
-        if ($provider->getPrivacyUrl() != $this->getPrivacyUrl())
-        {
+        if ($provider->getPrivacyUrl() != $this->getPrivacyUrl()) {
             $differ['PrivacyStatement URL']['before'] = $provider->getPrivacyUrl();
             $differ['ProvideStatement URL']['after'] = $this->getPrivacyUrl();
         }
-        if ($provider->getRegistrationAuthority() != $this->getRegistrationAuthority())
-        {
+        if ($provider->getRegistrationAuthority() != $this->getRegistrationAuthority()) {
             $differ['Registration Authority']['before'] = $provider->getRegistrationAuthority();
             $differ['Registration Authority']['after'] = $this->getRegistrationAuthority();
         }
-        if ($provider->getRegistrationDate() != $this->getRegistrationDate())
-        {
+        if ($provider->getRegistrationDate() != $this->getRegistrationDate()) {
             $rgbefore = $provider->getRegistrationDate();
-            if (!empty($rgbefore))
-            {
+            if (!empty($rgbefore)) {
                 $differ['Registration Date']['before'] = $rgbefore->format('Y-m-d');
-            }
-            else
-            {
+            } else {
                 $differ['Registration Date']['before'] = null;
             }
             $rgafter = $this->getRegistrationDate();
-            if (!empty($rgafter))
-            {
+            if (!empty($rgafter)) {
                 $rgafter = $this->getRegistrationDate();
                 $differ['Registration Date']['after'] = $rgafter->format('Y-m-d');
-            }
-            else
-            {
+            } else {
                 $differ['Registration Date']['after'] = null;
             }
         }
 
-        if ($provider->getEntityId() != $this->getEntityId())
-        {
+        if ($provider->getEntityId() != $this->getEntityId()) {
             $differ['EntityID']['before'] = $provider->getEntityId();
             $differ['EntityID']['after'] = $this->getEntityId();
         }
-        if (serialize($provider->getScope('idpsso')) != serialize($this->getScope('idpsso')))
-        {
+        if (serialize($provider->getScope('idpsso')) != serialize($this->getScope('idpsso'))) {
             $differ['Scope']['before'] = implode(',', $provider->getScope('idpsso'));
             $differ['Scope']['after'] = implode(',', $this->getScope('idpsso'));
         }
         $nameids_before = $provider->getNameIdToArray();
         $nameids_after = $this->getNameIdToArray();
-        if ($nameids_before != $nameids_after)
-        {
+        if ($nameids_before != $nameids_after) {
             $differ['nameids']['before'] = implode(', ', $nameids_before);
             $differ['nameids']['after'] = implode(', ', $nameids_after);
         }
 
 
-
-        if ($provider->getCountry() != $this->getCountry())
-        {
+        if ($provider->getCountry() != $this->getCountry()) {
             $differ['Country']['before'] = $provider->getCountry();
             $differ['Country']['after'] = $this->getCountry();
         }
 
         $tmp_provider_validto = $provider->getValidTo();
         $tmp_this_validto = $this->getValidTo();
-        if (!empty($tmp_provider_validto))
-        {
+        if (!empty($tmp_provider_validto)) {
             $validto_before = $provider->getValidTo()->format('Y-m-d');
-        }
-        else
-        {
+        } else {
             $validto_before = '';
         }
-        if (!empty($tmp_this_validto))
-        {
+        if (!empty($tmp_this_validto)) {
             $validto_after = $this->getValidTo()->format('Y-m-d');
-        }
-        else
-        {
+        } else {
             $validto_after = '';
         }
 
-        if ($validto_before != $validto_after)
-        {
+        if ($validto_before != $validto_after) {
             $differ['ValidTo']['before'] = $validto_before;
             $differ['ValidTo']['after'] = $validto_after;
         }
         $tmp_provider_validfrom = $provider->getValidFrom();
         $tmp_this_validfrom = $this->getValidFrom();
-        if (!empty($tmp_provider_validfrom))
-        {
+        if (!empty($tmp_provider_validfrom)) {
             $validfrom_before = $provider->getValidFrom()->format('Y-m-d');
-        }
-        else
-        {
+        } else {
             $validfrom_before = '';
         }
-        if (!empty($tmp_this_validfrom))
-        {
+        if (!empty($tmp_this_validfrom)) {
             $validfrom_after = $this->getValidFrom()->format('Y-m-d');
-        }
-        else
-        {
+        } else {
             $validfrom_after = '';
         }
-        if ($validfrom_before != $validfrom_after)
-        {
+        if ($validfrom_before != $validfrom_after) {
             $differ['ValidFrom']['before'] = $validfrom_before;
             $differ['ValidFrom']['after'] = $validfrom_after;
         }
-        if ($provider->getType() != $this->getType())
-        {
+        if ($provider->getType() != $this->getType()) {
             $differ['Type']['before'] = $provider->getType();
             $differ['Type']['after'] = $this->getType();
         }
-        if ($provider->getActive() != $this->getActive())
-        {
+        if ($provider->getActive() != $this->getActive()) {
             $differ['Active']['before'] = $provider->getActive();
             $differ['Active']['after'] = $this->getActive();
         }
-        if ($provider->getLocked() != $this->getLocked())
-        {
+        if ($provider->getLocked() != $this->getLocked()) {
             $differ['Locked']['before'] = $provider->getLocked();
             $differ['Locked']['after'] = $this->getLocked();
         }
@@ -482,82 +448,62 @@ class Provider
 
         $ldisplayname_diff1 = array_diff_assoc($ldisplayname_before, $ldisplayname_after);
         $ldisplayname_diff2 = array_diff_assoc($ldisplayname_after, $ldisplayname_before);
-        if (count($ldisplayname_diff1) > 0 || count($ldisplayname_diff2) > 0)
-        {
+        if (count($ldisplayname_diff1) > 0 || count($ldisplayname_diff2) > 0) {
             $tmpstr = '';
-            foreach ($ldisplayname_diff1 as $k => $v)
-            {
+            foreach ($ldisplayname_diff1 as $k => $v) {
                 $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
             }
             $differ['DisplayNameLocalized']['before'] = $tmpstr;
             $tmpstr = '';
-            foreach ($ldisplayname_diff2 as $k => $v)
-            {
+            foreach ($ldisplayname_diff2 as $k => $v) {
                 $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
             }
             $differ['DisplayNameLocalized']['after'] = $tmpstr;
         }
 
 
-
-
-
-
-
         $lname_before = $provider->getLocalName();
-        if ($lname_before == NULL)
-        {
+        if ($lname_before == NULL) {
             $lname_before = array();
         }
         $lname_after = $this->getLocalName();
-        if ($lname_after == NULL)
-        {
+        if ($lname_after == NULL) {
             $lname_after = array();
         }
         $lname_diff1 = array_diff_assoc($lname_before, $lname_after);
         $lname_diff2 = array_diff_assoc($lname_after, $lname_before);
-        if (count($lname_diff1) > 0 || count($lname_diff2) > 0)
-        {
+        if (count($lname_diff1) > 0 || count($lname_diff2) > 0) {
             $tmpstr = '';
-            foreach ($lname_diff1 as $k => $v)
-            {
+            foreach ($lname_diff1 as $k => $v) {
                 $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
             }
             $differ['NameLocalized']['before'] = $tmpstr;
             $tmpstr = '';
-            foreach ($lname_diff2 as $k => $v)
-            {
+            foreach ($lname_diff2 as $k => $v) {
                 $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
             }
             $differ['NameLocalized']['after'] = $tmpstr;
         }
 
 
-
-
         $lname_before = $provider->getLocalHelpdeskUrl();
-        if ($lname_before == NULL)
-        {
+        if ($lname_before == NULL) {
             $lname_before = array();
         }
         $lname_after = $this->getLocalHelpdeskUrl();
-        if ($lname_after == NULL)
-        {
+        if ($lname_after == NULL) {
             $lname_after = array();
         }
         $lname_diff1 = array_diff_assoc($lname_before, $lname_after);
         $lname_diff2 = array_diff_assoc($lname_after, $lname_before);
-        if (count($lname_diff1) > 0 || count($lname_diff2) > 0)
-        {
+        if (count($lname_diff1) > 0 || count($lname_diff2) > 0) {
             $tmpstr = '';
-            foreach ($lname_diff1 as $k => $v)
-            {
+            foreach ($lname_diff1 as $k => $v) {
                 $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
             }
             $differ['HelpdeskURLLocalized']['before'] = $tmpstr;
             $tmpstr = '';
-            foreach ($lname_diff2 as $k => $v)
-            {
+            foreach ($lname_diff2 as $k => $v) {
                 $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
             }
             $differ['HelpdeskURLLocalized']['after'] = $tmpstr;
@@ -565,28 +511,23 @@ class Provider
 
 
         $lname_before = $provider->getLocalPrivacyUrl();
-        if ($lname_before == NULL)
-        {
+        if ($lname_before == NULL) {
             $lname_before = array();
         }
         $lname_after = $this->getLocalPrivacyUrl();
-        if ($lname_after == NULL)
-        {
+        if ($lname_after == NULL) {
             $lname_after = array();
         }
         $lname_diff1 = array_diff_assoc($lname_before, $lname_after);
         $lname_diff2 = array_diff_assoc($lname_after, $lname_before);
-        if (count($lname_diff1) > 0 || count($lname_diff2) > 0)
-        {
+        if (count($lname_diff1) > 0 || count($lname_diff2) > 0) {
             $tmpstr = '';
-            foreach ($lname_diff1 as $k => $v)
-            {
+            foreach ($lname_diff1 as $k => $v) {
                 $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
             }
             $differ['PrivacyStatementURLLocalized']['before'] = $tmpstr;
             $tmpstr = '';
-            foreach ($lname_diff2 as $k => $v)
-            {
+            foreach ($lname_diff2 as $k => $v) {
                 $tmpstr .= $k . ':' . htmlentities($v) . '<br />';
             }
             $differ['PrivacyStatementURLLocalized']['after'] = $tmpstr;
@@ -601,21 +542,18 @@ class Provider
     }
 
     /**
-     * @prePersist 
+     * @prePersist
      */
     public function created()
     {
         $this->createdAt = new \DateTime("now", new \DateTimeZone('UTC'));
-        if (!isset($this->hidepublic))
-        {
+        if (!isset($this->hidepublic)) {
             $this->hidepublic = false;
         }
-        if (empty($this->nameidformat))
-        {
+        if (empty($this->nameidformat)) {
             $this->setNameId();
         }
-        if (empty($this->displayname))
-        {
+        if (empty($this->displayname)) {
             $this->displayname = $this->getName();
         }
     }
@@ -628,42 +566,32 @@ class Provider
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $is_local = $this->is_local;
-        if ($is_local)
-        {
+        if ($is_local) {
             $rescheck = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => $this->id));
-            if (!empty($rescheck))
-            {
+            if (!empty($rescheck)) {
                 return true;
             }
             $parent = array();
 
             $parents = $this->em->getRepository("models\AclResource")->findBy(array('resource' => array('idp', 'sp', 'entity')));
-            foreach ($parents as $p)
-            {
+            foreach ($parents as $p) {
                 $parent[$p->getResource()] = $p;
             }
             $stype = $this->type;
-            if ($stype === 'BOTH')
-            {
+            if ($stype === 'BOTH') {
                 $types = array('entity');
-            }
-            elseif ($stype === 'IDP')
-            {
+            } elseif ($stype === 'IDP') {
                 $types = array('idp');
-            }
-            else
-            {
+            } else {
                 $types = array('sp');
             }
-            foreach ($types as $key)
-            {
+            foreach ($types as $key) {
                 $r = new AclResource;
                 $resource_name = $this->id;
                 $r->setResource($resource_name);
                 $r->setDefaultValue('view');
                 $r->setType('entity');
-                if (array_key_exists($key, $parent))
-                {
+                if (array_key_exists($key, $parent)) {
                     $r->setParent($parent[$key]);
                 }
                 $this->em->persist($r);
@@ -674,11 +602,11 @@ class Provider
     }
 
     /**
-     * @preRemove 
+     * @preRemove
      */
     public function unsetOwner()
     {
-        
+
     }
 
     /**
@@ -703,7 +631,7 @@ class Provider
      */
     public function setAddionals()
     {
-        $this->ci = & get_instance();
+        $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
 
@@ -723,19 +651,14 @@ class Provider
 
     public function setLocalName(array $name = NULL)
     {
-        if (!empty($name))
-        {
-            foreach ($name as $k => $v)
-            {
-                if (empty($v))
-                {
+        if (!empty($name)) {
+            foreach ($name as $k => $v) {
+                if (empty($v)) {
                     unset($name['' . $k . '']);
                 }
             }
             $this->lname = serialize($name);
-        }
-        else
-        {
+        } else {
             $this->lname = NULL;
         }
     }
@@ -748,19 +671,14 @@ class Provider
 
     public function setLocalDisplayName($name = NULL)
     {
-        if (!empty($name) && is_array($name))
-        {
-            foreach ($name as $k => $v)
-            {
-                if (empty($v))
-                {
+        if (!empty($name) && is_array($name)) {
+            foreach ($name as $k => $v) {
+                if (empty($v)) {
                     unset($name['' . $k . '']);
                 }
             }
             $this->ldisplayname = serialize($name);
-        }
-        else
-        {
+        } else {
             $this->ldisplayname = serialize(array());
         }
     }
@@ -768,12 +686,9 @@ class Provider
     public function setRegistrationPolicyFromArray($regarray, $reset = FALSE)
     {
 
-        if ($reset === TRUE)
-        {
+        if ($reset === TRUE) {
             $this->regpolicy = serialize($regarray);
-        }
-        else
-        {
+        } else {
             $s = $this->getRegistrationPolicy();
             $n = array_merge($s, $regarray);
             $this->regpolicy = serialize($n);
@@ -796,11 +711,11 @@ class Provider
     }
 
     /**
-      public function setScope($scope)
-      {
-      $this->scope = $scope;
-      return $this;
-      }
+     * public function setScope($scope)
+     * {
+     * $this->scope = $scope;
+     * return $this;
+     * }
      */
 
     /**
@@ -810,12 +725,9 @@ class Provider
     public function setScope($type, $scope)
     {
         $ex = @unserialize($this->scope);
-        if ($ex === 'b:0;' || $ex !== false)
-        {
+        if ($ex === 'b:0;' || $ex !== false) {
             $ex['' . $type . ''] = $scope;
-        }
-        else
-        {
+        } else {
             $ex = array();
             $ex['' . $type . ''] = $scope;
         }
@@ -826,18 +738,14 @@ class Provider
     private function overwriteScopeFull(Provider $provider)
     {
         $pScope = $provider->getScopeFull();
-        if (!isset($pScope['idpsso']))
-        {
+        if (!isset($pScope['idpsso'])) {
             $pScope['idpsso'] = array();
         }
-        if (!isset($pScope['aa']))
-        {
+        if (!isset($pScope['aa'])) {
             $pScope['aa'] = array();
         }
-        foreach ($pScope as $k => $v)
-        {
-            if ($k === 'idpsso' || $k === 'aa')
-            {
+        foreach ($pScope as $k => $v) {
+            if ($k === 'idpsso' || $k === 'aa') {
                 $this->setScope($k, $v);
             }
         }
@@ -853,13 +761,10 @@ class Provider
     public function setEntityId($entity)
     {
         $entity = trim($entity);
-        if (!empty($entity))
-        {
+        if (!empty($entity)) {
             $this->entityid = $entity;
             return $this;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -872,8 +777,7 @@ class Provider
 
     public function setCountry($country = null)
     {
-        if (!empty($country))
-        {
+        if (!empty($country)) {
             $this->country = $country;
         }
     }
@@ -892,12 +796,10 @@ class Provider
      */
     public function setNameId($nameid = NULL)
     {
-        if (empty($nameid))
-        {
+        if (empty($nameid)) {
             $nameid = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient";
         }
-        if (empty($this->nameidformat))
-        {
+        if (empty($this->nameidformat)) {
             $this->nameidformat = new \Doctrine\Common\Collections\ArrayCollection();
         }
         $this->nameidformat->add($nameid);
@@ -928,8 +830,7 @@ class Provider
 
     public function addMembership(FederationMembers $membership)
     {
-        if (!$this->membership->contains($membership))
-        {
+        if (!$this->membership->contains($membership)) {
             $this->membership->add($membership);
             $membership->setProvider($this);
         }
@@ -951,12 +852,10 @@ class Provider
 
     public function setProtocol($protocol = NULL)
     {
-        if (empty($protocol))
-        {
+        if (empty($protocol)) {
             $protocol = "urn:oasis:names:tc:SAML:2.0:protocol";
         }
-        if (empty($this->protocol))
-        {
+        if (empty($this->protocol)) {
             $this->protocol = new \Doctrine\Common\Collections\ArrayCollection();
         }
         $this->protocol->add($protocol);
@@ -966,13 +865,10 @@ class Provider
     public function setProtocolSupport($n, $data)
     {
         $allowed = array('aa', 'idpsso', 'spsso');
-        if (in_array($n, $allowed) && is_array($data))
-        {
-            foreach ($data as $k => $v)
-            {
+        if (in_array($n, $allowed) && is_array($data)) {
+            foreach ($data as $k => $v) {
                 $i = trim($v);
-                if (empty($i))
-                {
+                if (empty($i)) {
                     unset($data['' . $k . '']);
                 }
             }
@@ -990,7 +886,7 @@ class Provider
     }
 
     /**
-     * setting entity as SP 
+     * setting entity as SP
      */
     public function setSP()
     {
@@ -1033,19 +929,14 @@ class Provider
 
     public function setLocalHelpdeskUrl($urls = NULL)
     {
-        if (!empty($urls) && is_array($urls))
-        {
-            foreach ($urls as $k => $v)
-            {
-                if (empty($v))
-                {
+        if (!empty($urls) && is_array($urls)) {
+            foreach ($urls as $k => $v) {
+                if (empty($v)) {
                     unset($urls['' . $k . '']);
                 }
             }
             $this->lhelpdeskurl = serialize($urls);
-        }
-        else
-        {
+        } else {
             $this->lhelpdeskurl = NULL;
         }
     }
@@ -1057,12 +948,9 @@ class Provider
 
     public function setLocalPrivacyUrl(array $url = null)
     {
-        if (!empty($url))
-        {
+        if (!empty($url)) {
             $this->lprivacyurl = serialize($url);
-        }
-        else
-        {
+        } else {
             $this->lprivacyurl = NULL;
         }
     }
@@ -1075,12 +963,9 @@ class Provider
 
     public function setRegistrationDate(\DateTime $date = null)
     {
-        if (empty($date))
-        {
+        if (empty($date)) {
             $this->registerdate = NULL;
-        }
-        else
-        {
+        } else {
             $this->registerdate = $date->setTimezone(new \DateTimeZone('UTC'));
         }
         return $this;
@@ -1091,12 +976,9 @@ class Provider
      */
     public function setValidTo(\DateTime $date = NULL)
     {
-        if (empty($date))
-        {
+        if (empty($date)) {
             $this->validto = NULL;
-        }
-        else
-        {
+        } else {
             $this->validto = $date->setTimezone(new \DateTimeZone('UTC'));
         }
         return $this;
@@ -1104,12 +986,9 @@ class Provider
 
     public function setValidFrom(\DateTime $date = NULL)
     {
-        if (empty($date))
-        {
+        if (empty($date)) {
             $this->validfrom = NULL;
-        }
-        else
-        {
+        } else {
             $this->validfrom = $date->setTimezone(new \DateTimeZone('UTC'));
         }
         return $this;
@@ -1130,53 +1009,38 @@ class Provider
         $this->em = $this->ci->doctrine->em;
         $ex = $this->getExtendMetadata();
         $parent = null;
-        foreach ($ex as $e)
-        {
-            if (!empty($parent))
-            {
+        foreach ($ex as $e) {
+            if (!empty($parent)) {
                 break;
-            }
-            else
-            {
-                if (empty($p) && $e->getType() === $type && $e->getNameSpace() === 'mdui' && $e->getElement() === 'UIInfo')
-                {
+            } else {
+                if (empty($p) && $e->getType() === $type && $e->getNameSpace() === 'mdui' && $e->getElement() === 'UIInfo') {
                     $parent = $e;
                 }
             }
         }
-        foreach ($ex as $e)
-        {
+        foreach ($ex as $e) {
             $origElementName = $e->getElement();
             $origType = $e->getType();
             $origNameSpace = $e->getNameSpace();
-            if ($origElementName === $elementName && $origType === $type && $origNameSpace === 'mdui')
-            {
+            if ($origElementName === $elementName && $origType === $type && $origNameSpace === 'mdui') {
                 $t = $e->getAttributes();
                 $lvalue = $t['xml:lang'];
-                if (array_key_exists($lvalue, $descriptions))
-                {
-                    if (!empty($descriptions[$lvalue]))
-                    {
+                if (array_key_exists($lvalue, $descriptions)) {
+                    if (!empty($descriptions[$lvalue])) {
                         $e->setValue($descriptions[$lvalue]);
-                    }
-                    else
-                    {
+                    } else {
                         $ex->removeElement($e);
                         $this->em->remove($e);
                     }
                     unset($descriptions[$lvalue]);
-                }
-                else
-                {
+                } else {
                     $ex->removeElement($e);
                     $this->em->remove($e);
                 }
             }
         }
-        if (count($descriptions) > 0)
-        {
-            foreach ($descriptions as $k => $v)
-            {
+        if (count($descriptions) > 0) {
+            foreach ($descriptions as $k => $v) {
                 $nelement = new ExtendMetadata();
                 $nelement->setType($type);
                 $nelement->setNameSpace('mdui');
@@ -1184,8 +1048,7 @@ class Provider
                 $nelement->setValue($v);
                 $attr = array('xml:lang' => $k);
                 $nelement->setAttributes($attr);
-                if (empty($parent))
-                {
+                if (empty($parent)) {
                     $parent = new ExtendMetadata();
                     $parent->setType($type);
                     $parent->setNameSpace('mdui');
@@ -1204,20 +1067,16 @@ class Provider
 
     public function setWayfList($wayflist = null)
     {
-        if (!empty($wayflist) && is_array($wayflist))
-        {
+        if (!empty($wayflist) && is_array($wayflist)) {
             $this->wayflist = serialize($wayflist);
         }
     }
 
     public function setExcarps($excarps = null)
     {
-        if (!empty($excarps) && is_array($excarps) && count($excarps) > 0)
-        {
+        if (!empty($excarps) && is_array($excarps) && count($excarps) > 0) {
             $this->excarps = serialize($excarps);
-        }
-        else
-        {
+        } else {
             $this->excarps = null;
         }
     }
@@ -1236,12 +1095,9 @@ class Provider
 
     public function setLocal($is_local)
     {
-        if ($is_local)
-        {
+        if ($is_local) {
             $this->is_local = true;
-        }
-        else
-        {
+        } else {
             $this->is_local = false;
         }
         return $this;
@@ -1259,12 +1115,9 @@ class Provider
 
     public function setActive($val = NULL)
     {
-        if (!empty($val))
-        {
+        if (!empty($val)) {
             $this->is_active = 1;
-        }
-        else
-        {
+        } else {
             $this->is_active = 0;
         }
         return $this;
@@ -1292,12 +1145,9 @@ class Provider
 
     public function setApproved($val = NULL)
     {
-        if (!empty($val))
-        {
+        if (!empty($val)) {
             $this->is_approved = 1;
-        }
-        else
-        {
+        } else {
             $this->is_approved = 0;
         }
         return $this;
@@ -1307,14 +1157,13 @@ class Provider
     {
         $doFilter['federation_id'] = array('' . $federation->getId() . '');
         $membership = $this->getMembership()->filter(
-                function(FederationMembers $entry) use($doFilter) {
-            return (in_array($entry->getFederation()->getId(), $doFilter['federation_id']));
-        }
+            function (FederationMembers $entry) use ($doFilter) {
+                return (in_array($entry->getFederation()->getId(), $doFilter['federation_id']));
+            }
         );
 
 
-        if ($membership->count() == 0)
-        {
+        if ($membership->count() == 0) {
             $newMembership = new FederationMembers();
             $federation->addMembership($newMembership);
             $this->addMembership($newMembership);
@@ -1327,14 +1176,13 @@ class Provider
 
         $doFilter['federation_id'] = array('' . $federation->getId() . '');
         $membership = $this->getMembership()->filter(
-                function(FederationMembers $entry) use($doFilter) {
-            return (in_array($entry->getFederation()->getId(), $doFilter['federation_id']));
-        }
+            function (FederationMembers $entry) use ($doFilter) {
+                return (in_array($entry->getFederation()->getId(), $doFilter['federation_id']));
+            }
         );
 
 
-        foreach ($membership as $m)
-        {
+        foreach ($membership as $m) {
             $this->removeMembership($m);
         }
         return $this->getFederations();
@@ -1342,8 +1190,7 @@ class Provider
 
     public function removeMembership(FederationMembers $membership)
     {
-        if ($this->membership->contains($membership))
-        {
+        if ($this->membership->contains($membership)) {
             $this->membership->removeElement($membership);
         }
 
@@ -1366,7 +1213,7 @@ class Provider
 
     public function removeServiceLocation(ServiceLocation $service)
     {
-        $this->ci = & get_instance();
+        $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->getServiceLocations()->removeElement($service);
         $this->em->remove($service);
@@ -1389,12 +1236,9 @@ class Provider
 
     public function setStatic($static)
     {
-        if ($static === true)
-        {
+        if ($static === true) {
             $this->is_static = true;
-        }
-        else
-        {
+        } else {
             $this->is_static = false;
         }
         return $this;
@@ -1411,12 +1255,9 @@ class Provider
     public function overwriteStaticMetadata(StaticMetadata $metadata = null)
     {
         $m = $this->getStaticMetadata();
-        if (!empty($m))
-        {
+        if (!empty($m)) {
             $m->setMetadata($metadata->getMetadata());
-        }
-        else
-        {
+        } else {
             $this->setStaticMetadata($metadata);
         }
         return $this;
@@ -1444,7 +1285,7 @@ class Provider
 
     public function removeContact(Contact $contact)
     {
-        $this->ci = & get_instance();
+        $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->getContacts()->removeElement($contact);
         $this->em->remove($contact);
@@ -1453,11 +1294,10 @@ class Provider
 
     public function removeAllContacts()
     {
-        $this->ci = & get_instance();
+        $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $contacts = $this->getContacts();
-        foreach ($contacts->getValues() as $contact)
-        {
+        foreach ($contacts->getValues() as $contact) {
             $contacts->removeElement($contact);
             $this->em->remove($contact);
         }
@@ -1493,8 +1333,7 @@ class Provider
         $this->setRegistrationDate($provider->getRegistrationDate());
         $this->overwriteWithNameid($provider);
         $prototypes = array('idpsso', 'aa', 'spsso');
-        foreach ($prototypes as $a)
-        {
+        foreach ($prototypes as $a) {
             $this->setProtocolSupport($a, $provider->getProtocolSupport($a));
         }
         $this->setType($provider->getType());
@@ -1502,49 +1341,38 @@ class Provider
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
         $smetadata = $provider->getStaticMetadata();
-        if (!empty($smetadata))
-        {
+        if (!empty($smetadata)) {
             $this->overwriteStaticMetadata($smetadata);
         }
-        foreach ($this->getServiceLocations() as $s)
-        {
+        foreach ($this->getServiceLocations() as $s) {
             $this->removeServiceLocation($s);
         }
-        foreach ($provider->getServiceLocations() as $r)
-        {
+        foreach ($provider->getServiceLocations() as $r) {
             $this->setServiceLocation($r);
             $order = $r->getOrder();
-            if (is_null($order))
-            {
+            if (is_null($order)) {
                 $r->setOrder(1);
             }
         }
-        foreach ($this->getCertificates() as $c)
-        {
+        foreach ($this->getCertificates() as $c) {
             $this->removeCertificate($c);
         }
-        foreach ($provider->getCertificates() as $r)
-        {
+        foreach ($provider->getCertificates() as $r) {
             $this->setCertificate($r);
         }
 
-        foreach ($this->getContacts() as $cn)
-        {
+        foreach ($this->getContacts() as $cn) {
             $this->removeContact($cn);
         }
-        foreach ($provider->getContacts() as $cn2)
-        {
+        foreach ($provider->getContacts() as $cn2) {
             $this->setContact($cn2);
         }
-        foreach ($this->getExtendMetadata() as $f)
-        {
-            if (!empty($f))
-            {
+        foreach ($this->getExtendMetadata() as $f) {
+            if (!empty($f)) {
                 $this->removeExtendWithChildren($f);
             }
         }
-        foreach ($provider->getExtendMetadata() as $gg)
-        {
+        foreach ($provider->getExtendMetadata() as $gg) {
             $this->setExtendMetadata($gg);
         }
         return $this;
@@ -1552,15 +1380,13 @@ class Provider
 
     private function removeExtendWithChildren(ExtendMetadata $e)
     {
-        $this->ci = & get_instance();
+        $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
 
         $children = $e->getChildren();
-        if (!empty($children) && $children->count() > 0)
-        {
+        if (!empty($children) && $children->count() > 0) {
 
-            foreach ($children->getValues() as $c)
-            {
+            foreach ($children->getValues() as $c) {
 
                 $this->removeExtendWithChildren($c);
             }
@@ -1624,23 +1450,17 @@ class Provider
      */
     public function getNameIds($n = null)
     {
-        if (empty($n))
-        {
-            if (!empty($this->nameids))
-            {
+        if (empty($n)) {
+            if (!empty($this->nameids)) {
                 return unserialize($this->nameids);
-            }
-            else
-            {
+            } else {
                 return array();
             }
         }
         $default = array();
-        if (!empty($this->nameids))
-        {
+        if (!empty($this->nameids)) {
             $r = unserialize($this->nameids);
-            if (isset($r['' . $n . '']))
-            {
+            if (isset($r['' . $n . ''])) {
                 return $r['' . $n . ''];
             }
         }
@@ -1655,8 +1475,7 @@ class Provider
     public function addNotification(NotificationList $notification)
     {
         $isin = $this->getNotifications()->contains($notification);
-        if (empty($isin))
-        {
+        if (empty($isin)) {
             $this->getNotifications()->add($notification);
         }
         return $this;
@@ -1676,37 +1495,28 @@ class Provider
     {
         $col = new \Doctrine\Common\Collections\ArrayCollection();
         $tmp = $this->protocol;
-        if (!empty($tmp))
-        {
+        if (!empty($tmp)) {
             return $this->protocol;
-        }
-        else
-        {
+        } else {
             return $col;
         }
     }
 
     public function getProtocolSupport($n = null)
     {
-        if (empty($n))
-        {
+        if (empty($n)) {
             $t = $this->protocolsupport;
-            if (empty($t))
-            {
+            if (empty($t)) {
                 return array();
-            }
-            else
-            {
+            } else {
                 return unserialize($t);
             }
         }
         $default = array('urn:oasis:names:tc:SAML:2.0:protocol');
         $t = $this->protocolsupport;
-        if (!empty($t))
-        {
+        if (!empty($t)) {
             $r = unserialize($t);
-            if (isset($r[$n]))
-            {
+            if (isset($r[$n])) {
                 return $r[$n];
             }
         }
@@ -1716,8 +1526,7 @@ class Provider
     public function getRegistrationPolicy()
     {
         $s = @unserialize($this->regpolicy);
-        if (empty($s))
-        {
+        if (empty($s)) {
             return array();
         }
         return $s;
@@ -1726,12 +1535,9 @@ class Provider
     public function getScope($n)
     {
         $s = @unserialize($this->scope);
-        if (isset($s[$n]))
-        {
+        if (isset($s[$n])) {
             return $s[$n];
-        }
-        else
-        {
+        } else {
             return array();
         }
     }
@@ -1739,12 +1545,9 @@ class Provider
     public function getScopeFull()
     {
         $s = @unserialize($this->scope);
-        if (!empty($s))
-        {
+        if (!empty($s)) {
             return $s;
-        }
-        else
-        {
+        } else {
             return array('aa' => array(), 'idpsso' => array());
         }
     }
@@ -1755,11 +1558,9 @@ class Provider
     public function convertScope()
     {
         $s = $this->scope;
-        if (!empty($s))
-        {
+        if (!empty($s)) {
             $s2 = @unserialize($s);
-            if (empty($s2))
-            {
+            if (empty($s2)) {
                 $y = explode(',', $this->scope);
                 $z = array('idpsso' => $y, 'aa' => $y);
                 $this->scope = (serialize($z));
@@ -1787,13 +1588,10 @@ class Provider
     {
         $mem = $this->membership;
         $federations = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($mem as $m)
-        {
+        foreach ($mem as $m) {
             $joinstate = $m->getJoinState();
-            if ($joinstate != 2)
-            {
-                $federations->add($m->getFederation());
-                ;
+            if ($joinstate != 2) {
+                $federations->add($m->getFederation());;
             }
         }
         return $federations;
@@ -1803,12 +1601,9 @@ class Provider
     {
         $mem = $this->membership;
         $federations = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($mem as $m)
-        {
-            if ($m->isFinalMembership())
-            {
-                $federations->add($m->getFederation());
-                ;
+        foreach ($mem as $m) {
+            if ($m->isFinalMembership()) {
+                $federations->add($m->getFederation());;
             }
         }
         return $federations;
@@ -1817,8 +1612,7 @@ class Provider
     public function getFederationNames()
     {
         $feders = array();
-        foreach ($this->membership as $entry)
-        {
+        foreach ($this->membership as $entry) {
             $feders[] = $entry->getFederation();
         }
         return $feders;
@@ -1832,12 +1626,9 @@ class Provider
     public function getLocalName()
     {
         $p = unserialize($this->lname);
-        if (empty($p))
-        {
+        if (empty($p)) {
             return array();
-        }
-        else
-        {
+        } else {
             return $p;
         }
     }
@@ -1845,8 +1636,7 @@ class Provider
     public function getMergedLocalName()
     {
         $r = $this->getLocalName();
-        if (!isset($r['en']) && !empty($this->name))
-        {
+        if (!isset($r['en']) && !empty($this->name)) {
             $r['en'] = $this->name;
         }
         return $r;
@@ -1856,55 +1646,41 @@ class Provider
     {
         $result = null;
         $backupname = null;
-        if (empty($type))
-        {
+        if (empty($type)) {
             $type = $this->type;
         }
         $doFilter = array('DisplayName');
-        if (!empty($this->extend))
-        {
+        if (!empty($this->extend)) {
             $e = $this->getExtendMetadata()->filter(
-                    function(ExtendMetadata $entry) use ($doFilter) {
-                return in_array($entry->getElement(), $doFilter);
-            });
-            if (!empty($e))
-            {
-                foreach ($e as $p)
-                {
+                function (ExtendMetadata $entry) use ($doFilter) {
+                    return in_array($entry->getElement(), $doFilter);
+                });
+            if (!empty($e)) {
+                foreach ($e as $p) {
                     $t = $p->getType();
                     $a = $p->getAttributes();
-                    if (strcasecmp($t, $type) == 0 && isset($a['xml:lang']))
-                    {
-                        if (strcasecmp($a['xml:lang'], $jlang) == 0)
-                        {
+                    if (strcasecmp($t, $type) == 0 && isset($a['xml:lang'])) {
+                        if (strcasecmp($a['xml:lang'], $jlang) == 0) {
                             $result = $p->getEvalue();
                             break;
-                        }
-                        elseif ($backupname === null)
-                        {
+                        } elseif ($backupname === null) {
                             $backupname = $p->getEvalue();
                         }
                     }
                 }
             }
         }
-        if ($result === null)
-        {
-            if ($backupname !== null)
-            {
+        if ($result === null) {
+            if ($backupname !== null) {
                 $result = $backupname;
-            }
-            else
-            {
+            } else {
                 $result = $this->getDisplayNameInLang($jlang);
-                if (empty($result))
-                {
+                if (empty($result)) {
                     $result = $this->getNameInLang($jlang);
                 }
             }
         }
-        if (empty($result))
-        {
+        if (empty($result)) {
             $result = $this->entityid;
         }
         return trim($result);
@@ -1914,15 +1690,11 @@ class Provider
     {
         $t['en'] = $this->name;
         $p = unserialize($this->lname);
-        if (is_array($p))
-        {
-            if (!array_key_exists('en', $p))
-            {
+        if (is_array($p)) {
+            if (!array_key_exists('en', $p)) {
                 $p['en'] = $t['en'];
             }
-        }
-        else
-        {
+        } else {
             $p = $t;
         }
         return $p;
@@ -1931,12 +1703,9 @@ class Provider
     public function getDisplayNameInLang($jlang)
     {
         $r = $this->getDisplayNameLocalized();
-        if (isset($r['' . $jlang . '']))
-        {
+        if (isset($r['' . $jlang . ''])) {
             return $r['' . $jlang . ''];
-        }
-        else
-        {
+        } else {
             return $r['en'];
         }
     }
@@ -1944,32 +1713,25 @@ class Provider
     public function getNameInLang($jlang)
     {
         $r = $this->getNameLocalized();
-        if (isset($r['' . $jlang . '']))
-        {
+        if (isset($r['' . $jlang . ''])) {
             return $r['' . $jlang . ''];
-        }
-        else
-        {
+        } else {
             return $r['en'];
         }
     }
 
     public function getDisplayName($length = null)
     {
-        if (empty($length) || !is_integer($length) || strlen($this->displayname) <= $length)
-        {
+        if (empty($length) || !is_integer($length) || strlen($this->displayname) <= $length) {
             return $this->displayname;
-        }
-        else
-        {
+        } else {
             return substr($this->displayname, 0, $length) . "...";
         }
     }
 
     public function getLocalDisplayName()
     {
-        if (!empty($this->ldisplayname))
-        {
+        if (!empty($this->ldisplayname)) {
             return unserialize($this->ldisplayname);
         }
         return array();
@@ -1978,8 +1740,7 @@ class Provider
     public function getMergedLocalDisplayName()
     {
         $r = $this->getLocalDisplayName();
-        if (!isset($r['en']) && !empty($this->displayname))
-        {
+        if (!isset($r['en']) && !empty($this->displayname)) {
             $r['en'] = $this->displayname;
         }
         return $r;
@@ -1989,10 +1750,8 @@ class Provider
     {
         $result = array();
         $ex = $this->getExtendMetadata();
-        foreach ($ex as $v)
-        {
-            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'DisplayName')
-            {
+        foreach ($ex as $v) {
+            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'DisplayName') {
                 $l = $v->getAttributes();
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
@@ -2002,17 +1761,13 @@ class Provider
 
     public function getDisplayNameLocalized()
     {
-        if (!empty($this->ldisplayname))
-        {
+        if (!empty($this->ldisplayname)) {
             $p = unserialize($this->ldisplayname);
-            if (!array_key_exists('en', $p))
-            {
+            if (!array_key_exists('en', $p)) {
                 $p['en'] = $this->displayname;
             }
             return $p;
-        }
-        else
-        {
+        } else {
             return array('en' => $this->displayname);
         }
     }
@@ -2043,18 +1798,14 @@ class Provider
         $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
         $validAfter = TRUE;
         $validBefore = TRUE;
-        if (!empty($this->validfrom))
-        {
+        if (!empty($this->validfrom)) {
 
-            if ($currentTime < $this->validfrom)
-            {
+            if ($currentTime < $this->validfrom) {
                 $validBefore = FALSE;
             }
         }
-        if (!empty($this->validto))
-        {
-            if ($currentTime > $this->validto)
-            {
+        if (!empty($this->validto)) {
+            if ($currentTime > $this->validto) {
                 $validAfter = FALSE;
             }
         }
@@ -2104,12 +1855,9 @@ class Provider
     {
         $c = $this->getStatic();
         $d = $this->getStaticMetadata();
-        if ($c && !empty($d))
-        {
+        if ($c && !empty($d)) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -2121,12 +1869,9 @@ class Provider
 
     public function getLocalHelpdeskUrl()
     {
-        if (!empty($this->lhelpdeskurl))
-        {
+        if (!empty($this->lhelpdeskurl)) {
             return unserialize($this->lhelpdeskurl);
-        }
-        else
-        {
+        } else {
             return array();
         }
     }
@@ -2135,15 +1880,11 @@ class Provider
     {
         $t['en'] = $this->helpdeskurl;
         $p = unserialize($this->lhelpdeskurl);
-        if (is_array($p))
-        {
-            if (!array_key_exists('en', $p) && !empty($t['en']))
-            {
+        if (is_array($p)) {
+            if (!array_key_exists('en', $p) && !empty($t['en'])) {
                 $p['en'] = $t['en'];
             }
-        }
-        else
-        {
+        } else {
             $p = $t;
         }
         return array_filter($p);
@@ -2163,10 +1904,8 @@ class Provider
     {
         $result = array();
         $ex = $this->getExtendMetadata();
-        foreach ($ex as $v)
-        {
-            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'PrivacyStatementURL')
-            {
+        foreach ($ex as $v) {
+            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'PrivacyStatementURL') {
                 $l = $v->getAttributes();
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
@@ -2178,15 +1917,11 @@ class Provider
     {
         $t['en'] = $this->privacyurl;
         $p = unserialize($this->lprivacyurl);
-        if (is_array($p))
-        {
-            if (!array_key_exists('en', $p))
-            {
+        if (is_array($p)) {
+            if (!array_key_exists('en', $p)) {
                 $p['en'] = $t['en'];
             }
-        }
-        else
-        {
+        } else {
             $p = $t;
         }
         return $p;
@@ -2221,7 +1956,7 @@ class Provider
 
     public function getLocalAvailable()
     {
-        return ( $this->is_local && $this->is_active && $this->is_approved && $this->isValidFromTo());
+        return ($this->is_local && $this->is_active && $this->is_approved && $this->isValidFromTo());
     }
 
     public function getDescription()
@@ -2233,13 +1968,11 @@ class Provider
     {
         $result = array();
         $ex = $this->getExtendMetadata();
-        foreach ($ex as $v)
-        {
+        foreach ($ex as $v) {
             $t = $v->getType();
             $u = $v->getNameSpace();
             $e = $v->getElement();
-            if ($t === $type && $u === 'mdui' && $e === 'Description')
-            {
+            if ($t === $type && $u === 'mdui' && $e === 'Description') {
                 $l = $v->getAttributes();
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
@@ -2250,12 +1983,9 @@ class Provider
     public function getWayfList()
     {
         $w = $this->wayflist;
-        if (!empty($w))
-        {
+        if (!empty($w)) {
             return unserialize($w);
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
@@ -2263,24 +1993,18 @@ class Provider
     public function getExcarps()
     {
         $w = $this->excarps;
-        if (!empty($w))
-        {
+        if (!empty($w)) {
             return unserialize($w);
-        }
-        else
-        {
+        } else {
             return array();
         }
     }
 
     public function getLastModified()
     {
-        if (empty($this->updatedAt))
-        {
+        if (empty($this->updatedAt)) {
             return $this->createdAt;
-        }
-        else
-        {
+        } else {
             return $this->updatedAt;
         }
     }
@@ -2300,14 +2024,12 @@ class Provider
 
         $r['nameid'] = array();
         $nameids = $this->getNameIds();
-        if (!empty($nameids))
-        {
+        if (!empty($nameids)) {
             $r['nameid'] = $nameids;
         }
         $r['protocol'] = array();
         $protocols = $this->getProtocol()->getValues();
-        if (!empty($protocols))
-        {
+        if (!empty($protocols)) {
             $r['protocol'] = $protocols;
         }
         $r['type'] = $this->getType();
@@ -2324,43 +2046,34 @@ class Provider
         $r['is_local'] = $this->getLocal();
         $r['contacts'] = array();
         $contacts = $this->getContacts();
-        if (!empty($contacts))
-        {
-            foreach ($contacts->getValues() as $c)
-            {
+        if (!empty($contacts)) {
+            foreach ($contacts->getValues() as $c) {
                 $r['contacts'][] = $c->convertToArray();
             }
         }
 
         $r['certificates'] = array();
         $certs = $this->getCertificates();
-        if (!empty($certs))
-        {
-            foreach ($certs->getValues() as $crt)
-            {
+        if (!empty($certs)) {
+            foreach ($certs->getValues() as $crt) {
                 $r['certificates'][] = $crt->convertToArray();
             }
         }
         $services = $this->getServiceLocations();
         $r['services'] = array();
-        if (!empty($services))
-        {
-            foreach ($services->getValues() as $s)
-            {
+        if (!empty($services)) {
+            foreach ($services->getValues() as $s) {
                 $r['services'][] = $s->convertToArray();
             }
         }
 
         $r['federations'] = array();
         $membership = $this->getMembership();
-        if (!empty($membership) && $membership->count() > 0)
-        {
+        if (!empty($membership) && $membership->count() > 0) {
             \log_message('debug', 'GKS found membership');
-            foreach ($membership as $f)
-            {
+            foreach ($membership as $f) {
                 $state = $f->getJoinState();
-                if ($state != 2)
-                {
+                if ($state != 2) {
                     $r['federations'][] = $f->getFederation()->convertToArray();
                 }
             }
@@ -2373,27 +2086,20 @@ class Provider
     {
         $etype = strtoupper($r['type']);
         $this->setName($r['name']);
-        if (!empty($r['displayname']))
-        {
+        if (!empty($r['displayname'])) {
             $this->setDisplayname($r['displayname']);
-        }
-        else
-        {
+        } else {
             $this->setDisplayname($r['name']);
         }
         $this->setEntityid($r['entityid']);
-        if (is_array($r['nameid']) && count($r['nameid'] > 0))
-        {
-            foreach ($r['nameid'] as $k => $n)
-            {
+        if (is_array($r['nameid']) && count($r['nameid'] > 0)) {
+            foreach ($r['nameid'] as $k => $n) {
                 $this->setNameids($k, $n);
             }
         }
 
-        if (is_array($r['protocol']) && count($r['protocol']) > 0)
-        {
-            foreach ($r['protocol'] as $p)
-            {
+        if (is_array($r['protocol']) && count($r['protocol']) > 0) {
+            foreach ($r['protocol'] as $p) {
                 $this->setProtocol($p);
             }
         }
@@ -2409,22 +2115,17 @@ class Provider
         $this->setActive($r['is_active']);
         $this->setStatic($r['is_static']);
         $this->setLocal($r['is_local']);
-        if (count($r['contacts']) > 0)
-        {
-            foreach ($r['contacts'] as $v)
-            {
+        if (count($r['contacts']) > 0) {
+            foreach ($r['contacts'] as $v) {
                 $c = new Contact;
                 $c->importFromArray($v);
                 $this->setContact($c);
                 $c->setProvider($this);
             }
         }
-        if (count($r['certificates']) > 0)
-        {
-            foreach ($r['certificates'] as $v)
-            {
-                if (is_array($v))
-                {
+        if (count($r['certificates']) > 0) {
+            foreach ($r['certificates'] as $v) {
+                if (is_array($v)) {
                     $c = new Certificate;
                     $c->importFromArray($v);
                     $this->setCertificate($c);
@@ -2432,41 +2133,32 @@ class Provider
                 }
             }
         }
-        if ($etype !== 'IDP')
-        {
-            if (isset($r['details']['spssodescriptor']['extensions']['idpdisc']) && is_array($r['details']['spssodescriptor']['extensions']['idpdisc']))
-            {
-                foreach ($r['details']['spssodescriptor']['extensions']['idpdisc'] as $idpdisc)
-                {
+        if ($etype !== 'IDP') {
+            if (isset($r['details']['spssodescriptor']['extensions']['idpdisc']) && is_array($r['details']['spssodescriptor']['extensions']['idpdisc'])) {
+                foreach ($r['details']['spssodescriptor']['extensions']['idpdisc'] as $idpdisc) {
                     $c = new ServiceLocation;
                     $c->setDiscoveryResponse($idpdisc['url'], $idpdisc['order']);
                     $c->setProvider($this);
                 }
             }
-            if (isset($r['details']['spssodescriptor']['extensions']['init']) && is_array($r['details']['spssodescriptor']['extensions']['init']))
-            {
-                foreach ($r['details']['spssodescriptor']['extensions']['init'] as $initreq)
-                {
+            if (isset($r['details']['spssodescriptor']['extensions']['init']) && is_array($r['details']['spssodescriptor']['extensions']['init'])) {
+                foreach ($r['details']['spssodescriptor']['extensions']['init'] as $initreq) {
                     $c = new ServiceLocation;
                     $c->setRequestInitiator($initreq['url'], $initreq['binding']);
                     $c->setProvider($this);
                 }
             }
         }
-        if (count($r['services']) > 0)
-        {
-            foreach ($r['services'] as $v)
-            {
+        if (count($r['services']) > 0) {
+            foreach ($r['services'] as $v) {
                 $c = new ServiceLocation;
                 $c->importFromArray($v);
                 $this->setServiceLocation($c);
                 $c->setProvider($this);
             }
         }
-        if (count($r['federations']) > 0)
-        {
-            foreach ($r['federations'] as $f)
-            {
+        if (count($r['federations']) > 0) {
+            foreach ($r['federations'] as $f) {
                 $c = new Federation;
                 $c->importFromArray($f);
                 $m = new FederationMembers;
@@ -2490,8 +2182,7 @@ class Provider
         $parentUIInfo->setType($type);
         $parentUIInfo->setProvider($this);
         $this->setExtendMetadata($parentUIInfo);
-        if ($type === 'idp')
-        {
+        if ($type === 'idp') {
             $parentDiscoHints = new ExtendMetadata;
             $parentDiscoHints->setNamespace('mdui');
             $parentDiscoHints->setElement('DiscoHints');
@@ -2499,34 +2190,26 @@ class Provider
             $parentDiscoHints->setType($type);
             $parentDiscoHints->setProvider($this);
             $this->setExtendMetadata($parentDiscoHints);
-            if (isset($ext['geo']) && is_array($ext['geo']))
-            {
-                foreach ($ext['geo'] as $g)
-                {
+            if (isset($ext['geo']) && is_array($ext['geo'])) {
+                foreach ($ext['geo'] as $g) {
                     $geo = new ExtendMetadata;
                     $geo->setGeoLocation('' . $g[0] . ',' . $g[1] . '', $this, $parentDiscoHints, $type);
                     $geo->setProvider($this);
                     $this->setExtendMetadata($geo);
                 }
             }
-            foreach (array('iphint', 'domainhint') as $v)
-            {
-                if (isset($ext['' . $v . '']))
-                {
-                    foreach ($ext['' . $v . ''] as $w)
-                    {
+            foreach (array('iphint', 'domainhint') as $v) {
+                if (isset($ext['' . $v . ''])) {
+                    foreach ($ext['' . $v . ''] as $w) {
                         $we = new ExtendMetadata;
                         $we->setProvider($this);
                         $we->setType('idp');
                         $we->setNamespace('mdui');
                         $we->setValue($w);
                         $we->setParent($parentDiscoHints);
-                        if($v === 'iphint')
-                        {
+                        if ($v === 'iphint') {
                             $we->setElement('IPHint');
-                        }
-                        else
-                        {
+                        } else {
                             $we->setElement('DomainHint');
                         }
                         $this->setExtendMetadata($we);
@@ -2534,19 +2217,15 @@ class Provider
                 }
             }
         }
-        if (array_key_exists('scope', $ext))
-        {
+        if (array_key_exists('scope', $ext)) {
             $this->setScope('idpsso', $ext['scope']);
         }
-        if (array_key_exists('aascope', $ext))
-        {
+        if (array_key_exists('aascope', $ext)) {
             $this->setScope('aa', $ext['aascope']);
         }
 
-        if (array_key_exists('desc', $ext) && is_array($ext['desc']))
-        {
-            foreach ($ext['desc'] as $k => $p)
-            {
+        if (array_key_exists('desc', $ext) && is_array($ext['desc'])) {
+            foreach ($ext['desc'] as $k => $p) {
                 $extdesc = new ExtendMetadata;
                 $extdesc->setNamespace('mdui');
                 $extdesc->setType($type);
@@ -2558,10 +2237,8 @@ class Provider
                 $extdesc->setParent($parentUIInfo);
             }
         }
-        if (array_key_exists('displayname', $ext) && is_array($ext['displayname']))
-        {
-            foreach ($ext['displayname'] as $k => $p)
-            {
+        if (array_key_exists('displayname', $ext) && is_array($ext['displayname'])) {
+            foreach ($ext['displayname'] as $k => $p) {
                 $extdesc = new ExtendMetadata;
                 $extdesc->setNamespace('mdui');
                 $extdesc->setType($type);
@@ -2573,10 +2250,8 @@ class Provider
                 $extdesc->setParent($parentUIInfo);
             }
         }
-        if (array_key_exists('privacyurl', $ext) && is_array($ext['privacyurl']))
-        {
-            foreach ($ext['privacyurl'] as $k => $p)
-            {
+        if (array_key_exists('privacyurl', $ext) && is_array($ext['privacyurl'])) {
+            foreach ($ext['privacyurl'] as $k => $p) {
                 $extdesc = new ExtendMetadata;
                 $extdesc->setNamespace('mdui');
                 $extdesc->setType($type);
@@ -2588,10 +2263,8 @@ class Provider
                 $extdesc->setParent($parentUIInfo);
             }
         }
-        if (array_key_exists('informationurl', $ext) && is_array($ext['informationurl']))
-        {
-            foreach ($ext['informationurl'] as $k => $p)
-            {
+        if (array_key_exists('informationurl', $ext) && is_array($ext['informationurl'])) {
+            foreach ($ext['informationurl'] as $k => $p) {
                 $extdesc = new ExtendMetadata;
                 $extdesc->setNamespace('mdui');
                 $extdesc->setType($type);
@@ -2603,32 +2276,25 @@ class Provider
                 $extdesc->setParent($parentUIInfo);
             }
         }
-        if (array_key_exists('logo', $ext) && is_array($ext['logo']))
-        {
+        if (array_key_exists('logo', $ext) && is_array($ext['logo'])) {
             \log_message('debug', 'GK logo provider');
-            foreach ($ext['logo'] as $k => $p)
-            {
+            foreach ($ext['logo'] as $k => $p) {
                 $extdesc = new ExtendMetadata;
                 $extdesc->setLogo($p['val'], $this, $parentUIInfo, array('width' => $p['width'], 'height' => $p['height'], 'xml:lang' => $p['xml:lang']), $type);
                 $this->setExtendMetadata($extdesc);
             }
         }
-        if ($type == 'sp')
-        {
-            if (array_key_exists('idpdisc', $ext) && is_array($ext['idpdisc']))
-            {
-                foreach ($ext['idpdisc'] as $idpdiscs)
-                {
+        if ($type == 'sp') {
+            if (array_key_exists('idpdisc', $ext) && is_array($ext['idpdisc'])) {
+                foreach ($ext['idpdisc'] as $idpdiscs) {
                     $disc = new ServiceLocation;
                     $disc->setDiscoveryResponse($idpdiscs['url'], @$idpdiscs['order']);
                     $disc->setProvider($this);
                     $this->setServiceLocation($disc);
                 }
             }
-            if (array_key_exists('init', $ext) && is_array($ext['init']))
-            {
-                foreach ($ext['init'] as $inits)
-                {
+            if (array_key_exists('init', $ext) && is_array($ext['init'])) {
+                foreach ($ext['init'] as $inits) {
                     $rinit = new ServiceLocation;
                     $rinit->setRequestInitiator($inits['url']);
                     $rinit->setProvider($this);
@@ -2640,22 +2306,17 @@ class Provider
 
     private function aaDescriptorFromArray($b)
     {
-        if (array_key_exists('protocols', $b))
-        {
+        if (array_key_exists('protocols', $b)) {
             $this->setProtocolSupport('aa', $b['protocols']);
         }
-        if (array_key_exists('extensions', $b))
-        {
+        if (array_key_exists('extensions', $b)) {
             $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'aa');
         }
-        if (array_key_exists('nameid', $b) && is_array($b['nameid']))
-        {
+        if (array_key_exists('nameid', $b) && is_array($b['nameid'])) {
             $this->setNameIds('aa', $b['nameid']);
         }
-        if (array_key_exists('attributeservice', $b))
-        {
-            foreach ($b['attributeservice'] as $aval)
-            {
+        if (array_key_exists('attributeservice', $b)) {
+            foreach ($b['attributeservice'] as $aval) {
                 $aa = new ServiceLocation;
                 $aa->setType('IDPAttributeService');
                 $aa->setBindingName($aval['binding']);
@@ -2664,30 +2325,27 @@ class Provider
                 $this->setServiceLocation($aa);
             }
         }
-        if (array_key_exists('certificate', $b))
-        {
-            foreach ($b['certificate'] as $c)
-            {
+        if (array_key_exists('certificate', $b)) {
+            foreach ($b['certificate'] as $c) {
                 $cert = new Certificate();
-                if (array_key_exists('x509data', $c))
-                {
+                if (array_key_exists('x509data', $c)) {
                     $cert->setCertType('x509');
-                    if (array_key_exists('x509certificate', $c['x509data']))
-                    {
+                    if (array_key_exists('x509certificate', $c['x509data'])) {
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
+	            if(array_key_exists('encmethods',$c) && count($c['encmethods'])>0)
+	            {
+		            $cert->setEncryptMethods($c['encmethods']);
+	            }
 
-                $cert->setType('aa');
+
+	            $cert->setType('aa');
                 $cert->setCertUse($c['use']);
-                if (!empty($c['keyname']))
-                {
-                    if (is_array($c['keyname']))
-                    {
+                if (!empty($c['keyname'])) {
+                    if (is_array($c['keyname'])) {
                         $cert->setKeyname(implode(',', $c['keyname']));
-                    }
-                    else
-                    {
+                    } else {
                         $cert->setKeyname($c['keyname']);
                     }
                 }
@@ -2699,30 +2357,23 @@ class Provider
 
     private function idpSSODescriptorFromArray($b)
     {
-        if (array_key_exists('extensions', $b))
-        {
+        if (array_key_exists('extensions', $b)) {
             $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'idp');
         }
 
-        if (array_key_exists('nameid', $b) && is_array($b['nameid']))
-        {
+        if (array_key_exists('nameid', $b) && is_array($b['nameid'])) {
             $this->setNameIds('idpsso', $b['nameid']);
         }
-        if (array_key_exists('servicelocations', $b))
-        {
+        if (array_key_exists('servicelocations', $b)) {
             $tmpsrcl = array('singlesignonservice' => 'SingleSignOnService', 'singlelogout' => 'IDPSingleLogoutService', 'artifactresolutionservice' => 'IDPArtifactResolutionService');
-            foreach ($tmpsrcl as $kc => $vc)
-            {
-                if (isset($b['servicelocations']['' . $kc . '']) && is_array($b['servicelocations']['' . $kc . '']))
-                {
-                    foreach ($b['servicelocations']['' . $kc . ''] as $s)
-                    {
+            foreach ($tmpsrcl as $kc => $vc) {
+                if (isset($b['servicelocations']['' . $kc . '']) && is_array($b['servicelocations']['' . $kc . ''])) {
+                    foreach ($b['servicelocations']['' . $kc . ''] as $s) {
                         $sso = new ServiceLocation;
                         $sso->setType($vc);
                         $sso->setBindingName($s['binding']);
                         $sso->setUrl($s['location']);
-                        if ($vc === 'IDPArtifactResolutionService')
-                        {
+                        if ($vc === 'IDPArtifactResolutionService') {
                             $sso->setOrder($s['order']);
                         }
                         $sso->setProvider($this);
@@ -2732,31 +2383,27 @@ class Provider
             }
         }
         $this->setProtocolSupport('idpsso', $b['protocols']);
-        if (array_key_exists('certificate', $b) && count($b['certificate']) > 0)
-        {
+        if (array_key_exists('certificate', $b) && count($b['certificate']) > 0) {
 
-            foreach ($b['certificate'] as $c)
-            {
+            foreach ($b['certificate'] as $c) {
                 $cert = new Certificate();
-                if (array_key_exists('x509data', $c))
-                {
+                if (array_key_exists('x509data', $c)) {
                     $cert->setCertType('x509');
-                    if (array_key_exists('x509certificate', $c['x509data']))
-                    {
+                    if (array_key_exists('x509certificate', $c['x509data'])) {
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
+	            if(array_key_exists('encmethods',$c) && count($c['encmethods'])>0)
+	            {
+		            $cert->setEncryptMethods($c['encmethods']);
+	            }
 
                 $cert->setType('idpsso');
                 $cert->setCertUse($c['use']);
-                if (!empty($c['keyname']))
-                {
-                    if (is_array($c['keyname']))
-                    {
+                if (!empty($c['keyname'])) {
+                    if (is_array($c['keyname'])) {
                         $cert->setKeyname(implode(',', $c['keyname']));
-                    }
-                    else
-                    {
+                    } else {
                         $cert->setKeyname($c['keyname']);
                     }
                 }
@@ -2769,54 +2416,43 @@ class Provider
 
     private function spSSODescriptorFromArray($b)
     {
-        if (array_key_exists('extensions', $b))
-        {
+        if (array_key_exists('extensions', $b)) {
             $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'sp');
         }
-        if (array_key_exists('nameid', $b) && is_array($b['nameid']))
-        {
+        if (array_key_exists('nameid', $b) && is_array($b['nameid'])) {
             $this->setNameIds('spsso', $b['nameid']);
         }
-        if (array_key_exists('protocols', $b))
-        {
+        if (array_key_exists('protocols', $b)) {
             $this->setProtocolSupport('spsso', $b['protocols']);
         }
-        if (isset($b['servicelocations']['assertionconsumerservice']) && is_array($b['servicelocations']['assertionconsumerservice']))
-        {
+        if (isset($b['servicelocations']['assertionconsumerservice']) && is_array($b['servicelocations']['assertionconsumerservice'])) {
 
-            foreach ($b['servicelocations']['assertionconsumerservice'] as $s)
-            {
+            foreach ($b['servicelocations']['assertionconsumerservice'] as $s) {
                 $sso = new ServiceLocation;
                 $sso->setType('AssertionConsumerService');
                 $sso->setBindingName($s['binding']);
                 $sso->setUrl($s['location']);
-                if (isset($s['order']))
-                {
+                if (isset($s['order'])) {
                     $sso->setOrder($s['order']);
                 }
-                if (!empty($s['isdefault']))
-                {
+                if (!empty($s['isdefault'])) {
                     $sso->setDefault(true);
                 }
                 $sso->setProvider($this);
                 $this->setServiceLocation($sso);
             }
         }
-        if (isset($b['servicelocations']['artifactresolutionservice']) && is_array($b['servicelocations']['artifactresolutionservice']))
-        {
+        if (isset($b['servicelocations']['artifactresolutionservice']) && is_array($b['servicelocations']['artifactresolutionservice'])) {
 
-            foreach ($b['servicelocations']['artifactresolutionservice'] as $s)
-            {
+            foreach ($b['servicelocations']['artifactresolutionservice'] as $s) {
                 $sso = new ServiceLocation;
                 $sso->setType('SPArtifactResolutionService');
                 $sso->setBindingName($s['binding']);
                 $sso->setUrl($s['location']);
-                if (isset($s['order']))
-                {
+                if (isset($s['order'])) {
                     $sso->setOrder($s['order']);
                 }
-                if (!empty($s['isdefault']))
-                {
+                if (!empty($s['isdefault'])) {
                     $sso->setDefault(true);
                 }
                 $sso->setProvider($this);
@@ -2824,11 +2460,9 @@ class Provider
             }
         }
 
-        if (isset($b['servicelocations']['singlelogout']) && is_array($b['servicelocations']['singlelogout']))
-        {
+        if (isset($b['servicelocations']['singlelogout']) && is_array($b['servicelocations']['singlelogout'])) {
 
-            foreach ($b['servicelocations']['singlelogout'] as $s)
-            {
+            foreach ($b['servicelocations']['singlelogout'] as $s) {
                 $slo = new ServiceLocation;
                 $slo->setType('SPSingleLogoutService');
                 $slo->setBindingName($s['binding']);
@@ -2837,30 +2471,27 @@ class Provider
                 $this->setServiceLocation($slo);
             }
         }
-        if (array_key_exists('certificate', $b) && is_array($b['certificate']))
-        {
+        if (array_key_exists('certificate', $b) && is_array($b['certificate'])) {
 
-            foreach ($b['certificate'] as $c)
-            {
+            foreach ($b['certificate'] as $c) {
                 $cert = new Certificate();
-                if (array_key_exists('x509data', $c))
-                {
+                if (array_key_exists('x509data', $c)) {
                     $cert->setCertType('x509');
-                    if (array_key_exists('x509certificate', $c['x509data']))
-                    {
+                    if (array_key_exists('x509certificate', $c['x509data'])) {
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
-                $cert->setType('spsso');
+	            if(array_key_exists('encmethods',$c) && count($c['encmethods'])>0)
+	            {
+		            $cert->setEncryptMethods($c['encmethods']);
+	            }
+
+	            $cert->setType('spsso');
                 $cert->setCertUse($c['use']);
-                if (!empty($c['keyname']))
-                {
-                    if (is_array($c['keyname']))
-                    {
+                if (!empty($c['keyname'])) {
+                    if (is_array($c['keyname'])) {
                         $cert->setKeyname(implode(',', $c['keyname']));
-                    }
-                    else
-                    {
+                    } else {
                         $cert->setKeyname($c['keyname']);
                     }
                 }
@@ -2873,35 +2504,26 @@ class Provider
 
     public function setReqAttrsFromArray($ent, $attributesByName)
     {
-        if (isset($ent['details']['reqattrs']))
-        {
+        if (isset($ent['details']['reqattrs'])) {
             \log_message('info', 'DI1');
             $attrsset = array();
-            foreach ($ent['details']['reqattrs'] as $r)
-            {
-                if (array_key_exists($r['name'], $attributesByName))
-                {
-                    if (!in_array($r['name'], $attrsset))
-                    {
+            foreach ($ent['details']['reqattrs'] as $r) {
+                if (array_key_exists($r['name'], $attributesByName)) {
+                    if (!in_array($r['name'], $attrsset)) {
                         $reqattr = new AttributeRequirement;
                         $reqattr->setAttribute($attributesByName['' . $r['name'] . '']);
                         $reqattr->setType('SP');
                         $reqattr->setSP($this);
-                        if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0)
-                        {
+                        if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0) {
                             $reqattr->setStatus('required');
-                        }
-                        else
-                        {
+                        } else {
                             $reqattr->setStatus('desired');
                         }
                         $reqattr->setReason('');
                         $this->setAttributesRequirement($reqattr);
                         $attrsset[] = $r['name'];
                     }
-                }
-                else
-                {
+                } else {
                     log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
                 }
             }
@@ -2911,106 +2533,95 @@ class Provider
 
     public function setProviderFromArray($a, $full = FALSE)
     {
-        if (!is_array($a))
-        {
+        if (!is_array($a)) {
             return null;
         }
         $this->setType($a['type']);
         $this->setEntityId($a['entityid']);
-        if (!empty($a['coc']))
-        {
+        if (!empty($a['coc'])) {
             /**
              * @todo set CodeOfConduct
              */
         }
-        if (!empty($a['validuntil']))
-        {
+        if (!empty($a['validuntil'])) {
             $p = explode("T", $a['validuntil']);
             $this->setValidTo(\DateTime::createFromFormat('Y-m-d', $p[0]));
         }
-        if (!empty($a['registrar']))
-        {
+        if (!empty($a['registrar'])) {
             $this->setRegistrationAuthority($a['registrar']);
-            if (!empty($a['regdate']))
-            {
+            if (!empty($a['regdate'])) {
                 $p = explode("T", $a['regdate']);
                 $ptime = str_replace('Z', '', $p['1']);
                 $pdate = \DateTime::createFromFormat('Y-m-d H:i:s', $p[0] . ' ' . substr($ptime, 0, 8));
-                if ($pdate instanceOf \DateTime)
-                {
+                if ($pdate instanceOf \DateTime) {
                     $this->setRegistrationDate($pdate);
-                }
-                else
-                {
+                } else {
                     \log_message('error', __METHOD__ . ' couldnt create \DateTime object from string for entity:' . $this->entityid);
                 }
             }
         }
-        if ($full & !empty($a['regpol']))
-        {
-            foreach ($a['regpol'] as $v)
-            {
-                \log_message('debug', 'GKS SS regpollll');
+        if ($full & !empty($a['regpol'])) {
+            foreach ($a['regpol'] as $v) {
                 $b = $this->em->getRepository("models\Coc")->findOneBy(array('type' => 'regpol', 'is_enabled' => true, 'lang' => $v['lang'], 'url' => $v['url']));
-                if (!empty($b))
-                {
+                if (!empty($b)) {
                     $this->setCoc($b);
                 }
             }
         }
-        if (!empty($a['metadata']))
-        {
+        if ($full && !empty($a['algs'])) {
+
+            foreach ($a['algs'] as $alg) {
+                $e = new ExtendMetadata();
+                $e->setElement($alg['name']);
+                $e->setNamespace('alg');
+                $e->setValue($alg['algorithm']);
+                $e->setType('ent');
+                if (!empty($alg['minkeysize'])) {
+                    $algattr['MinKeySize'] = $alg['minkeysize'];
+                }
+                if (!empty($alg['maxkeysize'])) {
+                    $algattr['MaxKeySize'] = $alg['maxkeysize'];
+                }
+                if (!empty($algattr)) {
+                    $e->setAttributes($algattr);
+                }
+                $e->setProvider($this);
+                $this->setExtendMetadata($e);
+            }
+        }
+        if (!empty($a['metadata'])) {
             $m = new StaticMetadata;
             $m->setMetadata($a['metadata']);
             $this->setStaticMetadata($m);
         }
-        if (array_key_exists('details', $a))
-        {
-            foreach ($a['details']['org'] as $k => $o)
-            {
-                if ($k === 'OrganizationName')
-                {
+        if (array_key_exists('details', $a)) {
+            foreach ($a['details']['org'] as $k => $o) {
+                if ($k === 'OrganizationName') {
                     $lorgname = array();
-                    foreach ($o as $k1 => $v1)
-                    {
-                        if ($k1 === 'en')
-                        {
+                    foreach ($o as $k1 => $v1) {
+                        if ($k1 === 'en') {
                             $this->setName($v1);
-                        }
-                        else
-                        {
+                        } else {
                             $lorgname['' . $k1 . ''] = $v1;
                         }
                     }
                     $this->setLocalName($lorgname);
-                }
-                elseif ($k === 'OrganizationDisplayName')
-                {
+                } elseif ($k === 'OrganizationDisplayName') {
                     $lorgname = array();
-                    foreach ($o as $k1 => $v1)
-                    {
-                        if ($k1 === 'en')
-                        {
+                    foreach ($o as $k1 => $v1) {
+                        if ($k1 === 'en') {
                             $this->setDisplayName($v1);
-                        }
-                        else
-                        {
+                        } else {
                             $lorgname['' . $k1 . ''] = $v1;
                         }
                     }
                     $this->setLocalDisplayName($lorgname);
-                }
-                elseif ($k === 'OrganizationURL')
-                {
+                } elseif ($k === 'OrganizationURL') {
                     $lorgname = array();
-                    foreach ($o as $k1 => $v1)
-                    {
-                        if ($k1 === 'en')
-                        {
+                    foreach ($o as $k1 => $v1) {
+                        if ($k1 === 'en') {
                             $this->setHelpdeskUrl($v1);
-                        }
-                        else
-                        {
+                        } else {
                             $lorgname[$k1] = $v1;
                         }
                     }
@@ -3019,8 +2630,7 @@ class Provider
             }
 
 
-            foreach ($a['details']['contacts'] as $c)
-            {
+            foreach ($a['details']['contacts'] as $c) {
                 $tc = new Contact;
                 $tc->setType($c['type']);
                 $tc->setEmail($c['email']);
@@ -3029,23 +2639,18 @@ class Provider
                 $tc->setProvider($this);
                 $this->setContact($tc);
             }
-            if ($a['type'] !== 'SP')
-            {
-                if (array_key_exists('idpssodescriptor', $a['details']))
-                {
+            if ($a['type'] !== 'SP') {
+                if (array_key_exists('idpssodescriptor', $a['details'])) {
 
                     $this->idpSSODescriptorFromArray($a['details']['idpssodescriptor']);
                 }
-                if (array_key_exists('aadescriptor', $a['details']))
-                {
+                if (array_key_exists('aadescriptor', $a['details'])) {
 
                     $this->aaDescriptorFromArray($a['details']['aadescriptor']);
                 }
             }
-            if ($a['type'] !== 'IDP')
-            {
-                if (array_key_exists('spssodescriptor', $a['details']))
-                {
+            if ($a['type'] !== 'IDP') {
+                if (array_key_exists('spssodescriptor', $a['details'])) {
                     $this->spSSODescriptorFromArray($a['details']['spssodescriptor']);
                 }
             }

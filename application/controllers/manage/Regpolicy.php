@@ -63,7 +63,7 @@ class Regpolicy extends MY_Controller
                 /**
                  * @todo add extracting row to show providers connected to policy
                  */
-                $data['rows'][] = array($c->getName(), $c->getLang(), $lbl, anchor($c->getUrl(), $c->getUrl(), array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(), $l);
+                $data['rows'][] = array($c->getName(), $c->getLang(),  anchor($c->getUrl(), $c->getUrl(), array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(),$lbl, $l);
 
             }
         } else {
@@ -77,8 +77,6 @@ class Regpolicy extends MY_Controller
         $data['titlepage'] = lang('title_regpols');
 
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>'#','name'=>lang('title_regpols'),'type'=>'current'),
         );
 
@@ -155,8 +153,6 @@ class Regpolicy extends MY_Controller
             $data['form'] = $f;
         }
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>base_url('manage/regpolicy/show'),'name'=>lang('title_regpols')),
             array('url'=>'#','name'=>lang('title_addregpol'),'type'=>'current'),
         );
@@ -209,8 +205,6 @@ class Regpolicy extends MY_Controller
         $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
         $f .= form_close();
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             array('url'=>base_url('manage/regpolicy/show'),'name'=>lang('title_regpols')),
             array('url'=>'#','name'=>lang('title_editform'),'type'=>'current'),
         );

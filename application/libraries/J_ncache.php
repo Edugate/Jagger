@@ -44,4 +44,22 @@ class J_ncache
         }
         return true;
     }
+    public function cleanFederationMembers($fedId)
+    {
+        $guilangs = MY_Controller::guiLangs();
+        $langs = array_keys($guilangs);
+        foreach($langs as $v)
+        {
+            $cacheid = 'fedmbrs_'.$fedId.'_'.$v;
+            $this->ci->cache->delete($cachedid);
+        }
+        return true;
+    }
+    public function getFederationMembers($fedId,$lang)
+    {
+        $cachedid = 'fedmbrs_' . $fedId . '_' . $lang;
+        return $this->ci->cache->get($cachedid);
+    }
+
+
 }

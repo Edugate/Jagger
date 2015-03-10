@@ -258,8 +258,6 @@ class Access_manage extends MY_Controller {
             $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
         }
 	    $data['breadcrumbs'] = array(
-		    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-		    array('url'=>base_url(),'name'=>lang('dashboard')),
             $plist,
 		    array('url'=>base_url('providers/detail/show/'.$ent->getId().''),'name'=>''.html_escape($data['resourcename']).''),
 		    array('url'=>'#','name'=>lang('rr_accessmngmt'),'type'=>'current'),
@@ -278,8 +276,6 @@ class Access_manage extends MY_Controller {
         }
         $fedurl= base64url_encode($fed->getName());
         $data['breadcrumbs'] = array(
-            array('url' => base_url('p/page/front_page'), 'name' => lang('home')),
-            array('url' => base_url(), 'name' => lang('dashboard')),
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
             array('url' => base_url('federations/manage/show/'.$fedurl.''), 'name' => '' . $fed->getName() . ''),
             array('url'=>'#','type'=>'current','name'=>lang('rr_accessmngmt'))

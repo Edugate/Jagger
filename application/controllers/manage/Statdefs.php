@@ -206,8 +206,6 @@ class Statdefs extends MY_Controller
                 $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
             }
             $data['breadcrumbs'] = array(
-                array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-                array('url'=>base_url(),'name'=>lang('dashboard')),
                 $plist,
                 array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.$langname.''),
                 array('url'=>'#','name'=>lang('statsmngmt'),'type'=>'current'),
@@ -497,8 +495,6 @@ class Statdefs extends MY_Controller
         }
 
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-            array('url'=>base_url(),'name'=>lang('dashboard')),
             $plist,
             array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.$providerLangName.''),
             array('url'=>base_url('manage/statdefs/show/'.$provider->getId().''),'name'=>''.lang('statsmngmt').''),
@@ -676,8 +672,6 @@ class Statdefs extends MY_Controller
                 $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
             }
             $data['breadcrumbs'] = array(
-                array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-                array('url'=>base_url(),'name'=>lang('dashboard')),
                 $plist,
                 array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.$providerLangName.''),
                 array('url'=>base_url('manage/statdefs/show/'.$provider->getId().''),'name'=>''.lang('statsmngmt').''),
@@ -765,8 +759,6 @@ class Statdefs extends MY_Controller
                 }
 
                 $data['breadcrumbs'] = array(
-                    array('url'=>base_url('p/page/front_page'),'name'=>lang('home')),
-                    array('url'=>base_url(),'name'=>lang('dashboard')),
                     $plist,
                     array('url'=>base_url('providers/detail/show/'.$provider->getId().''),'name'=>''.$providerLangName.''),
                     array('url'=>base_url('manage/statdefs/show/'.$provider->getId().''),'name'=>''.lang('statsmngmt').''),
