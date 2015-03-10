@@ -419,6 +419,7 @@ class Arp_generator {
             $global_policy[$g->getAttribute()->getName()] = $g->getPolicy();
         }
 
+	    $supported_attrs = array();
         foreach ($s_attrs as $s)
         {
             $supported_attrs[$s->getAttribute()->getName()] = 0;
@@ -540,7 +541,6 @@ class Arp_generator {
                         /* check if sp's federation matches idp federation */
                         if (array_key_exists($f_value->getId(), $feds_collection))
                         {
-                            $n_req = array();
                             $n_req = $tmp_requirements->getRequirementsByFed($f_value);
                             if (!empty($n_req))
                             {

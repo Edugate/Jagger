@@ -334,7 +334,7 @@ class Form_element
 			$newelement = '<div><button class="editbutton addicon small" type="button" id="naacert">' . lang('addnewcert') . ' ' . lang('for') . ' AttributeAuthorityDescriptor</button></div>';
 			$Part .= $newelement . '</div></fieldset>';
 			$result[] = $Part;
-			$Part = '';
+
 // end CERTS AttributeAuthorityDescriptor
 		}
 		if (strcmp($enttype, 'IDP') != 0) {
@@ -1043,28 +1043,6 @@ class Form_element
 				}
 			} elseif ($sessform && isset($ses['srv']['IDPArtifactResolutionService']) && is_array($ses['srv']['IDPArtifactResolutionService'])) {
 				foreach ($ses['srv']['IDPArtifactResolutionService'] as $k4 => $v4) {
-
-
-					$r = '<div><div>';
-					$r .= '<div>' . form_label(lang('rr_bindingname'), 'f[srv][IDPArtifactResolutionService][' . $k4 . '][bind]');
-					$r .= form_dropdown('f[srv][IDPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, $v4['bind']) . '</div>';
-					$r .= '<div>' . form_label(lang('rr_url'), 'f[srv][IDPArtifactResolutionService][' . $k4 . '][url]');
-					$r .= form_input(array(
-						'name' => 'f[srv][IDPArtifactResolutionService][' . $k4 . '][url]',
-						'id' => 'f[srv][IDPArtifactResolutionService][' . $k4 . '][url]',
-						'value' => set_value('f[srv][IDPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['IDPArtifactResolutionService']['' . $k4 . '']['url'], FALSE),
-						'class' => 'acsurl',
-					));
-					$r .= 'index ' . form_input(array(
-							'name' => 'f[srv][IDPArtifactResolutionService][' . $k4 . '][order]',
-							'id' => 'f[srv][IDPArtifactResolutionService][' . $k4 . '][order]',
-							'size' => '3',
-							'maxlength' => '3',
-							'class' => 'acsindex',
-							'value' => set_value('f[srv][IDPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['IDPArtifactResolutionService']['' . $k4 . '']['order']),
-						)) . '</div>';
-
-					$r .= '</div></div>';
 					$furl = set_value('f[srv][IDPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['IDPArtifactResolutionService']['' . $k4 . '']['url'], FALSE);
 					$forder = set_value('f[srv][IDPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['IDPArtifactResolutionService']['' . $k4 . '']['order']);
 					$r = '<div class="srvgroup">';
@@ -2766,13 +2744,12 @@ class Form_element
 	{
 		$langs = languagesCodes();
 		$langselected = set_value('regpollang', $this->defaultlangselect);
-        $r = '';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', '', FALSE)) . '</div></div>';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', '', FALSE)) . '</div></div>';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', '', FALSE)) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
-		return $r;
+        $result = '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', '', FALSE)) . '</div></div>';
+		$result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
+		$result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', '', FALSE)) . '</div></div>';
+		$result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', '', FALSE)) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
+		return $result;
 	}
 
 	public function generateEditRegpol(models\Coc $coc)
@@ -2806,13 +2783,12 @@ class Form_element
 		foreach ($attrsnames as $k) {
 			$attrdropdown['' . $k . ''] = $k;
 		}
-		$r = '';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name')) . '</div></div>';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="attrname" class="inline right">' . lang('rr_attr_name') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('attrname', $attrdropdown, set_value('attrname')) . '</div></div>';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_value') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', '', FALSE)) . '</div></div>';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description')) . '</div></div>';
-		return $r;
+		$result = '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name')) . '</div></div>';
+		$result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="attrname" class="inline right">' . lang('rr_attr_name') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('attrname', $attrdropdown, set_value('attrname')) . '</div></div>';
+		$result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_value') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', '', FALSE)) . '</div></div>';
+		$result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
+		$result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description')) . '</div></div>';
+		return $result;
 	}
 
 	public function generateEditCoc(models\Coc $coc)
@@ -2822,13 +2798,12 @@ class Form_element
 		foreach ($attrsnames as $k) {
 			$attrdropdown['' . $k . ''] = $k;
 		}
-		$r = '';
-		$r .= '<div class="small-12 columns">' . jGenerateInput(lang('entcat_displayname'), 'name', set_value('name', $coc->getName()), '') . '</div>';
-		$r .= '<div class="small-12 columns">' . jGenerateInput(lang('entcat_value'), 'url', set_value('url', $coc->getUrl(), FALSE), '') . '</div>';
-		$r .= '<div class="small-12 columns">' . jGenerateDropdown(lang('rr_attr_name'), 'attrname', $attrdropdown, $coc->getSubtype(), '') . '</div>';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
-		$r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
-		return $r;
+		$result  = '<div class="small-12 columns">' . jGenerateInput(lang('entcat_displayname'), 'name', set_value('name', $coc->getName()), '') . '</div>';
+		$result .= '<div class="small-12 columns">' . jGenerateInput(lang('entcat_value'), 'url', set_value('url', $coc->getUrl(), FALSE), '') . '</div>';
+		$result .= '<div class="small-12 columns">' . jGenerateDropdown(lang('rr_attr_name'), 'attrname', $attrdropdown, $coc->getSubtype(), '') . '</div>';
+		$result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
+		$result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
+		return $result;
 	}
 
 }
