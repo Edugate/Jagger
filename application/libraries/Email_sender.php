@@ -294,7 +294,6 @@ class Email_sender {
 
         $merged = array_merge($params, $args);
         $isidp = false;
-        $issp = false;
         if (strcasecmp($type, 'idp') == 0)
         {
             $r['subject'] = 'IDP registration request';
@@ -303,7 +302,6 @@ class Email_sender {
         elseif (strcasecmp($type, 'sp') == 0)
         {
             $r['subject'] = 'SP registration request';
-            $issp = true;
         }
         else
         {
