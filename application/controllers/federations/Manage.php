@@ -129,7 +129,7 @@ class Manage extends MY_Controller
 			log_message('debug', __METHOD__ . ' retrieved fedmembers (lang:' . $lang . ') from cache');
 			return $cachedResult;
 		} else {
-			log_message('debug', __METHOD__ . ' no data in cache for id: ' . $cachedid);
+			log_message('debug', __METHOD__ . ' no data in cache');
 		}
 
 
@@ -173,10 +173,8 @@ class Manage extends MY_Controller
 			);
 		}
 
+        $this->j_ncache->saveFederationMembers($federation->getId(),$lang,$membersInArray);
 
-		if ($this->cache->save($cachedid, $membersInArray, 720)) {
-			log_message('debug', __METHOD__ . ' cacheid stored ' . $cachedid);
-		}
 		return $membersInArray;
 	}
 

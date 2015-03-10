@@ -61,5 +61,12 @@ class J_ncache
         return $this->ci->cache->get($cachedid);
     }
 
+    public function saveFederationMembers($fedId,$lang,$data)
+    {
+        $cachedid = 'fedmbrs_' . $fedId . '_' . $lang;
+        $this->ci->cache->save($cachedid, $data, 720);
+        return true;
+    }
+
 
 }
