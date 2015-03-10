@@ -36,11 +36,10 @@ class J_ncache
     {
         $guilangs = MY_Controller::guiLangs();
         $langs = array_keys($guilangs);
+	    $cachePrefix = $type.'_l_';
         foreach($langs as $v)
         {
-            $cachedid = $type.'_l_'.$v;
-            $this->ci->cache->delete($cachedid);
-            
+            $this->ci->cache->delete($cachePrefix.$v);
         }
         return true;
     }
@@ -48,10 +47,10 @@ class J_ncache
     {
         $guilangs = MY_Controller::guiLangs();
         $langs = array_keys($guilangs);
+	    $cachePrefix = 'fedmbrs_'.$fedId.'_';
         foreach($langs as $v)
         {
-            $cacheid = 'fedmbrs_'.$fedId.'_'.$v;
-            $this->ci->cache->delete($cachedid);
+            $this->ci->cache->delete($cachePrefix.$v);
         }
         return true;
     }
