@@ -69,7 +69,13 @@ $foundation = $base_url . 'foundation/';
 <header>
     <?php
     $iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
-    $isBreadcrumbs = $this->rrpreference->getPreferences('breadcrumbs');
+    $breadcrumbsConf = $this->rrpreference->getPreferences('breadcrumbs');
+    $breadcrumbsEnabled = FALSE;
+    if(!empty($breadcrumbsConf) && !empty($breadcrumbsConf['status']))
+    {
+        $breadcrumbsEnabled = TRUE;
+    }
+
     $showPagetitles = $this->rrpreference->getPreferences('titleheader');
     if (isset($iscookieconsent['status']) && (boolean)$iscookieconsent['status'] === TRUE && isset($iscookieconsent['value'])) {
         $this->load->helper('cookie');
@@ -86,6 +92,7 @@ $foundation = $base_url . 'foundation/';
     }
 
 
+    $args['breadcrumbsEnabled'] = $breadcrumbsEnabled;
     $this->load->view('toppanel', $args);
 
     if (!empty($showPagetitles) && !empty($showPagetitles['status']) && (!empty($titlepage) || !empty($subtitlepage))) {
@@ -127,7 +134,7 @@ $foundation = $base_url . 'foundation/';
 </header>
 <?php
 
-if ($loggedin && !empty($isBreadcrumbs['status'])) {
+if ($loggedin && $breadcrumbsEnabled === TRUE) {
     echo '<div class="row fullWidth">';
     echo '<ul class="breadcrumbs">';
     $prefBreadcrumbs = array(array('url' => base_url(), 'name' => lang('dashboard')));
