@@ -36,6 +36,7 @@ class Manage extends MY_Controller
 		 */
 		$this->tmp_providers = new models\Providers;
 		MY_Controller::$menuactive = 'fed';
+        $this->load->library('j_ncache');
 	}
 
 	function index()
@@ -123,11 +124,7 @@ class Manage extends MY_Controller
 
 	private function getMembers($federation, $lang)
 	{
-		$keyprefix = getCachePrefix();
-		$this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
-		$cachedid = 'fedmbrs_' . $federation->getId() . '_' . $lang;
-		$cachedResult = $this->cache->get($cachedid);
-
+        $cachedResult = $this->j_ncache->getFederationMembers($federation->getId(),$lang);
 		if (!empty($cachedResult)) {
 			log_message('debug', __METHOD__ . ' retrieved fedmembers (lang:' . $lang . ') from cache');
 			return $cachedResult;
@@ -666,11 +663,17 @@ class Manage extends MY_Controller
 				);
 			}
 		}
+
 		$data['content_view'] = 'federation/bulkadd_view';
 		$data['form_elements'] = $form_elements;
 		$data['fed_encoded'] = $fed_name;
 		$data['message'] = $message;
 		$data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $data['fed_encoded'] . '">' . html_escape($federation->getName()) . '</a>';
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+            array('url' => base_url('federations/manage/show/'.$data['fed_encoded'].''), 'name' => html_escape($federation->getName())),
+            array('url' => base_url('#'), 'name' => $data['subtitlepage'],'type'=>'current'),
+        );
 		$this->load->view('page', $data);
 	}
 
@@ -736,6 +739,7 @@ class Manage extends MY_Controller
 				$this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $subject, $body, array(), false);
 			}
 			$this->em->flush();
+            $this->j_ncache->cleanFederationMembers($federation->getId());
 			$message = '<div class="success">' . lang('rr_fedmembersadded') . '</div>';
 		} else {
 			$message = '<div class="alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>';
