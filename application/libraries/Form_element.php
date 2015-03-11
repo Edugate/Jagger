@@ -2024,7 +2024,6 @@ class Form_element
 			$result[] = '<fieldset><legend>' . lang('e_idpiphint') . '</legend>' . $r2 . '</fieldset>';
 			$result[] = '';
 			// start geolocation
-			// $result[] = '';
 			$geosinputs = '';
 			foreach ($geo as $k => $g) {
 				$geosinputs .= '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' . $k . ']" type="text" value="' . html_escape($g) . '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
@@ -2035,7 +2034,6 @@ class Form_element
 			$r .= '<div class="large-4 column"><input id="map-search" type="text" placeholder="' . lang('rrsearchonmap') . '"/><div id="geogroup">' . $geosinputs . '</div></div>';
 			$r .= '</div>';
 			$result[] = '<fieldset><legend>' . lang('rr_geolocation') . '</legend>' . $r . '</fieldset>';
-			// $result[] ='';
 			// end geolocation
 		}
 		// END IDPSSO PART

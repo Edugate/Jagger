@@ -970,10 +970,6 @@ class Entityedit extends MY_Controller
         $data['menutabs'] = $menutabs;
         $data['content_view'] = 'manage/entityedit_view.php';
 
-
-        // $data['headerjs'] ='';
-
-
         $this->load->view('page', $data);
     }
 

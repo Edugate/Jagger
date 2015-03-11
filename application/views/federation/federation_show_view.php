@@ -1,9 +1,4 @@
 <?php
-
-
-
-
-
 echo '<div id="ifedtabs">';
 echo '<ul class="tabs" data-tab>
  <li class="tab-title active"><a href="#general">' . lang('tabgeneral') . '</a></li>
@@ -15,10 +10,10 @@ if (!empty($fvalidator)) {
 }
 echo '<li class="tab-title"><a href="#management">' . lang('tabMngt') . '</a></li>';
 
-echo  '</ul>';
+echo '</ul>';
 
 $tmpl = array('table_open' => '<table id="detailsnosort" >');
-$tmpl2= array('table_open' => '<table style="border: 0px">');
+$tmpl2 = array('table_open' => '<table style="border: 0px">');
 echo '<div class="tabs-content">';
 foreach ($result as $k => $v) {
     if ($k !== 'general') {
@@ -33,8 +28,7 @@ foreach ($result as $k => $v) {
         echo '<div class="text-right">' . $editlink . '</div>';
 
 
-        if(!empty($fedpiechart))
-        {
+        if (!empty($fedpiechart)) {
             $this->table->set_template($tmpl2);
             echo '<div class="row">';
 
@@ -46,14 +40,9 @@ foreach ($result as $k => $v) {
             echo '</div>';
 
             echo '</div>';
-        }
-        else {
+        } else {
             $this->table->set_template($tmpl);
-           // echo '<div class="row">';
-
             echo $this->table->generate($v);
-
-            //echo '</div>';
         }
 
         $this->table->clear();
