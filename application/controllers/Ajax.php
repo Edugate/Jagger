@@ -347,7 +347,6 @@ class Ajax extends MY_Controller
 			echo 'denied';
 			return;
 		}
-		$jLang = MY_Controller::getLang();
 		$username = $this->j_auth->current_user();
 		$u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
 		if (empty($u)) {

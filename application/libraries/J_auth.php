@@ -35,9 +35,7 @@ class J_auth
 		$this->ci = &get_instance();
 		$this->em = $this->ci->doctrine->em;
 		$this->ci->load->helper('cookie');
-		if (isset($_SESSION['timeoffset'])) {
-			self::$timeOffset = (int)$_SESSION['timeoffset'] * 60;
-		}
+        self::$timeOffset = (int) $this->ci->session->userdata('timeoffset') *60;
 		log_message('debug', 'TimeOffset  :' . self::$timeOffset);
 	}
 
@@ -163,26 +161,26 @@ class J_auth
 
 	public function logged_in()
 	{
-		if (!empty($_SESSION['logged']) && !empty($_SESSION['username'])) {
-			log_message('debug', 'J_auth::$timeOffset : ' . J_auth::$timeOffset);
-			if (!empty($_SESSION['timeoffset'])) {
-				$timeoffset = $_SESSION['timeoffset'];
-			} else {
-				$timeoffset = 0;
-			}
-			log_message('debug', 'session is active for: ' . $_SESSION['username'] . ' with set timeoffsett ' . $timeoffset);
-			return TRUE;
-		} else {
-			return FALSE;
+        $loggedin = trim($this->ci->session->userdata('logged'));
+        $username = trim($this->ci->session->userdata('username'));
+        if(!empty($loggedin)  && !empty($username))
+        {
+            log_message('debug', 'session is active for: ' .$username . '');
+            return true;
+        }
+        else {
+			return false;
 		}
 	}
 
 	public function current_user()
 	{
-		if (!empty($_SESSION['logged']) && isset($_SESSION['username']) && isset($_SESSION['user_id'])) {
-			return $_SESSION['username'];
-		}
-		return FALSE;
+        if($this->logged_in())
+        {
+            return trim($this->ci->session->userdata('username'));
+        }
+
+		return false;
 	}
 
 	public function set_error($error)
