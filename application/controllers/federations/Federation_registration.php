@@ -18,6 +18,10 @@ if (!defined('BASEPATH'))
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 
+/**
+ * @property Email_sender $email_sender
+ * @property Approval $approval
+ */
 class Federation_registration extends MY_Controller
 {
 
@@ -123,7 +127,7 @@ class Federation_registration extends MY_Controller
           $body .= $q->getEmail().' just filled Federation Registration form'.PHP_EOL;
           if(isset($_SERVER['REMOTE_ADDR']))
           {
-            $body .= "Requester's IP :". $_SERVER['REMOTE_ADDR']. PHP_EOL;
+            $body .= "Requester's IP :". $this->input->ip_address(). PHP_EOL;
           }
           $body .= 'Federation name: '.$fedname. PHP_EOL;
           $body .= 'You can approve or reject it on '.base_url().'reports/awaiting/detail/'.$q->getToken().PHP_EOL;

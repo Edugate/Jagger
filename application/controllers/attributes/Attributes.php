@@ -99,6 +99,9 @@ class Attributes extends MY_Controller {
     public function show()
     {
         $this->title = lang('attrsdeflist');
+        /**
+         * @var $attributes models\Attribute[]
+         */
         $attributes_tmp = new models\Attributes();
         $attributes = $attributes_tmp->getAttributes();
         $dataRows = array();
