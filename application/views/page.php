@@ -71,8 +71,7 @@ $foundation = $base_url . 'foundation/';
     $iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
     $breadcrumbsConf = $this->rrpreference->getPreferences('breadcrumbs');
     $breadcrumbsEnabled = FALSE;
-    if(!empty($breadcrumbsConf) && !empty($breadcrumbsConf['status']))
-    {
+    if (!empty($breadcrumbsConf) && !empty($breadcrumbsConf['status'])) {
         $breadcrumbsEnabled = TRUE;
     }
 
@@ -134,17 +133,21 @@ $foundation = $base_url . 'foundation/';
 </header>
 <?php
 
-if ($loggedin && $breadcrumbsEnabled === TRUE) {
+if ($breadcrumbsEnabled === TRUE) {
+    if ($loggedin) {
+        $prefBreadcrumbs = array(array('url' => base_url(), 'name' => lang('dashboard')));
+    } else {
+        $prefBreadcrumbs = array();
+    }
     echo '<div class="row fullWidth">';
     echo '<ul class="breadcrumbs">';
-    $prefBreadcrumbs = array(array('url' => base_url(), 'name' => lang('dashboard')));
 
-    if(empty($breadcrumbs))
-    {
-        $breadcrumbs  = array();
+
+    if (empty($breadcrumbs)) {
+        $breadcrumbs = array();
     }
-    $groupsBreadcrumbs = array($prefBreadcrumbs,$breadcrumbs);
-    foreach($groupsBreadcrumbs as $barray) {
+    $groupsBreadcrumbs = array($prefBreadcrumbs, $breadcrumbs);
+    foreach ($groupsBreadcrumbs as $barray) {
 
         foreach ($barray as $b) {
             $rawAttrs = '';
@@ -164,6 +167,8 @@ if ($loggedin && $breadcrumbsEnabled === TRUE) {
     }
     echo '</ul>';
     echo '</div>';
+
+
 }
 ?>
 <div id="container" class="row">

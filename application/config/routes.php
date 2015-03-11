@@ -42,9 +42,10 @@ $route['default_controller'] = "dashboard";
 
 $route['404_override'] = '';
 
-$route['providers/sp/registration'] = 'providers/sp_registration';
+$route['providers/sp/registration/(:any)'] = 'providerregistration/sp';
+$route['providers/sp/registration'] = 'providerregistration/sp';
+$route['providers/sp_registration'] = 'providerregistration/sp';
 $route['home']  = 'p/page/front_page';
-$route['providers/sp/registration/(:any)'] = 'providers/sp_registration/$1';
 $route['metadata/federatation/(:any)/metadata.xml'] = 'federations/manage/show/$1';
 $route['reports/awaiting'] = 'reports/awaiting/alist';
 // for advanced sp/idp registration form
