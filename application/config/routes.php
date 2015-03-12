@@ -44,6 +44,7 @@ $route['404_override'] = '';
 
 $route['providers/sp/registration/(:any)'] = 'providerregistration/sp';
 $route['providers/sp/registration'] = 'providerregistration/sp';
+$route['providers/sp_registration'] = 'providerregistration/sp';
 $route['providers/idp_registration'] = 'providerregistration/idp';
 $route['home']  = 'p/page/front_page';
 $route['metadata/federatation/(:any)/metadata.xml'] = 'federations/manage/show/$1';
