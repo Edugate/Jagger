@@ -2,9 +2,13 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
+/**
+ * Class Providerregistration
+ */
 class Providerregistration extends MY_Controller{
 
-     function __construct()
+
+    function __construct()
     {
         parent::__construct();
         $this->load->helper('form');

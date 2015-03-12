@@ -17,10 +17,14 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @package     Jagger
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
+
+/**
+ * @property Providertoxml $providertoxml
+ * @property Xmlvalidator $xmlvalidator
+ */
 class Metadata extends MY_Controller
 {
 
-    private $useNewMetagen = false;
 
     function __construct()
     {
@@ -58,6 +62,9 @@ class Metadata extends MY_Controller
             show_error('Access denied', 403);
         }
 
+        /**
+         * @var $federation models\Federation
+         */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name));
 
         if (empty($federation))
@@ -77,6 +84,7 @@ class Metadata extends MY_Controller
         $creationInstant = $validfor->format('Y-m-d\TH:i:s\Z');
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
+        $idprefix ='';
         $prefid = $this->config->item('fedmetadataidprefix');
         if (!empty($prefid))
         {
@@ -93,6 +101,9 @@ class Metadata extends MY_Controller
             $options['fedreqattrs'] = $attrfedreq_tmp->getRequirementsByFed($federation);
         }
         $tmpm = new models\Providers;
+        /**
+         * @var $members \models\Provider[]
+         */
         $members = $tmpm->getActiveFederationMembers($federation, $excludeType);
 
         $xmlOut = $this->providertoxml->createXMLDocument();
@@ -142,7 +153,6 @@ class Metadata extends MY_Controller
                 }
             }
 
-
             if ($m->isStaticMetadata())
             {
                 $xmlOut->text('static' . PHP_EOL);
@@ -179,9 +189,10 @@ class Metadata extends MY_Controller
             show_error('Access denied', 403);
         }
 
-
+        /**
+         * @var $federation models\Federation
+         */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE));
-
 
         if (empty($federation))
         {
@@ -209,6 +220,9 @@ class Metadata extends MY_Controller
             $options['fedreqattrs'] = $attrfedreq_tmp->getRequirementsByFed($federation);
         }
         $tmpm = new models\Providers;
+        /**
+         * @var $members models\Provider[]
+         */
         $members = $tmpm->getActiveFederationmembersForExport($federation, null);
         $validfor = new \DateTime("now", new \DateTimezone('UTC'));
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
@@ -280,6 +294,9 @@ class Metadata extends MY_Controller
         $this->load->library('providertoxml');
         $name = base64url_decode($entityId);
         $options['attrs'] = 1;
+        /**
+         * @var $entity models\Provider
+         */
         $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
         if (!empty($entity))
         {
@@ -357,16 +374,16 @@ class Metadata extends MY_Controller
         }
         $data = array();
         $name = base64url_decode($entityId);
+        /**
+         * @var $me models\Provider
+         */
         $me = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $name . ''));
-
         if (empty($me))
         {
             log_message('debug', 'Failed generating circle metadata for ' . $name);
             show_error('unknown provider', 404);
             return;
         }
-        $disable_extcirclemeta = $this->config->item('disable_extcirclemeta');
-
         if (!$this->isProviderAllowedForCircle($me))
         {
             log_message('warning', 'Cannot generate circle metadata for external provider:' . $me->getEntityId());
@@ -380,8 +397,6 @@ class Metadata extends MY_Controller
         {
             $excludeType = $mtype;
         }
-
-        $cacheId = 'circlemeta_' . $me->getId();
         $options['attrs'] = 1;
         $p = new models\Providers;
         $tFeds = $p->getTrustedActiveFeds($me);
@@ -391,6 +406,9 @@ class Metadata extends MY_Controller
             $feds[] = $f->getId();
         }
 
+        /**
+         * @var $members models\Provider[]
+         */
         $members = $p->getActiveMembersOfFederations($feds, $excludeType);
 
         $validfor = new \DateTime("now", new \DateTimezone('UTC'));
@@ -455,25 +473,29 @@ class Metadata extends MY_Controller
         $this->load->view('metadata_view', $data);
     }
 
+    /**
+     * @param $tokenid
+     * @return bool|void
+     */
     public function queue($tokenid)
     {
         if (strlen($tokenid) > 100 || !ctype_alnum($tokenid))
         {
             show_error('Not found', 404);
-            return;
+            return null;
         }
         $q = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $tokenid));
         if (empty($q))
         {
             show_error('Not found', 404);
-            return;
+            return null;
         }
         $queueAction = $q->getAction();
         $queueObjType = $q->getType();
         if (!(strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0)))
         {
             show_error('Not found', 404);
-            return;
+            return null;
         }
         $d = $q->getData();
         $this->load->library('providertoxml');
