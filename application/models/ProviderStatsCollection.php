@@ -92,7 +92,10 @@ class ProviderStatsCollection {
     {
         return $this->statdefinition;
     }
-   
+
+    /**
+     * @return \DateTime
+     */
     public function getCreatedAt()
     {
         return $this->createdAt;

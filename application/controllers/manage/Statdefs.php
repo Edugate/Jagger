@@ -20,18 +20,21 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Statdefs extends MY_Controller
 {
 
+    protected  $ispreworkers;
     function __construct()
     {
         parent::__construct();
+        $this->ispreworkers = $this->config->item('predefinedstats');
         $this->load->library('form_validation');
     }
+
     public function download($defid = null)
     {
         if (!$this->input->is_ajax_request())
         {
             show_error('denied', 403);
         }
-        if (empty($defid) || !is_numeric($defid))
+        if (empty($defid) || !ctype_digit($defid))
         {
             show_error('not found', 404);
         }
@@ -46,11 +49,17 @@ class Statdefs extends MY_Controller
         {
             show_error('denied', 403);
         }
+        /**
+         * @var $def models\ProviderStatsDef
+         */
         $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
         if (empty($def))
         {
             show_error('not found', 404);
         }
+        /**
+         * @var $provider models\Provider
+         */
         $provider = $def->getProvider();
         if (empty($provider))
         {
@@ -109,13 +118,13 @@ class Statdefs extends MY_Controller
             {
 
                 echo json_encode(array('status' => lang('rr_jobinqueue')));
-                return;
+                return false;
             }
             elseif ($stat[0] === $stat[1] && $stat[1] === true)
             {
                 $percent = $stat[2] / $stat[3] * 100;
                 echo json_encode(array('status' => lang('rr_jobdonein') . ' ' . $percent . ' %'));
-                return;
+                return false;
             }
         }
 
@@ -146,13 +155,14 @@ class Statdefs extends MY_Controller
         if (empty($providerid) || !is_numeric($providerid))
         {
             show_error('Page not found', 404);
-            reurn;
+            return null;
         }
         $isgearman = $this->config->item('gearman');
         $isstatistics = $this->config->item('statistics');
         if (empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
         {
             show_error('not found', 404);
+            return null;
         }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
@@ -161,7 +171,7 @@ class Statdefs extends MY_Controller
         }
         else
         {
-            $lang = MY_Controller::getLang();
+            $jLang = MY_Controller::getLang();
 
             $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => '' . $providerid . ''));
             if (empty($provider))
@@ -187,8 +197,13 @@ class Statdefs extends MY_Controller
             {
                 show_error(lang('rr_noperm'), 403);
             }
+
+            /**
+             * @var $ed models\ProviderStatsDef[]
+             */
+
             $ed = $this->getExistingStatsDefs($provider->getId());
-            $langname = $provider->getNameToWebInLang($lang, $providerType);
+            $langname = $provider->getNameToWebInLang($jLang, $providerType);
             $data = array(
                 'providerid' => $provider->getId(),
                 'providerentity' => $provider->getEntityId(),
@@ -256,6 +271,9 @@ class Statdefs extends MY_Controller
                 {
                     show_error('incorrect fedid', 404);
                 }
+                /**
+                 * @var $statdef models\ProviderStatsDef
+                 */
                 $statdef = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => '' . $defid . '', 'provider' => '' . $providerid . ''));
                 if (empty($statdef))
                 {
@@ -299,17 +317,17 @@ class Statdefs extends MY_Controller
                         }
                         else
                         {
-                            $predefinedstats = $this->config->item('predefinedstats');
-                            if (empty($predefinedstats) || !is_array($predefinedstats) || !array_key_exists($sysdef, $predefinedstats))
+
+                            if (empty($this->ispreworkers) || !is_array($this->ispreworkers) || !array_key_exists($sysdef, $this->ispreworkers))
                             {
                                 $d[] = array('name' => '' . lang('nameofbuiltinstatdef') . '', 'value' => '<span class="alert">' . lang('builtincolnovalid') . '</span>');
                             }
                             else
                             {
                                 $sysdefdesc = '';
-                                if (isset($predefinedstats['' . $sysdef . '']['desc']))
+                                if (isset($this->ispreworkers['' . $sysdef . '']['desc']))
                                 {
-                                    $sysdefdesc = $predefinedstats['' . $sysdef . '']['desc'];
+                                    $sysdefdesc = $this->ispreworkers['' . $sysdef . '']['desc'];
                                 }
                                 $d[] = array('name' => '' . lang('nameofbuiltinstatdef') . '', 'value' => '' . $sysdef . ':<br />' . $sysdefdesc . '');
                             }
@@ -338,7 +356,7 @@ class Statdefs extends MY_Controller
                         if ($accesstype === 'anon')
                         {
                             $vaccesstype = lang('rr_anon');
-                            $d[] = array('name' => '' . lang('rr_typeaccess') . '', 'value' => '' . $accesstype . '');
+                            $d[] = array('name' => '' . lang('rr_typeaccess') . '', 'value' => '' . $vaccesstype . '');
                         }
                         else
                         {
@@ -348,6 +366,9 @@ class Statdefs extends MY_Controller
                             $d[] = array('name' => '' . lang('rr_password') . '', 'value' => '***********');
                         }
                     }
+                    /**
+                     * @var $statfiles models\ProviderStatsCollection[]
+                     */
                     $statfiles = $statdef->getStatistics();
 
                     if (!empty($statfiles) && count($statfiles) > 0)
@@ -357,7 +378,8 @@ class Statdefs extends MY_Controller
                         $dowinfo = lang('statfilegenerated');
                         foreach ($statfiles as $st)
                         {
-                            $statv .= '<li><a href="' . $downurl . $st->getId() . '">' . $dowinfo . ': ' . date('Y-m-d H:i:s', $st->getCreatedAt()->format('U') + j_auth::$timeOffset) . '</a></li>';
+                            $createdAt = date('Y-m-d H:i:s',$st->getCreatedAt()->format("U")+j_auth::$timeOffset);
+                            $statv .= '<li><a href="'.$downurl.$st->getId().'">'. $dowinfo.': '.$createdAt.'</a></li>';
                         }
                         $statv .= '</ul>';
                         $d[] = array('name' => '' . lang('generatedstatslist') . '', 'value' => '' . $statv . '');
@@ -396,12 +418,17 @@ class Statdefs extends MY_Controller
             show_error('not found', 404);
         }
 
+        /**
+         * @var $statdef models\ProviderStatsDef
+         */
         $statdef = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $statdefid, 'provider' => $providerid));
         if (empty($statdef))
         {
             show_error('Statdef Page not found', 404);
         }
-
+        /**
+         * @var $provider models\Provider
+         */
         $provider = $statdef->getProvider();
         $myLang = MY_Controller::getLang();
         $providerType = $provider->getType();
@@ -422,12 +449,12 @@ class Statdefs extends MY_Controller
         $data['providerid'] = $providerid;
         $data['providerentity'] = $provider->getEntityId();
         $data['providername'] = $provider->getName();
-        $ispreworkers = $this->config->item('predefinedstats');
+
         $workersdescriptions = '<ul>';
-        if (!empty($ispreworkers) && is_array($ispreworkers) && count($ispreworkers) > 0)
+        if (!empty($this->ispreworkers) && is_array($this->ispreworkers) && count($this->ispreworkers) > 0)
         {
             $workerdropdown = array();
-            foreach ($ispreworkers as $key => $value)
+            foreach ($this->ispreworkers as $key => $value)
             {
                 if (is_array($value) && array_key_exists('worker', $value))
                 {
@@ -512,7 +539,6 @@ class Statdefs extends MY_Controller
         {
             $defname = $this->input->post('defname');
             $titlename = $this->input->post('titlename');
-            $sourceurl = $this->input->post('sourceurl');
             $accesstype = $this->input->post('accesstype');
             $description = $this->input->post('description');
             $sourceurl = $this->input->post('sourceurl');
@@ -606,6 +632,9 @@ class Statdefs extends MY_Controller
         else
         {
 
+            /**
+             * @var $provider models\Provider
+             */
             $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => '' . $providerid . ''));
             if (empty($provider))
             {
@@ -634,12 +663,11 @@ class Statdefs extends MY_Controller
             $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['providerid'] . '">' . $providerLangName . '</a>';
             $data['subtitlepage'] = lang('title_newstatdefs');
             $data['submenupage'][] = array('name' => lang('statdeflist'), 'link' => '' . base_url() . 'manage/statdefs/show/' . $data['providerid'] . '');
-            $ispreworkers = $this->config->item('predefinedstats');
             $workersdescriptions = '<ul>';
-            if (!empty($ispreworkers) && is_array($ispreworkers) && count($ispreworkers) > 0)
+            if (!empty($this->ispreworkers) && is_array($this->ispreworkers) && count($this->ispreworkers) > 0)
             {
                 $workerdropdown = array();
-                foreach ($ispreworkers as $key => $value)
+                foreach ($this->ispreworkers as $key => $value)
                 {
                     if (is_array($value) && array_key_exists('worker', $value))
                     {
@@ -691,7 +719,6 @@ class Statdefs extends MY_Controller
                 $sourceurl = $this->input->post('sourceurl');
                 $accesstype = $this->input->post('accesstype');
                 $description = $this->input->post('description');
-                $sourceurl = $this->input->post('sourceurl');
                 $userauthn = $this->input->post('userauthn');
                 $passauthn = $this->input->post('passauthn');
                 $formattype = $this->input->post('formattype');
@@ -822,6 +849,10 @@ class Statdefs extends MY_Controller
         return $this->form_validation->run();
     }
 
+    /**
+     * @param $providerid
+     * @return array
+     */
     private function getExistingStatsDefs($providerid)
     {
         $r = $this->em->getRepository("models\ProviderStatsDef")->findBy(array('provider' => '' . $providerid . ''));
@@ -835,6 +866,7 @@ class Statdefs extends MY_Controller
             show_error('method not allowed', 401);
         }
         $loggedin = $this->j_auth->logged_in();
+        $msg ='';
         if (!$loggedin)
         {
             $s = 403;
@@ -851,6 +883,9 @@ class Statdefs extends MY_Controller
             echo $msg;
             return;
         }
+        /**
+         * @var $def models\ProviderStatsDef
+         */
         $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
         if (empty($def))
         {
@@ -858,7 +893,9 @@ class Statdefs extends MY_Controller
             echo 'not found';
             return;
         }
+
         $provider = $def->getProvider();
+
         if (empty($provider))
         {
             log_message('error', 'Found orphaned statdefinition with id: ' . $def->getId());
