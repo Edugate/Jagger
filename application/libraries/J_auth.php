@@ -232,7 +232,7 @@ class J_auth
 		}
 		$u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
 		if (empty($u)) {
-			log_message('error', 'isAdministrator: Browser client session from IP:' . $_SERVER['REMOTE_ADDR'] . ' references to nonexist user: ' . $username);
+			log_message('error', 'isAdministrator: Browser client session from IP:' .  $this->ci->input->ip_address() . ' references to nonexist user: ' . $username);
 			$this->ci->session->sess_destroy();
 			return FALSE;
 		}

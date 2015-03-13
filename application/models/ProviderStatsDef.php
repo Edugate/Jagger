@@ -162,6 +162,9 @@ class ProviderStatsDef {
        return $this->titlename;
     }
 
+    /**
+     * @return Provider
+     */
     public function getProvider()
     {
        return $this->provider;

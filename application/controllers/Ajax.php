@@ -5,6 +5,9 @@
  * and open the template in the editor.
  */
 
+/**
+ * @property Curl $curl;
+ */
 class Ajax extends MY_Controller
 {
 
@@ -27,6 +30,7 @@ class Ajax extends MY_Controller
 			$this->input->set_cookie($lc);
 			return true;
 		}
+
 	}
 
 	public function getproviders()
@@ -42,6 +46,7 @@ class Ajax extends MY_Controller
 			echo 'denied';
 			return;
 		}
+
 
 		$p = new models\Providers();
 		$providers = $p->getLocalIdsEntities();
@@ -78,6 +83,7 @@ class Ajax extends MY_Controller
 			$sslvalidate = TRUE;
 			$sslvalidatehost = 2;
 		}
+
 		$image = $this->curl->simple_get('' . $logourl . '', array(), array(
 			CURLOPT_SSL_VERIFYPEER => $sslvalidate,
 			CURLOPT_SSL_VERIFYHOST => $sslvalidatehost,
@@ -396,4 +402,3 @@ class Ajax extends MY_Controller
 
 }
 
-?>

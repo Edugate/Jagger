@@ -54,6 +54,11 @@ class Attributes extends MY_Controller {
         $this->title = lang('rr_newattr_title');
         $isAdmin = $this->j_auth->isAdministrator();
         $data['titlepage'] = lang('rr_newattr_title');
+        $data['breadcrumbs'] = array(
+            array('url'=>base_url('attributes/attributes/show'),'name'=>lang('attrsdeflist')),
+            array('url'=>'#','name'=>lang('rr_newattr_title'),'type'=>'current'),
+
+        );
         if (!$isAdmin)
         {
             show_error('Access Denied', 401);
@@ -99,6 +104,9 @@ class Attributes extends MY_Controller {
     public function show()
     {
         $this->title = lang('attrsdeflist');
+        /**
+         * @var $attributes models\Attribute[]
+         */
         $attributes_tmp = new models\Attributes();
         $attributes = $attributes_tmp->getAttributes();
         $dataRows = array();
