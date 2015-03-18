@@ -181,12 +181,32 @@ class Entityedit extends MY_Controller
             }
 
         }
-        $this->tmp_error = 'externar validator: failed';
-        if(isset($result['error']))
+        if(isset($result['returncode']))
         {
-            foreach ($result['error'] as $er)
+            if(strcasecmp($result['returncode'],'error')==0 || strcasecmp($result['returncode'],'critical')==0)
             {
-                $this->tmp_error  .= html_escape($er).PHP_EOL;
+                  //$this->tmp_error = serialize($result['message']);
+                  if(isset($result['message']) && is_array($result['message']))
+                  {
+                     foreach($result['message'] as $ke=>$ee)
+                     {
+                        $this->tmp_error .= html_escape($ke).':';
+                        if(is_array($ee))
+                        {
+                            foreach($ee as $pe)
+                            {
+                               $this->tmp_error .= html_escape($pe).';';
+                            }
+                        }
+                        else
+                        {
+                            $this->tmp_error .= html_escape($ee);
+                        }
+                        $this->tmp_error .= '<br />';
+                        
+                     }
+                  }
+                  return false;
             }
         }
         return true;
@@ -1051,8 +1071,9 @@ class Entityedit extends MY_Controller
                             $isFvalidatoryMandatory = $fvalidator->getMandatory();
 
                         }
+                        log_message('debug','JAGGER: externalValidatorPassed='.(int)$externalValidatorPassed.', isFvalidatoryMandatory:'.(int) $isFvalidatoryMandatory);
 
-                        if($externalValidatorPassed === true && $isFvalidatoryMandatory === false) {
+                        if($externalValidatorPassed === true || $isFvalidatoryMandatory === false) {
                             $convertedToArray['metadata'] = base64_encode($xmloutput);
 
                             log_message('debug', 'GKS convertedToArray: ' . serialize($convertedToArray));
