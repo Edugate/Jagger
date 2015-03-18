@@ -29,6 +29,7 @@ class Awaiting extends MY_Controller
         parent::__construct();
         $this->load->helper(array('form', 'url', 'cert'));
         $this->load->library('table');
+        $this->load->library('tracker');
         $this->title = lang('title_approval');
     }
 
@@ -517,9 +518,12 @@ class Awaiting extends MY_Controller
         $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), false);
         $this->federationremover->removeFederation($federation);
         $this->em->remove($q);
+        $this->tracker->save_track('sys', null, null, 'approved - remove fed: '.$federation->getName().'', false);
+
         try
         {
             $this->em->flush();
+            log_message('info','JAGGER: '.__METHOD__.' '.$this->session->userdata('username').' : approved - remove fed:'.$federation->getName().'');
             return true;
         }
         catch (Exception $e)
@@ -655,6 +659,7 @@ class Awaiting extends MY_Controller
             $additionalReceipents[] = $requester_recipient;
         }
         $this->email_sender->addToMailQueue(array('greqisterreq', 'gidpregisterreq'), null, $sbj, $body, $additionalReceipents, FALSE);
+        $this->tracker->save_track('sys', null, null, 'approved - provider reg req: '.$entity->getEntityId().'', false);
         $this->load->library('j_ncache');
         try
         {
@@ -1008,7 +1013,7 @@ class Awaiting extends MY_Controller
                         $membership->setFederation($federation);
                     }
                     $this->em->persist($membership);
-                    $this->load->library('tracker');
+
                     $this->tracker->save_track(strtolower($provider->getType()), 'request', $provider->getEntityId(), 'request to join federation: ' . $federation->getName() . ' :: accepted ', false);
 
 
@@ -1042,26 +1047,42 @@ class Awaiting extends MY_Controller
         {
             $recipient = $queueObj->getRecipient();
             $recipienttype = $queueObj->getRecipientType();
+            $allowedRecipientTypes = array('entitycategory','regpolicy');
             $type = $queueObj->getType();
             $name = $queueObj->getName();
-            if (strcasecmp($recipienttype, 'entitycategory') == 0 && strcasecmp($type, 'Provider') == 0 && !empty($name))
+            if(in_array($recipienttype,$allowedRecipientTypes) && strcasecmp($type, 'Provider') == 0 && !empty($name))
             {
-                $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $recipient, 'type' => 'entcat'));
                 $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
-                if (empty($coc) || empty($provider))
+                if(empty($provider))
                 {
-                    log_message('error', __METHOD__ . ' couldn approve request as EntityCategory with id ' . $recipient . ' or provider with entityid ' . $name . ' does not exists');
-                    show_error('Entity category or provider does not exist', 404);
-                    return; /// @todo finish
+                    log_message('error', __METHOD__ . ' could not approve request as provider with entityid ' . $name . ' does not exists');
+                    show_error('Provider does not exist', 404);
+                    return;
                 }
-
+                if(strcasecmp($recipienttype, 'entitycategory') == 0) {
+                    $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $recipient, 'type' => 'entcat'));
+                    if(empty($coc))
+                    {
+                        log_message('error', __METHOD__ . ' could not approve request as EntityCategory with id ' . $recipient . '  does not exists');
+                        show_error('Entity category', 404);
+                        return;
+                    }
+                }
+                else
+                {
+                    $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $recipient, 'type' => 'regpol'));
+                    if(empty($coc))
+                    {
+                        log_message('error', __METHOD__ . ' could not approve request as RegistrationPolicy with id ' . $recipient . '  does not exists');
+                        show_error('RegistrationPolicy does not exist', 404);
+                        return;
+                    }
+                }
                 if (!$isAdministrator)
                 {
                     show_error('no permission', 403);
                     return;
                 }
-
-
                 $coc->setProvider($provider);
                 $provider->setCoc($coc);
                 $this->em->persist($provider);
@@ -1079,42 +1100,7 @@ class Awaiting extends MY_Controller
                     $data = array('content_view' => 'error_message', 'error_message' => 'Problem occured');
                     $this->load->view('page', $data);
                 }
-            }
-            elseif (strcasecmp($recipienttype, 'regpolicy') == 0 && strcasecmp($type, 'Provider') == 0 && !empty($name))
-            {
-                $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $recipient, 'type' => 'regpol'));
-                $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
-                if (empty($coc) || empty($provider))
-                {
-                    log_message('error', __METHOD__ . ' couldn approve request as RegistrationPolicy with id ' . $recipient . ' or provider with entityid ' . $name . ' does not exists');
-                    show_error('Entity category or provider does not exist', 404);
-                    return; /// @todo finish
-                }
 
-                if (!$isAdministrator)
-                {
-                    show_error('no permission', 403);
-                    return;
-                }
-
-
-                $coc->setProvider($provider);
-                $provider->setCoc($coc);
-                $this->em->persist($provider);
-                $this->em->persist($coc);
-                $this->em->remove($queueObj);
-                try
-                {
-                    $this->em->flush();
-                    $data = array('content_view' => 'reports/awaiting_approved_view', 'success_message' => 'Request has been approved');
-                    $this->load->view('page', $data);
-                }
-                catch (Exception $e)
-                {
-                    log_message('error', __METHOD__ . ' ' . $e);
-                    $data = array('content_view' => 'error_message', 'error_message' => 'Problem occured');
-                    $this->load->view('page', $data);
-                }
             }
             else
             {

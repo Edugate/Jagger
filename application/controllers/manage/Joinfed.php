@@ -142,13 +142,13 @@ class Joinfed extends MY_Controller
                     if (!empty($overrideconfig) && is_array($overrideconfig) && array_key_exists('joinfed', $overrideconfig) && !empty($overrideconfig['joinfed'])) {
                         $b = $overrideconfig['joinfed'];
                     } else {
-                        $b = "Hi,\r\nJust few moments ago Administator of Provider %s (%s) \r\n";
-                        $b .= "sent request to Administrators of Federation: %s \r\n";
-                        $b .= "to access  him as new federation member.\r\n";
-                        $b .= "To accept or reject this request please go to Resource Registry\r\n %s \r\n";
-                        $b .= "\r\n\r\n======= additional message attached by requestor ===========\r\n";
+                        $b = "Hi,".PHP_EOL."Just few moments ago Administator of Provider %s (%s)".PHP_EOL;
+                        $b .= "sent request to Administrators of Federation: %s".PHP_EOL;
+                        $b .= "to access  him as new federation member.".PHP_EOL;
+                        $b .= "To accept or reject this request please go to Resource Registry".PHP_EOL."%s".PHP_EOL;
+                        $b .= PHP_EOL.PHP_EOL."======= additional message attached by requestor ===========".PHP_EOL;
                         $b .= "%s";
-                        $b .= "\r\n=============================================================\r\n";
+                        $b .= PHP_EOL."=============================================================".PHP_EOL;
                     }
                     $localizedmail = $this->config->item('localizedmail');
                     if (!empty($localizedmail) && is_array($localizedmail) && array_key_exists('joinfed', $localizedmail) && !empty($localizedmail['joinfed'])) {
@@ -172,8 +172,9 @@ class Joinfed extends MY_Controller
                     $this->email_sender->addToMailQueue(array('joinfedreq', 'gjoinfedreq'), $federation, $mail_sbj, $mail_body, array(), FALSE);
                     try {
                         $this->em->flush();
+                        log_message('info','JAGGER: '.__METHOD__.' '.$this->session->userdata('username').': request to join federation: entityID: '.$ent->getEntityId().', fed: '.$federation->getName());
                     } catch (Exception $e) {
-                        log_message('error', $e);
+                        log_message('error','JAGGER: '. $e);
                         show_error('Internal server error', 500);
 
                     }
