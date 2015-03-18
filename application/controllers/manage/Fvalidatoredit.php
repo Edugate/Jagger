@@ -33,12 +33,13 @@ class Fvalidatoredit extends MY_Controller {
      */
     private function _submit_validate()
     {
-        $this->form_validation->set_rules('vname', lang('fvalid_name'), 'required|trim|min_length[5]|max_length[20]|xss_clean');
-        $this->form_validation->set_rules('vdesc', lang('rr_description'), 'required|trim|min_length[5]|max_length[200]|xss_clean');
-        $this->form_validation->set_rules('vurl', lang('fvalid_url'), 'required|trim|min_length[5]|max_length[256]|valid_url');
+        $this->form_validation->set_rules('vname', lang('fvalid_name'), 'trim|required|min_length[5]|max_length[20]|xss_clean');
+        $this->form_validation->set_rules('vregenabled', lang('lbl_fvalidonreg'),'trim|max_length[3]');
+        $this->form_validation->set_rules('vdesc', lang('rr_description'), 'trim|required|min_length[5]|max_length[200]|xss_clean');
+        $this->form_validation->set_rules('vurl', lang('fvalid_url'), 'trim|required|min_length[5]|max_length[256]|valid_url');
         $methods = array('GET', 'POST');
-        $this->form_validation->set_rules('vmethod', lang('rr_httpmethod'), 'required|trim|min_length[3]|max_length[4]|matches_inarray[' . serialize($methods) . ']');
-        $this->form_validation->set_rules('vparam', lang('fvalid_entparam'), 'required|trim|min_length[1]|max_length[32]|xss_clean');
+        $this->form_validation->set_rules('vmethod', lang('rr_httpmethod'), 'trim|required|min_length[3]|max_length[4]|matches_inarray[' . serialize($methods) . ']');
+        $this->form_validation->set_rules('vparam', lang('fvalid_entparam'), 'trim|required|min_length[1]|max_length[32]|xss_clean');
         $this->form_validation->set_rules('voptparams', lang('fvalid_optargs'), 'trim|min_length[1]|max_length[256]|xss_clean');
         $this->form_validation->set_rules('vargsep', lang('rr_argsep'), 'trim|max_length[256]|xss_clean');
         $doctypes = array('XML', 'xml');
@@ -64,6 +65,9 @@ class Fvalidatoredit extends MY_Controller {
             show_error('not found', 404);
         }
         $this->load->library('zacl');
+        /**
+         * @var $federation models\Federation
+         */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
         if (empty($federation))
         {
@@ -87,9 +91,12 @@ class Fvalidatoredit extends MY_Controller {
             } else
             {
                 /**
-                 * edit existing validator
+                 * @var $fvalidators models\FederationValidator[]
                  */
                 $fvalidators = $federation->getValidators();
+                /**
+                 * @var $fvalidator models\FederationValidator
+                 */
                 $fvalidator = $this->em->getRepository("models\FederationValidator")->findOneBy(array('id' => $fvalidatorid));
 
                 if (empty($fvalidator) || !$fvalidators->contains($fvalidator))
@@ -121,6 +128,15 @@ class Fvalidatoredit extends MY_Controller {
             $fvalidator->setMethod($method);
             $entparam = $this->input->post('vparam');
             $fvalidator->setEntityParam($entparam);
+            $regenabled = $this->input->post('vregenabled');
+            if(strcmp($regenabled,'yes')==0)
+            {
+                $fvalidator->setEnabledForRegister(true);
+            }
+            else
+            {
+                $fvalidator->setEnabledForRegister(false);
+            }
 
             $optparamsTmp = explode('$$', $this->input->post('voptparams'));
             $optparams = array();
@@ -296,6 +312,7 @@ class Fvalidatoredit extends MY_Controller {
                 $data['vmsgelements'] = implode(' ', $fvalidator->getMessageCodeElements());
                 $data['venabled'] = $fvalidator->getEnabled();
                 $data['vmandatory'] = $fvalidator->getMandatory();
+                $data['vregenabled'] = $fvalidator->isEnabledForRegistration();
             }
             $data['content_view'] = 'manage/fvalidator_edit_view';
             $data['titlepage'] = lang('rr_federation').': '.anchor($data['federationlink'],$data['federationname']);

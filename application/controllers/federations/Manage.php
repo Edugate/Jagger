@@ -334,6 +334,9 @@ class Manage extends MY_Controller
         }
         $this->load->library('zacl');
         $this->load->library('show_element');
+        /**
+         * @var $federation models\Federation
+         */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation)) {
             show_error(lang('error_fednotfound'), 404);
@@ -345,7 +348,7 @@ class Manage extends MY_Controller
         $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
         $hasAddbulkAccess = $this->zacl->check_acl('f_' . $resource, 'addbulk', $group, '');
         $hasManageAccess = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
-        $canEdit = (boolean)($hasManageAccess OR $hasWriteAccess);
+        $canEdit = (boolean)($hasManageAccess || $hasWriteAccess);
         $this->title = lang('rr_federation_detail');
 
         $data['breadcrumbs'] = array(
@@ -487,6 +490,9 @@ class Manage extends MY_Controller
 </div></div>', 'colspan' => 2));
         }
 
+        /**
+         * @var $fvalidators models\FederationValidator[]
+         */
         $fvalidators = $federation->getValidators();
 
         if ($hasWriteAccess) {
@@ -509,17 +515,26 @@ class Manage extends MY_Controller
                     $d['fvalidators'][] = array('data' => array('data' => ' ' . $editbtn, 'class' => '', 'colspan' => 2));
                     $isenabled = $f->getEnabled();
                     $ismandatory = $f->getMandatory();
+                    $isenabledForRegistration = $f->isEnabledForRegistration();
+
                     $method = $f->getMethod();
+                    $fedstatusLabels = '';
                     if ($isenabled) {
-                        $d['fvalidators'][] = array('data' => array('data' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')), 'colspan' => 2));
+                        $fedstatusLabels .= ' '.makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
                     } else {
-                        $d['fvalidators'][] = array('data' => array('data' => makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled')), 'colspan' => 2));
+                        $fedstatusLabels .= ' '.makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
                     }
                     if ($ismandatory) {
-                        $d['fvalidators'][] = array('data' => array('data' => makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory')), 'colspan' => 2));
+                        $fedstatusLabels .= ' '.makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory'));
                     } else {
-                        $d['fvalidators'][] = array('data' => array('data' => makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional')), 'colspan' => 2));
+                        $fedstatusLabels .= ' '.makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional'));
                     }
+                    if($isenabledForRegistration)
+                    {
+                        $fedstatusLabels .= ' '.makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg'));
+                    }
+
+                    $d['fvalidators'][] = array('data'=>lang('rr_status'),'value'=>$fedstatusLabels);
                     $d['fvalidators'][] = array('data' => lang('Description'), 'value' => html_escape($f->getDescription()));
                     $d['fvalidators'][] = array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType());
                     $d['fvalidators'][] = array('data' => lang('fvalid_url'), 'value' => $f->getUrl());
@@ -557,6 +572,7 @@ class Manage extends MY_Controller
                     $fvdata .= $this->table->generate($d['fvalidators']);
                     $fvdata .= '</div>';
                     $fvdata .= '</dd>';
+                    $this->table->clear();
                 }
                 $fvdata .= '</dl>';
                 $data['result']['fvalidators'][] = array('data' => array('data' => $fvdata, 'colspan' => 2, 'class' => ''));
@@ -851,6 +867,9 @@ class Manage extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
+        /**
+         * @var $federation models\Federation
+         */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation)) {
             show_error('Federation not found', 404);
@@ -866,6 +885,9 @@ class Manage extends MY_Controller
             log_message('debug', 'Remove provider from fed form is valid');
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
+            /**
+             * @var $inv_member models\Provider
+             */
             $inv_member = $this->tmp_providers->getOneById($provider_id);
             if (empty($inv_member)) {
                 $data['error_message'] = lang('rerror_providernotexist');

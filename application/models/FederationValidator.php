@@ -282,7 +282,7 @@ class FederationValidator
         {
             $this->isEnabledForRegister = FALSE;
         }
-        return this;
+        return $this;
     }
 
     public function setMandatory($arg)

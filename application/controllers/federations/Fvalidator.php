@@ -18,6 +18,10 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  */
 
 /**
+ * @property Curl $curl
+ */
+
+/**
  * @todo add permission to check for public or private perms
  */
 class Fvalidator extends MY_Controller
@@ -54,7 +58,12 @@ class Fvalidator extends MY_Controller
         }
         if (!empty($fid) && !empty($fvid))
         {
+            /**
+             * @var $fvalidator models\FederationValidator
+             */
+
             $fvalidator = $this->em->getRepository("models\FederationValidator")->findOneBy(array('id' => $fvid, 'federation' => $fid, 'isEnabled' => TRUE));
+
             if (empty($fvalidator))
             {
                 set_status_header(404);
@@ -67,6 +76,8 @@ class Fvalidator extends MY_Controller
                 echo json_encode($result);
                 return;
             }
+
+
         }
         $fedid = $this->input->post('fedid');
         if (empty($fedid) || !is_numeric($fedid))
@@ -76,6 +87,11 @@ class Fvalidator extends MY_Controller
             echo 'Not found';
             return;
         }
+
+        /**
+         * @var $fed models\Federation
+         */
+
         $fed = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
         if (empty($fed))
         {
@@ -124,6 +140,12 @@ class Fvalidator extends MY_Controller
             echo 'incorrect/missing paramters  passed';
             return;
         }
+
+        /**
+         * @var $federation models\Federation
+         * @var $fvalidator models\FederationValidator
+         */
+
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $inputArgs['federationid']));
         $fvalidator = $this->em->getRepository("models\FederationValidator")->findOneBy(array('id' => $inputArgs['fvalidatorid']));
 
@@ -135,6 +157,9 @@ class Fvalidator extends MY_Controller
         }
         elseif(!empty($inputArgs['providerid']) && ctype_digit($inputArgs['providerid']))
         {
+            /**
+             * @var $provider models\Provider
+             */
             $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $inputArgs['providerid']));
             if(!empty($provider))
             {
@@ -149,17 +174,25 @@ class Fvalidator extends MY_Controller
             return;
         }
         $validators = $federation->getValidators();
+
         if (!$validators->contains($fvalidator))
         {
             
             set_status_header(404);
             echo 'federation desnt match validator';
+            return;
         }
         $method = $fvalidator->getMethod();
         $remoteUrl = $fvalidator->getUrl();
         $entityParam = $fvalidator->getEntityParam();
         $optArgs = $fvalidator->getOptargs();
         $params = array();
+        if(empty($providerMetadataUrl))
+        {
+            set_status_header(404);
+            echo 'missing params';
+            return;
+        }
         if (strcmp($method, 'GET') == 0)
         {
             $separator = $fvalidator->getSeparator();

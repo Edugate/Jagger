@@ -21,6 +21,14 @@ if (!defined('BASEPATH'))
 
 /**
  * @property Curl $curl
+ * @property ProviderUpdater $providerupdater
+ * @property Form_element $form_element
+ * @property Providerformelements $providerformelements
+ * @property Providertoxml $providertoxml
+ * @property Email_sender $email_sender
+ * @property Xmlvalidator $xmlvalidator
+ * @property Metadata2array $metadata2array
+ *
  */
 class Entityedit extends MY_Controller
 {
@@ -48,17 +56,16 @@ class Entityedit extends MY_Controller
         }
     }
 
-    private function externalValidation($metaid, models\FederationValidator $fvalidator)
+    private function externalValidation($metaid, models\FederationValidator $fedValidator)
     {
         $metadataUrl = base_url().'/metadata/preregister/'.$metaid.'';
-        $method = $fvalidator->getMethod();
-        $remoteUrl = $fvalidator->getUrl();
-        $entityParam = $fvalidator->getEntityParam();
-        $optArgs = $fvalidator->getOptargs();
-        $params = array();
+        $method = $fedValidator->getMethod();
+        $remoteUrl = $fedValidator->getUrl();
+        $entityParam = $fedValidator->getEntityParam();
+        $optArgs = $fedValidator->getOptargs();
         if (strcmp($method, 'GET') == 0)
         {
-            $separator = $fvalidator->getSeparator();
+            $separator = $fedValidator->getSeparator();
             $optArgsStr = '';
             foreach ($optArgs as $k => $v)
             {
@@ -82,21 +89,18 @@ class Entityedit extends MY_Controller
             $this->curl->create('' . $remoteUrl . '');
             $this->curl->post($params);
         }
-
-        $addoptions = array();
-        $this->curl->options($addoptions);
+        $this->curl->options(array());
         $data = $this->curl->execute();
         if (empty($data))
         {
-            log_message('warning', 'External validator returned empty result');
-            $this->tmp_error = 'External validator: timeout or returned empty result';
-            return false;
+            log_message('warning', __METHOD__.'External validator : returned empty result: '. $this->curl->error_string);
+            return true;
         }
-        log_message('debug', __METHOD__ . ' data received: ' . $data);
-        $expectedDocumentType = $fvalidator->getDocutmentType();
+        log_message('debug', __METHOD__ . 'External validator : data received from validator: ' . $data);
+        $expectedDocumentType = $fedValidator->getDocutmentType();
         if (strcmp($expectedDocumentType, 'xml') != 0)
         {
-            log_message('warning','Other than xml not supported yet');
+            log_message('warning','External validator : Other than xml not supported yet');
             return true;
         }
         else
@@ -105,16 +109,18 @@ class Entityedit extends MY_Controller
             $sxe = simplexml_load_string($data);
             if (!$sxe)
             {
-                log_message('warning','Received invalid xml document from external validator');
-                $this->tmp_error = 'Received invalid response from external validator';
-                return false;
+                log_message('warning',__METHOD__.' Received invalid xml document from external validator');
+                return true;
             }
+            /**
+             * @var $docxml \DomDocument
+             */
             $docxml = new \DomDocument();
             $docxml->loadXML($data);
-            $returncodeElements = $fvalidator->getReturnCodeElement();
+            $returncodeElements = $fedValidator->getReturnCodeElement();
             if (count($returncodeElements) == 0)
             {
-                log_message('error','FedValidator ('.$fvalidator->getId().') has not defined returned codes');
+                log_message('error','External validator ('.$fedValidator->getId().') has not defined returned codes');
                 return  true;
             }
             foreach ($returncodeElements as $v)
@@ -128,13 +134,13 @@ class Entityedit extends MY_Controller
             $codeDomeValue = null;
             if (empty($codeDoms->length))
             {
-                log_message('warning','Expected return code not received from externalvalidaor ignoring...');
+                log_message('warning','External validator: expected return code not received from externalvalidaor ignoring...');
                 return true;
             }
             $codeDomeValue = trim($codeDoms->item(0)->nodeValue);
             log_message('debug', __METHOD__ . ' found expected value ' . $codeDomeValue);
-            $expectedReturnValues = $fvalidator->getReturnCodeValues();
-            $elementWithMessage = $fvalidator->getMessageCodeElements();
+            $expectedReturnValues = $fedValidator->getReturnCodeValues();
+            $elementWithMessage = $fedValidator->getMessageCodeElements();
             $result = array();
             foreach ($expectedReturnValues as $k => $v)
             {
@@ -185,7 +191,6 @@ class Entityedit extends MY_Controller
         {
             if(strcasecmp($result['returncode'],'error')==0 || strcasecmp($result['returncode'],'critical')==0)
             {
-                  //$this->tmp_error = serialize($result['message']);
                   if(isset($result['message']) && is_array($result['message']))
                   {
                      foreach($result['message'] as $ke=>$ee)
@@ -726,6 +731,9 @@ class Entityedit extends MY_Controller
             $this->load->library('zacl');
         }
 
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->tmp_providers->getOneById($id);
         if (empty($ent)) {
             show_error('Provider not found', '404');
@@ -876,6 +884,9 @@ class Entityedit extends MY_Controller
 
             );
         }
+        /**
+         * @var $u models\User
+         */
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
             $data['anonymous'] = TRUE;
@@ -893,6 +904,9 @@ class Entityedit extends MY_Controller
             );
         }
 
+        /**
+         * @var $fedCollection models\Federation[]
+         */
         $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active' => TRUE));
         if (count($fedCollection) > 0) {
             $data['federations'] = array();
@@ -914,10 +928,15 @@ class Entityedit extends MY_Controller
             if (!empty($metadatabody)) {
                 $this->load->library('xmlvalidator');
                 libxml_use_internal_errors(true);
+                /**
+                 * @var $metadataDOM \DOMDocument
+                 */
+
                 $metadataDOM = new \DOMDocument();
                 $metadataDOM->strictErrorChecking = FALSE;
                 $metadataDOM->WarningChecking = FALSE;
                 $metadataDOM->loadXML($metadatabody);
+
                 $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
                 if (!$isValid) {
                     log_message('warning', __METHOD__ . ' invalid metadata had been pasted in registration form');
@@ -930,6 +949,11 @@ class Entityedit extends MY_Controller
                     foreach ($namespaces as $key => $value) {
                         $xpath->registerNamespace($key, $value);
                     }
+
+
+                    /**
+                     * @var $domlist DOMNodeList[]
+                     */
                     $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
                     if (count($domlist) == 1) {
                         foreach ($domlist as $l) {
@@ -939,6 +963,9 @@ class Entityedit extends MY_Controller
                         if (isset($o['type']) && strcasecmp($o['type'], $t) == 0) {
                             $ent->setProviderFromArray($o);
                             if (isset($o['details']['reqattrs'])) {
+                                /**
+                                 * @var $attrsDefinititions models\Attribute[]
+                                 */
                                 $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
                                 foreach ($attrsDefinitions as $v) {
                                     $attributes['' . $v->getOid() . ''] = $v;

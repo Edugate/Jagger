@@ -943,20 +943,20 @@ class Providerdetails
 		if ($idppart) {
 			$d[]['msection'] = 'IDPSSODescriptor';
 			if (array_key_exists('idpsso', $certs)) {
-				foreach ($certs['idpsso'] as $v) {
-					$c = $this->_genCertView($v);
-					foreach ($c as $v) {
-						$d[] = $v;
+				foreach ($certs['idpsso'] as $v1) {
+					$c = $this->_genCertView($v1);
+					foreach ($c as $v2) {
+						$d[] = $v2;
 					}
 				}
 			}
 			// AA
 			if (array_key_exists('aa', $certs)) {
 				$d[]['msection'] = 'AttributeAuthorityDescriptor';
-				foreach ($certs['aa'] as $v) {
-					$c = $this->_genCertView($v);
-					foreach ($c as $v) {
-						$d[] = $v;
+				foreach ($certs['aa'] as $v1) {
+					$c = $this->_genCertView($v1);
+					foreach ($c as $v2) {
+						$d[] = $v2;
 					}
 				}
 			}
@@ -964,10 +964,10 @@ class Providerdetails
 		if ($sppart) {
 			$d[]['msection'] = 'SPSSODescriptor';
 			if (array_key_exists('spsso', $certs)) {
-				foreach ($certs['spsso'] as $v) {
-					$c = $this->_genCertView($v);
-					foreach ($c as $v) {
-						$d[] = $v;
+				foreach ($certs['spsso'] as $v1) {
+					$c = $this->_genCertView($v1);
+					foreach ($c as $v2) {
+						$d[] = $v2;
 					}
 				}
 			}

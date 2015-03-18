@@ -40,6 +40,8 @@ if (!defined('BASEPATH'))
  * @property CI_Lang $lang
  * @property Zacl $zacl
  * @property J_cache $j_cache
+ * @property J_ncache $j_ncache
+ * @property Curl $curl
  * @property Show_element $show_element
  * @property J_auth $j_auth
  * @property Doctrine $doctrine

@@ -864,6 +864,12 @@ class Providertoxml
         return $xml;
     }
 
+    /**
+     * @param \models\Provider $ent
+     * @param $options
+     * @param bool $outputXML
+     * @return string|XMLWriter
+     */
     public function entityConvertNewDocument(\models\Provider $ent, $options, $outputXML = false)
     {
         $type = $ent->getType();

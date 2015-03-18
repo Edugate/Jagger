@@ -299,6 +299,7 @@ $lang['lbl_mandatory']              = 'Mandatory';
 $lang['lbl_optional']               = 'Optional';
 $lang['lbl_excluded']               = 'Excluded';
 $lang['lbl_publichidden']           = 'Hidden on public list';
+$lang['lbl_fvalidonreg']            = 'Enabled on provider registration page';
 $lang['label_text']                 = 'Text';
 $lang['membership_inactive']        = 'membership disabled';
 $lang['membership_banned']        = 'membership banned';
