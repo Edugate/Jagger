@@ -3,17 +3,17 @@
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Attributepolicy Class
- * 
+ *
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
@@ -30,16 +30,9 @@ class Attributepolicy extends MY_Controller
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin)
-        {
-            $this->session->set_flashdata('target', $this->current_site);
+        if (!$loggedin) {
             redirect('auth/login', 'location');
         }
-
-        $this->current_idp = $this->session->userdata('current_idp');
-        $this->current_idp_name = $this->session->userdata('current_idp_name');
-        $this->current_sp = $this->session->userdata('current_sp');
-        $this->current_sp_name = $this->session->userdata('current_sp_name');
 
         $this->load->helper('form');
         $this->load->library(array('table', 'form_element'));
@@ -82,32 +75,30 @@ class Attributepolicy extends MY_Controller
         $policy = $this->input->post('policy');
         $action = $this->input->post('submit');
         $is_policy = false;
-        if (($policy == 0) || ($policy == 1) || ($policy == 2))
-        {
+        if (($policy == 0) || ($policy == 1) || ($policy == 2)) {
             $is_policy = true;
         }
-        if (empty($idpid) || !is_numeric($idpid))
-        {
+        if (empty($idpid) || !is_numeric($idpid)) {
             show_error(lang('unknownerror'), 503);
         }
+        /**
+         * @var $idp models\Provider
+         */
         $idp = $this->tmp_providers->getOneIdpById($idpid);
-        if (empty($idp))
-        {
+        if (empty($idp)) {
             show_error(lang('rerror_providernotexist'), 404);
         }
         $resource = $idpid;
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access)
-        {
+        if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_nopermission');
             $this->load->view('page', $data);
             return;
         }
         $locked = $idp->getLocked();
-        if ($locked)
-        {
+        if ($locked) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_lockedentity');
             $this->load->view('page', $data);
@@ -115,10 +106,7 @@ class Attributepolicy extends MY_Controller
         }
 
 
-
-
-        if (!$is_policy)
-        {
+        if (!$is_policy) {
             log_message('error', 'Policy wasnt set');
             show_error(lang('rr_policynotset'), 503);
         }
@@ -127,26 +115,19 @@ class Attributepolicy extends MY_Controller
         $attribute = $this->tmp_attrs->getAttributeById($attr);
         $attrPolicy = $this->tmp_arps->getOneGlobalPolicy($idpid, $attr);
         $changes = array();
-        if (empty($attrPolicy) && ($action === 'modify' || $action === 'Add default policy'))
-        {
+        if (empty($attrPolicy) && ($action === 'modify' || $action === 'Add default policy')) {
             $attrPolicy = new models\AttributeReleasePolicy;
-            if (empty($idp) || empty($attribute))
-            {
+            if (empty($idp) || empty($attribute)) {
                 log_message('debug', 'Cannot create new policy for idpid = ' . $idpid . ' because idp attribute not found');
                 show_error(lang('unknownerror'), 503);
             }
             $changes['attr: ' . $attribute->getName() . '']['before'] = 'no default policy';
             $attrPolicy->setGlobalPolicy($idp, $attribute, $policy);
             $changes['attr: ' . $attribute->getName() . '']['after'] = $tmp_a[$policy];
-        }
-        elseif ($action === 'Cancel')
-        {
+        } elseif ($action === 'Cancel') {
             return $this->globals($idpid);
-        }
-        else
-        {
-            if ($attrPolicy->getPolicy() === $policy)
-            {
+        } else {
+            if ($attrPolicy->getPolicy() === $policy) {
                 $changes['attr: ' . $attribute->getName() . '']['before'] = $tmp_a[$attrPolicy->getPolicy()] . ' (default policy)';
                 $changes['attr: ' . $attribute->getName() . '']['after'] = $tmp_a[$policy];
             }
@@ -154,21 +135,16 @@ class Attributepolicy extends MY_Controller
         }
 
 
-
-        if ($action === 'modify' || $action === 'Add default policy')
-        {
+        if ($action === 'modify' || $action === 'Add default policy') {
             $this->em->persist($attrPolicy);
-        }
-        elseif ($action == 'delete' && !empty($attrPolicy))
-        {
+        } elseif ($action == 'delete' && !empty($attrPolicy)) {
             $changes['attr: ' . $attribute->getName() . '']['before'] = $tmp_a[$attrPolicy->getPolicy()] . ' (default policy)';
             $this->em->remove($attrPolicy);
             $changes['attr: ' . $attribute->getName() . '']['after'] = 'policy removed';
         }
 
         $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpid), -1);
-        if (!empty($changes) && count($changes) > 0)
-        {
+        if (!empty($changes) && count($changes) > 0) {
             $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
         }
         $this->em->flush();
@@ -182,21 +158,21 @@ class Attributepolicy extends MY_Controller
     {
         $data = array();
         $subtitle = "";
-   
-        if (!is_numeric($idp_id) || !is_numeric($attr_id))
-        {
+
+        if (!is_numeric($idp_id) || !is_numeric($attr_id)) {
             log_message('error', "Idp id or attr id is set incorectly");
             show_error(lang('error404'), 404);
         }
-        if (!($type === 'global' || $type === 'fed' || $type === 'sp'))
-        {
+        if (!($type === 'global' || $type === 'fed' || $type === 'sp')) {
             log_message('error', "The type of policy is: " . $type . ". Should be one of: global,fed,sp");
             show_error(lang('error_wrongpolicytype'), 404);
         }
 
+        /**
+         * @var $idp models\Provider
+         */
         $idp = $this->tmp_providers->getOneIdPById($idp_id);
-        if (empty($idp))
-        {
+        if (empty($idp)) {
             log_message('error', 'IdP not found with id:' . $idp_id);
             show_error(lang('rerror_idpnotfound') . ' id:' . $idp_id);
         }
@@ -205,15 +181,14 @@ class Attributepolicy extends MY_Controller
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
 
-        $data['titlepage'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), lang('rr_provider').': '.$providerNameInLang);
-        
+        $data['titlepage'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), lang('rr_provider') . ': ' . $providerNameInLang);
+
 
         $resource = $idp->getId();
         $data['provider_entity'] = $idp->getEntityId();
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access)
-        {
+        if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_nopermission');
             $this->load->view('page', $data);
@@ -222,66 +197,52 @@ class Attributepolicy extends MY_Controller
         $locked = $idp->getLocked();
 
         $attribute = $this->tmp_attrs->getAttributeById($attr_id);
-        if (empty($attribute))
-        {
+        if (empty($attribute)) {
             log_message('error', 'Attribute not found with id:' . $attr_id);
             show_error('' . lang('error_attrnotfoundwithid') . ': ' . $attr_id);
         }
 
 
         $action = '';
-        if ($type === 'global')
-        {
+        if ($type === 'global') {
             $attr_policy = $this->tmp_arps->getOneGlobalPolicy($idp_id, $attr_id);
             $action = base_url('manage/attributepolicy/submit_global');
             $subtitle = lang('rr_defaultarp');
-            if ($locked)
-            {
+            if ($locked) {
                 $subtitle .= '<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
             }
-        }
-        elseif ($type === 'fed')
-        {
+        } elseif ($type === 'fed') {
             $attr_policy = $this->tmp_arps->getOneFedPolicy($idp_id, $attr_id, $requester);
             $tmp_feds = new models\Federations;
             $fed = $tmp_feds->getOneFederationById($requester);
-            if (!empty($fed))
-            {
+            if (!empty($fed)) {
                 $data['fed_name'] = $fed->getName();
                 $data['fed_url'] = base64url_encode($fed->getName());
             }
             $action = base_url('manage/attributepolicy/submit_fed/' . $idp_id);
             $subtitle = lang('rr_arpforfed');
-            if ($locked)
-            {
-                $subtitle .='<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
+            if ($locked) {
+                $subtitle .= '<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
             }
-        }
-        elseif ($type === 'sp')
-        {
+        } elseif ($type === 'sp') {
             $attr_policy = $this->tmp_arps->getOneSPPolicy($idp_id, $attr_id, $requester);
 
             $sp = $this->tmp_providers->getOneSpById($requester);
-            if (!empty($sp))
-            {
+            if (!empty($sp)) {
                 log_message('debug', 'SP found with id: ' . $requester);
                 $data['sp_name'] = $sp->getNameToWebInLang($myLang, 'sp');
-            }
-            else
-            {
+            } else {
                 log_message('debug', 'SP not found with id: ' . $requester);
                 show_error(lang('rerror_spnotfound') . ' id:' . $requester, 404);
             }
             $link_sp = anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
             $action = base_url('manage/attributepolicy/submit_sp/' . $idp_id);
-            $data['subtitlepage'] = lang('rr_specarpforsp').' : <br />' .$link_sp  ;
-            if ($locked)
-            {
-                $subtitle .='<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
+            $data['subtitlepage'] = lang('rr_specarpforsp') . ' : <br />' . $link_sp;
+            if ($locked) {
+                $subtitle .= '<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
             }
         }
-        if (empty($attr_policy))
-        {
+        if (empty($attr_policy)) {
             $data['error_message'] = lang('arpnotfound');
             $message = 'Policy not found for: ';
             $message .= '[idp_id=' . $idp_id . ', attr_id=' . $attr_id . ', type=' . $type . ', requester=' . $requester . ']';
@@ -299,9 +260,7 @@ class Attributepolicy extends MY_Controller
             $narp->setPolicy(0);
             $submit_type = 'create';
             $data['edit_form'] = $this->form_element->generateEditPolicyForm($narp, $action, $submit_type);
-        }
-        else
-        {
+        } else {
             log_message('debug', 'Policy has been found for: [idp_id=' . $idp_id . ', attr_id=' . $attr_id . ', type=' . $type . ', requester=' . $requester . ']');
             $data['attribute_name'] = $attribute->getName();
             $data['idp_name'] = $idp->getName();
@@ -313,7 +272,7 @@ class Attributepolicy extends MY_Controller
         }
 
         $data['subtitle'] = $subtitle;
-        
+
         $data['content_view'] = 'manage/attribute_policy_detail_view';
         $this->load->view('page', $data);
     }
@@ -322,29 +281,20 @@ class Attributepolicy extends MY_Controller
     {
         $data['content_view'] = 'manage/attribute_policy_view';
         $this->title = lang('rr_attributereleasepolicy');
-        if (!ctype_digit($idp_id))
-        {
-            if (empty($this->current_idp))
-            {
-                $this->session->set_flashdata('target', $this->current_site);
-                redirect('manage/settings/idp', 'location');
-            }
-            $search_idp = $this->current_idp;
+        if (empty($idp_id) || !ctype_digit($idp_id)) {
+            show_error('Incorrect id provided', 404);
+            return;
         }
-        else
-        {
-            $search_idp = $idp_id;
-        }
-        /**
-         * finding idp by id 
-         */
-        $idp = $this->tmp_providers->getOneIdpById($search_idp);
 
         /**
-         * display 404 if idp not found 
+         * @var $idp models\Provider
          */
-        if (empty($idp))
-        {
+        $idp = $this->tmp_providers->getOneIdpById($idp_id);
+
+        /**
+         * display 404 if idp not found
+         */
+        if (empty($idp)) {
             log_message('debug', 'Identity Provider with id ' . $idp . ' not found');
             show_error(lang('rerror_idpnotfound'), 404);
             return;
@@ -353,14 +303,13 @@ class Attributepolicy extends MY_Controller
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
-            array('url'=>base_url('providers/detail/show/'.$idp->getId().''),'name'=>''.$providerNameInLang.''),
-            array('url'=>'#','name'=>lang('rr_attributereleasepolicy'),'type'=>'current'),
+            array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+            array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
+            array('url' => '#', 'name' => lang('rr_attributereleasepolicy'), 'type' => 'current'),
 
         );
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
-        if (!$has_write_access)
-        {
+        if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_noperm');
             $this->load->view('page', $data);
@@ -372,7 +321,7 @@ class Attributepolicy extends MY_Controller
         $data['subtitlepage'] = lang('rr_attributereleasepolicy');
 
         /**
-         * pull default arp - it's equal to supported attributes 
+         * pull default arp - it's equal to supported attributes
          */
         $data['default_policy'] = $this->displayDefaultPolicy($idp);
 
@@ -381,25 +330,21 @@ class Attributepolicy extends MY_Controller
         $data['specific_policy'] = $this->displaySpecificPolicy($idp);
 
         /**
-         * pull all attributes defitnitions 
+         * pull all attributes defitnitions
          */
         $supportedAttrs = $this->tmp_arps->getSupportedAttributes($idp);
         $supportedArray = array();
-        foreach ($supportedAttrs as $s)
-        {
+        foreach ($supportedAttrs as $s) {
             $supportedArray[$s->getAttribute()->getId()] = $s->getAttribute()->getName();
         }
 
         $existingAttrs = $this->tmp_arps->getGlobalPolicyAttributes($idp);
         $globalArray = array();
-        if (!empty($existingAttrs))
-        {
-            foreach ($existingAttrs as $e)
-            {
+        if (!empty($existingAttrs)) {
+            foreach ($existingAttrs as $e) {
                 $globalArray[$e->getAttribute()->getId()] = $e->getAttribute()->getName();
             }
         }
-
 
         /**
          * array of attributes wchich dont exist in arp yet
@@ -409,11 +354,10 @@ class Attributepolicy extends MY_Controller
         $data['spid'] = null;
         $data['formdown'][''] = lang('selectone') . '...';
         $sps = $this->tmp_providers->getCircleMembersLight($idp);
-        foreach ($sps as $key)
-        {
+        foreach ($sps as $key) {
             $data['formdown'][$key->getId()] = $key->getNameToWebInLang($lang, 'sp') . ' (' . $key->getEntityId() . ')';
         }
-        $data['idpid'] = $search_idp;
+        $data['idpid'] = $idp_id;
         $data['idp_name'] = $idp->getName();
         $data['idp_entityid'] = $idp->getEntityId();
         $this->load->view('page', $data);
@@ -421,16 +365,17 @@ class Attributepolicy extends MY_Controller
 
     public function show_feds($idp_id, $fed_id = null)
     {
+        /**
+         * @var $idp models\Provider
+         */
         $idp = $this->tmp_providers->getOneIdpById($idp_id);
-        if (empty($idp))
-        {
+        if (empty($idp)) {
             show_error(lang('rerror_idpnotfound'), 404);
         }
         $resource = $idp->getId();
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access)
-        {
+        if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_nopermission');
             $this->load->view('page', $data);
@@ -438,19 +383,15 @@ class Attributepolicy extends MY_Controller
         }
         $lang = MY_Controller::getLang();
         $displayname = $idp->getNameToWebInLang($lang, 'idp');
-        if (empty($displayname))
-        {
+        if (empty($displayname)) {
             $displayname = $idp->getEntityId();
         }
         $data['idpname'] = $displayname;
         $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $displayname . '</a>';
 
-        if (($this->input->post('fedid')) && empty($fed_id))
-        {
+        if (($this->input->post('fedid')) && empty($fed_id)) {
             redirect(base_url('manage/attributepolicy/show_feds/' . $idp_id . '/' . $this->input->post('fedid')), 'location');
-        }
-        elseif (empty($fed_id))
-        {
+        } elseif (empty($fed_id)) {
             $data = array();
 
             $feds = $idp->getFederations();
@@ -461,17 +402,17 @@ class Attributepolicy extends MY_Controller
             $data['subtitlepage'] = lang('rr_arpforfed');
             $data['content_view'] = 'manage/attribute_policy_feds_view';
             $this->load->view('page', $data);
-        }
-        else
-        {
+        } else {
             $data = array();
             $data['idpname'] = $displayname;
             $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $displayname . '</a>';
 
             $tmp_fed = new models\Federations();
+            /**
+             * @var $fed models\Federation
+             */
             $fed = $tmp_fed->getOneFederationById($fed_id);
-            if (empty($fed))
-            {
+            if (empty($fed)) {
                 return $this->show_feds($idp->getId());
             }
             /**
@@ -488,22 +429,18 @@ class Attributepolicy extends MY_Controller
             /**
              * build array
              */
-            if (empty($supportedAttrs))
-            {
+            if (empty($supportedAttrs)) {
                 show_error(lang('error_setsupattrfirst'), 404);
             }
             $attrs_tmp = array();
             $attrs = array();
-            foreach ($supportedAttrs as $s)
-            {
+            foreach ($supportedAttrs as $s) {
                 $attrs[$s->getAttribute()->getId()][$fed->getId()] = 100;
                 $attrs[$s->getAttribute()->getId()]['name'] = $s->getAttribute()->getName();
             }
 
-            if (!empty($existingAttrs))
-            {
-                foreach ($existingAttrs as $e)
-                {
+            if (!empty($existingAttrs)) {
+                foreach ($existingAttrs as $e) {
                     $attrs_tmp[$e->getAttribute()->getId()][$e->getRequester()] = $e->getPolicy();
                 }
             }
@@ -517,8 +454,7 @@ class Attributepolicy extends MY_Controller
             $drop0 = lang('dropnever');
             $drop1 = lang('dropokreq');
             $drop2 = lang('dropokreqdes');
-            foreach ($attrs_merged as $key => $value)
-            {
+            foreach ($attrs_merged as $key => $value) {
                 $policy = $value[$fed->getId()];
                 $col2 = form_dropdown('attrid[' . $key . ']', array('100' => '' . $drop100 . '', '0' => '' . $drop0 . '', '1' => '' . $drop1 . '', '2' => '' . $drop2 . ''), $policy);
                 $tbl_array[$i] = array($value['name'], $col2);
@@ -546,68 +482,61 @@ class Attributepolicy extends MY_Controller
         log_message('debug', 'submit_fed submited');
         $idpid = $this->input->post('idpid');
         $fedid = $this->input->post('fedid');
-        if (!empty($idpid) && !empty($fedid))
-        {
-            if ($idp_id === $idpid)
-            {
+        if (!empty($idpid) && !empty($fedid)) {
+            if ($idp_id === $idpid) {
                 log_message('debug', 'idpid is OK: ' . $idpid);
 
 
                 $tmp_feds = new models\Federations;
 
+                /**
+                 * @var $idp models\Provider
+                 */
                 $idp = $this->tmp_providers->getOneIdpById($idpid);
-                if (empty($idp))
-                {
+                if (empty($idp)) {
                     log_message('error', 'Form attribute_policy for fed. IdP not found with id: ' . $this->input->post('idpid'));
                     show_error(lang('rerror_idpnotfound'), 404);
-                }
-                else
-                {
+                } else {
                     log_message('debug', 'IDP found with id: ' . $idpid);
                 }
 
                 $resource = $idp->getId();
                 $group = 'idp';
                 $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-                if (!$has_write_access)
-                {
+                if (!$has_write_access) {
                     $data['content_view'] = 'nopermission';
                     $data['error'] = lang('noperm_idpedit');
                     $this->load->view('page', $data);
                     return;
                 }
                 $locked = $idp->getLocked();
-                if ($locked)
-                {
+                if ($locked) {
                     $data['content_view'] = 'nopermission';
                     $data['error'] = lang('noperm_idpeditlocked');
                     $this->load->view('page', $data);
                     return;
                 }
 
+                /**
+                 * @var $fed models\Federation
+                 */
                 $fed = $tmp_feds->getOneFederationById($fedid);
-                if (empty($fed))
-                {
+                if (empty($fed)) {
                     log_message('error', 'Form attributepolicy for fed. Federation not found with id: ' . $this->input->post('fedid'));
                     show_error(lang('error_fednotfound'), 404);
-                }
-                else
-                {
+                } else {
                     log_message('debug', 'Federation found with id: ' . $fedid);
                 }
 
                 $attrlist = $this->input->post('attrid');
                 $attribute = $this->input->post('attribute');
 
-                if (!empty($attrlist) && is_array($attrlist) && count($attrlist) > 0)
-                {
+                if (!empty($attrlist) && is_array($attrlist) && count($attrlist) > 0) {
                     $submit_action = $this->input->post('submit');
                     log_message('debug', 'Found attributes');
-                    foreach ($attrlist as $key => $value)
-                    {
+                    foreach ($attrlist as $key => $value) {
                         $attr_pol = $this->tmp_arps->getOneFedPolicyAttribute($idp, $fed, $key);
-                        if (empty($attr_pol) && ($value != '100'))
-                        {
+                        if (empty($attr_pol) && ($value != '100')) {
                             $attr_pol = new models\AttributeReleasePolicy;
                             $attr_pol->setProvider($idp);
                             $tmp_attrs = new models\Attributes;
@@ -617,15 +546,10 @@ class Attributepolicy extends MY_Controller
                             $attr_pol->setRequester($fed->getId());
                             $attr_pol->setPolicy($value);
                             $this->em->persist($attr_pol);
-                        }
-                        elseif (!empty($attr_pol))
-                        {
-                            if ($value == '100' || $submit_action == 'delete all')
-                            {
+                        } elseif (!empty($attr_pol)) {
+                            if ($value == '100' || $submit_action == 'delete all') {
                                 $this->em->remove($attr_pol);
-                            }
-                            else
-                            {
+                            } else {
                                 $attr_pol->setPolicy($value);
                                 $this->em->persist($attr_pol);
                             }
@@ -633,26 +557,18 @@ class Attributepolicy extends MY_Controller
                     }
                     $this->em->flush();
                     return $this->globals($idpid);
-                }
-                elseif (!empty($attribute) && is_numeric($attribute))
-                {
+                } elseif (!empty($attribute) && is_numeric($attribute)) {
                     $submit_action = $this->input->post('submit');
                     $policy = $this->input->post('policy');
                     log_message('debug', "Found numeric attr id: " . $attribute);
                     $attr_pol = $this->tmp_arps->getOneFedPolicyAttribute($idp, $fed, $attribute);
-                    if (empty($attr_pol))
-                    {
+                    if (empty($attr_pol)) {
                         log_message('debug', 'Attribute policy not found with idp:' . $idp->getId() . ' fed:' . $fed->getId() . ' attr:' . $attribute);
-                    }
-                    else
-                    {
+                    } else {
                         log_message('debug', 'Found attribute policy idp:' . $idp->getId() . ' fed:' . $fed->getId() . ' attr:' . $attribute);
-                        if ($policy == '100' || $submit_action == 'delete')
-                        {
+                        if ($policy == '100' || $submit_action == 'delete') {
                             $this->em->remove($attr_pol);
-                        }
-                        else
-                        {
+                        } else {
                             $attr_pol->setPolicy($policy);
                             $this->em->persist($attr_pol);
                         }
@@ -660,9 +576,7 @@ class Attributepolicy extends MY_Controller
                     $this->em->flush();
                     return $this->globals($idp_id);
                 }
-            }
-            else
-            {
+            } else {
                 log_message('error', 'Id of idp in form is different than post-target idp id');
                 show_error('POST target doesnt match attrs', 503);
             }
@@ -677,62 +591,55 @@ class Attributepolicy extends MY_Controller
         $attributeid = $this->input->post('attribute');
         $policy = $this->input->post('policy');
         $action = $this->input->post('submit');
-        if (empty($spid) || !is_numeric($spid))
-        {
+        if (empty($spid) || !is_numeric($spid)) {
             log_message('error', 'spid in post not provided or not numeric');
             show_error(lang('missedinfoinpost'), 404);
         }
-        if (empty($idpid) || !is_numeric($idpid))
-        {
+        if (empty($idpid) || !is_numeric($idpid)) {
             log_message('error', 'idpid in post not provided or not numeric');
             show_error(lang('missedinfoinpost'), 404);
         }
-        if (empty($attributeid) || !is_numeric($attributeid))
-        {
+        if (empty($attributeid) || !is_numeric($attributeid)) {
             log_message('error', 'attributeid in post not provided or not numeric');
             show_error(lang('missedinfoinpost'), 404);
         }
-        if (!isset($policy) || !is_numeric($policy))
-        {
+        if (!isset($policy) || !is_numeric($policy)) {
             log_message('error', 'policy in post not provided or not numeric:' . $policy);
             show_error(lang('missedinfoinpost'), 404);
         }
-        if (!($policy == 0 || $policy == 1 || $policy == 2 || $policy == 100))
-        {
+        if (!($policy == 0 || $policy == 1 || $policy == 2 || $policy == 100)) {
             log_message('error', 'wrong policy in post: ' . $policy);
             show_error(lang('wrongpolicyval'), 404);
         }
-        if ($idp_id != $idpid)
-        {
+        if ($idp_id != $idpid) {
             log_message('error', 'idp id from post is not equal with idp in url, idp in post:' . $idpid . ', idp in url:' . $idp_id);
             show_error(lang('unknownerror'), 404);
         }
 
         $sp = $this->tmp_providers->getOneSpById($spid);
-        if (empty($sp))
-        {
+        if (empty($sp)) {
             log_message('error', 'SP with id ' . $spid . ' doesnt exist');
             show_error(lang('rerror_spnotfound'), 404);
         }
+        /**
+         * @var $idp models\Provider
+         */
         $idp = $this->tmp_providers->getOneIdpById($idp_id);
-        if (empty($idp))
-        {
+        if (empty($idp)) {
             log_message('error', 'IDP with id ' . $idp_id . ' doesnt exist');
             show_error(lang('rerror_idpnotfound'), 404);
         }
         $resource = $idp->getId();
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access)
-        {
+        if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('noperm_idpedit');
             $this->load->view('page', $data);
             return;
         }
         $locked = $idp->getLocked();
-        if ($locked)
-        {
+        if ($locked) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('noperm_idpeditlocked');
             $this->load->view('page', $data);
@@ -742,8 +649,7 @@ class Attributepolicy extends MY_Controller
 
         $tmp_attrs = new models\Attributes;
         $attribute = $tmp_attrs->getAttributeById($attributeid);
-        if (empty($attribute))
-        {
+        if (empty($attribute)) {
             log_message('error', 'attribute  with id ' . $idp_id . ' doesnt exist');
             show_error(lang('reqattrnotexist'), 404);
         }
@@ -752,34 +658,25 @@ class Attributepolicy extends MY_Controller
         log_message('debug', 'Checking if arp exists already');
 
         $arp = $this->tmp_arps->getOneSPPolicy($idp_id, $attributeid, $spid);
-        if (!empty($arp))
-        {
+        if (!empty($arp)) {
             log_message('debug', 'Arp found in db, proceeding action');
-            if ($action === 'delete')
-            {
+            if ($action === 'delete') {
                 $this->em->remove($arp);
                 $this->em->flush();
                 log_message('debug', 'action: delete - removing arp');
-            }
-            elseif ($action === 'modify')
-            {
+            } elseif ($action === 'modify') {
                 $old_policy = $arp->getPolicy();
                 $arp->setPolicy($policy);
                 $this->em->persist($arp);
                 $this->em->flush();
                 log_message('debug', 'action: modify - modifying arp from policy ' . $old_policy . ' to ' . $policy);
-            }
-            else
-            {
+            } else {
                 log_message('error', 'wrong action in post, it should be modify or delete but got ' . $action);
                 show_error(lang('unknownerror'), 403);
             }
-        }
-        else
-        {
+        } else {
             log_message('debug', 'Arp not found');
-            if ($action === 'create')
-            {
+            if ($action === 'create') {
                 log_message('debug', 'Creating new arp');
                 $narp = new models\AttributeReleasePolicy;
                 $narp->setSpecificPolicy($idp, $attribute, $spid, $policy);
@@ -787,7 +684,6 @@ class Attributepolicy extends MY_Controller
                 $this->em->flush();
             }
         }
-
 
 
         return $this->globals($idp_id);
@@ -798,38 +694,36 @@ class Attributepolicy extends MY_Controller
         $changes = array();
         $tmp_a = $this->config->item('policy_dropdown');
         $submited_provider_id = $this->input->post('idpid');
-        if (empty($submited_provider_id) || ($idp_id != $submited_provider_id))
-        {
+        if (empty($submited_provider_id) || ($idp_id != $submited_provider_id)) {
             log_message('error', 'conflivt or empty');
             show_error(lang('unknownerror'), 403);
-        }
-        else
-        {
+        } else {
             log_message('debug', 'idpid passed correctly');
         }
         $submited_policies = $this->input->post('policy');
         $submited_requester_id = $this->input->post('spid');
+        /**
+         * @var $idp models\Provider
+         * @var $sp models\Provider
+         */
         $idp = $this->tmp_providers->getOneIdpById($submited_provider_id);
         $sp = $this->tmp_providers->getOneSpById($submited_requester_id);
 
-        if (empty($idp) || empty($sp))
-        {
+        if (empty($idp) || empty($sp)) {
             log_message('error', 'IdP with id:' . $submited_provider_id . ' or SP with id:' . $submited_requester_id . ' not found');
             show_error(lang('rerror_idpnotfound'), 404);
         }
         $resource = $idp->getId();
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access)
-        {
+        if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rrerror_noperm_provedit');
             $this->load->view('page', $data);
             return;
         }
         $locked = $idp->getLocked();
-        if ($locked)
-        {
+        if ($locked) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('noperm_idpeditlocked');
             $this->load->view('page', $data);
@@ -837,44 +731,31 @@ class Attributepolicy extends MY_Controller
         }
 
 
-        foreach ($submited_policies as $key => $value)
-        {
-            if ($value === '100')
-            {
+        foreach ($submited_policies as $key => $value) {
+            if ($value === '100') {
                 $arp = $this->tmp_arps->getOneSPPolicy($idp->getId(), $key, $sp->getId());
-                if (!empty($arp))
-                {
+                if (!empty($arp)) {
                     $changes['attr:' . $arp->getAttribute()->getName() . '']['before'] = 'policy for ' . htmlentities($sp->getEntityId()) . ' : ' . $tmp_a[$arp->getPolicy()];
                     $this->em->remove($arp);
                     $changes['attr:' . $arp->getAttribute()->getName() . '']['after'] = 'policy removed';
                 }
-            }
-            else
-            {
+            } else {
                 $arp = $this->tmp_arps->getOneSPPolicy($idp->getId(), $key, $sp->getId());
-                if (!empty($arp))
-                {
+                if (!empty($arp)) {
                     $old_policy = $arp->getPolicy();
-                    if ($value == 0 || $value == 1 || $value == 2)
-                    {
-                        if ($old_policy != $value)
-                        {
+                    if ($value == 0 || $value == 1 || $value == 2) {
+                        if ($old_policy != $value) {
                             $changes['attr:' . $arp->getAttribute()->getName() . '']['before'] = 'policy for ' . htmlentities($sp->getEntityId()) . ' : ' . $tmp_a[$arp->getPolicy()];
                             $changes['attr:' . $arp->getAttribute()->getName() . '']['after'] = $tmp_a[$value];
                         }
                         $arp->setPolicy($value);
                         $this->em->persist($arp);
                         log_message('debug', 'policy changed for arp_id:' . $arp->getId() . ' from ' . $old_policy . ' to ' . $value . ' ready for sync');
-                    }
-                    else
-                    {
+                    } else {
                         log_message('error', 'policy couldnt be changed for arp_id:' . $arp->getId() . ' from ' . $old_policy . ' to ' . $value);
                     }
-                }
-                else
-                {
-                    if ($value == 0 || $value == 1 || $value == 2)
-                    {
+                } else {
+                    if ($value == 0 || $value == 1 || $value == 2) {
                         log_message('debug', 'create new arp record for idp:' . $idp->getEntityId());
                         $new_arp = new models\AttributeReleasePolicy;
                         $attr = $this->tmp_attrs->getAttributeById($key);
@@ -891,8 +772,7 @@ class Attributepolicy extends MY_Controller
                 }
             }
         }
-        if (!empty($changes) && count($changes) > 0)
-        {
+        if (!empty($changes) && count($changes) > 0) {
             $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
         }
         $this->em->flush();
@@ -901,17 +781,18 @@ class Attributepolicy extends MY_Controller
 
     public function multi($idp_id, $type, $requester)
     {
-        if (!($type == 'sp' || $type == 'fed'))
-        {
+        if (!($type == 'sp' || $type == 'fed')) {
             log_message('debug', 'wrong type:' . $type . ' (expected sp or fed)');
             show_error('wrong url request', 404);
         }
 
         $tmp_requirements = new models\AttributeRequirements;
+        /**
+         * @var $idp models\Provider
+         */
         $idp = $this->tmp_providers->getOneIdPById($idp_id);
 
-        if (empty($idp))
-        {
+        if (empty($idp)) {
             log_message('error', '(manage/attributepolicy/multi) Identity Provider not found with id:' . $idp_id);
             show_error(lang('rerror_idpnotfound'), 404);
         }
@@ -919,8 +800,7 @@ class Attributepolicy extends MY_Controller
         $resource = $idp->getId();
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access)
-        {
+        if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('noperm_idpedit');
             $this->load->view('page', $data);
@@ -928,21 +808,21 @@ class Attributepolicy extends MY_Controller
         }
         $lang = MY_Controller::getLang();
         $idpDisplayname = $idp->getNameToWebInLang($lang, 'idp');
-        if (empty($idpDisplayname))
-        {
+        if (empty($idpDisplayname)) {
             $idpDisplayname = $idp->getEntityId();
         }
         $data['provider'] = $idp->getName();
         $data['provider_id'] = $idp->getId();
         $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $idpDisplayname . '</a>';
-        if ($type == 'sp')
-        {
+        if ($type == 'sp') {
             log_message('debug', '(manage/attributepolicy/multi) type SP');
             $data['content_view'] = 'manage/attribute_policy_multi_sp_view';
+            /**
+             * @var $sp models\Provider
+             */
             $sp = $this->tmp_providers->getOneSpById($requester);
 
-            if (empty($sp))
-            {
+            if (empty($sp)) {
                 log_message('error', '(manage/attributepolicy/multi) Service Provider as requester not found with id:' . $requester);
                 show_error(lang('rerror_spnotfound'), 404);
             }
@@ -951,8 +831,7 @@ class Attributepolicy extends MY_Controller
             $data['requester_id'] = $sp->getId();
             $data['requester_type'] = 'SP';
             $spDisplayname = $sp->getNameToWebInLang($lang, 'sp');
-            if (empty($spDisplayname))
-            {
+            if (empty($spDisplayname)) {
                 $spDisplayname = $sp->getEntityId();
             }
             $data['subtitlepage'] = lang('rr_specarpforsp') . ': <a href="' . base_url() . 'providers/detail/show/' . $sp->getId() . '">' . $spDisplayname . '</a>';
@@ -960,8 +839,7 @@ class Attributepolicy extends MY_Controller
              * @todo fix it
              */
             $is_available = $sp->getAvailable();
-            if (empty($is_available))
-            {
+            if (empty($is_available)) {
                 log_message('debug', 'Service Provider exists but it\'s not available (disabled, timevalid)');
                 /**
                  * @todo finish it
@@ -970,8 +848,7 @@ class Attributepolicy extends MY_Controller
 
             $arps = $this->tmp_arps->getSpecificPolicyAttributes($idp, $requester);
             $arps_array = array();
-            foreach ($arps as $a)
-            {
+            foreach ($arps as $a) {
                 $attr_name = $a->getAttribute()->getName();
                 $arps_array[$attr_name] = array(
                     'attr_name' => $attr_name,
@@ -985,12 +862,10 @@ class Attributepolicy extends MY_Controller
                 );
             }
             $supported_attrs = $this->tmp_arps->getSupportedAttributes($idp);
-            foreach ($supported_attrs as $p)
-            {
+            foreach ($supported_attrs as $p) {
                 $attr_name = $p->getAttribute()->getName();
                 $arps_array[$attr_name]['supported'] = 1;
-                if (!array_key_exists('attr_id', $arps_array[$attr_name]))
-                {
+                if (!array_key_exists('attr_id', $arps_array[$attr_name])) {
                     $arps_array[$attr_name]['attr_name'] = $attr_name;
                     $arps_array[$attr_name]['attr_id'] = $p->getAttribute()->getId();
                     $arps_array[$attr_name]['attr_policy'] = null;
@@ -1001,11 +876,9 @@ class Attributepolicy extends MY_Controller
                 }
             }
             $requirements = $tmp_requirements->getRequirementsBySP($sp);
-            foreach ($requirements as $r)
-            {
+            foreach ($requirements as $r) {
                 $attr_name = $r->getAttribute()->getName();
-                if (!array_key_exists($attr_name, $arps_array))
-                {
+                if (!array_key_exists($attr_name, $arps_array)) {
                     $arps_array[$attr_name] = array(
                         'attr_name' => $attr_name,
                         'supported' => 0,
@@ -1031,8 +904,7 @@ class Attributepolicy extends MY_Controller
             $data['requester'] = $sp->getName();
             $data['requester_id'] = $sp->getId();
             $data['requester_entityid'] = $sp->getEntityId();
-            if (in_array($data['requester_entityid'], $excluded_arp))
-            {
+            if (in_array($data['requester_entityid'], $excluded_arp)) {
                 $data['excluded'] = true;
             }
 
@@ -1040,9 +912,7 @@ class Attributepolicy extends MY_Controller
             /**
              * @todo finish
              */
-        }
-        elseif ($type == 'fed')
-        {
+        } elseif ($type == 'fed') {
             $data['content_view'] = 'manage/attribute_policy_multi_fed_view';
             log_message('debug', '(manage/attributepolicy/multi) type FED');
             /**
@@ -1054,36 +924,30 @@ class Attributepolicy extends MY_Controller
 
     public function _specific_validate()
     {
-        
+
     }
 
     public function specific($idp_id, $type)
     {
-        if (!is_numeric($idp_id))
-        {
+        if (!is_numeric($idp_id)) {
             show_error('Id of IdP is not numeric', 404);
         }
         $resource = $idp_id;
         $group = 'idp';
         $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access)
-        {
+        if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('noperm_idpedit');
             $this->load->view('page', $data);
             return;
         }
         $this->load->library('form_validation');
-        if ($type == 'sp')
-        {
+        if ($type == 'sp') {
             $this->form_validation->set_rules('service', 'Service ID', 'required');
             $sp_id = $this->input->post('service');
-            if ($this->form_validation->run() === FALSE)
-            {
+            if ($this->form_validation->run() === FALSE) {
                 show_error(lang('emptyvalnotallowed'), 404);
-            }
-            else
-            {
+            } else {
                 redirect(base_url('manage/attributepolicy/multi/' . $idp_id . '/sp/' . $sp_id), 'location');
             }
         }
