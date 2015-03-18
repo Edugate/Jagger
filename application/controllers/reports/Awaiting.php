@@ -1226,7 +1226,7 @@ class Awaiting extends MY_Controller
                     $body .= 'The request placed on ' . base_url() . PHP_EOL;
                     $body .= 'Request with tokenID: ' . $queueObj->getToken() . ' has been canceled/rejected' . PHP_EOL;
                     $body .= "";
-                    log_message('debug', 'Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->j_auth->current_user());
+                    log_message('info', 'JAGGER: Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->j_auth->current_user());
                     $this->em->remove($queueObj);
                     if ($notification === TRUE)
                     {
