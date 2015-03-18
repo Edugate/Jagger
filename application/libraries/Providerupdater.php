@@ -18,6 +18,10 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
+
+/**
+ * @property Doctrine $em
+ */
 class Providerupdater
 {
 
@@ -28,6 +32,7 @@ class Providerupdater
 	function __construct()
 	{
 		$this->ci = &get_instance();
+
 		$this->em = $this->ci->doctrine->em;
 
 		$this->ci->load->library('tracker');
@@ -37,6 +42,7 @@ class Providerupdater
 	public function getChangeProposal(models\Provider $ent, $chg)
 	{
 		$p['entityid'] = $ent->getEntityId();
+
 	}
 
 	public function updateRegPolicies(models\Provider $ent, array $ch, $isAdmin = false)
@@ -572,7 +578,7 @@ class Providerupdater
 			foreach ($trs as $tr) {
 				$keyid = $tr->getAttribute()->getId();
 				if (array_key_exists($keyid, $origAttrReqs)) {
-					log_error('warning', __METHOD__ . ' found duplicate in attr req for entityid:' . $ent->getEntityId());
+					log_message('warning', __METHOD__ . ' found duplicate in attr req for entityid:' . $ent->getEntityId());
 					$trs->removeElement($tr);
 					$this->em->remove($tr);
 					continue;

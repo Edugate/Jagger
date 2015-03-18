@@ -18,6 +18,10 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
+
+/**
+ * @property Curl $curl
+ */
 class Entityedit extends MY_Controller
 {
 
@@ -33,7 +37,7 @@ class Entityedit extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->library(array('form_element', 'form_validation', 'approval', 'providertoxml'));
+        $this->load->library(array('curl','form_element', 'form_validation', 'approval', 'providertoxml'));
         $this->tmp_providers = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmp_error = '';
@@ -42,6 +46,151 @@ class Entityedit extends MY_Controller
         if (!empty($entpartschangesdisallowed) && is_array($entpartschangesdisallowed)) {
             $this->disallowedparts = $this->config->item('entpartschangesdisallowed');
         }
+    }
+
+    private function externalValidation($metaid, models\FederationValidator $fvalidator)
+    {
+        $metadataUrl = base_url().'/metadata/preregister/'.$metaid.'';
+        $method = $fvalidator->getMethod();
+        $remoteUrl = $fvalidator->getUrl();
+        $entityParam = $fvalidator->getEntityParam();
+        $optArgs = $fvalidator->getOptargs();
+        $params = array();
+        if (strcmp($method, 'GET') == 0)
+        {
+            $separator = $fvalidator->getSeparator();
+            $optArgsStr = '';
+            foreach ($optArgs as $k => $v)
+            {
+                if ($v === null)
+                {
+                    $optArgsStr .=$k . $separator;
+                }
+                else
+                {
+                    $optArgsStr .= $k . '=' . $v . '' . $separator;
+                }
+            }
+            $optArgsStr .=$entityParam . '=' . urlencode($metadataUrl);
+            $remoteUrl = $remoteUrl . $optArgsStr;
+            $this->curl->create('' . $remoteUrl . '');
+        }
+        else
+        {
+            $params = $optArgs;
+            $params['' . $entityParam . ''] = $metadataUrl;
+            $this->curl->create('' . $remoteUrl . '');
+            $this->curl->post($params);
+        }
+
+        $addoptions = array();
+        $this->curl->options($addoptions);
+        $data = $this->curl->execute();
+        if (empty($data))
+        {
+            log_message('warning', 'External validator returned empty result');
+            $this->tmp_error = 'External validator: timeout or returned empty result';
+            return false;
+        }
+        log_message('debug', __METHOD__ . ' data received: ' . $data);
+        $expectedDocumentType = $fvalidator->getDocutmentType();
+        if (strcmp($expectedDocumentType, 'xml') != 0)
+        {
+            log_message('warning','Other than xml not supported yet');
+            return true;
+        }
+        else
+        {
+            libxml_use_internal_errors(true);
+            $sxe = simplexml_load_string($data);
+            if (!$sxe)
+            {
+                log_message('warning','Received invalid xml document from external validator');
+                $this->tmp_error = 'Received invalid response from external validator';
+                return false;
+            }
+            $docxml = new \DomDocument();
+            $docxml->loadXML($data);
+            $returncodeElements = $fvalidator->getReturnCodeElement();
+            if (count($returncodeElements) == 0)
+            {
+                log_message('error','FedValidator ('.$fvalidator->getId().') has not defined returned codes');
+                return  true;
+            }
+            foreach ($returncodeElements as $v)
+            {
+                $codeDoms = $docxml->getElementsByTagName($v);
+                if (!empty($codeDoms->length))
+                {
+                    break;
+                }
+            }
+            $codeDomeValue = null;
+            if (empty($codeDoms->length))
+            {
+                log_message('warning','Expected return code not received from externalvalidaor ignoring...');
+                return true;
+            }
+            $codeDomeValue = trim($codeDoms->item(0)->nodeValue);
+            log_message('debug', __METHOD__ . ' found expected value ' . $codeDomeValue);
+            $expectedReturnValues = $fvalidator->getReturnCodeValues();
+            $elementWithMessage = $fvalidator->getMessageCodeElements();
+            $result = array();
+            foreach ($expectedReturnValues as $k => $v)
+            {
+
+                if (is_array($v))
+                {
+
+                    foreach ($v as $v1)
+                    {
+                        if (strcasecmp($codeDomeValue, $v1) == 0)
+                        {
+                            $result['returncode'] = $k;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!isset($result['returncode']))
+            {
+                $result['returncode'] = 'unknown';
+            }
+            $result['message'] = array();
+            foreach ($elementWithMessage as $v)
+            {
+                log_message('debug', __METHOD__ . ' searching for ' . $v . ' element');
+                $o = $docxml->getElementsByTagName($v);
+                if ($o->length > 0)
+                {
+                    $result['message'][$v] = array();
+                    for ($i = 0; $i < $o->length; $i++)
+                    {
+                        $g = trim($o->item($i)->nodeValue);
+                        log_message('debug', __METHOD__ . ' value for ' . $v . ' element: ' . $g);
+                        if (!empty($g))
+                        {
+                            $result['message'][$v][] = htmlspecialchars($g);
+                        }
+                    }
+                }
+            }
+            if (count($result['message']) == 0)
+            {
+                $result['message']['unknown'] = 'no response message';
+            }
+
+        }
+        $this->tmp_error = 'externar validator: failed';
+        if(isset($result['error']))
+        {
+            foreach ($result['error'] as $er)
+            {
+                $this->tmp_error  .= html_escape($er).PHP_EOL;
+            }
+        }
+        return true;
+
     }
 
     private function submitValidate($id)
@@ -807,13 +956,10 @@ class Entityedit extends MY_Controller
             $this->discardDraft($t);
             redirect(base_url() . 'providers/' . strtolower($t) . '_registration', 'location');
         } elseif ($this->submitValidate($t) === TRUE) {
-
-            log_message('debug', __METHOD__ . ' line ' . __LINE__ . ' GKS  _submit_validate');
             $y = $this->input->post('f');
-            log_message('debug', __METHOD__ . ' line ' . __LINE__ . ' GKS ' . serialize($y));
             $submittype = $this->input->post('modify');
             if ($submittype === 'modify') {
-                \log_message('debug', __METHOD__ . 'GKS submittype=modify');
+                \log_message('debug', __METHOD__ . 'submittype=modify');
                 $this->load->library('providerupdater');
                 $c = $this->getFromDraft($t);
                 if (!empty($c) && is_array($c)) {
@@ -845,6 +991,9 @@ class Entityedit extends MY_Controller
                         }
                         $ttype = $ent->getType();
 
+                        /**
+                         * @var $federation models\Federation
+                         */
                         if (!empty($y['federation'])) {
                             try {
                                 $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => '' . $y['federation'] . ''));
@@ -854,6 +1003,7 @@ class Entityedit extends MY_Controller
                                 return;
                             }
                         }
+                        $fvalidator = null;
                         if (!empty($federation)) {
                             $ispublic = $federation->getPublic();
                             $isactive = $federation->getActive();
@@ -866,81 +1016,115 @@ class Entityedit extends MY_Controller
                             } else {
                                 log_message('warning', 'Federation is not public, cannot register sp with join fed with name ' . $federation->getName());
                             }
+                            /**
+                             * @var $fvalidators models\FederationValidator[]
+                             */
+                            $fvalidators = $federation->getValidators();
+                            if(!empty($fvalidators))
+                            {
+                                foreach($fvalidators as $fv)
+                                {
+                                    $isenabledForRegister = $fv->isEnabledForRegistration();
+                                    if($isenabledForRegister)
+                                    {
+                                        $fvalidator = $fv;
+
+                                        break;
+                                    }
+                                }
+                            }
+
                         }
-
-
-                        log_message('debug', 'GKS before convert: entitid: ' . $ent->getEntityId());
                         $convertedToArray = $ent->convertToArray(True);
                         $this->load->library('providertoxml');
                         $options['attrs'] = 1;
                         $xmlOut = $this->providertoxml->entityConvertNewDocument($ent, $options);
-                        $convertedToArray['metadata'] = base64_encode($xmlOut->outputMemory());
+                        $this->load->library('j_ncache');
+                        $tmpid = rand(10,1000);
+                        log_message('debug','JAGGER RAND: '.$tmpid);
+                        $xmloutput = $xmlOut->outputMemory();
+                        $this->j_ncache->savePreregisterMetadata($tmpid, $xmloutput);
+                        $isFvalidatoryMandatory = false;
+                        $externalValidatorPassed = true;
+                        if($fvalidator instanceof models\FederationValidator) {
+                            $externalValidatorPassed = $this->externalValidation($tmpid,$fvalidator);
+                            $isFvalidatoryMandatory = $fvalidator->getMandatory();
 
-                        log_message('debug', 'GKS convertedToArray: ' . serialize($convertedToArray));
-
-                        if (strcmp($ttype, 'IDP') == 0) {
-                            $q->addIDP($convertedToArray);
-                            $mailTemplateGroup = 'idpregresquest';
-                            $notificationGroup = 'gidpregisterreq';
-                        } else {
-                            $q->addSP($convertedToArray);
-                            $mailTemplateGroup = 'spregresquest';
-                            $notificationGroup = 'gspregisterreq';
-                        }
-                        if (empty($contactMail)) {
-                            $contactMail = $this->input->post('f[primarycnt][mail]');
-                        }
-                        $q->setEmail($contactMail);
-
-                        $q->setToken();
-                        $sourceIP = $this->input->ip_address();
-                        $messageTemplateParams = array(
-                            'requestermail' => $contactMail,
-                            'token' => $q->getToken(),
-                            'requestersourceip' => $sourceIP,
-                            'orgname' => $ent->getName(),
-                            'serviceentityid' => $ent->getEntityId(),
-                        );
-                        if (!empty($u)) {
-
-                            $requsername = $u->getUsername();
-                            $reqfullname = $u->getFullname();
-                        } else {
-                            $requsername = 'anonymous';
-                            $reqfullname = '';
-                        }
-                        $nowUtc = new \DateTime('now', new \DateTimeZone('UTC'));
-
-                        $messageTemplateArgs = array(
-                            'token' => $q->getToken(),
-                            'srcip' => $sourceIP,
-                            'entorgname' => $ent->getName(),
-                            'entityid' => $ent->getEntityId(),
-                            'reqemail' => $contactMail,
-                            'requsername' => '' . $requsername . '',
-                            'reqfullname' => $reqfullname,
-                            'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
-                            'qurl' => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '');
-
-
-                        $messageTemplate = $this->email_sender->generateLocalizedMail($mailTemplateGroup, $messageTemplateArgs);
-                        if (empty($messageTemplate)) {
-                            $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams, NULL);
-                        }
-                        if (!empty($messageTemplate)) {
-                            $this->email_sender->addToMailQueue(array('greqisterreq', $notificationGroup), null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
                         }
 
+                        if($externalValidatorPassed === true && $isFvalidatoryMandatory === false) {
+                            $convertedToArray['metadata'] = base64_encode($xmloutput);
 
-                        $this->em->persist($q);
-                        $this->em->detach($ent);
-                        try {
-                            $this->em->flush();
-                            redirect(base_url() . 'manage/entityedit/registersuccess');
-                        } catch (Exception $e) {
-                            log_message('error', __METHOD__ . ' ' . $e);
-                            show_error('Internal Server Error', 500);
-                            return;
+                            log_message('debug', 'GKS convertedToArray: ' . serialize($convertedToArray));
+
+                            if (strcmp($ttype, 'IDP') == 0) {
+                                $q->addIDP($convertedToArray);
+                                $mailTemplateGroup = 'idpregresquest';
+                                $notificationGroup = 'gidpregisterreq';
+                            } else {
+                                $q->addSP($convertedToArray);
+                                $mailTemplateGroup = 'spregresquest';
+                                $notificationGroup = 'gspregisterreq';
+                            }
+                            if (empty($contactMail)) {
+                                $contactMail = $this->input->post('f[primarycnt][mail]');
+                            }
+                            $q->setEmail($contactMail);
+
+                            $q->setToken();
+                            $sourceIP = $this->input->ip_address();
+                            $messageTemplateParams = array(
+                                'requestermail' => $contactMail,
+                                'token' => $q->getToken(),
+                                'requestersourceip' => $sourceIP,
+                                'orgname' => $ent->getName(),
+                                'serviceentityid' => $ent->getEntityId(),
+                            );
+                            if (!empty($u)) {
+
+                                $requsername = $u->getUsername();
+                                $reqfullname = $u->getFullname();
+                            } else {
+                                $requsername = 'anonymous';
+                                $reqfullname = '';
+                            }
+                            $nowUtc = new \DateTime('now', new \DateTimeZone('UTC'));
+
+                            $messageTemplateArgs = array(
+                                'token' => $q->getToken(),
+                                'srcip' => $sourceIP,
+                                'entorgname' => $ent->getName(),
+                                'entityid' => $ent->getEntityId(),
+                                'reqemail' => $contactMail,
+                                'requsername' => '' . $requsername . '',
+                                'reqfullname' => $reqfullname,
+                                'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
+                                'qurl' => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '');
+
+
+                            $messageTemplate = $this->email_sender->generateLocalizedMail($mailTemplateGroup, $messageTemplateArgs);
+                            if (empty($messageTemplate)) {
+                                $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams, NULL);
+                            }
+                            if (!empty($messageTemplate)) {
+                                $this->email_sender->addToMailQueue(array('greqisterreq', $notificationGroup), null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
+                            }
+
+
+                            $this->em->persist($q);
+                            $this->em->detach($ent);
+                            try {
+                                $this->em->flush();
+                                redirect(base_url() . 'manage/entityedit/registersuccess');
+                            } catch (Exception $e) {
+                                log_message('error', __METHOD__ . ' ' . $e);
+                                show_error('Internal Server Error', 500);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            $this->em->detach($ent);
                         }
                     }
                 }

@@ -282,6 +282,25 @@ class Metadata extends MY_Controller
         $this->load->view('metadata_view', $data);
     }
 
+    public function preregister($tmpid)
+    {
+        if(!ctype_digit($tmpid))
+        {
+            show_error('Not found');
+        }
+        $this->load->library('j_ncache');
+        $cachedMetadata = $this->j_ncache->getPreregisterMetadata($tmpid);
+        if(!empty($cachedMetadata))
+        {
+            $data['out'] = $cachedMetadata;
+            $this->load->view('metadata_view', $data);
+        }
+        else
+        {
+            show_error('Not found 2');
+        }
+    }
+
     public function service($entityId = null, $m = null)
     {
         if (empty($entityId) || empty($m) || strcmp($m, 'metadata.xml') != 0)

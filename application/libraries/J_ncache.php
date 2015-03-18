@@ -67,5 +67,24 @@ class J_ncache
         return true;
     }
 
+    public function getPreregisterMetadata($tmpid)
+    {
+        $cacheid = 'preregmeta_'.$tmpid;
+        return $this->ci->cache->get($cacheid);
+    }
+    public function cleanPreregisterMetadata($tmpid)
+    {
+        $cacheid = 'preregmeta_'.$tmpid;
+        $this->ci->cache->delete($cacheid);
+        return true;
+    }
+    public function savePreregisterMetadata($tmpid, $data)
+    {
+        $cacheid = 'preregmeta_'.$tmpid;
+        $this->ci->cache->save($cacheid, $data, 720);
+        return true;
+
+    }
+
 
 }
