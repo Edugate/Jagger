@@ -45,7 +45,7 @@ class Entityedit extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->library(array('curl','form_element', 'form_validation', 'approval', 'providertoxml'));
+        $this->load->library(array('curl', 'form_element', 'form_validation', 'approval', 'providertoxml'));
         $this->tmp_providers = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmp_error = '';
@@ -58,32 +58,25 @@ class Entityedit extends MY_Controller
 
     private function externalValidation($metaid, models\FederationValidator $fedValidator)
     {
-        $metadataUrl = base_url().'/metadata/preregister/'.$metaid.'';
+        $metadataUrl = base_url() . '/metadata/preregister/' . $metaid . '';
         $method = $fedValidator->getMethod();
         $remoteUrl = $fedValidator->getUrl();
         $entityParam = $fedValidator->getEntityParam();
         $optArgs = $fedValidator->getOptargs();
-        if (strcmp($method, 'GET') == 0)
-        {
+        if (strcmp($method, 'GET') == 0) {
             $separator = $fedValidator->getSeparator();
             $optArgsStr = '';
-            foreach ($optArgs as $k => $v)
-            {
-                if ($v === null)
-                {
-                    $optArgsStr .=$k . $separator;
-                }
-                else
-                {
+            foreach ($optArgs as $k => $v) {
+                if ($v === null) {
+                    $optArgsStr .= $k . $separator;
+                } else {
                     $optArgsStr .= $k . '=' . $v . '' . $separator;
                 }
             }
-            $optArgsStr .=$entityParam . '=' . urlencode($metadataUrl);
+            $optArgsStr .= $entityParam . '=' . urlencode($metadataUrl);
             $remoteUrl = $remoteUrl . $optArgsStr;
             $this->curl->create('' . $remoteUrl . '');
-        }
-        else
-        {
+        } else {
             $params = $optArgs;
             $params['' . $entityParam . ''] = $metadataUrl;
             $this->curl->create('' . $remoteUrl . '');
@@ -91,26 +84,23 @@ class Entityedit extends MY_Controller
         }
         $this->curl->options(array());
         $data = $this->curl->execute();
-        if (empty($data))
-        {
-            log_message('warning', __METHOD__.'External validator : returned empty result: '. $this->curl->error_string);
-            return true;
+        if (empty($data)) {
+            log_message('warning', __METHOD__ . 'External validator : returned empty result: ' . $this->curl->error_string);
+            $this->tmp_error .= 'Federation validator : returned empty response, please tray again or contact support';
+            return false;
         }
         log_message('debug', __METHOD__ . 'External validator : data received from validator: ' . $data);
         $expectedDocumentType = $fedValidator->getDocutmentType();
-        if (strcmp($expectedDocumentType, 'xml') != 0)
-        {
-            log_message('warning','External validator : Other than xml not supported yet');
+        if (strcmp($expectedDocumentType, 'xml') != 0) {
+            log_message('warning', 'External validator : Other than xml not supported yet');
             return true;
-        }
-        else
-        {
+        } else {
             libxml_use_internal_errors(true);
             $sxe = simplexml_load_string($data);
-            if (!$sxe)
-            {
-                log_message('warning',__METHOD__.' Received invalid xml document from external validator');
-                return true;
+            if (!$sxe) {
+                log_message('warning', __METHOD__ . ' Received invalid xml document from external validator');
+                $this->tmp_error .= 'Received invalid response from  External validator, please tray again or contact support';
+                return false;
             }
             /**
              * @var $docxml \DomDocument
@@ -118,103 +108,89 @@ class Entityedit extends MY_Controller
             $docxml = new \DomDocument();
             $docxml->loadXML($data);
             $returncodeElements = $fedValidator->getReturnCodeElement();
-            if (count($returncodeElements) == 0)
-            {
-                log_message('error','External validator ('.$fedValidator->getId().') has not defined returned codes');
-                return  true;
+            if (count($returncodeElements) == 0) {
+                log_message('error', 'External validator (' . $fedValidator->getId() . ') is misconfigured - has not defined returned codes');
+                return true;
             }
-            foreach ($returncodeElements as $v)
-            {
+            foreach ($returncodeElements as $v) {
                 $codeDoms = $docxml->getElementsByTagName($v);
-                if (!empty($codeDoms->length))
-                {
+                if (!empty($codeDoms->length)) {
                     break;
                 }
             }
             $codeDomeValue = null;
-            if (empty($codeDoms->length))
-            {
-                log_message('warning','External validator: expected return code not received from externalvalidaor ignoring...');
-                return true;
+            if (empty($codeDoms->length)) {
+                log_message('warning', __METHOD__.' External validator: expected return code element not received from externalvalidaor');
+                $this->tmp_error .= 'Received invalid response from  External validator, please tray again or contact support';
+                return false;
             }
             $codeDomeValue = trim($codeDoms->item(0)->nodeValue);
-            log_message('debug', __METHOD__ . ' found expected value ' . $codeDomeValue);
+            if (strlen($codeDomeValue) > 0) {
+                log_message('debug', __METHOD__ . ' found expected element with value ' . $codeDomeValue);
+            } else {
+                log_message('warning', __METHOD__ . ' found expected element but with no value');
+                $this->tmp_error .= 'Received invalid response from  External validator, please tray again or contact support';
+                return false;
+            }
             $expectedReturnValues = $fedValidator->getReturnCodeValues();
+            $typesOfReturns = array('success' => array(), 'error' => array(), 'warning' => array(), 'critical' => array());
+            $mergedReturns = array_merge($typesOfReturns, $expectedReturnValues);
+            if (in_array($codeDomeValue, $mergedReturns['success']) || in_array($codeDomeValue, $mergedReturns['warning'])) {
+                log_message('info', __METHOD__ . ' returned value found in expected success/warning - passed');
+                return true;
+            }
             $elementWithMessage = $fedValidator->getMessageCodeElements();
             $result = array();
-            foreach ($expectedReturnValues as $k => $v)
-            {
-
-                if (is_array($v))
-                {
-
-                    foreach ($v as $v1)
-                    {
-                        if (strcasecmp($codeDomeValue, $v1) == 0)
-                        {
-                            $result['returncode'] = $k;
-                            break;
-                        }
-                    }
+            foreach (array('error', 'critical') as $e) {
+                if (in_array($codeDomeValue, $mergedReturns['' . $e . ''])) {
+                    $result['returncode'] = $e;
+                    break;
                 }
             }
-            if (!isset($result['returncode']))
-            {
+
+
+            if (!isset($result['returncode'])) {
                 $result['returncode'] = 'unknown';
             }
             $result['message'] = array();
-            foreach ($elementWithMessage as $v)
-            {
+            foreach ($elementWithMessage as $v) {
                 log_message('debug', __METHOD__ . ' searching for ' . $v . ' element');
                 $o = $docxml->getElementsByTagName($v);
-                if ($o->length > 0)
-                {
+                if ($o->length > 0) {
                     $result['message'][$v] = array();
-                    for ($i = 0; $i < $o->length; $i++)
-                    {
+                    for ($i = 0; $i < $o->length; $i++) {
                         $g = trim($o->item($i)->nodeValue);
                         log_message('debug', __METHOD__ . ' value for ' . $v . ' element: ' . $g);
-                        if (!empty($g))
-                        {
+                        if (!empty($g)) {
                             $result['message'][$v][] = htmlspecialchars($g);
                         }
                     }
                 }
             }
-            if (count($result['message']) == 0)
-            {
+            if (count($result['message']) == 0) {
                 $result['message']['unknown'] = 'no response message';
             }
 
         }
-        if(isset($result['returncode']))
-        {
-            if(strcasecmp($result['returncode'],'error')==0 || strcasecmp($result['returncode'],'critical')==0)
-            {
-                  if(isset($result['message']) && is_array($result['message']))
-                  {
-                     foreach($result['message'] as $ke=>$ee)
-                     {
-                        $this->tmp_error .= html_escape($ke).':';
-                        if(is_array($ee))
-                        {
-                            foreach($ee as $pe)
-                            {
-                               $this->tmp_error .= html_escape($pe).';';
-                            }
-                        }
-                        else
-                        {
-                            $this->tmp_error .= html_escape($ee);
-                        }
-                        $this->tmp_error .= '<br />';
-                        
-                     }
-                  }
-                  return false;
+        $this->tmp_error .= 'Validator reponse: ' . $result['returncode'] . '<br />';
+
+
+        if (isset($result['message']) && is_array($result['message'])) {
+            foreach ($result['message'] as $ke => $ee) {
+                $this->tmp_error .= html_escape($ke) . ':';
+                if (is_array($ee)) {
+                    foreach ($ee as $pe) {
+                        $this->tmp_error .= html_escape($pe) . ';';
+                    }
+                } else {
+                    $this->tmp_error .= html_escape($ee);
+                }
+                $this->tmp_error .= '<br />';
+
             }
         }
-        return true;
+        return false;
+
 
     }
 
@@ -1067,13 +1043,10 @@ class Entityedit extends MY_Controller
                              * @var $fvalidators models\FederationValidator[]
                              */
                             $fvalidators = $federation->getValidators();
-                            if(!empty($fvalidators))
-                            {
-                                foreach($fvalidators as $fv)
-                                {
+                            if (!empty($fvalidators)) {
+                                foreach ($fvalidators as $fv) {
                                     $isenabledForRegister = $fv->isEnabledForRegistration();
-                                    if($isenabledForRegister)
-                                    {
+                                    if ($isenabledForRegister) {
                                         $fvalidator = $fv;
 
                                         break;
@@ -1087,20 +1060,20 @@ class Entityedit extends MY_Controller
                         $options['attrs'] = 1;
                         $xmlOut = $this->providertoxml->entityConvertNewDocument($ent, $options);
                         $this->load->library('j_ncache');
-                        $tmpid = rand(10,1000);
-                        log_message('debug','JAGGER RAND: '.$tmpid);
+                        $tmpid = rand(10, 1000);
+                        log_message('debug', 'JAGGER RAND: ' . $tmpid);
                         $xmloutput = $xmlOut->outputMemory();
                         $this->j_ncache->savePreregisterMetadata($tmpid, $xmloutput);
                         $isFvalidatoryMandatory = false;
                         $externalValidatorPassed = true;
-                        if($fvalidator instanceof models\FederationValidator) {
-                            $externalValidatorPassed = $this->externalValidation($tmpid,$fvalidator);
+                        if ($fvalidator instanceof models\FederationValidator) {
+                            $externalValidatorPassed = $this->externalValidation($tmpid, $fvalidator);
                             $isFvalidatoryMandatory = $fvalidator->getMandatory();
 
                         }
-                        log_message('debug','JAGGER: externalValidatorPassed='.(int)$externalValidatorPassed.', isFvalidatoryMandatory:'.(int) $isFvalidatoryMandatory);
+                        log_message('debug', 'JAGGER: externalValidatorPassed=' . (int)$externalValidatorPassed . ', isFvalidatoryMandatory:' . (int)$isFvalidatoryMandatory);
 
-                        if($externalValidatorPassed === true || $isFvalidatoryMandatory === false) {
+                        if ($externalValidatorPassed === true || $isFvalidatoryMandatory === false) {
                             $convertedToArray['metadata'] = base64_encode($xmloutput);
 
                             log_message('debug', 'GKS convertedToArray: ' . serialize($convertedToArray));
@@ -1169,9 +1142,7 @@ class Entityedit extends MY_Controller
                                 show_error('Internal Server Error', 500);
                                 return;
                             }
-                        }
-                        else
-                        {
+                        } else {
                             $this->em->detach($ent);
                         }
                     }
