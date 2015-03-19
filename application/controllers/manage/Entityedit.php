@@ -134,7 +134,7 @@ class Entityedit extends MY_Controller
             }
             $expectedReturnValues = $fedValidator->getReturnCodeValues();
             $typesOfReturns = array('success' => array(), 'error' => array(), 'warning' => array(), 'critical' => array());
-            $mergedReturns = array_merged($typesOfReturns, $expectedReturnValues);
+            $mergedReturns = array_merge($typesOfReturns, $expectedReturnValues);
             if (in_array($codeDomeValue, $mergedReturns['success']) || in_array($codeDomeValue, $mergedReturns['warning'])) {
                 log_message('info', __METHOD__ . ' returned value found in expected success/warning - passed');
                 return true;
