@@ -19,9 +19,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 
-/**
- * @property Doctrine $em
- */
+
 class Providerupdater
 {
 
@@ -32,9 +30,7 @@ class Providerupdater
 	function __construct()
 	{
 		$this->ci = &get_instance();
-
 		$this->em = $this->ci->doctrine->em;
-
 		$this->ci->load->library('tracker');
 		$this->logtracks = array();
 	}
@@ -45,6 +41,11 @@ class Providerupdater
 
 	}
 
+    /**
+     * @param \models\Provider $ent
+     * @param array $ch
+     * @param bool $isAdmin
+     */
 	public function updateRegPolicies(models\Provider $ent, array $ch, $isAdmin = false)
 	{
 		$currentCocs = $ent->getCoc();
@@ -89,6 +90,11 @@ class Providerupdater
 		}
 	}
 
+    /**
+     * @param \models\Provider $ent
+     * @param array $ch
+     * @return \models\Provider
+     */
 	private function updateProviderExtend(models\Provider $ent, array $ch)
 	{
 		$m = array();
