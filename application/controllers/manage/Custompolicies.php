@@ -12,12 +12,12 @@ if (!defined('BASEPATH'))
  */
 
 /**
- * Custom_policies Class
+ * Custompolicies Class
  *
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Custom_policies extends MY_Controller
+class Custompolicies extends MY_Controller
 {
 
     private $tmp_providers;

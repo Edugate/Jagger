@@ -344,7 +344,7 @@ class Show_element {
                             $denied_values .="</dl>";
                         }
                     }
-                    $custom_link = anchor(base_url() . "manage/custom_policies/idp/" . $provider->getId() . "/" . $attr_value['spid'] . "/" . $attr_value['attr_id'], $icon );
+                    $custom_link = anchor(base_url() . "manage/custompolicies/idp/" . $provider->getId() . "/" . $attr_value['spid'] . "/" . $attr_value['attr_id'], $icon );
 
                     $attributes[] = array($attr_name . $link, $attr_value['status'], $attr_value['policy'] . '<br /><div ><b>'.lang('custompolicy').'</b>' . $custom_link .  $permited_values  . $denied_values . '</div>');
                 }
