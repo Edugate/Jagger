@@ -28,17 +28,9 @@ class Custompolicies extends MY_Controller
     {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
-        $this->current_site = current_url();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
-
-        $this->current_idp = $this->session->userdata('current_idp');
-        $this->current_idp_name = $this->session->userdata('current_idp_name');
-        $this->current_sp = $this->session->userdata('current_sp');
-        $this->current_sp_name = $this->session->userdata('current_sp_name');
-
         $this->load->helper('form');
         $this->load->library(array('table', 'form_element'));
         $this->tmp_providers = new models\Providers;
@@ -51,7 +43,7 @@ class Custompolicies extends MY_Controller
     private function _submit_validate()
     {
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('values', '' . lang('permdenvalue') . '', 'trim|alpha_dash_comma|xss_clean');
+        $this->form_validation->set_rules('values', '' . lang('permdenvalue') . '', 'trim|alpha_dash_comma');
         $this->form_validation->set_rules('policy', 'Policy', 'trim');
         return $this->form_validation->run();
     }
@@ -71,6 +63,7 @@ class Custompolicies extends MY_Controller
         if (!$hasWriteAccess) {
             show_error(lang('error403'), 403);
         }
+        $myLang = MY_Controller::getLang();
         $isLocked = $idp->getLocked();
         if (!empty($attributeId)) {
             /**
@@ -142,12 +135,6 @@ class Custompolicies extends MY_Controller
                 }
             }
 
-
-            /**
-             * @var $supported_attributes models\AttributeReleasePolicy[]
-             */
-            $supported_attrs = $this->tmp_arps->getSupportedAttributes($idp);
-            $myLang = MY_Controller::getLang();
 
 
             $data['idp_id'] = $idp->getId();
