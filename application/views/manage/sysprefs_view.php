@@ -81,3 +81,4 @@ echo $this->table->generate();
 
 	<a class="close-reveal-modal">&#215;</a>
 </div>
+

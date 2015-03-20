@@ -69,3 +69,4 @@ echo '<div class="availablelogosgrid" style="display:none">'.base_url().'manage/
    <p><button class="modal-close button mall">Close</a></button>
   <a class="close-reveal-modal">&#215;</a>
 </div>
+

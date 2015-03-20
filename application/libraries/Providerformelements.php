@@ -176,12 +176,6 @@ class Providerformelements
             $result[] = '';
         }
 
-
-
         return $result;
     }
-
-
-
-
 }
