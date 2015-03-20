@@ -32,22 +32,31 @@ class Statdefs extends MY_Controller
     {
         if (!$this->input->is_ajax_request())
         {
-            show_error('denied', 403);
+            set_status_header(403);
+            echo 'Access denied';
+            return;
         }
         if (empty($defid) || !ctype_digit($defid))
         {
-            show_error('not found', 404);
+            set_status_header(404);
+            echo 'Not found';
+            return;
         }
         $isgearman = $this->config->item('gearman');
         $isstatistics = $this->config->item('statistics');
         if (empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
         {
-            show_error('not found', 404);
+            set_status_header(404);
+            echo 'Not found';
+            return;
+
         }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin)
         {
-            show_error('denied', 403);
+            set_status_header(403);
+            echo 'Access denied';
+            return;
         }
         /**
          * @var $def models\ProviderStatsDef
@@ -55,7 +64,9 @@ class Statdefs extends MY_Controller
         $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
         if (empty($def))
         {
-            show_error('not found', 404);
+            set_status_header(404);
+            echo 'Not found';
+            return;
         }
         /**
          * @var $provider models\Provider
@@ -63,18 +74,26 @@ class Statdefs extends MY_Controller
         $provider = $def->getProvider();
         if (empty($provider))
         {
-            show_error('not found', 404);
+
+            set_status_header(404);
+            echo 'Not found';
+            return;
         }
         $islocal = $provider->getLocal();
         if (!$islocal)
         {
-            show_error('no stats allowed for this entity', 403);
+            set_status_header(403);
+            echo 'no stats allowed for this entity';
+            return;
         }
         $this->load->library('zacl');
         $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
         if (!$hasAccess)
         {
-            show_error('denied', 403);
+            
+            set_status_header(403);
+            echo 'Access denied';
+            return;
         }
         $params = array(
             'defid' => $def->getId(),
