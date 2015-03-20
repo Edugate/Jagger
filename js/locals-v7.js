@@ -622,7 +622,7 @@ var GINIT = {
             return false;
         });
 
-        $("#confirmremover").on('click', 'div.yes', function (e) {
+        $("#confirmremover").on('click', '.yes', function (e) {
             e.preventDefault();
             var form = $(this).closest("form");
             var actionUrl = form.attr('action');
@@ -655,11 +655,16 @@ var GINIT = {
             var url = $(this).attr('href');
             var regid = $(this).attr('data-jagger-regpolicy');
             var ecid = $(this).attr('data-jagger-ec');
+            var providersCounter = $(this).attr('data-jagger-counter');
+            var fieldname = $(this).attr('data-jagger-fieldname');
             if (url === undefined) {
                 return false;
             }
             var formremover = $("#confirmremover");
-
+            var datafieldname = formremover.find('span.data-fieldname').first();
+            var datacounter = formremover.find('span.data-counter').first();
+            datafieldname.html(fieldname);
+            datacounter.html(providersCounter);
             var form = formremover.find('form').first();
             form.attr('action', url);
             if (ecid !== undefined && ecid !== null) {

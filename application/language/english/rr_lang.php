@@ -115,6 +115,10 @@ $lang['btnaddiphint']               = 'Add IP Hint';
 $lang['btnadddomainhint']               = 'Add Domain Hint';
 $lang['btngetlogo']                 = 'Get logo';
 $lang['regpol_language'] =            'Language';
+$lang['regpolrmstr']  =             'You are going to delete Registration Policy';
+$lang['ecrmstr']  =             'You are going to delete Entity Category';
+$lang['countentconnected']   = 'Number entities connected';
+
 $lang['rr_lang'] =                  'Language';
 $lang['digestmethodsign']          = 'Digest method for signing metadata';
 $lang['digestmethodexportsign']          = 'Digest method for signing exported metadata';

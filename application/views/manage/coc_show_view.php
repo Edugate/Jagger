@@ -20,22 +20,25 @@ if(!empty($rows))
      $this->table->clear();    
 
 }
+$btns = array(
+    '<button class="button alert modal-close" value="cancel" name="cancel" type="reset">'.lang('rr_no').'</button>',
+    '<a href="#" class="yes button">' . lang('rr_yes') . '</a>'
+);
 
 echo '<div id="confirmremover" class="reveal-modal small" data-reveal>';
-echo form_open();
 
 echo '<h3>'.lang('douwanttoproceed').'</h3>';
-echo '<p><div class="buttons small-12 columns small-text-right">
-    <div class="small-6 columns">
-    <div class="no close-reveal-modal button">' . lang('rr_no') . '</div>
-        </div>
-    <div class="small-6 columns">
-    <div class="yes button">' . lang('rr_yes') . '</div>
-        </div>
-        
-</div></p>';
+echo '<div>'.lang('ecrmstr').': <span class="data-fieldname"></span></div>';
+echo '<div>'.lang('countentconnected').': <span class="data-counter"></span></div>';
+echo form_open();
+
+
+echo '<p><div class="buttons small-12 columns small-text-right">';
+
+    echo revealBtnsRow($btns);
+echo '</div></p>';
 
 echo form_close();
-    
+echo '<a class="close-reveal-modal">&#215;</a>';
 echo '</div>';
 

@@ -94,7 +94,7 @@ class Coc {
  
     public function getName()
     {
-        return $this->name;   
+        return trim($this->name);
     }
 
     public function getType()

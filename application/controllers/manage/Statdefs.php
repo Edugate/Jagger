@@ -90,7 +90,7 @@ class Statdefs extends MY_Controller
         $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
         if (!$hasAccess)
         {
-            
+
             set_status_header(403);
             echo 'Access denied';
             return;

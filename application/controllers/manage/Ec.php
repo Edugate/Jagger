@@ -50,13 +50,14 @@ class Ec extends MY_Controller {
         {
             foreach ($obj_list as $c)
             {
+                $countProviders = $c->getProvidersCount();
                 $isEnabled = $c->getAvailable();
                 if ($has_write_access)
                 {
                     $l = '<a href="' . base_url() . 'manage/ec/edit/' . $c->getId() . '" ><i class="fi-pencil"></i></a>';
                     if (!$isEnabled)
                     {
-                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/ec/remove/' . $c->getId() . '" class="withconfirm" data-jagger-ec="' . $c->getId() . '"><i class="fi-trash"></i></a>';
+                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/ec/remove/' . $c->getId() . '" class="withconfirm" data-jagger-fieldname="'.$c->getName().'" data-jagger-ec="' . $c->getId() . '" data-jagger-counter="'.$countProviders.'"><i class="fi-trash"></i></a>';
                     }
                 }
                 else
@@ -72,6 +73,7 @@ class Ec extends MY_Controller {
                 {
                     $lbl = '<span class="lbl lbl-disabled">' . lang('rr_disabled') . '</span>';
                 }
+                $lbl .= '<span class="label secondary">' . $countProviders . '</span> ';
                 $subtype = $c->getSubtype();
                 if (empty($subtype))
                 {

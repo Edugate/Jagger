@@ -17,6 +17,10 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
+
+/**
+ * @property Form_element $form_element
+ */
 class Regpolicy extends MY_Controller
 {
 
@@ -41,15 +45,19 @@ class Regpolicy extends MY_Controller
 
         }
         $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
+        /**
+         * @var $obj_list models\Coc[]
+         */
         $obj_list = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
         $data['rows'] = array();
         if (is_array($obj_list) && count($obj_list) > 0) {
             foreach ($obj_list as $c) {
+                $countProviders = $c->getProvidersCount();
                 $isEnabled = $c->getAvailable();
                 if ($has_write_access) {
                     $l = '<a href="' . base_url() . 'manage/regpolicy/edit/' . $c->getId() . '" ><i class="fi-pencil"></i></a>';
                     if (!$isEnabled) {
-                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/regpolicy/remove/' . $c->getId() . '" class="withconfirm" data-jagger-regpolicy="' . $c->getId() . '"><i class="fi-trash"></i></a>';
+                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/regpolicy/remove/' . $c->getId() . '" class="withconfirm" data-jagger-regpolicy="' . $c->getId() . '" data-jagger-fieldname="'.$c->getName().'"  data-jagger-counter="'.$countProviders.'"><i class="fi-trash"></i></a>';
                     }
                 } else {
                     $l = '';
@@ -60,6 +68,7 @@ class Regpolicy extends MY_Controller
                 } else {
                     $lbl = '<span class="lbl lbl-disabled">' . lang('rr_disabled') . '</span>';
                 }
+                $lbl .= '<span class="label secondary">' . $countProviders . '</span> ';
                 /**
                  * @todo add extracting row to show providers connected to policy
                  */
@@ -168,6 +177,9 @@ class Regpolicy extends MY_Controller
             show_error('Not found', 404);
             return;
         }
+        /**
+         * @var $coc models\Coc
+         */
         $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $id, 'type' => 'regpol'));
         if (empty($coc)) {
             show_error('Not found', 404);
@@ -214,6 +226,7 @@ class Regpolicy extends MY_Controller
 
     }
 
+
     function remove($id = null)
     {
         if (empty($id) || !ctype_digit($id)) {
@@ -238,6 +251,9 @@ class Regpolicy extends MY_Controller
             echo 'access denied';
             return;
         }
+        /**
+         * @var $regpol models\Coc
+         */
         $regpol = $this->em->getRepository("models\Coc")->findOneBy(array('id' => '' . $id . '', 'type' => 'regpol', 'is_enabled' => false));
         if (empty($regpol)) {
             set_status_header(403);
