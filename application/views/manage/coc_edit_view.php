@@ -1,5 +1,5 @@
 <?php
-$errors_v = validation_errors('<p class="error">', '</p>');
+$errors_v = validation_errors('<div>', '</div>');
 if (!empty($errors_v)) {
     echo '<div data-alert class="alert-box alert">'.$errors_v.'</div>';
 }
@@ -22,3 +22,4 @@ elseif(!empty($form))
        echo $form;
 
 }
+
