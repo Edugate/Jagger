@@ -41,6 +41,9 @@ if (!defined('BASEPATH'))
  * @property Zacl $zacl
  * @property J_cache $j_cache
  * @property J_ncache $j_ncache
+ * @property Approval $approval
+ * @property Tracker $tracker
+ * @property Email_sender $email_sender
  * @property Curl $curl
  * @property Show_element $show_element
  * @property J_auth $j_auth

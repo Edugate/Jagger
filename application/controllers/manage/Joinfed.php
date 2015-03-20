@@ -17,6 +17,7 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
+
 class Joinfed extends MY_Controller
 {
 
@@ -50,35 +51,37 @@ class Joinfed extends MY_Controller
             show_error(lang('error_incorrectprovid'), 404);
             return;
         }
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if (empty($ent)) {
             show_error(lang('rerror_provnotfound'), 404);
             return;
         }
-        $lang = MY_Controller::getLang();
+        else
+        {
+            $hasWriteAccess = $this->zacl->check_acl($ent->getId(), 'write', 'entity');
+            if (!$hasWriteAccess) {
+                show_error('No access', 403);
+                return;
+            }
+            if ($ent->getLocked()) {
+                show_error(lang('error_lockednoedit'), 403);
+                return;
+            }
+        }
+        $myLang = MY_Controller::getLang();
         $entType = strtolower($ent->getType());
-
-        $data['name'] = $ent->getNameToWebInLang($lang, $entType);
-        if (empty($data['name'])) {
-            $data['name'] = $ent->getEntityId();
-        }
-        $data['entityid'] = $ent->getEntityId();
-        $data['providerid'] = $ent->getId();
-
-        $has_write_access = $this->zacl->check_acl($ent->getId(), 'write', 'entity');
-        if (!$has_write_access) {
-            show_error('No access', 403);
-            return;
-        }
-        if ($ent->getLocked()) {
-            show_error(lang('error_lockednoedit'), 403);
-            return;
-        }
-
-        $this->title = $data['name'] . ':' . lang('joinfederation');
-
-        $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $ent->getId() . '">' . $data['name'] . '</a>';
-        $data['subtitlepage'] = lang('fedejoinform');
+        $nameInLang = $ent->getNameToWebInLang($myLang, $entType);
+        $data = array(
+            'name' => $nameInLang,
+            'entityid' => $ent->getEntityId(),
+            'providerid' => $ent->getId(),
+            'titlepage' =>  '<a href="' . base_url() . 'providers/detail/show/' . $ent->getId() . '">' . $nameInLang . '</a>',
+            'subtitlepage' => lang('fedejoinform')
+        );
+        $this->title =  $nameInLang. ':' . lang('joinfederation');
         if(strcasecmp($entType,'SP')==0)
         {
             $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
@@ -89,24 +92,30 @@ class Joinfed extends MY_Controller
         }
 	    $data['breadcrumbs'] = array(
             $plist,
-		    array('url'=>base_url('providers/detail/show/'.$ent->getId().''),'name'=>''.html_escape($data['name']).''),
+		    array('url'=>base_url('providers/detail/show/'.$ent->getId().''),'name'=>''.html_escape($nameInLang).''),
 		    array('url'=>'#','name'=>lang('fedejoinform'),'type'=>'current'),
 	    );
-        $all_federations = $this->em->getRepository("models\Federation")->findAll();
+        /**
+         * @var $allFederations models\Federation[]
+         */
+        $allFederations = $this->em->getRepository("models\Federation")->findAll();
         $federations = $ent->getFederations();
 
-        $available_federations = array();
-        foreach ($all_federations as $ff) {
+        $availableFederations = array();
+        foreach ($allFederations as $ff) {
             if (!$federations->contains($ff)) {
-                $available_federations[$ff->getId()] = $ff->getName();
+                $availableFederations[$ff->getId()] = $ff->getName();
             }
         }
 
-        $feds_dropdown = $available_federations;
+        $feds_dropdown = $availableFederations;
 
         if ($this->submit_validate() === TRUE) {
             $message = $this->input->post('formmessage');
             $fedid = $this->input->post('fedid');
+            /**
+             * @var $federation models\Federation
+             */
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
             if (empty($federation)) {
                 show_error('' . lang('error_nofedyouwantjoin') . '', 404);
@@ -121,14 +130,10 @@ class Joinfed extends MY_Controller
                 $add_to_queue = $this->approval->invitationFederationToQueue($ent, $federation, 'Join', $message);
                 if ($add_to_queue) {
                     $this->load->library('tracker');
-                    $mail_recipients = array();
                     $mail_sbj = "Request  to join federation: " . $federation->getName();
 
 
-                    $providername = $ent->getName();
-                    if (empty($providername)) {
-                        $providername = $ent->getEntityId();
-                    }
+                    $providername = $nameInLang;
                     $providerentityid = $ent->getEntityId();
                     $awaitingurl = base_url() . 'reports/awaiting';
                     $fedname = $federation->getName();
@@ -142,13 +147,13 @@ class Joinfed extends MY_Controller
                     if (!empty($overrideconfig) && is_array($overrideconfig) && array_key_exists('joinfed', $overrideconfig) && !empty($overrideconfig['joinfed'])) {
                         $b = $overrideconfig['joinfed'];
                     } else {
-                        $b = "Hi,".PHP_EOL."Just few moments ago Administator of Provider %s (%s)".PHP_EOL;
-                        $b .= "sent request to Administrators of Federation: %s".PHP_EOL;
-                        $b .= "to access  him as new federation member.".PHP_EOL;
-                        $b .= "To accept or reject this request please go to Resource Registry".PHP_EOL."%s".PHP_EOL;
-                        $b .= PHP_EOL.PHP_EOL."======= additional message attached by requestor ===========".PHP_EOL;
-                        $b .= "%s";
-                        $b .= PHP_EOL."=============================================================".PHP_EOL;
+                        $b = "Hi,".PHP_EOL.
+                            "Just few moments ago Administator of Provider %s (%s)".PHP_EOL.
+                            "sent request to Administrators of Federation: %s".PHP_EOL.
+                            "to access  him as new federation member.".PHP_EOL.
+                            "To accept or reject this request please go to Resource Registry".PHP_EOL.
+                            "%s".PHP_EOL.PHP_EOL.PHP_EOL."======= additional message attached by requestor ===========".
+                            PHP_EOL."%s".PHP_EOL."=============================================================".PHP_EOL;
                     }
                     $localizedmail = $this->config->item('localizedmail');
                     if (!empty($localizedmail) && is_array($localizedmail) && array_key_exists('joinfed', $localizedmail) && !empty($localizedmail['joinfed'])) {
