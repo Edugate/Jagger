@@ -3,22 +3,22 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Custom_policies Class
- * 
+ *
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
-class Custom_policies extends MY_Controller {
+class Custom_policies extends MY_Controller
+{
 
     private $tmp_providers;
     private $tmp_arps;
@@ -29,8 +29,7 @@ class Custom_policies extends MY_Controller {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
@@ -52,71 +51,67 @@ class Custom_policies extends MY_Controller {
     private function _submit_validate()
     {
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('values', ''.lang('permdenvalue').'', 'trim|alpha_dash_comma|xss_clean');
+        $this->form_validation->set_rules('values', '' . lang('permdenvalue') . '', 'trim|alpha_dash_comma|xss_clean');
         $this->form_validation->set_rules('policy', 'Policy', 'trim');
         return $this->form_validation->run();
     }
 
-    public function idp($idp_id, $sp_id, $attr_id = null)
+    public function idp($idp_id, $sp_id, $attributeId = null)
     {
+        /**
+         * @var $idp models\Provider
+         * @var $sp models\Provider
+         */
         $idp = $this->tmp_providers->getOneIdPById($idp_id);
         $sp = $this->tmp_providers->getOneSpById($sp_id);
-        if (empty($idp) || empty($sp))
-        {
-            show_error(''.lang('rerror_providernotexist').'', 404);
+        if (empty($idp) || empty($sp)) {
+            show_error('' . lang('rerror_providernotexist') . '', 404);
         }
-        $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'idp', '');
-        if (!$has_write_access)
-        {
+        $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
+        if (!$hasWriteAccess) {
             show_error(lang('error403'), 403);
         }
-        $locked = $idp->getLocked();
-        if (!empty($attr_id))
-        {
-            $attribute = $this->tmp_attrs->getAttributeById($attr_id);
+        $isLocked = $idp->getLocked();
+        if (!empty($attributeId)) {
+            /**
+             * @var $attribute models\Attribute
+             */
+            $attribute = $this->tmp_attrs->getAttributeById($attributeId);
             $data['form_action'] = current_url();
-            if (empty($attribute))
-            {
+            if (empty($attribute)) {
                 show_error('Attribute doesnt exist', 404);
             }
-            if ($this->_submit_validate() === TRUE)
-            {
-                if($locked)
-                {
-                   show_error(''.lang('error_lockednoedit').'', 403);
+            if ($this->_submit_validate() === TRUE) {
+                if ($isLocked) {
+                    show_error('' . lang('error_lockednoedit') . '', 403);
                 }
+                /**
+                 * @var $custom_arp models\AttributeReleasePolicy
+                 */
                 $custom_arp = $this->tmp_arps->getCustomSpArpByAttribute($idp, $sp, $attribute);
                 $values = trim($this->input->post('values'));
                 $policy = $this->input->post('policy');
 
-                if (empty($values))
-                {
-                    if (!empty($custom_arp))
-                    {
+                if (empty($values)) {
+                    if (!empty($custom_arp)) {
                         $this->em->remove($custom_arp);
                         $this->em->flush();
                         $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idp->getId()), -1);
                     }
-                }
-                else
-                {
+                } else {
 
                     $vdata = explode(",", $values);
-                    array_walk($vdata, function(&$n) {
-                                $n = trim($n);
-                            });
+                    array_walk($vdata, function (&$n) {
+                        $n = trim($n);
+                    });
                     $vdata = array_filter($vdata);
-                    if ($policy == 'permit' or $policy == 'deny')
-                    {
+                    if ($policy == 'permit' or $policy == 'deny') {
                         $arraydata[$policy] = $vdata;
 
 
-                        if (!empty($custom_arp))
-                        {
+                        if (!empty($custom_arp)) {
                             $custom_arp->setRawdata($arraydata);
-                        }
-                        else
-                        {
+                        } else {
                             $custom_arp = new models\AttributeReleasePolicy;
                             $custom_arp->setAttribute($attribute);
                             $custom_arp->setProvider($idp);
@@ -134,18 +129,13 @@ class Custom_policies extends MY_Controller {
             $custom_arp = $this->tmp_arps->getCustomSpArpByAttribute($idp, $sp, $attribute);
 
             $data['policy_selected'] = '';
-            if (!empty($custom_arp))
-            {
+            if (!empty($custom_arp)) {
                 $arraydata = $custom_arp->getRawdata();
-                if (!empty($arraydata) && is_array($arraydata))
-                {
-                    if (array_key_exists('permit', $arraydata) && is_array($arraydata['permit']))
-                    {
+                if (!empty($arraydata) && is_array($arraydata)) {
+                    if (array_key_exists('permit', $arraydata) && is_array($arraydata['permit'])) {
                         $data['values'] = implode(",", $arraydata['permit']);
                         $data['policy_selected'] = 'permit';
-                    }
-                    elseif (array_key_exists('deny', $arraydata) && is_array($arraydata['deny']))
-                    {
+                    } elseif (array_key_exists('deny', $arraydata) && is_array($arraydata['deny'])) {
                         $data['values'] = implode(",", $arraydata['deny']);
                         $data['policy_selected'] = 'deny';
                     }
@@ -153,15 +143,32 @@ class Custom_policies extends MY_Controller {
             }
 
 
+            /**
+             * @var $supported_attributes models\AttributeReleasePolicy[]
+             */
             $supported_attrs = $this->tmp_arps->getSupportedAttributes($idp);
+            $myLang = MY_Controller::getLang();
+
+
             $data['idp_id'] = $idp->getId();
-            $data['idp_name'] = $idp->getName();
-            $data['locked'] = $locked;
+            $data['idp_name'] = $idp->getNameToWebInLang($myLang, 'idp');
+            $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url('providers/detail/show/' . $idp->getId() . '') . '">' . $data['idp_name'] . '</a>';
+
+            $data['isLocked'] = $isLocked;
             $data['idp_entityid'] = $idp->getEntityId();
             $data['sp_id'] = $sp->getId();
-            $data['sp_name'] = $sp->getName();
+            $data['sp_name'] = $sp->getNameToWebInLang($myLang, 'sp');
             $data['sp_entityid'] = $sp->getEntityId();
             $data['attribute_name'] = $attribute->getName();
+            $data['subtitlepage'] = ucfirst(lang('customarpforattr')) . ': ' . $data['attribute_name'];
+            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
+            $data['breadcrumbs'] = array(
+                $plist,
+                array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $data['idp_name'] . ''),
+                array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
+                array('url' => '#', 'name' => lang('customarpforattr'), 'type' => 'current'),
+
+            );
         }
         $data['content_view'] = 'manage/custom_policies_view';
         $this->load->view('page', $data);
