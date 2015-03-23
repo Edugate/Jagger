@@ -538,7 +538,7 @@ class Show_element {
                 $user = lang('unknown');
             }
             $result .='<dd class="accordion-navigation">';
-            $result .= '<a href="#mod'.$mcounter.'">'.date('Y-m-d H:i:s',$t->getCreated()->format('U')+j_auth::$timeOffset) .' ' .lang('chng_made_by').' <b>' . $user . '</b> '.lang('from').' ' . $t->getIp() .'</a><div id="mod'.$mcounter.'" class="content">' . $y . '</div>';
+            $result .= '<a href="#mod'.$mcounter.'" class="accordion-icon">'.date('Y-m-d H:i:s',$t->getCreated()->format('U')+j_auth::$timeOffset) .' ' .lang('chng_made_by').' <b>' . $user . '</b> '.lang('from').' ' . $t->getIp() .'</a><div id="mod'.$mcounter.'" class="content">' . $y . '</div>';
             $result .='</dd>';
             $mcounter++;
         }
