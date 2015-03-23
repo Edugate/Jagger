@@ -508,7 +508,7 @@ class Manage extends MY_Controller
                 foreach ($fvalidators as $f) {
                     $d['fvalidators'] = array();
                     $fvdata .= ' <dd class="accordion-navigation">';
-                    $fvdata .= '<a href="#fvdata' . $f->getId() . '">' . $f->getName() . '</a>';
+                    $fvdata .= '<a href="#fvdata' . $f->getId() . '" class="accordion-icon">' . $f->getName() . '</a>';
                     $fvdata .= '<div id="fvdata' . $f->getId() . '" class="content">';
                     $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
 

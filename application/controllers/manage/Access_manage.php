@@ -27,7 +27,6 @@ class Access_manage extends MY_Controller {
         $this->current_site = current_url();
         if (!$loggedin)
         {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
         $this->tmp_providers = new models\Providers;
@@ -53,6 +52,9 @@ class Access_manage extends MY_Controller {
     function entity($id)
     {
 
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->tmp_providers->getOneById($id);
         if (empty($ent))
         {
@@ -66,6 +68,10 @@ class Access_manage extends MY_Controller {
         $is_local = $ent->getLocal();
         if ($is_local)
         {
+            /**
+             * @var $isResourceAcl models\AclResource
+             * @var $parent models\AclResource
+             */
             $isResourceAcl = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => $ent->getId()));
             if (empty($isResourceAcl))
             {
