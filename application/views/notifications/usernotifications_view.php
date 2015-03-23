@@ -7,7 +7,7 @@ if(!empty($warnmessage))
  
 }
 ?>
-<div class="small-12 columns text-right"><button id="registernotification2" class="addbutton addicon" type="button" ><?php echo lang('rr_add');?></button></div>
+<div class="small-12 columns text-right"><button class="small" type="button" data-reveal-id="notificationaddmodal"><?php echo lang('rr_add');?></button></div>
 <?php
   if(count($rows)>1)
   {
@@ -62,7 +62,7 @@ $btns = array(
    echo form_open(base_url().'notifications/subscriber/add/'.$encodeduser.'',$rrs);
 $btns = array(
      '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
-    '<div class="yes button">'. lang('rr_add').'</div>'
+    '<button type="submit" class="">'. lang('rr_add').'</button>'
 );
    ?>
       <div class="header">

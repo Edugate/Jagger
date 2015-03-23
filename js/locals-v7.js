@@ -2808,30 +2808,6 @@ $(document).ready(function () {
         return false;
     });
 
-
-    $("button#registernotification2").click(function (ev) {
-        ev.preventDefault();
-        var notiform = $("form#notificationaddform");
-        notificationadd2('', function (ev) {
-            var serializedData = notiform.serializeArray();
-            $.ajax({
-                type: "POST",
-                url: notiform.attr('action'),
-                data: $("form#notificationaddform").serializeArray(),
-                success: function (data) {
-                    $(".message").html(data);
-                    if (data === 'OK') {
-                        $(this).foundation('reveal', 'close');
-                        location.reload();
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    window.alert('Error occured: ' + errorThrown);
-                }
-            });
-
-        });
-    });
     $('button[name="fedstatus"]').click(function (ev) {
         var btnVal = $(this).attr('value');
         var additionalMsg = $(this).attr('title');
@@ -2939,160 +2915,84 @@ $(document).ready(function () {
         ev.preventDefault();
     });
 
-    function notificationadd2(message, callback) {
-        $("#notificationaddmodal").foundation('reveal', 'open', {});
-        $(document).on('opened', '#notificationaddmodal', function () {
-            var modal = $(this);
+
+    $(document).on('submit',"#notificationaddform",function(e){
+        e.preventDefault();
+        var notiform = $(this);
+        var serializedData = notiform.serializeArray();
+        $.ajax({
+            type: "POST",
+            url: notiform.attr('action'),
+            data: notiform.serializeArray(),
+                success: function (data) {
+                    $(".message").html(data);
+                    if (data === 'OK') {
+                        $('#notificationaddmodal').foundation('reveal', 'close');
+                        location.reload();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    window.alert('Error occured: ' + errorThrown);
+                }
+            });
+
+
+    });
+
+    $(document).on('open.fndtn.reveal', '#notificationaddmodal', function () {
+        var modal = $(this);
+        $('select#sfederation').parent().hide();
+        $('select#sprovider').parent().hide();
+        $('select#type').change(function () {
             $('select#sfederation').parent().hide();
             $('select#sprovider').parent().hide();
-            $('select#type').change(function () {
-                $('select#sfederation').parent().hide();
-                $('select#sprovider').parent().hide();
-                var optionSelected = $(this).find("option:selected");
-                var valueSelected = optionSelected.val();
-                var textSelected = optionSelected.text();
-                var selfed = $('#sfederation');
-                var selprovider = $('#sprovider');
-                selfed.find('option').remove();
-                selprovider.find('option').remove();
-                if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged") {
-                    $.ajax({
-                        type: "GET",
-                        url: baseurl + 'ajax/getfeds',
-                        cache: true,
-                        success: function (json) {
-                            $.each(json, function (key, value) {
-                                $('<option>').val(value.id).text(value.name).appendTo(selfed);
-                            });
-                            $('select#sfederation').parent().show();
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            $(".message").html(errorThrown);
-                        }
-
-                    });
-                }
-                else if (valueSelected === "requeststoproviders") {
-                    $.ajax({
-                        type: "GET",
-                        url: baseurl + 'ajax/getproviders',
-                        cache: false,
-                        datatype: "json",
-                        success: function (data) {
-                            $.each(data, function (key, value) {
-                                $('<option>').val(value.key).text(value.value).appendTo(selprovider);
-                            });
-                            $('select#sprovider').parent().show();
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            $(".message").html(errorThrown);
-                        }
-
-                    });
-                }
-            });//end change
-            $(".no").click(function () {
-                $("#notificationaddmodal").foundation('reveal', 'close');
-            });
-            $('.yes').click(function () {
-                if ($.isFunction(callback)) {
-                    callback.apply();
-                }
-
-                //     modal.close(); // or $.modal.close();
-            });
-
-
-        });
-
-    }
-
-
-    function notificationadd(message, callback) {
-        $('#notificationaddform').modal({
-            closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-            position: ["20%",],
-            overlayId: 'simpledialog-overlay',
-            minHeight: '400px',
-            minWidth: '500px',
-            containerId: 'simpledialog-container',
-            onOpen: function (dialog) {
-                dialog.overlay.fadeIn('fast', function () {
-                    dialog.container.slideDown('fast', function () {
-                        dialog.data.fadeIn('fast');
-                    });
-                });
-            },
-            onShow: function (dialog) {
-                $('select#sfederation').parent().hide();
-                $('select#sprovider').parent().hide();
-                $('select#type').change(function () {
-                    $('select#sfederation').parent().hide();
-                    $('select#sprovider').parent().hide();
-
-                    var optionSelected = $(this).find("option:selected");
-                    var valueSelected = optionSelected.val();
-                    var textSelected = optionSelected.text();
-                    var selfed = $('#sfederation');
-                    var selprovider = $('#sprovider');
-                    selfed.find('option').remove();
-                    selprovider.find('option').remove();
-                    if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged") {
-                        $.ajax({
-                            type: "GET",
-                            url: baseurl + 'ajax/getfeds',
-                            cache: true,
-                            success: function (json) {
-                                $.each(json, function (key, value) {
-                                    $('<option>').val(value.id).text(value.name).appendTo(selfed);
-                                });
-                                $('select#sfederation').parent().show();
-
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                $(".message").html(errorThrown);
-                            }
-
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected = optionSelected.val();
+            var textSelected = optionSelected.text();
+            var selfed = $('#sfederation');
+            var selprovider = $('#sprovider');
+            selfed.find('option').remove();
+            selprovider.find('option').remove();
+            if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged") {
+                $.ajax({
+                    type: "GET",
+                    url: baseurl + 'ajax/getfeds',
+                    cache: true,
+                    success: function (json) {
+                        $.each(json, function (key, value) {
+                            $('<option>').val(value.id).text(value.name).appendTo(selfed);
                         });
-                    }
-                    else if (valueSelected === "requeststoproviders") {
-                        $.ajax({
-                            type: "GET",
-                            url: baseurl + 'ajax/getproviders',
-                            cache: false,
-                            //datatype: "json",
-                            success: function (json) {
-                                var data = $.parseJSON(json);
-                                $.each(data, function (key, value) {
-                                    $('<option>').val(value.key).text(value.value).appendTo(selprovider);
-                                });
-                                $('select#sprovider').parent().show();
-
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                $(".message").html(errorThrown);
-                            }
-
-                        });
-
-                    }
-                }); // end change  function
-                var modal = this;
-                $('.message', dialog.data[0]).append(message);
-                $('.yes', dialog.data[0]).click(function () {
-                    if ($.isFunction(callback)) {
-                        callback.apply();
+                        $('select#sfederation').parent().show();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $(".message").html(errorThrown);
                     }
 
-                    //     modal.close(); // or $.modal.close();
                 });
             }
+            else if (valueSelected === "requeststoproviders") {
+                $.ajax({
+                    type: "GET",
+                    url: baseurl + 'ajax/getproviders',
+                    cache: false,
+                    datatype: "json",
+                    success: function (data) {
+                        $.each(data, function (key, value) {
+                            $('<option>').val(value.key).text(value.value).appendTo(selprovider);
+                        });
+                        $('select#sprovider').parent().show();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $(".message").html(errorThrown);
+                    }
 
-        });
-    }
+                });
+            }
+        });//end change
 
+    });
 
-    function sconfirm(message, callback) {
+     function sconfirm(message, callback) {
         $('#sconfirm').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%",],
@@ -3246,6 +3146,7 @@ $("#notificationupdateform").on('submit', function (e) {
             }
 
             $('#notificationupdatemodal').foundation('reveal', 'close');
+            location.reload();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             window.alert('Error occured: ' + errorThrown);
