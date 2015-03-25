@@ -35,7 +35,7 @@ class Attributepolicy extends MY_Controller
         }
 
         $this->load->helper('form');
-        $this->load->library(array('table', 'form_element'));
+        $this->load->library(array('table', 'form_element','show_element'));
         $this->tmp_providers = new models\Providers;
         $this->tmp_arps = new models\AttributeReleasePolicies;
         $this->tmp_attrs = new models\Attributes;
@@ -45,21 +45,18 @@ class Attributepolicy extends MY_Controller
 
     private function displayDefaultPolicy($idp)
     {
-        $this->load->library('show_element');
         $result = $this->show_element->generateTableDefaultArp($idp, TRUE);
         return $result . '<br />';
     }
 
     private function displaySpecificPolicy($idp)
     {
-        $this->load->library('show_element');
         $result = $this->show_element->generateTableSpecificArp($idp, TRUE);
         return $result;
     }
 
     private function displayFederationsPolicy($idp)
     {
-        $this->load->library('show_element');
         $result = $this->show_element->generateTableFederationsArp($idp, TRUE);
         return $result . '<br />';
     }
@@ -159,7 +156,7 @@ class Attributepolicy extends MY_Controller
         $data = array();
         $subtitle = "";
 
-        if (!is_numeric($idp_id) || !is_numeric($attr_id)) {
+        if (!ctype_digit($idp_id) || !ctype_digit($attr_id)) {
             log_message('error', "Idp id or attr id is set incorectly");
             show_error(lang('error404'), 404);
         }
@@ -224,9 +221,12 @@ class Attributepolicy extends MY_Controller
             if ($locked) {
                 $subtitle .= '<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
             }
-        } elseif ($type === 'sp') {
+        } else {  //type==sp
             $attr_policy = $this->tmp_arps->getOneSPPolicy($idp_id, $attr_id, $requester);
 
+            /**
+             * @var $sp models\Provider
+             */
             $sp = $this->tmp_providers->getOneSpById($requester);
             if (!empty($sp)) {
                 log_message('debug', 'SP found with id: ' . $requester);
