@@ -362,6 +362,7 @@ $lang['rr_user']                    = 'User';
 $lang['rr_users']                   = 'Users';
 $lang['rr_users_list']              = 'Users list';
 $lang['rr_newuser']                 = 'New user';
+$lang['btn_newuser']                = 'Add user';
 $lang['rr_rmuser']                  = 'Remove user';
 $lang['rr_rmuserbtn']               = 'Remove user';
 $lang['rr_rminguser']               = 'Removing user';

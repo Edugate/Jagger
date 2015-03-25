@@ -2611,7 +2611,6 @@ $(window).bind('resize orientationchange', function () {
 
 var adjustMenu = function () {
     if (ww < 768) {
-        $("#filter-form").remove();
         $(".toggleMenu").css("display", "inline-block");
         if (!$(".toggleMenu").hasClass("active")) {
             $(".nav").hide();

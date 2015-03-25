@@ -606,6 +606,9 @@ class Users extends MY_Controller
 			}
 			$userlist[] = array('user' => anchor($showlink . $encoded_username, $u->getUsername()), 'fullname' => $u->getFullname(), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp());
 		}
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('#'), 'name' => lang('rr_userslist'), 'type' => 'current')
+        );
 		$data['titlepage'] = lang('rr_userslist');
 		$data['userlist'] = $userlist;
 		$data['content_view'] = 'manage/userlist_view';
