@@ -176,10 +176,8 @@
                                 href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users'); ?></a>
                             <ul class="dropdown">
                                 <li>
-                                    <a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users_list'); ?></a>
-                                <li>
-                                    <a href="<?php echo $base_url; ?>manage/users/add"><?php echo lang('rr_newuser'); ?></a>
-                                </li>
+                                    <a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users_list'); ?></a></li>
+                                
                                 <li>
                                     <a href="<?php echo $base_url; ?>manage/users/remove"><?php echo lang('rr_rmuser'); ?></a>
                                 </li>
