@@ -249,13 +249,12 @@ class Users extends MY_Controller
 
     public function add()
     {
-        $loggedin = $this->j_auth->logged_in();
-        $isAjax = $this->input->is_ajax_request();
         if (!$this->input->is_ajax_request()) {
             set_status_header(403);
             echo 'Permission denied';
             return;
         }
+        $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
             set_status_header(403);
             echo 'Permission denied';
@@ -599,7 +598,7 @@ class Users extends MY_Controller
          */
         $users = $this->em->getRepository("models\User")->findAll();
         $userlist = array();
-        $showlink = base_url('manage/users/show/');
+        $showlink = base_url('manage/users/show');
 
         foreach ($users as $u) {
             $encoded_username = base64url_encode($u->getUsername());
@@ -608,7 +607,7 @@ class Users extends MY_Controller
             if (!empty($last)) {
                 $lastlogin = date('Y-m-d H:i:s', $last->format('U') + j_auth::$timeOffset);
             }
-            $userlist[] = array('user' => anchor($showlink . $encoded_username, $u->getUsername()), 'fullname' => $u->getFullname(), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp());
+            $userlist[] = array('user' => anchor($showlink .'/'. $encoded_username, $u->getUsername()), 'fullname' => $u->getFullname(), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp());
         }
         $data['breadcrumbs'] = array(
             array('url' => base_url('#'), 'name' => lang('rr_userslist'), 'type' => 'current')
