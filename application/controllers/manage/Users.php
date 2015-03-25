@@ -590,21 +590,21 @@ class Users extends MY_Controller
 			return;
 		}
 
+        /**
+         * @var $users models\User[]
+         */
 		$users = $this->em->getRepository("models\User")->findAll();
 		$userlist = array();
-		$showlink = base_url() . 'manage/users/show/';
+		$showlink = base_url('manage/users/show/');
 
 		foreach ($users as $u) {
 			$encoded_username = base64url_encode($u->getUsername());
 			$last = $u->getLastlogin();
+            $lastlogin = 'never';
 			if (!empty($last)) {
 				$lastlogin = date('Y-m-d H:i:s', $last->format('U') + j_auth::$timeOffset);
-			} else {
-				$lastlogin = 'never';
 			}
-			$ip = null;
-			$ip = $u->getIp();
-			$userlist[] = array('user' => anchor($showlink . $encoded_username, $u->getUsername()), 'fullname' => $u->getFullname(), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $ip);
+			$userlist[] = array('user' => anchor($showlink . $encoded_username, $u->getUsername()), 'fullname' => $u->getFullname(), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp());
 		}
 		$data['titlepage'] = lang('rr_userslist');
 		$data['userlist'] = $userlist;
