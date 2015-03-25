@@ -1080,10 +1080,6 @@ class Providerdetails
 				$d[++$i]['name'] = $s->getAttribute()->getName();
 				$d[$i]['value'] = $s->getAttribute()->getDescription();
 			}
-
-			$d[++$i]['header'] = lang('rr_defaultspecificarp') . $edit_policy;
-			$disable_caption = true;
-			$d[++$i]['2cols'] = $this->CI->show_element->generateTableDefaultArp($ent, $disable_caption);
 		}
 
 		/**

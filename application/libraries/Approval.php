@@ -199,7 +199,6 @@ class Approval {
          $queue->setName($federation->getName());
          $queue->setEmail($user->getEmail());
          $queue->setAction('Delete');
-         $fed = array('id'=>$federation->getId(),'name'=>$federation->getName());
          $queue->addFederation($federation->convertToArray());
          $queue->setToken();
          return $queue;
