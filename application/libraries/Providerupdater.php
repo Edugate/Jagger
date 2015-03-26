@@ -643,33 +643,18 @@ class Providerupdater
              * set scopes
              */
             if (array_key_exists('scopes', $ch) && (!in_array('scope', $dissalowedparts) || empty($entid))) {
-                $origscopesso = implode(',', $ent->getScope('idpsso'));
-                $origscopeaa = implode(',', $ent->getScope('aa'));
-                if (array_key_exists('idpsso', $ch['scopes']) && !empty($ch['scopes']['idpsso'])) {
-                    $idpssoscopes = array_filter(preg_split("/[\s,]+/", $ch['scopes']['idpsso']));
-                    $ent->setScope('idpsso', array_unique($idpssoscopes));
-                    if ($origscopesso != implode(',', $idpssoscopes)) {
-                        $m['Scope IDPSSO'] = array('before' => $origscopesso, 'after' => implode(',', $idpssoscopes));
-                    }
-                } else {
-                    $ent->setScope('idpsso', array());
-                    if (!empty($origscopesso)) {
-                        $m['Scope IDPSSO'] = array('before' => $origscopesso, 'after' => '');
+
+                $scopeTypes = array('idpsso', 'aa');
+                foreach ($scopeTypes as $scopeType) {
+                    $origScopes = implode(',', $ent->getScope($scopeType));
+                    if (array_key_exists($scopeType, $ch['scopes']) && !empty($ch['scopes'][$scopeType])) {
+                        $newScopes = array_filter(preg_split("/[\s,]+/", $ch['scopes'][$scopeType]));
+                        $ent->setScope($scopeType, array_unique($newScopes));
+                        if ($origScopes != implode(',', $newScopes)) {
+                            $m['Scope ' . $scopeType . ''] = array('before' => $origScopes, 'after' => implode(',', $newScopes));
+                        }
                     }
                 }
-                if (array_key_exists('aa', $ch['scopes']) && !empty($ch['scopes']['aa'])) {
-                    $aascopes = array_filter(preg_split("/[\s,]+/", $ch['scopes']['aa']));
-                    $ent->setScope('aa', array_unique($aascopes));
-                    if ($origscopeaa != implode(',', $aascopes)) {
-                        $m['Scope AA'] = array('before' => $origscopeaa, 'after' => implode(',', $aascopes));
-                    }
-                } else {
-                    $ent->setScope('aa', array());
-                    if (!empty($origscopeaa)) {
-                        $m['Scope AA'] = array('before' => $origscopeaa, 'after' => '');
-                    }
-                }
-                $origscopesso = null;
             }
         }
         if (array_key_exists('entityid', $ch) && !empty($ch['entityid'])) {
@@ -684,7 +669,7 @@ class Providerupdater
             }
         }
 
-        $fields = array('lname', 'ldisplayname','lhelpdesk');
+        $fields = array('lname', 'ldisplayname', 'lhelpdesk');
         $fieldsLongName = array(
             'lname' => 'OrganizationName',
             'ldisplayname' => 'OrganizationDisplayName',
@@ -703,7 +688,7 @@ class Providerupdater
                     $trackorigs = $ent->getMergedLocalName();
                 } elseif ($fieldName === 'ldisplayname') {
                     $trackorigs = $ent->getMergedLocalDisplayName();
-                }elseif($fieldName === 'lhelpdesk'){
+                } elseif ($fieldName === 'lhelpdesk') {
                     $trackorigs = $ent->getHelpdeskUrlLocalized();
                 }
                 $isDiff = false;
@@ -737,8 +722,7 @@ class Providerupdater
                         $ent->setLocalDisplayName($ch['ldisplayname']);
                         $trackAfter = $ent->getMergedLocalDisplayName();
 
-                    }elseif($fieldName === 'lhelpdesk')
-                    {
+                    } elseif ($fieldName === 'lhelpdesk') {
                         if (isset($ch['lhelpdesk']['en'])) {
                             $ent->setHelpdeskUrl($ch['lhelpdesk']['en']);
                             unset($ch['lhelpdesk']['en']);
@@ -754,7 +738,6 @@ class Providerupdater
                 }
             }
         }
-
 
 
         if ($isAdmin) {
