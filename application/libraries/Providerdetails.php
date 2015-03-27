@@ -51,8 +51,6 @@ class Providerdetails
 		if (!empty($certData)) {
 			$certtype = $cert->getCertType();
 			if ($certtype === 'X509Certificate') {
-				$fingerprint_md5 = generateFingerprint($certData, 'md5');
-				$fingerprint_sha1 = generateFingerprint($certData, 'sha1');
 				$certValid = validateX509($certData);
 				if (!$certValid) {
 					$cString = '<span class="error">' . lang('rr_certificatenotvalid') . '</span>';

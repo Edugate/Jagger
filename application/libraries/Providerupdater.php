@@ -22,6 +22,9 @@ class Providerupdater
 {
 
     protected $ci;
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
     protected $em;
     protected $logtracks;
     protected $allowedLangCodes;
@@ -110,6 +113,9 @@ class Providerupdater
         $entSignMethods = array();
         $entDigestMethods = array();
         $langCodes = languagesCodes();
+        /**
+         * @var $extendsCollection models\ExtendMetadata[]
+         */
         $extendsCollection = $ent->getExtendMetadata();
         $uiinfoParent = array('idp' => null, 'sp' => null);
         $discohintsParent = null;
@@ -127,6 +133,7 @@ class Providerupdater
             if (isset($extendsInArray['ent']['alg']['DigestMethod'])) {
                 foreach ($extendsInArray['ent']['alg']['DigestMethod'] as $k => $v) {
                     $dvalue = $v->getEvalue();
+
                     if (in_array($dvalue, $ch['algs']['digest'])) {
                         $ch['algs']['digest'] = array_diff($ch['algs']['digest'], array('' . $dvalue . ''));
                     } else {
