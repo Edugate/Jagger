@@ -533,14 +533,11 @@ class Users extends MY_Controller
     {
         $formTarget = base_url() . 'manage/users/updatesecondfactor/' . $encodeduser;
         $allowed2f = $this->config->item('2fengines');
-        if (empty($allowed2f) || !is_array($allowed2f)) {
+        if (!is_array($allowed2f)) {
             $allowed2f = array();
         }
-
-        $r = ' <button data-reveal-id="m2f" class="tiny" name="m2fbtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeduser . '"> ' . lang('btnupdate') . '</button>';
-        $r .= '<div id="m2f" class="reveal-modal tiny" data-reveal>';
-        $r .= '<h3>' . lang('2fupdatetitle') . '</h3>';
-        $r .= form_open($formTarget);
+        $result = '<button data-reveal-id="m2f" class="tiny" name="m2fbtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeduser . '"> ' . lang('btnupdate') . '</button>';
+        $result .= '<div id="m2f" class="reveal-modal tiny" data-reveal><h3>' . lang('2fupdatetitle') . '</h3>'.form_open($formTarget);
         if (count($allowed2f) > 0) {
             $allowed2f[] = 'none';
 
@@ -548,35 +545,29 @@ class Users extends MY_Controller
             foreach ($allowed2f as $v) {
                 $dropdown['' . $v . ''] = $v;
             }
-
-
-            $r .= '<div data-alert class="alert-box alert hidden" ></div>';
-            $r .= '<div class="small-12 column"><div class="large-6 column end">' . form_dropdown('secondfactor', $dropdown) . '</div></div>';
-
-            $r .= '<div class="small-12 column right"><button type="button" name="update2f" class="button small right">' . lang('btnupdate') . '</button></div>';
+            $result .= '<div data-alert class="alert-box alert hidden" ></div><div class="small-12 column"><div class="large-6 column end">' . form_dropdown('secondfactor', $dropdown) . '</div></div>';
+            $result .= '<div class="small-12 column right"><button type="button" name="update2f" class="button small right">' . lang('btnupdate') . '</button></div>';
         }
-        $r .= form_close();
-        $r .= '<a class="close-reveal-modal">&#215;</a>';
-        $r .= '</div>';
-        return $r;
+        $result .= form_close().'<a class="close-reveal-modal">&#215;</a></div>';
+        return $result;
     }
 
     private function manageRoleBtn($encodeuser)
     {
         $formTarget = base_url() . 'manage/users/updaterole/' . $encodeuser;
+        /**
+         * @var $roles models\AclRole[]
+         */
         $roles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
-        $r = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">' . lang('btnmanageroles') . '</button>';
-        $r .= '<div id="mroles" class="reveal-modal tiny" data-reveal>';
-        $r .= '<h3>' . lang('rr_manageroles') . '</h3>';
-        $r .= form_open($formTarget);
+        $result = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">' . lang('btnmanageroles') . '</button>';
+        $result .= '<div id="mroles" class="reveal-modal tiny" data-reveal><h3>' . lang('rr_manageroles') . '</h3>';
+        $result .= form_open($formTarget);
         foreach ($roles as $v) {
-            $r .= '<div class="small-12 column"><div class="small-6 column">' . $v->getName() . '</div><div class="small-6 column"><input type="checkbox" name="checkrole[]" value="' . $v->getName() . '"  /></div></div>';
+            $result .= '<div class="small-12 column"><div class="small-6 column">' . $v->getName() . '</div><div class="small-6 column"><input type="checkbox" name="checkrole[]" value="' . $v->getName() . '"  /></div></div>';
         }
-        $r .= '<button type="button" name="updaterole" class="button small">' . lang('btnupdate') . '</button>';
-        $r .= form_close();
-        $r .= '<a class="close-reveal-modal">&#215;</a>';
-        $r .= '</div>';
-        return $r;
+        $result .= '<button type="button" name="updaterole" class="button small">' . lang('btnupdate') . '</button>';
+        $result .= form_close().'<a class="close-reveal-modal">&#215;</a></div>';
+        return $result;
     }
 
     public function showlist()
@@ -648,25 +639,24 @@ class Users extends MY_Controller
                 $form_attributes = array('id' => 'formver2', 'class' => 'register');
                 $action = base_url() . "manage/users/remove";
                 $f = form_open($action, $form_attributes);
-                $f .= '<div class="small-12 columns">';
-                $f .= '<div class="small-3 columns">';
+                $f .= '<div class="small-12 columns"><div class="small-3 columns">';
                 $f .= jform_label('' . lang('rr_username') . '', 'username') . '</div>';
-                $f .= '<div class="small-6 large-7 end columns">' . form_input('username') . '</div>';
-                $f .= '</div>';
-                $f .= '<div class="buttons small-12 columns"><div class="small-9 large-10 end columns text-right"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">' . lang('rr_rmuserbtn') . '</button></div></div>';
-                $f .= form_close();
-
+                $f .= '<div class="small-6 large-7 end columns">' . form_input('username') . '</div></div>';
+                $f .= '<div class="buttons small-12 columns"><div class="small-9 large-10 end columns text-right"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">' . lang('rr_rmuserbtn') . '</button></div></div>'.form_close();
                 $data['form'] = $f;
                 $data['titlepage'] = lang('rr_rminguser');
                 $data['content_view'] = 'manage/remove_user_view';
                 $this->load->view('page', $data);
             } else {
                 $this->load->library('user_manage');
+                /**
+                 * @var $user models\User
+                 */
                 $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
                 if (!empty($user)) {
                     $selected_username = strtolower($user->getUsername());
-                    $current_username = strtolower($_SESSION['username']);
-                    if ($selected_username != $current_username) {
+                    $current_username = strtolower($this->session->userdata('username'));
+                    if (strcmp($selected_username,$current_username)!=0) {
                         $this->user_manage->remove($user);
                         $data['message'] = 'user has been removed';
                         $this->load->library('tracker');
@@ -707,26 +697,14 @@ class Users extends MY_Controller
         } else {
             $form_attributes = array('id' => 'formver2', 'class' => 'span-16');
             $action = current_url();
-            $form = form_open($action, $form_attributes);
-            $form .= form_fieldset('Access manage for user ' . $username);
-            $form .= '<ol>';
-            $form .= '<li>';
-            $form .= form_label('Authorization', 'authz');
-            $form .= '<ol>';
+            $form = form_open($action, $form_attributes).form_fieldset('Access manage for user ' . $username);
+            $form .= '<ol><li>'.form_label('Authorization', 'authz').'<ol>';
             $form .= '<li>Local authentication' . form_checkbox('authz[local]', '1', $user->getLocal()) . '</li>';
             $form .= '<li>Federated access' . form_checkbox('authz[federated]', '1', $user->getFederated()) . '</li>';
-            $form .= '</ol>';
-            $form .= '</li>';
-            $form .= '<li>';
-            $form .= form_label('Account enabled', 'status');
-            $form .= '<ol>';
-            $form .= '<li>' . form_checkbox('status', '1', $user->isEnabled()) . '</li>';
-            $form .= '</ol>';
-            $form .= '</li>';
-            $form .= '</ol>';
-            $form .= '<div class="buttons"><button type="submit" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div';
-            $form .= form_fieldset_close();
-            $form .= form_close();
+            $form .= '</ol></li><li>'.form_label('Account enabled', 'status');
+            $form .= '<ol><li>' . form_checkbox('status', '1', $user->isEnabled()) . '</li>';
+            $form .= '</ol></li></ol><div class="buttons"><button type="submit" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div';
+            $form .= form_fieldset_close().form_close();
             $data['content_view'] = 'manage/user_access_edit_view';
             $data['form'] = $form;
             $this->load->view('page', $data);
@@ -745,8 +723,6 @@ class Users extends MY_Controller
         if (empty($user)) {
             show_error('User not found', 404);
         }
-
-
         $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
         $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
         if (!$write_access && !$manage_access) {
