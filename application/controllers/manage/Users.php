@@ -69,10 +69,15 @@ class Users extends MY_Controller
         return true;
     }
 
+    /**
+     * @param $encoded_user
+     * @return bool
+     */
     private function isOwner($encoded_user)
     {
         $decodedUser = base64url_decode(trim($encoded_user));
-        if (isset($_SESSION['username']) && strcasecmp($decodedUser, $_SESSION['username']) == 0) {
+        $sessionUsername = $this->session->userdata('username');
+        if (!empty($sessionUsername) && strlen(trim($sessionUsername)) > 0 && strcasecmp($decodedUser, $sessionUsername) == 0) {
             return true;
         } else {
             return false;
@@ -124,10 +129,8 @@ class Users extends MY_Controller
          */
         try {
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        }
-        catch(Exception $e)
-        {
-            log_message('error',__METHOD__. ' '.$e);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
             return;
         }
@@ -154,9 +157,8 @@ class Users extends MY_Controller
          */
         try {
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        } catch(Exception $e)
-        {
-            log_message('error',__METHOD__. ' '.$e);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
             return;
         }
@@ -213,10 +215,8 @@ class Users extends MY_Controller
          */
         try {
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        }
-        catch(Exception $e)
-        {
-            log_message('error',__METHOD__. ' '.$e);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
             echo 'DB problem';
             return;
@@ -240,10 +240,8 @@ class Users extends MY_Controller
         $this->em->persist($user);
         try {
             $this->em->flush();
-        }
-        catch(Exception $e)
-        {
-            log_message('error',__METHOD__.' '.$e);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
             echo 'DB problem';
             return;
@@ -265,10 +263,8 @@ class Users extends MY_Controller
          */
         try {
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        }
-        catch(Exception $e)
-        {
-            log_message('error',__METHOD__.' '.$e);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
             return;
         }
@@ -378,14 +374,11 @@ class Users extends MY_Controller
                 log_message('error', __METHOD__ . ' ' . $e);
                 show_error('Error occurred', 500);
             }
-        }
-        else
-        {
+        } else {
             $errors = validation_errors('<div>', '</div>');
 
-            if (!empty($errors))
-            {
-               echo $errors;
+            if (!empty($errors)) {
+                echo $errors;
             }
         }
     }
@@ -436,11 +429,9 @@ class Users extends MY_Controller
          */
         try {
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        }
-        catch(Exception $e)
-        {
-            log_message('error',__METHOD__.' '.$e);
-            show_error('Internal server error',500);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+            show_error('Internal server error', 500);
             return;
         }
         if (empty($user)) {
@@ -610,7 +601,7 @@ class Users extends MY_Controller
             $allowed2f = array();
         }
         $result = '<button data-reveal-id="m2f" class="tiny" name="m2fbtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeduser . '"> ' . lang('btnupdate') . '</button>';
-        $result .= '<div id="m2f" class="reveal-modal tiny" data-reveal><h3>' . lang('2fupdatetitle') . '</h3>'.form_open($formTarget);
+        $result .= '<div id="m2f" class="reveal-modal tiny" data-reveal><h3>' . lang('2fupdatetitle') . '</h3>' . form_open($formTarget);
         if (count($allowed2f) > 0) {
             $allowed2f[] = 'none';
 
@@ -621,7 +612,7 @@ class Users extends MY_Controller
             $result .= '<div data-alert class="alert-box alert hidden" ></div><div class="small-12 column"><div class="large-6 column end">' . form_dropdown('secondfactor', $dropdown) . '</div></div>';
             $result .= '<div class="small-12 column right"><button type="button" name="update2f" class="button small right">' . lang('btnupdate') . '</button></div>';
         }
-        $result .= form_close().'<a class="close-reveal-modal">&#215;</a></div>';
+        $result .= form_close() . '<a class="close-reveal-modal">&#215;</a></div>';
         return $result;
     }
 
@@ -639,7 +630,7 @@ class Users extends MY_Controller
             $result .= '<div class="small-12 column"><div class="small-6 column">' . $v->getName() . '</div><div class="small-6 column"><input type="checkbox" name="checkrole[]" value="' . $v->getName() . '"  /></div></div>';
         }
         $result .= '<button type="button" name="updaterole" class="button small">' . lang('btnupdate') . '</button>';
-        $result .= form_close().'<a class="close-reveal-modal">&#215;</a></div>';
+        $result .= form_close() . '<a class="close-reveal-modal">&#215;</a></div>';
         return $result;
     }
 
@@ -661,24 +652,26 @@ class Users extends MY_Controller
          * @var $users models\User[]
          */
         $users = $this->em->getRepository("models\User")->findAll();
-        $userlist = array();
+        $usersList = array();
         $showlink = base_url('manage/users/show');
 
         foreach ($users as $u) {
             $encoded_username = base64url_encode($u->getUsername());
             $last = $u->getLastlogin();
-            $lastlogin = 'never';
+            $lastlogin = '';
             if (!empty($last)) {
                 $lastlogin = date('Y-m-d H:i:s', $last->format('U') + j_auth::$timeOffset);
             }
-            $userlist[] = array('user' => anchor($showlink .'/'. $encoded_username, $u->getUsername()), 'fullname' => $u->getFullname(), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp());
+            $usersList[] = array('user' => anchor($showlink . '/' . $encoded_username, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp());
         }
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('#'), 'name' => lang('rr_userslist'), 'type' => 'current')
+        $data = array(
+            'breadcrumbs' => array(
+                array('url' => base_url('#'), 'name' => lang('rr_userslist'), 'type' => 'current')
+            ),
+            'titlepage' => lang('rr_userslist'),
+            'userlist' => $usersList,
+            'content_view' => 'manage/userlist_view'
         );
-        $data['titlepage'] = lang('rr_userslist');
-        $data['userlist'] = $userlist;
-        $data['content_view'] = 'manage/userlist_view';
         $this->load->view('page', $data);
     }
 
@@ -715,7 +708,7 @@ class Users extends MY_Controller
                 $f .= '<div class="small-12 columns"><div class="small-3 columns">';
                 $f .= jform_label('' . lang('rr_username') . '', 'username') . '</div>';
                 $f .= '<div class="small-6 large-7 end columns">' . form_input('username') . '</div></div>';
-                $f .= '<div class="buttons small-12 columns"><div class="small-9 large-10 end columns text-right"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">' . lang('rr_rmuserbtn') . '</button></div></div>'.form_close();
+                $f .= '<div class="buttons small-12 columns"><div class="small-9 large-10 end columns text-right"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">' . lang('rr_rmuserbtn') . '</button></div></div>' . form_close();
                 $data['form'] = $f;
                 $data['titlepage'] = lang('rr_rminguser');
                 $data['content_view'] = 'manage/remove_user_view';
@@ -729,7 +722,7 @@ class Users extends MY_Controller
                 if (!empty($user)) {
                     $selected_username = strtolower($user->getUsername());
                     $current_username = strtolower($this->session->userdata('username'));
-                    if (strcmp($selected_username,$current_username)!=0) {
+                    if (strcmp($selected_username, $current_username) != 0) {
                         $this->user_manage->remove($user);
                         $data['message'] = 'user has been removed';
                         $this->load->library('tracker');
@@ -770,14 +763,14 @@ class Users extends MY_Controller
         } else {
             $form_attributes = array('id' => 'formver2', 'class' => 'span-16');
             $action = current_url();
-            $form = form_open($action, $form_attributes).form_fieldset('Access manage for user ' . $username);
-            $form .= '<ol><li>'.form_label('Authorization', 'authz').'<ol>';
+            $form = form_open($action, $form_attributes) . form_fieldset('Access manage for user ' . $username);
+            $form .= '<ol><li>' . form_label('Authorization', 'authz') . '<ol>';
             $form .= '<li>Local authentication' . form_checkbox('authz[local]', '1', $user->getLocal()) . '</li>';
             $form .= '<li>Federated access' . form_checkbox('authz[federated]', '1', $user->getFederated()) . '</li>';
-            $form .= '</ol></li><li>'.form_label('Account enabled', 'status');
+            $form .= '</ol></li><li>' . form_label('Account enabled', 'status');
             $form .= '<ol><li>' . form_checkbox('status', '1', $user->isEnabled()) . '</li>';
-            $form .= '</ol></li></ol><div class="buttons"><button type="submit" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div';
-            $form .= form_fieldset_close().form_close();
+            $form .= '</ol></li></ol><div class="buttons"><button type="submit" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
+            $form .= form_fieldset_close() . form_close();
             $data['content_view'] = 'manage/user_access_edit_view';
             $data['form'] = $form;
             $this->load->view('page', $data);
@@ -808,7 +801,7 @@ class Users extends MY_Controller
         $data['manage_access'] = $manage_access;
         $data['write_access'] = $write_access;
         if (!$this->modifySubmitValidate()) {
-            $data['titlepage'] = lang('rr_changepass') . ': ' . htmlentities($user->getUsername());
+            $data['titlepage'] = lang('rr_changepass') . ': ' . html_escape($user->getUsername());
             $data['content_view'] = 'manage/password_change_view';
             $this->load->view('page', $data);
         } else {
@@ -818,7 +811,7 @@ class Users extends MY_Controller
                 $user->setLocalEnabled();
                 $this->em->persist($user);
                 $this->em->flush();
-                $data['message'] = '' . lang('rr_passchangedsucces') . ': ' . htmlentities($user->getUsername());
+                $data['message'] = '' . lang('rr_passchangedsucces') . ': ' . html_escape($user->getUsername());
                 $data['content_view'] = 'manage/password_change_view';
                 $this->load->view('page', $data);
             }

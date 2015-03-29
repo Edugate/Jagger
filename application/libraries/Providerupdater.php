@@ -660,6 +660,11 @@ class Providerupdater
                         if ($origScopes != implode(',', $newScopes)) {
                             $m['Scope ' . $scopeType . ''] = array('before' => $origScopes, 'after' => implode(',', $newScopes));
                         }
+                    } else {
+                        $ent->setScope($scopeType, array());
+                        if (!empty($origScopes)) {
+                            $m['Scope ' . $scopeType . ''] = array('before' => $origScopes, 'after' => '');
+                        }
                     }
                 }
             }
