@@ -703,9 +703,17 @@ class Entityedit extends MY_Controller
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
-        } else {
+        }
+        try {
             $this->load->library('zacl');
         }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            show_error('Internal server error',500);
+            return;
+        }
+
 
         /**
          * @var $ent models\Provider
@@ -732,7 +740,7 @@ class Entityedit extends MY_Controller
 
         if ($this->input->post('discard')) {
             $this->discardDraft($id);
-            redirect(base_url() . 'providers/detail/show/' . $id, 'location');
+            redirect(base_url('providers/detail/show/'.$id.''), 'location');
         } elseif ($this->submitValidate($id) === TRUE) {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
