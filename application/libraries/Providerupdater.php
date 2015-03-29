@@ -110,8 +110,6 @@ class Providerupdater
         } else {
             $extypes = array('' . strtolower($type) . '');
         }
-        $entSignMethods = array();
-        $entDigestMethods = array();
         $langCodes = languagesCodes();
         /**
          * @var $extendsCollection models\ExtendMetadata[]
@@ -122,60 +120,39 @@ class Providerupdater
         $extendsInArray = array();
         foreach ($extendsCollection as $e) {
             $extendsInArray['' . $e->getType() . '']['' . $e->getNamespace() . '']['' . $e->getElement() . ''][] = $e;
-            if ($e->getElement() == 'UIInfo' && $e->getNamespace() == 'mdui') {
+            if ($e->getElement() == 'UIInfo') {
                 $uiinfoParent['' . $e->getType() . ''] = $e;
-            } elseif ($e->getElement() === 'DiscoHints' && $e->getNamespace() === 'mdui' && $e->getType() === 'idp') {
+            } elseif ($e->getElement() === 'DiscoHints' && $e->getType() === 'idp') {
                 $discohintsParent = $e;
             }
         }
 
-        if (isset($ch['algs']['digest']) && is_array($ch['algs']['digest'])) {
-            if (isset($extendsInArray['ent']['alg']['DigestMethod'])) {
-                foreach ($extendsInArray['ent']['alg']['DigestMethod'] as $k => $v) {
-                    $dvalue = $v->getEvalue();
+        $algsMethods = array('digest'=>'DigestMethod','signing'=>'SigningMethod');
+        foreach($algsMethods as $algKey=>$algValue)
+        {
+            if (isset($ch['algs'][''.$algKey.'']) && is_array($ch['algs'][''.$algKey.''])) {
+                if (isset($extendsInArray['ent']['alg'][''.$algValue.''])) {
+                    foreach ($extendsInArray['ent']['alg'][''.$algValue.''] as $k => $v) {
+                        $dvalue = $v->getEvalue();
 
-                    if (in_array($dvalue, $ch['algs']['digest'])) {
-                        $ch['algs']['digest'] = array_diff($ch['algs']['digest'], array('' . $dvalue . ''));
-                    } else {
-                        $ent->getExtendMetadata()->removeElement($v);
-                        $this->em->remove($v);
+                        if (in_array($dvalue, $ch['algs'][''.$algKey.''])) {
+                            $ch['algs'][''.$algKey.''] = array_diff($ch['algs'][''.$algKey.''], array('' . $dvalue . ''));
+                        } else {
+                            $ent->getExtendMetadata()->removeElement($v);
+                            $this->em->remove($v);
+                        }
                     }
                 }
-            }
-            foreach ($ch['algs']['digest'] as $v2) {
-                $dig = new models\ExtendMetadata;
-                $dig->setType('ent');
-                $dig->setNamespace('alg');
-                $dig->setValue(trim($v2));
-                $dig->setElement('DigestMethod');
-                $ent->setExtendMetadata($dig);
-                $this->em->persist($dig);
-            }
-
-        }
-        if (isset($ch['algs']['signing']) && is_array($ch['algs']['signing'])) {
-            if (isset($extendsInArray['ent']['alg']['SigningMethod'])) {
-                foreach ($extendsInArray['ent']['alg']['SigningMethod'] as $k => $v) {
-                    $dvalue = $v->getEvalue();
-                    if (in_array($dvalue, $ch['algs']['signing'])) {
-                        $ch['algs']['signing'] = array_diff($ch['algs']['signing'], array('' . $dvalue . ''));
-                    } else {
-                        $ent->getExtendMetadata()->removeElement($v);
-                        $this->em->remove($v);
-                    }
+                foreach ($ch['algs'][''.$algKey.''] as $v2) {
+                    $dig = new models\ExtendMetadata;
+                    $dig->setAlgorithmMethod($v2,$algValue);
+                    $ent->setExtendMetadata($dig);
+                    $this->em->persist($dig);
                 }
-            }
-            foreach ($ch['algs']['signing'] as $v2) {
-                $dig = new models\ExtendMetadata;
-                $dig->setType('ent');
-                $dig->setNamespace('alg');
-                $dig->setValue(trim($v2));
-                $dig->setElement('SigningMethod');
-                $ent->setExtendMetadata($dig);
-                $this->em->persist($dig);
-            }
 
+            }
         }
+
         if (in_array('idp', $extypes)) {
             if (empty($discohintsParent)) {
                 $discohintsParent = new models\ExtendMetadata;
@@ -760,13 +737,12 @@ class Providerupdater
                 $ent->setRegistrationAuthority($ch['regauthority']);
             }
             if (array_key_exists('registrationdate', $ch)) {
+                $prevregdate = '';
+                $prevregtime = '';
                 $prevregistrationdate = $ent->getRegistrationDate();
                 if (isset($prevregistrationdate)) {
                     $prevregdate = date('Y-m-d', $prevregistrationdate->format('U') + j_auth::$timeOffset);
                     $prevregtime = date('H:i', $prevregistrationdate->format('U') + j_auth::$timeOffset);
-                } else {
-                    $prevregdate = '';
-                    $prevregtime = '';
                 }
                 if (!array_key_exists('registrationtime', $ch) || empty($ch['registrationtime'])) {
                     $tmpnow = new \DateTime('now');

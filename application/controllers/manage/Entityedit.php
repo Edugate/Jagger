@@ -701,7 +701,6 @@ class Entityedit extends MY_Controller
     {
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
         try {
@@ -722,12 +721,12 @@ class Entityedit extends MY_Controller
         if (empty($ent)) {
             show_error('Provider not found', '404');
         }
-        $locked = $ent->getLocked();
-        $is_local = $ent->getLocal();
-        if (!$is_local) {
+        $isLocked = $ent->getLocked();
+        $isLocal = $ent->getLocal();
+        if (!$isLocal) {
             show_error('Access Denied. Identity/Service Provider is not localy managed.', 403);
         }
-        if ($locked) {
+        if ($isLocked) {
             show_error('Access Denied. Identity/Service Provider is locked and cannod be modified.', 403);
         }
         $this->entityid = $ent->getEntityId();

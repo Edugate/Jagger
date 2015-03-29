@@ -228,6 +228,16 @@ class ExtendMetadata {
         $this->setAttributes($attrs);
     }
 
+    public function setAlgorithmMethod($value,$method)
+    {
+        $this->setType('ent');
+        $this->setNamespace('alg');
+        $this->setValue(trim($value));
+        $this->setElement($method);
+        return $this;
+    }
+
+
     public function setAttributes(array $attrs)
     {
 
