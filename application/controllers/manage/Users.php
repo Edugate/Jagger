@@ -24,7 +24,6 @@ class Users extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        $this->current_site = current_url();
         $this->load->helper(array('cert', 'form'));
         $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'table', 'zacl'));
     }
@@ -120,7 +119,18 @@ class Users extends MY_Controller
             return;
         }
         $username = base64url_decode(trim($encodeduser));
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        /**
+         * @var $user models\User
+         */
+        try {
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__. ' '.$e);
+            set_status_header(500);
+            return;
+        }
         if (empty($user)) {
             set_status_header(404);
             echo 'user not found';
@@ -139,7 +149,18 @@ class Users extends MY_Controller
             return;
         }
         $username = base64url_decode(trim($encodeduser));
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        /**
+         * @var $user models\User
+         */
+        try {
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        } catch(Exception $e)
+        {
+            log_message('error',__METHOD__. ' '.$e);
+            set_status_header(500);
+            return;
+        }
+
         if (empty($user)) {
             set_status_header(404);
             echo 'user not found';
@@ -187,7 +208,20 @@ class Users extends MY_Controller
 
 
         $username = base64url_decode(trim($encodeduser));
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        /**
+         * @var $user models\User
+         */
+        try {
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__. ' '.$e);
+            set_status_header(500);
+            echo 'DB problem';
+            return;
+        }
+
         if (empty($user)) {
             set_status_header(404);
             echo 'user not found';
@@ -204,7 +238,16 @@ class Users extends MY_Controller
             $user->setSecondFactor(null);
         }
         $this->em->persist($user);
-        $this->em->flush();
+        try {
+            $this->em->flush();
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            set_status_header(500);
+            echo 'DB problem';
+            return;
+        }
         $result = array('secondfactor' => $secondfactor);
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
@@ -217,7 +260,18 @@ class Users extends MY_Controller
             return;
         }
         $username = base64url_decode(trim($encodeduser));
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        /**
+         * @var $user models\User
+         */
+        try {
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            set_status_header(500);
+            return;
+        }
         if (empty($user)) {
             set_status_header(404);
             echo 'user not found';
@@ -233,6 +287,9 @@ class Users extends MY_Controller
                 $user->unsetRole($r);
             }
         }
+        /**
+         * @var $sysroles models\AclRole[]
+         */
         $sysroles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
         foreach ($sysroles as $newRole) {
             $newRolename = $newRole->getName();
@@ -298,7 +355,9 @@ class Users extends MY_Controller
             $user->setAccepted();
             $user->setEnabled();
             $user->setValid();
-            $member = new models\AclRole;
+            /**
+             * @var $member models\AclRole
+             */
             $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Member'));
             if (!empty($member)) {
                 $user->setRole($member);
@@ -358,7 +417,6 @@ class Users extends MY_Controller
         }
         $userpref = $user->getUserpref();
         if (isset($userpref['board'])) {
-            $board = $userpref['board'];
         }
         $data['content_view'] = 'manage/userbookmarkedit_view';
         $this->load->view('page', $data);
@@ -373,7 +431,18 @@ class Users extends MY_Controller
         $encoded_username = trim($encoded_username);
         $username = base64url_decode($encoded_username);
         $limit_authn = 15;
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        /**
+         * @var $user models\User
+         */
+        try {
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            show_error('Internal server error',500);
+            return;
+        }
         if (empty($user)) {
             show_error('User not found', 404);
         }
@@ -392,11 +461,15 @@ class Users extends MY_Controller
 
         $passedit_link = '<span><a href="' . base_url() . 'manage/users/passedit/' . $encoded_username . '" class="edit" title="edit" ><i class="fi-pencil"></i></a></span>';
 
+        /**
+         * @var $authn_logs models\Tracker[]
+         * @var $action_logs models\Tracker[]
+         */
         $authn_logs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limit_authn);
 
         $action_logs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
 
-        $data['caption'] = htmlspecialchars($user->getUsername());
+        $data['caption'] = html_escape($user->getUsername());
         $local_access = $user->getLocal();
         $federated_access = $user->getFederated();
 
@@ -739,7 +812,6 @@ class Users extends MY_Controller
             $data['content_view'] = 'manage/password_change_view';
             $this->load->view('page', $data);
         } else {
-            $oldpassword = $this->input->post('oldpassword');
             $password = $this->input->post('password');
             if ($manage_access) {
                 $user->setPassword($password);

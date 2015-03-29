@@ -33,7 +33,19 @@ class Dashboard extends MY_Controller {
         if (!$loggedin)
         {
             $data['content_view'] = 'staticpages_view' ;
-            $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode'=>'front_page','enabled'=>true, 'ispublic'=>true));
+            /**
+             * @var $frontpage models\Staticpage
+             */
+            try {
+                $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode' => 'front_page', 'enabled' => true, 'ispublic' => true));
+            }
+            catch(Exception $e)
+            {
+
+                log_message('error',__METHOD__.' '.$e);
+                show_error('Internal server error',500);
+                return;
+            }
             if (!empty($frontpage))
             {
                 $data['pcontent'] = jaggerTagsReplacer($frontpage->getContent());
@@ -42,12 +54,21 @@ class Dashboard extends MY_Controller {
             $this->load->view('page',$data);
             return;  
         }
-        
-        $this->load->library('zacl');
-        
+        try {
+            $this->load->library('zacl');
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__ .' '.$e);
+            show_error('Internal server error',500);
+            return;
+        }
         $this->load->library('table');
-        $q = $this->em->getRepository("models\Queue")->findAll();
-        $this->inqueue = count($q);
+        /**
+         * @var $queues models\Queue[]
+         */
+        $queues = $this->em->getRepository("models\Queue")->findAll();
+        $this->inqueue = count($queues);
         $acc = $this->zacl->check_acl('dashboard', 'read', 'default', '');
         $data['inqueue'] = $this->inqueue;
         if (empty($acc))
