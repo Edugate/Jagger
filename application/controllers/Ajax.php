@@ -189,6 +189,9 @@ class Ajax extends MY_Controller
 		if (!$loggedin) {
 			show_error('permission denied', 403);
 		}
+        /**
+         * @var $fedcat models\FederationCategory
+         */
 		if (!empty($id)) {
 			$fedcat = $this->em->getRepository("models\FederationCategory")->findOneBy(array('id' => $id));
 			if (empty($fedcat)) {
@@ -342,61 +345,62 @@ class Ajax extends MY_Controller
 
 	public function bookfed($id = null, $action = null)
 	{
-		if (!$this->input->is_ajax_request() || empty($action) || empty($id) || !ctype_digit($id)) {
-			set_status_header(401);
-			echo 'denied';
-			return;
-		}
-		$loggedin = $this->j_auth->logged_in();
-		if (!$loggedin) {
+		if (!$this->input->is_ajax_request() || empty($action) || empty($id) || !ctype_digit($id) || !$this->j_auth->logged_in()) {
 			set_status_header(401);
 			echo 'denied';
 			return;
 		}
 		$username = $this->j_auth->current_user();
-		$u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
+        /**
+         * @var $u models\User
+         */
+        try {
+            $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
+        }
+        catch(Exception $e)
+        {
+            set_status_header(500);
+            log_message('error',__METHOD__.' '.$e);
+            echo 'Internal server error';
+            return;
+        }
 		if (empty($u)) {
 			log_message('error', __METHOD__ . ' username:' . $username . ' loggedin but user not found in db');
 			set_status_header(401);
 			echo 'denied';
 			return;
 		}
-		if (strcmp($action, 'add') !== 0 && strcmp($action, 'del') !== 0) {
-			set_status_header(401);
-			echo 'unknown action';
-			return;
-
-		}
 		if (strcmp($action, 'add') == 0) {
+            /**
+             * @var $fed models\Federation
+             */
 			$fed = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $id));
 			if (empty($fed)) {
 				set_status_header(404);
 				echo 'federation not found';
 				return;
 			}
-			$fedid = $fed->getId();
-			$fedname = $fed->getName();
-			$fedencoded = base64url_encode($fedname);
-
-			$u->addFedToBookmark($fedid, $fedname, $fedencoded);
+			$u->addFedToBookmark($fed->getId(), $fed->getName(), base64url_encode($fed->getName()));
 			$this->em->persist($u);
 			$userprefs = $u->getUserpref();
 			$this->session->set_userdata(array('board' => $userprefs['board']));
-
 			$this->em->flush();
 			echo 'ok';
-			return;
 
 		}
-		if (strcmp($action, 'del') == 0) {
+		elseif (strcmp($action, 'del') == 0) {
 			$u->delFedFromBookmark($id);
 			$this->em->persist($u);
 			$userprefs = $u->getUserpref();
 			$this->session->set_userdata(array('board' => $userprefs['board']));
 			$this->em->flush();
 			echo 'ok';
-			return;
 		}
+        else
+        {
+            set_status_header(401);
+			echo 'unknown action';
+        }
 
 	}
 
