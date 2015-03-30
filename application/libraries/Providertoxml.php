@@ -16,6 +16,9 @@ class Providertoxml
 {
 
     private $ci;
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
     private $em;
     private $isGenIdFnExist;
     private $useGlobalRegistrar;
@@ -112,6 +115,9 @@ class Providertoxml
         if (empty($registrar) && $ent->getLocal() && $this->useGlobalRegistrar) {
             $registrar = $this->globalRegistrar;
         }
+        /**
+         * @var $cocs models\Coc[]
+         */
         $doFilter = array(TRUE);
         $cocs = $ent->getCoc()->filter(
             function (models\Coc $entry) use ($doFilter) {
@@ -129,6 +135,9 @@ class Providertoxml
             }
         }
 
+        /**
+         * @var $extendMeta models\ExtendMetadata[]
+         */
         $doFilter1 = array('DigestMethod', 'SigningMethod');
         $extendMeta = $ent->getExtendMetadata()->filter(
             function (models\ExtendMetadata $entry) use ($doFilter1) {
@@ -158,6 +167,9 @@ class Providertoxml
             if (!empty($registrar)) {
                 $xml->startElementNs('mdrpi', 'RegistrationInfo', null);
                 $xml->writeAttribute('registrationAuthority', $registrar);
+                /**
+                 * @var $registerDate DateTime
+                 */
                 $registerDate = $ent->getRegistrationDate();
                 if (!empty($registerDate)) {
                     $xml->writeAttribute('registrationInstant', $registerDate->format('Y-m-d') . 'T' . $registerDate->format('H:i:s') . 'Z');
@@ -258,18 +270,15 @@ class Providertoxml
         $toGenerate = FALSE;
         $extendMeta = $ent->getExtendMetadata();
         $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
+        $extarrayKeys = array_keys($extarray);
         foreach ($extendMeta as $v) {
-            if ((strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui') && ($v->getElement() !== 'UIInfo')) {
+            if ( in_array($v->getElement(),$extarrayKeys) &&  (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui')) {
                 $extarray['' . $v->getElement() . ''][] = $v;
-            }
-        }
-        foreach ($extarray as $e) {
-            if (count($e) > 0) {
                 $toGenerate = TRUE;
-                break;
             }
         }
         if ($toGenerate === FALSE) {
+
             return $xml;
         }
         $xml->startElementNs('mdui', 'UIInfo', null);
@@ -295,8 +304,6 @@ class Providertoxml
             if (!$enLang['' . $mduiElement . '']) {
                 if (strcmp('PrivacyStatementURL', $mduiElement) == 0) {
                     $t = $ent->getPrivacyUrl();
-                } elseif (strcmp('InformationURL', $mduiElement) == 0) {
-                    $t = $ent->getHelpdeskURL();
                 }
 
                 if (!empty($t)) {
@@ -819,7 +826,6 @@ class Providertoxml
         if ($islocal && $this->isGenIdFnExist) {
             $genId = customGenerateEntityDescriptorID(array('id' => '' . $ent->getId() . '', 'entityid' => '' . $ent->getEntityId() . ''));
             if (!empty($genId)) {
-
                 $xml->writeAttribute('ID', $genId);
             }
         }

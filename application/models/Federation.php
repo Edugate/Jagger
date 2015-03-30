@@ -1,9 +1,6 @@
 <?php
-
 namespace models;
 
-use \Doctrine\Common\Collections\ArrayCollection,
-    \Doctrine\ORM\Events;
 
 /**
  * ResourceRegistry3

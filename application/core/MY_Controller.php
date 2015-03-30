@@ -47,6 +47,9 @@ if (!defined('BASEPATH'))
  * @property Curl $curl
  * @property Show_element $show_element
  * @property J_auth $j_auth
+ * @property Arp_generator $arp_generator
+ * @property Rrpreference $rrpreference
+ * @property User_manage $user_manage
  * @property Doctrine $doctrine
  * @property CI_Cache $cache
  */
@@ -138,16 +141,6 @@ class MY_Controller extends CI_Controller {
             log_message('debug', __METHOD__ . ' custom_helper loaded');
         }
 
-        try {
-            $this->em->getConnection()->connect();
-        }
-        catch(Exception $e)
-        {
-            log_message('error',$e);
-            set_status_header(500);
-            echo 'Internal server error - DB access';
-            return;
-        }
     }
 
     public static function getLang()

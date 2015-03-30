@@ -162,6 +162,9 @@ class Tracker {
         return $this->sourceip;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getCreated()
     {
         return $this->createdAt;

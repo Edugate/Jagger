@@ -580,6 +580,9 @@ class User {
         return $this->local;
     }
 
+    /**
+     * @return \DateTime|null
+     */
     public function getLastlogin()
     {
         return $this->lastlogin;

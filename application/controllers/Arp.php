@@ -17,6 +17,8 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
+
+
 class Arp extends MY_Controller
 {
 
@@ -64,12 +66,16 @@ class Arp extends MY_Controller
         }
         $data = array();
         $tmp_idp = new models\Providers;
-        $idp = new models\Provider;
+
+        /**
+         * @var $idp models\Provider
+         */
         try {
             $idp = $tmp_idp->getOneIdpByEntityId(base64url_decode($idp_entityid));
         }
         catch(Exception $e)
         {
+            $this->output->set_content_type('text/html');
             log_message('error',$e);
             set_status_header(500);
             echo 'Internal server error';
@@ -88,7 +94,7 @@ class Arp extends MY_Controller
 
         $arpcached = $this->cache->get($cacheid);
         if (empty($arpcached)) {
-            log_message('debug', 'not found in memcache');
+            log_message('debug', __METHOD__.' ARP for '.$entityid.' not found in memcache');
             $data['out'] = $this->generateXml($idp);
             if (!empty($data['out'])) {
                 $this->cache->save($cacheid, $data['out'], 2400);
@@ -100,10 +106,11 @@ class Arp extends MY_Controller
         }
         if (!empty($data['out'])) {
             $this->load->view('metadata_view', $data);
-            log_message('info', 'Downloaded......');
+            log_message('info', __METHOD__.' ARP for '.$entityid.' :: Downloaded......');
             $this->trackRequest($entityid);
         }
         else {
+            log_message('warning', __METHOD__.' ARP for '.$entityid.' cannot be generated because no policy had been set');
             show_error('ARP cannot be generated because no policy had been set', 404);
         }
     }
@@ -115,21 +122,16 @@ class Arp extends MY_Controller
             $reqtype = null;
             if (isset($_SERVER['HTTP_REFERER'])) {
                 $ref = $_SERVER['HTTP_REFERER'];
-                log_message('debug', 'REFERER:' . $ref);
+                log_message('debug', 'REFERER: ' . $ref);
             }
             if (isset($_SERVER['REQUEST_METHOD'])) {
                 $reqtype = $_SERVER['REQUEST_METHOD'];
             }
             $reftomatch = base_url() . 'reports/sp_matrix/show';
             if ((!empty($reqtype) && $reqtype == 'GET') && ((!empty($ref) && stristr($ref, $reftomatch) === FALSE) || (empty($ref)))) {
-                log_message('debug', 'Arp downloading set1');
                 $sync_with_db = true;
                 $details = null;
                 $this->tracker->save_track($this->resourcetype, $this->subtype, $resourcename, $details, $sync_with_db);
             }
-          
-
     }
-
-
 }

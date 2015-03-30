@@ -701,11 +701,18 @@ class Entityedit extends MY_Controller
     {
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
-        } else {
+        }
+        try {
             $this->load->library('zacl');
         }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            show_error('Internal server error',500);
+            return;
+        }
+
 
         /**
          * @var $ent models\Provider
@@ -714,12 +721,12 @@ class Entityedit extends MY_Controller
         if (empty($ent)) {
             show_error('Provider not found', '404');
         }
-        $locked = $ent->getLocked();
-        $is_local = $ent->getLocal();
-        if (!$is_local) {
+        $isLocked = $ent->getLocked();
+        $isLocal = $ent->getLocal();
+        if (!$isLocal) {
             show_error('Access Denied. Identity/Service Provider is not localy managed.', 403);
         }
-        if ($locked) {
+        if ($isLocked) {
             show_error('Access Denied. Identity/Service Provider is locked and cannod be modified.', 403);
         }
         $this->entityid = $ent->getEntityId();
@@ -732,7 +739,7 @@ class Entityedit extends MY_Controller
 
         if ($this->input->post('discard')) {
             $this->discardDraft($id);
-            redirect(base_url() . 'providers/detail/show/' . $id, 'location');
+            redirect(base_url('providers/detail/show/'.$id.''), 'location');
         } elseif ($this->submitValidate($id) === TRUE) {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');

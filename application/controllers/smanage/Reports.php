@@ -27,17 +27,14 @@ class Reports extends MY_Controller {
     {
         parent::__construct();
         $this->load->library('j_auth');
-         MY_Controller::$menuactive = 'admins';
+        MY_Controller::$menuactive = 'admins';
     }
 
     public function  index(){
         $loggedin = $this->j_auth->logged_in();
         if(!$loggedin)
         {
-
-               $this->session->set_flashdata('target', $this->current_site);
                redirect('auth/login', 'location');
-
         }
         if(!$this->j_auth->isAdministrator())
         {
@@ -47,7 +44,6 @@ class Reports extends MY_Controller {
         if(function_exists('apc_clear_cache'))
         {
            apc_clear_cache();
-
         }
         $this->title = lang('title_sysreports');
         $data['titlepage'] =lang('title_sysreports') ;
