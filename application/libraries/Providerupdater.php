@@ -112,11 +112,11 @@ class Providerupdater
     private function updateProviderExtend(models\Provider $ent, array $ch)
     {
         $m = array();
-        $type = $ent->getType();
-        if (strcasecmp($type, 'BOTH') == 0) {
+        $entityType = $ent->getType();
+        if (strcasecmp($entityType, 'BOTH') == 0) {
             $extypes = array('idp', 'sp');
         } else {
-            $extypes = array('' . strtolower($type) . '');
+            $extypes = array('' . strtolower($entityType) . '');
         }
         $langCodes = languagesCodes();
         /**
@@ -128,7 +128,7 @@ class Providerupdater
         $extendsInArray = array();
         foreach ($extendsCollection as $e) {
             $extendsInArray['' . $e->getType() . '']['' . $e->getNamespace() . '']['' . $e->getElement() . ''][] = $e;
-            if ($e->getElement() == 'UIInfo') {
+            if ($e->getElement() === 'UIInfo') {
                 $uiinfoParent['' . $e->getType() . ''] = $e;
             } elseif ($e->getElement() === 'DiscoHints' && $e->getType() === 'idp') {
                 $discohintsParent = $e;
@@ -161,6 +161,7 @@ class Providerupdater
         }
 
         if (in_array('idp', $extypes)) {
+            $idpDiscoHints = array('geo'=>'GeolocationHint','domainhint'=>'DomainHint','iphint'=>'IPHint');
             if (empty($discohintsParent)) {
                 $discohintsParent = new models\ExtendMetadata;
                 $discohintsParent->setType('idp');
@@ -168,90 +169,35 @@ class Providerupdater
                 $discohintsParent->setElement('DiscoHints');
                 $ent->setExtendMetadata($discohintsParent);
             }
-            if (isset($ch['uii']['idpsso']['geo']) && is_array($ch['uii']['idpsso']['geo'])) {
-                $ch['uii']['idpsso']['geo'] = array_unique($ch['uii']['idpsso']['geo']);
-                if (isset($extendsInArray['idp']['mdui']['GeolocationHint'])) {
-                    foreach ($extendsInArray['idp']['mdui']['GeolocationHint'] as $k => $v) {
-                        $vId = $v->getId();
-                        if (array_key_exists($vId, $ch['uii']['idpsso']['geo']) && !empty($ch['uii']['idpsso']['geo']['' . $vId . ''])) {
-                            $v->setValue($ch['uii']['idpsso']['geo']['' . $vId . '']);
-                            $this->em->persist($v);
-                        } else {
-                            $ent->getExtendMetadata()->removeElement($v);
-                            $this->em->remove($v);
+            foreach($idpDiscoHints as $key=>$value)
+            {
+                if (isset($ch['uii']['idpsso'][''.$key.'']) && is_array($ch['uii']['idpsso'][''.$key.''])) {
+                    $ch['uii']['idpsso'][''.$key.''] = array_unique($ch['uii']['idpsso'][''.$key.'']);
+                    if (isset($extendsInArray['idp']['mdui'][''.$value.''])) {
+                        foreach ($extendsInArray['idp']['mdui'][''.$value.''] as $k => $v) {
+                            $vId = $v->getId();
+                            if (array_key_exists($vId, $ch['uii']['idpsso'][''.$key.'']) && !empty($ch['uii']['idpsso'][''.$key.'']['' . $vId . ''])) {
+                                $v->setValue($ch['uii']['idpsso'][''.$key.'']['' . $vId . '']);
+                                $this->em->persist($v);
+                            } else {
+                                $ent->getExtendMetadata()->removeElement($v);
+                                $this->em->remove($v);
+                            }
+                            unset($ch['uii']['idpsso'][''.$key.'']['' . $vId . '']);
                         }
-                        unset($ch['uii']['idpsso']['geo']['' . $vId . '']);
                     }
-                }
-                foreach ($ch['uii']['idpsso']['geo'] as $v) {
-                    if (!empty($v)) {
-                        $n = new models\ExtendMetadata;
-                        $n->setParent($discohintsParent);
-                        $n->setType('idp');
-                        $n->setNamespace('mdui');
-                        $n->setElement('GeolocationHint');
-                        $n->setValue($v);
-                        $n->setAttributes(array());
-                        $ent->setExtendMetadata($n);
-                        $this->em->persist($n);
-                    }
-                }
-            }
-            if (isset($ch['uii']['idpsso']['domainhint']) && is_array($ch['uii']['idpsso']['domainhint'])) {
-                $ch['uii']['idpsso']['domainhint'] = array_unique($ch['uii']['idpsso']['domainhint']);
-                if (isset($extendsInArray['idp']['mdui']['DomainHint'])) {
-                    foreach ($extendsInArray['idp']['mdui']['DomainHint'] as $k => $v) {
-                        $vId = $v->getId();
-                        if (array_key_exists($vId, $ch['uii']['idpsso']['domainhint']) && !empty($ch['uii']['idpsso']['domainhint']['' . $vId . ''])) {
-                            $v->setValue($ch['uii']['idpsso']['domainhint']['' . $vId . '']);
-                            $this->em->persist($v);
-                        } else {
-                            $ent->getExtendMetadata()->removeElement($v);
-                            $this->em->remove($v);
+                    foreach ($ch['uii']['idpsso'][''.$key.''] as $v) {
+                        if (!empty($v)) {
+                            $newExtend = new models\ExtendMetadata;
+                            $newExtend->setParent($discohintsParent);
+                            $newExtend->setType('idp');
+                            $newExtend->setNamespace('mdui');
+                            $newExtend->setElement(''.$value.'');
+                            $newExtend->setValue($v);
+                            $newExtend->setAttributes(array());
+                            $ent->setExtendMetadata($newExtend);
+                            $this->em->persist($newExtend);
                         }
-                        unset($ch['uii']['idpsso']['domainhint']['' . $vId . '']);
-                    }
-                }
-                foreach ($ch['uii']['idpsso']['domainhint'] as $v) {
-                    if (!empty($v)) {
-                        $n = new models\ExtendMetadata;
-                        $n->setParent($discohintsParent);
-                        $n->setType('idp');
-                        $n->setNamespace('mdui');
-                        $n->setElement('DomainHint');
-                        $n->setValue($v);
-                        $n->setAttributes(array());
-                        $ent->setExtendMetadata($n);
-                        $this->em->persist($n);
-                    }
-                }
-            }
-            if (isset($ch['uii']['idpsso']['iphint']) && is_array($ch['uii']['idpsso']['iphint'])) {
-                $ch['uii']['idpsso']['iphint'] = array_unique($ch['uii']['idpsso']['iphint']);
-                if (isset($extendsInArray['idp']['mdui']['IPHint'])) {
-                    foreach ($extendsInArray['idp']['mdui']['IPHint'] as $k => $v) {
-                        $vId = $v->getId();
-                        if (array_key_exists($vId, $ch['uii']['idpsso']['iphint']) && !empty($ch['uii']['idpsso']['iphint']['' . $vId . ''])) {
-                            $v->setValue($ch['uii']['idpsso']['iphint']['' . $vId . '']);
-                            $this->em->persist($v);
-                        } else {
-                            $ent->getExtendMetadata()->removeElement($v);
-                            $this->em->remove($v);
-                        }
-                        unset($ch['uii']['idpsso']['iphint']['' . $vId . '']);
-                    }
-                }
-                foreach ($ch['uii']['idpsso']['iphint'] as $v) {
-                    if (!empty($v)) {
-                        $n = new models\ExtendMetadata;
-                        $n->setParent($discohintsParent);
-                        $n->setType('idp');
-                        $n->setNamespace('mdui');
-                        $n->setElement('IPHint');
-                        $n->setValue($v);
-                        $n->setAttributes(array());
-                        $ent->setExtendMetadata($n);
-                        $this->em->persist($n);
                     }
                 }
             }
@@ -402,7 +348,7 @@ class Providerupdater
         /**
          * start update UII
          */
-        if ($type !== 'SP') {
+        if ($entityType !== 'SP') {
             $typeFilter = array('idp');
             $idpextend = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($typeFilter) {
@@ -466,7 +412,7 @@ class Providerupdater
                 }
             }
         }
-        if ($type !== 'IDP') {
+        if ($entityType !== 'IDP') {
             $typeFilter = array('sp');
             $spextend = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($typeFilter) {
