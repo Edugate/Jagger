@@ -30,12 +30,12 @@ class Providers
 
 	protected $providers;
 	protected $em;
+    protected $ci;
 
 	function __construct()
 	{
 		$this->ci = &get_instance();
 		$this->em = $this->ci->doctrine->em;
-
 		$this->providers = new \Doctrine\Common\Collections\ArrayCollection();
 	}
 
@@ -55,7 +55,6 @@ class Providers
 	public function getTrustedActiveFeds(Provider $provider)
 	{
 		$feds = new \Doctrine\Common\Collections\ArrayCollection();
-		$provid = $provider->getId();
 		$query = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
 		$query->setParameter(1, $provider->getId());
 		$result = $query->getResult();
@@ -166,7 +165,6 @@ class Providers
 	public function getTrustedServicesWithFeds(Provider $provider)
 	{
 		$type = $provider->getType();
-		$rtype = array();
 		if ($type === 'IDP') {
 
 			$rtype = array('SP', 'BOTH');
@@ -202,9 +200,7 @@ class Providers
 	public function getCircleMembersLight(Provider $provider)
 	{
 		$this->providers = new \Doctrine\Common\Collections\ArrayCollection();
-
 		$type = $provider->getType();
-		$types = array();
 		if ($type === 'IDP') {
 			$types = array('SP', 'BOTH');
 		} elseif ($type === 'SP') {
