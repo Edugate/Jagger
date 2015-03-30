@@ -35,38 +35,40 @@ class Awaiting extends MY_Controller
 
     function alist()
     {
-        $loggedin = $this->j_auth->logged_in();
-        if ($loggedin)
-        {
-            $this->load->library('zacl');
-            $this->load->library('j_queue');
-        }
-        else
+        if (!$this->j_auth->logged_in())
         {
             redirect('auth/login', 'location');
-        }
 
+        }
+        try {
+            $this->load->library(array('zacl','j_queue'));
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            set_status_header(500);
+            echo 'Internal server error';
+            return;
+        }
         $this->title =  lang('rr_listawaiting');
-        $data['titlepage'] = lang('rr_listawaiting');
-        $data['content_view'] = 'reports/awaiting_view';
-        $data['message'] = $this->alert;
-        $data['error_message'] = $this->error_message;
+        $data = array(
+            'titlepage' => lang('rr_listawaiting'),
+            'content_view' => 'reports/awaiting_view',
+            'message' => $this->alert,
+            'error_message'=>$this->error_message
+        );
         $this->load->view('page', $data);
     }
 
     function ajaxrefresh()
     {
-        if (!$this->input->is_ajax_request())
-        {
-            show_error('Permission denied', 403);
-        }
-
-        if (!$this->j_auth->logged_in())
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
         {
             set_status_header(403);
-            echo "not authenticated";
+            echo 'Permission denied';
             return;
         }
+
         $this->load->library('zacl');
         $this->load->library('j_queue');
         $queuelist = $this->getQueueList();
@@ -224,16 +226,13 @@ class Awaiting extends MY_Controller
 
     public function dashajaxrefresh()
     {
-        if (!$this->input->is_ajax_request())
-        {
-            show_error('Permission denied', 403);
-        }
-        if (!$this->j_auth->logged_in())
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
         {
             set_status_header(403);
-            echo "not authenticated";
+            echo "Permission denied";
             return;
         }
+
         $this->load->library('zacl');
         $this->load->library('j_queue');
         $queuelist = $this->getQueueList();
@@ -246,16 +245,10 @@ class Awaiting extends MY_Controller
 
     public function counterqueue()
     {
-        if (!$this->input->is_ajax_request())
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
         {
             set_status_header(403);
-            echo 'Access denied';
-            return;
-        }
-        if (!$this->j_auth->logged_in())
-        {
-            set_status_header(403);
-            echo "not authenticated";
+            echo "Permission denied";
             return;
         }
         $this->load->library('zacl');
@@ -375,15 +368,37 @@ class Awaiting extends MY_Controller
 
     function detail($token)
     {
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
+        if(!ctype_alnum($token))
+        {
+            show_error('Wrong token provided',404);
+            return;
+        }
+        if (!$this->j_auth->logged_in())
         {
             redirect('auth/login', 'location');
         }
-        $this->load->library(array('zacl', 'j_queue'));
-        $this->load->library('providertoxml');
-        $qObject = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $token));
-        if (empty($qObject))
+        try {
+            $this->load->library(array('zacl', 'j_queue', 'providertoxml'));
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            show_error('Internal server error',500);
+            return;
+        }
+        /**
+         * @var $queueObject models\Queue
+         */
+        try {
+            $queueObject = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $token));
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            show_error('Internal server error',500);
+            return;
+        }
+        if (empty($queueObject))
         {
             $dataview = array(
                 'content_view' => 'error_message',
@@ -392,12 +407,12 @@ class Awaiting extends MY_Controller
             $this->load->view('page', $dataview);
             return;
         }
-        $objType = $qObject->getObjType();
-        $objAction = $qObject->getAction();
-        $recipientType = $qObject->getRecipientType();
+        $objType = $queueObject->getObjType();
+        $objAction = $queueObject->getAction();
+        $recipientType = $queueObject->getRecipientType();
         if (strcasecmp($objType, 'Provider') == 0)
         {
-            $r = $this->detailProvider($qObject);
+            $r = $this->detailProvider($queueObject);
             if (!empty($r))
             {
                 $this->load->view('page', $r['data']);
@@ -410,7 +425,7 @@ class Awaiting extends MY_Controller
         }
         elseif (strcasecmp($objType, 'Federation') == 0)
         {
-            $r = $this->detailFederation($qObject);
+            $r = $this->detailFederation($queueObject);
             if (!empty($r))
             {
                 $this->load->view('page', $r['data']);
@@ -423,11 +438,11 @@ class Awaiting extends MY_Controller
         }
         elseif (strcasecmp($objType, 'User') == 0 && strcasecmp($objAction, 'Create') == 0)
         {
-            if ($this->hasQAccess($qObject))
+            if ($this->hasQAccess($queueObject))
             {
-                $buttons = $this->j_queue->displayFormsButtons($qObject->getId());
+                $buttons = $this->j_queue->displayFormsButtons($queueObject->getId());
                 $dataview = array(
-                    'userdata' => $this->j_queue->displayRegisterUser($qObject),
+                    'userdata' => $this->j_queue->displayRegisterUser($queueObject),
                     'content_view' => 'reports/awaiting_user_register_view',
                     'error_message' => $this->error_message
                 );
@@ -443,12 +458,12 @@ class Awaiting extends MY_Controller
         }
         elseif (strcasecmp($objType, 'n') == 0 && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) // apply for entity category
         {
-            if ($this->hasQAccess($qObject))
+            if ($this->hasQAccess($queueObject))
             {
-                $approveaccess = $this->hasApproveAccess($qObject);
-                $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), !$approveaccess);
+                $approveaccess = $this->hasApproveAccess($queueObject);
+                $buttons = $this->j_queue->displayFormsButtons($queueObject->getId(), !$approveaccess);
                 $dataview = array(
-                    'requestdata' => $this->j_queue->displayApplyForEntityCategory($qObject),
+                    'requestdata' => $this->j_queue->displayApplyForEntityCategory($queueObject),
                     'content_view' => 'reports/awaiting_applyforentcat_view'
                 );
                 $dataview['requestdata'][]['2cols'] = $buttons;
@@ -463,15 +478,15 @@ class Awaiting extends MY_Controller
         }
         elseif (strcasecmp($objType, 'n') == 0 && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) // apply for entity category
         {
-            if ($this->hasQAccess($qObject))
+            if ($this->hasQAccess($queueObject))
             {
 
-                $approveaccess = (boolean) $this->hasApproveAccess($qObject);
+                $approveaccess = (boolean) $this->hasApproveAccess($queueObject);
 
-                $buttons = $this->j_queue->displayFormsButtons($qObject->getId(), !$approveaccess);
+                $buttons = $this->j_queue->displayFormsButtons($queueObject->getId(), !$approveaccess);
 
                 $dataview = array(
-                    'requestdata' => $this->j_queue->displayApplyForRegistrationPolicy($qObject),
+                    'requestdata' => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
                     'content_view' => 'reports/awaiting_applyforentcat_view'
                 );
                 $dataview['requestdata'][]['2cols'] = $buttons;
