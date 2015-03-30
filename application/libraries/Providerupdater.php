@@ -222,7 +222,7 @@ class Providerupdater
                         $origs['' . $l['xml:lang'] . ''] = $value->getElementValue();
                     }
                 }
-                $newex = array();
+
                 if (isset($ch['prvurl']['' . $v . 'sso'])) {
                     $newex = $ch['prvurl']['' . $v . 'sso'];
                     foreach ($origex as $key => $value) {
