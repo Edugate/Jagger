@@ -19,17 +19,13 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  */
 class Awaiting extends MY_Controller
 {
-
     private $alert;
     private $error_message;
-    
-
     function __construct()
     {
         parent::__construct();
         $this->load->helper(array('form', 'url', 'cert'));
-        $this->load->library('table');
-        $this->load->library('tracker');
+        $this->load->library(array('table','tracker'));
         $this->title = lang('title_approval');
     }
 
@@ -68,19 +64,16 @@ class Awaiting extends MY_Controller
             echo 'Permission denied';
             return;
         }
-
-        $this->load->library('zacl');
-        $this->load->library('j_queue');
-        $queuelist = $this->getQueueList();
+        $this->load->library(array('zacl','j_queue'));
         $data = array(
-            'list' => $queuelist,
+            'list' => $this->getQueueList(),
             'error_message' => $this->session->flashdata('error_message'),
             'content_view' => 'reports/awaiting_list_view'
         );
         $this->load->view('reports/awaiting_list_view', $data);
     }
 
-    private function hasQAccess($q)
+    private function hasQAccess(\models\Queue $q)
     {
         $result = false;
         $isAdministrator = $this->j_auth->isAdministrator();
@@ -125,7 +118,7 @@ class Awaiting extends MY_Controller
         return $result;
     }
 
-    private function hasApproveAccess($q)
+    private function hasApproveAccess(\models\Queue $q)
     {
         $result = false;
         $isAdministrator = $this->j_auth->isAdministrator();
@@ -157,6 +150,9 @@ class Awaiting extends MY_Controller
     {
         $this->load->library('zacl');
         $this->load->library('j_queue');
+        /**
+         * @var $queueArray models\Queue[]
+         */
         $queueArray = $this->em->getRepository("models\Queue")->findAll();
         $result = array('q'=>array(),'s'=>array());
         
@@ -232,12 +228,9 @@ class Awaiting extends MY_Controller
             echo "Permission denied";
             return;
         }
-
-        $this->load->library('zacl');
-        $this->load->library('j_queue');
-        $queuelist = $this->getQueueList();
+        $this->load->library(array('zacl','j_queue'));
         $data = array(
-            'list' => $queuelist,
+            'list' => $this->getQueueList(),
             'content_view' => 'reports/dashawaiting_list_view'
         );
         $this->load->view('reports/dashawaiting_list_view', $data);
@@ -251,11 +244,9 @@ class Awaiting extends MY_Controller
             echo "Permission denied";
             return;
         }
-        $this->load->library('zacl');
-        $this->load->library('j_queue');
+        $this->load->library(array('zacl','j_queue'));
         $queuelist = $this->getQueueList();
         $c = count($queuelist['q'])+count($queuelist['s']);
-        set_status_header(200);
         echo $c;
         return;
     }
