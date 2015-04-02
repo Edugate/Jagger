@@ -430,6 +430,9 @@ class Awaiting extends MY_Controller
     {
         $qFed = new models\Federation;
         $qFed->importFromArray($q->getData());
+        /**
+         * @var $federation models\Federation
+         */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $qFed->getName()));
         if (empty($federation)) {
             $this->error_message = 'Federation not found';
@@ -442,13 +445,11 @@ class Awaiting extends MY_Controller
         }
         $this->load->library('FederationRemover');
         $sbj = 'Federation has been removed';
-        $body = 'Dear user,' . PHP_EOL;
-        $body .= 'Federation : ' . $federation->getName() . ' has been removed from the system';
+        $body = 'Dear user,' . PHP_EOL.'Federation : ' . $federation->getName() . ' has been removed from the system';
         $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), false);
         $this->federationremover->removeFederation($federation);
         $this->em->remove($q);
         $this->tracker->save_track('sys', null, null, 'approved - remove fed: ' . $federation->getName() . '', false);
-
         try {
             $this->em->flush();
             log_message('info', 'JAGGER: ' . __METHOD__ . ' ' . $this->session->userdata('username') . ' : approved - remove fed:' . $federation->getName() . '');
@@ -471,7 +472,7 @@ class Awaiting extends MY_Controller
             $entity = new models\Provider;
             $entity->importFromArray($d);
         } else {
-            $this->load->library('xmlvalidator');
+            $this->load->library(array('xmlvalidator','metadata2array'));
             libxml_use_internal_errors(true);
             $metadataDOM = new \DOMDocument();
             $metadataDOM->strictErrorChecking = FALSE;
@@ -482,7 +483,6 @@ class Awaiting extends MY_Controller
                 $this->error_message = 'Invalid metadata';
                 return false;
             }
-            $this->load->library('metadata2array');
             $xpath = new DomXPath($metadataDOM);
             $namespaces = h_metadataNamespaces();
             foreach ($namespaces as $key => $value) {
@@ -554,10 +554,8 @@ class Awaiting extends MY_Controller
             $requester_recipient = $q->getEmail();
         }
         $sbj = 'Identity/Service Provider has been approved';
-        $body = 'Dear user,' . PHP_EOL;
-        $body .= 'Registration request: ' . $entity->getName() . ' (' . $entity->getEntityId() . ')' . PHP_EOL;
-        $body .= 'Requested by: ' . $requester_recipient . '' . PHP_EOL;
-        $body .= 'Request has been just approved by ' . $this->j_auth->current_user() . ' and added to the system' . PHP_EOL;
+        $body = 'Dear user,' . PHP_EOL.'Registration request: ' . $entity->getName() . ' (' . $entity->getEntityId() . ')' . PHP_EOL;
+        $body .= 'Requested by: '.$requester_recipient.''. PHP_EOL.'Request has been just approved by ' . $this->j_auth->current_user() . ' and added to the system' . PHP_EOL;
         $body .= 'It can be reviewed on ' . base_url() . ' ' . PHP_EOL;
         $additionalReceipents = array();
         $toNotifyRequester = $this->config->item('notify_requester_if_queue_accepted');
@@ -581,15 +579,12 @@ class Awaiting extends MY_Controller
 
     function approve()
     {
-        log_message('info', __METHOD__ . ' run');
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $isAdministrator = $this->j_auth->isAdministrator();
-        $this->load->library('zacl');
-        $this->load->library('j_queue');
-
+        $this->load->library(array('zacl','j_queue'));
         $message = "";
         $error_message = null;
         $qaction = trim($this->input->post('qaction'));
@@ -601,6 +596,9 @@ class Awaiting extends MY_Controller
             redirect(base_url() . "reports/awaiting", 'location');
             return;
         }
+        /**
+         * @var $queueObj models\Queue
+         */
         if (!empty($qid) || ctype_digit($qid)) {
             $queueObj = $this->em->getRepository("models\Queue")->findOneBy(array('id' => $qid));
         }
