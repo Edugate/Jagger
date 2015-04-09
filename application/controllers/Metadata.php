@@ -77,20 +77,28 @@ class Metadata extends MY_Controller
             /**
              * dont display metadata if federation is inactive
              */
-            show_error('federation is not active', 404);
+            set_status_header(404);
+            echo 'The federation is no active';
+            return;
         }
         $publisher = $federation->getPublisher();
         $validfor = new \DateTime("now", new \DateTimezone('UTC'));
         $creationInstant = $validfor->format('Y-m-d\TH:i:s\Z');
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
-        $idprefix ='';
-        $prefid = $this->config->item('fedmetadataidprefix');
-        if (!empty($prefid))
+        $entitiesDescriptorId = $federation->getDescriptorId();
+        if(empty($entitiesDescriptorId))
         {
-            $idprefix = $prefid;
+            $idprefix ='';
+            $prefid = $this->config->item('fedmetadataidprefix');
+            if (!empty($prefid))
+            {
+                $idprefix = $prefid;
+            }
+            $idsuffix = $validfor->format('YmdHis');
+            $entitiesDescriptorId = $idprefix . $idsuffix;
         }
-        $idsuffix = $validfor->format('YmdHis');
+
 
         $includeAttrRequirement = $federation->getAttrsInmeta();
         $options = array('attrs' => 0, 'fedreqattrs' => array());
@@ -114,7 +122,7 @@ class Metadata extends MY_Controller
         $xmlOut->text('Metadata was generated on: ' . $now->format('Y-m-d H:i') . ' UTC' . PHP_EOL . 'TERMS OF USE' . PHP_EOL . $federation->getTou() . PHP_EOL);
         $xmlOut->endComment();
         $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
-        $xmlOut->writeAttribute('ID', '' . $idprefix . $idsuffix . '');
+        $xmlOut->writeAttribute('ID', '' . $entitiesDescriptorId . '');
         $xmlOut->writeAttribute('Name', $federation->getUrn());
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
@@ -227,12 +235,21 @@ class Metadata extends MY_Controller
         $validfor = new \DateTime("now", new \DateTimezone('UTC'));
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
-        $idprefix = $this->config->item('fedexportmetadataidprefix');
-        if (empty($idprefix))
-        {
-            $idprefix = '';
+
+        $entitiesDescriptorId = $federation->getDescriptorId();
+        if(strlen($entitiesDescriptorId) == 0) {
+
+            $idprefix = $this->config->item('fedexportmetadataidprefix');
+            if (empty($idprefix)) {
+                $idprefix = '';
+            }
+            $idsuffix = $validfor->format('YmdHis');
+            $entitiesDescriptorId = $idprefix . $idsuffix;
         }
-        $idsuffix = $validfor->format('YmdHis');
+        else
+        {
+            $entitiesDescriptorId = 'export-'.$entitiesDescriptorId.'';
+        }
         $xmlOut = $this->providertoxml->createXMLDocument();
         $topcomment = PHP_EOL . '===============================================================' . PHP_EOL . '= Federation metadata containing only localy managed entities.=' . PHP_EOL . '===============================================================' . PHP_EOL;
         // EntitiesDescriptor
@@ -246,7 +263,7 @@ class Metadata extends MY_Controller
 
         $xmlOut->endComment();
         $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
-        $xmlOut->writeAttribute('ID', '' . $idprefix . $idsuffix . '');
+        $xmlOut->writeAttribute('ID', '' . $entitiesDescriptorId . '');
         $xmlOut->writeAttribute('Name', $federation->getUrn());
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');

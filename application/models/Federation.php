@@ -56,6 +56,11 @@ class Federation {
     protected $urn;
 
     /**
+     * @Column(type="string", length=128, nullable=true)
+     */
+    protected $descriptorid;
+
+    /**
      * @Column(type="string", length=512, nullable=true, unique=false)
      */
     protected $publisher;
@@ -193,6 +198,18 @@ class Federation {
     public function setSysname($name)
     {
         $this->sysname = trim($name);
+        return $this;
+    }
+
+    public function setDescriptorId($str=null)
+    {
+        if(is_null($str) || strlen(trim($str)) == 0)
+        {
+            $this->descriptorid = null;
+        }
+        else {
+            $this->descriptorid = trim($str);
+        }
         return $this;
     }
 
@@ -404,6 +421,11 @@ class Federation {
     public function getSysname()
     {
         return $this->sysname;
+    }
+
+    public function getDescriptorId()
+    {
+        return $this->descriptorid;
     }
 
     public function getLocal()

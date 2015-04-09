@@ -385,6 +385,7 @@ class Manage extends MY_Controller
             $digestExport = $defaultDigest;
         }
 
+
         $data['bookmarked'] = $bookmarked;
         $data['federation_name'] = html_escape($federation->getName());
         $data['federation_sysname'] = html_escape($federation->getSysname());
@@ -415,7 +416,24 @@ class Manage extends MY_Controller
         $data['result']['general'][] = array(lang('rr_fed_name'), html_escape($federation->getName()));
         $data['result']['general'][] = array(lang('fednameinmeta'), html_escape($federation->getUrn()));
         $data['result']['general'][] = array(lang('rr_fed_sysname'), html_escape($federation->getSysname()));
-
+        $entitiesDescriptorId = $federation->getDescriptorId();
+        if(!empty($entitiesDescriptorId))
+        {
+             $data['result']['general'][] = array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
+        }
+        else
+        {
+            $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+            $idprefix ='';
+            $prefid = $this->config->item('fedmetadataidprefix');
+            if (!empty($prefid))
+            {
+                $idprefix = $prefid;
+            }
+            $idsuffix = $validfor->format('YmdHis');
+            $entitiesDescriptorId = $idprefix . $idsuffix;
+            $data['result']['general'][] = array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId). ' <span class="label">'.lang('rr_entdesciddyn').'</span>');
+        }
         $data['result']['general'][] = array(lang('rr_fed_publisher'), html_escape($federation->getPublisher()));
         $data['result']['general'][] = array(lang('rr_fed_desc'), html_escape($federation->getDescription()));
         $data['result']['general'][] = array(lang('rr_fed_tou'), html_escape($federation->getTou()));
