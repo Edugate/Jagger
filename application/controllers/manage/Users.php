@@ -449,6 +449,21 @@ class Users extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
+        $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
+        if (!$accessListUsers)
+        {
+           $breadcrumbs = array(
+                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
+                array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
+            );
+        }
+        else
+        {
+            $breadcrumbs = array(
+                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
+                array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
+            );
+        }
 
         $passedit_link = '<span><a href="' . base_url() . 'manage/users/passedit/' . $encoded_username . '" class="edit" title="edit" ><i class="fi-pencil"></i></a></span>';
 
@@ -587,6 +602,7 @@ class Users extends MY_Controller
             }
         }
 
+        $data['breadcrumbs'] = $breadcrumbs;
         $data['det'] = $det;
         $data['titlepage'] = lang('rr_detforuser') . ': ' . $data['caption'];
         $data['content_view'] = 'manage/userdetail_view';

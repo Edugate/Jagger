@@ -2592,7 +2592,9 @@ class Form_element
 		$f .= '<div class="small-12 columns">';
 		$f .= jGenerateInput(lang('fednameinmeta'), 'urn', set_value('urn', $federation->getUrn(), FALSE), '', FALSE);
 		$f .= '</div>';
-
+        $f .= '<div class="small-12 columns">';
+		$f .= jGenerateInput(lang('rr_fed_descid'), 'descid', set_value('descid', $federation->getDescriptorId(), FALSE), '', 'leave it empty if you want it be genereated dynamicaly');
+		$f .= '</div>';
 
 		$f .= '<div class="small-12 columns">';
 		$f .= jGenerateInput(lang('rr_fed_publisher'), 'publisher', set_value('publisher', $federation->getPublisher(), FALSE), '');

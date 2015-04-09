@@ -50,6 +50,7 @@ class Fededit extends MY_Controller {
         $this->form_validation->set_rules('fedname', lang('rr_fed_name'), 'strip_tags|trim|required|min_length[5]|max_length[128]|federation_updateunique['.serialize($ar1).']');
         $ar2 = array('attr'=>'urn','fedid'=>''.$fedid.'');
         $this->form_validation->set_rules('urn', lang('fednameinmeta'), 'strip_tags|trim|required|min_length[5]|max_length[128]|federation_updateunique['.serialize($ar2).']');
+        $this->form_validation->set_rules('descid', lang('rr_fed_descid'), 'trim|min_length[1]|max_length[128]|alpha_numeric');
         $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[2000]');
         $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'strip_tags|trim|min_length[5]|max_length[1000]');
         $this->form_validation->set_rules('incattrs',lang('rr_include_attr_in_meta'),'strip_tags|trim|max_length[10]');
@@ -75,6 +76,9 @@ class Fededit extends MY_Controller {
             show_error(lang('wrongarggiven'), 403);
         }
         $fed_tmp = new models\Federations();
+        /**
+         * @var $fed models\Federation
+         */
         $fed = $fed_tmp->getOneFederationById($fedid);
         if (empty($fed))
         {
@@ -114,6 +118,7 @@ class Fededit extends MY_Controller {
             $digestExport = $this->input->post('digestmethodext');
             $usealtmeta = $this->input->post('usealtmeta');
             $altMetaUrl = $this->input->post('altmetaurl');
+            $descid = $this->input->post('descid');
             if ($infedid != $fedid)
             {
                 show_error('Incorrect post', 403);
@@ -126,6 +131,9 @@ class Fededit extends MY_Controller {
             {
                 $fed->setAltMetaUrlEnabled(FALSE);
             }
+
+            $fed->setDescriptorId($descid);
+
             $fed->setAltMetaUrl($altMetaUrl);
             $fed->setName($fedname);
             $fed->setUrn($inurn);
@@ -165,6 +173,7 @@ class Fededit extends MY_Controller {
               $fedurl = base64url_encode($fedname);
               $this->em->flush();
               log_message('info','Basic information for federation '.$fedname.' has been updated');
+                $data['encodedfedname'] = $fedurl;
               $data['success_message'] = sprintf(lang('rr_fedinfo_updated'),$fedname);
               $data['titlepage'] = lang('rr_federation').': <a href="'.base_url().'federations/manage/show/'.$fedurl.'">'.html_escape($fedname).'</a>';
             }
