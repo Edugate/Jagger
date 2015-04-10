@@ -650,6 +650,61 @@ var GINIT = {
             return false;
         });
 
+        $(".policymembers").on('click', function(e){
+            var link = $(this).attr('data-jagger-jsource');
+            var modal = $('#regpolmembers');
+            var content = modal.find(".datacontent").first();
+            $.ajax({
+                type: "GET",
+                url: link,
+                beforeSend: function () {
+                        content.empty();
+                    },
+                success: function (data) {
+                    if(data){
+                        var listbody = $('<ul/>');
+                        listbody.addClass('no-bullet');
+                        var result = [];
+                        var a = 0;
+                        $.each(data, function (i, v) {
+                            result[a++] = '<li><a href="'+baseurl+'providers/detail/show/'+ v.provid+'">'+ v.name+' </a><small>('+ v.entityid+')</small></li>';
+                        })
+                        listbody.append(result.join(''));
+                        content.append(listbody);
+                        modal.foundation('reveal', 'open');
+                    }
+                }
+
+            });
+        });
+        $(".ecmembers").on('click', function(e){
+            var link = $(this).attr('data-jagger-jsource');
+            var modal = $('#ecmembers');
+            var content = modal.find(".datacontent").first();
+            $.ajax({
+                type: "GET",
+                url: link,
+                beforeSend: function () {
+                    content.empty();
+                },
+                success: function (data) {
+                    if(data){
+                        var listbody = $('<ul/>');
+                        listbody.addClass('no-bullet');
+                        var result = [];
+                        var a = 0;
+                        $.each(data, function (i, v) {
+                            result[a++] = '<li><a href="'+baseurl+'providers/detail/show/'+ v.provid+'">'+ v.name+' </a><small>('+ v.entityid+')</small></li>';
+                        })
+                        listbody.append(result.join(''));
+                        content.append(listbody);
+                        modal.foundation('reveal', 'open');
+                    }
+                }
+
+            });
+        });
+
         $("#confirmremover").on('click', '.yes', function (e) {
             e.preventDefault();
             var form = $(this).closest("form");

@@ -39,3 +39,10 @@ echo form_close();
 echo '<a class="close-reveal-modal">&#215;</a>';
 echo '</div>';
 
+
+echo '<div id="regpolmembers" class="reveal-modal small" data-reveal>';
+echo '<h4>'.lang('modtl_listentconregpol').'</h4>';
+echo '<div class="datacontent"></div>';
+echo '<a class="close-reveal-modal">&#215;</a>';
+echo '</div>';
+

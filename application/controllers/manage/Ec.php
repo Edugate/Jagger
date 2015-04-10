@@ -73,7 +73,7 @@ class Ec extends MY_Controller {
                 {
                     $lbl = '<span class="lbl lbl-disabled">' . lang('rr_disabled') . '</span>';
                 }
-                $lbl .= '<span class="label secondary">' . $countProviders . '</span> ';
+                $lbl .= '<span class="label secondary ecmembers" data-jagger-jsource="'.base_url('manage/regpolicy/getmembers/'.$c->getId().'').'">' . $countProviders . '</span> ';
                 $subtype = $c->getSubtype();
                 if (empty($subtype))
                 {
@@ -99,6 +99,41 @@ class Ec extends MY_Controller {
         );
         $data['content_view'] = 'manage/coc_show_view';
         $this->load->view('page', $data);
+    }
+    function getMembers($ecid)
+    {
+        if(!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
+        {
+            set_status_header(403);
+            echo 'Access denied';
+            return;
+        }
+
+        $myLang = MY_Controller::getLang();
+        /**
+         * @var $regPolicy models\Coc
+         */
+        $entCategory = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$ecid));
+        if(empty($entCategory))
+        {
+            set_status_header(404);
+            echo 'no members found';
+            return;
+        }
+        /**
+         * @var $policyMembers models\Provider[]
+         */
+        $ecMembers = $entCategory->getProviders();
+        $result = array();
+        foreach($ecMembers as $member)
+        {
+            $result[] = array(
+                'entityid'=>$member->getEntityId(),
+                'provid'=>$member->getId(),
+                'name'=>$member->getNameToWebInLang($myLang),
+            );
+        }
+        $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
     private function _add_submit_validate()
