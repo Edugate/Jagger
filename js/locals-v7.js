@@ -3717,7 +3717,8 @@ $(document).on('click', 'a.updateprefs', function (e) {
 
 
 
-
+$(".select2").select2();
+$("#itestcombo").select2();
 
 
 
