@@ -27,6 +27,11 @@ class Regpolicy extends MY_Controller
     function __construct()
     {
         parent::__construct();
+
+    }
+
+    public function show($id = null)
+    {
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
             redirect('auth/login', 'location');
@@ -34,10 +39,6 @@ class Regpolicy extends MY_Controller
         $this->load->helper('form');
         $this->load->library('form_validation');
         $this->load->library('zacl');
-    }
-
-    public function show($id = null)
-    {
         $this->title = lang('title_regpols');
         if (isset($id)) {
             show_error('Argument passed to page  not allowed', 403);
@@ -68,7 +69,7 @@ class Regpolicy extends MY_Controller
                 } else {
                     $lbl = '<span class="lbl lbl-disabled">' . lang('rr_disabled') . '</span>';
                 }
-                $lbl .= '<span class="label secondary">' . $countProviders . '</span> ';
+                $lbl .= '<span class="label secondary policymembers" data-jagger-jsource="'.base_url('manage/regpolicy/getmembers/'.$c->getId().'').'">' . $countProviders . '</span> ';
                 /**
                  * @todo add extracting row to show providers connected to policy
                  */
@@ -117,6 +118,13 @@ class Regpolicy extends MY_Controller
 
     public function add()
     {
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin) {
+            redirect('auth/login', 'location');
+        }
+        $this->load->helper('form');
+        $this->load->library('form_validation');
+        $this->load->library('zacl');
         $this->title = lang('title_addregpol');
         $data['titlepage'] = lang('title_addregpol');
         $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
@@ -171,6 +179,13 @@ class Regpolicy extends MY_Controller
 
     public function edit($id)
     {
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin) {
+            redirect('auth/login', 'location');
+        }
+        $this->load->helper('form');
+        $this->load->library('form_validation');
+        $this->load->library('zacl');
         $this->title = lang('title_regpoledit');
 
         if (empty($id) || !is_numeric($id)) {
@@ -226,9 +241,54 @@ class Regpolicy extends MY_Controller
 
     }
 
+    function getMembers($regpolid)
+    {
+        if(!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
+        {
+            set_status_header(403);
+            echo 'Access denied';
+            return;
+        }
+
+        $myLang = MY_Controller::getLang();
+        /**
+         * @var $regPolicy models\Coc
+         */
+        $regPolicy = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$regpolid));
+        if(empty($regPolicy))
+        {
+            set_status_header(404);
+            echo 'no members found';
+            return;
+        }
+        /**
+         * @var $policyMembers models\Provider[]
+         */
+        $policyMembers = $regPolicy->getProviders();
+        $result = array();
+        foreach($policyMembers as $member)
+        {
+            $result[] = array(
+                'entityid'=>$member->getEntityId(),
+                'provid'=>$member->getId(),
+                'name'=>$member->getNameToWebInLang($myLang),
+            );
+        }
+        $this->output->set_content_type('application/json')->set_output(json_encode($result));
+    }
+
 
     function remove($id = null)
     {
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin) {
+            set_status_header(403);
+            echo 'access denied';
+            return;
+        }
+        $this->load->helper('form');
+        $this->load->library('form_validation');
+        $this->load->library('zacl');
         if (empty($id) || !ctype_digit($id)) {
             set_status_header(404);
             echo 'incorrect id or id not provided';
@@ -239,12 +299,7 @@ class Regpolicy extends MY_Controller
             echo 'access denied';
             return;
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            set_status_header(403);
-            echo 'access denied';
-            return;
-        }
+
         $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
         if (!$has_write_access) {
             set_status_header(403);

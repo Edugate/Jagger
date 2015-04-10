@@ -892,7 +892,7 @@ class Manage extends MY_Controller
         if (empty($federation)) {
             show_error('Federation not found', 404);
         }
-        $lang = MY_Controller::getLang();
+        $myLang = MY_Controller::getLang();
         $resource = $federation->getId();
         $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
         if (!$has_write_access) {
@@ -942,7 +942,7 @@ class Manage extends MY_Controller
                     if (strcmp($entype, 'both') == 0) {
                         $entype = 'idp';
                     }
-                    $provider_name = $inv_member->getNameToWebInLang($lang, $entype);;
+                    $provider_name = $inv_member->getNameToWebInLang($myLang, $entype);;
                     $this->em->persist($inv_member);
                     $this->em->flush();
                     $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($inv_member);
@@ -986,7 +986,7 @@ class Manage extends MY_Controller
                     $ltype = 'idp';
                 }
 
-                $list[$l->getType()][$l->getId()] = $l->getNameToWebInLang($lang, $ltype) . ' (' . $l->getEntityId() . ')';
+                $list[$l->getType()][$l->getId()] = $l->getNameToWebInLang($myLang, $ltype) . ' (' . $l->getEntityId() . ')';
             }
             $list = array_filter($list);
             $data['providers'] = $list;
@@ -995,11 +995,13 @@ class Manage extends MY_Controller
             $data['error_message'] = lang('error_notfoundmemberstoberm');
         }
         $this->load->helper('form');
+        $encodedFedName = base64url_encode($federation->getName());
         $data['content_view'] = 'federation/remove_provider_view';
 
+        $data['encodedfedname'] = $encodedFedName;
         $data['breadcrumbs'] = array(
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => '' . $federation->getName() . ''),
+            array('url' => base_url('federations/manage/show/' . $encodedFedName . ''), 'name' => '' . $federation->getName() . ''),
             array('url' => '#', 'type' => 'current', 'name' => lang('rmprovfromfed'))
 
         );

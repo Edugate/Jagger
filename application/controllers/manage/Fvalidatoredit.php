@@ -80,9 +80,16 @@ class Fvalidatoredit extends MY_Controller {
             show_error('no access', 403);
         }
         $data['federationname'] = $federation->getName();
-        $data['federationlink'] = base_url() . 'federations/manage/show/' . base64url_encode($federation->getName());
+        $data['federationlink'] = base_url('federations/manage/show/'.base64url_encode($federation->getName()).'') ;
         $data['newfvalidator'] = FALSE;
 
+
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+            array('url' => $data['federationlink'], 'name' => '' . $federation->getName() . ''),
+            array('url'=>'#','type'=>'current','name'=>lang('title_fedvalidator').' : '.lang('title_editform'))
+
+        );
         if (!empty($fvalidatorid))
         {
             if (!ctype_digit($fvalidatorid))
