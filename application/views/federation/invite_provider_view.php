@@ -14,7 +14,7 @@ if (!empty($providers)) {
 
     echo '<div class="small-12 columns">';
     echo '<div class="small-3 columns">' . jform_label('' . lang('rrprovs') . '', 'provider') . '</div>';
-    echo '<div class="small-6 large-7 columns end">' . form_dropdown('provider', $providers, set_value('provider')) . '</div>';
+    echo '<div class="small-6 large-7 columns end">' . form_dropdown('provider', $providers, set_value('provider'),'class="select2"') . '</div>';
     echo "</div>";
     echo '<div class="small-12 columns">';
     echo '<div class="small-3 columns">' . jform_label('' . lang('rr_message') . '', 'message') . '</div>';
