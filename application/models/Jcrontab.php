@@ -262,8 +262,6 @@ class Jcrontab
             return true;
         }
         return false;
-
-
     }
 
     public function setJcommand($job)
@@ -360,7 +358,7 @@ class Jcrontab
 
     public function setLastRun()
     {
-        $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
+        $currentTime = new \DateTime("now");
         $this->lastrun = $currentTime;
         return $this;
     }
