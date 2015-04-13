@@ -112,7 +112,7 @@ class Gworkers extends MY_Controller
 
             $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled' => true));
             echo count($cronEntries) . PHP_EOL;
-            $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
+            $currentTime = new \DateTime("now");
             foreach ($cronEntries as $c) {
                 $cron = Cron\CronExpression::factory($c->getCronToStr());
                 if ($cron->isDue()) {
