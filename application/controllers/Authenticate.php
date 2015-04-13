@@ -115,9 +115,11 @@ class Authenticate extends MY_Controller
 		}
 		$auth_error = '';
 		if ($this->input->is_ajax_request() && $isReferrerOK && ($_SERVER['REQUEST_METHOD'] === 'POST')) {
-			J_auth::$timeOffset = (int)$this->input->post('browsertimeoffset');
-			log_message('debug', 'client browser timeoffset: ' . J_auth::$timeOffset);
-			$this->session->set_userdata('timeoffset', '' . J_auth::$timeOffset . '');
+            if(empty(J_auth::$timeOffset)) {
+                J_auth::$timeOffset = (int)$this->input->post('browsertimeoffset');
+                log_message('debug', 'client browser timeoffset: ' . J_auth::$timeOffset);
+                $this->session->set_userdata('timeoffset', '' . J_auth::$timeOffset . '');
+            }
 			if ($this->j_auth->logged_in()) {
 				$result = array('success' => true, 'result' => 'OK');
 				$this->output->set_content_type('application/json')->set_output(json_encode($result));
