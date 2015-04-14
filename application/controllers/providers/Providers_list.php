@@ -160,7 +160,7 @@ class Providers_list extends MY_Controller {
 
         $result['columns'] = array(
             'nameandentityid' => array('colname' => '' . $lnamcol . '', 'status' => 1, 'cols' => array('pname', 'pentityid')),
-            'url' => array('colname' => '' . lang('tbl_title_helpurl') . '', 'status' => 1, 'cols' => array('phelpurl')),
+            'url' => array('colname' => '' . lang('e_orgurl') . '', 'status' => 1, 'cols' => array('phelpurl')),
             'pregdate' => array('colname' => '' . lang('tbl_title_regdate') . '', 'status' => 1, 'cols' => array('pregdate')),
             'entstatus' => array('colname' => 'status', 'status' => 1, 'cols' => array('plocked', 'pactive', 'pvisible', 'pstatic', 'plocal'))
         );
