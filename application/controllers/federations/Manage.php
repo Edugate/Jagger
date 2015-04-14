@@ -798,9 +798,12 @@ class Manage extends MY_Controller
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $lang = MY_Controller::getLang();
+        $myLang = MY_Controller::getLang();
         $this->load->library('zacl');
         $this->load->library('show_element');
+        /**
+         * @var $federation models\Federation
+         */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation)) {
             show_error('Federation not found', 404);
@@ -817,31 +820,32 @@ class Manage extends MY_Controller
             log_message('debug', 'Invitation form is valid');
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
-            $inv_member = $this->tmp_providers->getOneById($provider_id);
-            if (empty($inv_member)) {
+            /**
+             * @var $invitedProvider models\Provider
+             */
+            $invitedProvider = $this->tmp_providers->getOneById($provider_id);
+            if (empty($invitedProvider)) {
                 $data['error'] = lang('rerror_providernotexist');
             } else {
-                $inv_member_federations = $inv_member->getFederations();
+                $inv_member_federations = $invitedProvider->getFederations();
                 if ($inv_member_federations->contains($federation)) {
                     $data['error'] = sprintf(lang('rr_provideralready_member_of'), $federation->getName());
                 } else {
                     $this->load->library('approval');
                     /* create request in queue with flush */
-                    $add_to_queue = $this->approval->invitationProviderToQueue($federation, $inv_member, 'Join');
+                    $add_to_queue = $this->approval->invitationProviderToQueue($federation, $invitedProvider, 'Join');
                     if ($add_to_queue) {
                         $mail_recipients = array();
                         $mail_sbj = "Invitation: join federation: " . $federation->getName();
                         $mail_body = "Hi," . PHP_EOL . "Just few moments ago Administator of federation \"" . $federation->getName() . "\"" . PHP_EOL;
-                        $mail_body .= "invited Provider: \"" . $inv_member->getName() . "(" . $inv_member->getEntityId() . ")\"" . PHP_EOL;
+                        $mail_body .= "invited Provider: \"" . $invitedProvider->getName() . " (" . $invitedProvider->getEntityId() . ")\"" . PHP_EOL;
                         $mail_body .= "to join his federation." . PHP_EOL;
                         $mail_body .= "To accept or reject this request please go to Resource Registry" . PHP_EOL;
                         $mail_body .= base_url() . "reports/awaiting" . PHP_EOL . PHP_EOL . PHP_EOL;
                         $mail_body .= "======= additional message attached by requestor ===========" . PHP_EOL;
-                        $mail_body .= $message . PHP_EOL;
+                        $mail_body .= html_escape($message) . PHP_EOL;
                         $mail_body .= "=============================================================" . PHP_EOL;
-
-
-                        $this->email_sender->addToMailQueue(array('grequeststoproviders', 'requeststoproviders'), $inv_member, $mail_sbj, $mail_body, array(), false);
+                        $this->email_sender->addToMailQueue(array('grequeststoproviders', 'requeststoproviders'), $invitedProvider, $mail_sbj, $mail_body, array(), true);
                     }
                 }
             }
@@ -855,7 +859,7 @@ class Manage extends MY_Controller
                 if (strcmp($ltype, 'both') == 0) {
                     $ltype = 'idp';
                 }
-                $list[$l->getType()][$l->getId()] = $l->getNameToWebInLang($lang, $ltype) . ' (' . $l->getEntityId() . ')';
+                $list[$l->getType()][$l->getId()] = $l->getNameToWebInLang($myLang, $ltype) . ' (' . $l->getEntityId() . ')';
             }
         }
         $list = array_filter($list);
