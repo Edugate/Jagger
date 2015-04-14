@@ -254,7 +254,7 @@ class Entityedit extends MY_Controller
 
             if (array_key_exists('lname', $y['f'])) {
                 foreach ($y['f']['lname'] as $k => $v) {
-                    $this->form_validation->set_rules('f[lname][' . $k . ']', ucfirst(lang('localizednamein')) . ' ' . $k, 'strip_tags|trim');
+                    $this->form_validation->set_rules('f[lname][' . $k . ']', ucfirst(lang('e_orgname')) . ' ' . $k, 'strip_tags|trim');
                 }
                 if (count(array_filter($y['f']['lname'])) == 0) {
                     $this->tmp_error = lang('errnoorgnames');
@@ -266,7 +266,7 @@ class Entityedit extends MY_Controller
             }
             if (array_key_exists('ldisplayname', $y['f'])) {
                 foreach ($y['f']['ldisplayname'] as $k => $v) {
-                    $this->form_validation->set_rules('f[ldisplayname][' . $k . ']', ucfirst(lang('localizeddisplaynamein')) . ' ' . $k, 'strip_tags|trim');
+                    $this->form_validation->set_rules('f[ldisplayname][' . $k . ']', ucfirst(lang('e_orgdisplayname')) . ' ' . $k, 'strip_tags|trim');
                 }
                 if (count(array_filter($y['f']['ldisplayname'])) == 0) {
                     $this->tmp_error = lang('errnoorgdisnames');
@@ -282,7 +282,7 @@ class Entityedit extends MY_Controller
                     /**
                      * @todo GEO validation
                      */
-                    $this->form_validation->set_rules('f[uii][idpsso][geo][' . $k . ']', 'Geolocation ', 'strip_tags|trim|min_length[3]|max_length[40]|valid_latlng');
+                    $this->form_validation->set_rules('f[uii][idpsso][geo][' . $k . ']', lang('rr_geo').' ', 'strip_tags|trim|min_length[3]|max_length[40]|valid_latlng');
                 }
             }
 
@@ -315,18 +315,24 @@ class Entityedit extends MY_Controller
 
             if (array_key_exists('lhelpdesk', $y['f'])) {
                 foreach ($y['f']['lhelpdesk'] as $k => $v) {
-                    $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', lang('localizedhelpdeskin') . ' ' . $k, 'strip_tags|trim|required|valid_url');
+                    $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', lang('e_orgurl') . ' ', 'strip_tags|trim|valid_url');
                 }
-
+                $y['f']['lhelpdesk'] = array_filter($y['f']['lhelpdesk']);
+                if(count($y['f']['lhelpdesk']) == 0)
+                {
+                    $this->tmp_error = lang('errnoorgurls');
+                    $optValidationsPassed = FALSE;
+                }
             } else {
                 $this->tmp_error = lang('errnoorgurls');
                 $optValidationsPassed = FALSE;
             }
 
 
+
             if (array_key_exists('contact', $y['f'])) {
                 foreach ($y['f']['contact'] as $k => $v) {
-                    $this->form_validation->set_rules('f[contact][' . $k . '][email]', '' . lang('rr_contactemail') . '', 'trim|htmlspecialchars|valid_email');
+                    $this->form_validation->set_rules('f[contact][' . $k . '][email]', '' . lang('rr_contactemail') . '', 'trim|valid_email');
                     $this->form_validation->set_rules('f[contact][' . $k . '][type]', '' . lang('rr_contacttype') . '', 'trim|htmlspecialchars|valid_contact_type');
                     $this->form_validation->set_rules('f[contact][' . $k . '][fname]', '' . lang('rr_contactfirstname') . '', 'trim|htmlspecialchars');
                     $this->form_validation->set_rules('f[contact][' . $k . '][sname]', '' . lang('rr_contactlastname') . '', 'trim|htmlspecialchars');
@@ -348,21 +354,22 @@ class Entityedit extends MY_Controller
                 if (array_key_exists('spsso', $y['f']['crt'])) {
                     foreach ($y['f']['crt']['spsso'] as $k => $v) {
                         if (is_numeric($k)) {
-                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|getPEM|verify_cert_nokeysize');
+                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'SPSSODescriptor/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
                         } else {
-                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'cert data', 'trim|getPEM|verify_cert');
+                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'SPSSoDescriptor/Certificate body', 'trim|required|getPEM|verify_cert');
                         }
                         $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
                         $this->form_validation->set_rules('f[crt][spsso][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
+
 
                     }
                 }
                 if (array_key_exists('idpsso', $y['f']['crt'])) {
                     foreach ($y['f']['crt']['idpsso'] as $k => $v) {
                         if (is_numeric($k)) {
-                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|getPEM|verify_cert_nokeysize');
+                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'IDPSSODescriptor/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
                         } else {
-                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'Certificate', 'trim|getPEM|verify_cert');
+                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'IDPSSODescriptor/Certificate body', 'trim|required|getPEM|verify_cert');
                         }
                         $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
                         $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
@@ -371,9 +378,9 @@ class Entityedit extends MY_Controller
                 if (array_key_exists('aa', $y['f']['crt'])) {
                     foreach ($y['f']['crt']['aa'] as $k => $v) {
                         if (is_numeric($k)) {
-                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|getPEM|verify_cert_nokeysize');
+                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'AttributeAuthorityDescriptor/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
                         } else {
-                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'Certificate', 'trim|getPEM|verify_cert');
+                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'AttributeAuthorityDescriptor/Certificate body', 'trim|required|getPEM|verify_cert');
                         }
                         $this->form_validation->set_rules('f[crt][aa][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
                         $this->form_validation->set_rules('f[crt][aa][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
@@ -384,14 +391,21 @@ class Entityedit extends MY_Controller
             /**
              * service locations
              */
-            $nosso = 0;
+            $idpssoSrvsLocations = 0;
+
+            $aaSrvsLocations = 0;
             $nossobindings = array();
             $noidpslo = array();
             if (array_key_exists('srv', $y['f'])) {
                 if (array_key_exists('IDPAttributeService', $y['f']['srv'])) {
                     foreach ($y['f']['srv']['IDPAttributeService'] as $k => $v) {
-                        $this->form_validation->set_rules('f[srv][IDPAttributeService][' . $k . '][url]', 'AttributeAuthorityDescriptor/AttributeService: ' . html_escape($y['f']['srv']['SingleSignOnService']['' . $k . '']['bind']), 'strip_tags|trim|max_length[254]|valid_url');
+                        $this->form_validation->set_rules('f[srv][IDPAttributeService][' . $k . '][url]', 'AttributeAuthorityDescriptor/AttributeService: ' . html_escape($y['f']['srv']['IDPAttributeService']['' . $k . '']['bind']), 'strip_tags|trim|max_length[254]|valid_url');
+                        if(!empty($y['f']['srv']['IDPAttributeService'][''.$k.'']['url']))
+                        {
+                           ++$aaSrvsLocations;
+                        }
                     }
+
                 }
                 if (!array_key_exists('SingleSignOnService', $y['f']['srv'])) {
                     $y['f']['srv']['SingleSignOnService'] = array();
@@ -401,7 +415,7 @@ class Entityedit extends MY_Controller
                     $tmp1 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][url]', 'SingleSignOnService URL for: ' . $y['f']['srv']['SingleSignOnService']['' . $k . '']['bind'], 'strip_tags|trim|max_length[254]|valid_url');
                     $tmp2 = $this->form_validation->set_rules('f[srv][SingleSignOnService][' . $k . '][bind]', 'SingleSignOnService Binding protocol', 'htmlspecialchars|required');
                     if ($tmp1 && $tmp2 && !empty($y['f']['srv']['SingleSignOnService']['' . $k . '']['url'])) {
-                        ++$nosso;
+                        ++$idpssoSrvsLocations;
                     }
                 }
                 if (array_key_exists('IDPSingleLogoutService', $y['f']['srv'])) {
@@ -429,7 +443,7 @@ class Entityedit extends MY_Controller
                     foreach ($y['f']['srv']['AssertionConsumerService'] as $k => $v) {
                         $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][url]', 'AssertionConsumerService URL', 'strip_tags|trim|max_length[254]|valid_url');
                         $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][bind]', 'AssertionConsumerService Binding protocol', 'trim|htmlspecialchars');
-                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][order]', 'AssertionConsumerService Index', 'trim|htmlspecialchars');
+                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][order]', 'AssertionConsumerService index', 'trim|htmlspecialchars');
 
                         $tmpurl = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['order']);
@@ -556,8 +570,8 @@ class Entityedit extends MY_Controller
             $result = $this->form_validation->run();
             if (strcasecmp($this->type, 'SP') != 0) {
 
-                if (empty($nosso) && !$staticisdefault) {
-                    $this->tmp_error = 'At least one SSO must be set';
+                if (empty($idpssoSrvsLocations) && empty($aaSrvsLocations) && !$staticisdefault) {
+                    $this->tmp_error = lang('errmissssoaasrvs');
                     return false;
                 }
                 if (!empty($nossobindings) && is_array($nossobindings) && count($nossobindings) > 0 && count(array_unique($nossobindings)) < count($nossobindings)) {

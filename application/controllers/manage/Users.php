@@ -813,6 +813,24 @@ class Users extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
+        $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
+        if (!$accessListUsers)
+        {
+            $breadcrumbs = array(
+                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
+                array('url' => base_url('manage/users/show/'.$encoded_username.''), 'name' => html_escape($user->getUsername())),
+                array('url' => base_url('#'), 'name' => lang('rr_changepass'), 'type' => 'current')
+            );
+        }
+        else
+        {
+            $breadcrumbs = array(
+                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
+                array('url' => base_url('manage/users/show/'.$encoded_username.''), 'name' => html_escape($user->getUsername()),),
+                array('url' => base_url('#'), 'name' => lang('rr_changepass'), 'type' => 'current')
+            );
+        }
+        $data['breadcrumbs'] = $breadcrumbs;
         $data['encoded_username'] = $encoded_username;
         $data['manage_access'] = $manage_access;
         $data['write_access'] = $write_access;

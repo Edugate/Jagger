@@ -739,7 +739,7 @@ class Providertoxml
         return $xml;
     }
 
-    private function verifySP(models\Provider $ent)
+    private function verifySPSSO(models\Provider $ent)
     {
         $doFilter = array('AssertionConsumerService');
         $serviceLocations = $ent->getServiceLocations()->filter(
@@ -754,7 +754,7 @@ class Providertoxml
         return TRUE;
     }
 
-    private function verifyIdP(\models\Provider $ent)
+    private function verifyIDPSSO(\models\Provider $ent)
     {
         $doFilter = array('SingleSignOnService');
         $serviceLocations = $ent->getServiceLocations()->filter(
@@ -779,6 +779,34 @@ class Providertoxml
 
         return TRUE;
     }
+
+
+    private function verifyAA(\models\Provider $ent)
+    {
+        $doFilter = array('IDPAttributeService');
+        $serviceLocations = $ent->getServiceLocations()->filter(
+            function (models\ServiceLocation $entry) use ($doFilter) {
+                return in_array($entry->getType(), $doFilter);
+            }
+        );
+        if (count($serviceLocations) == 0) {
+            log_message('warning', __METHOD__ . ' missing  ServiceLocations (AA) for entity:' . $ent->getEntityId());
+            return FALSE;
+        }
+        $doCertFilter = array('aa');
+        $certificates = $ent->getCertificates()->filter(
+            function (models\Certificate $entry) use ($doCertFilter) {
+                return in_array($entry->getType(), $doCertFilter);
+            }
+        );
+        if (count($certificates) == 0) {
+            log_message('error', __METHOD__ . ' missing cert for AA : entity:' . $ent->getEntityId());
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
 
     // if $doCacheId is set it saves entiy in cache with key = ${systemprefix}.$doCacheId
     public function entityConvert(\XMLWriter $xmlOut, \models\Provider $ent, $options, $doCacheId = null)
@@ -808,15 +836,18 @@ class Providertoxml
         }
         $islocal = $ent->getLocal();
         $valiUntil = $ent->getValidTo();
-
+        $isValidIDPSSO = FALSE;
+        $isValidAA = FALSE;
         if ($hasIdpRole) {
-            $canProceed = $this->verifyIdP($ent);
+            $isValidIDPSSO = $this->verifyIDPSSO($ent);
+            $isValidAA = $this->verifyAA($ent);
+            $canProceed = ($isValidAA || $isValidIDPSSO);
             if (!$canProceed) {
                 return $xml;
             }
         }
         if ($hasSpRole) {
-            $canProceed = $this->verifySP($ent);
+            $canProceed = $this->verifySPSSO($ent);
             if (!$canProceed) {
                 return $xml;
             }
@@ -840,11 +871,13 @@ class Providertoxml
         foreach ($rolesFns as $fn) {
             if (strcmp($fn, 'createSPSSODescriptor') == 0) {
                 $this->$fn($xml, $ent, $options);
-            } else {
+            } elseif(strcmp($fn, 'createIDPSSODescriptor') == 0  && $isValidIDPSSO) {
+                $this->$fn($xml, $ent);
+            } elseif(strcmp($fn, 'createAttributeAuthorityDescriptor') == 0  && $isValidAA) {
                 $this->$fn($xml, $ent);
             }
         }
-
+        
         $this->createOrganization($xml, $ent);
         $this->createContacts($xml, $ent);
 
@@ -895,14 +928,18 @@ class Providertoxml
         $islocal = $ent->getLocal();
         $valiUntil = $ent->getValidTo();
 
+        $isValidIDPSSO = FALSE;
+        $isValidAA = FALSE;
         if ($hasIdpRole) {
-            $canProceed = $this->verifyIdP($ent);
+            $isValidIDPSSO = $this->verifyIDPSSO($ent);
+            $isValidAA = $this->verifyAA($ent);
+            $canProceed =  ($isValidIDPSSO || $isValidAA);
             if (!$canProceed) {
                 return null;
             }
         }
         if ($hasSpRole) {
-            $canProceed = $this->verifySP($ent);
+            $canProceed = $this->verifySPSSO($ent);
             if (!$canProceed) {
                 return null;
             }
@@ -932,7 +969,9 @@ class Providertoxml
         foreach ($rolesFns as $fn) {
             if (strcmp($fn, 'createSPSSODescriptor') == 0) {
                 $this->$fn($xml, $ent, $options);
-            } else {
+            } elseif(strcmp($fn, 'createIDPSSODescriptor') == 0  && $isValidIDPSSO) {
+                $this->$fn($xml, $ent);
+            } elseif(strcmp($fn, 'createAttributeAuthorityDescriptor') == 0  && $isValidAA) {
                 $this->$fn($xml, $ent);
             }
         }
