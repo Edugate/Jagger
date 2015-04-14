@@ -33,6 +33,9 @@ class J_queue
         $this->em = $this->ci->doctrine->em;
         $this->tmp_providers = new models\Providers;
         $this->tmp_federations = new models\Federations;
+        /**
+         * @var $attrs models\Attribute[]
+         */
         $attrs = $this->em->getRepository("models\Attribute")->findAll();
         foreach ($attrs as $a) {
             $this->attributesByName['' . $a->getOid() . ''] = $a;
@@ -47,26 +50,20 @@ class J_queue
     function displayFormsButtons($qid, $onlycancel = FALSE)
     {
         /* add approve form */
-        $approve_form = '';
+        $approveForm = '';
         $rejecttext = lang('rr_cancel');
         if (!$onlycancel) {
             $rejecttext = lang('rr_submitreject');
-            $approve_hidden_attributes = array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes');
-            $approve_attrid = array('id' => 'approvequeue');
-            $approve_form = form_open('reports/awaiting/approve', $approve_attrid, $approve_hidden_attributes);
-            $approve_form .= '<button type="submit" name="mysubmit" value="Accept request!" class="savebutton saveicon right">' . lang('rr_submitapprove') . '</button>';
-            $approve_form .= form_close();
+            $approveForm = form_open('reports/awaiting/approve',array('id' => 'approvequeue') , array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes'));
+            $approveForm .= '<button type="submit" name="mysubmit" value="Accept request!" class="savebutton saveicon right">' . lang('rr_submitapprove') . '</button>'. form_close();
         }
 
         /* add reject form */
         $reject_hidden_attributes = array('qaction' => 'reject', 'qid' => $qid);
         $reject_attrid = array('id' => 'rejectqueue');
-        $reject_form = form_open('reports/awaiting/reject', $reject_attrid, $reject_hidden_attributes);
-        $reject_form .= '<button type="submit" name="mysubmit" value="Reject request!" class="resetbutton reseticon left alert">' . $rejecttext . '</button>';
-        $reject_form .= form_close();
-
-
-        $result = '<div class="small-12 large-6 columns"><div class="buttons panel clearfix" >' . $reject_form . '' . $approve_form . '</div></div>';
+        $rejectForm = form_open('reports/awaiting/reject', $reject_attrid, $reject_hidden_attributes);
+        $rejectForm .= '<button type="submit" name="mysubmit" value="Reject request!" class="resetbutton reseticon left alert">' . $rejecttext . '</button>'.form_close();
+        $result = '<div class="small-12 large-6 columns"><div class="buttons panel clearfix" >' . $rejectForm . '' . $approveForm . '</div></div>';
         return $result;
     }
 
@@ -124,22 +121,21 @@ class J_queue
         if (!empty($member)) {
             $u->setRole($member);
         }
-        $p_role = new models\AclRole;
-        $p_role->setName($u->getUsername());
-        $p_role->setType('user');
-        $p_role->setDescription('personal role for user ' . $u->getUsername());
-        $u->setRole($p_role);
-        $this->em->persist($p_role);
+        $personalRole = new models\AclRole;
+        $personalRole->setName($u->getUsername());
+        $personalRole->setType('user');
+        $personalRole->setDescription('personal role for user ' . $u->getUsername());
+        $u->setRole($personalRole);
+        $this->em->persist($personalRole);
         $this->em->persist($u);
 
-        $m_subj = 'User Registration';
-        $m_body = 'Dear user,' . PHP_EOL;
-        $m_body .= 'User registration request to use the service ' . base_url() . ' has been accepted' . PHP_EOL;
-        $m_body .= 'Details:' . PHP_EOL;
-        $m_body .= 'Username: ' . $u->getUsername() . PHP_EOL;
-        $m_body .= 'E-mail: ' . $u->getEmail() . PHP_EOL;
+        $mailSubject = 'User Registration';
+        $mailBody = 'Dear user,' . PHP_EOL;
+        $mailBody .= 'User registration request to use the service ' . base_url() . ' has been accepted' . PHP_EOL;
+        $mailBody .= 'Details:' . PHP_EOL  .'Username: ' . $u->getUsername() . PHP_EOL;
+        $mailBody .= 'E-mail: ' . $u->getEmail() . PHP_EOL;
         $recipient[] = $u->getEmail();
-        $this->ci->email_sender->addToMailQueue(array(), null, $m_subj, $m_body, $recipient, $sync = false);
+        $this->ci->email_sender->addToMailQueue(array(), null, $mailSubject, $mailBody, $recipient, $sync = false);
         return true;
     }
 
