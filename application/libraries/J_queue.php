@@ -40,8 +40,8 @@ class J_queue
     }
 
     /**
-     * generate approve/reject buttons for queue detail
-     * @param type $qid
+     * @param $qid
+     * @param bool $onlycancel
      * @return string
      */
     function displayFormsButtons($qid, $onlycancel = FALSE)
@@ -273,58 +273,59 @@ class J_queue
         return $r;
     }
 
+    /**
+     * @param \models\Queue $q
+     * @return array
+     */
     function displayRegisterFederation(models\Queue $q)
     {
         $objData = new models\Federation;
-
         $objData->importFromArray($q->getData());
-
-
-        $fedrows = array();
-        $fedrows[] = array('header' => lang('request'));
-        $fedrows[] = array('name' => lang('type'), 'value' => lang('reqregnewfed'));
-
         $creator = $q->getCreator();
         if ($creator) {
-            $fedrows[] = array('name' => lang('requestor'), 'value' => $creator->getFullname() . ' (' . $creator->getUsername() . ')');
+            $row1 = array('name' => lang('requestor'), 'value' => $creator->getFullname() . ' (' . $creator->getUsername() . ')');
         } else {
-            $fedrows[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
+            $row1 = array('name' => lang('requestor'), 'value' => lang('unknown'));
         }
-        $fedrows[] = array('name' => lang('rr_sourceip'), 'value' => $q->getIP());
-
-        $fedrows[] = array('name' => lang('rr_regdate'), 'value' => $q->getCreatedAt());
-        $fedrows[] = array('header' => lang('rr_basicinformation'));
-        $fedrows[] = array('name' => lang('rr_fed_name'), 'value' => $objData->getName());
-        $fedrows[] = array('name' => lang('fednameinmeta'), 'value' => $objData->getUrn());
-        $fedrows[] = array('name' => lang('Description'), 'value' => $objData->getDescription());
-        $fedrows[] = array('name' => lang('rr_fed_tou'), 'value' => $objData->getTou());
-
+        $fedrows = array(
+            array('header' => lang('request')),
+            array('name' => lang('type'), 'value' => lang('reqregnewfed')),
+            $row1,
+            array('name' => lang('rr_sourceip'), 'value' => $q->getIP()),
+            array('name' => lang('rr_regdate'), 'value' => $q->getCreatedAt()),
+            array('header' => lang('rr_basicinformation')),
+            array('name' => lang('rr_fed_name'), 'value' => $objData->getName()),
+            array('name' => lang('fednameinmeta'), 'value' => $objData->getUrn()),
+            array('name' => lang('Description'), 'value' => $objData->getDescription()),
+            array('name' => lang('rr_fed_tou'), 'value' => $objData->getTou())
+        );
         return $fedrows;
     }
 
+    /**
+     * @param \models\Queue $q
+     * @return array
+     */
     function displayDeleteFederation(models\Queue $q)
     {
         $objData = new models\Federation;
-
         $objData->importFromArray($q->getData());
-
-
-        $fedrows = array();
-        $fedrows[] = array('header' => lang('request'));
-        $fedrows[] = array('name' => lang('type'), 'value' => lang('reqdelfed'));
-
         $creator = $q->getCreator();
         if ($creator) {
-            $fedrows[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
+            $row1 = array('name' => lang('requestor'), 'value' => $creator->getUsername());
         } else {
-            $fedrows[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
+            $row1 = array('name' => lang('requestor'), 'value' => lang('unknown'));
         }
-        $fedrows[] = array('name' => lang('rr_sourceip'), 'value' => $q->getIP());
-        $fedrows[] = array('name' => lang('rr_requestdate'), 'value' => $q->getCreatedAt());
-        $fedrows[] = array('header' => lang('rr_basicinformation'));
-        $fedrows[] = array('name' => lang('rr_fed_name'), 'value' => $objData->getName());
-        $fedrows[] = array('name' => lang('fednameinmeta'), 'value' => $objData->getUrn());
-
+        $fedrows = array(
+            array('header' => lang('request')),
+            array('name' => lang('type'), 'value' => lang('reqdelfed')),
+            $row1,
+            array('name' => lang('rr_sourceip'), 'value' => $q->getIP()),
+            array('name' => lang('rr_requestdate'), 'value' => $q->getCreatedAt()),
+            array('header' => lang('rr_basicinformation')),
+            array('name' => lang('rr_fed_name'), 'value' => $objData->getName()),
+            array('name' => lang('fednameinmeta'), 'value' => $objData->getUrn())
+        );
         return $fedrows;
     }
 
@@ -333,7 +334,6 @@ class J_queue
         $showXML = FALSE;
         $objData = null;
         $data = $q->getData();
-        $objType = $q->getObjType();
         $objData = new models\Provider;
         if (!isset($data['metadata'])) {
             $objData->importFromArray($data);
@@ -357,7 +357,6 @@ class J_queue
                 }
                 $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
                 if (count($domlist) == 1) {
-                    $d = array();
                     foreach ($domlist as $l) {
                         $entarray = $this->ci->metadata2array->entityDOMToArray($l, TRUE);
                     }
@@ -516,7 +515,6 @@ class J_queue
             $dataRows[$i]['name'] = 'XML';
             $this->ci->load->library('geshilib');
             $dataRows[$i]['value'] = '' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . '';
-            $i++;
         }
         return $dataRows;
     }
@@ -536,8 +534,7 @@ class J_queue
         $this->ci->table->set_caption(lang('rr_requestawaiting'));
 
 
-        $text = '<span style="white-space: normal">' . lang('adminoffed') . ': ' . $queue->getName() . ' ' . lang('invyourprov') . ': (' . $provider->getEntityId() . ')';
-        $text .= "</span>";
+        $text = '<span style="white-space: normal">' . lang('adminoffed') . ': ' . $queue->getName() . ' ' . lang('invyourprov') . ': (' . $provider->getEntityId() . ')</span>';
         $cell = array('data' => $text, 'colspan' => 2);
         $this->ci->table->add_row($cell);
         $cell = array('data' => lang('rr_details'), 'class' => 'highlight', 'colspan' => 2);
@@ -554,9 +551,7 @@ class J_queue
         $this->ci->table->add_row($cell);
         $cell = array('data' => $this->displayFormsButtons($queue->getId()), 'colspan' => 2);
         $this->ci->table->add_row($cell);
-        $result = '';
-        $result .= $this->ci->table->generate();
-        $result .= '';
+        $result = $this->ci->table->generate();
         $this->ci->table->clear();
         return $result;
     }
@@ -576,10 +571,7 @@ class J_queue
         $tmpl = array('table_open' => '<table id="details" class="zebra">');
         $this->ci->table->set_template($tmpl);
         $this->ci->table->set_caption(lang('rr_requestawaiting'));
-
-
-        $text = '<span style="white-space: normal">' . lang('adminofprov') . ': ' . $queue->getName() . ' ' . lang('askedyourfed') . ': (' . $federation->getName() . ')';
-        $text .= "</span>";
+        $text = '<span style="white-space: normal">' . lang('adminofprov') . ': ' . $queue->getName() . ' ' . lang('askedyourfed') . ': (' . $federation->getName() . ')</span>';
         $cell = array('data' => $text, 'colspan' => 2);
         $this->ci->table->add_row($cell);
         $cell = array('data' => lang('rr_details'), 'class' => 'highlight', 'colspan' => 2);
@@ -598,12 +590,10 @@ class J_queue
                 break;
             }
         }
-        if ($fedValidator) {
-            $nname = $fedValidator->getName();
-        } else {
-            $nname = '';
-        }
         $data = $queue->getData();
+        /**
+         * @var $provider models\Provider
+         */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $data['entityid']));
         $validators = $federation->getValidators();
         $valMandatory = null;
@@ -649,13 +639,10 @@ class J_queue
         $cell = array('data' => $this->displayFormsButtons($queue->getId(), !$canApprove), 'colspan' => 2);
         $this->ci->table->add_row($cell);
         # show additional information returned by validator
-        $text = '<div id="fvresult" style="display:none;" data-alert class="alert-box info"><div><b>' . lang('fvalidcodereceived') . '</b>: <span id="fvreturncode"></span></div><div><p><b>' . lang('fvalidmsgsreceived') . '</b>:</p><div id="fvmessages"></div></div></div>';
-        $text .= '<div id="fvalidesc"></div>';
+        $text = '<div id="fvresult" style="display:none;" data-alert class="alert-box info"><div><b>' . lang('fvalidcodereceived') . '</b>: <span id="fvreturncode"></span></div><div><p><b>' . lang('fvalidmsgsreceived') . '</b>:</p><div id="fvmessages"></div></div></div><div id="fvalidesc"></div>';
         $cell = array('data' => $text, 'colspan' => 2);
         $this->ci->table->add_row($cell);
-        $result = '';
-        $result .= $this->ci->table->generate();
-        $result .= '';
+        $result = $this->ci->table->generate();
         $this->ci->table->clear();
         return $result;
     }
