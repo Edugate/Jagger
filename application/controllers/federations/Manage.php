@@ -29,7 +29,7 @@ class Manage extends MY_Controller
     {
         parent::__construct();
         $this->current_site = current_url();
-        $this->load->helper(array('cert'));
+        $this->load->helper(array('cert', 'form'));
         $this->session->set_userdata(array('currentMenu' => 'federation'));
         /**
          * @todo add check loggedin
@@ -43,30 +43,30 @@ class Manage extends MY_Controller
     {
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
-        } else {
-            $data['breadcrumbs'] = array(
-                array('url' => base_url('federations/manage'), 'name' => lang('rr_federations'), 'type' => 'current'),
-
-
-            );
-            $this->load->library('zacl');
-            $this->title = lang('title_fedlist');
-            /**
-             * @var $federationCategories models\FederationCategory[]
-             */
-            $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
-            $data['categories'] = array();
-            foreach ($federationCategories as $v) {
-                $data['categories'][] = array('catid' => '' . $v->getId() . '',
-                    'name' => '' . $v->getName() . '',
-                    'title' => '' . $v->getFullName() . '',
-                    'desc' => '' . $v->getDescription() . '',
-                    'default' => '' . $v->isDefault() . '');
-            }
-            $data['titlepage'] = lang('rr_federation_list');
-            $data['content_view'] = 'federation/list_view.php';
-            $this->load->view('page', $data);
         }
+        $this->load->library('zacl');
+        $this->title = lang('title_fedlist');
+        /**
+         * @var $federationCategories models\FederationCategory[]
+         */
+        $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
+        $data = array(
+            'categories'=>array(),
+            'titlepage'=>lang('rr_federation_list'),
+            'content_view'=>'federation/list_view.php',
+            'breadcrumbs'=>array(
+                array('url' => base_url('federations/manage'), 'name' => lang('rr_federations'), 'type' => 'current')
+            ),
+        );
+        foreach ($federationCategories as $v) {
+            $data['categories'][] = array('catid' => '' . $v->getId() . '',
+                'name' => '' . $v->getName() . '',
+                'title' => '' . $v->getFullName() . '',
+                'desc' => '' . $v->getDescription() . '',
+                'default' => '' . $v->isDefault() . '');
+        }
+        $this->load->view('page', $data);
+
     }
 
     function changestatus()
@@ -411,22 +411,18 @@ class Manage extends MY_Controller
         $data['result']['general'][] = array(lang('fednameinmeta'), html_escape($federation->getUrn()));
         $data['result']['general'][] = array(lang('rr_fed_sysname'), html_escape($federation->getSysname()));
         $entitiesDescriptorId = $federation->getDescriptorId();
-        if(!empty($entitiesDescriptorId))
-        {
-             $data['result']['general'][] = array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
-        }
-        else
-        {
+        if (!empty($entitiesDescriptorId)) {
+            $data['result']['general'][] = array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
+        } else {
             $validfor = new \DateTime("now", new \DateTimezone('UTC'));
-            $idprefix ='';
+            $idprefix = '';
             $prefid = $this->config->item('fedmetadataidprefix');
-            if (!empty($prefid))
-            {
+            if (!empty($prefid)) {
                 $idprefix = $prefid;
             }
             $idsuffix = $validfor->format('YmdHis');
             $entitiesDescriptorId = $idprefix . $idsuffix;
-            $data['result']['general'][] = array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId). ' <span class="label">'.lang('rr_entdesciddyn').'</span>');
+            $data['result']['general'][] = array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
         }
         $data['result']['general'][] = array(lang('rr_fed_publisher'), html_escape($federation->getPublisher()));
         $data['result']['general'][] = array(lang('rr_fed_desc'), html_escape($federation->getDescription()));
@@ -532,21 +528,20 @@ class Manage extends MY_Controller
                     $method = $f->getMethod();
                     $fedstatusLabels = '';
                     if ($isenabled) {
-                        $fedstatusLabels .= ' '.makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
+                        $fedstatusLabels .= ' ' . makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
                     } else {
-                        $fedstatusLabels .= ' '.makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
+                        $fedstatusLabels .= ' ' . makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
                     }
                     if ($ismandatory) {
-                        $fedstatusLabels .= ' '.makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory'));
+                        $fedstatusLabels .= ' ' . makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory'));
                     } else {
-                        $fedstatusLabels .= ' '.makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional'));
+                        $fedstatusLabels .= ' ' . makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional'));
                     }
-                    if($isenabledForRegistration)
-                    {
-                        $fedstatusLabels .= ' '.makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg'));
+                    if ($isenabledForRegistration) {
+                        $fedstatusLabels .= ' ' . makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg'));
                     }
 
-                    $d['fvalidators'][] = array('data'=>lang('rr_status'),'value'=>$fedstatusLabels);
+                    $d['fvalidators'][] = array('data' => lang('rr_status'), 'value' => $fedstatusLabels);
                     $d['fvalidators'][] = array('data' => lang('Description'), 'value' => html_escape($f->getDescription()));
                     $d['fvalidators'][] = array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType());
                     $d['fvalidators'][] = array('data' => lang('fvalid_url'), 'value' => $f->getUrl());
@@ -643,11 +638,9 @@ class Manage extends MY_Controller
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library('zacl');
+        $this->load->library(array('zacl', 'show_element'));
         $form_elements = array();
-        $this->load->helper('form');
         if (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp') == 0) {
-            $this->load->library('show_element');
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
             if (empty($federation)) {
                 show_error(lang('error_fednotfound'), 404);
@@ -865,7 +858,6 @@ class Manage extends MY_Controller
             $data['error_message'] = lang('rr_fednoprovidersavail');
         }
         $data['fedname'] = $federation->getName();
-        $this->load->helper('form');
 
         $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()) . '">' . $federation->getName() . '</a>';
 
@@ -993,7 +985,6 @@ class Manage extends MY_Controller
         } else {
             $data['error_message'] = lang('error_notfoundmemberstoberm');
         }
-        $this->load->helper('form');
         $encodedFedName = base64url_encode($federation->getName());
         $data['content_view'] = 'federation/remove_provider_view';
 
