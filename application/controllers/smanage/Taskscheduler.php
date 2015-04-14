@@ -262,7 +262,7 @@ class Taskscheduler extends MY_Controller
             $lastRun = $t->getLastRun();
             $lastRunHtml = 'never';
             if (!empty($lastRun)) {
-                $lastRunHtml = date('Y-m-d H:i:s', $lastRun->format('U') + j_auth::$timeOffset);
+                $lastRunHtml = $lastRun->format('Y-m-d H:i:s');
 
             }
             $params = $t->getJparams();

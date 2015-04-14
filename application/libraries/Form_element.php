@@ -301,7 +301,7 @@ class Form_element
 		}
 
 		if (strcmp($enttype, 'SP') != 0) {
-			$Part = '<fieldset><legend>' . lang('idpcerts') . ' <small><i>IDPSSODesciptor</i></small></legend><div>';
+			$Part = '<fieldset><legend>IDPSSODescriptor</legend><div>';
 			$idpssocerts = array();
 // start CERTS IDPSSODescriptor
 			if ($sessform && isset($ses['crt']['idpsso'])) {
@@ -318,7 +318,7 @@ class Form_element
 			$Part .= $newelement . '</div></fieldset>';
 			$result[] = $Part;
 // end CERTS IDPSSODescriptor
-			$Part = '<fieldset><legend>' . lang('idpcerts') . ' <small><i>AttributeAuthorityDesciptor</i></small></legend><div>';
+			$Part = '<fieldset><legend>AttributeAuthorityDescriptor</legend><div>';
 			$aacerts = array();
 // start CERTS AttributeAuthorityDescriptor
 			if ($sessform && isset($ses['crt']['aa'])) {
@@ -338,7 +338,7 @@ class Form_element
 // end CERTS AttributeAuthorityDescriptor
 		}
 		if (strcmp($enttype, 'IDP') != 0) {
-			$Part = '<fieldset><legend>' . lang('rr_certificates') . ' <small><i>' . lang('serviceprovider') . '</i></small></legend><div>';
+			$Part = '<fieldset><legend>SPSSODescriptor</legend><div>';
 			$spssocerts = array();
 			if ($sessform && isset($ses['crt']['spsso'])) {
 				foreach ($ses['crt']['spsso'] as $key => $value) {
@@ -360,9 +360,7 @@ class Form_element
 	private function _generateAttrReqAddButton($attrs)
 	{
 
-		$r = '<div class="small-12 columns">';
-		$r .= '<div class="medium-3 columns">';
-		$r .= '<select name="nattrreq">';
+		$r = '<div class="small-12 columns"><div class="medium-3 columns"><select name="nattrreq">';
 		foreach ($attrs as $a) {
 			if (isset($a['disabled'])) {
 				$disabled = 'disabled="disabled"';
@@ -371,11 +369,7 @@ class Form_element
 			}
 			$r .= '<option value="' . $a['attrid'] . '" ' . $disabled . '>' . $a['attrname'] . '</option>';
 		}
-
-		$r .= '</select>';
-		$r .= '</div>';
-		$r .= '<div class="medium-3 columns end"><button id="nattrreqbtn" name="nattrreqbtn" class="tiny">' . lang('rr_add') . '</button></div>';
-		$r .= '</div>';
+		$r .= '</select></div><div class="medium-3 columns end"><button id="nattrreqbtn" name="nattrreqbtn" class="tiny">'.lang('rr_add').'</button></div></div>';
 		return $r;
 	}
 
