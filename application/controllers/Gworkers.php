@@ -68,7 +68,7 @@ class Gworkers extends MY_Controller
                     $mails = $em->getRepository("models\MailQueue")->findBy(array('deliverytype' => 'mail', 'frequence' => '1', 'issent' => false));
 
                     foreach ($mails as $m) {
-                        log_message('debug', 'MAILQUEUE sending ' . $m->getId());
+                        log_message('info', 'MAILQUEUE sending mail with id: ' . $m->getId());
                         $maildata = $m->getMailToArray();
                         $this->email->clear();
                         $this->email->from($sendOptions['mailfrom']);
