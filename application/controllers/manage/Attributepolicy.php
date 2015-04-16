@@ -299,7 +299,6 @@ class Attributepolicy extends MY_Controller
             show_error(lang('rerror_idpnotfound'), 404);
             return;
         }
-
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
         $data['breadcrumbs'] = array(
@@ -315,8 +314,7 @@ class Attributepolicy extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
-        $lang = MY_Controller::getLang();
-        $displayname = $idp->getNameToWebInLang($lang, 'idp');
+        $displayname = $idp->getNameToWebInLang($myLang, 'idp');
         $data['titlepage'] = lang('identityprovider') . ': ' . '<a href="' . base_url() . 'providers/detail/show/' . $idp_id . '">' . $displayname . '</a>';
         $data['subtitlepage'] = lang('rr_attributereleasepolicy');
 
@@ -355,7 +353,7 @@ class Attributepolicy extends MY_Controller
         $data['formdown'][''] = lang('selectone') . '...';
         $sps = $this->tmp_providers->getCircleMembersLight($idp);
         foreach ($sps as $key) {
-            $data['formdown'][$key->getId()] = $key->getNameToWebInLang($lang, 'sp') . ' (' . $key->getEntityId() . ')';
+            $data['formdown'][$key->getId()] = $key->getNameToWebInLang($myLang, 'sp') . ' (' . $key->getEntityId() . ')';
         }
         $data['idpid'] = $idp_id;
         $data['idp_name'] = $idp->getName();

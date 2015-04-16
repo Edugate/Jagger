@@ -184,11 +184,10 @@ class Regpolicy extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->load->helper('form');
-        $this->load->library('form_validation');
-        $this->load->library('zacl');
+        $this->load->library(array('form_validation','zacl'));
         $this->title = lang('title_regpoledit');
 
-        if (empty($id) || !is_numeric($id)) {
+        if (empty($id) || !ctype_digit($id)) {
             show_error('Not found', 404);
             return;
         }
@@ -205,9 +204,10 @@ class Regpolicy extends MY_Controller
             show_error('No access', 401);
             return;
         }
-        $data['titlepage'] = lang('title_regpol') . ': ' . htmlentities($coc->getName());
-        $data['subtitlepage'] = lang('title_regpoledit');
-
+        $data = array(
+            'titlepage'=>lang('title_regpol') . ': ' . html_escape($coc->getName()),
+            'subtitlepage'=> lang('title_regpoledit')
+        );
         if ($this->_edit_submit_validate($id) === TRUE) {
             $enable = $this->input->post('cenabled');
             if (!empty($enable) && $enable == 'accept') {
@@ -225,8 +225,7 @@ class Regpolicy extends MY_Controller
         }
         $data['coc_name'] = $coc->getName();
         $this->load->library('form_element');
-        $f = form_open();
-        $f .= $this->form_element->generateEditRegpol($coc);
+        $f = form_open() . $this->form_element->generateEditRegpol($coc);
         $f .= '<div class="buttons large-10 medium-10 small-12 text-right columns end">';
         $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
         $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
