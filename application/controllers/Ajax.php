@@ -292,8 +292,11 @@ class Ajax extends MY_Controller
 			echo 'denied';
 			return;
 		}
-		$jLang = MY_Controller::getLang();
+		$myLang = MY_Controller::getLang();
 		$username = $this->j_auth->current_user();
+        /**
+         * @var $u models\User
+         */
 		$u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
 		if (empty($u)) {
 			log_message('error', __METHOD__ . ' username:' . $username . ' loggedin but user not found in db');
@@ -308,17 +311,16 @@ class Ajax extends MY_Controller
 
 		}
 		if (strcmp($action, 'add') == 0) {
+            /**
+             * @var $ent models\Provider
+             */
 			$ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
 			if (empty($ent)) {
 				set_status_header(404);
 				echo 'provider not found';
 				return;
 			}
-			$enttype = $ent->getType();
-			$entname = $ent->getNameToWebInLang($jLang, $enttype);
-			$entid = $ent->getId();
-			$entityid = $ent->getEntityId();
-			$u->addEntityToBookmark($entid, $entname, $enttype, $entityid);
+			$u->addEntityToBookmark($ent->getId(), $ent->getNameToWebInLang($myLang,$ent->getType()), $ent->getType(), $ent->getEntityId());
 			$this->em->persist($u);
 			$userprefs = $u->getUserpref();
 			$this->session->set_userdata(array('board' => $userprefs['board']));
@@ -331,14 +333,11 @@ class Ajax extends MY_Controller
 		}
 		try {
 			$this->em->flush();
-			set_status_header(200);
 			echo 'ok';
-			return;
 		} catch (Exception $e) {
 			log_message('error', __METHOD__ . ' : ' . $e);
 			set_status_header(500);
-			echo 'DB issue';
-			return;
+			echo 'Database error occurred';
 		}
 
 	}
