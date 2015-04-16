@@ -481,14 +481,14 @@ class Users extends MY_Controller
 
         $systemTwoFactorAuthn = $this->config->item('twofactorauthn');
         $secondFactor = $user->getSecondFactor();
-        $i = 0;
-        $det = array();
-        $det[$i++] = array('key' => lang('rr_username'), 'val' => htmlspecialchars($user->getUsername()));
+
+
+        $tab1[] = array('key' => lang('rr_username'), 'val' => htmlspecialchars($user->getUsername()));
         if ($write_access) {
-            $det[$i++] = array('key' => lang('rr_password'), 'val' => $passedit_link);
+            $tab1[] = array('key' => lang('rr_password'), 'val' => $passedit_link);
         }
-        $det[$i++] = array('key' => '' . lang('rr_userfullname') . '', 'val' => htmlspecialchars($user->getFullname()));
-        $det[$i++] = array('key' => '' . lang('rr_uemail') . '', 'val' => htmlspecialchars($user->getEmail()));
+        $tab1[] = array('key' => '' . lang('rr_userfullname') . '', 'val' => htmlspecialchars($user->getFullname()));
+        $tab1[] = array('key' => '' . lang('rr_uemail') . '', 'val' => htmlspecialchars($user->getEmail()));
         $access_type_str = array();
         if ($local_access) {
             $access_type_str[] = lang('rr_local_authn');
@@ -496,7 +496,7 @@ class Users extends MY_Controller
         if ($federated_access) {
             $access_type_str[] = lang('federated_access');
         }
-        $det[$i++] = array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(", ", $access_type_str));
+        $tab1[] = array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(", ", $access_type_str));
 
         if ($isAdmin) {
             $manageBtn = $this->manageRoleBtn($encoded_username);
@@ -504,8 +504,8 @@ class Users extends MY_Controller
             $manageBtn = '';
         }
         $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_twofactorauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
-        $det[$i++] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
-        $det[$i++] = array('key' => lang('rrnotifications'), 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encoded_username . '', lang('rrmynotifications')));
+        $tab1[] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
+        $tab1[] = array('key' => lang('rrnotifications'), 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encoded_username . '', lang('rrmynotifications')));
         $this->load->library('rrpreference');
         $allowed2fglobal = $this->rrpreference->getStatusByName('user2fset');
         if (isset($_SESSION['username']) && strcasecmp($_SESSION['username'], $username) == 0) {
@@ -522,16 +522,15 @@ class Users extends MY_Controller
         if ($secondFactor) {
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="' . $secondFactor . ' ">' . $secondFactor . '</span>';
             if ($systemTwoFactorAuthn) {
-                $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '' . $bb);
+                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '' . $bb);
             } else {
-                $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . ' <span class="label alert">Disabled</span>' . $bb);
+                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . ' <span class="label alert">Disabled</span>' . $bb);
             }
         } elseif ($systemTwoFactorAuthn) {
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="none">none</span>';
-            $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . $bb);
+            $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . $bb);
         }
-
-        $det[$i++] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
+        $tab2[] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
         $bookmarks = '';
         $userpref = $user->getUserpref();
         if (isset($userpref['board'])) {
@@ -549,7 +548,7 @@ class Users extends MY_Controller
             if (array_key_exists('sp', $board) && is_array($board['sp'])) {
                 $bookmarks .= '<p><ul class="no-bullet"><b>' . lang('serviceproviders') . '</b>';
                 foreach ($board['sp'] as $key => $value) {
-                    $bookmarks .= '<li><a href="' . base_url() . 'providers/detail/show/' . $key . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
+                    $bookmarks .= '<li><a href="'.base_url('providers/detail/show/'.$key.'').'">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
                 }
                 $bookmarks .= '</ul></p>';
             }
@@ -561,16 +560,15 @@ class Users extends MY_Controller
                 $bookmarks .= '</ul></p>';
             }
         }
-        $det[$i++] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
-
-
-        $det[$i++] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limit_authn, 'class' => 'highlight', 'colspan' => 2));
+        $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
+        $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limit_authn, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authn_logs as $ath) {
             $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U') + j_auth::$timeOffset);
             $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
-            $det[$i++] = array('key' => $date, 'val' => $detail);
+            $tab3[] = array('key' => $date, 'val' => $detail);
         }
-        $det[$i++] = array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2));
+
+        $tab4[] = array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2));
         foreach ($action_logs as $ath) {
             $subtype = $ath->getSubType();
             if ($subtype == 'modification') {
@@ -594,16 +592,40 @@ class Users extends MY_Controller
                     }
                 }
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $dstr;
-                $det[$i++] = array('key' => $date, 'val' => $detail);
+                $tab4[] = array('key' => $date, 'val' => $detail);
             } elseif ($subtype == 'create' || $subtype == 'remove') {
                 $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U') + j_auth::$timeOffset);
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
-                $det[$i++] = array('key' => $date, 'val' => $detail);
+                $tab4[] = array('key' => $date, 'val' => $detail);
             }
         }
 
+
+        $data['tabs'] = array(
+            array(
+                'tabid'=>'tab1',
+                'tabtitle'=>lang('rr_profile'),
+                'tabdata'=>$tab1,
+            ),
+            array(
+                'tabid'=>'tab2',
+                'tabtitle'=>lang('dashboard'),
+                'tabdata'=>$tab2,
+            ),
+            array(
+                'tabid'=>'tab3',
+                'tabtitle'=>lang('authnlogs'),
+                'tabdata'=>$tab3,
+            ),
+            array(
+                'tabid'=>'tab4',
+                'tabtitle'=>lang('actionlogs'),
+                'tabdata'=>$tab4,
+            )
+        );
+
         $data['breadcrumbs'] = $breadcrumbs;
-        $data['det'] = $det;
+
         $data['titlepage'] = lang('rr_detforuser') . ': ' . $data['caption'];
         $data['content_view'] = 'manage/userdetail_view';
         $this->load->view('page', $data);

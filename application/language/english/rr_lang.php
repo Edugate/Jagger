@@ -151,6 +151,7 @@ $lang['requeststoproviders']       = 'Requests sent to the specified IdP/SP...';
 $lang['gfedmemberschanged']         = 'Alert if a federation members circle of trust changes';
 $lang['fedmemberschanged']         = 'Alert if a specified federation members circle of trust changes';
 $lang['myprofile']                 = 'My profile';
+$lang['rr_profile']                = 'Profile';
 $lang['rr_formstep']                    = 'step';
 $lang['rr_uii']                     = 'User Interface Information';
 $lang['rr_coc']                     = 'Data protection Code of Conduct';
