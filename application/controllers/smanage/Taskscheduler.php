@@ -8,30 +8,24 @@ class Taskscheduler extends MY_Controller
     {
         parent::__construct();
         MY_Controller::$menuactive = 'admins';
+        $this->load->library('table');
     }
 
     private function submit_validate()
     {
 
         $params = $this->input->post('params');
-        if(!empty($params) && is_array($params))
-        {
-            foreach($params as $k=>$p)
-            {
-                if(array_key_exists('name',$p))
-                {
-                    if(array_key_exists('value',$p))
-                    {
-                        $this->form_validation->set_rules('params['.$k.'][value]','Params value','trim');
+        if (!empty($params) && is_array($params)) {
+            foreach ($params as $k => $p) {
+                if (array_key_exists('name', $p)) {
+                    if (array_key_exists('value', $p)) {
+                        $this->form_validation->set_rules('params[' . $k . '][value]', 'Params value', 'trim');
 
-                        if(!empty($p['value']))
-                        {
-                            $this->form_validation->set_rules('params['.$k.'][name]','Params name','trim|required');
+                        if (!empty($p['value'])) {
+                            $this->form_validation->set_rules('params[' . $k . '][name]', 'Params name', 'trim|required');
                         }
                     }
                 }
-
-
             }
         }
         $this->form_validation->set_rules('isenabled', lang('taskenabled'), 'trim');
@@ -42,7 +36,7 @@ class Taskscheduler extends MY_Controller
         $this->form_validation->set_rules('cron[dow]', lang('crondow'), 'trim|required|valid_crondow');
         $this->form_validation->set_rules('comment', lang('rr_description'), 'trim|required|alpha_numeric_spaces');
         $this->form_validation->set_rules('istemplate', lang('tasktemplate'), 'trim');
-        $this->form_validation->set_rules('fnname','Fn name','trim|required|alpha_dash');
+        $this->form_validation->set_rules('fnname', 'Fn name', 'trim|required|alpha_dash');
 
         return $this->form_validation->run();
 
@@ -110,39 +104,29 @@ class Taskscheduler extends MY_Controller
             $task->setJcommand($this->input->post('fnname'));
             $isenabeld = $this->input->post('isenabled');
             $istemplate = $this->input->post('istemplate');
-            if(!empty($isenabeld))
-            {
+            if (!empty($isenabeld)) {
                 $task->setEnabled(true);
-            }
-            else{
+            } else {
                 $task->setEnabled(false);
             }
-            if(!empty($istemplate))
-            {
+            if (!empty($istemplate)) {
                 $task->setTemplate(true);
-            }
-            else
-            {
+            } else {
                 $task->setTemplate(false);
             }
 
             $parameters = $this->input->post('params');
             $paramsToSet = array();
-            if(is_array($parameters))
-            {
-                foreach($parameters as $k=>$v)
-                {
-                    if(!array_key_exists('name',$v) || strlen($v['name']) ==0)
-                    {
+            if (is_array($parameters)) {
+                foreach ($parameters as $k => $v) {
+                    if (!array_key_exists('name', $v) || strlen($v['name']) == 0) {
                         unset($parameters[$k]);
                         continue;
                     }
 
-                    if(array_key_exists('value', $v)) {
+                    if (array_key_exists('value', $v)) {
                         $paramsToSet['' . $v['name'] . ''] = $v['value'];
-                    }
-                    else
-                    {
+                    } else {
                         $paramsToSet['' . $v['name'] . ''] = null;
                     }
 
@@ -151,39 +135,32 @@ class Taskscheduler extends MY_Controller
 
             $task->setJparams($paramsToSet);
 
-            try{
+            try {
                 $cronToTest = Cron\CronExpression::factory($task->getCronToStr());
                 $this->em->persist($task);
                 $this->em->flush();
                 $data['msg'] = html_escape(lang('taskupsuccess'));
-            }
-            catch(Exception $e)
-            {
-                log_message('error',__METHOD__.' '.$e);
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
                 $data['errormsg'] = html_escape('One of the value (minutes,hours,etc) is invalid');
 
             }
 
 
-
             $data['content_view'] = 'smanage/taskupdatesuccess_view';
 
-            $this->load->view('page',$data);
-
+            $this->load->view('page', $data);
 
 
         } else {
 
-            if($this->input->post()) {
+            if ($this->input->post()) {
 
                 $data['paramssubmit'] = $this->input->post('params');
-                if(empty($data['paramssubmit']))
-                {
+                if (empty($data['paramssubmit'])) {
                     $data['paramssubmit'] = array();
                 }
-            }
-            else
-            {
+            } else {
                 $data['paramssubmit'] = null;
 
             }
@@ -213,27 +190,25 @@ class Taskscheduler extends MY_Controller
 
     public function tasklist()
     {
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            redirect('auth/login', 'location');
-            return;
-        }
-
-        if (!$this->j_auth->isAdministrator()) {
-            show_error('no permission', 403);
-            return;
-        }
-
         $featureEnabled = $this->config->item('featenable');
         if (!isset($featureEnabled['tasks']) || $featureEnabled['tasks'] !== TRUE) {
             show_error('Feature is not enabled', 403);
             return;
+        } else {
+            if (!$this->j_auth->logged_in()) {
+                redirect('auth/login', 'location');
+                return;
+            }
+            if (!$this->j_auth->isAdministrator()) {
+                show_error('no permission', 403);
+                return;
+            }
         }
+        $this->title = lang('title_tasks');
 
-        $this->load->library('table');
-        $this->title = 'Tasks Scheduler';
-        $data['titlepage'] = $this->title;
-
+        /**
+         * @var $tasks models\Jcrontab[]
+         */
         $tasks = $this->em->getRepository("models\Jcrontab")->findAll();
         $rows = array();
         foreach ($tasks as $t) {
@@ -245,14 +220,11 @@ class Taskscheduler extends MY_Controller
 
             }
             $nextrun = $cron->getNextRunDate()->format('Y-m-d H:i:s');
-
-
             $isEnabled = $t->getEnabled();
             $isTemplate = $t->getTemplate();
+            $isTemplateHtml = '';
             if ($isTemplate) {
-                $isTemplateHtml = '<span class="label">template</span>';
-            } else {
-                $isTemplateHtml = '';
+                $isTemplateHtml = '<span class="label">' . lang('lbl_template') . '</span>';
             }
             if ($isEnabled) {
                 $isEnabledHtml = '<span class="label">' . lang('rr_enabled') . '</span>';
@@ -271,8 +243,6 @@ class Taskscheduler extends MY_Controller
                 $paramsToHtml .= '' . html_escape($k) . ':' . html_escape($p) . '<br />';
             }
             $rows[] = array(
-
-
                 html_escape($t->getCronToStr()),
                 html_escape($t->getJcomment()),
                 html_escape($t->getJcommand()) . ' ' . $isTemplateHtml,
@@ -282,17 +252,21 @@ class Taskscheduler extends MY_Controller
                 $nextrun,
                 $isEnabledHtml,
                 '<a href="' . base_url('smanage/taskscheduler/taskedit/' . $t->getId() . '') . '"<i class="fi-pencil"></i></a>',
-
             );
 
         }
-        $data['breadcrumbs'] = array(
-            array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
-            array('url' => base_url('smanage/taskscheduler/tasklist'), 'name' => lang('tasks_menulink'), 'type' => 'current'),
 
+        $data = array(
+            'titlepage' => $this->title,
+            'breadcrumbs' => array(
+                array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
+                array('url' => base_url('smanage/taskscheduler/tasklist'), 'name' => lang('tasks_menulink'), 'type' => 'current'),
+
+            ),
+            'rows' => &$rows,
+            'content_view' => 'smanage/tasklist_view',
         );
-        $data['rows'] = &$rows;
-        $data['content_view'] = 'smanage/tasklist_view';
+
         $this->load->view('page', $data);
 
 
