@@ -705,6 +705,12 @@ var GINIT = {
             });
         });
 
+        $(".rmusericon").on('click',function(e){
+            var modal = $("#removeusermodal");
+            modal.foundation('reveal','open');
+            return false;
+        });
+
         $("#confirmremover").on('click', '.yes', function (e) {
             e.preventDefault();
             var form = $(this).closest("form");

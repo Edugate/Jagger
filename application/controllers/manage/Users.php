@@ -695,12 +695,21 @@ class Users extends MY_Controller
 
         foreach ($users as $u) {
             $encoded_username = base64url_encode($u->getUsername());
+            $roles = $u->getRoleNames();
+            if(in_array('Administrator',$roles))
+            {
+                $action = '';
+            }
+            else
+            {
+                $action = '<a href="#" class="rmusericon"><i class="fi-trash"></i><a>';
+            }
             $last = $u->getLastlogin();
             $lastlogin = '';
             if (!empty($last)) {
                 $lastlogin = date('Y-m-d H:i:s', $last->format('U') + j_auth::$timeOffset);
             }
-            $usersList[] = array('user' => anchor($showlink . '/' . $encoded_username, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp());
+            $usersList[] = array('user' => anchor($showlink . '/' . $encoded_username, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(),$action);
         }
         $data = array(
             'breadcrumbs' => array(
