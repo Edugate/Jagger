@@ -173,14 +173,22 @@ class J_auth
 		}
 	}
 
+    /**
+     * @return null|string
+     */
 	public function current_user()
 	{
+        $username = null;
         if($this->logged_in())
         {
-            return trim($this->ci->session->userdata('username'));
+            $username =  trim($this->ci->session->userdata('username'));
         }
 
-		return false;
+        if(strlen($username) == 0)
+        {
+            $username = null;
+        }
+		return $username;
 	}
 
 	public function set_error($error)

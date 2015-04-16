@@ -1,29 +1,29 @@
 <?php
 namespace models;
-/**
- * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
- */
+    /**
+     * ResourceRegistry3
+     *
+     * @package     RR3
+     * @author      Middleware Team HEAnet
+     * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
+     * @license     MIT http://www.opensource.org/licenses/mit-license.php
+     *
+     */
 
-/**
- * Attribute Class
- * 
- * @package     RR3
- * @subpackage  Models
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
+    /**
+     * Attribute Class
+     *
+     * @package     RR3
+     * @subpackage  Models
+     * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+     */
 
 /**
  * NotificationList Model
  *
  * This model for attributes definitions
- * 
- * 
+ *
+ *
  * @HasLifecycleCallbacks
  * @Entity
  * @Table(name="notificationlist",indexes={@Index(name="type_idx", columns={"type"}),@Index(name="subscibe_idx", columns={"subscriber"})})
@@ -31,242 +31,248 @@ namespace models;
  */
 class NotificationList
 {
-        /**
-         * @Id
-         * @Column(type="integer", nullable=false)
-         * @GeneratedValue(strategy="AUTO")
-         */
-         protected $id;
+    /**
+     * @Id
+     * @Column(type="integer", nullable=false)
+     * @GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
-        /**
-         * @ManyToOne(targetEntity="User",inversedBy="subscriptions")
-         * @JoinColumn(name="subscriber", referencedColumnName="id")
-         */
-        protected $subscriber;
+    /**
+     * @ManyToOne(targetEntity="User",inversedBy="subscriptions")
+     * @JoinColumn(name="subscriber", referencedColumnName="id")
+     */
+    protected $subscriber;
 
-        /**
-         * @Column(type="string", length=10, nullable=false)
-         */
-        protected $notificationtype ;
+    /**
+     * @Column(type="string", length=10, nullable=false)
+     */
+    protected $notificationtype;
 
-        /**
-         * @Column(type="string", length=25, nullable=false)
-         */
-        protected $type;
+    /**
+     * @Column(type="string", length=25, nullable=false)
+     */
+    protected $type;
 
-        /**
-         * @ManyToOne(targetEntity="Provider",inversedBy="notifications")
-         * @JoinColumn(name="provider", referencedColumnName="id")
-         */
-        protected $provider;
+    /**
+     * @ManyToOne(targetEntity="Provider",inversedBy="notifications")
+     * @JoinColumn(name="provider", referencedColumnName="id")
+     */
+    protected $provider;
 
-        /**
-         * @ManyToOne(targetEntity="Federation",inversedBy="notifications")
-         * @JoinColumn(name="federation", referencedColumnName="id")
-         */
-        protected $federation;
+    /**
+     * @ManyToOne(targetEntity="Federation",inversedBy="notifications")
+     * @JoinColumn(name="federation", referencedColumnName="id")
+     */
+    protected $federation;
 
-        /**
-         * @Column(type="string", length=256, nullable=true)
-         */
-        protected $email;
+    /**
+     * @Column(type="string", length=256, nullable=true)
+     */
+    protected $email;
 
-        /**
-         * @Column(type="string", length=15, nullable=true)
-         */
-        protected $mobile;
+    /**
+     * @Column(type="string", length=15, nullable=true)
+     */
+    protected $mobile;
 
-        /**
-         * @Column(name="isenabled",type="boolean")
-         */
-        protected $is_enabled;
+    /**
+     * @Column(name="isenabled",type="boolean")
+     */
+    protected $is_enabled;
 
-        /**
-         * @Column(name="isapproved",type="boolean")
-         */
-        protected $is_approved;
-        
-        /**
-         * @Column(name="created", type="datetime")
-         */
-        protected $createdAt;
+    /**
+     * @Column(name="isapproved",type="boolean")
+     */
+    protected $is_approved;
 
-       /**
-        * @Column(name="updated", type="datetime")
-        */
-       protected $updatedAt;
+    /**
+     * @Column(name="created", type="datetime")
+     */
+    protected $createdAt;
 
-       function __construct()
-       {
-          $this->is_enabled = false;
-          $this->is_approved = false;
-          $this->notificationtype = 'mail';
-          $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
-       }
+    /**
+     * @Column(name="updated", type="datetime")
+     */
+    protected $updatedAt;
 
-       public function getId()
-       {
-           return $this->id;
-       } 
- 
-       public function getNotificationType()
-       {
-          return $this->notificationtype;
-       }
+    function __construct()
+    {
+        $this->is_enabled = false;
+        $this->is_approved = false;
+        $this->notificationtype = 'mail';
+        $this->updatedAt = new \DateTime("now", new \DateTimeZone('UTC'));
+    }
 
-       public function getSubscriber()
-       {
-           return $this->subscriber;
-       }
-       public function getType()
-       {
-           return $this->type;
-       }
-       
-       public function getProvider()
-       {
-           return $this->provider;
-       } 
-       public function getFederation()
-       {
-           return $this->federation;
-       }
-       public function getEmail()
-       {
-           return $this->email;
-       }
-       public function getAltEmail()
-       {
-            if(empty($this->email))
-            {
-                 return $this->getSubscriber()->getEmail();
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getNotificationType()
+    {
+        return $this->notificationtype;
+    }
+
+    /**
+     * @return User
+     */
+    public function getSubscriber()
+    {
+        return $this->subscriber;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return null|Provider
+     */
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    /**
+     * @return null|Federation
+     */
+    public function getFederation()
+    {
+        return $this->federation;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function getAltEmail()
+    {
+        if (empty($this->email)) {
+            return $this->getSubscriber()->getEmail();
+        }
+        return $this->email;
+
+    }
+
+    public function getRcpt()
+    {
+        if ($this->notificationtype == 'mail') {
+            if (empty($this->email)) {
+                return $this->getSubscriber()->getEmail();
             }
             return $this->email;
+        } else {
+            return $this->mobile;
+        }
+    }
 
-       }
-      
-       public function getRcpt()
-       {
-           if($this->notificationtype == 'mail')
-           {
-              if(empty($this->email))
-              {
-                 return $this->getSubscriber()->getEmail();
-              }
-              return $this->email;
-           }
-           else
-           {
-              return $this->mobile;
-           }
-       }
-       public function getEnabled()
-       {
-           return $this->is_enabled;
-       }
+    public function getEnabled()
+    {
+        return $this->is_enabled;
+    }
 
-       public function getApproved()
-       {
-           return $this->is_approved;
-       }
+    public function getApproved()
+    {
+        return $this->is_approved;
+    }
 
-       public function getMobile()
-       {
-           return $this->mobile;
-       }
- 
-       public function getAvailable()
-       {
-          if($this->is_enabled && $this->is_approved)
-          {
-              return true; 
-          }
-          return false;
-       }
+    public function getMobile()
+    {
+        return $this->mobile;
+    }
 
-       public function getCreatedAt()
-       {
-          return $this->createdAt;
-       }
-      
-       public function getUpdatedAt()
-       {
-          return $this->updatedAt;
-       }
-     
-      /**
-       * setters/modifiers
-       */
-       public function setSubscriber(User $user)
-       {
-          $this->subscriber = $user;
-          return $this;
-       }
-       public function setType($type)
-       {
-          $type = trim($type);
-          if(!empty($type))
-          {
-             $this->type  = $type;
-             return $this;
-          }
-       }
-       public function  setProvider(Provider $provider)
-       {
-          $this->provider = $provider;
-          return $this;
-       }
-     
-       public function setFederation(Federation $federation)
-       {
-           $this->federation = $federation;
-           return $this;
-       }
+    public function getAvailable()
+    {
+        if ($this->is_enabled && $this->is_approved) {
+            return true;
+        }
+        return false;
+    }
 
-       public function setEmail($email)
-       {
-          $email = trim($email);
-          $this->email = $email;
-          return $this;
-       }
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 
-       public function setEnabled( $arg)
-       {
-          $this->is_enabled = $arg;
-          return $this;
-       }
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
 
-       public function setApproved( $arg)
-       {
-          $this->is_approved = $arg;
-          return $this;
-       }
+    /**
+     * setters/modifiers
+     */
+    public function setSubscriber(User $user)
+    {
+        $this->subscriber = $user;
+        return $this;
+    }
+
+    public function setType($type)
+    {
+        $type = trim($type);
+        if (!empty($type)) {
+            $this->type = $type;
+            return $this;
+        }
+    }
+
+    public function  setProvider(Provider $provider)
+    {
+        $this->provider = $provider;
+        return $this;
+    }
+
+    public function setFederation(Federation $federation)
+    {
+        $this->federation = $federation;
+        return $this;
+    }
+
+    public function setEmail($email)
+    {
+        $email = trim($email);
+        $this->email = $email;
+        return $this;
+    }
+
+    public function setEnabled($arg)
+    {
+        $this->is_enabled = $arg;
+        return $this;
+    }
+
+    public function setApproved($arg)
+    {
+        $this->is_approved = $arg;
+        return $this;
+    }
 
 
-       
-      /**
-       * @prePersist 
-       */
-       public function created()
-       {
-           if(empty($this->notificationtype))
-           {
-              $this->notificationtype = 'mail';
-           }
-           $this->createdAt = new \DateTime("now",new \DateTimeZone('UTC'));
-       }
+    /**
+     * @prePersist
+     */
+    public function created()
+    {
+        if (empty($this->notificationtype)) {
+            $this->notificationtype = 'mail';
+        }
+        $this->createdAt = new \DateTime("now", new \DateTimeZone('UTC'));
+    }
 
 
-      /**
-       * @PreUpdate
-       */
-       public function updated()
-       {
-          if(empty($this->notificationtype))
-          {
-              $this->notificationtype = 'mail';
-          }
-          $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
-       }
-      
+    /**
+     * @PreUpdate
+     */
+    public function updated()
+    {
+        if (empty($this->notificationtype)) {
+            $this->notificationtype = 'mail';
+        }
+        $this->updatedAt = new \DateTime("now", new \DateTimeZone('UTC'));
+    }
+
 }

@@ -59,6 +59,9 @@ class Form_element
 	public function NgenerateRegistrationPolicies(models\Provider $ent)
 	{
 		$langs = languagesCodes();
+        /**
+         * @var $entRegPolicies models\Coc[]
+         */
 		$entRegPolicies = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
 		$currentCocs = $ent->getCoc();
 		$currentRegPolicies = array();

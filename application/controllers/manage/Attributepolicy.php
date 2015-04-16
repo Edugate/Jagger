@@ -299,7 +299,6 @@ class Attributepolicy extends MY_Controller
             show_error(lang('rerror_idpnotfound'), 404);
             return;
         }
-
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
         $data['breadcrumbs'] = array(
@@ -310,14 +309,14 @@ class Attributepolicy extends MY_Controller
         );
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
         if (!$has_write_access) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rr_noperm');
+            $data = array(
+                'content_view' => 'nopermission',
+                'error'=>lang('rr_noperm'),
+            );
             $this->load->view('page', $data);
             return;
         }
-        $lang = MY_Controller::getLang();
-        $displayname = $idp->getNameToWebInLang($lang, 'idp');
-        $data['titlepage'] = lang('identityprovider') . ': ' . '<a href="' . base_url() . 'providers/detail/show/' . $idp_id . '">' . $displayname . '</a>';
+        $data['titlepage'] = lang('identityprovider') . ': ' . '<a href="' . base_url() . 'providers/detail/show/' . $idp_id . '">' . $providerNameInLang . '</a>';
         $data['subtitlepage'] = lang('rr_attributereleasepolicy');
 
         /**
@@ -355,7 +354,7 @@ class Attributepolicy extends MY_Controller
         $data['formdown'][''] = lang('selectone') . '...';
         $sps = $this->tmp_providers->getCircleMembersLight($idp);
         foreach ($sps as $key) {
-            $data['formdown'][$key->getId()] = $key->getNameToWebInLang($lang, 'sp') . ' (' . $key->getEntityId() . ')';
+            $data['formdown'][$key->getId()] = $key->getNameToWebInLang($myLang, 'sp') . ' (' . $key->getEntityId() . ')';
         }
         $data['idpid'] = $idp_id;
         $data['idp_name'] = $idp->getName();
@@ -381,13 +380,13 @@ class Attributepolicy extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
-        $lang = MY_Controller::getLang();
-        $displayname = $idp->getNameToWebInLang($lang, 'idp');
-        if (empty($displayname)) {
-            $displayname = $idp->getEntityId();
+        $myLang = MY_Controller::getLang();
+        $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
+        if (empty($providerNameInLang)) {
+            $providerNameInLang = $idp->getEntityId();
         }
-        $data['idpname'] = $displayname;
-        $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $displayname . '</a>';
+        $data['idpname'] = $providerNameInLang;
+        $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $providerNameInLang . '</a>';
 
         if (($this->input->post('fedid')) && empty($fed_id)) {
             redirect(base_url('manage/attributepolicy/show_feds/' . $idp_id . '/' . $this->input->post('fedid')), 'location');
@@ -397,15 +396,15 @@ class Attributepolicy extends MY_Controller
             $feds = $idp->getFederations();
             $data['federations'] = $this->form_element->generateFederationsElement($feds);
             $data['idpid'] = $idp->getId();
-            $data['idpname'] = $displayname;
-            $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $displayname . '</a>';
+            $data['idpname'] = $providerNameInLang;
+            $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $providerNameInLang . '</a>';
             $data['subtitlepage'] = lang('rr_arpforfed');
             $data['content_view'] = 'manage/attribute_policy_feds_view';
             $this->load->view('page', $data);
         } else {
             $data = array();
-            $data['idpname'] = $displayname;
-            $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $displayname . '</a>';
+            $data['idpname'] = $providerNameInLang;
+            $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $providerNameInLang . '</a>';
 
             $tmp_fed = new models\Federations();
             /**
