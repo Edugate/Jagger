@@ -4,21 +4,22 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Dashboard Class
- * 
+ *
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Subscriber extends MY_Controller {
+class Subscriber extends MY_Controller
+{
 
     function __construct()
     {
@@ -26,68 +27,59 @@ class Subscriber extends MY_Controller {
         $this->load->helper('shortcodes');
     }
 
-    private function getSubscriptionsToJson($subscribtionOwner)
+    private function getSubscriptionsToJson(models\User $subscriptionOwner)
     {
-        $n = $subscribtionOwner->getSubscriptions();
+        /**
+         * @var $userSubscriptions models\NotificationList[]
+         */
+        $userSubscriptions = $subscriptionOwner->getSubscriptions();
         $result = array();
 
-        foreach ($n as $v)
-        {
-            $prov = $v->getProvider();
-            if (empty($prov))
-            {
+        foreach ($userSubscriptions as $subscription) {
+            $prov = $subscription->getProvider();
+            if (empty($prov)) {
                 $provid = null;
                 $provname = null;
-            }
-            else
-            {
+            } else {
                 $provid = $prov->getId();
                 $provname = $prov->getEntityId();
             }
-            $fed = $v->getFederation();
-            if (empty($fed))
-            {
-                $fedid = null;
-                $fedname = null;
+            $fed = $subscription->getFederation();
+            if (empty($fed)) {
+                $federationId = null;
+                $federationName = null;
+            } else {
+                $federationId = $fed->getId();
+                $federationName = $fed->getName();
             }
-            else
-            {
-                $fedid = $fed->getId();
-                $fedname = $fed->getName();
-            }
-            $isApproved = $v->getApproved();
-            $isEnabled = $v->getEnabled();
+            $isApproved = $subscription->getApproved();
+            $isEnabled = $subscription->getEnabled();
             $status = '';
-            if ($isEnabled && $isApproved)
-            {
+            if ($isEnabled && $isApproved) {
                 $status = lang('subscisactive');
-            }
-            else
-            {
+            } else {
 
-                if (!$isEnabled)
-                {
+                if (!$isEnabled) {
                     $status .= lang('subscdisabled') . '; ';
                 }
-                if (!$isApproved)
-                {
+                if (!$isApproved) {
                     $status .= lang('subscnotapproved');
                 }
             }
             $result[] = array(
-                'id' => $v->getId(),
-                'delivery' => $v->getNotificationType(),
-                'type' => $v->getType(),
-                'langtype' => lang($v->getType()),
+                'id' => $subscription->getId(),
+                'delivery' => $subscription->getNotificationType(),
+                'type' => $subscription->getType(),
+                'langtype' => lang($subscription->getType()),
                 'providerid' => $provid,
                 'providername' => $provname,
-                'federationid' => $fedid,
-                'federationname' => $fedname,
-                'rcptto' => $v->getRcpt(),
-                'email' => '' . $v->getAltEmail() . '',
-                'enabled' => '' . $v->getEnabled() . '',
-                'approved' => '' . $v->getApproved() . '',
-                'updated' => '' . date('Y-m-d H:i:s', $v->getUpdatedAt()->format('U') + j_auth::$timeOffset) . '',
+                'federationid' => $federationId,
+                'federationname' => $federationName,
+                'rcptto' => $subscription->getRcpt(),
+                'email' => '' . $subscription->getAltEmail() . '',
+                'enabled' => '' . $subscription->getEnabled() . '',
+                'approved' => '' . $subscription->getApproved() . '',
+                'updated' => '' . date('Y-m-d H:i:s', $subscription->getUpdatedAt()->format('U') + j_auth::$timeOffset) . '',
                 'langstatus' => $status,
                 'langprovider' => lang('rr_provider'),
                 'langfederation' => lang('rr_federation'),
@@ -99,33 +91,32 @@ class Subscriber extends MY_Controller {
 
     public function mysubscriptions($encodeduser = null)
     {
-        if (empty($encodeduser))
-        {
+        if (empty($encodeduser)) {
             show_error('not found', 404);
         }
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             redirect('auth/login', 'location');
             return;
         }
+        $this->load->library('zacl');
         $decodeduser = base64url_decode($encodeduser);
         $loggeduser = $this->j_auth->current_user();
-        if (empty($loggeduser))
-        {
+        if (empty($loggeduser)) {
             log_message('warning', 'User logged in but missing username in sesssion');
             show_error('permission denied', 403);
         }
         $isAdmin = $this->j_auth->isAdministrator();
-        if (strcasecmp($decodeduser, $loggeduser) != 0 && $isAdmin !== TRUE)
-        {
+        if (strcasecmp($decodeduser, $loggeduser) != 0 && $isAdmin !== TRUE) {
             log_message('warning', __METHOD__ . ': User ' . $loggeduser . ' tried to get access to other users subsricriptions:' . $decodeduser);
             show_error('permission denied', 403);
         }
 
+        /**
+         * @var $subscribtionOwner models\User
+         */
         $subscribtionOwner = $this->em->getRepository("models\User")->findOneBy(array('username' => $decodeduser));
-        if (empty($subscribtionOwner))
-        {
+        if (empty($subscribtionOwner)) {
             show_error('not found', 404);
         }
         $data['encodeduser'] = $encodeduser;
@@ -134,52 +125,53 @@ class Subscriber extends MY_Controller {
         $data['subscriber']['email'] = $subscribtionOwner->getEmail();
         $data['titlepage'] = $data['subscriber']['username'];
         $data['subtitlepage'] = lang('title_usersubscriptions');
-        $n = json_decode($this->getSubscriptionsToJson($subscribtionOwner), true);
-        $row[] = array('', lang('subscrtype'), lang('rr_relatedto'), lang('rr_deliverytype'), lang('subscrmail'), lang('subscrstatus'), lang('updatedat'), '');
-        if (!count($n) > 0)
+        $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
+        if (!$accessListUsers)
         {
-            $data['warnmessage'] = lang('nousersubscrfound');
+            $data['breadcrumbs'] = array(
+                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
+                array('url' => base_url('manage/users/show/'.$encodeduser.''), 'name' => html_escape($subscribtionOwner->getUsername())),
+                array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
+            );
         }
         else
         {
+            $data['breadcrumbs'] = array(
+                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
+                array('url' => base_url('manage/users/show/'.$encodeduser.''), 'name' => html_escape($subscribtionOwner->getUsername()),),
+                array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
+            );
+        }
+
+        $n = json_decode($this->getSubscriptionsToJson($subscribtionOwner), true);
+        $row[] = array('', lang('subscrtype'), lang('rr_relatedto'), lang('rr_deliverytype'), lang('subscrmail'), lang('subscrstatus'), lang('updatedat'), '');
+        if (!count($n) > 0) {
+            $data['warnmessage'] = lang('nousersubscrfound');
+        } else {
             $this->load->helper('shortcodes');
             $mappedTypes = notificationCodes();
             $i = 0;
-            foreach ($n as $v)
-            {
-                $status = '';
-                $isEnabled = $v['enabled'];
-                $isApproved = $v['approved'];
+            foreach ($n as $v) {
                 $type = $v['type'];
-                if (isset($mappedTypes['' . $type . '']))
-                {
+                if (isset($mappedTypes['' . $type . ''])) {
                     $type = lang('' . $mappedTypes['' . $type . '']['desclang'] . '');
                 }
-                $relatedto = '';
-                if ($v['providerid'])
-                {
+                if ($v['providerid']) {
                     $relatedto = $v['langprovider'] . ': ' . $v['providername'];
-                }
-                elseif ($v['federationid'])
-                {
+                } elseif ($v['federationid']) {
                     $relatedto = $v['langfederation'] . ': ' . $v['federationname'];
-                }
-                else
-                {
+                } else {
                     $relatedto = $v['langany'];
                 }
                 $button = '<a href="#" value="' . $v['id'] . '" class="updatenotifactionstatus"  data-reveal-id="notificationupdatemodal"><i class="fi-pencil"></i></a>';
-                $row[] = array(++$i, $type, $relatedto, $v['delivery'], $v['rcptto'], '<div class="subscrstatus">'.$v['langstatus'].'</div>', $v['updated'], $button);
+                $row[] = array(++$i, $type, $relatedto, $v['delivery'], $v['rcptto'], '<div class="subscrstatus">' . $v['langstatus'] . '</div>', $v['updated'], $button);
             }
         }
 
         $data['rows'] = $row;
-        if ($isAdmin)
-        {
+        if ($isAdmin) {
             $data['statusdropdown'] = array('approve' => lang('rr_approve'), 'disapprove' => lang('rr_disapprove'), 'enable' => lang('rr_enable'), 'disable' => lang('rr_disable'), 'remove' => lang('rr_remove'));
-        }
-        else
-        {
+        } else {
             $data['statusdropdown'] = array('enable' => lang('rr_enable'), 'disable' => lang('rr_disable'), 'remove' => lang('rr_remove'));
         }
 
@@ -189,48 +181,42 @@ class Subscriber extends MY_Controller {
 
     public function add($encodeduser = null)
     {
-        if (!$this->input->is_ajax_request() || empty($encodeduser))
-        {
+        if (!$this->input->is_ajax_request() || empty($encodeduser)) {
             set_status_header(403);
             echo 'denied';
             return;
         }
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             set_status_header(403);
             echo 'not loggedin';
             return;
         }
         $username = $this->j_auth->current_user();
-        if (!empty($username))
-        {
+        if (!empty($username)) {
+            /**
+             * @var $user models\User
+             */
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
         }
-        if (empty($user))
-        {
+        if (empty($user)) {
             set_status_header(403);
             echo 'error occured';
             return;
         }
         $isAdministator = $this->j_auth->isAdministrator();
         $decodeduser = base64url_decode($encodeduser);
-        $requetmatchuser = (boolean) (strcmp($username, $decodeduser) == 0);
-        if (!($isAdministator || $requetmatchuser))
-        {
+        $requetmatchuser = (boolean)(strcmp($username, $decodeduser) == 0);
+        if (!($isAdministator || $requetmatchuser)) {
             set_status_header(403);
             echo 'mismatch error occured';
             return;
         }
-        if ($requetmatchuser)
-        {
+        if ($requetmatchuser) {
             $subscriber = &$user;
-        }
-        else
-        {
+        } else {
             $subscriber = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $decodeduser . ''));
-            if (empty($subscriber))
-            {
+            if (empty($subscriber)) {
                 set_status_header(403);
                 echo 'error occured';
                 return;
@@ -241,40 +227,35 @@ class Subscriber extends MY_Controller {
 
         $ntype = trim(htmlentities($this->input->post('type')));
         $nprovider = trim($this->input->post('sprovider'));
-        if (!empty($nprovider) && !ctype_digit($nprovider))
-        {
+        if (!empty($nprovider) && !ctype_digit($nprovider)) {
             echo '<div class="error">incorrect provider</div>';
         }
         $nfederation = trim($this->input->post('sfederation'));
-        if (!empty($nfederation) && !ctype_digit($nfederation))
-        {
+        if (!empty($nfederation) && !ctype_digit($nfederation)) {
             echo '<div class="error">incorrect federation</div>';
         }
         $this->load->library('form_validation');
         $this->form_validation->set_rules('semail', '' . lang('rr_contactemail') . '', 'trim|min_length[3]|max_length[255]|valid_email');
-        if ($this->form_validation->run() === FALSE)
-        {
+        if ($this->form_validation->run() === FALSE) {
             echo validation_errors('<div class="error">', '</div>');
             return;
         }
         $nemail = trim($this->input->post('semail'));
 
         $codes = notificationCodes();
-        if (!array_key_exists($ntype, $codes))
-        {
+        if (!array_key_exists($ntype, $codes)) {
             echo '<div class="error">' . lang('error_wrongnotifycationtype') . '</div>';
             return;
         }
         ///////////////////////////////////////////////////////
-        $success = false;
-        if (strcmp($ntype, 'joinfedreq') == 0 || strcmp($ntype, 'fedmemberschanged') == 0)
-        {
-            if (!empty($nfederation))
-            {
+        if (strcmp($ntype, 'joinfedreq') == 0 || strcmp($ntype, 'fedmemberschanged') == 0) {
+            /**
+             * @var $federation models\Federation
+             */
+            if (!empty($nfederation)) {
                 $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $nfederation));
             }
-            if (empty($federation))
-            {
+            if (empty($federation)) {
                 echo '<div class="error">' . lang('error_fednotfound') . '</div>';
                 return;
             }
@@ -283,28 +264,24 @@ class Subscriber extends MY_Controller {
             $notification->setSubscriber($subscriber);
             $notification->setType($ntype);
             $notification->setFederation($federation);
-            if (!empty($nemail))
-            {
+            if (!empty($nemail)) {
                 $notification->setEmail($nemail);
             }
             $notification->setEnabled(TRUE);
-            if ($has_write_access)
-            {
+            if ($has_write_access) {
                 $notification->setApproved(TRUE);
             }
             $this->em->persist($notification);
             $this->em->flush();
-            $success = true;
             echo "OK";
-        }
-        elseif (strcmp($ntype, 'requeststoproviders') == 0)
-        {
-            if (!empty($nprovider))
-            {
+        } elseif (strcmp($ntype, 'requeststoproviders') == 0) {
+            /**
+             * @var $provider models\Provider
+             */
+            if (!empty($nprovider)) {
                 $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $nprovider));
             }
-            if (empty($provider))
-            {
+            if (empty($provider)) {
                 echo '<div class="error">' . lang('rerror_providernotexist') . '</div>';
                 return;
             }
@@ -313,43 +290,32 @@ class Subscriber extends MY_Controller {
             $notification->setSubscriber($subscriber);
             $notification->setType($ntype);
             $notification->setProvider($provider);
-            if (!empty($nemail))
-            {
+            if (!empty($nemail)) {
                 $notification->setEmail($nemail);
             }
             $notification->setEnabled(TRUE);
-            if ($has_write_access)
-            {
+            if ($has_write_access) {
                 $notification->setApproved(TRUE);
             }
             $this->em->persist($notification);
             $this->em->flush();
-            $success = true;
             echo "OK";
-        }
-        elseif (array_key_exists($ntype, $codes))
-        {
+        } elseif (array_key_exists($ntype, $codes)) {
             $notification = new models\NotificationList();
             $notification->setSubscriber($subscriber);
             $notification->setType($ntype);
-            if (!empty($nemail))
-            {
+            if (!empty($nemail)) {
                 $notification->setEmail($nemail);
             }
             $notification->setEnabled(TRUE);
 
-            if ($isAdministator)
-            {
+            if ($isAdministator) {
                 $notification->setApproved(TRUE);
             }
             $this->em->persist($notification);
             $this->em->flush();
-            $success = true;
             echo "OK";
-        }
-        else
-        {
-            $success = false;
+        } else {
             echo '<div class="error">' . lang('unknownerror') . '</div>';
         }
         return;
@@ -357,15 +323,13 @@ class Subscriber extends MY_Controller {
 
     public function updatestatus($id = null)
     {
-        if (!$this->input->is_ajax_request() || empty($id) || !is_numeric($id) || $_SERVER['REQUEST_METHOD'] !== 'POST')
-        {
+        if (!$this->input->is_ajax_request() || empty($id) || !is_numeric($id) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
             set_status_header(403);
             echo 'denied';
             return;
         }
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             set_status_header(403);
             echo 'not loggedin';
             return;
@@ -373,30 +337,32 @@ class Subscriber extends MY_Controller {
 
         $noteid = $this->input->post('noteid');
         $status = htmlentities($this->input->post('status'));
-        if (empty($noteid) || !is_numeric($noteid) || strcmp($noteid, $id) != 0)
-        {
+        if (empty($noteid) || !is_numeric($noteid) || strcmp($noteid, $id) != 0) {
             set_status_header(403);
             echo 'denied';
             return;
         }
         $allowedStatus = array('remove', 'approve', 'enable', 'disable', 'disapprove');
-        if (!in_array($status, $allowedStatus))
-        {
+        if (!in_array($status, $allowedStatus)) {
             set_status_header(403);
             echo 'denied';
             return;
         }
+        /**
+         * @var $notification models\NotificationList
+         */
         $notification = $this->em->getRepository("models\NotificationList")->findOneBy(array('id' => $noteid));
-        if (empty($notification))
-        {
+        if (empty($notification)) {
             set_status_header(404);
             echo 'not found';
             return;
         }
 
+        /**
+         * @var $user models\User
+         */
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->j_auth->current_user()));
-        if (empty($user))
-        {
+        if (empty($user)) {
             set_status_header(404);
             echo 'not found';
             return;
@@ -404,75 +370,56 @@ class Subscriber extends MY_Controller {
         $isAdministrator = $this->j_auth->isAdministrator();
         $notificationOwner = $notification->getSubscriber();
         $userMatchOwner = ($notificationOwner->getId() === $user->getId());
-        if (!(($userMatchOwner) || ($isAdministrator)))
-        {
+        if (!(($userMatchOwner) || ($isAdministrator))) {
             set_status_header(403);
             echo 'denied';
             return;
         }
         $success = false;
-        if ($userMatchOwner && (strcmp($status, 'remove') === 0 or strcmp($status, 'disable') === 0 or strcmp($status, 'enable') === 0))
-        {
-            if (strcmp($status, 'remove') === 0)
-            {
+        if ($userMatchOwner && (strcmp($status, 'remove') === 0 or strcmp($status, 'disable') === 0 or strcmp($status, 'enable') === 0)) {
+            if (strcmp($status, 'remove') === 0) {
                 $this->em->remove($notification);
                 $this->em->flush();
                 $success = true;
-            }
-            elseif (strcmp($status, 'disable') === 0)
-            {
+            } elseif (strcmp($status, 'disable') === 0) {
                 $notification->setEnabled(false);
                 $this->em->persist($notification);
                 $this->em->flush();
                 $success = true;
-            }
-            elseif (strcmp($status, 'enable') === 0)
-            {
+            } elseif (strcmp($status, 'enable') === 0) {
                 $notification->setEnabled(true);
                 $this->em->persist($notification);
                 $this->em->flush();
                 $success = true;
             }
-        }
-        elseif ($isAdministrator)
-        {
-            if (strcmp($status, 'remove') === 0)
-            {
+        } elseif ($isAdministrator) {
+            if (strcmp($status, 'remove') === 0) {
                 $this->em->remove($notification);
                 $this->em->flush();
                 $success = true;
-            }
-            elseif (strcmp($status, 'disable') === 0)
-            {
+            } elseif (strcmp($status, 'disable') === 0) {
                 $notification->setEnabled(false);
                 $this->em->persist($notification);
                 $this->em->flush();
                 $success = true;
-            }
-            elseif (strcmp($status, 'enable') === 0)
-            {
+            } elseif (strcmp($status, 'enable') === 0) {
                 $notification->setEnabled(true);
                 $this->em->persist($notification);
                 $this->em->flush();
                 $success = true;
-            }
-            elseif (strcmp($status, 'approve') === 0)
-            {
+            } elseif (strcmp($status, 'approve') === 0) {
                 $notification->setApproved(true);
                 $this->em->persist($notification);
                 $this->em->flush();
                 $success = true;
-            }
-            elseif (strcmp($status, 'disapprove') === 0)
-            {
+            } elseif (strcmp($status, 'disapprove') === 0) {
                 $notification->setApproved(false);
                 $this->em->persist($notification);
                 $this->em->flush();
                 $success = true;
             }
         }
-        if ($success)
-        {
+        if ($success) {
             $refreshed = $this->getSubscriptionsToJson($notificationOwner);
             $this->output->set_content_type('application/json');
             echo $refreshed;
