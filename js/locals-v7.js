@@ -2054,6 +2054,86 @@ $(document).ready(function () {
 
     }
 
+    $('#spmatrixload').on('click',function(e){
+        var link = $(this).attr('data-jagger-ajaxurl');
+        var resulttarget = $(document).find('#spmatrixdiv').first();
+        $.ajax({
+            type: "GET",
+            url: link,
+            cache: false,
+            dataType: "json",
+            beforeSend: function(){
+                $("#spinner").show();
+            },
+            success: function (json) {
+                $("#spinner").hide();
+                if(json)
+                {
+
+                    var attrdefs = json.attrs;
+                    var policies = json.data;
+                    var mlegend = '<div><span class="den">&nbsp;&nbsp;&nbsp;</span> <span>denied</span></div>' +
+                        '<div><span class="perm">&nbsp;&nbsp;&nbsp;</span> <span>permitted</span></div>' +
+                        '<div><span class="dis">&nbsp;&nbsp;&nbsp;</span> <span>not supported</span></div>' +
+                        '<div><span>R</span> <span>required</span></div>' +
+                        '<div><span>D</span> <span>desired</span></div>';
+
+                    var countAttr = 0;
+                    var tbl = '<table class="table table-header-rotated" id="idpmatrixresult"><thead><tr>';
+                    tbl += '<th style="background: white">' + mlegend + '</th>';
+                    $.each(attrdefs, function (a, p) {
+                        tbl += '<th class="rotate"><div><span>' + a + '</span></div></th>';
+                        countAttr++;
+                    });
+                    if (countAttr > 52) {
+                        $("#container").css({"max-width": "100%"});
+                    }
+                    var cell, requiredAttr, pAttr,cl;
+                    tbl += '</tr></thead><tbody>';
+                    $.each(policies, function (i, a) {
+
+                        tbl += '<tr><td data-jagger-entidlink="' + a.idpid + '" class="searchcol"><span data-tooltip aria-haspopup="true" class="has-tip" data-options="disable_for_touch:true" title="' + i + '" >' + a.name + '</span><span class="hidden">' + i + '</span></td>';
+                         $.each(attrdefs, function (k, v) {
+                             cl = '';
+                             requiredAttr = a['data']['attributes'][''+k+''];
+                             cell = v[0].toUpperCase();
+                             if(requiredAttr === undefined)
+                             {
+                                 cl = 'dis'
+                             }
+                             else if(requiredAttr === 0 )
+                             {
+                                 cl = 'den'
+                             }
+                             else if(requiredAttr === 1)
+                             {
+                                 if(cell === 'R')
+                                 {
+                                     cl = 'perm';
+                                 }
+                                 else
+                                 {
+                                     cl = 'den';
+                                 }
+                             }
+                             else if (requiredAttr === 2)
+                             {
+                                 cl = 'perm';
+                             }
+
+                             tbl += '<td class="'+cl+'">';
+                             tbl += cell + '</td>';
+                         });
+                    });
+                    tbl += '</tbody></table>';
+                    resulttarget.html(tbl);
+                }
+            },
+            error: function(){
+                $("#spinner").hide();
+            }
+        })
+    });
     ////////////// new idpmatrix
     if ($('#matrixloader').length > 0) {
         var formupdater = $('#policyupdater');
