@@ -24,13 +24,25 @@ echo '<a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>';
 
 
-echo '<div id="removeusermodal" class="reveal-modal medium" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">';
+echo '<div id="removeusermodal" class="reveal-modal small" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">';
 $form_attributes = array('id' => 'formver2', 'class' => 'register');
+
+
 $f = form_open(base_url('manage/users/remove'), $form_attributes);
+$f .= '<h4>'.lang('rr_rmuserconfirm').' : <span id="usernameval"></span></h4>';
+$f .= '<div id="removeusermodalmsg"  data-alert class="alert-box hidden"></div>';
 $f .= '<div class="small-12 columns"><div class="small-3 columns">';
+$f .= '<input type="hidden" style="display:none;" value="" name="encodedusr" id="encodedusr">';
 $f .= jform_label('' . lang('rr_username') . '', 'username') . '</div>';
 $f .= '<div class="small-6 large-7 end columns">' . form_input('username') . '</div></div>';
-$f .= '<div class="buttons small-12 columns"><div class="small-9 large-10 end columns text-right"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">' . lang('rr_rmuserbtn') . '</button></div></div>' . form_close();
+$f .= '<div class="buttons small-12 columns">';
+$mbts = array(
+    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">'.lang('rr_cancel').'</button>',
+    '<button type="submit" name="remove" value="remove" class="resetbutton deleteicon">' . lang('rr_rmuserbtn') . '</button>',
+    '<button type="reset" name="close" value="cancel" class="button modal-close hidden">Close</button>',
+);
+$f .= revealBtnsRow($mbts);
+$f .='</div>' . form_close();
 echo $f;
 
 echo '<a class="close-reveal-modal" aria-label="Close">&#215;</a>';

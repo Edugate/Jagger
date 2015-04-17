@@ -172,17 +172,7 @@
 
                         echo '<li><a href="' . $base_url . 'manage/importer">' . lang('rr_meta_importer') . '</a></li>';
                         ?>
-                        <li class="has-dropdown"><a
-                                href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users'); ?></a>
-                            <ul class="dropdown">
-                                <li>
-                                    <a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users_list'); ?></a></li>
-                                
-                                <li>
-                                    <a href="<?php echo $base_url; ?>manage/users/remove"><?php echo lang('rr_rmuser'); ?></a>
-                                </li>
-                            </ul>
-                        </li>
+                        <li><a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users'); ?></a></li>
                         <?php
                         echo '<li><a href="' . $base_url . 'manage/spage/showall">' . lang('rr_articlesmngmt') . '</a></li>';
                         echo '<li><a href="' . $base_url . 'manage/mailtemplates/showlist">' . lang('rr_mailtemplmngmt') . '</a></li>';

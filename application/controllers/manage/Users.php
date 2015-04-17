@@ -450,15 +450,12 @@ class Users extends MY_Controller
             return;
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
-        if (!$accessListUsers)
-        {
-           $breadcrumbs = array(
+        if (!$accessListUsers) {
+            $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
                 array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
             );
-        }
-        else
-        {
+        } else {
             $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
                 array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
@@ -548,7 +545,7 @@ class Users extends MY_Controller
             if (array_key_exists('sp', $board) && is_array($board['sp'])) {
                 $bookmarks .= '<p><ul class="no-bullet"><b>' . lang('serviceproviders') . '</b>';
                 foreach ($board['sp'] as $key => $value) {
-                    $bookmarks .= '<li><a href="'.base_url('providers/detail/show/'.$key.'').'">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
+                    $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
                 }
                 $bookmarks .= '</ul></p>';
             }
@@ -603,24 +600,24 @@ class Users extends MY_Controller
 
         $data['tabs'] = array(
             array(
-                'tabid'=>'tab1',
-                'tabtitle'=>lang('rr_profile'),
-                'tabdata'=>$tab1,
+                'tabid' => 'tab1',
+                'tabtitle' => lang('rr_profile'),
+                'tabdata' => $tab1,
             ),
             array(
-                'tabid'=>'tab2',
-                'tabtitle'=>lang('dashboard'),
-                'tabdata'=>$tab2,
+                'tabid' => 'tab2',
+                'tabtitle' => lang('dashboard'),
+                'tabdata' => $tab2,
             ),
             array(
-                'tabid'=>'tab3',
-                'tabtitle'=>lang('authnlogs'),
-                'tabdata'=>$tab3,
+                'tabid' => 'tab3',
+                'tabtitle' => lang('authnlogs'),
+                'tabdata' => $tab3,
             ),
             array(
-                'tabid'=>'tab4',
-                'tabtitle'=>lang('actionlogs'),
-                'tabdata'=>$tab4,
+                'tabid' => 'tab4',
+                'tabtitle' => lang('actionlogs'),
+                'tabdata' => $tab4,
             )
         );
 
@@ -696,20 +693,17 @@ class Users extends MY_Controller
         foreach ($users as $u) {
             $encoded_username = base64url_encode($u->getUsername());
             $roles = $u->getRoleNames();
-            if(in_array('Administrator',$roles))
-            {
+            if (in_array('Administrator', $roles)) {
                 $action = '';
-            }
-            else
-            {
-                $action = '<a href="#" class="rmusericon"><i class="fi-trash"></i><a>';
+            } else {
+                $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encoded_username . '"><i class="fi-trash"></i><a>';
             }
             $last = $u->getLastlogin();
             $lastlogin = '';
             if (!empty($last)) {
                 $lastlogin = date('Y-m-d H:i:s', $last->format('U') + j_auth::$timeOffset);
             }
-            $usersList[] = array('user' => anchor($showlink . '/' . $encoded_username, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(),$action);
+            $usersList[] = array('user' => anchor($showlink . '/' . $encoded_username, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(), $action);
         }
         $data = array(
             'breadcrumbs' => array(
@@ -725,7 +719,8 @@ class Users extends MY_Controller
     private function removeSubmitValidate()
     {
         log_message('debug', '(remove user) validating form initialized');
-        $this->form_validation->set_rules('username', 'Username', 'required|trim|max_length[128]|user_username_exists[username]');
+        $this->form_validation->set_rules('username', lang('rr_username'), 'required|trim|max_length[128]|user_username_exists[username]');
+        $this->form_validation->set_rules('encodedusr','ff');
         return $this->form_validation->run();
     }
 
@@ -739,51 +734,69 @@ class Users extends MY_Controller
     public function remove()
     {
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            redirect('auth/login', 'location');
+        $isAjax = $this->input->is_ajax_request();
+        if (!$loggedin || !$isAjax) {
+            set_status_header(403);
+            echo 'Permission denied';
+            return;
         }
+
         $access = $this->zacl->check_acl('user', 'remove', 'default', '');
         if (!$access) {
-            $data['error'] = lang('error403');
-            $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-        } else {
-            if (!$this->removeSubmitValidate()) {
-                $form_attributes = array('id' => 'formver2', 'class' => 'register');
-                $action = base_url() . "manage/users/remove";
-                $f = form_open($action, $form_attributes);
-                $f .= '<div class="small-12 columns"><div class="small-3 columns">';
-                $f .= jform_label('' . lang('rr_username') . '', 'username') . '</div>';
-                $f .= '<div class="small-6 large-7 end columns">' . form_input('username') . '</div></div>';
-                $f .= '<div class="buttons small-12 columns"><div class="small-9 large-10 end columns text-right"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">' . lang('rr_rmuserbtn') . '</button></div></div>' . form_close();
-                $data['form'] = $f;
-                $data['titlepage'] = lang('rr_rminguser');
-                $data['content_view'] = 'manage/remove_user_view';
-                $this->load->view('page', $data);
-            } else {
-                $this->load->library('user_manage');
-                /**
-                 * @var $user models\User
-                 */
-                $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
-                if (!empty($user)) {
-                    $selected_username = strtolower($user->getUsername());
-                    $current_username = strtolower($this->session->userdata('username'));
-                    if (strcmp($selected_username, $current_username) != 0) {
-                        $this->user_manage->remove($user);
-                        $data['message'] = 'user has been removed';
-                        $this->load->library('tracker');
-                        $this->tracker->save_track('user', 'remove', $selected_username, 'user removed from the system', true);
-                    } else {
-                        $data['message'] = lang('error_cannotrmyouself');
-                    }
-                } else {
-                    $data['message'] = lang('error_usernotexist');
-                }
-                $data['content_view'] = 'manage/remove_user_view';
-                $this->load->view('page', $data);
-            }
+            set_status_header(403);
+            echo 'Permission denied';
+            return;
         }
+        if (!$this->removeSubmitValidate()) {
+            set_status_header(403);
+
+            echo validation_errors('<div>', '</div>');
+            return;
+
+        } else {
+            $this->load->library('user_manage');
+            /**
+             * @var $user models\User
+             */
+            $inputUsername = trim($this->input->post('username'));
+            $hiddenEcondedUser = trim($this->input->post('encodedusr'));
+            if(empty($inputUsername) || strcmp(base64url_encode($inputUsername),$hiddenEcondedUser)!=0)
+            {
+                set_status_header(403);
+                echo 'Entered username doesnt match';
+                return;
+            }
+
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
+            if (!empty($user)) {
+                $userRoles = $user->getRoleNames();
+                if(in_array('Administrator',$userRoles))
+                {
+                    set_status_header(403);
+                    echo 'You cannot remover user who has Admninitrator role set';
+                    return;
+                }
+                $selected_username = strtolower($user->getUsername());
+                $current_username = strtolower($this->session->userdata('username'));
+                if (strcmp($selected_username, $current_username) != 0) {
+                    $this->user_manage->remove($user);
+                    echo 'user has been removed';
+                    $this->load->library('tracker');
+                    $this->tracker->save_track('user', 'remove', $selected_username, 'user removed from the system', true);
+                    return;
+                } else {
+                    set_status_header(403);
+                    echo lang('error_cannotrmyouself');
+                    return;
+                }
+            } else {
+                set_status_header(403);
+                echo lang('error_usernotexist');
+                return;
+            }
+
+        }
+
     }
 
     public function accessedit($encoded_username)
@@ -845,19 +858,16 @@ class Users extends MY_Controller
             return;
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
-        if (!$accessListUsers)
-        {
+        if (!$accessListUsers) {
             $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
-                array('url' => base_url('manage/users/show/'.$encoded_username.''), 'name' => html_escape($user->getUsername())),
+                array('url' => base_url('manage/users/show/' . $encoded_username . ''), 'name' => html_escape($user->getUsername())),
                 array('url' => base_url('#'), 'name' => lang('rr_changepass'), 'type' => 'current')
             );
-        }
-        else
-        {
+        } else {
             $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
-                array('url' => base_url('manage/users/show/'.$encoded_username.''), 'name' => html_escape($user->getUsername()),),
+                array('url' => base_url('manage/users/show/' . $encoded_username . ''), 'name' => html_escape($user->getUsername()),),
                 array('url' => base_url('#'), 'name' => lang('rr_changepass'), 'type' => 'current')
             );
         }
