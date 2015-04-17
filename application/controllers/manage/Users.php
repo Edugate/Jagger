@@ -450,15 +450,12 @@ class Users extends MY_Controller
             return;
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
-        if (!$accessListUsers)
-        {
-           $breadcrumbs = array(
+        if (!$accessListUsers) {
+            $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
                 array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
             );
-        }
-        else
-        {
+        } else {
             $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
                 array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
@@ -481,14 +478,14 @@ class Users extends MY_Controller
 
         $systemTwoFactorAuthn = $this->config->item('twofactorauthn');
         $secondFactor = $user->getSecondFactor();
-        $i = 0;
-        $det = array();
-        $det[$i++] = array('key' => lang('rr_username'), 'val' => htmlspecialchars($user->getUsername()));
+
+
+        $tab1[] = array('key' => lang('rr_username'), 'val' => htmlspecialchars($user->getUsername()));
         if ($write_access) {
-            $det[$i++] = array('key' => lang('rr_password'), 'val' => $passedit_link);
+            $tab1[] = array('key' => lang('rr_password'), 'val' => $passedit_link);
         }
-        $det[$i++] = array('key' => '' . lang('rr_userfullname') . '', 'val' => htmlspecialchars($user->getFullname()));
-        $det[$i++] = array('key' => '' . lang('rr_uemail') . '', 'val' => htmlspecialchars($user->getEmail()));
+        $tab1[] = array('key' => '' . lang('rr_userfullname') . '', 'val' => htmlspecialchars($user->getFullname()));
+        $tab1[] = array('key' => '' . lang('rr_uemail') . '', 'val' => htmlspecialchars($user->getEmail()));
         $access_type_str = array();
         if ($local_access) {
             $access_type_str[] = lang('rr_local_authn');
@@ -496,7 +493,7 @@ class Users extends MY_Controller
         if ($federated_access) {
             $access_type_str[] = lang('federated_access');
         }
-        $det[$i++] = array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(", ", $access_type_str));
+        $tab1[] = array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(", ", $access_type_str));
 
         if ($isAdmin) {
             $manageBtn = $this->manageRoleBtn($encoded_username);
@@ -504,8 +501,8 @@ class Users extends MY_Controller
             $manageBtn = '';
         }
         $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_twofactorauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
-        $det[$i++] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
-        $det[$i++] = array('key' => lang('rrnotifications'), 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encoded_username . '', lang('rrmynotifications')));
+        $tab1[] = array('key' => lang('rr_assignedroles'), 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn);
+        $tab1[] = array('key' => lang('rrnotifications'), 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encoded_username . '', lang('rrmynotifications')));
         $this->load->library('rrpreference');
         $allowed2fglobal = $this->rrpreference->getStatusByName('user2fset');
         if (isset($_SESSION['username']) && strcasecmp($_SESSION['username'], $username) == 0) {
@@ -522,16 +519,15 @@ class Users extends MY_Controller
         if ($secondFactor) {
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="' . $secondFactor . ' ">' . $secondFactor . '</span>';
             if ($systemTwoFactorAuthn) {
-                $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '' . $bb);
+                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '' . $bb);
             } else {
-                $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . ' <span class="label alert">Disabled</span>' . $bb);
+                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . ' <span class="label alert">Disabled</span>' . $bb);
             }
         } elseif ($systemTwoFactorAuthn) {
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="none">none</span>';
-            $det[$i++] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . $bb);
+            $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . $bb);
         }
-
-        $det[$i++] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
+        $tab2[] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
         $bookmarks = '';
         $userpref = $user->getUserpref();
         if (isset($userpref['board'])) {
@@ -549,7 +545,7 @@ class Users extends MY_Controller
             if (array_key_exists('sp', $board) && is_array($board['sp'])) {
                 $bookmarks .= '<p><ul class="no-bullet"><b>' . lang('serviceproviders') . '</b>';
                 foreach ($board['sp'] as $key => $value) {
-                    $bookmarks .= '<li><a href="' . base_url() . 'providers/detail/show/' . $key . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
+                    $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
                 }
                 $bookmarks .= '</ul></p>';
             }
@@ -561,16 +557,15 @@ class Users extends MY_Controller
                 $bookmarks .= '</ul></p>';
             }
         }
-        $det[$i++] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
-
-
-        $det[$i++] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limit_authn, 'class' => 'highlight', 'colspan' => 2));
+        $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
+        $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limit_authn, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authn_logs as $ath) {
             $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U') + j_auth::$timeOffset);
             $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
-            $det[$i++] = array('key' => $date, 'val' => $detail);
+            $tab3[] = array('key' => $date, 'val' => $detail);
         }
-        $det[$i++] = array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2));
+
+        $tab4[] = array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2));
         foreach ($action_logs as $ath) {
             $subtype = $ath->getSubType();
             if ($subtype == 'modification') {
@@ -594,16 +589,40 @@ class Users extends MY_Controller
                     }
                 }
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $dstr;
-                $det[$i++] = array('key' => $date, 'val' => $detail);
+                $tab4[] = array('key' => $date, 'val' => $detail);
             } elseif ($subtype == 'create' || $subtype == 'remove') {
                 $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U') + j_auth::$timeOffset);
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
-                $det[$i++] = array('key' => $date, 'val' => $detail);
+                $tab4[] = array('key' => $date, 'val' => $detail);
             }
         }
 
+
+        $data['tabs'] = array(
+            array(
+                'tabid' => 'tab1',
+                'tabtitle' => lang('rr_profile'),
+                'tabdata' => $tab1,
+            ),
+            array(
+                'tabid' => 'tab2',
+                'tabtitle' => lang('dashboard'),
+                'tabdata' => $tab2,
+            ),
+            array(
+                'tabid' => 'tab3',
+                'tabtitle' => lang('authnlogs'),
+                'tabdata' => $tab3,
+            ),
+            array(
+                'tabid' => 'tab4',
+                'tabtitle' => lang('actionlogs'),
+                'tabdata' => $tab4,
+            )
+        );
+
         $data['breadcrumbs'] = $breadcrumbs;
-        $data['det'] = $det;
+
         $data['titlepage'] = lang('rr_detforuser') . ': ' . $data['caption'];
         $data['content_view'] = 'manage/userdetail_view';
         $this->load->view('page', $data);
@@ -673,12 +692,18 @@ class Users extends MY_Controller
 
         foreach ($users as $u) {
             $encoded_username = base64url_encode($u->getUsername());
+            $roles = $u->getRoleNames();
+            if (in_array('Administrator', $roles)) {
+                $action = '';
+            } else {
+                $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encoded_username . '"><i class="fi-trash"></i><a>';
+            }
             $last = $u->getLastlogin();
             $lastlogin = '';
             if (!empty($last)) {
                 $lastlogin = date('Y-m-d H:i:s', $last->format('U') + j_auth::$timeOffset);
             }
-            $usersList[] = array('user' => anchor($showlink . '/' . $encoded_username, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp());
+            $usersList[] = array('user' => anchor($showlink . '/' . $encoded_username, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(), $action);
         }
         $data = array(
             'breadcrumbs' => array(
@@ -694,7 +719,8 @@ class Users extends MY_Controller
     private function removeSubmitValidate()
     {
         log_message('debug', '(remove user) validating form initialized');
-        $this->form_validation->set_rules('username', 'Username', 'required|trim|max_length[128]|user_username_exists[username]');
+        $this->form_validation->set_rules('username', lang('rr_username'), 'required|trim|max_length[128]|user_username_exists[username]');
+        $this->form_validation->set_rules('encodedusr','ff');
         return $this->form_validation->run();
     }
 
@@ -708,51 +734,69 @@ class Users extends MY_Controller
     public function remove()
     {
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            redirect('auth/login', 'location');
+        $isAjax = $this->input->is_ajax_request();
+        if (!$loggedin || !$isAjax) {
+            set_status_header(403);
+            echo 'Permission denied';
+            return;
         }
+
         $access = $this->zacl->check_acl('user', 'remove', 'default', '');
         if (!$access) {
-            $data['error'] = lang('error403');
-            $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-        } else {
-            if (!$this->removeSubmitValidate()) {
-                $form_attributes = array('id' => 'formver2', 'class' => 'register');
-                $action = base_url() . "manage/users/remove";
-                $f = form_open($action, $form_attributes);
-                $f .= '<div class="small-12 columns"><div class="small-3 columns">';
-                $f .= jform_label('' . lang('rr_username') . '', 'username') . '</div>';
-                $f .= '<div class="small-6 large-7 end columns">' . form_input('username') . '</div></div>';
-                $f .= '<div class="buttons small-12 columns"><div class="small-9 large-10 end columns text-right"><button type="submit" name="remove" value="remove" class="resetbutton deleteicon">' . lang('rr_rmuserbtn') . '</button></div></div>' . form_close();
-                $data['form'] = $f;
-                $data['titlepage'] = lang('rr_rminguser');
-                $data['content_view'] = 'manage/remove_user_view';
-                $this->load->view('page', $data);
-            } else {
-                $this->load->library('user_manage');
-                /**
-                 * @var $user models\User
-                 */
-                $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
-                if (!empty($user)) {
-                    $selected_username = strtolower($user->getUsername());
-                    $current_username = strtolower($this->session->userdata('username'));
-                    if (strcmp($selected_username, $current_username) != 0) {
-                        $this->user_manage->remove($user);
-                        $data['message'] = 'user has been removed';
-                        $this->load->library('tracker');
-                        $this->tracker->save_track('user', 'remove', $selected_username, 'user removed from the system', true);
-                    } else {
-                        $data['message'] = lang('error_cannotrmyouself');
-                    }
-                } else {
-                    $data['message'] = lang('error_usernotexist');
-                }
-                $data['content_view'] = 'manage/remove_user_view';
-                $this->load->view('page', $data);
-            }
+            set_status_header(403);
+            echo 'Permission denied';
+            return;
         }
+        if (!$this->removeSubmitValidate()) {
+            set_status_header(403);
+
+            echo validation_errors('<div>', '</div>');
+            return;
+
+        } else {
+            $this->load->library('user_manage');
+            /**
+             * @var $user models\User
+             */
+            $inputUsername = trim($this->input->post('username'));
+            $hiddenEcondedUser = trim($this->input->post('encodedusr'));
+            if(empty($inputUsername) || strcmp(base64url_encode($inputUsername),$hiddenEcondedUser)!=0)
+            {
+                set_status_header(403);
+                echo 'Entered username doesnt match';
+                return;
+            }
+
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
+            if (!empty($user)) {
+                $userRoles = $user->getRoleNames();
+                if(in_array('Administrator',$userRoles))
+                {
+                    set_status_header(403);
+                    echo 'You cannot remover user who has Admninitrator role set';
+                    return;
+                }
+                $selected_username = strtolower($user->getUsername());
+                $current_username = strtolower($this->session->userdata('username'));
+                if (strcmp($selected_username, $current_username) != 0) {
+                    $this->user_manage->remove($user);
+                    echo 'user has been removed';
+                    $this->load->library('tracker');
+                    $this->tracker->save_track('user', 'remove', $selected_username, 'user removed from the system', true);
+                    return;
+                } else {
+                    set_status_header(403);
+                    echo lang('error_cannotrmyouself');
+                    return;
+                }
+            } else {
+                set_status_header(403);
+                echo lang('error_usernotexist');
+                return;
+            }
+
+        }
+
     }
 
     public function accessedit($encoded_username)
@@ -814,19 +858,16 @@ class Users extends MY_Controller
             return;
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
-        if (!$accessListUsers)
-        {
+        if (!$accessListUsers) {
             $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
-                array('url' => base_url('manage/users/show/'.$encoded_username.''), 'name' => html_escape($user->getUsername())),
+                array('url' => base_url('manage/users/show/' . $encoded_username . ''), 'name' => html_escape($user->getUsername())),
                 array('url' => base_url('#'), 'name' => lang('rr_changepass'), 'type' => 'current')
             );
-        }
-        else
-        {
+        } else {
             $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
-                array('url' => base_url('manage/users/show/'.$encoded_username.''), 'name' => html_escape($user->getUsername()),),
+                array('url' => base_url('manage/users/show/' . $encoded_username . ''), 'name' => html_escape($user->getUsername()),),
                 array('url' => base_url('#'), 'name' => lang('rr_changepass'), 'type' => 'current')
             );
         }

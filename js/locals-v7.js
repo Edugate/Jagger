@@ -705,6 +705,77 @@ var GINIT = {
             });
         });
 
+        $(".rmusericon").on('click',function(e){
+            var modal = $("#removeusermodal");
+            var msgdiv = modal.find("#removeusermodalmsg").first();
+            var username = $(this).attr('data-jagger-username');
+            var encusername = $(this).attr('data-jagger-encodeduser');
+            var usernameval = modal.find('#usernameval').first();
+            var inputencusr = modal.find('#encodedusr').first();
+            var closebtn = modal.find("button[name='close']");
+            var cancelbtn = modal.find("button[name='cancel']");
+            var submitbtn =modal.find("button[name='remove']");
+            var inputusername = modal.find("input[name='username']");
+            inputusername.val('');
+            inputencusr.val(encusername);
+            usernameval.html(username);
+            msgdiv.html('').hide().removeClass('alert').removeClass('success');
+            submitbtn.show();
+            cancelbtn.show();
+            closebtn.hide();
+
+
+            modal.foundation('reveal','open');
+            return false;
+        });
+
+
+        $("#removeusermodal form").on('submit', function(e){
+            e.preventDefault();
+            var msgdiv = $(this).find("#removeusermodalmsg").first();
+            var inputencusr = $(this).find('#encodedusr').first();
+            var link = $(this).attr('action');
+            var closebtn = $(this).find("button[name='close']");
+            var cancelbtn = $(this).find("button[name='cancel']");
+            var submitbtn =$(this).find("button[name='remove']");
+            $.ajax({
+                    type: "POST",
+                    url: link,
+                    data: $(this).serializeArray(),
+                    beforeSend: function(){
+                        msgdiv.html('').hide().removeClass('alert').removeClass('success');
+                        submitbtn.show();
+                        cancelbtn.show();
+                        closebtn.hide();
+                    },
+                    success: function(data)
+                    {
+                       var cell = $(document).find('a[data-jagger-encodeduser="'+inputencusr.val()+'"]');
+
+                        if(cell)
+                        {
+
+                           cell.closest('tr').hide();
+
+                        }
+
+                        msgdiv.html(data).addClass('success').show();
+                        submitbtn.hide();
+                        cancelbtn.hide();
+                        closebtn.show();
+                        return false;
+                    },
+                    error: function (xhr, status, error) {
+                    var alertmsg = '' + error + '';
+                    msgdiv.html(xhr.responseText).addClass('alert').show();
+                    return false;
+                    }
+                }
+
+            );
+
+        });
+
         $("#confirmremover").on('click', '.yes', function (e) {
             e.preventDefault();
             var form = $(this).closest("form");
