@@ -106,7 +106,7 @@ class Spmatrix extends MY_Controller
         foreach ($members as $member) {
             $entityID = $member->getEntityId();
             $result1 = $this->arp_generator->arpToXML($member, true);
-            if (array_key_exists($spEntityId, $result1)) {
+            if (is_array($result1) && array_key_exists($spEntityId, $result1)) {
                 if (!$ok) {
                     $result['attrs'] = $result1['' . $spEntityId . '']['req'];
                     $ok = true;
@@ -123,3 +123,4 @@ class Spmatrix extends MY_Controller
     }
 
 }
+
