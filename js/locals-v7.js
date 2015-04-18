@@ -2055,6 +2055,7 @@ $(document).ready(function () {
     }
 
     $('#spmatrixload').on('click',function(e){
+        var loadbutton = $(this);
         var link = $(this).attr('data-jagger-ajaxurl');
         var resulttarget = $(document).find('#spmatrixdiv').first();
         $.ajax({
@@ -2072,11 +2073,12 @@ $(document).ready(function () {
 
                     var attrdefs = json.attrs;
                     var policies = json.data;
+                    var prefurl = json.providerprefurl;
                     var mlegend = '<div><span class="den">&nbsp;&nbsp;&nbsp;</span> <span>denied</span></div>' +
-                        '<div><span class="perm">&nbsp;&nbsp;&nbsp;</span> <span>permitted</span></div>' +
-                        '<div><span class="dis">&nbsp;&nbsp;&nbsp;</span> <span>not supported</span></div>' +
-                        '<div><span>R</span> <span>required</span></div>' +
-                        '<div><span>D</span> <span>desired</span></div>';
+                        '<div><span class="perm">&nbsp;&nbsp;&nbsp;</span><span>permitted</span></div>' +
+                        '<div><span class="dis">&nbsp;&nbsp;&nbsp;</span><span>not supported</span></div>' +
+                        '<div><span>R</span>-<span>required</span></div>' +
+                        '<div><span>D</span>-<span>desired</span></div>';
 
                     var countAttr = 0;
                     var tbl = '<table class="table table-header-rotated" id="idpmatrixresult"><thead><tr>';
@@ -2092,7 +2094,7 @@ $(document).ready(function () {
                     tbl += '</tr></thead><tbody>';
                     $.each(policies, function (i, a) {
 
-                        tbl += '<tr><td data-jagger-entidlink="' + a.idpid + '" class="searchcol"><span data-tooltip aria-haspopup="true" class="has-tip" data-options="disable_for_touch:true" title="' + i + '" >' + a.name + '</span><span class="hidden">' + i + '</span></td>';
+                        tbl += '<tr><td data-jagger-entidlink="' + a.idpid + '" class="searchcol"><a href="'+prefurl+'/'+ a.idpid+'" title="' + a.entityid + '" >' + a.name + '</a><span class="hidden">' + i + '</span></td>';
                          $.each(attrdefs, function (k, v) {
                              cl = '';
                              requiredAttr = a['data']['attributes'][''+k+''];
@@ -2126,6 +2128,7 @@ $(document).ready(function () {
                          });
                     });
                     tbl += '</tbody></table>';
+                    loadbutton.hide();
                     resulttarget.html(tbl);
                 }
             },

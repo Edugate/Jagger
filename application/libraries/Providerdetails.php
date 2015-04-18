@@ -1087,7 +1087,7 @@ class Providerdetails
 
 			if ($hasWriteAccess) {
 				$d[++$i]['name'] = lang('rr_attrsoverview');
-				$d[$i]['value'] = anchor(base_url() . 'reports/sp_matrix/show/' . $ent->getId(), lang('rr_attrsoverview'), 'class="button small editbutton"');
+				$d[$i]['value'] = anchor(base_url() . 'reports/spmatrix/show/' . $ent->getId(), lang('rr_attrsoverview'), 'class="button small editbutton"');
 
 				if (!empty($logoUploadEnabled) && $logoUploadEnabled === TRUE) {
 					$entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/sp/' . $ent->getId() . ''), 'class' => '');

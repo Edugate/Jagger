@@ -25,7 +25,7 @@ class Spmatrix extends MY_Controller
             show_404();
         }
         /**
-         * @vat $sp models\Provider
+         * @var $sp models\Provider
          */
         $sp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
         if (empty($sp)) {
@@ -34,13 +34,26 @@ class Spmatrix extends MY_Controller
 
 
         $this->load->library('zacl');
-
+        $hasWriteAccess = $this->zacl->check_acl($sp->getId(), 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            show_error('Permission denied', 403);
+            return;
+        }
         $myLang = MY_Controller::getLang();
         $titlename = $sp->getNameToWebInLang($myLang, $sp->getType());
         $this->title = $titlename;
 
-
-        $data = array('content_view'=>'reports/spmatrix_view','spid'=>$sp->getId());
+        $data = array(
+            'titlepage' => '<a href="' . base_url() . 'providers/detail/show/' . $sp->getId() . '">' .$titlename . '</a>',
+            'subtitlepage' =>  lang('rr_provideingattrsoverview'),
+            'content_view' => 'reports/spmatrix_view',
+            'spid' => $sp->getId(),
+            'breadcrumbs' => array(
+                array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders')),
+                array('url' => base_url('providers/detail/show/' . $sp->getId() . ''), 'name' => '' . html_escape($titlename) . ''),
+                array('url' => '#', 'name' => lang('rr_arpoverview'), 'type' => 'current'),
+            )
+        );
         $this->load->view('page', $data);
 
     }
@@ -49,7 +62,7 @@ class Spmatrix extends MY_Controller
     {
         $loggedin = $this->j_auth->logged_in();
         $isAjax = $this->input->is_ajax_request();
-        if (!$loggedin) {
+        if (!$loggedin || !$isAjax) {
             set_status_header(403);
             echo 'no perm';
             return;
@@ -60,7 +73,7 @@ class Spmatrix extends MY_Controller
             return;
         }
         /**
-         * @vat $sp models\Provider
+         * @var $sp models\Provider
          */
         $sp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
         if (empty($sp)) {
@@ -71,38 +84,31 @@ class Spmatrix extends MY_Controller
 
         $spEntityId = $sp->getEntityId();
         $this->load->library('zacl');
-
+        $hasWriteAccess = $this->zacl->check_acl($sp->getId(), 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            set_status_header(403);
+            echo 'Permission denied';
+            return;
+        }
         $myLang = MY_Controller::getLang();
         $titlename = $sp->getNameToWebInLang($myLang, $sp->getType());
         $this->title = $titlename;
+        $result['providerprefurl'] = base_url('providers/detail/show/');
         $result['data'] = array();
         /**
          * @var $members models\Provider[]
          */
         $members = $this->tmp_providers->getCircleMembersIDP($sp, NULL, TRUE);
 
-        $keyprefix = getCachePrefix();
-        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
-
         $this->load->library('arp_generator');
 
         $ok = false;
         foreach ($members as $member) {
-            $cacheid = 'arp_' . $member->getId();
-            $arpcached = $this->cache->get($cacheid);
             $entityID = $member->getEntityId();
-            if(empty($arpcached)) {
-                $result1 = $this->arp_generator->arpToXML($member, true);
-            }
-            else
-            {
-                $result1 = $arpcached;
-            }
-            $result1_keys = array_keys($result1);
-
-            if (in_array($spEntityId, $result1_keys)) {
-                if(!$ok) {
-                    $result['attrs'] =  $result1[''.$spEntityId.'']['req'];
+            $result1 = $this->arp_generator->arpToXML($member, true);
+            if (array_key_exists($spEntityId, $result1)) {
+                if (!$ok) {
+                    $result['attrs'] = $result1['' . $spEntityId . '']['req'];
                     $ok = true;
                 }
                 $result['data'][] = array('idpid' => $member->getId(), 'name' => $member->getNameToWebInLang($myLang, 'idp'), 'entityid' => $entityID, 'data' => $result1['' . $spEntityId . '']);
@@ -110,8 +116,7 @@ class Spmatrix extends MY_Controller
             }
 
         }
-        if(count($result['data'])==0)
-        {
+        if (count($result['data']) == 0) {
             $result['message'] = 'No policies found';
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
