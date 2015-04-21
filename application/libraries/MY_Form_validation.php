@@ -521,8 +521,9 @@ class MY_form_validation extends CI_form_validation
     function user_username_unique($username)
     {
         $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        if (!empty($u)) {
-            $this->set_message('user_username_unique', "The %s : \"$username\" does already exist in the system.");
+        $rolename = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>$username));
+        if (!empty($u) || !empty($rolename)) {
+            $this->set_message('user_username_unique', "The %s : \" $username\" does already exist in the system or conflicts with role names.");
             return FALSE;
         } else {
             return TRUE;

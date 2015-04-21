@@ -40,9 +40,9 @@ class Users extends MY_Controller
     {
         log_message('debug', '(add user) validating form initialized');
         $usernameMinLength = $this->config->item('username_min_length') ?: 5;
-        $this->form_validation->set_rules('username', '' . lang('rr_username') . '', 'required|min_length[' . $usernameMinLength . ']|max_length[128]|user_username_unique[username]|xss_clean');
-        $this->form_validation->set_rules('email', 'E-mail', 'required|min_length[5]|max_length[128]|valid_email');
-        $this->form_validation->set_rules('access', 'Access type', 'required|xss_clean');
+        $this->form_validation->set_rules('username', '' . lang('rr_username') . '', 'trim|required|min_length[' . $usernameMinLength . ']|max_length[128]|user_username_unique[username]|xss_clean');
+        $this->form_validation->set_rules('email', 'E-mail', 'trim|required|min_length[5]|max_length[128]|valid_email');
+        $this->form_validation->set_rules('access', 'Access type', 'trim|required');
         $accesstype = trim($this->input->post('access'));
         if (!strcasecmp($accesstype, 'fed') == 0) {
             $this->form_validation->set_rules('password', '' . lang('rr_password') . '', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
@@ -258,6 +258,7 @@ class Users extends MY_Controller
             return;
         }
         $username = base64url_decode(trim($encodeduser));
+        $loggedUsername = $this->j_auth->current_user();
         /**
          * @var $user models\User
          */
@@ -280,6 +281,12 @@ class Users extends MY_Controller
             $currentRolename = $r->getName();
             $roleType = $r->getType();
             if (!in_array($currentRolename, $inputroles) && ($roleType === 'system')) {
+                if(strcasecmp($loggedUsername,$username)==0 && strcasecmp($currentRolename,'administrator') == 0)
+                {
+                    set_status_header(403);
+                    echo 'You are not allowed to remove Administrator role from your own account';
+                    return;
+                }
                 $user->unsetRole($r);
             }
         }
@@ -661,6 +668,7 @@ class Users extends MY_Controller
         $result = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">' . lang('btnmanageroles') . '</button>';
         $result .= '<div id="mroles" class="reveal-modal tiny" data-reveal><h3>' . lang('rr_manageroles') . '</h3>';
         $result .= form_open($formTarget);
+        $result .= '<div class="msg hidden alert-box" data-alert></div>';
         foreach ($roles as $v) {
             $result .= '<div class="small-12 column"><div class="small-6 column">' . $v->getName() . '</div><div class="small-6 column"><input type="checkbox" name="checkrole[]" value="' . $v->getName() . '"  /></div></div>';
         }
