@@ -271,7 +271,12 @@ class Attributepolicy extends MY_Controller
             $data['edit_form'] = $this->form_element->generateEditPolicyForm($attr_policy, $action, $submit_type);
         }
 
-        $data['subtitle'] = $subtitle;
+        $data['subtitlepage'] = $subtitle;
+        $data['breadcrumbs'] = array(
+            array('url'=> base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
+            array('url' => base_url('providers/detail/show/'.$idp_id.''), 'name' => '' . $providerNameInLang . ''),
+            array('url'=> base_url('manage/attributepolicy/globals/'.$idp_id.''),'name'=>lang('rr_attributereleasepolicy')),
+        );
 
         $data['content_view'] = 'manage/attribute_policy_detail_view';
         $this->load->view('page', $data);
