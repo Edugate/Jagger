@@ -349,13 +349,6 @@ class Providerupdater
          * start update UII
          */
         if ($entityType !== 'SP') {
-            $typeFilter = array('idp');
-            $idpextend = $ent->getExtendMetadata()->filter(
-                function (models\ExtendMetadata $entry) use ($typeFilter) {
-                    return in_array($entry->getType(), $typeFilter);
-                });
-
-
             $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($doFilter) {
@@ -365,11 +358,21 @@ class Providerupdater
             foreach ($e as $v) {
                 $l = $v->getAttributes();
                 if (isset($l['xml:lang'])) {
-                    $exarray['' . $v->getElement() . '']['' . $l['xml:lang'] . ''] = $v;
+                    if(isset($exarray['' . $v->getElement() . '']['' . $l['xml:lang'] . '']))
+                    {
+                        log_message('error','Found duplicated element for entity: '.$ent->getEntityId().' about mdui element: '.$v->getElement().' for lang '.$l['xml:lang'].' automaticaly removed');
+                        $e->removeElement($v);
+                        $ent->getExtendMetadata()->removeElement($v);
+                        $this->em->remove($v);
+                    }
+                    else {
+                        $exarray['' . $v->getElement() . '']['' . $l['xml:lang'] . ''] = $v;
+                    }
                 } else {
                     log_message('error', 'ExentedMetadata element with id:' . $v->getId() . ' doesnt contains xml:lang attr');
                 }
             }
+
             $mduiel = array('displayname' => 'DisplayName', 'desc' => 'Description', 'helpdesk' => 'InformationURL');
             foreach ($mduiel as $elkey => $elvalue) {
                 if (isset($ch['uii']['idpsso']['' . $elkey . '']) && is_array($ch['uii']['idpsso']['' . $elkey . ''])) {
@@ -379,6 +382,11 @@ class Providerupdater
                             return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                         });
                     foreach ($collection as $c) {
+                        $cid = $c->getId();
+                        if($cid === 1283948)
+                        {
+                            log_message('debug','DUPA still is here: '.$cid);
+                        }
                         $attrs = $c->getAttributes();
                         $lang = $attrs['xml:lang'];
                         if (!isset($ch['uii']['idpsso']['' . $elkey . '']['' . $lang . ''])) {

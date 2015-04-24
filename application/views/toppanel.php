@@ -48,7 +48,7 @@
                     <li class="has-dropdown">
                         <a href="#">
                             <?php
-                            echo '<img src="' . base_url() . 'images/jicons/male80.svg" class="jicon" style="height: 20px" title="' . htmlentities($user) . '"/>';
+                            echo '<img src="' . base_url() . 'images/jicons/male80.svg" class="jicon" style="height: 20px" title="' . html_escape($user) . '"/>';
                             ?></a>
                         <ul class="dropdown">
                             <li>
