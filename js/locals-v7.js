@@ -1,6 +1,10 @@
 ////////////////////////////////////
 /////// plugins ///////////////////
-
+function nl2br(str, is_xhtml) {
+    var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br ' + '/>' : '<br>'; // Adjust comment to avoid issue on phpjs.org display
+    return (str + '')
+        .replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+}
 /*
  * Copyright (c) 2008 Greg Weber greg at gregweber.info
  * Dual licensed under the MIT and GPL licenses:
@@ -3788,7 +3792,7 @@ $("#updateprefsmodal").on('submit', function (e) {
                     var type = data.type;
                     if (type === 'text') {
 
-                        rowRecord.find('span[data-jagger-name="vtext"]').first().html(data.vtext);
+                        rowRecord.find('span[data-jagger-name="vtext"]').first().html(nl2br(data.vtext,false));
                     }
                     var sStatus = rowRecord.find('span[data-jagger-name="status"]').first();
                     if (data.status) {

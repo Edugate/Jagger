@@ -21,11 +21,15 @@ if (!defined('BASEPATH'))
  */
 class Email_sender {
 
+    protected $mailFooter;
+
     function __construct()
     {
         $this->ci = & get_instance();
         $this->ci->load->library('doctrine');
         $this->em = $this->ci->doctrine->em;
+        $this->mailFooter = $this->ci->rrpreference->getTextValueByName('mail_footer');
+
     }
 
     // allow to create and use templates in following langs
@@ -218,9 +222,9 @@ class Email_sender {
             $this->ci->email->from($this->ci->config->item('mail_from'), '');
             $this->ci->email->to($k, '');
             $this->ci->email->subject($full_subject);
-            $footer = $this->ci->config->item('mail_footer');
+            //$footer = $this->ci->config->item('mail_footer');
 
-            $message = $body . PHP_EOL . 'Message was generated at ' . $generatedAt . PHP_EOL . $footer;
+            $message = $body . PHP_EOL . 'Message was generated at ' . $generatedAt . PHP_EOL . $this->mailFooter;
             $this->ci->email->message($message);
             if ($this->ci->email->send())
             {

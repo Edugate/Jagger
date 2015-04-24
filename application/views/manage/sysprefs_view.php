@@ -11,7 +11,7 @@ foreach ($datas as $x => $y) {
 			$cell = array();
 			$cell[] = '<span data-jagger-name="displayname">' . $v['displayname'] . '</span>';
 			$cell[] = '<span data-jagger-name="desc">' . $v['desc'] . '</span>';
-			$cell[] = '<span data-jagger-name="vtext">' . $v['vtext'] . '</span>';
+			$cell[] = '<span data-jagger-name="vtext">' . nl2br($v['vtext']) . '</span>';
 			if ($v['status']) {
 				$cell[] = '<span class="label" data-jagger-name="status">' . lang('rr_enabled') . '</span>';
 			} else {
