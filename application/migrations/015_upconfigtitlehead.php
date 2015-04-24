@@ -11,7 +11,7 @@ class Migration_upconfigtitlehead extends CI_Migration {
 		$initData = array();
 
 		$confelement = $this->em->getRepository("models\Preferences")->findOneBy(array('name'=>'titleheader'));
-		if(empty($breadcrumbs))
+		if(empty($confelement))
 		{
 			$c = new models\Preferences();
 			$c->setName('titleheader');
@@ -25,8 +25,8 @@ class Migration_upconfigtitlehead extends CI_Migration {
 		}
 		else
 		{
-			$breadcrumbs->setCategory('page');
-			$breadcrumbs->setType('bool');
+			$confelement->setCategory('page');
+			$confelement->setType('bool');
 			$this->em->persist($confelement);
 		}
 

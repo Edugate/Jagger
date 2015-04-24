@@ -48,3 +48,4 @@ echo $f;
 echo '<a class="close-reveal-modal" aria-label="Close">&#215;</a>';
 
 echo '</div>';
+

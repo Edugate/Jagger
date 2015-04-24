@@ -56,6 +56,10 @@ class Form_element
 	 * new function with prefix N for generating forms elements will replace old ones
 	 */
 
+    /**
+     * @param \models\Provider $ent
+     * @return array
+     */
 	public function NgenerateRegistrationPolicies(models\Provider $ent)
 	{
 		$langs = languagesCodes();
@@ -2510,10 +2514,12 @@ class Form_element
 		return $result;
 	}
 
-	/**
-	 * by default we just get all federations
-	 * @todo add more if conditions are set in array
-	 */
+    /**
+     * by default we just get all federations
+     * @param null $conditions
+     * @return array
+     * @todo add more if conditions are set in array
+     */
 	public function getFederation($conditions = null)
 	{
 		$result = array();

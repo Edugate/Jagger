@@ -329,7 +329,6 @@ class J_cache
 		{
 			$this->_contents['__cache_expires'] = $this->_expires + time();
 		}
-		// ...or add default expiration if its set
 		elseif (! empty($this->_default_expires) )
 		{
 			$this->_contents['__cache_expires'] = $this->_default_expires + time();

@@ -86,7 +86,7 @@ class Sysprefs extends MY_Controller
 
 		$this->form_validation->reset_validation();
 		if ($type === 'text') {
-			$this->form_validation->set_rules('vtext', lang('label_text'), 'trim|htmlspecialchars');
+			$this->form_validation->set_rules('vtext', lang('label_text'), 'trim');
 
 			if ($this->form_validation->run() !== true) {
 				$result['error'] = 'd' . validation_errors('<div>', '</div>');
@@ -94,7 +94,7 @@ class Sysprefs extends MY_Controller
 				return;
 			}
 			$t = $this->input->post('vtext');
-			$c->setValue($t);
+			$c->setValue(strip_tags($t,'<a>'));
 		}
 
 
