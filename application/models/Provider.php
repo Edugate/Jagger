@@ -2224,56 +2224,72 @@ class Provider
             $this->setScope('aa', $ext['aascope']);
         }
 
+        $langDuplicates = array();
         if (array_key_exists('desc', $ext) && is_array($ext['desc'])) {
             foreach ($ext['desc'] as $k => $p) {
-                $extdesc = new ExtendMetadata;
-                $extdesc->setNamespace('mdui');
-                $extdesc->setType($type);
-                $extdesc->setElement('Description');
-                $extdesc->setValue($p['val']);
-                $extdesc->setAttributes(array('xml:lang' => $p['lang']));
-                $extdesc->setProvider($this);
-                $this->setExtendMetadata($extdesc);
-                $extdesc->setParent($parentUIInfo);
+                if(!in_array($p['lang'],$langDuplicates)) {
+                    $extdesc = new ExtendMetadata;
+                    $extdesc->setNamespace('mdui');
+                    $extdesc->setType($type);
+                    $extdesc->setElement('Description');
+                    $extdesc->setValue($p['val']);
+                    $extdesc->setAttributes(array('xml:lang' => $p['lang']));
+                    $extdesc->setProvider($this);
+                    $this->setExtendMetadata($extdesc);
+                    $extdesc->setParent($parentUIInfo);
+                    $langDuplicates[] = $p['lang'];
+                }
             }
         }
+        $langDuplicates = array();
         if (array_key_exists('displayname', $ext) && is_array($ext['displayname'])) {
             foreach ($ext['displayname'] as $k => $p) {
-                $extdesc = new ExtendMetadata;
-                $extdesc->setNamespace('mdui');
-                $extdesc->setType($type);
-                $extdesc->setElement('DisplayName');
-                $extdesc->setValue($p['val']);
-                $extdesc->setAttributes(array('xml:lang' => $p['lang']));
-                $extdesc->setProvider($this);
-                $this->setExtendMetadata($extdesc);
-                $extdesc->setParent($parentUIInfo);
+                 if(!in_array($p['lang'],$langDuplicates)) {
+                     $extdesc = new ExtendMetadata;
+                     $extdesc->setNamespace('mdui');
+                     $extdesc->setType($type);
+                     $extdesc->setElement('DisplayName');
+                     $extdesc->setValue($p['val']);
+                     $extdesc->setAttributes(array('xml:lang' => $p['lang']));
+                     $extdesc->setProvider($this);
+                     $this->setExtendMetadata($extdesc);
+                     $extdesc->setParent($parentUIInfo);
+                     $langDuplicates[] = $p['lang'];
+                 }
             }
         }
+        $langDuplicates = array();
         if (array_key_exists('privacyurl', $ext) && is_array($ext['privacyurl'])) {
             foreach ($ext['privacyurl'] as $k => $p) {
-                $extdesc = new ExtendMetadata;
-                $extdesc->setNamespace('mdui');
-                $extdesc->setType($type);
-                $extdesc->setElement('PrivacyStatementURL');
-                $extdesc->setValue($p['val']);
-                $extdesc->setAttributes(array('xml:lang' => $p['lang']));
-                $extdesc->setProvider($this);
-                $this->setExtendMetadata($extdesc);
-                $extdesc->setParent($parentUIInfo);
+                if(!in_array($p['lang'],$langDuplicates)) {
+                    $extdesc = new ExtendMetadata;
+                    $extdesc->setNamespace('mdui');
+                    $extdesc->setType($type);
+                    $extdesc->setElement('PrivacyStatementURL');
+                    $extdesc->setValue($p['val']);
+                    $extdesc->setAttributes(array('xml:lang' => $p['lang']));
+                    $extdesc->setProvider($this);
+                    $this->setExtendMetadata($extdesc);
+                    $extdesc->setParent($parentUIInfo);
+                    $langDuplicates[] = $p['lang'];
+                }
             }
         }
+        $langDuplicates = array();
         if (array_key_exists('informationurl', $ext) && is_array($ext['informationurl'])) {
             foreach ($ext['informationurl'] as $k => $p) {
-                $extdesc = new ExtendMetadata;
-                $extdesc->setNamespace('mdui');
-                $extdesc->setType($type);
-                $extdesc->setElement('InformationURL');
-                $extdesc->setValue($p['val']);
-                $extdesc->setAttributes(array('xml:lang' => $p['lang']));
-                $extdesc->setProvider($this);
-                $this->setExtendMetadata($extdesc);
-                $extdesc->setParent($parentUIInfo);
+                if(!in_array($p['lang'],$langDuplicates)) {
+                    $extdesc = new ExtendMetadata;
+                    $extdesc->setNamespace('mdui');
+                    $extdesc->setType($type);
+                    $extdesc->setElement('InformationURL');
+                    $extdesc->setValue($p['val']);
+                    $extdesc->setAttributes(array('xml:lang' => $p['lang']));
+                    $extdesc->setProvider($this);
+                    $this->setExtendMetadata($extdesc);
+                    $extdesc->setParent($parentUIInfo);
+                    $langDuplicates[] = $p['lang'];
+                }
             }
         }
         if (array_key_exists('logo', $ext) && is_array($ext['logo'])) {
