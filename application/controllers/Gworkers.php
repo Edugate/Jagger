@@ -55,10 +55,6 @@ class Gworkers extends MY_Controller
         if (empty($sendOptions['subjsuffix'])) {
             $sendOptions['subjsuffix'] = '';
         }
-        if (empty($sendOptions['mailfooter'])) {
-            log_message('warning', 'MAILQUEUE ::  it is recommended to  set default footer (mail_footer) for mails in email.php config file');
-            $sendOptions['mailfooter'] = '';
-        }
         while (TRUE) {
             if (empty($sendOptions['sendenabled'])) {
                 log_message('warning', 'MAILQUEUE :: sending mails is disabled - check config "mail_sending_active" ');
@@ -66,7 +62,7 @@ class Gworkers extends MY_Controller
                 log_message('debug', 'MAILQUEUE :: checks for mails to be sent');
                 try {
                     $mails = $em->getRepository("models\MailQueue")->findBy(array('deliverytype' => 'mail', 'frequence' => '1', 'issent' => false));
-                    $mailFooter = $this->rrpreference->getTextValueByName('mail_footer');
+                    $mailFooter = $this->rrpreference->getTextValueByName('mailfooter');
                     foreach ($mails as $m) {
                         log_message('info', 'MAILQUEUE sending mail with id: ' . $m->getId());
                         $maildata = $m->getMailToArray();

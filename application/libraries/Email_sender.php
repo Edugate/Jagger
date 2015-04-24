@@ -28,7 +28,7 @@ class Email_sender {
         $this->ci = & get_instance();
         $this->ci->load->library('doctrine');
         $this->em = $this->ci->doctrine->em;
-        $this->mailFooter = $this->ci->rrpreference->getTextValueByName('mail_footer');
+        $this->mailFooter = $this->ci->rrpreference->getTextValueByName('mailfooter');
 
     }
 
