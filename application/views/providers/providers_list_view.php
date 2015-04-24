@@ -5,14 +5,14 @@ $form = '<form id="filter-form"><input name="filter" id="filter" value="" placeh
 
 
 echo '<div class="row">';
-echo '<div class="small-10 medium-9 large-9 columns">';
+echo '<div class="medium-9 large-9 columns">';
 
-echo '<dl class="sub-nav"> <dt><i class="fi-widget"></i> '.lang('rr_filter').':</dt> <dd class="afilter filterall"><a href="'.$prefurl.'/all" class="afilter filterall">'.lang('allprov').'</a></dd> <dd class="afilter filterext"><a href="'.$prefurl.'" class="afilter filterext">'. lang('extprov').'</a></dd> <dd class="afilter filterlocal active"><a href="'.$prefurl.'" class="afilter filterlocal initiated">'.lang('localprov').'</a></dd> </dl>';
+echo '<dl class="sub-nav"> <dt><span class="show-for-large-up"><i class="fi-widget"></i>'.lang('rr_filter').':</span></dt> <dd class="afilter filterall"><a href="'.$prefurl.'/all" class="afilter filterall">'.lang('allprov').'</a></dd> <dd class="afilter filterext"><a href="'.$prefurl.'" class="afilter filterext">'. lang('extprov').'</a></dd> <dd class="afilter filterlocal active"><a href="'.$prefurl.'" class="afilter filterlocal initiated">'.lang('localprov').'</a></dd> </dl>';
 
 echo '</div>';
 
 
-echo '<div class="small-2 medium-3 large-3 columns">';
+echo '<div class="medium-3 large-3 columns">';
 echo $form;
 echo '</div>';
 

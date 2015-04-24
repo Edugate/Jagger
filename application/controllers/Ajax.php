@@ -60,7 +60,7 @@ class Ajax extends MY_Controller
 
 	public function checklogourl()
 	{
-		if (!($this->input->is_ajax_request() && $this->j_auth->logged_in())) {
+		if (!($this->input->is_ajax_request())) {
 			set_status_header(403);
 			echo 'denied';
 			return;
