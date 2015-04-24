@@ -46,11 +46,11 @@ class Gworkers extends MY_Controller
         log_message('info', 'MAILQUEUE STARTED : daemon needs to be restarted after any changes in configs');
         $this->load->library('doctrine');
         $em = $this->doctrine->em;
+        $this->load->library('rrpreference');
         $sendOptions = array(
             'sendenabled' => $this->config->item('mail_sending_active'),
             'mailfrom' => $this->config->item('mail_from'),
-            'subjsuffix' => $this->config->item('mail_subject_suffix'),
-            'mailfooter' => $this->config->item('mail_footer')
+            'subjsuffix' => $this->config->item('mail_subject_suffix')
         );
         if (empty($sendOptions['subjsuffix'])) {
             $sendOptions['subjsuffix'] = '';
@@ -66,7 +66,7 @@ class Gworkers extends MY_Controller
                 log_message('debug', 'MAILQUEUE :: checks for mails to be sent');
                 try {
                     $mails = $em->getRepository("models\MailQueue")->findBy(array('deliverytype' => 'mail', 'frequence' => '1', 'issent' => false));
-
+                    $mailFooter = $this->rrpreference->getTextValueByName('mail_footer');
                     foreach ($mails as $m) {
                         log_message('info', 'MAILQUEUE sending mail with id: ' . $m->getId());
                         $maildata = $m->getMailToArray();
@@ -74,7 +74,7 @@ class Gworkers extends MY_Controller
                         $this->email->from($sendOptions['mailfrom']);
                         $this->email->to($maildata['to']);
                         $this->email->subject($maildata['subject'] . ' ' . $sendOptions['subjsuffix']);
-                        $this->email->message($maildata['data'] . PHP_EOL . '' . $sendOptions['mailfooter'] . PHP_EOL);
+                        $this->email->message($maildata['data'] . PHP_EOL . '' . $mailFooter . PHP_EOL);
                         if ($this->email->send()) {
                             $m->setMailSent();
                             $em->persist($m);
