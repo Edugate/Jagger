@@ -2252,7 +2252,7 @@ class Provider
             }
 
         }
-        
+
         if (array_key_exists('logo', $ext) && is_array($ext['logo'])) {
             \log_message('debug', 'GK logo provider');
             foreach ($ext['logo'] as $k => $p) {
