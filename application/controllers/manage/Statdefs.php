@@ -788,7 +788,6 @@ class Statdefs extends MY_Controller
         $this->form_validation->set_rules('titlename', 'Title name', 'required|trim|min_length[3]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('description', 'Description', 'required|trim|min_length[5]|max_length[1024]|xss_clean');
         $this->form_validation->set_rules('overwrite', 'Overwrite', 'trim|max_length[10]|xss_clean');
-
         $this->form_validation->set_rules('usepredefined', 'Predefined', 'trim|max_length[10]|xss_clean');
         $userpredefined = $this->input->post('usepredefined');
         if (empty($userpredefined) or $userpredefined !== 'yes')

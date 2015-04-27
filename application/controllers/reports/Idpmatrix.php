@@ -29,7 +29,6 @@ class Idpmatrix extends MY_Controller
 		$this->load->library('table');
 		$this->load->library('arp_generator');
 		$this->tmp_providers = new models\Providers;
-		$this->current_site = current_url();
 		$this->logo_basepath = $this->config->item('rr_logouriprefix');
 		$this->logo_baseurl = $this->config->item('rr_logobaseurl');
 		if (empty($this->logo_baseurl)) {
@@ -40,30 +39,30 @@ class Idpmatrix extends MY_Controller
 
 	public function getArpData($idpid)
 	{
-		if (!$this->input->is_ajax_request()) {
+		if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
 			set_status_header(403);
-			echo 'denied';
-			return;
-		}
-		$loggedin = $this->j_auth->logged_in();
-		if (!$loggedin) {
-			set_status_header(403);
-			echo 'no valid session';
-			return;
+			echo 'Access denied';
+			return false;
 		}
 		$this->load->library('zacl');
+        /**
+         * @var $idp models\Provider
+         */
 		$idp = $this->tmp_providers->getOneIdpById($idpid);
 		if (empty($idp)) {
 			set_status_header(404);
 			echo 'IdP not found';
-			return;
+			return false;
 		}
 		$has_read_access = $this->zacl->check_acl($idpid, 'read', 'entity', '');
 		if (!$has_read_access) {
 			set_status_header(403);
 			echo 'no perms';
-			return;
+			return false;
 		}
+        /**
+         * @var $attrs models\Attribute[]
+         */
 		$attrs = $this->em->getRepository("models\Attribute")->findAll();
 		foreach ($attrs as $a) {
 			$attrdefs[$a->getName()] = $a->getId();
@@ -75,15 +74,16 @@ class Idpmatrix extends MY_Controller
 		if (is_null($arparray['policies'])) {
 			$arparray['policies'] = array();
 		}
-
-		foreach ($arparray['policies'] as $p) {
-			foreach ($p['attributes'] as $k => $v) {
-				unset($attrdedsCopy['' . $k . '']);
-			}
-			foreach ($p['req'] as $k => $v) {
-				unset($attrdedsCopy['' . $k . '']);
-			}
-		}
+        else {
+            foreach ($arparray['policies'] as $p) {
+                foreach ($p['attributes'] as $k => $v) {
+                    unset($attrdedsCopy['' . $k . '']);
+                }
+                foreach ($p['req'] as $k => $v) {
+                    unset($attrdedsCopy['' . $k . '']);
+                }
+            }
+        }
 
 		$attrdefsLeft = array_diff_key($attrdefs, $attrdedsCopy);
 		ksort($attrdefsLeft);
@@ -95,26 +95,24 @@ class Idpmatrix extends MY_Controller
 			$arparray['message'] = lang('errormatrixnoattrsormembers');
 		}
 		$this->output->set_content_type('application/json')->set_output(json_encode($arparray));
-		return;
 	}
 
 	public function show($idpid)
 	{
-		if (empty($idpid) || !is_numeric($idpid)) {
+		if (empty($idpid) || !ctype_digit($idpid)) {
 			show_error('Wrong or empty id', 404);
 		}
-		$loggedin = $this->j_auth->logged_in();
-		if ($loggedin) {
+		if ($this->j_auth->logged_in()) {
 			$this->session->set_userdata(array('currentMenu' => 'awaiting'));
 			$this->load->library('zacl');
 		} else {
-			$this->session->set_flashdata('target', $this->current_site);
 			redirect('auth/login', 'location');
 		}
 		$idp = $this->tmp_providers->getOneIdpById($idpid);
 		if (empty($idp)) {
 			show_error('Identity Provider not found', 404);
 		}
+        $myLang = MY_Controller::getLang();
 
 		$has_read_access = $this->zacl->check_acl($idpid, 'read', 'entity', '');
 		$has_write_access = $this->zacl->check_acl($idpid, 'write', 'entity', '');
@@ -124,14 +122,14 @@ class Idpmatrix extends MY_Controller
 			$this->load->view('page', $data);
 			return;
 		}
-		$data['has_write_access'] = $has_write_access;
+        $data = array(
+            'has_write_access' => $has_write_access,
+            'excluded' => $idp->getExcarps(),
+            'idpname' => $idp->getNameToWebInLang($myLang, 'IDP'),
+            'idpid' => $idp->getId(),
+            'entityid' => $idp->getEntityId(),
+        );
 
-		$data['excluded'] = $idp->getExcarps();
-		$jlang = MY_Controller::getLang();
-
-		$data['idpname'] = $idp->getNameToWebInLang($jlang, 'IDP');;
-		$data['idpid'] = $idp->getId();
-		$data['entityid'] = $idp->getEntityId();
 		$extends = $idp->getExtendMetadata();
 		if (count($extends) > 0) {
 			foreach ($extends as $ex) {
@@ -142,8 +140,6 @@ class Idpmatrix extends MY_Controller
 				}
 			}
 		}
-		$data['entityid'] = $idp->getEntityId();
-		$data['idpid'] = $idp->getId();
 		$data['titlepage'] = lang('identityprovider') . ': ' . anchor('' . base_url() . 'providers/detail/show/' . $data['idpid'], $data['idpname']) . '<br />' . $data['entityid'];
 		$data['subtitlepage'] = lang('rr_arpoverview');
 		$data['breadcrumbs'] = array(
@@ -153,8 +149,6 @@ class Idpmatrix extends MY_Controller
 
 
 		);
-
-
 		$data['content_view'] = 'reports/idpmatrix_show_view';
 		$this->load->view('page', $data);
 	}
