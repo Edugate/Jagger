@@ -164,15 +164,14 @@ class Statdefs extends MY_Controller
             show_error('Page not found', 404);
             return null;
         }
-        $isgearman = $this->config->item('gearman');
-        $isstatistics = $this->config->item('statistics');
-        if (empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
+        $isStats = $this->isStats();
+
+        if (!$isStats)
         {
             show_error('not found', 404);
             return null;
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
+        if (!$this->j_auth->logged_in())
         {
             redirect('auth/login', 'location');
         }
@@ -408,9 +407,8 @@ class Statdefs extends MY_Controller
         {
             redirect('auth/login', 'location');
         }
-        $isgearman = $this->config->item('gearman');
-        $isstatistics = $this->config->item('statistics');
-        if (empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
+        $isStats = $this->isStats();
+        if ($isStats)
         {
             show_error('not found', 404);
         }
@@ -608,14 +606,12 @@ class Statdefs extends MY_Controller
             show_error('Page not found', 404);
         }
         $myLang = MY_Controller::getLang();
-        $isgearman = $this->config->item('gearman');
-        $isstatistics = $this->config->item('statistics');
-        if (empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
+        $isStats = $this->isStats();
+        if ($isStats)
         {
             show_error('not found', 404);
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
+        if (!$this->j_auth->logged_in())
         {
             redirect('auth/login', 'location');
         }
