@@ -28,41 +28,38 @@ class Statdefs extends MY_Controller
         $this->load->library('form_validation');
     }
 
-    public function download($defid = null)
+
+    private function isStats()
     {
-        if (!$this->input->is_ajax_request())
-        {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
-        }
-        if (empty($defid) || !ctype_digit($defid))
-        {
-            set_status_header(404);
-            echo 'Not found';
-            return;
-        }
         $isgearman = $this->config->item('gearman');
         $isstatistics = $this->config->item('statistics');
         if (empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE))
         {
-            set_status_header(404);
-            echo 'Not found';
-            return;
-
+            return false;
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
+        return true;
+    }
+
+    public function download($defid = null)
+    {
+        $isStats = $this->isStats();
+        if (!$isStats)
+        {
+            set_status_header(404);
+            echo 'Feature not enabled';
+            return;
+        }
+        if (!$this->input->is_ajax_request() || empty($defid) || !ctype_digit($defid)|| !$this->j_auth->logged_in())
         {
             set_status_header(403);
             echo 'Access denied';
             return;
         }
         /**
-         * @var $def models\ProviderStatsDef
+         * @var $statDefinition models\ProviderStatsDef
          */
-        $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
-        if (empty($def))
+        $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
+        if (empty($statDefinition))
         {
             set_status_header(404);
             echo 'Not found';
@@ -71,10 +68,9 @@ class Statdefs extends MY_Controller
         /**
          * @var $provider models\Provider
          */
-        $provider = $def->getProvider();
+        $provider = $statDefinition->getProvider();
         if (empty($provider))
         {
-
             set_status_header(404);
             echo 'Not found';
             return;
@@ -83,32 +79,31 @@ class Statdefs extends MY_Controller
         $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
         if (!$hasAccess)
         {
-
             set_status_header(403);
             echo 'Access denied';
             return;
         }
         $params = array(
-            'defid' => $def->getId(),
+            'defid' => $statDefinition->getId(),
             'entityid' => $provider->getEntityId(),
-            'url' => $def->getSourceUrl(),
-            'type' => $def->getType(),
-            'sysdef' => $def->getSysDef(),
-            'title' => $def->getTitle(),
-            'httpmethod' => $def->getHttpMethod(),
-            'format' => $def->getFormatType(),
-            'accesstype' => $def->getAccessType(),
-            'authuser' => $def->getAuthUser(),
-            'authpass' => $def->getAuthPass(),
-            'postoptions' => $def->getPostOptions(),
-            'displayoptions' => $def->getDisplayOptions(),
-            'overwrite' => $def->getOverwrite()
+            'url' => $statDefinition->getSourceUrl(),
+            'type' => $statDefinition->getType(),
+            'sysdef' => $statDefinition->getSysDef(),
+            'title' => $statDefinition->getTitle(),
+            'httpmethod' => $statDefinition->getHttpMethod(),
+            'format' => $statDefinition->getFormatType(),
+            'accesstype' => $statDefinition->getAccessType(),
+            'authuser' => $statDefinition->getAuthUser(),
+            'authpass' => $statDefinition->getAuthPass(),
+            'postoptions' => $statDefinition->getPostOptions(),
+            'displayoptions' => $statDefinition->getDisplayOptions(),
+            'overwrite' => $statDefinition->getOverwrite()
         );
 
         $gmclient = new GearmanClient();
         $jobservers = array();
-        $j = $this->config->item('gearmanconf');
-        foreach ($j['jobserver'] as $v)
+        $gearmanConfig = $this->config->item('gearmanconf');
+        foreach ($gearmanConfig['jobserver'] as $v)
         {
             $jobservers[] = '' . $v['ip'] . ':' . $v['port'] . '';
         }
@@ -122,13 +117,13 @@ class Statdefs extends MY_Controller
             echo "Cant add  job-server(s)";
             return false;
         }
-        if (!empty($_SESSION['jobs']['stadef']['' . $defid . '']))
+        $jobsSession = $this->session->userdata('jobs');
+        if (!empty($jobsSession) || is_array($jobsSession) || isset($jobsSession['statdef'][''.$defid.'']))
         {
-            $stat = $gmclient->jobStatus($_SESSION['jobs']['stadef']['' . $defid . '']);
+            $stat = $gmclient->jobStatus($jobsSession['stadef']['' . $defid . '']);
 
             if (($stat['0'] === TRUE) && ($stat['1'] === FALSE))
             {
-
                 echo json_encode(array('status' => lang('rr_jobinqueue')));
                 return false;
             }
@@ -164,7 +159,7 @@ class Statdefs extends MY_Controller
 
     public function show($providerid = null, $defid = null)
     {
-        if (empty($providerid) || !is_numeric($providerid))
+        if (empty($providerid) || !ctype_digit($providerid))
         {
             show_error('Page not found', 404);
             return null;
@@ -608,7 +603,7 @@ class Statdefs extends MY_Controller
     public function newStatDef($providerid = null)
     {
 
-        if (empty($providerid) || !is_numeric($providerid))
+        if (empty($providerid) || !ctype_digit($providerid))
         {
             show_error('Page not found', 404);
         }
