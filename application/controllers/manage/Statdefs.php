@@ -199,7 +199,7 @@ class Statdefs extends MY_Controller
             }
             $providerType = $provider->getType();
             $providerType = strtolower($providerType);
-            if (strcasecmp($providerType, 'both'))
+            if (strcasecmp($providerType, 'both') == 0)
             {
                 $providerType = 'idp';
             }
