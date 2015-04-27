@@ -19,7 +19,7 @@ if ($newtmpl === TRUE)
     echo jGenerateDropdown(lang('mtmplgroup'), 'msggroup', $groupdropdown, set_value('msggroup', ''), '');
     echo $rowEnd;
     echo $rowStart;
-    echo jGenerateDropdown(lang('rr_lang'), 'msglang', $langdropdown, '', '');
+    echo jGenerateDropdown(lang('rr_lang'), 'msglang', $langdropdown, set_value('msglang', ''), '');
     echo $rowEnd;
 }
 else

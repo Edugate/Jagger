@@ -300,7 +300,7 @@ class MY_form_validation extends CI_form_validation
 
         $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup' => $group, 'lang' => $jlang));
         if (!empty($l)) {
-            $this->set_message('mailtemplate_unique', 'Templeate with specidi lang exist for ');
+            $this->set_message('mailtemplate_unique', 'The template already exists for language: '.html_escape($jlang));
             return FALSE;
         }
         return TRUE;
