@@ -741,14 +741,11 @@ class Users extends MY_Controller
 
     public function remove()
     {
-        $loggedin = $this->j_auth->logged_in();
-        $isAjax = $this->input->is_ajax_request();
-        if (!$loggedin || !$isAjax) {
+        if (!$this->j_auth->logged_in() || !$this->input->is_ajax_request()) {
             set_status_header(403);
             echo 'Permission denied';
             return;
         }
-
         $access = $this->zacl->check_acl('user', 'remove', 'default', '');
         if (!$access) {
             set_status_header(403);
@@ -791,16 +788,13 @@ class Users extends MY_Controller
                     echo 'user has been removed';
                     $this->load->library('tracker');
                     $this->tracker->save_track('user', 'remove', $selected_username, 'user removed from the system', true);
-                    return;
                 } else {
                     set_status_header(403);
                     echo lang('error_cannotrmyouself');
-                    return;
                 }
             } else {
                 set_status_header(403);
                 echo lang('error_usernotexist');
-                return;
             }
 
         }

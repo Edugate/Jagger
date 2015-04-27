@@ -286,8 +286,7 @@ class Ajax extends MY_Controller
 			echo 'denied';
 			return;
 		}
-		$loggedin = $this->j_auth->logged_in();
-		if (!$loggedin) {
+		if (!$this->j_auth->logged_in()) {
 			set_status_header(401);
 			echo 'denied';
 			return;
