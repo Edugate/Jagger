@@ -156,10 +156,9 @@ class Detail extends MY_Controller
 			if ($has_write_access === TRUE) {
 				$i = 0;
 				$isactive = $ent->getActive();
-				$islocal = $ent->getLocal();
 				$isgearman = $this->config->item('gearman');
 				$isstats = $this->config->item('statistics');
-				if (($isactive === TRUE) && ($islocal === TRUE) && !empty($isgearman) && ($isgearman === TRUE) && !empty($isstats)) {
+				if (($isactive === TRUE)  && !empty($isgearman) && ($isgearman === TRUE) && !empty($isstats)) {
 					$d[++$i] = array('name' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')) . '',
 						'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>') . '');
 				}

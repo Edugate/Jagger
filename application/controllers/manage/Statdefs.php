@@ -79,13 +79,6 @@ class Statdefs extends MY_Controller
             echo 'Not found';
             return;
         }
-        $islocal = $provider->getLocal();
-        if (!$islocal)
-        {
-            set_status_header(403);
-            echo 'no stats allowed for this entity';
-            return;
-        }
         $this->load->library('zacl');
         $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
         if (!$hasAccess)
@@ -202,11 +195,6 @@ class Statdefs extends MY_Controller
             if (strcasecmp($providerType, 'both') == 0)
             {
                 $providerType = 'idp';
-            }
-            $islocal = $provider->getLocal();
-            if (!$islocal)
-            {
-                show_error('No stats allowed for this entity', 403);
             }
             $this->load->library('zacl');
 
@@ -417,16 +405,11 @@ class Statdefs extends MY_Controller
 
     public function statdefedit($providerid = null, $statdefid = null)
     {
-        if (empty($statdefid) || empty($providerid))
+        if (empty($statdefid) || empty($providerid) || !ctype_digit($statdefid) || !ctype_digit($providerid))
         {
             show_error('Page not found', 404);
         }
-        if (!(is_numeric($statdefid) && is_numeric($providerid)))
-        {
-            show_error('Page not found', 404);
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
+        if (!$this->j_auth->logged_in())
         {
             redirect('auth/login', 'location');
         }
@@ -436,7 +419,6 @@ class Statdefs extends MY_Controller
         {
             show_error('not found', 404);
         }
-
         /**
          * @var $statdef models\ProviderStatsDef
          */
@@ -452,12 +434,6 @@ class Statdefs extends MY_Controller
         $myLang = MY_Controller::getLang();
         $providerType = $provider->getType();
         $providerLangName = $provider->getNameToWebInLang($myLang, $providerType);
-        $islocal = $provider->getLocal();
-        if (!$islocal)
-        {
-            show_error('stats are allowed only for local entities', 403);
-        }
-
         $this->load->library('zacl');
         $hasAccess = $this->zacl->check_acl('' . $providerid . '', 'write', 'entity', '');
         if (!$hasAccess)
@@ -661,11 +637,6 @@ class Statdefs extends MY_Controller
             }
             $providerType = $provider->getType();
             $providerLangName = $provider->getNameToWebInLang($myLang, $providerType);
-            $islocal = $provider->getLocal();
-            if (!$islocal)
-            {
-                show_error('stats are allowed only for local entities', 403);
-            }
             $this->load->library('zacl');
 
             $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
