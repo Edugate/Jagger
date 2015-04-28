@@ -113,25 +113,24 @@ class Arpsexcl extends MY_Controller
             $this->em->flush();
 
         }
-        $lang = MY_Controller::getLang();
-        $displayname = $idp->getNameToWebInLang($lang, 'idp');
-        $this->title = $displayname . ': ARP excludes';
+
+        $this->title = $providerNameInLang . ': ARP excludes';
         $data = array(
             'rows' => $this->form_element->excludedArpsForm($idp),
             'idp_name' => $idp->getName(),
             'idp_id' => $idp->getId(),
             'idp_entityid' => $idp->getEntityId(),
             'content_view' => 'manage/arpsexcl_view',
-            'titlepage' => anchor(base_url() . 'providers/detail/show/' . $idp->getId(), $displayname),
-            'subtitlepage' => lang('rr_arpexcl1')
+            'titlepage' => anchor(base_url() . 'providers/detail/show/' . $idp->getId(), $providerNameInLang),
+            'subtitlepage' => lang('rr_arpexcl1'),
+            'breadcrumbs' => array(
+                array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+                array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
+                array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
+                array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current')
+            )
         );
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-            array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
-            array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
-            array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
 
-        );
         $this->load->view('page', $data);
 
     }
