@@ -222,7 +222,6 @@ class Email_sender {
             $this->ci->email->from($this->ci->config->item('mail_from'), '');
             $this->ci->email->to($k, '');
             $this->ci->email->subject($full_subject);
-            //$footer = $this->ci->config->item('mail_footer');
 
             $message = $body . PHP_EOL . 'Message was generated at ' . $generatedAt . PHP_EOL . $this->mailFooter;
             $this->ci->email->message($message);
