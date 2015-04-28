@@ -2,6 +2,10 @@
     <?php
     $entdelurl = base_url() . 'ajax/bookmarkentity/';
     $feddelurl = base_url() . 'ajax/bookfed/';
+    if(!empty($alertdashboard))
+    {
+        echo '<div data-alert class="alert-box error">'.html_escape($alertdashboard).'</div>';
+    }
     ?>
  
     <div class="small-12 columns" data-equalizer>

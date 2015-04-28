@@ -25,6 +25,28 @@ class Dashboard extends MY_Controller {
         parent::__construct();
     }
 
+
+
+    private function isMigrationUptodate()
+    {
+        $this->load->config('migration');
+        $targetVersion = config_item('migration_version');
+        /**
+         * @var $c models\Migration[]
+         */
+        $c = $this->em->getRepository("models\Migration")->findAll();
+        $currentVersion = 0;
+        foreach($c as $v)
+        {
+            $currentVersion = $v->getVersion();
+        }
+        if($currentVersion < $targetVersion)
+        {
+            return false;
+        }
+        return true;
+    }
+
     function index()
     {
         $this->load->library('j_auth');
@@ -80,6 +102,20 @@ class Dashboard extends MY_Controller {
         }
         else
         {
+            $isAdmin = $this->j_auth->isAdministrator();
+            if($isAdmin)
+            {
+                $isnotified = $this->session->userdata('alertnotified');
+                if(empty($isnotified))
+                {
+                    $isMigrationUptodate = $this->isMigrationUptodate();
+                    if($isMigrationUptodate!==TRUE)
+                    {
+                        $data['alertdashboard'] = 'Administration/System (migration) steps are required to make system uptodate';
+                    }
+                    $this->session->set_userdata(array('alertnotified'=>TRUE));
+                }
+            }
             $this->title = lang('dashboard');
             $board = $this->session->userdata('board');
             if(empty($board))
