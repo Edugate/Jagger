@@ -1332,8 +1332,7 @@ class Provider
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
         $this->setRegistrationDate($provider->getRegistrationDate());
         $this->overwriteWithNameid($provider);
-        $prototypes = array('idpsso', 'aa', 'spsso');
-        foreach ($prototypes as $a) {
+        foreach (array('idpsso', 'aa', 'spsso') as $a) {
             $this->setProtocolSupport($a, $provider->getProtocolSupport($a));
         }
         $this->setType($provider->getType());
