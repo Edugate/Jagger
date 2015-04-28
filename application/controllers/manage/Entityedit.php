@@ -39,7 +39,7 @@ class Entityedit extends MY_Controller
     protected $type;
     protected $disallowedparts = array();
     protected $entityid;
-    protected $idpsscoscope = array();
+    protected $idpssoscope = array();
     protected $aascope = array();
     protected $allowedDigestMethods;
     protected $allowedSigningMethods;
@@ -112,6 +112,7 @@ class Entityedit extends MY_Controller
             $docxml = new \DomDocument();
             $docxml->loadXML($data);
             $returncodeElements = $fedValidator->getReturnCodeElement();
+            $codeDoms = null;
             if (count($returncodeElements) == 0) {
                 log_message('error', 'External validator (' . $fedValidator->getId() . ') is misconfigured - has not defined returned codes');
                 return true;
@@ -567,7 +568,7 @@ class Entityedit extends MY_Controller
                     $this->tmp_error = 'duplicate binding protocols for IDP SLO found in sent form';
                     $optValidationsPassed = FALSE;
                 }
-                if (!empty($nosplo) && is_array($nosplo) && count($nosplo) > 0 && count(array_unique($nospslo)) < count($nospslo)) {
+                if (!empty($nospslo) && is_array($nospslo) && count($nospslo) > 0 && count(array_unique($nospslo)) < count($nospslo)) {
                     $this->tmp_error = 'duplicate binding protocols for SP SLO found in sent form';
                     $optValidationsPassed = FALSE;
                 }
@@ -694,6 +695,7 @@ class Entityedit extends MY_Controller
             show_error('No access to edit', 403);
             return false;
         }
+        return true;
     }
 
     public function show($id)
@@ -770,15 +772,15 @@ class Entityedit extends MY_Controller
         }
 
         $data['y'] = $entsession;
-        $lang = MY_Controller::getLang();
+        $myLang = MY_Controller::getLang();
 
-        $titlename = $ent->getNameToWebInLang($lang, $ent->getType());
-        $this->title = $titlename . ' :: ' . lang('title_provideredit');
+        $providerNameInLang = $ent->getNameToWebInLang($myLang, $ent->getType());
+        $this->title = $providerNameInLang . ' :: ' . lang('title_provideredit');
 
         /**
          * @todo check locked
          */
-        $data['entdetail'] = array('displayname' => $titlename, 'name' => $ent->getName(), 'id' => $ent->getId(), 'entityid' => $ent->getEntityId(), 'type' => $ent->getType());
+        $data['entdetail'] = array('displayname' => $providerNameInLang, 'name' => $ent->getName(), 'id' => $ent->getId(), 'entityid' => $ent->getEntityId(), 'type' => $ent->getType());
 
         if (!empty($showsuccess)) {
             $data['success_message'] = lang('updated');
@@ -946,9 +948,10 @@ class Entityedit extends MY_Controller
                             $ent->setProviderFromArray($o);
                             if (isset($o['details']['reqattrs'])) {
                                 /**
-                                 * @var $attrsDefinititions models\Attribute[]
+                                 * @var $attrsDefinitions models\Attribute[]
                                  */
                                 $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
+                                $attributes = array();
                                 foreach ($attrsDefinitions as $v) {
                                     $attributes['' . $v->getOid() . ''] = $v;
                                 }
