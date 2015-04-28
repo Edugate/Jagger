@@ -24,9 +24,7 @@ class Arpsexcl extends MY_Controller
     {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
-        $this->current_site = current_url();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
         $this->tmp_providers = new models\Providers;
@@ -35,8 +33,13 @@ class Arpsexcl extends MY_Controller
 
     public function idp($id)
     {
-        $this->title = 'ff';
+        if (!ctype_digit($id)) {
+            show_error('Incorrect id provided', 404);
+        }
         $tmp_providers = new models\Providers;
+        /**
+         * @var $idp models\Provider
+         */
         $idp = $tmp_providers->getOneIdpById($id);
         if (empty($idp)) {
             log_message('error', __METHOD__ . "IdP edit: Identity Provider with id=" . $id . " not found");
@@ -46,35 +49,36 @@ class Arpsexcl extends MY_Controller
 
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'IDP');
-
-
         $locked = $idp->getLocked();
         $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
         if (!$hasWriteAccess) {
             $data = array(
                 'content_view' => 'nopermission',
                 'error' => '' . lang('rrerror_noperm_provedit') . ': ' . $idp->getEntityid() . '',
-            );
-            $data['breadcrumbs'] = array(
-                array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-                array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
-                array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
-                array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
+                'breadcrumbs' => array(
+                    array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+                    array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
+                    array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
+                    array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
 
+                ),
             );
+
             $this->load->view('page', $data);
             return;
         }
         if ($locked) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rr_lockedentity') . $idp->getEntityid();
             log_message('debug', $idp->getEntityid() . ': is locked and cannot be edited');
-            $data['breadcrumbs'] = array(
-                array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-                array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
-                array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
-                array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
+            $data = array(
+                'content_view' => 'nopermission',
+                'error' => lang('rr_lockedentity') . $idp->getEntityid(),
+                'breadcrumbs' => array(
+                    array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+                    array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
+                    array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
+                    array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
 
+                ),
             );
             $this->load->view('page', $data);
             return;
