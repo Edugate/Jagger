@@ -193,7 +193,6 @@ class User {
      */
     public function encryptPassword($password)
     {
-        log_message('debug', 'Model User: encryptPassword(' . $password . ')');
         $salt = $this->getSalt();
         log_message('debug', 'Model User: encryptPassword: got slat:' . $salt);
         $encrypted_password = sha1($password . $salt);
@@ -247,29 +246,6 @@ class User {
     public function authenticate()
     {
         self::$current = $this;
-        return $this;
-    }
-
-
-    public function findUserMail($username, $email)
-    {
-        $CI = & get_instance();
-
-        $user = $this->CI->em->createQuery("SELECT u FROM models\User u WHERE u.username = '{$username}' OR u.email = '{$email}'")
-                ->getResult();
-
-        return $user ? $user[0] : FALSE;
-
-
-    }
-
-    public static function fakeStatic()
-    {
-        return TRUE;
-    }
-
-    public function fake()
-    {
         return $this;
     }
 
