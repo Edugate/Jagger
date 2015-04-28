@@ -41,6 +41,8 @@ class Entityedit extends MY_Controller
     protected $entityid;
     protected $idpsscoscope = array();
     protected $aascope = array();
+    protected $allowedDigestMethods;
+    protected $allowedSigningMethods;
 
     public function __construct()
     {
@@ -54,6 +56,8 @@ class Entityedit extends MY_Controller
         if (!empty($entpartschangesdisallowed) && is_array($entpartschangesdisallowed)) {
             $this->disallowedparts = $this->config->item('entpartschangesdisallowed');
         }
+        $this->allowedDigestMethods = j_DigestMethods();
+        $this->allowedSigningMethods = j_SignatureAlgorithms();
     }
 
     private function externalValidation($metaid, models\FederationValidator $fedValidator)
@@ -246,11 +250,8 @@ class Entityedit extends MY_Controller
             $this->form_validation->set_rules('f[registrationdate]', lang('rr_regdate'), 'trim|valid_date_past');
             $this->form_validation->set_rules('f[registrationtime]', lang('rr_regtime'), 'trim|valid_time_hhmm');
             $this->form_validation->set_rules('f[privacyurl]', lang('rr_defaultprivacyurl'), 'trim|valid_url');
-            $allowedDigestMethods = j_DigestMethods();
-            $allowedSigningMethods = j_SignatureAlgorithms();
-
-            $this->form_validation->set_rules('f[algs][digest][]', 'DigestMethod', 'trim|in_list[' . implode(",", $allowedDigestMethods) . ']');
-            $this->form_validation->set_rules('f[algs][signing][]', 'SigningMethod', 'trim|in_list[' . implode(",", $allowedSigningMethods) . ']');
+            $this->form_validation->set_rules('f[algs][digest][]', 'DigestMethod', 'trim|in_list[' . implode(",", $this->allowedDigestMethods) . ']');
+            $this->form_validation->set_rules('f[algs][signing][]', 'SigningMethod', 'trim|in_list[' . implode(",", $this->allowedSigningMethods) . ']');
 
             if (array_key_exists('lname', $y['f'])) {
                 foreach ($y['f']['lname'] as $k => $v) {
@@ -350,44 +351,28 @@ class Entityedit extends MY_Controller
              */
             $allowedEnryptionMethods = j_KeyEncryptionAlgorithms();
             $allowedEnryptionMethodsInList = implode(",", $allowedEnryptionMethods);
+            $certGroups = array(
+                'spsso'=>'SPSSODescriptor',
+                'idpsso'=>'IDPSSODescriptor',
+                'aa'=>'AttributeAuthorityDescriptor'
+            );
             if (array_key_exists('crt', $y['f'])) {
-                if (array_key_exists('spsso', $y['f']['crt'])) {
-                    foreach ($y['f']['crt']['spsso'] as $k => $v) {
-                        if (is_numeric($k)) {
-                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'SPSSODescriptor/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
-                        } else {
-                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'SPSSoDescriptor/Certificate body', 'trim|required|getPEM|verify_cert');
-                        }
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
+                foreach ($certGroups as $key => $val) {
+                    if (array_key_exists($key, $y['f']['crt'])) {
+                        foreach ($y['f']['crt'][''.$key.''] as $k => $v) {
+                            if (is_numeric($k)) {
+                                $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][certdata]', $val.'/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
+                            } else {
+                                $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][certdata]', $val.'/Certificate body', 'trim|required|getPEM|verify_cert');
+                            }
+                            $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
+                            $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
 
 
-                    }
-                }
-                if (array_key_exists('idpsso', $y['f']['crt'])) {
-                    foreach ($y['f']['crt']['idpsso'] as $k => $v) {
-                        if (is_numeric($k)) {
-                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'IDPSSODescriptor/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
-                        } else {
-                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'IDPSSODescriptor/Certificate body', 'trim|required|getPEM|verify_cert');
                         }
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
-                    }
-                }
-                if (array_key_exists('aa', $y['f']['crt'])) {
-                    foreach ($y['f']['crt']['aa'] as $k => $v) {
-                        if (is_numeric($k)) {
-                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'AttributeAuthorityDescriptor/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
-                        } else {
-                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'AttributeAuthorityDescriptor/Certificate body', 'trim|required|getPEM|verify_cert');
-                        }
-                        $this->form_validation->set_rules('f[crt][aa][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
-                        $this->form_validation->set_rules('f[crt][aa][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
                     }
                 }
             }
-
             /**
              * service locations
              */
