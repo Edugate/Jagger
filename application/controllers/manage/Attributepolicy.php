@@ -35,7 +35,7 @@ class Attributepolicy extends MY_Controller
         }
 
         $this->load->helper('form');
-        $this->load->library(array('table', 'form_element', 'show_element','zacl'));
+        $this->load->library(array('table', 'form_element', 'show_element', 'zacl'));
         $this->tmp_providers = new models\Providers;
         $this->tmp_arps = new models\AttributeReleasePolicies;
         $this->tmp_attrs = new models\Attributes;
@@ -676,12 +676,10 @@ class Attributepolicy extends MY_Controller
     {
         $changes = array();
         $tmp_a = $this->config->item('policy_dropdown');
-        $submited_provider_id = $this->input->post('idpid');
-        if (empty($submited_provider_id) || ($idp_id != $submited_provider_id)) {
+        $idpIdPosted = $this->input->post('idpid');
+        if (empty($idpIdPosted) || !ctype_digit($idpIdPosted) || ($idp_id !== $idpIdPosted)) {
             log_message('error', 'conflivt or empty');
             show_error(lang('unknownerror'), 403);
-        } else {
-            log_message('debug', 'idpid passed correctly');
         }
         $submited_policies = $this->input->post('policy');
         $submited_requester_id = $this->input->post('spid');
@@ -689,41 +687,30 @@ class Attributepolicy extends MY_Controller
          * @var $idp models\Provider
          * @var $sp models\Provider
          */
-        $idp = $this->tmp_providers->getOneIdpById($submited_provider_id);
+        $idp = $this->tmp_providers->getOneIdpById($idpIdPosted);
         $sp = $this->tmp_providers->getOneSpById($submited_requester_id);
 
+        $isIdPLocked = $idp->getLocked();
         if (empty($idp) || empty($sp)) {
-            log_message('error', 'IdP with id:' . $submited_provider_id . ' or SP with id:' . $submited_requester_id . ' not found');
+            log_message('error', 'IdP with id:' . $idpIdPosted . ' or SP with id:' . $submited_requester_id . ' not found');
             show_error(lang('rerror_idpnotfound'), 404);
         }
-        $resource = $idp->getId();
-        $group = 'idp';
-        $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access) {
+        $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
+        if ($isIdPLocked || !$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rrerror_noperm_provedit');
             $this->load->view('page', $data);
             return;
         }
-        $locked = $idp->getLocked();
-        if ($locked) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('noperm_idpeditlocked');
-            $this->load->view('page', $data);
-            return;
-        }
-
 
         foreach ($submited_policies as $key => $value) {
-            if ($value === '100') {
-                $arp = $this->tmp_arps->getOneSPPolicy($idp->getId(), $key, $sp->getId());
-                if (!empty($arp)) {
-                    $changes['attr:' . $arp->getAttribute()->getName() . '']['before'] = 'policy for ' . htmlentities($sp->getEntityId()) . ' : ' . $tmp_a[$arp->getPolicy()];
-                    $this->em->remove($arp);
-                    $changes['attr:' . $arp->getAttribute()->getName() . '']['after'] = 'policy removed';
-                }
+            $arp = $this->tmp_arps->getOneSPPolicy($idp->getId(), $key, $sp->getId());
+            if ($value === '100' && !empty($arp)) {
+                $changes['attr:' . $arp->getAttribute()->getName() . '']['before'] = 'policy for ' . html_escape($sp->getEntityId()) . ' : ' . $tmp_a[$arp->getPolicy()];
+                $this->em->remove($arp);
+                $changes['attr:' . $arp->getAttribute()->getName() . '']['after'] = 'policy removed';
+
             } else {
-                $arp = $this->tmp_arps->getOneSPPolicy($idp->getId(), $key, $sp->getId());
                 if (!empty($arp)) {
                     $old_policy = $arp->getPolicy();
                     if ($value == 0 || $value == 1 || $value == 2) {
@@ -809,15 +796,15 @@ class Attributepolicy extends MY_Controller
             ),
             'provider' => $idpNameInLang,
             'provider_id' => $idpID,
-            'provider_entityid'=> $idp->getEntityId(),
-            'requester_entityid'=>$sp->getEntityId(),
+            'provider_entityid' => $idp->getEntityId(),
+            'requester_entityid' => $sp->getEntityId(),
             'titlepage' => lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idpID . '">' . $idpNameInLang . '</a>',
             'content_view' => 'manage/attribute_policy_multi_sp_view',
             'requester' => $spNameInLang,
             'requester_id' => $requesterID,
             'requester_type' => 'SP',
             'subtitlepage' => '' . lang('rr_specarpforsp') . ': <a href="' . base_url() . 'providers/detail/show/' . $requesterID . '">' . $spNameInLang . '</a>',
-            'policy_dropdown'=>$this->config->item('policy_dropdown'),
+            'policy_dropdown' => $this->config->item('policy_dropdown'),
             'sp_available' => $sp->getAvailable(),
         );
         /**
@@ -880,11 +867,6 @@ class Attributepolicy extends MY_Controller
             $data['excluded'] = true;
         }
         $this->load->view('page', $data);
-    }
-
-    public function _specific_validate()
-    {
-
     }
 
     public function specific($idp_id, $type)
