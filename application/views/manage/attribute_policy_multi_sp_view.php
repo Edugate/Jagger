@@ -1,9 +1,9 @@
 
 <?php
 
-if(!empty($warning))
+if(empty($sp_available))
 {
-    echo '<div data-alert class="alert-box warning">'.html_escape($warning).'</div>';
+    echo '<div data-alert class="alert-box warning">'.lang('rr_spdisabled').'</div>';
 }
 $tmpl = array ( 'table_open'  => '<table id="detailsnosort">' );
 

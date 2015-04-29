@@ -201,8 +201,6 @@ class Attributepolicy extends MY_Controller
             show_error('' . lang('error_attrnotfoundwithid') . ': ' . $attr_id);
         }
 
-
-        $action = '';
         if ($type === 'global') {
             $attr_policy = $this->tmp_arps->getOneGlobalPolicy($idp_id, $attr_id);
             $action = base_url('manage/attributepolicy/submit_global');
@@ -597,18 +595,11 @@ class Attributepolicy extends MY_Controller
         $attributeid = $this->input->post('attribute');
         $policy = $this->input->post('policy');
         $action = $this->input->post('submit');
-        if (empty($spid) || !is_numeric($spid)) {
+        if (empty($spid) || empty($idpid) || empty($attributeid) || !ctype_digit($spid) || !ctype_digit($idpid) || !ctype_digit($attributeid)) {
             log_message('error', 'spid in post not provided or not numeric');
             show_error(lang('missedinfoinpost'), 404);
         }
-        if (empty($idpid) || !is_numeric($idpid)) {
-            log_message('error', 'idpid in post not provided or not numeric');
-            show_error(lang('missedinfoinpost'), 404);
-        }
-        if (empty($attributeid) || !is_numeric($attributeid)) {
-            log_message('error', 'attributeid in post not provided or not numeric');
-            show_error(lang('missedinfoinpost'), 404);
-        }
+
         if (!isset($policy) || !is_numeric($policy)) {
             log_message('error', 'policy in post not provided or not numeric:' . $policy);
             show_error(lang('missedinfoinpost'), 404);
@@ -617,7 +608,7 @@ class Attributepolicy extends MY_Controller
             log_message('error', 'wrong policy in post: ' . $policy);
             show_error(lang('wrongpolicyval'), 404);
         }
-        if ($idp_id != $idpid) {
+        if ($idp_id !== $idpid) {
             log_message('error', 'idp id from post is not equal with idp in url, idp in post:' . $idpid . ', idp in url:' . $idp_id);
             show_error(lang('unknownerror'), 404);
         }
@@ -635,34 +626,20 @@ class Attributepolicy extends MY_Controller
             log_message('error', 'IDP with id ' . $idp_id . ' doesnt exist');
             show_error(lang('rerror_idpnotfound'), 404);
         }
-        $resource = $idp->getId();
-        $group = 'idp';
-        $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access) {
+        $locked = $idp->getLocked();
+        $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
+        if ($locked || !$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('noperm_idpedit');
             $this->load->view('page', $data);
             return;
         }
-        $locked = $idp->getLocked();
-        if ($locked) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('noperm_idpeditlocked');
-            $this->load->view('page', $data);
-            return;
-        }
-
-
         $tmp_attrs = new models\Attributes;
         $attribute = $tmp_attrs->getAttributeById($attributeid);
         if (empty($attribute)) {
             log_message('error', 'attribute  with id ' . $idp_id . ' doesnt exist');
             show_error(lang('reqattrnotexist'), 404);
         }
-        log_message('debug', 'Arguments passed correctly in form');
-        log_message('debug', 'Arguments passed: idp_id:' . $idp_id . ', attr_id:' . $attributeid . ', sp_id:' . $spid);
-        log_message('debug', 'Checking if arp exists already');
-
         $arp = $this->tmp_arps->getOneSPPolicy($idp_id, $attributeid, $spid);
         if (!empty($arp)) {
             log_message('debug', 'Arp found in db, proceeding action');
@@ -812,7 +789,7 @@ class Attributepolicy extends MY_Controller
             return;
         }
         $myLang = MY_Controller::getLang();
-        $idpNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
+        $idpNameInLang = $idp->getNameToWebInLang(MY_Controller::getLang(), 'idp');
         /**
          * @var $sp models\Provider
          */
@@ -841,13 +818,8 @@ class Attributepolicy extends MY_Controller
             'requester_type' => 'SP',
             'subtitlepage' => '' . lang('rr_specarpforsp') . ': <a href="' . base_url() . 'providers/detail/show/' . $requesterID . '">' . $spNameInLang . '</a>',
             'policy_dropdown'=>$this->config->item('policy_dropdown'),
+            'sp_available' => $sp->getAvailable(),
         );
-        $isSpEnabled = $sp->getAvailable();
-        if ($isSpEnabled !== TRUE) {
-            log_message('debug', 'Service Provider exists but it\'s not available (disabled, timevalid)');
-            $data['warning'] = lang('rr_spdisabled');
-        }
-
         /**
          * @var $arps models\AttributeReleasePolicy[]
          */
