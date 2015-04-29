@@ -684,6 +684,7 @@ $lang['rr_defaultarp']              = 'Default attribute release policy';
 $lang['rr_arpforfed']               = 'Attribute release policy for Federation';
 $lang['rr_arpforfeds']               = 'Attribute release policy for Federations';
 $lang['rr_specarpforsp']            = 'Specific attribute release policy for Service Provider';
+$lang['rr_specpolicy']            = 'Specific Policy';
 $lang['rr_specpolicies']            = 'Specific Policies';
 $lang['rr_includedmetadata']        = 'included in metadata';
 $lang['rr_notincludedmetadata']     = 'not included in metadata';

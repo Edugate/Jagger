@@ -831,22 +831,22 @@ class Attributepolicy extends MY_Controller
             }
             $spNameInLang = $sp->getNameToWebInLang($myLang, 'sp');
             $data = array(
+                'breadcrumbs'=>array(
+                    array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+                    array('url' => base_url('providers/detail/show/' . $idpID . ''), 'name' => '' . $idpNameInLang . ''),
+                    array('url'=> base_url('manage/attributepolicy/globals/'.$idpID.''),'name'=>lang('rr_attributereleasepolicy')),
+                    array('url'=>'#','name'=>lang('rr_specpolicy').' : '.$spNameInLang.'','type'=>'current')
+                ),
                 'content_view'=> 'manage/attribute_policy_multi_sp_view',
                 'requester'=>$spNameInLang,
                 'requester_id'=>$requesterID,
                 'requester_type'=>'SP',
                 'subtitlepage'=>''.lang('rr_specarpforsp') . ': <a href="' . base_url() . 'providers/detail/show/' . $requesterID . '">' . $spNameInLang . '</a>'
             );
-
-            /**
-             * @todo fix it
-             */
-            $is_available = $sp->getAvailable();
-            if (empty($is_available)) {
+            $isSpEnabled = $sp->getAvailable();
+            if ($isSpEnabled !== TRUE) {
                 log_message('debug', 'Service Provider exists but it\'s not available (disabled, timevalid)');
-                /**
-                 * @todo finish it
-                 */
+                $data['warning'] = lang('rr_spdisabled');
             }
 
             /**
