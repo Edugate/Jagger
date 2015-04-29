@@ -783,10 +783,9 @@ class Attributepolicy extends MY_Controller
         return $this->multi($idp->getId(), 'sp', $sp->getId());
     }
 
-    public function multi($idp_id, $type, $requester)
+    public function multi($idpID, $type, $requesterID)
     {
-        if (!($type == 'sp' || $type == 'fed')) {
-            log_message('debug', 'wrong type:' . $type . ' (expected sp or fed)');
+        if (!ctype_digit($idpID) || !ctype_digit($requesterID) || !($type === 'sp' || $type === 'fed')) {
             show_error('wrong url request', 404);
         }
 
@@ -794,51 +793,51 @@ class Attributepolicy extends MY_Controller
         /**
          * @var $idp models\Provider
          */
-        $idp = $this->tmp_providers->getOneIdPById($idp_id);
+        $idp = $this->tmp_providers->getOneIdPById($idpID);
 
         if (empty($idp)) {
-            log_message('error', '(manage/attributepolicy/multi) Identity Provider not found with id:' . $idp_id);
+            log_message('error', '(manage/attributepolicy/multi) Identity Provider not found with id:' . $idpID);
             show_error(lang('rerror_idpnotfound'), 404);
         }
         $excluded_arp = $idp->getExcarps();
-        $resource = $idp->getId();
-        $group = 'idp';
-        $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
+        $has_write_access = $this->zacl->check_acl($idpID, 'write', 'entity', '');
         if (!$has_write_access) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('noperm_idpedit');
+            $data = array(
+                'content_view'=>'nopermission',
+                'error'=>lang('noperm_idpedit')
+            );
             $this->load->view('page', $data);
             return;
         }
-        $lang = MY_Controller::getLang();
-        $idpDisplayname = $idp->getNameToWebInLang($lang, 'idp');
-        if (empty($idpDisplayname)) {
-            $idpDisplayname = $idp->getEntityId();
-        }
-        $data['provider'] = $idp->getName();
-        $data['provider_id'] = $idp->getId();
-        $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $idpDisplayname . '</a>';
-        if ($type == 'sp') {
+        $myLang = MY_Controller::getLang();
+        $idpNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
+        $data = array(
+            'provider'=>$idpNameInLang,
+            'provider_id'=>$idpID,
+            'titlepage'=>lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idpID . '">' . $idpNameInLang . '</a>'
+        );
+
+        if ($type === 'sp') {
             log_message('debug', '(manage/attributepolicy/multi) type SP');
-            $data['content_view'] = 'manage/attribute_policy_multi_sp_view';
+
             /**
              * @var $sp models\Provider
              */
-            $sp = $this->tmp_providers->getOneSpById($requester);
+            $sp = $this->tmp_providers->getOneSpById($requesterID);
 
             if (empty($sp)) {
-                log_message('error', '(manage/attributepolicy/multi) Service Provider as requester not found with id:' . $requester);
+                log_message('error', '(manage/attributepolicy/multi) Service Provider as requester not found with id:' . $requesterID);
                 show_error(lang('rerror_spnotfound'), 404);
             }
+            $spNameInLang = $sp->getNameToWebInLang($myLang, 'sp');
+            $data = array(
+                'content_view'=> 'manage/attribute_policy_multi_sp_view',
+                'requester'=>$spNameInLang,
+                'requester_id'=>$requesterID,
+                'requester_type'=>'SP',
+                'subtitlepage'=>''.lang('rr_specarpforsp') . ': <a href="' . base_url() . 'providers/detail/show/' . $requesterID . '">' . $spNameInLang . '</a>'
+            );
 
-            $data['requester'] = $sp->getName();
-            $data['requester_id'] = $sp->getId();
-            $data['requester_type'] = 'SP';
-            $spDisplayname = $sp->getNameToWebInLang($lang, 'sp');
-            if (empty($spDisplayname)) {
-                $spDisplayname = $sp->getEntityId();
-            }
-            $data['subtitlepage'] = lang('rr_specarpforsp') . ': <a href="' . base_url() . 'providers/detail/show/' . $sp->getId() . '">' . $spDisplayname . '</a>';
             /**
              * @todo fix it
              */
@@ -850,12 +849,15 @@ class Attributepolicy extends MY_Controller
                  */
             }
 
-            $arps = $this->tmp_arps->getSpecificPolicyAttributes($idp, $requester);
-            $arps_array = array();
+            /**
+             * @var $arps models\AttributeReleasePolicy[]
+             */
+            $arps = $this->tmp_arps->getSpecificPolicyAttributes($idp, $requesterID);
+            $arpsInArray = array();
             foreach ($arps as $a) {
-                $attr_name = $a->getAttribute()->getName();
-                $arps_array[$attr_name] = array(
-                    'attr_name' => $attr_name,
+                $attributeName = $a->getAttribute()->getName();
+                $arpsInArray[''.$attributeName.''] = array(
+                    'attr_name' => $attributeName,
                     'supported' => 0,
                     'attr_id' => $a->getAttribute()->getId(),
                     'attr_policy' => $a->getPolicy(),
@@ -865,26 +867,26 @@ class Attributepolicy extends MY_Controller
                     'req_reason' => null,
                 );
             }
-            $supported_attrs = $this->tmp_arps->getSupportedAttributes($idp);
-            foreach ($supported_attrs as $p) {
-                $attr_name = $p->getAttribute()->getName();
-                $arps_array[$attr_name]['supported'] = 1;
-                if (!array_key_exists('attr_id', $arps_array[$attr_name])) {
-                    $arps_array[$attr_name]['attr_name'] = $attr_name;
-                    $arps_array[$attr_name]['attr_id'] = $p->getAttribute()->getId();
-                    $arps_array[$attr_name]['attr_policy'] = null;
-                    $arps_array[$attr_name]['idp_id'] = $p->getProvider()->getId();
-                    $arps_array[$attr_name]['sp_id'] = $requester;
-                    $arps_array[$attr_name]['req_status'] = null;
-                    $arps_array[$attr_name]['req_reason'] = null;
+            $supportedAttrs = $this->tmp_arps->getSupportedAttributes($idp);
+            foreach ($supportedAttrs as $p) {
+                $attributeName = $p->getAttribute()->getName();
+                $arpsInArray[''.$attributeName.'']['supported'] = 1;
+                if (!array_key_exists('attr_id', $arpsInArray[$attributeName])) {
+                    $arpsInArray[$attributeName]['attr_name'] = $attributeName;
+                    $arpsInArray[$attributeName]['attr_id'] = $p->getAttribute()->getId();
+                    $arpsInArray[$attributeName]['attr_policy'] = null;
+                    $arpsInArray[$attributeName]['idp_id'] = $p->getProvider()->getId();
+                    $arpsInArray[$attributeName]['sp_id'] = $requesterID;
+                    $arpsInArray[$attributeName]['req_status'] = null;
+                    $arpsInArray[$attributeName]['req_reason'] = null;
                 }
             }
             $requirements = $tmp_requirements->getRequirementsBySP($sp);
             foreach ($requirements as $r) {
-                $attr_name = $r->getAttribute()->getName();
-                if (!array_key_exists($attr_name, $arps_array)) {
-                    $arps_array[$attr_name] = array(
-                        'attr_name' => $attr_name,
+                $attributeName = $r->getAttribute()->getName();
+                if (!array_key_exists($attributeName, $arpsInArray)) {
+                    $arpsInArray[$attributeName] = array(
+                        'attr_name' => $attributeName,
                         'supported' => 0,
                         'attr_id' => $r->getAttribute()->getId(),
                         'attr_policy' => null,
@@ -895,17 +897,17 @@ class Attributepolicy extends MY_Controller
                     );
                 }
 
-                $arps_array[$attr_name]['attr_name'] = $attr_name;
-                $arps_array[$attr_name]['req_status'] = $r->getStatus();
-                $arps_array[$attr_name]['req_reason'] = $r->getReason();
+                $arpsInArray[$attributeName]['attr_name'] = $attributeName;
+                $arpsInArray[$attributeName]['req_status'] = $r->getStatus();
+                $arpsInArray[$attributeName]['req_reason'] = $r->getReason();
             }
-            $data['arps'] = $arps_array;
+            $data['arps'] = $arpsInArray;
             $data['policy_dropdown'] = $this->config->item('policy_dropdown');
             $data['policy_dropdown']['100'] = lang('dropnotset');
-            $data['provider'] = $idp->getName();
+            $data['provider'] = $idpNameInLang;
             $data['provider_id'] = $idp->getId();
             $data['provider_entityid'] = $idp->getEntityId();
-            $data['requester'] = $sp->getName();
+            $data['requester'] = $spNameInLang;
             $data['requester_id'] = $sp->getId();
             $data['requester_entityid'] = $sp->getEntityId();
             if (in_array($data['requester_entityid'], $excluded_arp)) {
