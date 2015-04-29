@@ -25,7 +25,7 @@ class Users extends MY_Controller
     {
         parent::__construct();
         $this->load->helper(array('cert', 'form'));
-        $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'table', 'zacl'));
+        $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'table', 'rrpreference'));
     }
 
     private function modifySubmitValidate()
@@ -175,23 +175,15 @@ class Users extends MY_Controller
 
     public function updateSecondFactor($encodeduser)
     {
-        if (!$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'denied';
-            return;
-
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             set_status_header(403);
             echo 'denied';
             return;
 
         }
 
-        $encodeduser = trim($encodeduser);
 
-        $this->load->library('rrpreference');
+        $this->load->library('zacl');
 
         $user2fset = $this->rrpreference->getStatusByName('user2fset');
         $isOwner = $this->isOwner($encodeduser);
@@ -209,7 +201,7 @@ class Users extends MY_Controller
         }
 
 
-        $username = base64url_decode(trim($encodeduser));
+        $username = base64url_decode($encodeduser);
         /**
          * @var $user models\User
          */
@@ -320,6 +312,7 @@ class Users extends MY_Controller
             echo 'Permission denied';
             return;
         }
+        $this->load->library('zacl');
         $access = $this->zacl->check_acl('user', 'create', 'default', '');
         if (!$access) {
             set_status_header(403);
@@ -408,6 +401,7 @@ class Users extends MY_Controller
         if (empty($user)) {
             show_error('User not found', 404);
         }
+        $this->load->library('zacl');
         $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
         if (!$write_access) {
             $data['error'] = lang('error403');
@@ -428,6 +422,7 @@ class Users extends MY_Controller
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
+        $this->load->library('zacl');
         $encoded_username = trim($encoded_username);
         $username = base64url_decode($encoded_username);
         $limit_authn = 15;
@@ -683,6 +678,7 @@ class Users extends MY_Controller
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
+        $this->load->library('zacl');
         $access = $this->zacl->check_acl('', 'read', 'user', '');
         if (!$access) {
             $data['error'] = lang('error403');
@@ -746,6 +742,7 @@ class Users extends MY_Controller
             echo 'Permission denied';
             return;
         }
+        $this->load->library('zacl');
         $access = $this->zacl->check_acl('user', 'remove', 'default', '');
         if (!$access) {
             set_status_header(403);
@@ -803,10 +800,11 @@ class Users extends MY_Controller
 
     public function accessedit($encoded_username)
     {
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+
+        if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
+        $this->load->library('zacl');
         $username = base64url_decode($encoded_username);
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if (empty($user)) {
@@ -851,6 +849,7 @@ class Users extends MY_Controller
         if (empty($user)) {
             show_error('User not found', 404);
         }
+        $this->load->library('zacl');
         $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
         $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
         if (!$write_access && !$manage_access) {
