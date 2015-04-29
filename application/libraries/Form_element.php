@@ -2720,14 +2720,21 @@ class Form_element
 		}
 		$result .= form_open($action, $attributes, $hidden);
 		$result .= $this->generateEditPolicyFormElement($arp);
-		$result .= '<div class="buttons">';
+		$result .= '<div>';
 		if (!empty($submit_type) && $submit_type == 'create') {
-			$result .= '<button name="submit" type="submit" value="cancel" class="resetbutton reseticon">' . lang('rr_cancel') . '</button>';
-			$result .= '<button name="submit" type="submit" value="create" class="savebutton saveicon">' . lang('rr_create') . '</button>';
+            $btns = array(
+                '<button name="submit" type="submit" value="cancel" class="resetbutton reseticon alert">' . lang('rr_cancel') . '</button>',
+                '<button name="submit" type="submit" value="create" class="savebutton saveicon">' . lang('rr_create') . '</button>'
+            );
+
 		} else {
-			$result .= '<button name="submit" type="submit" value="delete" class="resetbutton reseticon">' . lang('rr_remove') . '</button>';
-			$result .= '<button name="submit" type="submit" value="modify" class="savebutton saveicon">' . lang('rr_modify') . '</button>';
+            $btns = array(
+                '<button name="submit" type="submit" value="delete" class="resetbutton reseticon alert">' . lang('rr_remove') . '</button>',
+                '<button name="submit" type="submit" value="modify" class="savebutton saveicon">' . lang('rr_modify') . '</button>'
+            );
+
 		}
+        $result .= revealBtnsRow($btns);
 		$result .= '</div>';
 		$result .= form_close();
 		return $result;
@@ -2735,9 +2742,8 @@ class Form_element
 
 	public function generateEditPolicyFormElement(models\AttributeReleasePolicy $arp)
 	{
-		$result = '';
-		$result .= form_fieldset(lang('rr_attr_name') . ': ' . $arp->getAttribute()->getFullName() . ' (' . $arp->getAttribute()->getName() . ')');
-		$result .= '<div class="small-12 columns"><div class="small-3 columns">' . form_label(lang('rr_setpolicy'), 'policy') . '</div><div class="small-6 large-7 columns end">';
+		$result = form_fieldset(lang('rr_attr_name') . ': ' . $arp->getAttribute()->getFullName() . ' (' . $arp->getAttribute()->getName() . ')');
+		$result .= '<div class="small-12 columns"><div class="medium-3 columns">' . form_label(lang('rr_setpolicy'), 'policy') . '</div><div class="medium-7 columns end">';
 		$result .= form_dropdown('policy', $this->ci->config->item('policy_dropdown'), $arp->getPolicy()) . '</div></div>';
 		$result .= form_fieldset_close();
 		return $result;
@@ -2765,7 +2771,6 @@ class Form_element
 			}
 		}
 
-        $r = '';
 		$langselected = $langset;
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName(), FALSE)) . '</div></div>';
         $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
