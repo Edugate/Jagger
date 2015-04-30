@@ -470,7 +470,7 @@ class Statdefs extends MY_Controller
 
             if (!empty($usepredefined) && $usepredefined === 'yes') {
                 $statdef->setType('sys');
-                $statdef->setSysDef( $this->input->post('gworker'));
+                $statdef->setSysDef($this->input->post('gworker'));
             } else {
                 $statdef->setSysDef(NULL);
                 $statdef->setType('ext');
@@ -543,7 +543,7 @@ class Statdefs extends MY_Controller
                 array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
 
             ),
-            'content_view'=>'manage/statdefs_newform_view'
+            'content_view' => 'manage/statdefs_newform_view'
 
         );
         $workersdescriptions = '<ul>';
@@ -567,64 +567,54 @@ class Statdefs extends MY_Controller
 
         if ($this->newStatDefSubmitValidate() === FALSE) {
             return $this->load->view('page', $data);
-        } else {
-            $defname = $this->input->post('defname');
-            $titlename = $this->input->post('titlename');
-            $sourceurl = $this->input->post('sourceurl');
-            $accesstype = $this->input->post('accesstype');
-            $description = $this->input->post('description');
-            $userauthn = $this->input->post('userauthn');
-            $passauthn = $this->input->post('passauthn');
-            $formattype = $this->input->post('formattype');
-            $method = $this->input->post('httpmethod');
-            $gworker = $this->input->post('gworker');
-            $overwrite = $this->input->post('overwrite');
-            $usepredefined = $this->input->post('usepredefined');
-            $prepostoptions = $this->input->post('postoptions');
-            $p2 = explode('$$', $prepostoptions);
-            $postoptions = array();
-            if (!empty($p2) && is_array($p2) && count($p2) > 0) {
-                foreach ($p2 as $v) {
-                    $y = preg_split('/(\$:\$)/', $v, 2);
-                    if (count($y) === 2) {
-                        $postoptions['' . trim($y['0']) . ''] = trim($y['1']);
-                    }
-                }
-            }
-
-            $s = new models\ProviderStatsDef;
-            $s->setName($defname);
-            $s->setTitle($titlename);
-            $s->setDescription($description);
-            if (!empty($overwrite) && $overwrite === 'yes') {
-                $s->setOverwriteOn();
-            }
-
-            if (!empty($usepredefined) && $usepredefined === 'yes') {
-                $s->setType('sys');
-                $s->setSysDef($gworker);
-            } else {
-                $s->setType('ext');
-                $s->setHttpMethod($method);
-                $s->setPostOptions($postoptions);
-                $s->setUrl($sourceurl);
-                $s->setAccess($accesstype);
-                $s->setFormatType($formattype);
-                if ($accesstype !== 'anon') {
-                    $s->setAuthuser($userauthn);
-                    $s->setAuthpass($passauthn);
-                }
-            }
-            $provider->getStatDefinitions($s);
-            $s->setProvider($provider);
-
-            $this->em->persist($s);
-            $this->em->persist($provider);
-            $this->em->flush();
-            $data['content_view'] = 'manage/newstatdefsuccess';
-            $data['message'] = lang('stadefadded');
-            $this->load->view('page', $data);
         }
+        $formattype = $this->input->post('formattype');
+        $overwrite = $this->input->post('overwrite');
+        $usepredefined = $this->input->post('usepredefined');
+        $prepostoptions = $this->input->post('postoptions');
+        $p2 = explode('$$', $prepostoptions);
+        $postoptions = array();
+        if (!empty($p2) && is_array($p2) && count($p2) > 0) {
+            foreach ($p2 as $v) {
+                $y = preg_split('/(\$:\$)/', $v, 2);
+                if (count($y) === 2) {
+                    $postoptions['' . trim($y['0']) . ''] = trim($y['1']);
+                }
+            }
+        }
+
+        $s = new models\ProviderStatsDef;
+        $s->setName($this->input->post('defname'));
+        $s->setTitle($this->input->post('titlename'));
+        $s->setDescription($this->input->post('description'));
+        if (!empty($overwrite) && $overwrite === 'yes') {
+            $s->setOverwriteOn();
+        }
+
+        if (!empty($usepredefined) && $usepredefined === 'yes') {
+            $s->setType('sys');
+            $s->setSysDef($this->input->post('gworker'));
+        } else {
+            $s->setType('ext');
+            $s->setHttpMethod($this->input->post('httpmethod'));
+            $s->setPostOptions($postoptions);
+            $s->setUrl($this->input->post('sourceurl'));
+            $s->setAccess($this->input->post('accesstype'));
+            $s->setFormatType($formattype);
+            $s->setAuthuser($this->input->post('userauthn'));
+            $s->setAuthpass($this->input->post('passauthn'));
+
+        }
+        $provider->getStatDefinitions($s);
+        $s->setProvider($provider);
+
+        $this->em->persist($s);
+        $this->em->persist($provider);
+        $this->em->flush();
+        $data['content_view'] = 'manage/newstatdefsuccess';
+        $data['message'] = lang('stadefadded');
+        $this->load->view('page', $data);
+
 
     }
 
@@ -679,41 +669,30 @@ class Statdefs extends MY_Controller
 
     public function remove($defid = null)
     {
-        if (!$this->input->is_ajax_request()) {
-            show_error('method not allowed', 401);
-        }
-        $loggedin = $this->j_auth->logged_in();
-        $msg = '';
-        if (!$loggedin) {
+        $msg = null;
+        /**
+         * @var $def models\ProviderStatsDef
+         */
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             $s = 403;
             $msg = 'Access denied';
-        } elseif (empty($defid) || !is_numeric($defid)) {
+        } elseif (empty($defid) || !ctype_digit($defid)) {
             $s = 404;
             $msg = 'not found';
+        }else{
+            $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
+            if (empty($def)) {
+                $s = 404;
+                $msg = 'not found';
+            }
         }
         if (!empty($s)) {
             set_status_header($s);
             echo $msg;
             return;
         }
-        /**
-         * @var $def models\ProviderStatsDef
-         */
-        $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
-        if (empty($def)) {
-            set_status_header(404);
-            echo 'not found';
-            return;
-        }
-
         $provider = $def->getProvider();
 
-        if (empty($provider)) {
-            log_message('error', 'Found orphaned statdefinition with id: ' . $def->getId());
-            set_status_header(404);
-            echo 'not found';
-            return;
-        }
         $this->load->library('zacl');
         $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
         if (!$hasAccess) {
