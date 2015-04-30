@@ -184,61 +184,7 @@ class Email_sender {
         }
         return true;
     }
-
-    /**
-     * $to may be single email or array of mails
-     */
-    function send($to, $subject, $body)
-    {
-        $sending_enabled = $this->ci->config->item('mail_sending_active');
-        log_message('debug', 'Mail:: preparing');
-        log_message('debug', 'Mail:: To: ' . serialize($to));
-        log_message('debug', 'Mail:: Subject: ' . $subject);
-        log_message('debug', 'Mail:: Body: ' . $body);
-
-        if (!$sending_enabled)
-        {
-            log_message('debug', 'Mail:: cannot be sent because $config[mail_sending_active] is not true');
-            return false;
-        }
-        else
-        {
-            log_message('debug', 'Preparing to send email');
-        }
-        $full_subject = $subject . " " . $this->ci->config->item('mail_subject_suffix');
-        $list = array();
-        if (!is_array($to))
-        {
-            $list[] = $to;
-        }
-        else
-        {
-            $list = $to;
-        }
-        $generatedAt = '';
-        foreach ($list as $k)
-        {
-            $this->ci->email->clear();
-            $this->ci->email->from($this->ci->config->item('mail_from'), '');
-            $this->ci->email->to($k, '');
-            $this->ci->email->subject($full_subject);
-
-            $message = $body . PHP_EOL . 'Message was generated at ' . $generatedAt . PHP_EOL . $this->mailFooter;
-            $this->ci->email->message($message);
-            if ($this->ci->email->send())
-            {
-                log_message('debug', 'email sent to ' . $k);
-            }
-            else
-            {
-                log_message('error', 'email couldnt be sent to ' . $k);
-                log_message('error', $this->ci->email->print_debugger());
-            }
-        }
-        return true;
-    }
-
-
+    
     static function mailTemplatesGroups()
     {
        $result = array(
