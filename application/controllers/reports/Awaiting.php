@@ -80,11 +80,13 @@ class Awaiting extends MY_Controller
     private function hasQAccess(\models\Queue $q)
     {
         $result = false;
-        $isAdministrator = $this->j_auth->isAdministrator();
-        if ($isAdministrator) {
+        if ($this->j_auth->isAdministrator()) {
             return true;
         }
         $currentUser = $this->j_auth->current_user();
+        /**
+         * @var $creator models\User
+         */
         $creator = $q->getCreator();
         if (!empty($creator)) {
             $name = $creator->getUsername();
@@ -116,8 +118,7 @@ class Awaiting extends MY_Controller
     private function hasApproveAccess(\models\Queue $q)
     {
         $result = false;
-        $isAdministrator = $this->j_auth->isAdministrator();
-        if ($isAdministrator) {
+        if ($this->j_auth->isAdministrator()) {
             return true;
         }
         $action = $q->getAction();
@@ -461,6 +462,9 @@ class Awaiting extends MY_Controller
 
     private function createProvider(\models\Queue $q)
     {
+        /**
+         * @var $attrs models\Attribute[]
+         */
         $attrs = $this->em->getRepository("models\Attribute")->findAll();
         foreach ($attrs as $a) {
             $attributesByName['' . $a->getOid() . ''] = $a;
