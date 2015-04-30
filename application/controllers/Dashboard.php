@@ -66,15 +66,13 @@ class Dashboard extends MY_Controller {
 
                 log_message('error',__METHOD__.' '.$e);
                 show_error('Internal server error',500);
-                return;
             }
             if (!empty($frontpage))
             {
                 $data['pcontent'] = jaggerTagsReplacer($frontpage->getContent());
                 $data['ptitle'] = $frontpage->getTitle();
             }
-            $this->load->view('page',$data);
-            return;  
+            return $this->load->view('page',$data);
         }
         try {
             $this->load->library('zacl');
@@ -83,7 +81,6 @@ class Dashboard extends MY_Controller {
         {
             log_message('error',__METHOD__ .' '.$e);
             show_error('Internal server error',500);
-            return;
         }
         $this->load->library('table');
         /**
