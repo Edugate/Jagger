@@ -54,12 +54,19 @@ class Attributepolicy extends MY_Controller
         return $result;
     }
 
+    /**
+     * @param $idp
+     * @return string
+     */
     private function displayFederationsPolicy($idp)
     {
         $result = $this->show_element->generateTableFederationsArp($idp, TRUE);
         return $result . '<br />';
     }
 
+    /**
+     * return string
+     */
     public function submit_global()
     {
 
@@ -90,15 +97,14 @@ class Attributepolicy extends MY_Controller
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_nopermission');
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
+
         }
         $locked = $idp->getLocked();
         if ($locked) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_lockedentity');
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
 
 
@@ -110,6 +116,7 @@ class Attributepolicy extends MY_Controller
         $tmp_a = $this->config->item('policy_dropdown');
         /**
          * @var $attribute models\Attribute
+         * @var $attrPolicy models\AttributeReleasePolicy
          */
         $attribute = $this->tmp_attrs->getAttributeById($attr);
         $attrPolicy = $this->tmp_arps->getOneGlobalPolicy($idpid, $attr);
@@ -155,9 +162,6 @@ class Attributepolicy extends MY_Controller
      */
     public function detail($idp_id, $attr_id, $type, $requester)
     {
-        $data = array();
-        $subtitle = "";
-
         if (!ctype_digit($idp_id) || !ctype_digit($attr_id)) {
             log_message('error', "Idp id or attr id is set incorectly");
             show_error(lang('error404'), 404);
@@ -167,6 +171,7 @@ class Attributepolicy extends MY_Controller
             show_error(lang('error_wrongpolicytype'), 404);
         }
 
+        $subtitle = null;
         /**
          * @var $idp models\Provider
          */
@@ -181,20 +186,20 @@ class Attributepolicy extends MY_Controller
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
 
         $data['titlepage'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), lang('rr_provider') . ': ' . $providerNameInLang);
-
-
-        $resource = $idp->getId();
         $data['provider_entity'] = $idp->getEntityId();
-        $group = 'idp';
-        $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
+
+        $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_nopermission');
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $locked = $idp->getLocked();
+        $sp = null;
 
+        /**
+         * @var $attribute models\Attribute
+         */
         $attribute = $this->tmp_attrs->getAttributeById($attr_id);
         if (empty($attribute)) {
             log_message('error', 'Attribute not found with id:' . $attr_id);
@@ -205,22 +210,19 @@ class Attributepolicy extends MY_Controller
             $attr_policy = $this->tmp_arps->getOneGlobalPolicy($idp_id, $attr_id);
             $action = base_url('manage/attributepolicy/submit_global');
             $subtitle = lang('rr_defaultarp');
-            if ($locked) {
-                $subtitle .= '<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
-            }
         } elseif ($type === 'fed') {
             $attr_policy = $this->tmp_arps->getOneFedPolicy($idp_id, $attr_id, $requester);
             $tmp_feds = new models\Federations;
-            $fed = $tmp_feds->getOneFederationById($requester);
-            if (!empty($fed)) {
-                $data['fed_name'] = $fed->getName();
-                $data['fed_url'] = base64url_encode($fed->getName());
+            /**
+             * @var $federation models\Federation
+             */
+            $federation = $tmp_feds->getOneFederationById($requester);
+            if (!empty($federation)) {
+                $data['fed_name'] = $federation->getName();
+                $data['fed_url'] = base64url_encode($federation->getName());
             }
             $action = base_url('manage/attributepolicy/submit_fed/' . $idp_id);
             $subtitle = lang('rr_arpforfed');
-            if ($locked) {
-                $subtitle .= '<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
-            }
         } else {  //type==sp
             $attr_policy = $this->tmp_arps->getOneSPPolicy($idp_id, $attr_id, $requester);
 
@@ -238,11 +240,12 @@ class Attributepolicy extends MY_Controller
             $link_sp = anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
             $action = base_url('manage/attributepolicy/submit_sp/' . $idp_id);
             $data['subtitlepage'] = lang('rr_specarpforsp') . ' : <br />' . $link_sp;
-            if ($locked) {
-                $subtitle .= '<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
-            }
         }
-        if (empty($attr_policy)) {
+        if($locked)
+        {
+            $subtitle .= '<div class="lblsubttitlepos"><small>' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . '</small></div>';
+        }
+        if (empty($attr_policy) && $type === 'sp' ) {
             $data['error_message'] = lang('arpnotfound');
             $message = 'Policy not found for: ';
             $message .= '[idp_id=' . $idp_id . ', attr_id=' . $attr_id . ', type=' . $type . ', requester=' . $requester . ']';
@@ -279,18 +282,20 @@ class Attributepolicy extends MY_Controller
         );
 
         $data['content_view'] = 'manage/attribute_policy_detail_view';
-        $this->load->view('page', $data);
+        return $this->load->view('page', $data);
     }
 
+    /**
+     * @param $idp_id
+     * @return object|string
+     */
     public function globals($idp_id)
     {
         $data['content_view'] = 'manage/attribute_policy_view';
         $this->title = lang('rr_attributereleasepolicy');
         if (empty($idp_id) || !ctype_digit($idp_id)) {
             show_error('Incorrect id provided', 404);
-            return;
         }
-
         /**
          * @var $idp models\Provider
          */
@@ -302,7 +307,6 @@ class Attributepolicy extends MY_Controller
         if (empty($idp)) {
             log_message('debug', 'Identity Provider with id ' . $idp . ' not found');
             show_error(lang('rerror_idpnotfound'), 404);
-            return;
         }
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
@@ -318,8 +322,7 @@ class Attributepolicy extends MY_Controller
                 'content_view' => 'nopermission',
                 'error' => lang('rr_noperm'),
             );
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $data['titlepage'] = lang('identityprovider') . ': ' . '<a href="' . base_url() . 'providers/detail/show/' . $idp_id . '">' . $providerNameInLang . '</a>';
         $data['subtitlepage'] = lang('rr_attributereleasepolicy');
@@ -334,11 +337,11 @@ class Attributepolicy extends MY_Controller
         $data['specific_policy'] = $this->displaySpecificPolicy($idp);
 
         /**
-         * pull all attributes defitnitions
+         * @var $supportedAttributes models\AttributeReleasePolicy[]
          */
-        $supportedAttrs = $this->tmp_arps->getSupportedAttributes($idp);
+        $supportedAttributes = $this->tmp_arps->getSupportedAttributes($idp);
         $supportedArray = array();
-        foreach ($supportedAttrs as $s) {
+        foreach ($supportedAttributes as $s) {
             $supportedArray[$s->getAttribute()->getId()] = $s->getAttribute()->getName();
         }
 
@@ -364,9 +367,14 @@ class Attributepolicy extends MY_Controller
         $data['idpid'] = $idp_id;
         $data['idp_name'] = $idp->getName();
         $data['idp_entityid'] = $idp->getEntityId();
-        $this->load->view('page', $data);
+        return $this->load->view('page', $data);
     }
 
+    /**
+     * @param $idp_id
+     * @param null $fed_id
+     * @return object|string
+     */
     public function show_feds($idp_id, $fed_id = null)
     {
         /**
@@ -376,15 +384,15 @@ class Attributepolicy extends MY_Controller
         if (empty($idp)) {
             show_error(lang('rerror_idpnotfound'), 404);
         }
-        $resource = $idp->getId();
-        $group = 'idp';
-        $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
-        if (!$has_write_access) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rr_nopermission');
-            $this->load->view('page', $data);
-            return;
+        $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            $data = array(
+                'content_view'=>'nopermission',
+                'error'=>lang('rr_nopermission'),
+            );
+            return $this->load->view('page', $data);
         }
+
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
         if (empty($providerNameInLang)) {
@@ -405,7 +413,6 @@ class Attributepolicy extends MY_Controller
             $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url() . 'providers/detail/show/' . $idp->getId() . '">' . $providerNameInLang . '</a>';
             $data['subtitlepage'] = lang('rr_arpforfed');
             $data['content_view'] = 'manage/attribute_policy_feds_view';
-            $this->load->view('page', $data);
         } else {
             $data = array();
             $data['idpname'] = $providerNameInLang;
@@ -428,7 +435,7 @@ class Attributepolicy extends MY_Controller
             /**
              * getting set arp for this fed
              */
-            $existingAttrs = $this->tmp_arps->getFedPolicyAttributesByFed($idp, $fed);
+           $existingAttrs = $this->tmp_arps->getFedPolicyAttributesByFed($idp, $fed);
 
             /**
              * build array
@@ -477,8 +484,9 @@ class Attributepolicy extends MY_Controller
             $data['caption'] = $idp->getName() . '<br /><br />' . lang('rr_arpforfed') . ': ' . $fed->getName();
 
             $data['content_view'] = 'manage/attribute_policy_form_for_fed_view';
-            $this->load->view('page', $data);
+
         }
+        return $this->load->view('page', $data);
     }
 
     public function submit_fed($idp_id)
@@ -510,15 +518,14 @@ class Attributepolicy extends MY_Controller
                 if (!$has_write_access) {
                     $data['content_view'] = 'nopermission';
                     $data['error'] = lang('noperm_idpedit');
-                    $this->load->view('page', $data);
-                    return;
+                    return $this->load->view('page', $data);
                 }
                 $locked = $idp->getLocked();
                 if ($locked) {
                     $data['content_view'] = 'nopermission';
                     $data['error'] = lang('noperm_idpeditlocked');
-                    $this->load->view('page', $data);
-                    return;
+                    return $this->load->view('page', $data);
+
                 }
 
                 /**
@@ -631,8 +638,7 @@ class Attributepolicy extends MY_Controller
         if ($locked || !$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('noperm_idpedit');
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $tmp_attrs = new models\Attributes;
         $attribute = $tmp_attrs->getAttributeById($attributeid);
@@ -699,8 +705,7 @@ class Attributepolicy extends MY_Controller
         if ($isIdPLocked || !$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rrerror_noperm_provedit');
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
 
         foreach ($submited_policies as $key => $value) {
@@ -749,6 +754,12 @@ class Attributepolicy extends MY_Controller
         return $this->multi($idp->getId(), 'sp', $sp->getId());
     }
 
+    /**
+     * @param $idpID
+     * @param $type
+     * @param $requesterID
+     * @return object|string|void
+     */
     public function multi($idpID, $type, $requesterID)
     {
         if (!ctype_digit($idpID) || !ctype_digit($requesterID) || !($type === 'sp')) {
@@ -764,6 +775,7 @@ class Attributepolicy extends MY_Controller
         if (empty($idp)) {
             log_message('error', '(manage/attributepolicy/multi) Identity Provider not found with id:' . $idpID);
             show_error(lang('rerror_idpnotfound'), 404);
+
         }
         $excluded_arp = $idp->getExcarps();
         $has_write_access = $this->zacl->check_acl($idpID, 'write', 'entity', '');
@@ -772,8 +784,7 @@ class Attributepolicy extends MY_Controller
                 'content_view' => 'nopermission',
                 'error' => lang('noperm_idpedit')
             );
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $myLang = MY_Controller::getLang();
         $idpNameInLang = $idp->getNameToWebInLang(MY_Controller::getLang(), 'idp');
@@ -871,17 +882,14 @@ class Attributepolicy extends MY_Controller
 
     public function specific($idp_id, $type)
     {
-        if (!is_numeric($idp_id)) {
+        if (!ctype_digit($idp_id)) {
             show_error('Id of IdP is not numeric', 404);
         }
-        $resource = $idp_id;
-        $group = 'idp';
-        $has_write_access = $this->zacl->check_acl($resource, 'write', $group, '');
+        $has_write_access = $this->zacl->check_acl($idp_id, 'write','entity', '');
         if (!$has_write_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('noperm_idpedit');
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $this->load->library('form_validation');
         if ($type == 'sp') {

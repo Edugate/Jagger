@@ -50,6 +50,7 @@ if (!defined('BASEPATH'))
  * @property Arp_generator $arp_generator
  * @property Rrpreference $rrpreference
  * @property User_manage $user_manage
+ * @property Form_element $form_element
  * @property Doctrine $doctrine
  * @property CI_Cache $cache
  */
