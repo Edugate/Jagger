@@ -81,7 +81,7 @@ class Gworkers extends MY_Controller
                     $em->flush();
                     $em->clear();
                 } catch (Exception $e) {
-                    log_message('error', 'MAIL QUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect');
+                    log_message('error', 'MAILQUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect');
                     $em->getConnection()->close();
                     sleep(10);
                     $em->getConnection()->connect();

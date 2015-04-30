@@ -41,6 +41,7 @@ if (!defined('BASEPATH'))
  * @property Zacl $zacl
  * @property J_cache $j_cache
  * @property J_ncache $j_ncache
+ * @property J_queue $j_queue
  * @property Approval $approval
  * @property Tracker $tracker
  * @property Email_sender $email_sender
@@ -50,6 +51,7 @@ if (!defined('BASEPATH'))
  * @property Arp_generator $arp_generator
  * @property Rrpreference $rrpreference
  * @property User_manage $user_manage
+ * @property Form_element $form_element
  * @property Doctrine $doctrine
  * @property CI_Cache $cache
  */

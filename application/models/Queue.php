@@ -272,6 +272,7 @@ class Queue {
         return $this->id;
     }
 
+
     public function getCreator() {
         return $this->creator;
     }

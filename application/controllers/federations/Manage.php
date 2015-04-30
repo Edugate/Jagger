@@ -309,9 +309,9 @@ class Manage extends MY_Controller
         $metaExportLink = base_url() . 'metadata/federationexport/' . $federation->getSysname() . '/metadata.xml';
         $metaExportLinkSigned = base_url() . 'signedmetadata/federationexport/' . $federation->getSysname() . '/metadata.xml';
         if ($federation->getAttrsInmeta()) {
-            $d[] = array('data' => array('data' => '<div data-alert class="alert-box warning">' . lang('rr_meta_with_attr') . '</div>', 'class' => '', 'colspan' => 2));
+            $d[] = array('data' => array('data' => '<div data-alert class="alert-box info">' . lang('rr_meta_with_attr') . '</div>', 'class' => '', 'colspan' => 2));
         } else {
-            $d[] = array('data' => array('data' => '<div data-alert class="alert-box warning">' . lang('rr_meta_with_noattr') . '</div>', 'class' => '', 'colspan' => 2));
+            $d[] = array('data' => array('data' => '<div data-alert class="alert-box info">' . lang('rr_meta_with_noattr') . '</div>', 'class' => '', 'colspan' => 2));
         }
         if (!$federation->getActive()) {
             $d[] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span> ' . $metaLink);
@@ -392,12 +392,12 @@ class Manage extends MY_Controller
 
         $data['content_view'] = 'federation/federation_show_view';
         if (!$canEdit) {
-            $editLink = '<span class="alert"><i class="fi-prohibited"></i></span>';
+            $data['sideicons'][] = '<a href="#" title="'.lang('noperm_fededit').'"><i class="fi-prohibited"></i></a>';
+
         } else {
-            $editLink = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon button small" title="edit">' . lang('rr_edit') . '</a>';
+            $data['sideicons'][] = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" title="'.lang('rr_fededit').'"><i class="fi-pencil"></i></a>';
         }
 
-        $data['editlink'] = $editLink;
         if (empty($data['federation_is_active'])) {
             $data['result']['general'][] = array(
                 'data' => array('data' => '<div data-alert class="alert-box alert">' . lang('rr_fed_inactive_full') . '</div>', 'class' => 'fedstatusinactive', 'colspan' => 2)

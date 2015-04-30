@@ -1,17 +1,13 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 if(!empty($message))
 {
-	echo "<span>".$message."</span>";
+	echo '<div data-alert class="alert-box info">'.$message.'</span>';
 }
 if(!empty($error_message))
 {
-	echo "<span class=\"alert\">".$error_message."</span>";
+	echo '<div data-alert class="alert-box error">'.$error_message.'</div>';
 }
-?>
 
-<div id="responsecontainer"></div>
+
+echo '<div id="responsecontainer"></div>';

@@ -39,8 +39,10 @@ class Entityedit extends MY_Controller
     protected $type;
     protected $disallowedparts = array();
     protected $entityid;
-    protected $idpsscoscope = array();
+    protected $idpssoscope = array();
     protected $aascope = array();
+    protected $allowedDigestMethods;
+    protected $allowedSigningMethods;
 
     public function __construct()
     {
@@ -54,6 +56,8 @@ class Entityedit extends MY_Controller
         if (!empty($entpartschangesdisallowed) && is_array($entpartschangesdisallowed)) {
             $this->disallowedparts = $this->config->item('entpartschangesdisallowed');
         }
+        $this->allowedDigestMethods = j_DigestMethods();
+        $this->allowedSigningMethods = j_SignatureAlgorithms();
     }
 
     private function externalValidation($metaid, models\FederationValidator $fedValidator)
@@ -108,6 +112,7 @@ class Entityedit extends MY_Controller
             $docxml = new \DomDocument();
             $docxml->loadXML($data);
             $returncodeElements = $fedValidator->getReturnCodeElement();
+            $codeDoms = null;
             if (count($returncodeElements) == 0) {
                 log_message('error', 'External validator (' . $fedValidator->getId() . ') is misconfigured - has not defined returned codes');
                 return true;
@@ -246,11 +251,8 @@ class Entityedit extends MY_Controller
             $this->form_validation->set_rules('f[registrationdate]', lang('rr_regdate'), 'trim|valid_date_past');
             $this->form_validation->set_rules('f[registrationtime]', lang('rr_regtime'), 'trim|valid_time_hhmm');
             $this->form_validation->set_rules('f[privacyurl]', lang('rr_defaultprivacyurl'), 'trim|valid_url');
-            $allowedDigestMethods = j_DigestMethods();
-            $allowedSigningMethods = j_SignatureAlgorithms();
-
-            $this->form_validation->set_rules('f[algs][digest][]', 'DigestMethod', 'trim|in_list[' . implode(",", $allowedDigestMethods) . ']');
-            $this->form_validation->set_rules('f[algs][signing][]', 'SigningMethod', 'trim|in_list[' . implode(",", $allowedSigningMethods) . ']');
+            $this->form_validation->set_rules('f[algs][digest][]', 'DigestMethod', 'trim|in_list[' . implode(",", $this->allowedDigestMethods) . ']');
+            $this->form_validation->set_rules('f[algs][signing][]', 'SigningMethod', 'trim|in_list[' . implode(",", $this->allowedSigningMethods) . ']');
 
             if (array_key_exists('lname', $y['f'])) {
                 foreach ($y['f']['lname'] as $k => $v) {
@@ -350,44 +352,28 @@ class Entityedit extends MY_Controller
              */
             $allowedEnryptionMethods = j_KeyEncryptionAlgorithms();
             $allowedEnryptionMethodsInList = implode(",", $allowedEnryptionMethods);
+            $certGroups = array(
+                'spsso'=>'SPSSODescriptor',
+                'idpsso'=>'IDPSSODescriptor',
+                'aa'=>'AttributeAuthorityDescriptor'
+            );
             if (array_key_exists('crt', $y['f'])) {
-                if (array_key_exists('spsso', $y['f']['crt'])) {
-                    foreach ($y['f']['crt']['spsso'] as $k => $v) {
-                        if (is_numeric($k)) {
-                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'SPSSODescriptor/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
-                        } else {
-                            $this->form_validation->set_rules('f[crt][spsso][' . $k . '][certdata]', 'SPSSoDescriptor/Certificate body', 'trim|required|getPEM|verify_cert');
-                        }
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
-                        $this->form_validation->set_rules('f[crt][spsso][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
+                foreach ($certGroups as $key => $val) {
+                    if (array_key_exists($key, $y['f']['crt'])) {
+                        foreach ($y['f']['crt'][''.$key.''] as $k => $v) {
+                            if (is_numeric($k)) {
+                                $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][certdata]', $val.'/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
+                            } else {
+                                $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][certdata]', $val.'/Certificate body', 'trim|required|getPEM|verify_cert');
+                            }
+                            $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
+                            $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
 
 
-                    }
-                }
-                if (array_key_exists('idpsso', $y['f']['crt'])) {
-                    foreach ($y['f']['crt']['idpsso'] as $k => $v) {
-                        if (is_numeric($k)) {
-                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'IDPSSODescriptor/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
-                        } else {
-                            $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][certdata]', 'IDPSSODescriptor/Certificate body', 'trim|required|getPEM|verify_cert');
                         }
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
-                        $this->form_validation->set_rules('f[crt][idpsso][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
-                    }
-                }
-                if (array_key_exists('aa', $y['f']['crt'])) {
-                    foreach ($y['f']['crt']['aa'] as $k => $v) {
-                        if (is_numeric($k)) {
-                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'AttributeAuthorityDescriptor/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
-                        } else {
-                            $this->form_validation->set_rules('f[crt][aa][' . $k . '][certdata]', 'AttributeAuthorityDescriptor/Certificate body', 'trim|required|getPEM|verify_cert');
-                        }
-                        $this->form_validation->set_rules('f[crt][aa][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
-                        $this->form_validation->set_rules('f[crt][aa][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
                     }
                 }
             }
-
             /**
              * service locations
              */
@@ -582,7 +568,7 @@ class Entityedit extends MY_Controller
                     $this->tmp_error = 'duplicate binding protocols for IDP SLO found in sent form';
                     $optValidationsPassed = FALSE;
                 }
-                if (!empty($nosplo) && is_array($nosplo) && count($nosplo) > 0 && count(array_unique($nospslo)) < count($nospslo)) {
+                if (!empty($nospslo) && is_array($nospslo) && count($nospslo) > 0 && count(array_unique($nospslo)) < count($nospslo)) {
                     $this->tmp_error = 'duplicate binding protocols for SP SLO found in sent form';
                     $optValidationsPassed = FALSE;
                 }
@@ -709,6 +695,7 @@ class Entityedit extends MY_Controller
             show_error('No access to edit', 403);
             return false;
         }
+        return true;
     }
 
     public function show($id)
@@ -785,15 +772,15 @@ class Entityedit extends MY_Controller
         }
 
         $data['y'] = $entsession;
-        $lang = MY_Controller::getLang();
+        $myLang = MY_Controller::getLang();
 
-        $titlename = $ent->getNameToWebInLang($lang, $ent->getType());
-        $this->title = $titlename . ' :: ' . lang('title_provideredit');
+        $providerNameInLang = $ent->getNameToWebInLang($myLang, $ent->getType());
+        $this->title = $providerNameInLang . ' :: ' . lang('title_provideredit');
 
         /**
          * @todo check locked
          */
-        $data['entdetail'] = array('displayname' => $titlename, 'name' => $ent->getName(), 'id' => $ent->getId(), 'entityid' => $ent->getEntityId(), 'type' => $ent->getType());
+        $data['entdetail'] = array('displayname' => $providerNameInLang, 'name' => $ent->getName(), 'id' => $ent->getId(), 'entityid' => $ent->getEntityId(), 'type' => $ent->getType());
 
         if (!empty($showsuccess)) {
             $data['success_message'] = lang('updated');
@@ -961,9 +948,10 @@ class Entityedit extends MY_Controller
                             $ent->setProviderFromArray($o);
                             if (isset($o['details']['reqattrs'])) {
                                 /**
-                                 * @var $attrsDefinititions models\Attribute[]
+                                 * @var $attrsDefinitions models\Attribute[]
                                  */
                                 $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
+                                $attributes = array();
                                 foreach ($attrsDefinitions as $v) {
                                     $attributes['' . $v->getOid() . ''] = $v;
                                 }

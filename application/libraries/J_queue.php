@@ -577,15 +577,6 @@ class J_queue
         $cell = array(lang('rr_sourceip'), $queue->getIP());
         $this->ci->table->add_row($cell);
 
-        $validators = $federation->getValidators();
-        $fedValidator = null;
-        foreach ($validators as $v) {
-            $g = $v->getEnabled();
-            if ($g) {
-                $fedValidator = $v;
-                break;
-            }
-        }
         $data = $queue->getData();
         /**
          * @var $provider models\Provider

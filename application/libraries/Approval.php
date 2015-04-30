@@ -24,10 +24,12 @@ class Approval {
 
     protected $ci;
     protected $em;
+    protected $user;
 
     function __construct() {
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;
+        $this->user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->ci->session->userdata('username')));
 
     }
 
@@ -40,15 +42,14 @@ class Approval {
         log_message('debug',__METHOD__.': obj: '.get_class($obj).' , action: '.$action);
         $queue = new models\Queue();
         if ($obj instanceof models\Federation) {
-            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->ci->session->userdata('username')));
             $queue->addFederation($obj->convertToArray());
             /**
              * @todo decide if to verify action value 
              */
             $queue->setAction($action);
             $queue->setName($obj->getName());
-            $queue->setEmail($user->getEmail());
-            $queue->setCreator($user);
+            $queue->setEmail($this->user->getEmail());
+            $queue->setCreator($this->user);
             $queue->setToken();
         }
         return $queue;
@@ -61,14 +62,12 @@ class Approval {
      */
     public function applyForEntityCategory(models\Coc $coc, models\Provider $provider)
     {
-
-          $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->ci->session->userdata('username')));
           $q = new models\Queue();
           $q->setRecipient($coc->getId());
           $q->setRecipientType('entitycategory');
-          $q->setCreator($user);
+          $q->setCreator($this->user);
           $q->setName($provider->getEntityId());
-          $q->setEmail($user->getEmail());
+          $q->setEmail($this->user->getEmail());
           $q->setConfirm(TRUE);
           $q->setAction('APPLY');
           $q->setType('Provider');
@@ -86,13 +85,12 @@ class Approval {
      */
     public function applyForRegistrationPolicy(models\Coc $coc, models\Provider $provider)
     {
-          $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
           $q = new models\Queue();
           $q->setRecipient($coc->getId());
           $q->setRecipientType('regpolicy');
-          $q->setCreator($user);
+          $q->setCreator($this->user);
           $q->setName($provider->getEntityId());
-          $q->setEmail($user->getEmail());
+          $q->setEmail($this->user->getEmail());
           $q->setConfirm(TRUE);
           $q->setAction('APPLY');
           $q->setType('Provider');
@@ -111,13 +109,12 @@ class Approval {
      */
     public function invitationProviderToQueue(models\Federation $federation ,models\Provider $obj,$action)
     {
-           $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
            $queue = new models\Queue();
            $queue->setRecipient($obj->getId());
            $queue->setRecipientType('provider');
-	   $queue->setCreator($user);
+	   $queue->setCreator($this->user);
            $queue->setName($federation->getName());
-           $queue->setEmail($user->getEmail());
+           $queue->setEmail($this->user->getEmail());
            $fed = array('id'=>$federation->getId(), 'name'=>$federation->getName(), 'urn'=>$federation->getUrn());
            if($action == 'Join')
            {
@@ -137,13 +134,12 @@ class Approval {
      */
     public function removeProviderToQueue(models\Federation $federation ,models\Provider $obj,$action)
     {
-           $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
            $queue = new models\Queue();
            $queue->setRecipient($obj->getId());
            $queue->setRecipientType('provider');
-	   $queue->setCreator($user);
+	   $queue->setCreator($this->user);
            $queue->setName($federation->getName());
-           $queue->setEmail($user->getEmail());
+           $queue->setEmail($this->user->getEmail());
            $fed = array('id'=>$federation->getId(), 'name'=>$federation->getName(), 'urn'=>$federation->getUrn());
            if($action == 'Leave')
            {
@@ -164,18 +160,18 @@ class Approval {
      */
     public function invitationFederationToQueue(models\Provider $provider ,models\Federation $obj,$action,$message = null)
     {
-          $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
+
           $queue = new models\Queue();
           $queue->setRecipient($obj->getId());
           $queue->setRecipientType('federation');
-          $queue->setCreator($user);
+          $queue->setCreator($this->user);
           $providername = $provider->getName();
           if(empty($providername))
           {
              $providername = $provider->getEntityId();
           }
           $queue->setName($providername);
-          $queue->setEmail($user->getEmail());
+          $queue->setEmail($this->user->getEmail());
           $prov = array('id'=>$provider->getId(), 'name'=>$providername, 'entityid'=>$provider->getEntityId(),'message'=>''.$message.'');
           if($action == 'Join')
           {
@@ -193,11 +189,10 @@ class Approval {
      */
     public function removeFederation(models\Federation $federation)
     {
-         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $_SESSION['username']));
          $queue = new models\Queue();
-         $queue->setCreator($user);
+         $queue->setCreator($this->user);
          $queue->setName($federation->getName());
-         $queue->setEmail($user->getEmail());
+         $queue->setEmail($this->user->getEmail());
          $queue->setAction('Delete');
          $queue->addFederation($federation->convertToArray());
          $queue->setToken();

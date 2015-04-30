@@ -98,7 +98,7 @@ class Custompolicies extends MY_Controller
                         $n = trim($n);
                     });
                     $vdata = array_filter($vdata);
-                    if ($policy == 'permit' or $policy == 'deny') {
+                    if ($policy == 'permit' || $policy == 'deny') {
                         $arraydata[$policy] = $vdata;
 
 

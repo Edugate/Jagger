@@ -43,17 +43,10 @@ class Fvalidator extends MY_Controller
 
     public function detailjson($fid = null, $fvid = null)
     {
-        $is_ajax = $this->input->is_ajax_request();
-        if (!$is_ajax)
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
         {
-            show_error('request not allowed', 401);
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
-        {
-
             set_status_header(401);
-            echo 'Not authorized';
+            echo 'Access denied';
             return;
         }
         if (!empty($fid) && !empty($fvid))
@@ -125,7 +118,9 @@ class Fvalidator extends MY_Controller
     {
         if (!($this->input->is_ajax_request() && $this->j_auth->logged_in()))
         {
-            show_error('access denied', 403);
+            set_status_header(404);
+            echo 'Federation not found';
+            return;
         }
         $inputArgs = array(
             'providerid' => trim($this->input->post('provid')),
@@ -179,14 +174,13 @@ class Fvalidator extends MY_Controller
         {
             
             set_status_header(404);
-            echo 'federation desnt match validator';
+            echo 'federation does not match validator';
             return;
         }
         $method = $fvalidator->getMethod();
         $remoteUrl = $fvalidator->getUrl();
         $entityParam = $fvalidator->getEntityParam();
         $optArgs = $fvalidator->getOptargs();
-        $params = array();
         if(empty($providerMetadataUrl))
         {
             set_status_header(404);
@@ -225,13 +219,17 @@ class Fvalidator extends MY_Controller
         $data = $this->curl->execute();
         if (empty($data))
         {
-            show_error('No data received from external validator', 500);
+            set_status_header(500);
+            echo 'No data received from external validator';
+            return;
         }
         log_message('debug', __METHOD__ . ' data received: ' . $data);
         $expectedDocumentType = $fvalidator->getDocutmentType();
         if (strcmp($expectedDocumentType, 'xml') != 0)
         {
-            show_error('Other than xml not supported yet', 403);
+            set_status_header(403);
+            echo 'Other than xml not supported yet';
+            return;
         }
         else
         {
@@ -265,7 +263,10 @@ class Fvalidator extends MY_Controller
             log_message('debug', __METHOD__ . ' found expected value ' . $codeDomeValue);
             $expectedReturnValues = $fvalidator->getReturnCodeValues();
             $elementWithMessage = $fvalidator->getMessageCodeElements();
-            $result = array();
+            $result = array(
+                'returncode'=>'unknown',
+                'message'=>array()
+            );
             foreach ($expectedReturnValues as $k => $v)
             {
 
@@ -282,11 +283,6 @@ class Fvalidator extends MY_Controller
                     }
                 }
             }
-            if (!isset($result['returncode']))
-            {
-                $result['returncode'] = 'unknown';
-            }
-            $result['message'] = array();
             foreach ($elementWithMessage as $v)
             {
                 log_message('debug', __METHOD__ . ' searching for ' . $v . ' element');
