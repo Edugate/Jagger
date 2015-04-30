@@ -317,7 +317,6 @@ class Awaiting extends MY_Controller
     {
         if (!ctype_alnum($token)) {
             show_error('Wrong token provided', 404);
-            return;
         }
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
@@ -327,7 +326,6 @@ class Awaiting extends MY_Controller
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             show_error('Internal server error', 500);
-            return;
         }
         /**
          * @var $queueObject models\Queue
@@ -337,7 +335,6 @@ class Awaiting extends MY_Controller
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             show_error('Internal server error', 500);
-            return;
         }
 
 
@@ -365,8 +362,8 @@ class Awaiting extends MY_Controller
             if ($this->hasQAccess($queueObject)) {
                 $buttons = $this->j_queue->displayFormsButtons($queueObject->getId());
                 $result['data'] = array(
-                    'userdata' => $this->j_queue->displayRegisterUser($queueObject),
-                    'content_view' => 'reports/awaiting_user_register_view',
+                    'requestdata' => $this->j_queue->displayRegisterUser($queueObject),
+                    'content_view' => 'reports/awaiting_detail_view',
                     'error_message' => $this->error_message
                 );
                 $result['data']['userdata'][]['2cols'] = $buttons;
@@ -384,7 +381,7 @@ class Awaiting extends MY_Controller
                 $buttons = $this->j_queue->displayFormsButtons($queueObject->getId(), !$approveaccess);
                 $result['data'] = array(
                     'requestdata' => $this->j_queue->displayApplyForEntityCategory($queueObject),
-                    'content_view' => 'reports/awaiting_applyforentcat_view'
+                    'content_view' => 'reports/awaiting_detail_view'
                 );
                 $result['data']['requestdata'][]['2cols'] = $buttons;
             } else {
@@ -404,7 +401,7 @@ class Awaiting extends MY_Controller
 
                 $result['data'] = array(
                     'requestdata' => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
-                    'content_view' => 'reports/awaiting_applyforentcat_view'
+                    'content_view' => 'reports/awaiting_detail_view'
                 );
                 $result['data']['requestdata'][]['2cols'] = $buttons;
             } else {
