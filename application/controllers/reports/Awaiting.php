@@ -49,7 +49,10 @@ class Awaiting extends MY_Controller
             'titlepage' => lang('rr_listawaiting'),
             'content_view' => 'reports/awaiting_view',
             'message' => $this->alert,
-            'error_message' => $this->error_message
+            'error_message' => $this->error_message,
+            'breadcrumbs'=>array(
+                array('url' => '#', 'name' =>  lang('rr_listawaiting'), 'type' => 'current'),
+            )
         );
         $this->load->view('page', $data);
     }
@@ -70,6 +73,10 @@ class Awaiting extends MY_Controller
         $this->load->view('reports/awaiting_list_view', $data);
     }
 
+    /**
+     * @param \models\Queue $q
+     * @return bool
+     */
     private function hasQAccess(\models\Queue $q)
     {
         $result = false;
