@@ -154,7 +154,7 @@ class Email_sender {
                 $alreadyMailTo[] = $mailto;
             }
         }
-        if (!empty($additionalReciepients) and is_array($additionalReciepients) && count($additionalReciepients) > 0)
+        if (!empty($additionalReciepients) && is_array($additionalReciepients) && count($additionalReciepients) > 0)
         {
             foreach ($additionalReciepients as $v)
             {
@@ -184,7 +184,7 @@ class Email_sender {
         }
         return true;
     }
-    
+
     static function mailTemplatesGroups()
     {
        $result = array(
