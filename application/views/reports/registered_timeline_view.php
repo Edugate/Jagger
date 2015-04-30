@@ -3,7 +3,7 @@ $all_converted = array();
 $idps = array();
 $sps = array();
 $base_url = base_url();
-if (empty($grid) || !isset($grid['known']) or count($grid['known']) == 0)
+if (empty($grid) || !isset($grid['known']) || count($grid['known']) == 0)
 {
 
     echo '<div class="notice">'.lang('rr_noentitywithregdate').'</div>';
