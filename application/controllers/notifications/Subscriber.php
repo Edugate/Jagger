@@ -376,7 +376,7 @@ class Subscriber extends MY_Controller
             return;
         }
         $success = false;
-        if ($userMatchOwner && (strcmp($status, 'remove') === 0 or strcmp($status, 'disable') === 0 or strcmp($status, 'enable') === 0)) {
+        if ($userMatchOwner && (strcmp($status, 'remove') === 0 || strcmp($status, 'disable') === 0 || strcmp($status, 'enable') === 0)) {
             if (strcmp($status, 'remove') === 0) {
                 $this->em->remove($notification);
                 $this->em->flush();

@@ -636,7 +636,7 @@ class Statdefs extends MY_Controller
         $this->form_validation->set_rules('overwrite', 'Overwrite', 'trim|max_length[10]|xss_clean');
         $this->form_validation->set_rules('usepredefined', 'Predefined', 'trim|max_length[10]|xss_clean');
         $userpredefined = $this->input->post('usepredefined');
-        if (empty($userpredefined) or $userpredefined !== 'yes') {
+        if (empty($userpredefined) || $userpredefined !== 'yes') {
             $this->form_validation->set_rules('sourceurl', 'Source URL', 'required|trim|valid_extendedurl');
             $allowedmethods = serialize(array('post', 'get'));
             $this->form_validation->set_rules('httpmethod', 'Method', 'required|trim|matches_inarray[' . $allowedmethods . ']');
