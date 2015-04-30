@@ -43,7 +43,7 @@ class Fvalidator extends MY_Controller
 
     public function detailjson($fid = null, $fvid = null)
     {
-        if (!$this->input->is_ajax_request() || $this->j_auth->logged_in())
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
         {
             set_status_header(401);
             echo 'Access denied';
