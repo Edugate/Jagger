@@ -438,18 +438,9 @@ class Statdefs extends MY_Controller
 
         $data['content_view'] = 'manage/statdefs_editform_view';
         if ($this->newStatDefSubmitValidate() === FALSE) {
-            $this->load->view('page', $data);
+            return $this->load->view('page', $data);
         } else {
-            $defname = $this->input->post('defname');
-            $titlename = $this->input->post('titlename');
             $accesstype = $this->input->post('accesstype');
-            $description = $this->input->post('description');
-            $sourceurl = $this->input->post('sourceurl');
-            $userauthn = $this->input->post('userauthn');
-            $passauthn = $this->input->post('passauthn');
-            $formattype = $this->input->post('formattype');
-            $method = $this->input->post('httpmethod');
-            $gworker = $this->input->post('gworker');
             $overwrite = $this->input->post('overwrite');
             $usepredefined = $this->input->post('usepredefined');
             $prepostoptions = $this->input->post('postoptions');
@@ -468,9 +459,9 @@ class Statdefs extends MY_Controller
                 }
             }
 
-            $statdef->setName($defname);
-            $statdef->setTitle($titlename);
-            $statdef->setDescription($description);
+            $statdef->setName($this->input->post('defname'));
+            $statdef->setTitle($this->input->post('titlename'));
+            $statdef->setDescription($this->input->post('description'));
             if (!empty($overwrite) && $overwrite === 'yes') {
                 $statdef->setOverwriteOn();
             } else {
@@ -479,18 +470,18 @@ class Statdefs extends MY_Controller
 
             if (!empty($usepredefined) && $usepredefined === 'yes') {
                 $statdef->setType('sys');
-                $statdef->setSysDef($gworker);
+                $statdef->setSysDef( $this->input->post('gworker'));
             } else {
                 $statdef->setSysDef(NULL);
                 $statdef->setType('ext');
-                $statdef->setHttpMethod($method);
+                $statdef->setHttpMethod($this->input->post('httpmethod'));
                 $statdef->setPostOptions($postoptions);
-                $statdef->setUrl($sourceurl);
+                $statdef->setUrl($this->input->post('sourceurl'));
                 $statdef->setAccess($accesstype);
-                $statdef->setFormatType($formattype);
+                $statdef->setFormatType($this->input->post('formattype'));
                 if ($accesstype !== 'anon') {
-                    $statdef->setAuthuser($userauthn);
-                    $statdef->setAuthpass($passauthn);
+                    $statdef->setAuthuser($this->input->post('userauthn'));
+                    $statdef->setAuthpass($this->input->post('passauthn'));
                 }
             }
             $this->em->persist($statdef);
@@ -575,7 +566,7 @@ class Statdefs extends MY_Controller
         $data['workersdescriptions'] = $workersdescriptions;
 
         if ($this->newStatDefSubmitValidate() === FALSE) {
-            $this->load->view('page', $data);
+            return $this->load->view('page', $data);
         } else {
             $defname = $this->input->post('defname');
             $titlename = $this->input->post('titlename');
