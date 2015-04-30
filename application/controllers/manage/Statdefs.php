@@ -679,7 +679,7 @@ class Statdefs extends MY_Controller
         } elseif (empty($defid) || !ctype_digit($defid)) {
             $s = 404;
             $msg = 'not found';
-        }else{
+        } else {
             $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
             if (empty($def)) {
                 $s = 404;
@@ -691,6 +691,8 @@ class Statdefs extends MY_Controller
             echo $msg;
             return;
         }
+        $inputProviderId = $this->input->post('prvid');
+        $inputDefId = $this->input->post('defid');
         $provider = $def->getProvider();
 
         $this->load->library('zacl');
@@ -698,31 +700,24 @@ class Statdefs extends MY_Controller
         if (!$hasAccess) {
             set_status_header(403);
             echo 'Access denied';
-            return;
-        }
-        $inputProviderId = $this->input->post('prvid');
-        $inputDefId = $this->input->post('defid');
-        if (empty($inputProviderId) || empty($inputDefId) || !is_numeric($inputProviderId) || !is_numeric($inputDefId)) {
+        } elseif (empty($inputProviderId) || empty($inputDefId) || !is_numeric($inputProviderId) || !is_numeric($inputDefId)) {
             log_message('debug', 'no prvid and defid or not numeric in post form');
             set_status_header(403);
             echo 'Access denied';
-            return;
-        }
-        if ((strcmp($inputProviderId, $provider->getId()) != 0) || (strcmp($inputDefId, $defid) != 0)) {
+        } elseif ((strcmp($inputProviderId, $provider->getId()) != 0) || (strcmp($inputDefId, $defid) != 0)) {
             log_message('error', 'remove statdefid received inccorect params');
             set_status_header(403);
             echo 'Access denied';
-            return;
-        }
-        $this->em->remove($def);
-        try {
-            $this->em->flush();
-            echo "OK";
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ': ' . $e);
-            set_status_header(500);
-            echo 'Internal server error';
-            return;
+        } else {
+            $this->em->remove($def);
+            try {
+                $this->em->flush();
+                echo "OK";
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ': ' . $e);
+                set_status_header(500);
+                echo 'Internal server error';
+            }
         }
     }
 
