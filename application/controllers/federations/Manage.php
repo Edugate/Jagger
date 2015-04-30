@@ -392,12 +392,12 @@ class Manage extends MY_Controller
 
         $data['content_view'] = 'federation/federation_show_view';
         if (!$canEdit) {
-            $editLink = '<span class="alert"><i class="fi-prohibited"></i></span>';
+            $data['sideicons'][] = '<a href="#" title="'.lang('noperm_fededit').'"><i class="fi-prohibited"></i></a>';
+
         } else {
-            $editLink = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" class="editbutton editicon button small" title="edit">' . lang('rr_edit') . '</a>';
+            $data['sideicons'][] = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" title="'.lang('rr_fededit').'"><i class="fi-pencil"></i></a>';
         }
 
-        $data['editlink'] = $editLink;
         if (empty($data['federation_is_active'])) {
             $data['result']['general'][] = array(
                 'data' => array('data' => '<div data-alert class="alert-box alert">' . lang('rr_fed_inactive_full') . '</div>', 'class' => 'fedstatusinactive', 'colspan' => 2)

@@ -338,6 +338,7 @@ $lang['mtmplattach']                = 'Always add';
 $lang['fedejoinform']               = 'Join Federation Form';
 $lang['acceptprovtofed']            = 'Accept provider as member of this federation';
 $lang['rr_fededitform']             = 'Federation edit form';
+$lang['rr_fededit']                 = 'Edit federation details';
 $lang['ent_list_title']             = 'Entity Categories'; 
 $lang['addentcat_btn']              = 'Add Entity Category';
 $lang['addregpol_btn']              = 'Add Registration Policy';
