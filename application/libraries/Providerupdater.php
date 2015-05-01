@@ -28,6 +28,7 @@ class Providerupdater
     protected $em;
     protected $logtracks;
     protected $allowedLangCodes;
+    protected $langCodes;
 
     function __construct()
     {
@@ -35,7 +36,8 @@ class Providerupdater
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->library('tracker');
         $this->logtracks = array();
-        $this->allowedLangCodes = array_keys(languagesCodes());
+        $this->langCodes = languagesCodes();
+        $this->allowedLangCodes = array_keys($this->langCodes);
     }
 
     public function getChangeProposal(models\Provider $ent, $chg)
@@ -48,6 +50,7 @@ class Providerupdater
      * @param \models\Provider $ent
      * @param array $ch
      * @param bool $isAdmin
+     * @return \models\Provider
      */
     public function updateRegPolicies(models\Provider $ent, array $ch, $isAdmin = false)
     {
@@ -118,7 +121,6 @@ class Providerupdater
         } else {
             $extypes = array('' . strtolower($entityType) . '');
         }
-        $langCodes = languagesCodes();
         /**
          * @var $extendsCollection models\ExtendMetadata[]
          */
@@ -286,18 +288,7 @@ class Providerupdater
 
 
                 foreach ($collection as $c) {
-                    $attrs = $c->getAttributes();
-                    $lang = @$attrs['xml:lang'];
-                    $url = $c->getEvalue();
-
-                    $width = $attrs['width'];
-                    $height = $attrs['height'];
-                    $size = $width . 'x' . $height;
                     $logoid = $c->getId();
-                    if (empty($lang)) {
-                        $lang = 0;
-                    }
-
                     if (!isset($ch['uii']['' . $v . 'sso']['logo']['' . $logoid . ''])) {
                         log_message('debug', __METHOD__ . 'logo with id:' . $logoid . ' is removed');
                         $ent->getExtendMetadata()->removeElement($c);
@@ -396,7 +387,7 @@ class Providerupdater
                     }
                     foreach ($ch['uii']['idpsso']['' . $elkey . ''] as $key3 => $value3) {
 
-                        if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $langCodes)) {
+                        if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $this->langCodes)) {
                             $newelement = new models\ExtendMetadata;
                             $newelement->setParent($uiinfoParent['idp']);
                             $newelement->setType('idp');
@@ -421,11 +412,6 @@ class Providerupdater
             }
         }
         if ($entityType !== 'IDP') {
-            $typeFilter = array('sp');
-            $spextend = $ent->getExtendMetadata()->filter(
-                function (models\ExtendMetadata $entry) use ($typeFilter) {
-                    return in_array($entry->getType(), $typeFilter);
-                });
             $doFilter = array('t' => array('sp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($doFilter) {
@@ -458,7 +444,7 @@ class Providerupdater
                     }
                     foreach ($ch['uii']['spsso']['' . $elkey . ''] as $key3 => $value3) {
 
-                        if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $langCodes)) {
+                        if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $this->langCodes)) {
                             $newelement = new models\ExtendMetadata;
                             $newelement->setParent($uiinfoParent['sp']);
                             $newelement->setType('sp');
@@ -503,7 +489,6 @@ class Providerupdater
         $allowedAABind = getAllowedSOAPBindings();
         $spartidx = array();
         $idpartidx = array('-1');
-        $acsidx = array();
         $isAdmin = $this->ci->j_auth->isAdministrator();
         if ($isAdmin) {
             $dissalowedparts = array();
@@ -738,6 +723,9 @@ class Providerupdater
             }
             foreach ($ch['coc'] as $k => $v) {
                 if (!empty($v) && is_numeric($v)) {
+                    /**
+                     * @var $c models\Coc
+                     */
                     $c = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $v, 'type' => 'entcat'));
                     if (!empty($c) && !$currentEntCat->contains($c)) {
                         if ($isAdmin) {
@@ -1327,8 +1315,6 @@ class Providerupdater
          * @todo add track
          */
         if (array_key_exists('crt', $ch) && !empty($ch['crt']) && is_array($ch['crt'])) {
-            $crts = $ch['crt'];
-            $origcrts = array();
             $tmpcrt = $ent->getCertificates();
             $allowedusecase = array('signing', 'encryption', 'both');
             foreach ($tmpcrt as $v) {
