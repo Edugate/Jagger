@@ -950,7 +950,7 @@ class Providerupdater
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
                         } else {
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . ''])) {
-                                if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind'])) {
+                                if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) || empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind'])) {
                                     $ent->removeServiceLocation($v);
                                 } else {
                                     $v->setDefault(FALSE);
@@ -979,7 +979,7 @@ class Providerupdater
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
                         } else {
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . ''])) {
-                                if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind'])) {
+                                if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) || empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind'])) {
                                     $ent->removeServiceLocation($v);
                                 } else {
                                     if ($acsdefaultset || empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['default'])) {
@@ -1014,7 +1014,7 @@ class Providerupdater
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
                         } else {
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . ''])) {
-                                if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind'])) {
+                                if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) || empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind'])) {
                                     $ent->removeServiceLocation($v);
                                 } else {
                                     $v->setDefault(FALSE);
@@ -1043,7 +1043,7 @@ class Providerupdater
                             unset($srvs['' . $srvtype . '']['' . $v->getId() . '']);
                         } else {
                             if (array_key_exists($v->getId(), $srvs['' . $srvtype . ''])) {
-                                if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) or empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind'])) {
+                                if (empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['url']) || empty($srvs['' . $srvtype . '']['' . $v->getId() . '']['bind'])) {
                                     $ent->removeServiceLocation($v);
                                 } else {
                                     $v->setDefault(FALSE);
