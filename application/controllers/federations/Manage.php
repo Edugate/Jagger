@@ -326,12 +326,6 @@ class Manage extends MY_Controller
             return $this->load->view('page', $data);
         }
 
-        $bookmarked = false;
-        $b = $this->session->userdata('board');
-        if (!empty($b) && is_array($b) && isset($b['fed'][$data['' . $federation->getId() . '']])) {
-            $bookmarked = true;
-        }
-
         if (!$canEdit) {
             $sideicons[] = '<a href="#" title="' . lang('noperm_fededit') . '"><i class="fi-prohibited"></i></a>';
 
@@ -339,6 +333,19 @@ class Manage extends MY_Controller
             $sideicons[] = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" title="' . lang('rr_fededit') . '"><i class="fi-pencil"></i></a>';
             $editAttributesLink = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
         }
+
+        $bookmarked = false;
+        $b = $this->session->userdata('board');
+        if (!empty($b) && is_array($b) && isset($b['fed'][$data['' . $federation->getId() . '']])) {
+            $bookmarked = true;
+        }
+        else
+        {
+            $sideicons[] = '<a href="' . base_url() . 'ajax/bookfed/' . $data['federation_id'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus"></i></a>';
+
+        }
+
+
 
         $data = array(
             'federation_id' => $federation->getId(),
@@ -356,7 +363,6 @@ class Manage extends MY_Controller
         );
 
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
-        $entitiesDescriptorId = $federation->getDescriptorId();
 
 
         if (empty($data['federation_is_active'])) {
@@ -368,39 +374,24 @@ class Manage extends MY_Controller
                 'data' => array('data' => '<div data-alert class="alert-box alert">' . lang('rr_fed_inactive_full') . '</div>', 'class' => 'fedstatusinactive', 'style' => 'display: none', 'colspan' => 2)
             );
         }
-        $general = array(
-            array(lang('rr_fed_name'), html_escape($federation->getName())),
-            array(lang('fednameinmeta'), html_escape($federation->getUrn())),
-            array(lang('rr_fed_sysname'), html_escape($federation->getSysname()))
-        );
-
-        $data['result']['general'] = array_merge($data['result']['general'], $general);
-
-        if (!empty($entitiesDescriptorId)) {
-            $data['result']['general'][] = array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
-        } else {
-            $validfor = new \DateTime("now", new \DateTimezone('UTC'));
-            $idprefix = '';
-            $prefid = $this->config->item('fedmetadataidprefix');
-            if (!empty($prefid)) {
-                $idprefix = $prefid;
-            }
-            $idsuffix = $validfor->format('YmdHis');
-            $entitiesDescriptorId = $idprefix . $idsuffix;
-            $data['result']['general'][] = array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
-        }
         $idpContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>');
         $spContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>');
         $allContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>');
 
         $general = array(
+            array(lang('rr_fed_name'), html_escape($federation->getName())),
+            array(lang('fednameinmeta'), html_escape($federation->getUrn())),
+            array(lang('rr_fed_sysname'), html_escape($federation->getSysname())),
+            $this->genEntitiesDescriptorId($federation),
             array(lang('rr_fed_publisher'), html_escape($federation->getPublisher())),
             array(lang('rr_fed_desc'), html_escape($federation->getDescription())),
             array(lang('rr_fed_tou'), html_escape($federation->getTou())),
             array(lang('rr_downcontactsintxt'), $idpContactList . '<br />' . $spContactList . '<br />' . $allContactList),
-            array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '" class="button secondary">Diagram</a>')
+            array(lang('rr_timeline'), '<a href="' . base_url('reports/timelines/showregistered/'.$federation->getId().'').'" class="button secondary">Diagram</a>')
         );
+
         $data['result']['general'] = array_merge($data['result']['general'], $general);
+
 
 
 
@@ -552,9 +543,7 @@ class Manage extends MY_Controller
                 $data['result']['fvalidators'][] = array('data' => array('data' => '<div class="alert">' . lang('rr_noperm') . '</div>', 'colspan' => 2));
             }
         }
-        if (empty($data['bookmarked'])) {
-            $data['sideicons'][] = '<a href="' . base_url() . 'ajax/bookfed/' . $data['federation_id'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus"></i></a>';
-        }
+
 
         $this->load->view('page', $data);
     }
@@ -779,6 +768,29 @@ class Manage extends MY_Controller
 
 
         $this->load->view('page', $data);
+    }
+
+    /**
+     * @param \models\Federation $federation
+     * @return array
+     */
+    private function genEntitiesDescriptorId(\models\Federation $federation)
+    {
+        $entitiesDescriptorId = $federation->getDescriptorId();
+        if (!empty($entitiesDescriptorId)) {
+            return array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
+        } else {
+            $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+            $idprefix = '';
+            $prefid = $this->config->item('fedmetadataidprefix');
+            if (!empty($prefid)) {
+                $idprefix = $prefid;
+            }
+            $idsuffix = $validfor->format('YmdHis');
+            $entitiesDescriptorId = $idprefix . $idsuffix;
+            return array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
+        }
+
     }
 
 }
