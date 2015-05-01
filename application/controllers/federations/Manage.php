@@ -596,14 +596,14 @@ class Manage extends MY_Controller
                     $add_to_queue = $this->approval->invitationProviderToQueue($federation, $invitedProvider, 'Join');
                     if ($add_to_queue) {
                         $mailSubject = "Invitation: join federation: " . $federation->getName();
-                        $mailBody = "Hi," . PHP_EOL . "Just few moments ago Administator of federation \"" . $federation->getName() . "\"" . PHP_EOL;
-                        $mailBody .= "invited Provider: \"" . $invitedProvider->getName() . " (" . $invitedProvider->getEntityId() . ")\"" . PHP_EOL;
-                        $mailBody .= "to join his federation." . PHP_EOL;
-                        $mailBody .= "To accept or reject this request please go to Resource Registry" . PHP_EOL;
-                        $mailBody .= base_url() . "reports/awaiting" . PHP_EOL . PHP_EOL . PHP_EOL;
-                        $mailBody .= "======= additional message attached by requestor ===========" . PHP_EOL;
-                        $mailBody .= html_escape($message) . PHP_EOL;
-                        $mailBody .= "=============================================================" . PHP_EOL;
+                        $mailBody = 'Hi,' . PHP_EOL . 'Just few moments ago Administator of federation "' . $federation->getName() . '"'. PHP_EOL.
+                            'invited Provider: "' . $invitedProvider->getName() . ' (' . $invitedProvider->getEntityId() . ')"' . PHP_EOL.
+                            'to join his federation.' . PHP_EOL.
+                            'To accept or reject this request please go to Resource Registry' . PHP_EOL.
+                             base_url('reports/awaiting') . PHP_EOL . PHP_EOL . PHP_EOL.
+                            '======= additional message attached by requestor ===========' . PHP_EOL.
+                            html_escape($message) . PHP_EOL.
+                            '=============================================================' . PHP_EOL;
                         $this->email_sender->addToMailQueue(array('grequeststoproviders', 'requeststoproviders'), $invitedProvider, $mailSubject, $mailBody, array(), true);
                     }
                 }
@@ -673,14 +673,13 @@ class Manage extends MY_Controller
                 if ($this->config->item('rr_rm_member_from_fed') === TRUE) {
                     $p_tmp = new models\AttributeReleasePolicies;
                     $arp_fed = $p_tmp->getFedPolicyAttributesByFed($invitedProvider, $federation);
+                    $rm_arp_msg = '';
                     if (!empty($arp_fed) && is_array($arp_fed) && count($arp_fed) > 0) {
                         foreach ($arp_fed as $r) {
                             $this->em->remove($r);
                         }
-                        $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>";
-                        $rm_arp_msg .= "It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
-                    } else {
-                        $rm_arp_msg = '';
+                        $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>".
+                            "It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
                     }
                     $doFilter = array('' . $federation->getId() . '');
                     $m2 = $invitedProvider->getMembership()->filter(
@@ -726,7 +725,6 @@ class Manage extends MY_Controller
                 } else {
                     log_message('error', 'rr_rm_member_from_fed is not set in config');
                     show_error('missed some config setting, Please contact with admin.', 500);
-                    return;
                 }
             }
         }
@@ -749,13 +747,12 @@ class Manage extends MY_Controller
         } else {
             $data['error_message'] = lang('error_notfoundmemberstoberm');
         }
-        $encodedFedName = base64url_encode($federation->getName());
-        $data['content_view'] = 'federation/remove_provider_view';
 
-        $data['encodedfedname'] = $encodedFedName;
+        $data['content_view'] = 'federation/remove_provider_view';
+        $data['encodedfedname'] =base64url_encode($federation->getName()) ;
         $data['breadcrumbs'] = array(
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => base_url('federations/manage/show/' . $encodedFedName . ''), 'name' => '' . $federation->getName() . ''),
+            array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => '' . $federation->getName() . ''),
             array('url' => '#', 'type' => 'current', 'name' => lang('rmprovfromfed'))
 
         );
