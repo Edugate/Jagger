@@ -287,23 +287,20 @@ class Manage extends MY_Controller
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library('zacl');
-        $this->load->library('show_element');
+        $this->load->library(array('show_element','zacl'));
         /**
          * @var $federation models\Federation
          */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
         if (empty($federation)) {
             show_error(lang('error_fednotfound'), 404);
-            return;
         }
-        $resource = $federation->getId();
-        $group = 'federation';
+        $federationID = $federation->getId();
         $access = array(
-            'hasReadAccess' => $this->zacl->check_acl('f_' . $resource, 'read', $group, ''),
-            'hasWriteAccess' => $this->zacl->check_acl('f_' . $resource, 'write', $group, ''),
-            'hasAddbulkAccess' => $this->zacl->check_acl('f_' . $resource, 'addbulk', $group, ''),
-            'hasManageAccess' => $this->zacl->check_acl('f_' . $resource, 'manage', $group, '')
+            'hasReadAccess' => $this->zacl->check_acl('f_' . $federationID, 'read', 'federation', ''),
+            'hasWriteAccess' => $this->zacl->check_acl('f_' . $federationID, 'write', 'federation', ''),
+            'hasAddbulkAccess' => $this->zacl->check_acl('f_' . $federationID, 'addbulk', 'federation', ''),
+            'hasManageAccess' => $this->zacl->check_acl('f_' . $federationID, 'manage', 'federation', '')
         );
         $canEdit = (boolean)($access['hasManageAccess'] || $access['hasWriteAccess']);
         $editAttributesLink = '';
@@ -336,10 +333,10 @@ class Manage extends MY_Controller
 
         $bookmarked = false;
         $b = $this->session->userdata('board');
-        if (!empty($b) && is_array($b) && isset($b['fed'][$data['' . $federation->getId() . '']])) {
+        if (!empty($b) && is_array($b) && isset($b['fed']['' . $federation->getId() . ''])) {
             $bookmarked = true;
         } else {
-            $sideicons[] = '<a href="' . base_url() . 'ajax/bookfed/' . $data['federation_id'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus"></i></a>';
+            $sideicons[] = '<a href="' . base_url() . 'ajax/bookfed/' . $federation->getId() . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus"></i></a>';
 
         }
 
@@ -361,8 +358,7 @@ class Manage extends MY_Controller
         );
         if ($access['hasWriteAccess']) {
             $data['fvalidator'] = TRUE;
-            $addbtn = '<a href="' . base_url('manage/fvalidatoredit/vedit/' . $federation->getId() . '') . '" class="button small">' . lang('rr_add') . '</a>';
-            $data['result']['fvalidators'][] = array('data' => array('data' => $addbtn, 'class' => 'text-right', 'colspan' => 2));
+            $data['result']['fvalidators'][] = array('data' => array('data' => '<a href="' . base_url('manage/fvalidatoredit/vedit/' . $federation->getId() . '') . '" class="button small">' . lang('rr_add') . '</a>', 'class' => 'text-right', 'colspan' => 2));
         }
 
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
@@ -418,7 +414,7 @@ class Manage extends MY_Controller
 
 
         if ($access['hasManageAccess']) {
-            $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/access_manage/federation/' . $resource, '<i class="fi-arrow-right"></i>'), 'colspan' => 2));
+            $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/access_manage/federation/' . $federationID, '<i class="fi-arrow-right"></i>'), 'colspan' => 2));
             $data['hiddenspan'] = '<span id="fednameencoded" style="display:none">' . $encodedFedName . '</span>';
             if ($federation->getActive()) {
                 $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" title="' . lang('btn_deactivatefed') . ': ' . html_escape($federation->getName()) . '">' . lang('btn_deactivatefed') . '</button>';
