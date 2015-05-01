@@ -1343,7 +1343,7 @@ var GINIT = {
 
 
         });
-        $("a#getmembers").click(function () {
+        $("#getmembers").click(function () {
             var link = $(this), url = link.attr("href");
             var value = $('<ul/>');
 
@@ -1351,9 +1351,9 @@ var GINIT = {
                 url: url,
                 timeout: 22500,
                 cache: true,
-                success: function (json) {
+                dataType: "json",
+                success: function (data) {
                     $('#spinner').hide();
-                    var data = $.parseJSON(json);
                     if (!data) {
                         window.alert('no data');
                     }
