@@ -537,45 +537,7 @@ class Manage extends MY_Controller
 
         $this->load->view('page', $data);
     }
-
-    function members($fed_name)
-    {
-        if (!$this->j_auth->logged_in()) {
-            redirect('auth/login', 'location');
-        }
-        $this->load->library('zacl');
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
-        if (empty($federation)) {
-            show_error(lang('error_fednotfound'), 404);
-        }
-        $resource = $federation->getId();
-        $action = 'read';
-        $group = 'federation';
-        $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
-        if (!$has_read_access) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rerror_nopermfedlistview');
-            $this->load->view('page', $data);
-            return;
-        }
-        $data['federation_name'] = $federation->getName();
-        $data['metadata_link'] = base_url() . "metadata/federation/" . base64url_encode($data['federation_name']);
-        /**
-         * @var $members models\Provider[]
-         */
-        $members = $federation->getMembers();
-        $i = 0;
-        foreach ($members as $m) {
-            $id = $m->getId();
-            $link = base_url() . 'providers/detail/show/' . $id;
-            $data['m_list'][$i]['name'] = $m->getName();
-            $data['m_list'][$i]['entity'] = $m->getEntityId();
-            $data['m_list'][$i++]['link'] = anchor($link, '&gt;&gt');
-        }
-        $this->title = lang('rr_fedmembers');
-        $data['content_view'] = 'federation/federation_members_view';
-        $this->load->view('page', $data);
-    }
+    
 
     function addbulk($fed_name, $type, $message = null)
     {
