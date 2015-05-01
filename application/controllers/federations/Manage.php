@@ -220,8 +220,7 @@ class Manage extends MY_Controller
         }
 
         $this->load->helper('download');
-        $filename = 'federationcontactlist.txt';
-        force_download($filename, $result, 'text/plain');
+        force_download('federationcontactlist.txt', $result, 'text/plain');
     }
 
     private function showMetadataTab(models\Federation $federation, $hasWriteAccess)
@@ -398,27 +397,23 @@ class Manage extends MY_Controller
 
 
         $data['result']['attrs'][] = array('data' => array('data' => $editAttributesLink . '', 'class' => 'text-right', 'colspan' => 2));
-        if (!$access['hasWriteAccess']) {
-            $data['result']['attrs'][] = array('data' => array('data' => '<div class="notice"><small>' . lang('rr_noperm_edit') . '</small></div>', 'colspan' => 2));
-        }
+
         foreach ($requiredAttributes as $key) {
             $data['result']['attrs'][] = array($key->getAttribute()->getName(), $key->getStatus() . "<br /><i>(" . html_escape($key->getReason()) . ")</i>");
         }
 
 
-        $data['result']['membership'][] = array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2));
-        if (!$access['hasAddbulkAccess']) {
-            $data['result']['membership'][] = array('data' => array('data' => '<div class="notice"><small>' . lang('rr_noperm_bulks') . '</small></div>', 'colspan' => 2));
-        } else {
-            $data['result']['membership'][] = array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp', '<i class="fi-arrow-right"></i>'));
-
-            $data['result']['membership'][] = array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp', '<i class="fi-arrow-right"></i>'));
+        $data['result']['membership'][] = array('data' => array('data' => '',  'colspan' => 2));
+        if ($access['hasAddbulkAccess']) {
+            $data['result']['membership'] = array(
+                array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2)),
+                array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp', '<i class="fi-arrow-right"></i>')),
+                array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp', '<i class="fi-arrow-right"></i>'))
+            );
         }
         if ($access['hasWriteAccess']) {
             $data['result']['membership'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $encodedFedName . '', '<i class="fi-arrow-right"></i>'));
             $data['result']['membership'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $encodedFedName . '', '<i class="fi-arrow-right"></i>'));
-        } else {
-            $data['result']['membership'][] = array('data' => array('data' => '<div class="notice"><small>' . lang('rr_noperm_invmembers') . '</small></div>', 'colspan' => 2));
         }
 
 
