@@ -247,17 +247,12 @@ class Detail extends MY_Controller
 
 	function showmembers($providerid)
 	{
-		if (!$this->input->is_ajax_request()) {
+		if (!$this->input->is_ajax_request() || !ctype_digit($providerid)|| !$this->j_auth->logged_in()) {
 			set_status_header(403);
-			echo 'unsupported request';
+			echo 'Access denied';
 			return;
 		}
-		if (!$this->j_auth->logged_in()) {
-
-			set_status_header(403);
-			echo 'no session';
-			return;
-		}
+        $myLang = MY_Controller::getLang();
 		$ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
 		if (empty($ent)) {
 			set_status_header(404);
@@ -268,12 +263,15 @@ class Detail extends MY_Controller
 		$has_read_access = $this->zacl->check_acl($providerid, 'read', 'entity', '');
 		if (!$has_read_access) {
 			set_status_header(403);
-			echo 'no access';
+			echo 'Access denied';
 			return;
 		}
 
 		$l = array();
 		$tmp_providers = new models\Providers;
+        /**
+         * @var $members models\Provider[]
+         */
 		$members = $tmp_providers->getTrustedServicesWithFeds($ent);
 		if (empty($members)) {
 			$l[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');
@@ -281,17 +279,14 @@ class Detail extends MY_Controller
 		$preurl = base_url() . 'providers/detail/show/';
 		foreach ($members as $m) {
 			$feds = array();
-			$name = $m->getName();
-			if (empty($name)) {
-				$name = $m->getEntityId();
-			}
+			$name = $m->getNameToWebInLang($myLang);
 			$y = $m->getFederations();
 			foreach ($y as $yv) {
 				$feds[] = $yv->getName();
 			}
 			$l[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId(), 'feds' => $feds);
 		}
-		echo json_encode($l);
+        $this->output->set_content_type('application/json')->set_output(json_encode($l));
 	}
 
 }

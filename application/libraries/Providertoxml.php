@@ -78,19 +78,17 @@ class Providertoxml
                 'ns' => 'md',
             ),
         );
+        $this->isGenIdFnExist = false;
         if (function_exists('customGenerateEntityDescriptorID')) {
             $this->isGenIdFnExist = true;
-        } else {
-            $this->isGenIdFnExist = false;
         }
         $registrationAutority = $this->ci->config->item('registrationAutority');
         $load_registrationAutority = $this->ci->config->item('load_registrationAutority');
+        $this->useGlobalRegistrar = false;
         if (!empty($registrationAutority) && !empty($load_registrationAutority)) {
             $this->useGlobalRegistrar = true;
             $this->globalRegistrar = $this->ci->config->item('registrationAutority');
             $this->globalRegpolicy = $this->ci->config->item('registrationPolicy');
-        } else {
-            $this->useGlobalRegistrar = false;
         }
         $logoPrefixURI = $this->ci->config->item('rr_logouriprefix');
         $logoBaseUrl = $this->ci->config->item('rr_logobaseurl');
