@@ -300,40 +300,51 @@ class Manage extends MY_Controller
         }
         $resource = $federation->getId();
         $group = 'federation';
-        $hasReadAccess = $this->zacl->check_acl('f_' . $resource, 'read', $group, '');
-        $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
-        $hasAddbulkAccess = $this->zacl->check_acl('f_' . $resource, 'addbulk', $group, '');
-        $hasManageAccess = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
-        $canEdit = (boolean)($hasManageAccess || $hasWriteAccess);
+        $access = array(
+            'hasReadAccess'=>$this->zacl->check_acl('f_' . $resource, 'read', $group, ''),
+            'hasWriteAccess'=>$this->zacl->check_acl('f_' . $resource, 'write', $group, ''),
+            'hasAddbulkAccess'=>$this->zacl->check_acl('f_' . $resource, 'addbulk', $group, ''),
+            'hasManageAccess'=>$this->zacl->check_acl('f_' . $resource, 'manage', $group, '')
+        );
+        $canEdit = (boolean)($access['hasManageAccess'] || $access['hasWriteAccess']);
         $this->title = lang('rr_federation_detail');
 
-        $data['breadcrumbs'] = array(
+        $breadcrumbs = array(
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
             array('url' => '#', 'name' => '' . $federation->getName() . '', 'type' => 'current'),
 
         );
 
-        if (!$hasReadAccess && ($federation->getPublic() === FALSE)) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rrerror_noperm_viewfed');
+        if (!$access['hasReadAccess'] && ($federation->getPublic() === FALSE)) {
+            $data = array(
+                'content_view'=>'nopermission',
+                'error'=>lang('rrerror_noperm_viewfed'),
+                'breadcrumbs'=>$breadcrumbs
+            );
             return $this->load->view('page', $data);
         }
-        $data['federation_id'] = $federation->getId();
+
         $bookmarked = false;
         $b = $this->session->userdata('board');
-        if (!empty($b) && is_array($b) && isset($b['fed'][$data['federation_id']])) {
+        if (!empty($b) && is_array($b) && isset($b['fed'][$data[''.$federation->getId().'']])) {
             $bookmarked = true;
         }
-        $data['bookmarked'] = $bookmarked;
-        $data['federation_name'] = html_escape($federation->getName());
-        $data['federation_sysname'] = html_escape($federation->getSysname());
-        $data['federation_urn'] = html_escape($federation->getUrn());
-        $data['federation_desc'] = html_escape($federation->getDescription());
-        $data['federation_is_active'] = $federation->getActive();
-        $requiredAttributes = $federation->getAttributesRequirement()->getValues();
-        $data['titlepage'] = lang('rr_feddetail') . ': ' . $data['federation_name'];
+        $data = array(
+            'federation_id'=>$federation->getId(),
+            'bookmarked'=>$bookmarked,
+            'federation_name'=> html_escape($federation->getName()),
+            'federation_sysname'=> html_escape($federation->getSysname()),
+            'federation_urn'=> html_escape($federation->getUrn()),
+            'federation_desc'=>html_escape($federation->getDescription()),
+            'federation_is_active'=>$federation->getActive(),
+            'titlepage'=>lang('rr_feddetail') . ': ' .html_escape($federation->getName()),
+            'content_view'=> 'federation/federation_show_view',
+            'breadcrumbs'=>$breadcrumbs,
+            'fedpiechart'=>'<div class="row"><div><canvas id="fedpiechart" ></canvas></div><div id="fedpiechartlegend"></div></div>'
+        );
 
-        $data['content_view'] = 'federation/federation_show_view';
+        $requiredAttributes = $federation->getAttributesRequirement()->getValues();
+
         if (!$canEdit) {
             $data['sideicons'][] = '<a href="#" title="' . lang('noperm_fededit') . '"><i class="fi-prohibited"></i></a>';
 
@@ -375,15 +386,14 @@ class Manage extends MY_Controller
         $allContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>');
         $data['result']['general'][] = array(lang('rr_downcontactsintxt'), $idpContactList . '<br />' . $spContactList . '<br />' . $allContactList);
         $data['result']['general'][] = array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '" class="button secondary">Diagram</a>');
-        $data['fedpiechart'] = '<div class="row"><div><canvas id="fedpiechart" ></canvas></div><div id="fedpiechartlegend"></div></div>';
 
 
         $edit_attributes_link = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
-        if (!$hasWriteAccess) {
+        if (!$access['hasWriteAccess']) {
             $edit_attributes_link = '';
         }
         $data['result']['attrs'][] = array('data' => array('data' => $edit_attributes_link . '', 'class' => 'text-right', 'colspan' => 2));
-        if (!$hasWriteAccess) {
+        if (!$access['hasWriteAccess']) {
             $data['result']['attrs'][] = array('data' => array('data' => '<div class="notice"><small>' . lang('rr_noperm_edit') . '</small></div>', 'colspan' => 2));
         }
         foreach ($requiredAttributes as $key) {
@@ -392,14 +402,14 @@ class Manage extends MY_Controller
 
 
         $data['result']['membership'][] = array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2));
-        if (!$hasAddbulkAccess) {
+        if (!$access['hasAddbulkAccess']) {
             $data['result']['membership'][] = array('data' => array('data' => '<div class="notice"><small>' . lang('rr_noperm_bulks') . '</small></div>', 'colspan' => 2));
         } else {
             $data['result']['membership'][] = array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $fed_name . '/idp', '<i class="fi-arrow-right"></i>'));
 
             $data['result']['membership'][] = array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $fed_name . '/sp', '<i class="fi-arrow-right"></i>'));
         }
-        if ($hasWriteAccess) {
+        if ($access['hasWriteAccess']) {
             $data['result']['membership'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $fed_name . '', '<i class="fi-arrow-right"></i>'));
             $data['result']['membership'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $fed_name . '', '<i class="fi-arrow-right"></i>'));
         } else {
@@ -407,7 +417,7 @@ class Manage extends MY_Controller
         }
 
 
-        if ($hasManageAccess) {
+        if ($access['hasManageAccess']) {
             $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/access_manage/federation/' . $resource, '<i class="fi-arrow-right"></i>'), 'colspan' => 2));
             $data['hiddenspan'] = '<span id="fednameencoded" style="display:none">' . $fed_name . '</span>';
             if ($federation->getActive()) {
@@ -429,7 +439,7 @@ class Manage extends MY_Controller
         }
 
 
-        $metadataTab = $this->showMetadataTab($federation, $hasWriteAccess);
+        $metadataTab = $this->showMetadataTab($federation, $access['hasWriteAccess']);
         if (!isset($data['result']['metadata'])) {
             $data['result']['metadata'] = array();
         }
@@ -446,7 +456,7 @@ class Manage extends MY_Controller
          */
         $fvalidators = $federation->getValidators();
 
-        if ($hasWriteAccess) {
+        if ($access['hasWriteAccess']) {
             $data['fvalidator'] = TRUE;
             $data['result']['fvalidators'] = array();
             $addbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '" class="button small">' . lang('rr_add') . '</a>';
@@ -454,7 +464,7 @@ class Manage extends MY_Controller
         }
         if ($fvalidators->count() > 0) {
 
-            if ($hasWriteAccess) {
+            if ($access['hasWriteAccess']) {
                 $fvdata = '<dl class="accordion" data-accordion>';
                 foreach ($fvalidators as $f) {
                     $d['fvalidators'] = array();
@@ -559,8 +569,7 @@ class Manage extends MY_Controller
             redirect('auth/login', 'location');
         }
         $myLang = MY_Controller::getLang();
-        $this->load->library('zacl');
-        $this->load->library('show_element');
+        $this->load->library(array('zacl','show_element'));
         /**
          * @var $federation models\Federation
          */
@@ -568,13 +577,12 @@ class Manage extends MY_Controller
         if (empty($federation)) {
             show_error('Federation not found', 404);
         }
-        $resource = $federation->getId();
-        $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
+
+        $hasWriteAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'write', 'federation', '');
         if (!$hasWriteAccess) {
             show_error('no access', 403);
-            return;
         }
-        $data['subtitle'] = lang('rr_federation') . ': ' . $federation->getName() . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), '<img src="' . base_url() . 'images/icons/arrow-in.png"/>');
+        $data['subtitle'] = lang('rr_federation') . ': ' . $federation->getName() . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), '<i class="fi-arrow-right"></i>');
         log_message('debug', '_________Before validation');
         if ($this->inviteSubmitValidate() === TRUE) {
             log_message('debug', 'Invitation form is valid');
