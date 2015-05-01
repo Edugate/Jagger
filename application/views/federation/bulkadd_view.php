@@ -1,5 +1,5 @@
 <?php
-$action = base_url().'federations/manage/bulkaddsubmit';
+$action = base_url().'federations/fedactions/bulkaddsubmit';
 $hidden = array(
 	'fed' => $fed_encoded,
 	'memberstype'=>$memberstype,
