@@ -22,7 +22,7 @@ elseif($memberstype == 'sp')
 }
 if($message)
 {
-	echo '<div data-alert class="alert-box info">'.$message.'</div>';
+	echo $message;
 }
 echo $this->table->generate($form_elements);
 echo '<div class="buttons small-12 columns text-center">';

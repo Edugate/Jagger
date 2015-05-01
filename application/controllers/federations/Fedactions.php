@@ -4,6 +4,7 @@
 class Fedactions extends MY_Controller
 {
     private $tmp_providers;
+
     function __construct()
     {
         parent::__construct();
@@ -69,6 +70,7 @@ class Fedactions extends MY_Controller
         echo "incorrect params sent";
         return;
     }
+
     function addbulk($fed_name, $type, $message = null)
     {
         if (!$this->j_auth->logged_in()) {
@@ -84,13 +86,12 @@ class Fedactions extends MY_Controller
             if (empty($federation)) {
                 show_error(lang('error_fednotfound'), 404);
             }
-            $resource = $federation->getId();
-            $hasAddbulkAccess = $this->zacl->check_acl($resource, 'addbulk', 'federation', '');
+
+            $hasAddbulkAccess = $this->zacl->check_acl('f_'.$federation->getId(), 'addbulk', 'federation', '');
             if (!$hasAddbulkAccess) {
                 $data['content_view'] = 'nopermission';
                 $data['error'] = lang('rr_noperm');
-                $this->load->view('page', $data);
-                return;
+                return $this->load->view('page', $data);
             }
             $data['federation_name'] = $federation->getName();
             $data['federation_urn'] = $federation->getUrn();
@@ -108,7 +109,6 @@ class Fedactions extends MY_Controller
         } else {
             log_message('error', 'type is expected to be sp or idp but ' . $type . 'given');
             show_error('wrong type', 404);
-            return;
         }
         foreach ($providers as $i) {
             if (!$federationMembers->contains($i)) {
@@ -151,9 +151,12 @@ class Fedactions extends MY_Controller
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
         if (empty($federation)) {
             show_error('federation not found', 404);
-            return;
         }
-
+        $hasAddbulkAccess = $this->zacl->check_acl('f_'.$federation->getId(), 'addbulk', 'federation', '');
+        if (!$hasAddbulkAccess) {
+            $data = array('content_view'>'nopermission','error'=>lang('rr_noperm'));
+            return $this->load->view('page', $data);
+        }
         $existingMembers = $federation->getMembershipProviders();
         $m = $this->input->post('member');
         if (!empty($m) && is_array($m) && count($m) > 0) {
@@ -202,9 +205,9 @@ class Fedactions extends MY_Controller
             }
             $this->em->flush();
             $this->j_ncache->cleanFederationMembers($federation->getId());
-            $message = '<div class="success">' . lang('rr_fedmembersadded') . '</div>';
+            $message = '<div data-alert class="alert-box success">' . lang('rr_fedmembersadded') . '</div>';
         } else {
-            $message = '<div class="alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>';
+            $message = '<div data-alert class="alert-box alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>';
         }
 
         return $this->addbulk($encodedFedName, $memberstype, $message);

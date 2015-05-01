@@ -51,10 +51,10 @@ class Manage extends MY_Controller
          */
         $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
         $data = array(
-            'categories'=>array(),
-            'titlepage'=>lang('rr_federation_list'),
-            'content_view'=>'federation/list_view.php',
-            'breadcrumbs'=>array(
+            'categories' => array(),
+            'titlepage' => lang('rr_federation_list'),
+            'content_view' => 'federation/list_view.php',
+            'breadcrumbs' => array(
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations'), 'type' => 'current')
             ),
         );
@@ -316,8 +316,7 @@ class Manage extends MY_Controller
         if (!$hasReadAccess && ($federation->getPublic() === FALSE)) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rrerror_noperm_viewfed');
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $data['federation_id'] = $federation->getId();
         $bookmarked = false;
@@ -336,10 +335,10 @@ class Manage extends MY_Controller
 
         $data['content_view'] = 'federation/federation_show_view';
         if (!$canEdit) {
-            $data['sideicons'][] = '<a href="#" title="'.lang('noperm_fededit').'"><i class="fi-prohibited"></i></a>';
+            $data['sideicons'][] = '<a href="#" title="' . lang('noperm_fededit') . '"><i class="fi-prohibited"></i></a>';
 
         } else {
-            $data['sideicons'][] = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" title="'.lang('rr_fededit').'"><i class="fi-pencil"></i></a>';
+            $data['sideicons'][] = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" title="' . lang('rr_fededit') . '"><i class="fi-pencil"></i></a>';
         }
 
         if (empty($data['federation_is_active'])) {
@@ -656,26 +655,24 @@ class Manage extends MY_Controller
             show_error('Federation not found', 404);
         }
         $myLang = MY_Controller::getLang();
-        $resource = $federation->getId();
-        $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
-        if (!$has_write_access) {
+        $hasWriteAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'write', 'federation', '');
+        if (!$hasWriteAccess) {
             show_error('no access', 403);
-            return;
         }
         if ($this->removeSubmitValidate() === TRUE) {
             log_message('debug', 'Remove provider from fed form is valid');
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
             /**
-             * @var $inv_member models\Provider
+             * @var $invitedProvider models\Provider
              */
-            $inv_member = $this->tmp_providers->getOneById($provider_id);
-            if (empty($inv_member)) {
+            $invitedProvider = $this->tmp_providers->getOneById($provider_id);
+            if (empty($invitedProvider)) {
                 $data['error_message'] = lang('rerror_providernotexist');
             } else {
                 if ($this->config->item('rr_rm_member_from_fed') === TRUE) {
                     $p_tmp = new models\AttributeReleasePolicies;
-                    $arp_fed = $p_tmp->getFedPolicyAttributesByFed($inv_member, $federation);
+                    $arp_fed = $p_tmp->getFedPolicyAttributesByFed($invitedProvider, $federation);
                     if (!empty($arp_fed) && is_array($arp_fed) && count($arp_fed) > 0) {
                         foreach ($arp_fed as $r) {
                             $this->em->remove($r);
@@ -686,50 +683,46 @@ class Manage extends MY_Controller
                         $rm_arp_msg = '';
                     }
                     $doFilter = array('' . $federation->getId() . '');
-                    $m2 = $inv_member->getMembership()->filter(
+                    $m2 = $invitedProvider->getMembership()->filter(
                         function (models\FederationMembers $entry) use ($doFilter) {
                             return (in_array($entry->getFederation()->getId(), $doFilter));
                         }
                     );
                     foreach ($m2 as $v2) {
                         log_message('debug', 'GKS OOOO');
-                        if ($inv_member->getLocal()) {
+                        if ($invitedProvider->getLocal()) {
                             $v2->setJoinState('2');
                             $this->em->persist($v2);
                         } else {
-                            $inv_member->getMembership()->removeElement($v2);
+                            $invitedProvider->getMembership()->removeElement($v2);
                             $this->em->remove($v2);
                         }
                     }
-                    $entype = strtolower($inv_member->getType());
+                    $entype = strtolower($invitedProvider->getType());
                     if (strcmp($entype, 'both') == 0) {
                         $entype = 'idp';
                     }
-                    $provider_name = $inv_member->getNameToWebInLang($myLang, $entype);;
-                    $this->em->persist($inv_member);
-                    $this->em->flush();
-                    $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($inv_member);
+                    $provider_name = $invitedProvider->getNameToWebInLang($myLang, $entype);;
+                    $this->em->persist($invitedProvider);
+                    $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($invitedProvider);
                     if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0) {
                         foreach ($spec_arps_to_remove as $rp) {
                             $this->em->remove($rp);
                         }
-                        $this->em->flush();
                     }
-                    $data['success_message'] = "You just removed provider <b>" . $provider_name . "</b> from federation: <b>" . $federation->getName() . "</b><br />";
-                    $data['success_message'] .= $rm_arp_msg;
-                    if ($this->config->item('notify_if_provider_rm_from_fed') === TRUE) {
-                        $mail_sbj = "\"" . $provider_name . "\" has been removed from federation \"" . $federation->getName() . "\"";
-                        $mail_body = "Hi,\r\nJust few moments ago Administator of federation \"" . $federation->getName() . "\"\r\n";
-                        $mail_body .= "just removed " . $provider_name . " (" . $inv_member->getEntityId() . ") from federation\r\n";
-                        if (!empty($message)) {
-                            $mail_body .= "\r\n\r\n======= additional message attached by administrator ===========\r\n";
-                            $mail_body .= $message . "\r\n";
-                            $mail_body .= "================================================================\r\n";
-                        }
+                    $data['success_message'] = "You just removed provider <b>" . $provider_name . "</b> from federation: <b>" . $federation->getName() . "</b><br />".$rm_arp_msg;
 
-                        $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), $sync = false);
-                        $this->em->flush();
+                    $mail_sbj = "\"" . $provider_name . "\" has been removed from federation \"" . $federation->getName() . "\"";
+                    $mail_body = 'Hi,'.PHP_EOL.'Just few moments ago Administator of federation "' . $federation->getName() . '"'.PHP_EOL.
+                        'removed '.$provider_name. ' ('.$invitedProvider->getEntityId().') from federation'.PHP_EOL;
+                    if (!empty($message)) {
+                        $mail_body .= PHP_EOL.PHP_EOL.'======= additional message attached by administrator ==========='.PHP_EOL.$message.PHP_EOL.
+                        '================================================================'.PHP_EOL;
                     }
+
+                    $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), $sync = false);
+                    $this->em->flush();
+
                 } else {
                     log_message('error', 'rr_rm_member_from_fed is not set in config');
                     show_error('missed some config setting, Please contact with admin.', 500);
