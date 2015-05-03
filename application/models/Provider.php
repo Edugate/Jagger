@@ -1025,44 +1025,39 @@ class Provider
             if ($origElementName === $elementName && $origType === $type && $origNameSpace === 'mdui') {
                 $t = $e->getAttributes();
                 $lvalue = $t['xml:lang'];
-                if (array_key_exists($lvalue, $descriptions)) {
-                    if (!empty($descriptions[$lvalue])) {
-                        $e->setValue($descriptions[$lvalue]);
-                    } else {
-                        $ex->removeElement($e);
-                        $this->em->remove($e);
-                    }
-                    unset($descriptions[$lvalue]);
+                if (array_key_exists($lvalue, $descriptions) && !empty($descriptions[$lvalue])) {
+                    $e->setValue($descriptions[$lvalue]);
                 } else {
                     $ex->removeElement($e);
                     $this->em->remove($e);
                 }
+                unset($descriptions[$lvalue]);
             }
         }
-        if (count($descriptions) > 0) {
-            foreach ($descriptions as $k => $v) {
-                $nelement = new ExtendMetadata();
-                $nelement->setType($type);
-                $nelement->setNameSpace('mdui');
-                $nelement->setElement($elementName);
-                $nelement->setValue($v);
-                $attr = array('xml:lang' => $k);
-                $nelement->setAttributes($attr);
-                if (empty($parent)) {
-                    $parent = new ExtendMetadata();
-                    $parent->setType($type);
-                    $parent->setNameSpace('mdui');
-                    $parent->setElement('UIInfo');
-                    $ex->add($parent);
-                    $parent->setProvider($this);
-                    $this->em->persist($parent);
-                }
-                $nelement->setParent($parent);
-                $ex->add($nelement);
-                $nelement->setProvider($this);
-                $this->em->persist($nelement);
+
+        foreach ($descriptions as $k => $v) {
+            $nelement = new ExtendMetadata();
+            $nelement->setType($type);
+            $nelement->setNameSpace('mdui');
+            $nelement->setElement($elementName);
+            $nelement->setValue($v);
+            $attr = array('xml:lang' => $k);
+            $nelement->setAttributes($attr);
+            if (empty($parent)) {
+                $parent = new ExtendMetadata();
+                $parent->setType($type);
+                $parent->setNameSpace('mdui');
+                $parent->setElement('UIInfo');
+                $ex->add($parent);
+                $parent->setProvider($this);
+                $this->em->persist($parent);
             }
+            $nelement->setParent($parent);
+            $ex->add($nelement);
+            $nelement->setProvider($this);
+            $this->em->persist($nelement);
         }
+
     }
 
     public function setWayfList($wayflist = null)
@@ -2224,22 +2219,21 @@ class Provider
         }
 
         $otherExtends = array(
-            'desc'=>'Description',
-            'displayname'=>'DisplayName',
-            'privacyurl'=>'PrivacyStatementURL',
-            'informationurl'=>'InformationURL'
+            'desc' => 'Description',
+            'displayname' => 'DisplayName',
+            'privacyurl' => 'PrivacyStatementURL',
+            'informationurl' => 'InformationURL'
         );
 
-        foreach($otherExtends as $k=>$v)
-        {
+        foreach ($otherExtends as $k => $v) {
             $langDuplicates = array();
-            if (array_key_exists($k, $ext) && is_array($ext[''.$k.''])) {
-                foreach ($ext[''.$k.''] as $p2) {
-                    if(!in_array($p2['lang'],$langDuplicates)) {
+            if (array_key_exists($k, $ext) && is_array($ext['' . $k . ''])) {
+                foreach ($ext['' . $k . ''] as $p2) {
+                    if (!in_array($p2['lang'], $langDuplicates)) {
                         $extdesc = new ExtendMetadata;
                         $extdesc->setNamespace('mdui');
                         $extdesc->setType($type);
-                        $extdesc->setElement(''.$v.'');
+                        $extdesc->setElement('' . $v . '');
                         $extdesc->setValue($p2['val']);
                         $extdesc->setAttributes(array('xml:lang' => $p2['lang']));
                         $extdesc->setProvider($this);
@@ -2310,13 +2304,12 @@ class Provider
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
-	            if(array_key_exists('encmethods',$c) && count($c['encmethods'])>0)
-	            {
-		            $cert->setEncryptMethods($c['encmethods']);
-	            }
+                if (array_key_exists('encmethods', $c) && count($c['encmethods']) > 0) {
+                    $cert->setEncryptMethods($c['encmethods']);
+                }
 
 
-	            $cert->setType('aa');
+                $cert->setType('aa');
                 $cert->setCertUse($c['use']);
                 if (!empty($c['keyname'])) {
                     if (is_array($c['keyname'])) {
@@ -2346,12 +2339,11 @@ class Provider
                 if (isset($b['servicelocations']['' . $kc . '']) && is_array($b['servicelocations']['' . $kc . ''])) {
                     foreach ($b['servicelocations']['' . $kc . ''] as $s) {
                         $sso = new ServiceLocation;
-                        $sso->setType($vc);
-                        $sso->setBindingName($s['binding']);
-                        $sso->setUrl($s['location']);
+                        $order = null;
                         if ($vc === 'IDPArtifactResolutionService') {
-                            $sso->setOrder($s['order']);
+                            $order = $s['order'];
                         }
+                        $sso->setInFull($vc,$s['binding'],$s['location'],$order);
                         $sso->setProvider($this);
                         $this->setServiceLocation($sso);
                     }
@@ -2369,10 +2361,9 @@ class Provider
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
-	            if(array_key_exists('encmethods',$c) && count($c['encmethods'])>0)
-	            {
-		            $cert->setEncryptMethods($c['encmethods']);
-	            }
+                if (array_key_exists('encmethods', $c) && count($c['encmethods']) > 0) {
+                    $cert->setEncryptMethods($c['encmethods']);
+                }
 
                 $cert->setType('idpsso');
                 $cert->setCertUse($c['use']);
@@ -2457,12 +2448,11 @@ class Provider
                         $cert->setCertdata($c['x509data']['x509certificate']);
                     }
                 }
-	            if(array_key_exists('encmethods',$c) && count($c['encmethods'])>0)
-	            {
-		            $cert->setEncryptMethods($c['encmethods']);
-	            }
+                if (array_key_exists('encmethods', $c) && count($c['encmethods']) > 0) {
+                    $cert->setEncryptMethods($c['encmethods']);
+                }
 
-	            $cert->setType('spsso');
+                $cert->setType('spsso');
                 $cert->setCertUse($c['use']);
                 if (!empty($c['keyname'])) {
                     if (is_array($c['keyname'])) {

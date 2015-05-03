@@ -101,6 +101,7 @@ class Metadata2import
         if (empty($this->full) && empty($this->defaults['static'])) {
             return false;
         }
+
         $coclist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
         $regpollist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
         $attributes = $this->getAttributesByNames();
@@ -512,10 +513,7 @@ class Metadata2import
                 $counter = 0;
                 foreach ($this->metadataInArray as $ent) {
                     $counter++;
-                    if ($ent['type'] === 'BOTH' ||
-                        $ent['type'] === $type ||
-                        $type == 'ALL'
-                    ) {
+                    if ($ent['type'] === 'BOTH' || $ent['type'] === $type || $type == 'ALL') {
                         $importedProvider = new models\Provider;
                         $importedProvider->setProviderFromArray($ent);
 

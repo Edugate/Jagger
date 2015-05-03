@@ -171,9 +171,8 @@ class Form_element
                 }
             }
         }
-        $isAdmin = $this->ci->j_auth->isAdministrator();
         $r = '';
-        if (!$isAdmin) {
+        if (!$this->ci->j_auth->isAdministrator()) {
             $r .= '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
         $r .= '<div class="small-12 columns"><dl class="accordion checkboxlist" data-accordion>';
@@ -186,19 +185,20 @@ class Form_element
                     continue;
                 }
             }
+            $lbl = '';
             if (empty($v['enabled'])) {
                 if (!$is) {
                     continue;
                 }
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-            } else {
-                $lbl = '';
             }
             $rcheckbox = form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right'));
-            $r .= '<dd class="accordion-navigation small-12 column">';
-            $r .= '<div class="small-3 columns" >' . $rcheckbox . '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' . $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>';
-            $r .= '<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' . lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>';
-            $r .= '</dd>';
+            $r .= '<dd class="accordion-navigation small-12 column">'.
+                '<div class="small-3 columns" >' . $rcheckbox . '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' .
+                $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>'.
+                '<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>'.
+                lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>'.
+                '</dd>';
         }
         $r .= '</dl></div>';
         $result[] = $r;
