@@ -1405,11 +1405,11 @@ class Provider
      * @param $format
      * @return bool|null|string
      */
-    public function getRegistrationDateInFormat($format)
+    public function getRegistrationDateInFormat($format, $offset = 0)
     {
         if(!empty($this->registerdate))
         {
-            return \date($format, $this->registerdate->format('U'));
+            return \date($format, $this->registerdate->format('U') + $offset);
         }
         return null;
     }

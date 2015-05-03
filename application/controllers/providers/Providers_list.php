@@ -175,15 +175,6 @@ class Providers_list extends MY_Controller {
             $i = 0;
             foreach ($list as $v)
             {
-                $rdate = $v->getRegistrationDate();
-                if (isset($rdate))
-                {
-                    $regdate = date('Y-m-d', $rdate->format('U') + j_auth::$timeOffset);
-                }
-                else
-                {
-                    $regdate = '';
-                }
                 $data['"' . $i++ . '"'] = array(
                     'pid' => $v->getId(),
                     'plocked' => (int) $v->getLocked(),
@@ -194,7 +185,7 @@ class Providers_list extends MY_Controller {
                     'pavailable' => (int) $v->getAvailable(),
                     'pentityid' => $v->getEntityId(),
                     'pname' => $v->getNameToWebInLang($lang, $type),
-                    'pregdate' => $regdate,
+                    'pregdate' => $v->getRegistrationDateInFormat('Y-m-d', j_auth::$timeOffset),
                     'phelpurl' => $v->getHelpdeskUrl(),
                 );
             }
