@@ -95,13 +95,6 @@ class Manage extends MY_Controller
 
         ));
         foreach ($membership as $p) {
-            $regdate = $p->getRegistrationDate();
-            if (!empty($regdate)) {
-                $preg = date('Y-m', $regdate->format('U'));
-
-            } else {
-                $preg = null;
-            }
             $m = $p->getMembership()->first();
             $ptype = strtolower($p->getType());
             if ($ptype === 'idp') {
@@ -116,7 +109,7 @@ class Manage extends MY_Controller
                 'entityid' => $p->getEntityId(),
                 'pname' => html_escape($name),
                 'penabled' => $p->getAvailable(),
-                'regdate' => $preg
+                'regdate' => $p->getRegistrationDateInFormat('Y-m')
             );
         }
 

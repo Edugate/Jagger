@@ -1402,6 +1402,18 @@ class Provider
     }
 
     /**
+     * @param $format
+     * @return bool|null|string
+     */
+    public function getRegistrationDateInFormat($format)
+    {
+        if(!empty($this->registerdate))
+        {
+            return \date($format, $this->registerdate->format('U'));
+        }
+        return null;
+    }
+    /**
      * get collection of contacts which are used in metada
      */
     public function getContacts()
