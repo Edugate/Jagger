@@ -1,4 +1,12 @@
 <?php
+if(empty($federation_is_active))
+{
+    echo '<div data-alert class="alert-box alert fedstatusinactive">' . lang('rr_fed_inactive_full') . '</div>';
+}
+else
+{
+     echo '<div data-alert class="alert-box alert fedstatusinactive hidden">' . lang('rr_fed_inactive_full') . '</div>';
+}
 echo '<div id="ifedtabs">';
 echo '<ul class="tabs" data-tab>
  <li class="tab-title active"><a href="#general">' . lang('tabgeneral') . '</a></li>

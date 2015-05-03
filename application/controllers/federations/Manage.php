@@ -354,17 +354,8 @@ class Manage extends MY_Controller
         }
 
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
-
-
-        if (empty($data['federation_is_active'])) {
-            $data['result']['general'][] = array(
-                'data' => array('data' => '<div data-alert class="alert-box alert">' . lang('rr_fed_inactive_full') . '</div>', 'class' => 'fedstatusinactive', 'colspan' => 2)
-            );
-        } else {
-            $data['result']['general'][] = array(
-                'data' => array('data' => '<div data-alert class="alert-box alert">' . lang('rr_fed_inactive_full') . '</div>', 'class' => 'fedstatusinactive', 'style' => 'display: none', 'colspan' => 2)
-            );
-        }
+        $data['result']['general'][] = array();
+        
         $idpContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>');
         $spContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>');
         $allContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>');
