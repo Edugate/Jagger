@@ -354,12 +354,12 @@ class Manage extends MY_Controller
         }
 
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
-        $data['result']['general'][] = array();
-        
-        $idpContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>');
-        $spContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>');
-        $allContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>');
+        $contactLists = array(
+            'idp'=> anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>'),
+            'sp'=> anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>'),
+            'all'=>anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>')
 
+        );
         $general = array(
             array(lang('rr_fed_name'), html_escape($federation->getName())),
             array(lang('fednameinmeta'), html_escape($federation->getUrn())),
@@ -368,11 +368,11 @@ class Manage extends MY_Controller
             array(lang('rr_fed_publisher'), html_escape($federation->getPublisher())),
             array(lang('rr_fed_desc'), html_escape($federation->getDescription())),
             array(lang('rr_fed_tou'), html_escape($federation->getTou())),
-            array(lang('rr_downcontactsintxt'), $idpContactList . '<br />' . $spContactList . '<br />' . $allContactList),
+            array(lang('rr_downcontactsintxt'), $contactLists['idp'] . '<br />' . $contactLists['sp'] . '<br />' . $contactLists['all']),
             array(lang('rr_timeline'), '<a href="' . base_url('reports/timelines/showregistered/' . $federation->getId() . '') . '" class="button secondary">Diagram</a>')
         );
 
-        $data['result']['general'] = array_merge($data['result']['general'], $general);
+        $data['result']['general'] =  $general;
 
 
         $data['result']['attrs'][] = array('data' => array('data' => $editAttributesLink . '', 'class' => 'text-right', 'colspan' => 2));
@@ -746,19 +746,15 @@ class Manage extends MY_Controller
                         array('data' => lang('rr_httpmethod'), 'value' => $method),
                         array('data' => lang('fvalid_entparam'), 'value' => $f->getEntityParam()),
                         array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $optargsStr)),
+                        'sep'=>array('data' => lang('rr_argsep'), 'value' => $f->getSeparator()),
+                        array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement())),
+                        array('data' => lang('fvalid_retelements'), 'value' => $retvaluesToHtml),
+                        array('data' => lang('fvalid_msgelements'), 'value' => implode('<br />', $f->getMessageCodeElements()))
                     );
-
-
-                    if (strcmp($method, 'GET') == 0) {
-                        $tbl[] = array('data' => lang('rr_argsep'), 'value' => $f->getSeparator());
+                    if (strcmp($method, 'GET') != 0) {
+                        unset($tbl['sep']);
                     }
-                    $tbl[] = array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement()));
-                    $tbl[] = array('data' => lang('fvalid_retelements'), 'value' => $retvaluesToHtml);
-                    $tbl[] = array('data' => lang('fvalid_msgelements'), 'value' => implode('<br />', $f->getMessageCodeElements()));
-
-                    $fvdata .= $this->table->generate($tbl);
-                    $fvdata .= '</div>';
-                    $fvdata .= '</dd>';
+                    $fvdata .= $this->table->generate($tbl).'</div></dd>';
                     $this->table->clear();
                 }
                 $fvdata .= '</dl>';
