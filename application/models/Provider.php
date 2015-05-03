@@ -1020,9 +1020,8 @@ class Provider
         }
         foreach ($ex as $e) {
             $origElementName = $e->getElement();
-            $origType = $e->getType();
             $origNameSpace = $e->getNameSpace();
-            if ($origElementName === $elementName && $origType === $type && $origNameSpace === 'mdui') {
+            if ($origElementName === $elementName && $e->getType() === $type && $origNameSpace === 'mdui') {
                 $t = $e->getAttributes();
                 $lvalue = $t['xml:lang'];
                 if (array_key_exists($lvalue, $descriptions) && !empty($descriptions[$lvalue])) {
@@ -1362,9 +1361,7 @@ class Provider
             $this->setContact($cn2);
         }
         foreach ($this->getExtendMetadata() as $f) {
-            if (!empty($f)) {
                 $this->removeExtendWithChildren($f);
-            }
         }
         foreach ($provider->getExtendMetadata() as $gg) {
             $this->setExtendMetadata($gg);
