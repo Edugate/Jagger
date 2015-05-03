@@ -147,19 +147,18 @@ class Manage extends MY_Controller
 
     function fedmemberscount($fedid)
     {
-        if (!$this->input->is_ajax_request()) {
-            set_status_header(404);
+        if (!$this->input->is_ajax_request() || !ctype_digit($fedid)) {
+            set_status_header(403);
             echo 'Request not allowed';
             return;
         }
-        $lang = MY_Controller::getLang();
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
         if (empty($federation)) {
             set_status_header(404);
             echo 'Federarion not found';
             return;
         }
-        $preresult = $this->getMembers($federation, $lang);
+        $preresult = $this->getMembers($federation, MY_Controller::getLang());
         $result = array('idp' => count($preresult['idp']), 'sp' => count($preresult['sp']), 'both' => count($preresult['both']), 'definitions' => $preresult['definitions']);
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
@@ -280,7 +279,7 @@ class Manage extends MY_Controller
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library(array('show_element','zacl'));
+        $this->load->library(array('show_element', 'zacl'));
         /**
          * @var $federation models\Federation
          */
@@ -392,7 +391,7 @@ class Manage extends MY_Controller
         }
 
 
-        $data['result']['membership'][] = array('data' => array('data' => '',  'colspan' => 2));
+        $data['result']['membership'][] = array('data' => array('data' => '', 'colspan' => 2));
         if ($access['hasAddbulkAccess']) {
             $data['result']['membership'] = array(
                 array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2)),
@@ -481,6 +480,7 @@ class Manage extends MY_Controller
         if (!$hasWriteAccess) {
             show_error('no access', 403);
         }
+
         $data['subtitle'] = lang('rr_federation') . ': ' . $federation->getName() . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), '<i class="fi-arrow-right"></i>');
         log_message('debug', '_________Before validation');
         if ($this->inviteSubmitValidate() === TRUE) {
@@ -534,17 +534,19 @@ class Manage extends MY_Controller
         } else {
             $data['error_message'] = lang('rr_fednoprovidersavail');
         }
-        $data['fedname'] = $federation->getName();
 
-        $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()) . '">' . $federation->getName() . '</a>';
-
-        $data['fedurl'] = base_url('federations/manage/show/' . base64url_encode($federation->getName()) . '');
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => html_escape($federation->getName())),
-            array('url' => base_url('#'), 'name' => 'Invitation', 'type' => 'current'),
+        $data2merge = array(
+            'fedname' => $federation->getName(),
+            'titlepage' => lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()) . '">' . $federation->getName() . '</a>',
+            'fedurl' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''),
+            'breadcrumbs' => array(
+                array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+                array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => html_escape($federation->getName())),
+                array('url' => base_url('#'), 'name' => 'Invitation', 'type' => 'current'),
+            ),
+            'content_view' => 'federation/invite_provider_view',
         );
-        $data['content_view'] = 'federation/invite_provider_view';
+        $data = array_merge($data, $data2merge);
         $this->load->view('page', $data);
     }
 
@@ -704,8 +706,8 @@ class Manage extends MY_Controller
             if ($hasWriteAccess) {
                 $fvdata = '<dl class="accordion" data-accordion>';
                 foreach ($fvalidators as $f) {
-                    $fvdata .= ' <dd class="accordion-navigation">'.
-                        '<a href="#fvdata' . $f->getId() . '" class="accordion-icon">' . $f->getName() . '</a>'.
+                    $fvdata .= ' <dd class="accordion-navigation">' .
+                        '<a href="#fvdata' . $f->getId() . '" class="accordion-icon">' . $f->getName() . '</a>' .
                         '<div id="fvdata' . $f->getId() . '" class="content">';
                     $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
 
