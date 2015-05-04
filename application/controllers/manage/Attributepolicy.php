@@ -823,22 +823,24 @@ class Attributepolicy extends MY_Controller
         $supportedAttrs = $this->tmpArps->getSupportedAttributes($idp);
         foreach ($supportedAttrs as $p) {
             $attributeName = $p->getAttribute()->getName();
-            $arpsInArray['' . $attributeName . '']['supported'] = 1;
             if (!array_key_exists('attr_id', $arpsInArray[$attributeName])) {
-                $arpsInArray[$attributeName]['attr_name'] = $attributeName;
-                $arpsInArray[$attributeName]['attr_id'] = $p->getAttribute()->getId();
-                $arpsInArray[$attributeName]['attr_policy'] = null;
-                $arpsInArray[$attributeName]['idp_id'] = $p->getProvider()->getId();
-                $arpsInArray[$attributeName]['sp_id'] = $requesterID;
-                $arpsInArray[$attributeName]['req_status'] = null;
-                $arpsInArray[$attributeName]['req_reason'] = null;
+                $arpsInArray[''.$attributeName.''] = array(
+                    'attr_name'=> $attributeName,
+                    'attr_id'=>$p->getAttribute()->getId(),
+                    'attr_policy'=>null,
+                    'idp_id'=> $p->getProvider()->getId(),
+                    'sp_id'=>$requesterID,
+                    'req_status'=>null,
+                    'req_reason'=>null
+                );
             }
+            $arpsInArray['' . $attributeName . '']['supported'] = 1;
         }
         $requirements = $tmp_requirements->getRequirementsBySP($sp);
         foreach ($requirements as $r) {
             $attributeName = $r->getAttribute()->getName();
             if (!array_key_exists($attributeName, $arpsInArray)) {
-                $arpsInArray[$attributeName] = array(
+                $arpsInArray[''.$attributeName.''] = array(
                     'attr_name' => $attributeName,
                     'supported' => 0,
                     'attr_id' => $r->getAttribute()->getId(),
@@ -876,7 +878,7 @@ class Attributepolicy extends MY_Controller
             return $this->load->view('page', $data);
         }
         $this->load->library('form_validation');
-        if ($type == 'sp') {
+        if (strcmp($type,'sp')==0) {
             $this->form_validation->set_rules('service', 'Service ID', 'required');
             $sp_id = $this->input->post('service');
             if ($this->form_validation->run() === FALSE) {
