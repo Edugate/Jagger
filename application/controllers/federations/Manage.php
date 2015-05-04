@@ -355,9 +355,9 @@ class Manage extends MY_Controller
 
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
         $contactLists = array(
-            'idp'=> anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>'),
-            'sp'=> anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>'),
-            'all'=>anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>')
+            'idp' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>'),
+            'sp' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>'),
+            'all' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>')
 
         );
         $general = array(
@@ -372,7 +372,7 @@ class Manage extends MY_Controller
             array(lang('rr_timeline'), '<a href="' . base_url('reports/timelines/showregistered/' . $federation->getId() . '') . '" class="button secondary">Diagram</a>')
         );
 
-        $data['result']['general'] =  $general;
+        $data['result']['general'] = $general;
 
 
         $data['result']['attrs'][] = array('data' => array('data' => $editAttributesLink . '', 'class' => 'text-right', 'colspan' => 2));
@@ -628,8 +628,17 @@ class Manage extends MY_Controller
                 }
             }
         }
-        $data['titlepage'] = lang('rr_federation') . ': ' . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), $federation->getName());
-        $data['subtitlepage'] = lang('rmprovfromfed');
+        $data2merge = array(
+            'titlepage' => lang('rr_federation') . ': ' . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), $federation->getName()),
+            'subtitlepage' => lang('rmprovfromfed'),
+            'content_view' => 'federation/remove_provider_view',
+            'encodedfedname' => base64url_encode($federation->getName()),
+            'breadcrumbs' => array(
+                array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+                array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => '' . $federation->getName() . ''),
+                array('url' => '#', 'type' => 'current', 'name' => lang('rmprovfromfed'))
+            )
+        );
         $current_members = $federation->getMembers();
         if ($current_members->count() > 0) {
             $list = array('IDP' => array(), 'SP' => array(), 'BOTH' => array());
@@ -647,16 +656,7 @@ class Manage extends MY_Controller
         } else {
             $data['error_message'] = lang('error_notfoundmemberstoberm');
         }
-
-        $data['content_view'] = 'federation/remove_provider_view';
-        $data['encodedfedname'] = base64url_encode($federation->getName());
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => '' . $federation->getName() . ''),
-            array('url' => '#', 'type' => 'current', 'name' => lang('rmprovfromfed'))
-
-        );
-
+        $data = array_merge($data,$data2merge);
 
         $this->load->view('page', $data);
     }
@@ -702,20 +702,19 @@ class Manage extends MY_Controller
                         '<div id="fvdata' . $f->getId() . '" class="content">';
                     $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
 
-                    $method = $f->getMethod();
-                    $fedstatusLabels = '';
-                    if ($f->getEnabled()) {
-                        $fedstatusLabels .= ' ' . makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
-                    } else {
-                        $fedstatusLabels .= ' ' . makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
+                    $fedstatusLabels = array(
+                        'en' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')),
+                        'man' => makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory')),
+                        'reg' => makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg')),
+                    );
+                    if (!$f->getEnabled()) {
+                        $fedstatusLabels['en'] = makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
                     }
-                    if ($f->getMandatory()) {
-                        $fedstatusLabels .= ' ' . makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory'));
-                    } else {
-                        $fedstatusLabels .= ' ' . makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional'));
+                    if (!$f->getMandatory()) {
+                        $fedstatusLabels['man'] = makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional'));
                     }
-                    if ($f->isEnabledForRegistration()) {
-                        $fedstatusLabels .= ' ' . makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg'));
+                    if (!$f->isEnabledForRegistration()) {
+                        unset($fedstatusLabels['reg']);
                     }
                     $optargs1 = $f->getOptargs();
                     $optargsStr = array();
@@ -739,22 +738,22 @@ class Manage extends MY_Controller
 
                     $tbl = array(
                         array('data' => array('data' => ' ' . $editbtn, 'class' => '', 'colspan' => 2)),
-                        array('data' => lang('rr_status'), 'value' => $fedstatusLabels),
+                        array('data' => lang('rr_status'), 'value' => implode(' ', $fedstatusLabels)),
                         array('data' => lang('Description'), 'value' => html_escape($f->getDescription())),
                         array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType()),
                         array('data' => lang('fvalid_url'), 'value' => $f->getUrl()),
-                        array('data' => lang('rr_httpmethod'), 'value' => $method),
+                        array('data' => lang('rr_httpmethod'), 'value' => $f->getMethod()),
                         array('data' => lang('fvalid_entparam'), 'value' => $f->getEntityParam()),
                         array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $optargsStr)),
-                        'sep'=>array('data' => lang('rr_argsep'), 'value' => $f->getSeparator()),
+                        'sep' => array('data' => lang('rr_argsep'), 'value' => $f->getSeparator()),
                         array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement())),
                         array('data' => lang('fvalid_retelements'), 'value' => $retvaluesToHtml),
                         array('data' => lang('fvalid_msgelements'), 'value' => implode('<br />', $f->getMessageCodeElements()))
                     );
-                    if (strcmp($method, 'GET') != 0) {
+                    if (strcmp($f->getMethod(), 'GET') != 0) {
                         unset($tbl['sep']);
                     }
-                    $fvdata .= $this->table->generate($tbl).'</div></dd>';
+                    $fvdata .= $this->table->generate($tbl) . '</div></dd>';
                     $this->table->clear();
                 }
                 $fvdata .= '</dl>';
