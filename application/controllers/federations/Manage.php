@@ -458,7 +458,7 @@ class Manage extends MY_Controller
             redirect('auth/login', 'location');
         }
         $myLang = MY_Controller::getLang();
-        $this->load->library(array('zacl', 'show_element','approval'));
+        $this->load->library(array('zacl', 'show_element', 'approval'));
         /**
          * @var $federation models\Federation
          */
@@ -556,7 +556,6 @@ class Manage extends MY_Controller
             show_error('no access', 403);
         }
         if ($this->removeSubmitValidate() === TRUE) {
-            log_message('debug', 'Remove provider from fed form is valid');
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
             /**
@@ -566,62 +565,62 @@ class Manage extends MY_Controller
             if (empty($invitedProvider)) {
                 $data['error_message'] = lang('rerror_providernotexist');
             } else {
-                if ($this->config->item('rr_rm_member_from_fed') === TRUE) {
-                    $p_tmp = new models\AttributeReleasePolicies;
-                    $arp_fed = $p_tmp->getFedPolicyAttributesByFed($invitedProvider, $federation);
-                    $rm_arp_msg = '';
-                    if (!empty($arp_fed) && is_array($arp_fed) && count($arp_fed) > 0) {
-                        foreach ($arp_fed as $r) {
-                            $this->em->remove($r);
-                        }
-                        $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>" .
-                            "It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
-                    }
-                    $doFilter = array('' . $federation->getId() . '');
-                    $m2 = $invitedProvider->getMembership()->filter(
-                        function (models\FederationMembers $entry) use ($doFilter) {
-                            return (in_array($entry->getFederation()->getId(), $doFilter));
-                        }
-                    );
-                    foreach ($m2 as $v2) {
-                        log_message('debug', 'GKS OOOO');
-                        if ($invitedProvider->getLocal()) {
-                            $v2->setJoinState('2');
-                            $this->em->persist($v2);
-                        } else {
-                            $invitedProvider->getMembership()->removeElement($v2);
-                            $this->em->remove($v2);
-                        }
-                    }
-                    $entype = strtolower($invitedProvider->getType());
-                    if (strcmp($entype, 'both') == 0) {
-                        $entype = 'idp';
-                    }
-                    $provider_name = $invitedProvider->getNameToWebInLang($myLang, $entype);;
-                    $this->em->persist($invitedProvider);
-                    $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($invitedProvider);
-                    if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0) {
-                        foreach ($spec_arps_to_remove as $rp) {
-                            $this->em->remove($rp);
-                        }
-                    }
-                    $data['success_message'] = "You just removed provider <b>" . $provider_name . "</b> from federation: <b>" . $federation->getName() . "</b><br />" . $rm_arp_msg;
-
-                    $mail_sbj = "\"" . $provider_name . "\" has been removed from federation \"" . $federation->getName() . "\"";
-                    $mail_body = 'Hi,' . PHP_EOL . 'Just few moments ago Administator of federation "' . $federation->getName() . '"' . PHP_EOL .
-                        'removed ' . $provider_name . ' (' . $invitedProvider->getEntityId() . ') from federation' . PHP_EOL;
-                    if (!empty($message)) {
-                        $mail_body .= PHP_EOL . PHP_EOL . '======= additional message attached by administrator ===========' . PHP_EOL . $message . PHP_EOL .
-                            '================================================================' . PHP_EOL;
-                    }
-
-                    $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), $sync = false);
-                    $this->em->flush();
-
-                } else {
+                if ($this->config->item('rr_rm_member_from_fed') !== TRUE) {
                     log_message('error', 'rr_rm_member_from_fed is not set in config');
                     show_error('missed some config setting, Please contact with admin.', 500);
                 }
+
+                $p_tmp = new models\AttributeReleasePolicies;
+                $arp_fed = $p_tmp->getFedPolicyAttributesByFed($invitedProvider, $federation);
+                $rm_arp_msg = '';
+                if (!empty($arp_fed) && is_array($arp_fed) && count($arp_fed) > 0) {
+                    foreach ($arp_fed as $r) {
+                        $this->em->remove($r);
+                    }
+                    $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>" .
+                        "It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
+                }
+                $doFilter = array('' . $federation->getId() . '');
+                $m2 = $invitedProvider->getMembership()->filter(
+                    function (models\FederationMembers $entry) use ($doFilter) {
+                        return (in_array($entry->getFederation()->getId(), $doFilter));
+                    }
+                );
+                foreach ($m2 as $v2) {
+                    if ($invitedProvider->getLocal()) {
+                        $v2->setJoinState('2');
+                        $this->em->persist($v2);
+                    } else {
+                        $invitedProvider->getMembership()->removeElement($v2);
+                        $this->em->remove($v2);
+                    }
+                }
+                $entype = strtolower($invitedProvider->getType());
+                if (strcmp($entype, 'both') == 0) {
+                    $entype = 'idp';
+                }
+                $provider_name = $invitedProvider->getNameToWebInLang($myLang, $entype);;
+                $this->em->persist($invitedProvider);
+                $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($invitedProvider);
+                if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0) {
+                    foreach ($spec_arps_to_remove as $rp) {
+                        $this->em->remove($rp);
+                    }
+                }
+                $data['success_message'] = "You just removed provider <b>" . $provider_name . "</b> from federation: <b>" . $federation->getName() . "</b><br />" . $rm_arp_msg;
+
+                $mail_sbj = "\"" . $provider_name . "\" has been removed from federation \"" . $federation->getName() . "\"";
+                $mail_body = 'Hi,' . PHP_EOL . 'Just few moments ago Administator of federation "' . $federation->getName() . '"' . PHP_EOL .
+                    'removed ' . $provider_name . ' (' . $invitedProvider->getEntityId() . ') from federation' . PHP_EOL;
+                if (!empty($message)) {
+                    $mail_body .= PHP_EOL . PHP_EOL . '======= additional message attached by administrator ===========' . PHP_EOL . $message . PHP_EOL .
+                        '================================================================' . PHP_EOL;
+                }
+
+                $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), $sync = false);
+                $this->em->flush();
+
+
             }
         }
         $data2merge = array(
@@ -634,14 +633,12 @@ class Manage extends MY_Controller
                 array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => '' . $federation->getName() . ''),
                 array('url' => '#', 'type' => 'current', 'name' => lang('rmprovfromfed'))
             ),
-            'fedname'=>$federation->getName(),
+            'fedname' => $federation->getName(),
         );
         $current_members = $federation->getMembers();
-        if($current_members->count() == 0)
-        {
-             $data['error_message'] = lang('error_notfoundmemberstoberm');
-        }
-        else {
+        if ($current_members->count() == 0) {
+            $data['error_message'] = lang('error_notfoundmemberstoberm');
+        } else {
             $list = array('IDP' => array(), 'SP' => array(), 'BOTH' => array());
             foreach ($current_members as $l) {
                 $ltype = strtolower($l->getType());
@@ -654,7 +651,7 @@ class Manage extends MY_Controller
             $list = array_filter($list);
             $data['providers'] = $list;
         }
-        $data = array_merge($data,$data2merge);
+        $data = array_merge($data, $data2merge);
 
         $this->load->view('page', $data);
     }
