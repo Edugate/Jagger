@@ -169,6 +169,15 @@ class ServiceLocation {
         return $this;
     }
 
+    public function setInFull($type,$bind,$url,$idx=null)
+    {
+        $this->type = $type;
+        $this->bindingName = $bind;
+        $this->url = $url;
+        $this->ordered_no = $idx;
+        return $this;
+    }
+
     public function getId()
     {
         return $this->id;

@@ -23,6 +23,9 @@ class Form_element
 {
 
     protected $ci;
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
     protected $em;
     protected $disallowedparts = array();
     protected $defaultlangselect = 'en';
@@ -151,6 +154,9 @@ class Form_element
         if (!empty($ses) && is_array($ses)) {
             $sessform = TRUE;
         }
+        /**
+         * @var  $entCategories models\Coc[]
+         */
         $entCategories = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
         $entCategoriesArray = array();
         foreach ($entCategories as $v) {
@@ -165,40 +171,39 @@ class Form_element
             }
         } else {
             foreach ($assignedEntCategories as $k => $v) {
-                $vtype = $v->getType();
-                if (strcmp($vtype, 'entcat') == 0) {
+                if (strcmp($v->getType(), 'entcat') == 0) {
                     $entCategoriesArray['' . $v->getId() . '']['sel'] = true;
                 }
             }
         }
-        $isAdmin = $this->ci->j_auth->isAdministrator();
         $r = '';
-        if (!$isAdmin) {
+        if (!$this->ci->j_auth->isAdministrator()) {
             $r .= '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
         $r .= '<div class="small-12 columns"><dl class="accordion checkboxlist" data-accordion>';
         foreach ($entCategoriesArray as $k => $v) {
-            if (isset($v['sel'])) {
-                $is = true;
-            } else {
+            $lbl = '';
+            $is = true;
+            if (!isset($v['sel'])) {
                 $is = false;
                 if (!in_array($v['attrname'], $allowedCategories)) {
                     continue;
                 }
             }
+
             if (empty($v['enabled'])) {
                 if (!$is) {
                     continue;
                 }
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-            } else {
-                $lbl = '';
             }
-            $rcheckbox = form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right'));
-            $r .= '<dd class="accordion-navigation small-12 column">';
-            $r .= '<div class="small-3 columns" >' . $rcheckbox . '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' . $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>';
-            $r .= '<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' . lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>';
-            $r .= '</dd>';
+
+            $r .= '<dd class="accordion-navigation small-12 column">'.
+                '<div class="small-3 columns" >' .form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right')). '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' .
+                $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>'.
+                '<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>'.
+                lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>'.
+                '</dd>';
         }
         $r .= '</dl></div>';
         $result[] = $r;
@@ -693,6 +698,9 @@ class Form_element
 
     public function nGenerateAttrsReqs(models\Provider $ent, $ses = null)
     {
+        /**
+         * @var $allAttrs models\Attribute[]
+         */
         $allAttrs = $this->em->getRepository("models\Attribute")->findAll();
         $attrArray = array();
         foreach ($allAttrs as $a) {

@@ -28,9 +28,10 @@ class Translator extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->tmp_providers = new models\Providers;
-        $this->load->helper(array('form','file'));
+        $this->load->helper(array('form', 'file'));
         $this->load->library(array('table', 'zacl', 'form_validation'));
         $this->lang->load('rr', 'english');
+        $this->title = lang('title_translator');
     }
 
     private function _submit_validate($inputs)
@@ -54,17 +55,18 @@ class Translator extends MY_Controller
 
     public function tolanguage($l)
     {
-        $this->title = lang('title_translator');
+
         $this->lang->is_loaded = array();
         $this->lang->language = array();
         $this->lang->load('rr_lang', 'english');
         $original = $this->lang->language;
-        $data['titlepage'] = lang('title_translator') . '';
+
         $inputs = array_keys($original);
         $noinputs = (int)count($inputs) + 10;
-        $systempost = (int)ini_get(max_input_vars);
-        if ($noinputs > $systempost) {
-            $data['syswarning'] = 'The number of input vars is (>' . $noinputs . ') higher that system allows (' . $systempost . '). Please increase max_input_vars in php settings';
+        $systempost = (int)ini_get('max_input_vars');
+        $syswarning = null;
+        if (!empty($systempost) && $noinputs > $systempost) {
+            $syswarning = 'The number of input vars is (>' . $noinputs . ') higher that system allows (' . $systempost . '). Please increase max_input_vars in php settings';
         }
         $allowedlangs = MY_Controller::guiLangs();
         unset($allowedlangs['en']);
@@ -73,7 +75,6 @@ class Translator extends MY_Controller
         } else {
             show_error('The language code is not allowed', 404);
         }
-        $data['subtitlepage'] = 'en => ' . $langto;
 
 
         $isAccess = $this->checkPermission($langto);
@@ -90,8 +91,8 @@ class Translator extends MY_Controller
         foreach ($translatedTo as $key => $value) {
             $merger[$key]['to'] = $value;
         }
-        $data['merger'] = $merger;
-        $data['content_view'] = 'manage/translator_view';
+
+
         if ($this->_submit_validate($inputs) === TRUE) {
             $lang = $this->input->post('lang');
             $output = '<?php ' . PHP_EOL;
@@ -108,7 +109,22 @@ class Translator extends MY_Controller
             }
             return;
         }
-        $data['error_message'] = validation_errors('<div>', '</div>');
+
+
+        $data = array(
+            'merger' => $merger,
+            'subtitlepage' => 'en <i class="fi-arrow-right"></i> ' . html_escape($langto),
+            'titlepage' => 'Translator',
+            'breadcrumbs' => array(
+                array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
+                array('url' => '#', 'name' => 'Translation: from en to ' . html_escape($langto), 'type' => 'current'),
+            ),
+            'content_view' => 'manage/translator_view',
+            'error_message' => validation_errors('<div>', '</div>'),
+            'syswarning'=>$syswarning,
+        );
+
+
         $this->load->view('page', $data);
     }
 

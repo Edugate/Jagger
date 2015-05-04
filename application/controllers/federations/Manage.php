@@ -51,10 +51,10 @@ class Manage extends MY_Controller
          */
         $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
         $data = array(
-            'categories'=>array(),
-            'titlepage'=>lang('rr_federation_list'),
-            'content_view'=>'federation/list_view.php',
-            'breadcrumbs'=>array(
+            'categories' => array(),
+            'titlepage' => lang('rr_federation_list'),
+            'content_view' => 'federation/list_view.php',
+            'breadcrumbs' => array(
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations'), 'type' => 'current')
             ),
         );
@@ -67,62 +67,6 @@ class Manage extends MY_Controller
         }
         $this->load->view('page', $data);
 
-    }
-
-    function changestatus()
-    {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo 'access denied';
-            return;
-        }
-        $status = trim($this->input->post('status'));
-        $fedname = trim($this->input->post('fedname'));
-        if (empty($status) || empty($fedname)) {
-            set_status_header(403);
-            echo 'missing arguments';
-            return;
-        }
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => '' . htmlspecialchars(base64url_decode($fedname)) . ''));
-        if (empty($federation)) {
-            set_status_header(404);
-            echo 'Federarion not found';
-            return;
-        }
-        $this->load->library('zacl');
-        $has_manage_access = $this->zacl->check_acl('f_' . $federation->getId(), 'manage', 'federation', '');
-        if (!$has_manage_access) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
-        }
-        $currentStatus = $federation->getActive();
-        if ($currentStatus && strcmp($status, 'disablefed') == 0) {
-            $federation->setAsDisactive();
-            $this->em->persist($federation);
-            $this->em->flush();
-            echo "deactivated";
-            return;
-        } elseif (!$currentStatus && strcmp($status, 'enablefed') == 0) {
-            $federation->setAsActive();
-            $this->em->persist($federation);
-            $this->em->flush();
-            echo "activated";
-            return;
-        } elseif (!$currentStatus && strcmp($status, 'delfed') == 0) {
-            /**
-             * @todo finish
-             */
-            $this->load->library('Approval');
-            $q = $this->approval->removeFederation($federation);
-            $this->em->persist($q);
-            $this->em->flush();
-            echo "todelete";
-            return;
-        }
-        set_status_header(403);
-        echo "incorrect params sent";
-        return;
     }
 
     private function getMembers(models\Federation $federation, $lang)
@@ -151,13 +95,6 @@ class Manage extends MY_Controller
 
         ));
         foreach ($membership as $p) {
-            $regdate = $p->getRegistrationDate();
-            if (!empty($regdate)) {
-                $preg = date('Y-m', $regdate->format('U'));
-
-            } else {
-                $preg = null;
-            }
             $m = $p->getMembership()->first();
             $ptype = strtolower($p->getType());
             if ($ptype === 'idp') {
@@ -172,7 +109,7 @@ class Manage extends MY_Controller
                 'entityid' => $p->getEntityId(),
                 'pname' => html_escape($name),
                 'penabled' => $p->getAvailable(),
-                'regdate' => $preg
+                'regdate' => $p->getRegistrationDateInFormat('Y-m')
             );
         }
 
@@ -210,19 +147,18 @@ class Manage extends MY_Controller
 
     function fedmemberscount($fedid)
     {
-        if (!$this->input->is_ajax_request()) {
-            set_status_header(404);
+        if (!$this->input->is_ajax_request() || !ctype_digit($fedid)) {
+            set_status_header(403);
             echo 'Request not allowed';
             return;
         }
-        $lang = MY_Controller::getLang();
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
         if (empty($federation)) {
             set_status_header(404);
             echo 'Federarion not found';
             return;
         }
-        $preresult = $this->getMembers($federation, $lang);
+        $preresult = $this->getMembers($federation, MY_Controller::getLang());
         $result = array('idp' => count($preresult['idp']), 'sp' => count($preresult['sp']), 'both' => count($preresult['both']), 'definitions' => $preresult['definitions']);
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
@@ -276,8 +212,7 @@ class Manage extends MY_Controller
         }
 
         $this->load->helper('download');
-        $filename = 'federationcontactlist.txt';
-        force_download($filename, $result, 'text/plain');
+        force_download('federationcontactlist.txt', $result, 'text/plain');
     }
 
     private function showMetadataTab(models\Federation $federation, $hasWriteAccess)
@@ -339,134 +274,131 @@ class Manage extends MY_Controller
         return $d;
     }
 
-    function show($fed_name)
+    function show($encodedFedName)
     {
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library('zacl');
-        $this->load->library('show_element');
+        $this->load->library(array('show_element', 'zacl'));
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
         if (empty($federation)) {
             show_error(lang('error_fednotfound'), 404);
-            return;
         }
-        $resource = $federation->getId();
-        $group = 'federation';
-        $hasReadAccess = $this->zacl->check_acl('f_' . $resource, 'read', $group, '');
-        $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
-        $hasAddbulkAccess = $this->zacl->check_acl('f_' . $resource, 'addbulk', $group, '');
-        $hasManageAccess = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
-        $canEdit = (boolean)($hasManageAccess || $hasWriteAccess);
+        $federationID = $federation->getId();
+        $access = array(
+            'hasReadAccess' => $this->zacl->check_acl('f_' . $federationID, 'read', 'federation', ''),
+            'hasWriteAccess' => $this->zacl->check_acl('f_' . $federationID, 'write', 'federation', ''),
+            'hasAddbulkAccess' => $this->zacl->check_acl('f_' . $federationID, 'addbulk', 'federation', ''),
+            'hasManageAccess' => $this->zacl->check_acl('f_' . $federationID, 'manage', 'federation', '')
+        );
+        $canEdit = (boolean)($access['hasManageAccess'] || $access['hasWriteAccess']);
+        $editAttributesLink = '';
+
         $this->title = lang('rr_federation_detail');
 
-        $data['breadcrumbs'] = array(
+        $breadcrumbs = array(
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
             array('url' => '#', 'name' => '' . $federation->getName() . '', 'type' => 'current'),
 
         );
 
-        if (!$hasReadAccess && ($federation->getPublic() === FALSE)) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rrerror_noperm_viewfed');
-            $this->load->view('page', $data);
-            return;
+        if (!$access['hasReadAccess'] && ($federation->getPublic() === FALSE)) {
+            $data = array(
+                'content_view' => 'nopermission',
+                'error' => lang('rrerror_noperm_viewfed'),
+                'breadcrumbs' => $breadcrumbs
+            );
+            return $this->load->view('page', $data);
         }
-        $data['federation_id'] = $federation->getId();
+
+
+        if (!$canEdit) {
+            $sideicons[] = '<a href="#" title="' . lang('noperm_fededit') . '"><i class="fi-prohibited"></i></a>';
+
+        } else {
+            $sideicons[] = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" title="' . lang('rr_fededit') . '"><i class="fi-pencil"></i></a>';
+            $editAttributesLink = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
+        }
+
         $bookmarked = false;
         $b = $this->session->userdata('board');
-        if (!empty($b) && is_array($b) && isset($b['fed'][$data['federation_id']])) {
+        if (!empty($b) && is_array($b) && isset($b['fed']['' . $federation->getId() . ''])) {
             $bookmarked = true;
+        } else {
+            $sideicons[] = '<a href="' . base_url() . 'ajax/bookfed/' . $federation->getId() . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus"></i></a>';
+
         }
-        $data['bookmarked'] = $bookmarked;
-        $data['federation_name'] = html_escape($federation->getName());
-        $data['federation_sysname'] = html_escape($federation->getSysname());
-        $data['federation_urn'] = html_escape($federation->getUrn());
-        $data['federation_desc'] = html_escape($federation->getDescription());
-        $data['federation_is_active'] = $federation->getActive();
+
+
+        $data = array(
+            'federation_id' => $federation->getId(),
+            'bookmarked' => $bookmarked,
+            'federation_name' => html_escape($federation->getName()),
+            'federation_sysname' => html_escape($federation->getSysname()),
+            'federation_urn' => html_escape($federation->getUrn()),
+            'federation_desc' => html_escape($federation->getDescription()),
+            'federation_is_active' => $federation->getActive(),
+            'titlepage' => lang('rr_feddetail') . ': ' . html_escape($federation->getName()),
+            'content_view' => 'federation/federation_show_view',
+            'breadcrumbs' => $breadcrumbs,
+            'fedpiechart' => '<div class="row"><div><canvas id="fedpiechart" ></canvas></div><div id="fedpiechartlegend"></div></div>',
+            'sideicons' => &$sideicons,
+            'result' => array('fvalidators' => array()),
+        );
+        if ($access['hasWriteAccess']) {
+            $data['fvalidator'] = TRUE;
+            $data['result']['fvalidators'][] = array('data' => array('data' => '<a href="' . base_url('manage/fvalidatoredit/vedit/' . $federation->getId() . '') . '" class="button small">' . lang('rr_add') . '</a>', 'class' => 'text-right', 'colspan' => 2));
+        }
+
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
-        $data['titlepage'] = lang('rr_feddetail') . ': ' . $data['federation_name'];
+        $contactLists = array(
+            'idp' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>'),
+            'sp' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>'),
+            'all' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>')
 
-        $data['content_view'] = 'federation/federation_show_view';
-        if (!$canEdit) {
-            $data['sideicons'][] = '<a href="#" title="'.lang('noperm_fededit').'"><i class="fi-prohibited"></i></a>';
+        );
+        $general = array(
+            array(lang('rr_fed_name'), html_escape($federation->getName())),
+            array(lang('fednameinmeta'), html_escape($federation->getUrn())),
+            array(lang('rr_fed_sysname'), html_escape($federation->getSysname())),
+            $this->genEntitiesDescriptorId($federation),
+            array(lang('rr_fed_publisher'), html_escape($federation->getPublisher())),
+            array(lang('rr_fed_desc'), html_escape($federation->getDescription())),
+            array(lang('rr_fed_tou'), html_escape($federation->getTou())),
+            array(lang('rr_downcontactsintxt'), $contactLists['idp'] . '<br />' . $contactLists['sp'] . '<br />' . $contactLists['all']),
+            array(lang('rr_timeline'), '<a href="' . base_url('reports/timelines/showregistered/' . $federation->getId() . '') . '" class="button secondary">Diagram</a>')
+        );
 
-        } else {
-            $data['sideicons'][] = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" title="'.lang('rr_fededit').'"><i class="fi-pencil"></i></a>';
-        }
-
-        if (empty($data['federation_is_active'])) {
-            $data['result']['general'][] = array(
-                'data' => array('data' => '<div data-alert class="alert-box alert">' . lang('rr_fed_inactive_full') . '</div>', 'class' => 'fedstatusinactive', 'colspan' => 2)
-            );
-        } else {
-            $data['result']['general'][] = array(
-                'data' => array('data' => '<div data-alert class="alert-box alert">' . lang('rr_fed_inactive_full') . '</div>', 'class' => 'fedstatusinactive', 'style' => 'display: none', 'colspan' => 2)
-            );
-        }
-        $data['result']['general'][] = array(lang('rr_fed_name'), html_escape($federation->getName()));
-        $data['result']['general'][] = array(lang('fednameinmeta'), html_escape($federation->getUrn()));
-        $data['result']['general'][] = array(lang('rr_fed_sysname'), html_escape($federation->getSysname()));
-        $entitiesDescriptorId = $federation->getDescriptorId();
-        if (!empty($entitiesDescriptorId)) {
-            $data['result']['general'][] = array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
-        } else {
-            $validfor = new \DateTime("now", new \DateTimezone('UTC'));
-            $idprefix = '';
-            $prefid = $this->config->item('fedmetadataidprefix');
-            if (!empty($prefid)) {
-                $idprefix = $prefid;
-            }
-            $idsuffix = $validfor->format('YmdHis');
-            $entitiesDescriptorId = $idprefix . $idsuffix;
-            $data['result']['general'][] = array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
-        }
-        $data['result']['general'][] = array(lang('rr_fed_publisher'), html_escape($federation->getPublisher()));
-        $data['result']['general'][] = array(lang('rr_fed_desc'), html_escape($federation->getDescription()));
-        $data['result']['general'][] = array(lang('rr_fed_tou'), html_escape($federation->getTou()));
-        $idpContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>');
-        $spContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>');
-        $allContactList = anchor(base_url() . 'federations/manage/showcontactlist/' . $fed_name . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>');
-        $data['result']['general'][] = array(lang('rr_downcontactsintxt'), $idpContactList . '<br />' . $spContactList . '<br />' . $allContactList);
-        $data['result']['general'][] = array(lang('rr_timeline'), '<a href="' . base_url() . 'reports/timelines/showregistered/' . $federation->getId() . '" class="button secondary">Diagram</a>');
-        $data['fedpiechart'] = '<div class="row"><div><canvas id="fedpiechart" ></canvas></div><div id="fedpiechartlegend"></div></div>';
+        $data['result']['general'] = $general;
 
 
-        $edit_attributes_link = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
-        if (!$hasWriteAccess) {
-            $edit_attributes_link = '';
-        }
-        $data['result']['attrs'][] = array('data' => array('data' => $edit_attributes_link . '', 'class' => 'text-right', 'colspan' => 2));
-        if (!$hasWriteAccess) {
-            $data['result']['attrs'][] = array('data' => array('data' => '<div class="notice"><small>' . lang('rr_noperm_edit') . '</small></div>', 'colspan' => 2));
-        }
+        $data['result']['attrs'][] = array('data' => array('data' => $editAttributesLink . '', 'class' => 'text-right', 'colspan' => 2));
+
         foreach ($requiredAttributes as $key) {
             $data['result']['attrs'][] = array($key->getAttribute()->getName(), $key->getStatus() . "<br /><i>(" . html_escape($key->getReason()) . ")</i>");
         }
 
 
-        $data['result']['membership'][] = array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2));
-        if (!$hasAddbulkAccess) {
-            $data['result']['membership'][] = array('data' => array('data' => '<div class="notice"><small>' . lang('rr_noperm_bulks') . '</small></div>', 'colspan' => 2));
-        } else {
-            $data['result']['membership'][] = array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/idp', '<i class="fi-arrow-right"></i>'));
-
-            $data['result']['membership'][] = array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/manage/addbulk/' . $fed_name . '/sp', '<i class="fi-arrow-right"></i>'));
+        $data['result']['membership'][] = array('data' => array('data' => '', 'colspan' => 2));
+        if ($access['hasAddbulkAccess']) {
+            $data['result']['membership'] = array(
+                array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2)),
+                array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp', '<i class="fi-arrow-right"></i>')),
+                array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp', '<i class="fi-arrow-right"></i>'))
+            );
         }
-        if ($hasWriteAccess) {
-            $data['result']['membership'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $fed_name . '', '<i class="fi-arrow-right"></i>'));
-            $data['result']['membership'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $fed_name . '', '<i class="fi-arrow-right"></i>'));
-        } else {
-            $data['result']['membership'][] = array('data' => array('data' => '<div class="notice"><small>' . lang('rr_noperm_invmembers') . '</small></div>', 'colspan' => 2));
+        if ($access['hasWriteAccess']) {
+            $data['result']['membership'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $encodedFedName . '', '<i class="fi-arrow-right"></i>'));
+            $data['result']['membership'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $encodedFedName . '', '<i class="fi-arrow-right"></i>'));
         }
 
 
-        if ($hasManageAccess) {
-            $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/access_manage/federation/' . $resource, '<i class="fi-arrow-right"></i>'), 'colspan' => 2));
-            $data['hiddenspan'] = '<span id="fednameencoded" style="display:none">' . $fed_name . '</span>';
+        if ($access['hasManageAccess']) {
+            $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/access_manage/federation/' . $federationID, '<i class="fi-arrow-right"></i>'), 'colspan' => 2));
+            $data['hiddenspan'] = '<span id="fednameencoded" style="display:none">' . $encodedFedName . '</span>';
             if ($federation->getActive()) {
                 $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" title="' . lang('btn_deactivatefed') . ': ' . html_escape($federation->getName()) . '">' . lang('btn_deactivatefed') . '</button>';
                 $data['result']['management'][] = array('data' => array('data' => '' . $b . '', 'colspan' => 2));
@@ -486,7 +418,7 @@ class Manage extends MY_Controller
         }
 
 
-        $metadataTab = $this->showMetadataTab($federation, $hasWriteAccess);
+        $metadataTab = $this->showMetadataTab($federation, $access['hasWriteAccess']);
         if (!isset($data['result']['metadata'])) {
             $data['result']['metadata'] = array();
         }
@@ -498,273 +430,10 @@ class Manage extends MY_Controller
 </div></div>', 'colspan' => 2));
         }
 
-        /**
-         * @var $fvalidators models\FederationValidator[]
-         */
-        $fvalidators = $federation->getValidators();
+        $data['result']['fvalidators'] = array_merge($data['result']['fvalidators'], $this->genValidators($federation, $canEdit));
 
-        if ($hasWriteAccess) {
-            $data['fvalidator'] = TRUE;
-            $data['result']['fvalidators'] = array();
-            $addbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '" class="button small">' . lang('rr_add') . '</a>';
-            $data['result']['fvalidators'][] = array('data' => array('data' => $addbtn, 'class' => 'text-right', 'colspan' => 2));
-        }
-        if ($fvalidators->count() > 0) {
-
-            if ($hasWriteAccess) {
-                $fvdata = '<dl class="accordion" data-accordion>';
-                foreach ($fvalidators as $f) {
-                    $d['fvalidators'] = array();
-                    $fvdata .= ' <dd class="accordion-navigation">';
-                    $fvdata .= '<a href="#fvdata' . $f->getId() . '" class="accordion-icon">' . $f->getName() . '</a>';
-                    $fvdata .= '<div id="fvdata' . $f->getId() . '" class="content">';
-                    $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
-
-                    $d['fvalidators'][] = array('data' => array('data' => ' ' . $editbtn, 'class' => '', 'colspan' => 2));
-                    $isenabled = $f->getEnabled();
-                    $ismandatory = $f->getMandatory();
-                    $isenabledForRegistration = $f->isEnabledForRegistration();
-
-                    $method = $f->getMethod();
-                    $fedstatusLabels = '';
-                    if ($isenabled) {
-                        $fedstatusLabels .= ' ' . makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled'));
-                    } else {
-                        $fedstatusLabels .= ' ' . makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
-                    }
-                    if ($ismandatory) {
-                        $fedstatusLabels .= ' ' . makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory'));
-                    } else {
-                        $fedstatusLabels .= ' ' . makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional'));
-                    }
-                    if ($isenabledForRegistration) {
-                        $fedstatusLabels .= ' ' . makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg'));
-                    }
-
-                    $d['fvalidators'][] = array('data' => lang('rr_status'), 'value' => $fedstatusLabels);
-                    $d['fvalidators'][] = array('data' => lang('Description'), 'value' => html_escape($f->getDescription()));
-                    $d['fvalidators'][] = array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType());
-                    $d['fvalidators'][] = array('data' => lang('fvalid_url'), 'value' => $f->getUrl());
-                    $d['fvalidators'][] = array('data' => lang('rr_httpmethod'), 'value' => $method);
-                    $d['fvalidators'][] = array('data' => lang('fvalid_entparam'), 'value' => $f->getEntityParam());
-                    $optargs1 = $f->getOptargs();
-                    $optargsStr = array();
-                    foreach ($optargs1 as $k => $v) {
-                        if ($v === null) {
-                            $optargsStr[] = $k;
-                        } else {
-                            $optargsStr[] = $k . '=' . $v;
-                        }
-                    }
-                    $d['fvalidators'][] = array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $optargsStr));
-                    if (strcmp($method, 'GET') == 0) {
-                        $d['fvalidators'][] = array('data' => lang('rr_argsep'), 'value' => $f->getSeparator());
-                    } else {
-
-                    }
-                    $d['fvalidators'][] = array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement()));
-
-                    $retvalues = $f->getReturnCodeValues();
-                    $retvaluesToHtml = '';
-                    foreach ($retvalues as $k => $v) {
-                        $retvaluesToHtml .= '<div>' . $k . ': ';
-                        if (!empty($v) && is_array($v)) {
-                            foreach ($v as $v1) {
-                                $retvaluesToHtml .= '"' . $v1 . '"; ';
-                            }
-                        }
-                    }
-                    $d['fvalidators'][] = array('data' => lang('fvalid_retelements'), 'value' => $retvaluesToHtml);
-                    $d['fvalidators'][] = array('data' => lang('fvalid_msgelements'), 'value' => implode('<br />', $f->getMessageCodeElements()));
-                    $fvdata .= $this->table->generate($d['fvalidators']);
-                    $fvdata .= '</div>';
-                    $fvdata .= '</dd>';
-                    $this->table->clear();
-                }
-                $fvdata .= '</dl>';
-                $data['result']['fvalidators'][] = array('data' => array('data' => $fvdata, 'colspan' => 2, 'class' => ''));
-            } else {
-                $data['result']['fvalidators'][] = array('data' => array('data' => '<div class="alert">' . lang('rr_noperm') . '</div>', 'colspan' => 2));
-            }
-        }
-        if (empty($data['bookmarked'])) {
-            $data['sideicons'][] = '<a href="' . base_url() . 'ajax/bookfed/' . $data['federation_id'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus"></i></a>';
-        }
 
         $this->load->view('page', $data);
-    }
-
-    function members($fed_name)
-    {
-        if (!$this->j_auth->logged_in()) {
-            redirect('auth/login', 'location');
-        }
-        $this->load->library('zacl');
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
-        if (empty($federation)) {
-            show_error(lang('error_fednotfound'), 404);
-        }
-        $resource = $federation->getId();
-        $action = 'read';
-        $group = 'federation';
-        $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
-        if (!$has_read_access) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rerror_nopermfedlistview');
-            $this->load->view('page', $data);
-            return;
-        }
-        $data['federation_name'] = $federation->getName();
-        $data['metadata_link'] = base_url() . "metadata/federation/" . base64url_encode($data['federation_name']);
-        /**
-         * @var $members models\Provider[]
-         */
-        $members = $federation->getMembers();
-        $i = 0;
-        foreach ($members as $m) {
-            $id = $m->getId();
-            $link = base_url() . 'providers/detail/show/' . $id;
-            $data['m_list'][$i]['name'] = $m->getName();
-            $data['m_list'][$i]['entity'] = $m->getEntityId();
-            $data['m_list'][$i++]['link'] = anchor($link, '&gt;&gt');
-        }
-        $this->title = lang('rr_fedmembers');
-        $data['content_view'] = 'federation/federation_members_view';
-        $this->load->view('page', $data);
-    }
-
-    function addbulk($fed_name, $type, $message = null)
-    {
-        if (!$this->j_auth->logged_in()) {
-            redirect('auth/login', 'location');
-        }
-        $this->load->library(array('zacl', 'show_element'));
-        $form_elements = array();
-        if (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp') == 0) {
-            $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
-            if (empty($federation)) {
-                show_error(lang('error_fednotfound'), 404);
-            }
-            $resource = $federation->getId();
-            $hasAddbulkAccess = $this->zacl->check_acl($resource, 'addbulk', 'federation', '');
-            if (!$hasAddbulkAccess) {
-                $data['content_view'] = 'nopermission';
-                $data['error'] = lang('rr_noperm');
-                $this->load->view('page', $data);
-                return;
-            }
-            $data['federation_name'] = $federation->getName();
-            $data['federation_urn'] = $federation->getUrn();
-            $data['federation_desc'] = $federation->getDescription();
-            $data['federation_is_active'] = $federation->getActive();
-            $federationMembers = $federation->getMembers();
-            if (strcasecmp($type, 'idp') == 0) {
-                $providers = $this->tmp_providers->getIdps();
-                $data['subtitlepage'] = lang('rr_addnewidpsnoinv');
-            } else {
-                $providers = $this->tmp_providers->getSps();
-                $data['subtitlepage'] = lang('rr_addnewspsnoinv');
-            }
-            $data['memberstype'] = strtolower($type);
-        } else {
-            log_message('error', 'type is expected to be sp or idp but ' . $type . 'given');
-            show_error('wrong type', 404);
-            return;
-        }
-        foreach ($providers as $i) {
-            if (!$federationMembers->contains($i)) {
-                $checkbox = array(
-                    'id' => 'member[' . $i->getId() . ']',
-                    'name' => 'member[' . $i->getId() . ']',
-                    'value' => 1,);
-                $form_elements[] = array(
-                    'name' => $i->getName() . ' (' . $i->getEntityId() . ')',
-                    'box' => form_checkbox($checkbox),
-                );
-            }
-        }
-
-        $data['content_view'] = 'federation/bulkadd_view';
-        $data['form_elements'] = $form_elements;
-        $data['fed_encoded'] = $fed_name;
-        $data['message'] = $message;
-        $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $data['fed_encoded'] . '">' . html_escape($federation->getName()) . '</a>';
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => base_url('federations/manage/show/' . $data['fed_encoded'] . ''), 'name' => html_escape($federation->getName())),
-            array('url' => base_url('#'), 'name' => $data['subtitlepage'], 'type' => 'current'),
-        );
-        $this->load->view('page', $data);
-    }
-
-    public function bulkaddsubmit()
-    {
-        if (!$this->j_auth->logged_in()) {
-            redirect('auth/login', 'location');
-        }
-        $this->load->library('zacl');
-        $message = null;
-        $encodedFedName = $this->input->post('fed');
-        $memberstype = $this->input->post('memberstype');
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
-        if (empty($federation)) {
-            show_error('federation not found', 404);
-            return;
-        }
-        $existingMembers = $federation->getMembershipProviders();
-        $m = $this->input->post('member');
-        if (!empty($m) && is_array($m) && count($m) > 0) {
-            $mKeys = array_keys($m);
-            if (strcasecmp($memberstype, 'idp') == 0 || strcasecmp($memberstype, 'sp') == 0) {
-                $newMembersList = $this->em->getRepository("models\Provider")->findBy(array('type' => array('' . strtoupper($memberstype) . '', 'BOTH'), 'id' => $mKeys));
-            } else {
-                log_message('error', 'missed or wrong membertype while adding new members to federation');
-                show_error('Missed members type', 503);
-            }
-            $newMembersArray = array();
-            foreach ($newMembersList as $nmember) {
-                if (!$existingMembers->contains($nmember)) {
-                    $newMembersArray[] = $nmember->getEntityId();
-                    $newMembership = new models\FederationMembers();
-                    $newMembership->setProvider($nmember);
-                    $newMembership->setFederation($federation);
-                    if ($nmember->getLocal()) {
-                        $newMembership->setJoinState('1');
-                    }
-                    $this->em->persist($newMembership);
-                } else {
-                    $doFilter = array('' . $federation->getId() . '');
-                    $m1 = $nmember->getMembership()->filter(
-                        function (models\FederationMembers $entry) use ($doFilter) {
-                            return (in_array($entry->getFederation()->getId(), $doFilter));
-                        }
-                    );
-                    if (!empty($m1)) {
-                        foreach ($m1 as $v1) {
-                            if ($nmember->getLocal()) {
-                                $v1->setJoinState('1');
-                            } else {
-                                $v1->setJoinState('0');
-                            }
-                            $this->em->persist($v1);
-                            $newMembersArray[] = $nmember->getEntityId();
-                        }
-                    }
-                }
-            }
-            if (count($newMembersArray) > 0) {
-                $subject = 'Members of Federations changed';
-                $body = 'Dear user' . PHP_EOL . 'Federation ' . $federation->getName() . ' has new members:' . PHP_EOL . implode(';' . PHP_EOL, $newMembersArray);
-                $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $subject, $body, array(), false);
-            }
-            $this->em->flush();
-            $this->j_ncache->cleanFederationMembers($federation->getId());
-            $message = '<div class="success">' . lang('rr_fedmembersadded') . '</div>';
-        } else {
-            $message = '<div class="alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>';
-        }
-
-        return $this->addbulk($encodedFedName, $memberstype, $message);
     }
 
     private function inviteSubmitValidate()
@@ -783,31 +452,26 @@ class Manage extends MY_Controller
         return $this->form_validation->run();
     }
 
-    public function inviteprovider($fed_name)
+    public function inviteprovider($encodedFedName)
     {
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $myLang = MY_Controller::getLang();
-        $this->load->library('zacl');
-        $this->load->library('show_element');
+        $this->load->library(array('zacl', 'show_element', 'approval'));
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
         if (empty($federation)) {
             show_error('Federation not found', 404);
         }
-        $resource = $federation->getId();
-        $hasWriteAccess = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
+
+        $hasWriteAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'write', 'federation', '');
         if (!$hasWriteAccess) {
             show_error('no access', 403);
-            return;
         }
-        $data['subtitle'] = lang('rr_federation') . ': ' . $federation->getName() . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), '<img src="' . base_url() . 'images/icons/arrow-in.png"/>');
-        log_message('debug', '_________Before validation');
         if ($this->inviteSubmitValidate() === TRUE) {
-            log_message('debug', 'Invitation form is valid');
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
             /**
@@ -821,19 +485,18 @@ class Manage extends MY_Controller
                 if ($inv_member_federations->contains($federation)) {
                     $data['error'] = sprintf(lang('rr_provideralready_member_of'), $federation->getName());
                 } else {
-                    $this->load->library('approval');
                     /* create request in queue with flush */
                     $add_to_queue = $this->approval->invitationProviderToQueue($federation, $invitedProvider, 'Join');
                     if ($add_to_queue) {
                         $mailSubject = "Invitation: join federation: " . $federation->getName();
-                        $mailBody = "Hi," . PHP_EOL . "Just few moments ago Administator of federation \"" . $federation->getName() . "\"" . PHP_EOL;
-                        $mailBody .= "invited Provider: \"" . $invitedProvider->getName() . " (" . $invitedProvider->getEntityId() . ")\"" . PHP_EOL;
-                        $mailBody .= "to join his federation." . PHP_EOL;
-                        $mailBody .= "To accept or reject this request please go to Resource Registry" . PHP_EOL;
-                        $mailBody .= base_url() . "reports/awaiting" . PHP_EOL . PHP_EOL . PHP_EOL;
-                        $mailBody .= "======= additional message attached by requestor ===========" . PHP_EOL;
-                        $mailBody .= html_escape($message) . PHP_EOL;
-                        $mailBody .= "=============================================================" . PHP_EOL;
+                        $mailBody = 'Hi,' . PHP_EOL . 'Just few moments ago Administator of federation "' . $federation->getName() . '"' . PHP_EOL .
+                            'invited Provider: "' . $invitedProvider->getName() . ' (' . $invitedProvider->getEntityId() . ')"' . PHP_EOL .
+                            'to join his federation.' . PHP_EOL .
+                            'To accept or reject this request please go to Resource Registry' . PHP_EOL .
+                            base_url('reports/awaiting') . PHP_EOL . PHP_EOL . PHP_EOL .
+                            '======= additional message attached by requestor ===========' . PHP_EOL .
+                            html_escape($message) . PHP_EOL .
+                            '=============================================================' . PHP_EOL;
                         $this->email_sender->addToMailQueue(array('grequeststoproviders', 'requeststoproviders'), $invitedProvider, $mailSubject, $mailBody, array(), true);
                     }
                 }
@@ -844,11 +507,7 @@ class Manage extends MY_Controller
         $list = array('IDP' => array(), 'SP' => array(), 'BOTH' => array());
         foreach ($local_providers as $l) {
             if (!$current_members->contains($l)) {
-                $ltype = strtolower($l->getType());
-                if (strcmp($ltype, 'both') == 0) {
-                    $ltype = 'idp';
-                }
-                $list[$l->getType()][$l->getId()] = $l->getNameToWebInLang($myLang, $ltype) . ' (' . $l->getEntityId() . ')';
+                $list[$l->getType()][$l->getId()] = $l->getNameToWebInLang($myLang) . ' (' . $l->getEntityId() . ')';
             }
         }
         $list = array_filter($list);
@@ -857,21 +516,23 @@ class Manage extends MY_Controller
         } else {
             $data['error_message'] = lang('rr_fednoprovidersavail');
         }
-        $data['fedname'] = $federation->getName();
 
-        $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()) . '">' . $federation->getName() . '</a>';
-
-        $data['fedurl'] = base_url('federations/manage/show/' . base64url_encode($federation->getName()) . '');
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => html_escape($federation->getName())),
-            array('url' => base_url('#'), 'name' => 'Invitation', 'type' => 'current'),
+        $data2merge = array(
+            'fedname' => $federation->getName(),
+            'titlepage' => lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()) . '">' . $federation->getName() . '</a>',
+            'fedurl' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''),
+            'breadcrumbs' => array(
+                array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+                array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => html_escape($federation->getName())),
+                array('url' => base_url('#'), 'name' => 'Invitation', 'type' => 'current'),
+            ),
+            'content_view' => 'federation/invite_provider_view',
         );
-        $data['content_view'] = 'federation/invite_provider_view';
+        $data = array_merge($data, $data2merge);
         $this->load->view('page', $data);
     }
 
-    public function removeprovider($fed_name)
+    public function removeprovider($encodedFedName)
     {
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
@@ -880,96 +541,99 @@ class Manage extends MY_Controller
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
         if (empty($federation)) {
             show_error('Federation not found', 404);
         }
         $myLang = MY_Controller::getLang();
-        $resource = $federation->getId();
-        $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', 'federation', '');
-        if (!$has_write_access) {
+        $hasWriteAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'write', 'federation', '');
+        if (!$hasWriteAccess) {
             show_error('no access', 403);
-            return;
         }
         if ($this->removeSubmitValidate() === TRUE) {
-            log_message('debug', 'Remove provider from fed form is valid');
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
             /**
-             * @var $inv_member models\Provider
+             * @var $invitedProvider models\Provider
              */
-            $inv_member = $this->tmp_providers->getOneById($provider_id);
-            if (empty($inv_member)) {
+            $invitedProvider = $this->tmp_providers->getOneById($provider_id);
+            if (empty($invitedProvider)) {
                 $data['error_message'] = lang('rerror_providernotexist');
             } else {
-                if ($this->config->item('rr_rm_member_from_fed') === TRUE) {
-                    $p_tmp = new models\AttributeReleasePolicies;
-                    $arp_fed = $p_tmp->getFedPolicyAttributesByFed($inv_member, $federation);
-                    if (!empty($arp_fed) && is_array($arp_fed) && count($arp_fed) > 0) {
-                        foreach ($arp_fed as $r) {
-                            $this->em->remove($r);
-                        }
-                        $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>";
-                        $rm_arp_msg .= "It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
-                    } else {
-                        $rm_arp_msg = '';
-                    }
-                    $doFilter = array('' . $federation->getId() . '');
-                    $m2 = $inv_member->getMembership()->filter(
-                        function (models\FederationMembers $entry) use ($doFilter) {
-                            return (in_array($entry->getFederation()->getId(), $doFilter));
-                        }
-                    );
-                    foreach ($m2 as $v2) {
-                        log_message('debug', 'GKS OOOO');
-                        if ($inv_member->getLocal()) {
-                            $v2->setJoinState('2');
-                            $this->em->persist($v2);
-                        } else {
-                            $inv_member->getMembership()->removeElement($v2);
-                            $this->em->remove($v2);
-                        }
-                    }
-                    $entype = strtolower($inv_member->getType());
-                    if (strcmp($entype, 'both') == 0) {
-                        $entype = 'idp';
-                    }
-                    $provider_name = $inv_member->getNameToWebInLang($myLang, $entype);;
-                    $this->em->persist($inv_member);
-                    $this->em->flush();
-                    $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($inv_member);
-                    if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0) {
-                        foreach ($spec_arps_to_remove as $rp) {
-                            $this->em->remove($rp);
-                        }
-                        $this->em->flush();
-                    }
-                    $data['success_message'] = "You just removed provider <b>" . $provider_name . "</b> from federation: <b>" . $federation->getName() . "</b><br />";
-                    $data['success_message'] .= $rm_arp_msg;
-                    if ($this->config->item('notify_if_provider_rm_from_fed') === TRUE) {
-                        $mail_sbj = "\"" . $provider_name . "\" has been removed from federation \"" . $federation->getName() . "\"";
-                        $mail_body = "Hi,\r\nJust few moments ago Administator of federation \"" . $federation->getName() . "\"\r\n";
-                        $mail_body .= "just removed " . $provider_name . " (" . $inv_member->getEntityId() . ") from federation\r\n";
-                        if (!empty($message)) {
-                            $mail_body .= "\r\n\r\n======= additional message attached by administrator ===========\r\n";
-                            $mail_body .= $message . "\r\n";
-                            $mail_body .= "================================================================\r\n";
-                        }
-
-                        $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), $sync = false);
-                        $this->em->flush();
-                    }
-                } else {
+                if ($this->config->item('rr_rm_member_from_fed') !== TRUE) {
                     log_message('error', 'rr_rm_member_from_fed is not set in config');
                     show_error('missed some config setting, Please contact with admin.', 500);
-                    return;
                 }
+
+                $p_tmp = new models\AttributeReleasePolicies;
+                $arp_fed = $p_tmp->getFedPolicyAttributesByFed($invitedProvider, $federation);
+                $rm_arp_msg = '';
+                if (!empty($arp_fed) && is_array($arp_fed) && count($arp_fed) > 0) {
+                    foreach ($arp_fed as $r) {
+                        $this->em->remove($r);
+                    }
+                    $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>" .
+                        "It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
+                }
+                $doFilter = array('' . $federation->getId() . '');
+                $m2 = $invitedProvider->getMembership()->filter(
+                    function (models\FederationMembers $entry) use ($doFilter) {
+                        return (in_array($entry->getFederation()->getId(), $doFilter));
+                    }
+                );
+                foreach ($m2 as $v2) {
+                    if ($invitedProvider->getLocal()) {
+                        $v2->setJoinState('2');
+                        $this->em->persist($v2);
+                    } else {
+                        $invitedProvider->getMembership()->removeElement($v2);
+                        $this->em->remove($v2);
+                    }
+                }
+                $entype = strtolower($invitedProvider->getType());
+                if (strcasecmp($entype, 'both') == 0) {
+                    $entype = 'idp';
+                }
+                $provider_name = $invitedProvider->getNameToWebInLang($myLang, $entype);;
+                $this->em->persist($invitedProvider);
+                $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($invitedProvider);
+                if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0) {
+                    foreach ($spec_arps_to_remove as $rp) {
+                        $this->em->remove($rp);
+                    }
+                }
+                $data['success_message'] = "You just removed provider <b>" . $provider_name . "</b> from federation: <b>" . $federation->getName() . "</b><br />" . $rm_arp_msg;
+
+                $mail_sbj = "\"" . $provider_name . "\" has been removed from federation \"" . $federation->getName() . "\"";
+                $mail_body = 'Hi,' . PHP_EOL . 'Just few moments ago Administator of federation "' . $federation->getName() . '"' . PHP_EOL .
+                    'removed ' . $provider_name . ' (' . $invitedProvider->getEntityId() . ') from federation' . PHP_EOL;
+                if (!empty($message)) {
+                    $mail_body .= PHP_EOL . PHP_EOL . '======= additional message attached by administrator ===========' . PHP_EOL . $message . PHP_EOL .
+                        '================================================================' . PHP_EOL;
+                }
+
+                $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), $sync = false);
+                $this->em->flush();
+
+
             }
         }
-        $data['titlepage'] = lang('rr_federation') . ': ' . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), $federation->getName());
-        $data['subtitlepage'] = lang('rmprovfromfed');
+        $data2merge = array(
+            'titlepage' => lang('rr_federation') . ': ' . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), $federation->getName()),
+            'subtitlepage' => lang('rmprovfromfed'),
+            'content_view' => 'federation/remove_provider_view',
+            'encodedfedname' => base64url_encode($federation->getName()),
+            'breadcrumbs' => array(
+                array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+                array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => '' . $federation->getName() . ''),
+                array('url' => '#', 'type' => 'current', 'name' => lang('rmprovfromfed'))
+            ),
+            'fedname' => $federation->getName(),
+        );
         $current_members = $federation->getMembers();
-        if ($current_members->count() > 0) {
+        if ($current_members->count() == 0) {
+            $data['error_message'] = lang('error_notfoundmemberstoberm');
+        } else {
             $list = array('IDP' => array(), 'SP' => array(), 'BOTH' => array());
             foreach ($current_members as $l) {
                 $ltype = strtolower($l->getType());
@@ -981,23 +645,114 @@ class Manage extends MY_Controller
             }
             $list = array_filter($list);
             $data['providers'] = $list;
-            $data['fedname'] = $federation->getName();
-        } else {
-            $data['error_message'] = lang('error_notfoundmemberstoberm');
         }
-        $encodedFedName = base64url_encode($federation->getName());
-        $data['content_view'] = 'federation/remove_provider_view';
-
-        $data['encodedfedname'] = $encodedFedName;
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => base_url('federations/manage/show/' . $encodedFedName . ''), 'name' => '' . $federation->getName() . ''),
-            array('url' => '#', 'type' => 'current', 'name' => lang('rmprovfromfed'))
-
-        );
-
+        $data = array_merge($data, $data2merge);
 
         $this->load->view('page', $data);
+    }
+
+    /**
+     * @param \models\Federation $federation
+     * @return array
+     */
+    private function genEntitiesDescriptorId(\models\Federation $federation)
+    {
+        $entitiesDescriptorId = $federation->getDescriptorId();
+        if (!empty($entitiesDescriptorId)) {
+            return array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
+        } else {
+            $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+            $idprefix = '';
+            $prefid = $this->config->item('fedmetadataidprefix');
+            if (!empty($prefid)) {
+                $idprefix = $prefid;
+            }
+            $idsuffix = $validfor->format('YmdHis');
+            $entitiesDescriptorId = $idprefix . $idsuffix;
+            return array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
+        }
+
+    }
+
+    private function genValidators(\models\Federation $federation, $hasWriteAccess = false)
+    {
+        /**
+         * @var $fvalidators models\FederationValidator[]
+         */
+        $fvalidators = $federation->getValidators();
+
+
+        if ($fvalidators->count() > 0) {
+
+            if ($hasWriteAccess) {
+                $fvdata = '<dl class="accordion" data-accordion>';
+                foreach ($fvalidators as $f) {
+                    $fvdata .= ' <dd class="accordion-navigation">' .
+                        '<a href="#fvdata' . $f->getId() . '" class="accordion-icon">' . $f->getName() . '</a>' .
+                        '<div id="fvdata' . $f->getId() . '" class="content">';
+                    $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
+
+                    $fedstatusLabels = array(
+                        'en' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')),
+                        'man' => makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory')),
+                        'reg' => makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg')),
+                    );
+                    if (!$f->getEnabled()) {
+                        $fedstatusLabels['en'] = makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
+                    }
+                    if (!$f->getMandatory()) {
+                        $fedstatusLabels['man'] = makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional'));
+                    }
+                    if (!$f->isEnabledForRegistration()) {
+                        unset($fedstatusLabels['reg']);
+                    }
+                    $optargs1 = $f->getOptargs();
+                    $optargsStr = array();
+                    foreach ($optargs1 as $k => $v) {
+                        if ($v === null) {
+                            $optargsStr[] = $k;
+                        } else {
+                            $optargsStr[] = $k . '=' . $v;
+                        }
+                    }
+                    $retvalues = $f->getReturnCodeValues();
+                    $retvaluesToHtml = '';
+                    foreach ($retvalues as $k => $v) {
+                        $retvaluesToHtml .= '<div>' . $k . ': ';
+                        if (!empty($v) && is_array($v)) {
+                            foreach ($v as $v1) {
+                                $retvaluesToHtml .= '"' . $v1 . '"; ';
+                            }
+                        }
+                    }
+
+                    $tbl = array(
+                        array('data' => array('data' => ' ' . $editbtn, 'class' => '', 'colspan' => 2)),
+                        array('data' => lang('rr_status'), 'value' => implode(' ', $fedstatusLabels)),
+                        array('data' => lang('Description'), 'value' => html_escape($f->getDescription())),
+                        array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType()),
+                        array('data' => lang('fvalid_url'), 'value' => $f->getUrl()),
+                        array('data' => lang('rr_httpmethod'), 'value' => $f->getMethod()),
+                        array('data' => lang('fvalid_entparam'), 'value' => $f->getEntityParam()),
+                        array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $optargsStr)),
+                        'sep' => array('data' => lang('rr_argsep'), 'value' => $f->getSeparator()),
+                        array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement())),
+                        array('data' => lang('fvalid_retelements'), 'value' => $retvaluesToHtml),
+                        array('data' => lang('fvalid_msgelements'), 'value' => implode('<br />', $f->getMessageCodeElements()))
+                    );
+                    if (strcmp($f->getMethod(), 'GET') != 0) {
+                        unset($tbl['sep']);
+                    }
+                    $fvdata .= $this->table->generate($tbl) . '</div></dd>';
+                    $this->table->clear();
+                }
+                $fvdata .= '</dl>';
+                return array(array('data' => array('data' => $fvdata, 'colspan' => 2, 'class' => '')));
+            }
+            return array(array('data' => array('data' => '<div class="alert">' . lang('rr_noperm') . '</div>', 'colspan' => 2)));
+
+        }
+        return array();
     }
 
 }

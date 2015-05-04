@@ -3058,7 +3058,7 @@ $(document).ready(function () {
         var csrfhash = $("[name='csrfhash']").val();
         var baseurl = $("[name='baseurl']").val();
         var fedname = $("span#fednameencoded").text();
-        var url = baseurl + 'federations/manage/changestatus';
+        var url = baseurl + 'federations/fedactions/changestatus';
         var data = [{name: 'status', value: btnVal}, {name: csrfname, value: csrfhash}, {
             name: 'fedname',
             value: fedname

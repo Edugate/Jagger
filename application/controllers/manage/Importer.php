@@ -4,21 +4,22 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Importer Class
- * 
+ *
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Importer extends MY_Controller {
+class Importer extends MY_Controller
+{
 
     private $tmp_providers;
     private $tmp_attributes;
@@ -34,13 +35,10 @@ class Importer extends MY_Controller {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
-        }
-        else
-        {
+        } else {
             $this->load->helper(array('cert', 'form'));
             $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'xmlvalidator'));
             $this->tmp_providers = new models\Providers;
@@ -57,14 +55,11 @@ class Importer extends MY_Controller {
     function index()
     {
         $access = $this->access;
-        if (!$access)
-        {
+        if (!$access) {
             $data['content_view'] = "nopermission";
             $data['error'] = lang('error403');
             $this->load->view('page', $data);
-        }
-        else
-        {
+        } else {
 
             $data['title'] = lang('titleimportmeta');
             $data['titlepage'] = lang('titleimportmeta');
@@ -82,15 +77,13 @@ class Importer extends MY_Controller {
         $this->globalerrors = array();
         $this->other_error = array();
         $access = $this->access;
-        if (!$access)
-        {
+        if (!$access) {
             show_error('no access', 403);
         }
 
         log_message('debug', "importer submited");
         $data = array();
-        if ($this->_submit_validate() !== TRUE)
-        {
+        if ($this->_submit_validate() !== TRUE) {
             return $this->index();
         }
 
@@ -100,43 +93,31 @@ class Importer extends MY_Controller {
         $arg['validate'] = $this->input->post('validate');
         $arg['sslcheck'] = trim($this->input->post('sslcheck'));
 
-        if (!empty($arg['sslcheck']) && $arg['sslcheck'] === 'ignore')
-        {
+        if (!empty($arg['sslcheck']) && $arg['sslcheck'] === 'ignore') {
             $sslvalidate = FALSE;
-        }
-        else
-        {
+        } else {
             $sslvalidate = TRUE;
         }
 
-        if ($arg['validate'] === 'accept')
-        {
+        if ($arg['validate'] === 'accept') {
             $mvalidate = TRUE;
-            if (!empty($arg['cert']))
-            {
+            if (!empty($arg['cert'])) {
                 $mcerturl = FALSE;
                 $mcert = $arg['cert'];
-            }
-            elseif (!empty($arg['certurl']))
-            {
+            } elseif (!empty($arg['certurl'])) {
                 $mcerturl = $arg['certurl'];
                 $mcert = FALSE;
-            }
-            else
-            {
+            } else {
                 $this->other_error[] = lang('certsignerurlbodymissing');
                 return $this->index();
             }
-        }
-        else
-        {
+        } else {
             $mvalidate = FALSE;
             $mcerturl = FALSE;
             $mcert = FALSE;
         }
 
-        if ($this->_metadatasigner_validate($arg['metadataurl'], $sslvalidate, $mvalidate, $mcerturl, $mcert) !== TRUE)
-        {
+        if ($this->_metadatasigner_validate($arg['metadataurl'], $sslvalidate, $mvalidate, $mcerturl, $mcert) !== TRUE) {
             return $this->index();
         }
         $arg['type'] = $this->input->post('type');
@@ -153,8 +134,7 @@ class Importer extends MY_Controller {
         $tmp = new models\Federations();
 
         $fed = $tmp->getOneByName($arg['federation']);
-        if (empty($fed))
-        {
+        if (empty($fed)) {
             $this->other_error[] = 'No permission to add entities to selected federation';
             return $this->index();
         }
@@ -164,48 +144,32 @@ class Importer extends MY_Controller {
          * replace below if calling function
          * check if metadata_body if xml and valid against schema
          */
-        if ($arg['extorint'] == 'int')
-        {
+        if ($arg['extorint'] == 'int') {
             $local = true;
-        }
-        else
-        {
+        } else {
             $local = false;
         }
-        if ($arg['active'] == 'yes')
-        {
+        if ($arg['active'] == 'yes') {
             $active = true;
-        }
-        else
-        {
+        } else {
             $active = false;
         }
-        if ($arg['static'] == 'yes')
-        {
+        if ($arg['static'] == 'yes') {
             $static = true;
-        }
-        else
-        {
+        } else {
             $static = false;
         }
-        if ($arg['overwrite'] == 'yes')
-        {
+        if ($arg['overwrite'] == 'yes') {
             $overwrite = true;
-        }
-        else
-        {
+        } else {
             $overwrite = false;
         }
-        if ($arg['fullinformation'] == 'yes')
-        {
+        if ($arg['fullinformation'] == 'yes') {
             $full = true;
-        }
-        else
-        {
+        } else {
             $full = false;
         }
-        if (!($arg['type'] == 'idp' || $arg['type'] == 'sp' || $arg['type'] == 'all'))
-        {
+        if (!($arg['type'] == 'idp' || $arg['type'] == 'sp' || $arg['type'] == 'all')) {
             log_message('error', 'Cannot import metadata because type of entities is not set correctly');
             return $this->index();
         }
@@ -217,32 +181,26 @@ class Importer extends MY_Controller {
             'localimport' => TRUE,
             'federations' => array($fed->getName())
         );
-        foreach ($defaults as $key => $value)
-        {
-            if (!is_array($value))
-            {
+        foreach ($defaults as $key => $value) {
+            if (!is_array($value)) {
                 log_message('debug', 'importer: defaults:' . $key . '=' . $value);
             }
         }
         $other = null;
         $type_of_entities = strtoupper($arg['type']);
         $result = $this->metadata2import->import($this->xmlDOM, $type_of_entities, $full, $defaults, $other);
-        if ($result)
-        {
+        if ($result) {
             $this->load->library('j_ncache');
             $this->j_ncache->cleanProvidersList('idp');
             $this->j_ncache->cleanProvidersList('sp');
             $data['title'] = lang('titleimportmeta');
             $data['success_message'] = lang('okmetaimported');
-            if (isset($this->globalnotices['metadataimportmessage']) && is_array($this->globalnotices['metadataimportmessage']))
-            {
-              $data['success_details'] =  $this->globalnotices['metadataimportmessage'] ;
+            if (isset($this->globalnotices['metadataimportmessage']) && is_array($this->globalnotices['metadataimportmessage'])) {
+                $data['success_details'] = $this->globalnotices['metadataimportmessage'];
             }
             $data['content_view'] = "manage/import_metadata_success_view";
             $this->load->view('page', $data);
-        }
-        else
-        {
+        } else {
             return $this->index();
         }
     }
@@ -274,43 +232,35 @@ class Importer extends MY_Controller {
     {
         $curl_timeout = $this->config->item('curl_timeout');
         $this->curl_maxsize = $this->config->item('curl_metadata_maxsize');
-        if (!isset($curl_timeout))
-        {
-            $curl_timeout = 30;
+        if (!isset($curl_timeout)) {
+            $curl_timeout = 60;
         }
-        if (!isset($this->curl_maxsize))
-        {
+        if (!isset($this->curl_maxsize)) {
             $this->curl_maxsize = 20000;
         }
         $maxsize = $this->curl_maxsize;
-        if ($sslvalidate)
-        {
+        if ($sslvalidate) {
             $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), array(
                 CURLOPT_TIMEOUT => $curl_timeout,
                 CURLOPT_BUFFERSIZE => 128,
                 CURLOPT_NOPROGRESS => FALSE,
-                CURLOPT_PROGRESSFUNCTION => function($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize)
-                {
+                CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
                     return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
                 }
             ));
-        }
-        else
-        {
+        } else {
             $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), array(
                 CURLOPT_SSL_VERIFYPEER => $sslvalidate,
                 CURLOPT_SSL_VERIFYHOST => $sslvalidate,
                 CURLOPT_TIMEOUT => $curl_timeout,
                 CURLOPT_BUFFERSIZE => 128,
                 CURLOPT_NOPROGRESS => FALSE,
-                CURLOPT_PROGRESSFUNCTION => function($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize)
-                {
+                CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
                     return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
                 }
             ));
         }
-        if (empty($this->xmlbody))
-        {
+        if (empty($this->xmlbody)) {
             $this->other_error[] = $this->curl->error_string;
             return FALSE;
         }
@@ -321,61 +271,45 @@ class Importer extends MY_Controller {
         $this->xmlDOM->loadXML($this->xmlbody);
         log_message('debug', __METHOD__ . ' metadata xml loaded into DOMDocument - elements: ' . $this->xmlDOM->childNodes->length);
         $valid_metadata = FALSE;
-        if ($signed === FALSE)
-        {
+        if ($signed === FALSE) {
             $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, FALSE, FALSE);
+            return $valid_metadata;
         }
-        else
-        {
-            if (!empty($certbody))
-            {
-                if (validateX509($certbody))
-                {
-                    $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certbody);
-                }
-                else
-                {
-                    $this->other_error[] = lang('einvalidcertsignerdata');
-                    return FALSE;
-                }
+
+        if (!empty($certbody)) {
+            if (validateX509($certbody)) {
+                $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certbody);
+            } else {
+                $this->other_error[] = lang('einvalidcertsignerdata');
+                return FALSE;
             }
-            elseif (!empty($certurl))
-            {
-                if ($sslvalidate)
-                {
-                    $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
-                        CURLOPT_TIMEOUT => $curl_timeout,
-                        CURLOPT_BUFFERSIZE => 128,
-                        CURLOPT_NOPROGRESS => FALSE,
-                        CURLOPT_PROGRESSFUNCTION => function($DownloadSize, $Downloaded, $UploadSize, $Uploaded)
-                        {
-                            return ($Downloaded > (1000 * 1024)) ? 1 : 0;
-                        }
-                    ));
-                }
-                else
-                {
-                    $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
-                        CURLOPT_SSL_VERIFYPEER => $sslvalidate,
-                        CURLOPT_SSL_VERIFYHOST => $sslvalidate,
-                        CURLOPT_TIMEOUT => $curl_timeout,
-                        CURLOPT_BUFFERSIZE => 128,
-                        CURLOPT_NOPROGRESS => FALSE,
-                        CURLOPT_PROGRESSFUNCTION => function($DownloadSize, $Downloaded, $UploadSize, $Uploaded)
-                        {
-                            return ($Downloaded > (1000 * 1024)) ? 1 : 0;
-                        }
-                    ));
-                }
-                if (!empty($certdata) && validateX509($certdata))
-                {
-                    $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certdata);
-                }
-                else
-                {
-                    $this->other_error[] = lang('einvalidcertsignerurl');
-                    return FALSE;
-                }
+        } elseif (!empty($certurl)) {
+            if ($sslvalidate) {
+                $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
+                    CURLOPT_TIMEOUT => $curl_timeout,
+                    CURLOPT_BUFFERSIZE => 128,
+                    CURLOPT_NOPROGRESS => FALSE,
+                    CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
+                        return ($Downloaded > (1000 * 1024)) ? 1 : 0;
+                    }
+                ));
+            } else {
+                $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
+                    CURLOPT_SSL_VERIFYPEER => $sslvalidate,
+                    CURLOPT_SSL_VERIFYHOST => $sslvalidate,
+                    CURLOPT_TIMEOUT => $curl_timeout,
+                    CURLOPT_BUFFERSIZE => 128,
+                    CURLOPT_NOPROGRESS => FALSE,
+                    CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
+                        return ($Downloaded > (1000 * 1024)) ? 1 : 0;
+                    }
+                ));
+            }
+            if (!empty($certdata) && validateX509($certdata)) {
+                $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certdata);
+            } else {
+                $this->other_error[] = lang('einvalidcertsignerurl');
+                return FALSE;
             }
         }
         return $valid_metadata;
