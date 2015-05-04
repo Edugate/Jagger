@@ -508,11 +508,7 @@ class Manage extends MY_Controller
         $list = array('IDP' => array(), 'SP' => array(), 'BOTH' => array());
         foreach ($local_providers as $l) {
             if (!$current_members->contains($l)) {
-                $ltype = strtolower($l->getType());
-                if (strcmp($ltype, 'both') == 0) {
-                    $ltype = 'idp';
-                }
-                $list[$l->getType()][$l->getId()] = $l->getNameToWebInLang($myLang, $ltype) . ' (' . $l->getEntityId() . ')';
+                $list[$l->getType()][$l->getId()] = $l->getNameToWebInLang($myLang) . ' (' . $l->getEntityId() . ')';
             }
         }
         $list = array_filter($list);
@@ -596,7 +592,7 @@ class Manage extends MY_Controller
                     }
                 }
                 $entype = strtolower($invitedProvider->getType());
-                if (strcmp($entype, 'both') == 0) {
+                if (strcasecmp($entype, 'both') == 0) {
                     $entype = 'idp';
                 }
                 $provider_name = $invitedProvider->getNameToWebInLang($myLang, $entype);;
