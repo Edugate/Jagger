@@ -471,7 +471,6 @@ class Manage extends MY_Controller
         if (!$hasWriteAccess) {
             show_error('no access', 403);
         }
-        log_message('debug', '_________Before validation');
         if ($this->inviteSubmitValidate() === TRUE) {
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
