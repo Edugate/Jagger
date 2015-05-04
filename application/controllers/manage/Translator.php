@@ -62,8 +62,8 @@ class Translator extends MY_Controller
         $data['titlepage'] = lang('title_translator') . '';
         $inputs = array_keys($original);
         $noinputs = (int)count($inputs) + 10;
-        $systempost = (int)ini_get(max_input_vars);
-        if ($noinputs > $systempost) {
+        $systempost = (int)ini_get('max_input_vars');
+        if (!empty($systempost) && $noinputs > $systempost) {
             $data['syswarning'] = 'The number of input vars is (>' . $noinputs . ') higher that system allows (' . $systempost . '). Please increase max_input_vars in php settings';
         }
         $allowedlangs = MY_Controller::guiLangs();
@@ -73,8 +73,12 @@ class Translator extends MY_Controller
         } else {
             show_error('The language code is not allowed', 404);
         }
-        $data['subtitlepage'] = 'en => ' . $langto;
+        $data['subtitlepage'] = 'en => ' . html_escape($langto);
 
+        $data['breadcrumbs'] = array(
+            array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
+			array('url' => '#', 'name' => 'Translation: from en to '.html_escape($langto), 'type' => 'current'),
+        );
 
         $isAccess = $this->checkPermission($langto);
         if (!$isAccess) {
