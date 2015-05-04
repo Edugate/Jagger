@@ -452,17 +452,17 @@ class Manage extends MY_Controller
         return $this->form_validation->run();
     }
 
-    public function inviteprovider($fed_name)
+    public function inviteprovider($encodedFedName)
     {
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $myLang = MY_Controller::getLang();
-        $this->load->library(array('zacl', 'show_element'));
+        $this->load->library(array('zacl', 'show_element','approval'));
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
         if (empty($federation)) {
             show_error('Federation not found', 404);
         }
@@ -471,11 +471,8 @@ class Manage extends MY_Controller
         if (!$hasWriteAccess) {
             show_error('no access', 403);
         }
-
-        $data['subtitle'] = lang('rr_federation') . ': ' . $federation->getName() . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), '<i class="fi-arrow-right"></i>');
         log_message('debug', '_________Before validation');
         if ($this->inviteSubmitValidate() === TRUE) {
-            log_message('debug', 'Invitation form is valid');
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
             /**
@@ -489,7 +486,6 @@ class Manage extends MY_Controller
                 if ($inv_member_federations->contains($federation)) {
                     $data['error'] = sprintf(lang('rr_provideralready_member_of'), $federation->getName());
                 } else {
-                    $this->load->library('approval');
                     /* create request in queue with flush */
                     $add_to_queue = $this->approval->invitationProviderToQueue($federation, $invitedProvider, 'Join');
                     if ($add_to_queue) {
@@ -637,10 +633,15 @@ class Manage extends MY_Controller
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
                 array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => '' . $federation->getName() . ''),
                 array('url' => '#', 'type' => 'current', 'name' => lang('rmprovfromfed'))
-            )
+            ),
+            'fedname'=>$federation->getName(),
         );
         $current_members = $federation->getMembers();
-        if ($current_members->count() > 0) {
+        if($current_members->count() == 0)
+        {
+             $data['error_message'] = lang('error_notfoundmemberstoberm');
+        }
+        else {
             $list = array('IDP' => array(), 'SP' => array(), 'BOTH' => array());
             foreach ($current_members as $l) {
                 $ltype = strtolower($l->getType());
@@ -652,9 +653,6 @@ class Manage extends MY_Controller
             }
             $list = array_filter($list);
             $data['providers'] = $list;
-            $data['fedname'] = $federation->getName();
-        } else {
-            $data['error_message'] = lang('error_notfoundmemberstoberm');
         }
         $data = array_merge($data,$data2merge);
 
@@ -758,9 +756,9 @@ class Manage extends MY_Controller
                 }
                 $fvdata .= '</dl>';
                 return array(array('data' => array('data' => $fvdata, 'colspan' => 2, 'class' => '')));
-            } else {
-                return array(array('data' => array('data' => '<div class="alert">' . lang('rr_noperm') . '</div>', 'colspan' => 2)));
             }
+            return array(array('data' => array('data' => '<div class="alert">' . lang('rr_noperm') . '</div>', 'colspan' => 2)));
+
         }
         return array();
     }
