@@ -33,8 +33,6 @@ foreach ($result as $k => $v) {
     } else {
 
         echo '<div id="' . $k . '" class="content active nopadding">';
-        echo '<div class="text-right">' . $editlink . '</div>';
-
 
         if (!empty($fedpiechart)) {
             $this->table->set_template($tmpl2);

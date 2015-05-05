@@ -67,7 +67,7 @@ class Importer extends MY_Controller
             $data['other_error'] = $this->other_error;
             $data['global_erros'] = $this->globalerrors;
             $data['federations'] = $this->form_element->getFederation();
-            $data['types'] = $this->form_element->buildTypeOfEntities();
+            $data['types'] = array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities'));
             $this->load->view('page', $data);
         }
     }

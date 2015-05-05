@@ -2547,14 +2547,6 @@ class Form_element
         return $result;
     }
 
-    /**
-     * make dropdown list of type of entities
-     */
-    public function buildTypeOfEntities()
-    {
-        $types = array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities'));
-        return $types;
-    }
 
     public function generateFederationsElement($federations)
     {
