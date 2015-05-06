@@ -530,7 +530,7 @@ class Form_element
             $ischeck = '';
             if (in_array($tmplEnc, $certEncMethods)) {
                 $ischeck = ' checked="checked" ';
-            } 
+            }
             $row .= '<div><label><input type="checkbox" name="' . $name . '[' . $crtid . '][encmethods][]" value="' . $tmplEnc . '" ' . $ischeck . '> ' . $tmplEnc . '</label></div>';
         }
 
@@ -561,11 +561,10 @@ class Form_element
             $crtid = 'x' . rand();
         }
         $readonly = false;
-        if (is_numeric($crtid)) {
+        if (ctype_digit($crtid)) {
             $readonly = true;
         }
         $row = '<div class="certgroup small-12 columns">';
-
         $row .= '<div class="small-12 columns hidden">';
         $row .= $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($cert->getType()), '', FALSE);
         $row .= '</div>';
