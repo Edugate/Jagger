@@ -46,12 +46,7 @@ class Statdefs extends MY_Controller
 
     public function download($defid = null)
     {
-        if (!$this->isStats()) {
-            set_status_header(404);
-            echo 'Feature not enabled';
-            return null;
-        }
-        if (!$this->input->is_ajax_request() || empty($defid) || !ctype_digit($defid) || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || empty($defid) || !ctype_digit($defid) || $this->isStats() !== TRUE || !$this->j_auth->logged_in()) {
             set_status_header(403);
             echo 'Access denied';
             return null;
@@ -129,14 +124,10 @@ class Statdefs extends MY_Controller
             $jobHandle = $gmclient->doBackground("externalstatcollection", serialize($params));
             $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
             log_message('debug', 'GEARMAN: Job: ' . $jobHandle);
-        } elseif (($params['type'] === 'sys') && !empty($params['sysdef'])) {
-            if (array_key_exists($params['sysdef'], $this->ispreworkers)) {
-                if (array_key_exists('worker', $this->ispreworkers['' . $params['sysdef'] . '']) && !empty($this->ispreworkers['' . $params['sysdef'] . '']['worker'])) {
-                    $workername = $this->ispreworkers['' . $params['sysdef'] . '']['worker'];
-                    $jobHandle = $gmclient->doBackground('' . $workername . '', serialize($params));
-                    $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
-                }
-            }
+        } elseif (($params['type'] === 'sys') && !empty($params['sysdef']) && array_key_exists($params['sysdef'], $this->ispreworkers) && array_key_exists('worker', $this->ispreworkers['' . $params['sysdef'] . '']) && !empty($this->ispreworkers['' . $params['sysdef'] . '']['worker'])) {
+            $workername = $this->ispreworkers['' . $params['sysdef'] . '']['worker'];
+            $jobHandle = $gmclient->doBackground('' . $workername . '', serialize($params));
+            $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
         }
         echo json_encode(array('status' => lang('taskssent') . ' '));
     }
@@ -157,7 +148,6 @@ class Statdefs extends MY_Controller
             show_error('Provider not found', 404);
         }
         $providerType = $provider->getType();
-        $providerType = strtolower($providerType);
         if (strcasecmp($providerType, 'both') == 0) {
             $providerType = 'idp';
         }
@@ -174,7 +164,7 @@ class Statdefs extends MY_Controller
          */
 
         $statDefinitions = $this->getExistingStatsDefs($providerId);
-        $providerNameInLang = $provider->getNameToWebInLang($myLang, $providerType);
+        $providerNameInLang = $provider->getNameToWebInLang($myLang, strtolower($providerType));
         $data = array(
             'providerid' => $providerId,
             'providerentity' => $provider->getEntityId(),
@@ -366,15 +356,15 @@ class Statdefs extends MY_Controller
             'statdefshortname' => $statDefinition->getName(),
             'statdefdesc' => $statDefinition->getDescription(),
             'statdefoverwrite' => (boolean)$statDefinition->getOverwrite(),
-            'statdefid'=>$statDefinition->getId(),
-            'statdefpredefworker'=> $statDefinition->getSysDef(),
-            'statdefsourceurl'=>$statDefinition->getSourceUrl(),
-            'statdefmethod'=> $statDefinition->getHttpMethod(),
-            'statdefformattype'=>$statDefinition->getFormatType(),
-            'statdefaccesstype'=>$statDefinition->getAccessType(),
-            'statdefauthuser'=>$statDefinition->getAuthUser(),
-            'statdefpass'=> $statDefinition->getAuthPass(),
-            'content_view'=>'manage/statdefs_editform_view',
+            'statdefid' => $statDefinition->getId(),
+            'statdefpredefworker' => $statDefinition->getSysDef(),
+            'statdefsourceurl' => $statDefinition->getSourceUrl(),
+            'statdefmethod' => $statDefinition->getHttpMethod(),
+            'statdefformattype' => $statDefinition->getFormatType(),
+            'statdefaccesstype' => $statDefinition->getAccessType(),
+            'statdefauthuser' => $statDefinition->getAuthUser(),
+            'statdefpass' => $statDefinition->getAuthPass(),
+            'content_view' => 'manage/statdefs_editform_view',
         );
         $workersdescriptions = '<ul>';
         if (count($this->ispreworkers) > 0) {
