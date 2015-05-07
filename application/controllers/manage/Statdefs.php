@@ -370,6 +370,11 @@ class Statdefs extends MY_Controller
             'statdefpredefworker'=> $statDefinition->getSysDef(),
             'statdefsourceurl'=>$statDefinition->getSourceUrl(),
             'statdefmethod'=> $statDefinition->getHttpMethod(),
+            'statdefformattype'=>$statDefinition->getFormatType(),
+            'statdefaccesstype'=>$statDefinition->getAccessType(),
+            'statdefauthuser'=>$statDefinition->getAuthUser(),
+            'statdefpass'=> $statDefinition->getAuthPass(),
+            'content_view'=>'manage/statdefs_editform_view',
         );
         $workersdescriptions = '<ul>';
         if (count($this->ispreworkers) > 0) {
@@ -398,12 +403,9 @@ class Statdefs extends MY_Controller
         } else {
             $data['statdefpredef'] = FALSE;
         }
-   
+
         $statdefpostparam = $statDefinition->getPostOptions();
-        $data['statdefformattype'] = $statDefinition->getFormatType();
-        $data['statdefaccesstype'] = $statDefinition->getAccessType();
-        $data['statdefauthuser'] = $statDefinition->getAuthUser();
-        $data['statdefpass'] = $statDefinition->getAuthPass();
+
         $data['statdefpostparam'] = '';
         $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['providerid'] . '">' . $data['providername'] . '</a>';
         $data['subtitlepage'] = lang('statdefeditform');
@@ -413,6 +415,7 @@ class Statdefs extends MY_Controller
                 $data['statdefpostparam'] .= $key . '$:$' . $value . '$$';
             }
         }
+
         $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
         if (strcasecmp($providerType, 'SP') == 0) {
             $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
@@ -426,8 +429,7 @@ class Statdefs extends MY_Controller
 
         );
 
-
-        $data['content_view'] = 'manage/statdefs_editform_view';
+        
         if ($this->newStatDefSubmitValidate() === FALSE) {
             return $this->load->view('page', $data);
         }
