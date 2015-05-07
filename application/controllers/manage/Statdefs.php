@@ -79,7 +79,7 @@ class Statdefs extends MY_Controller
         if (!$hasAccess) {
             set_status_header(403);
             echo 'Access denied';
-            return;
+            return null;
         }
         $params = array(
             'defid' => $statDefinition->getId(),
@@ -126,15 +126,15 @@ class Statdefs extends MY_Controller
         }
 
         if ($params['type'] === 'ext') {
-            $job_handle = $gmclient->doBackground("externalstatcollection", serialize($params));
-            $_SESSION['jobs']['stadef']['' . $defid . ''] = $job_handle;
-            log_message('debug', 'GEARMAN: Job: ' . $job_handle);
+            $jobHandle = $gmclient->doBackground("externalstatcollection", serialize($params));
+            $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
+            log_message('debug', 'GEARMAN: Job: ' . $jobHandle);
         } elseif (($params['type'] === 'sys') && !empty($params['sysdef'])) {
             if (array_key_exists($params['sysdef'], $this->ispreworkers)) {
                 if (array_key_exists('worker', $this->ispreworkers['' . $params['sysdef'] . '']) && !empty($this->ispreworkers['' . $params['sysdef'] . '']['worker'])) {
                     $workername = $this->ispreworkers['' . $params['sysdef'] . '']['worker'];
-                    $job_handle = $gmclient->doBackground('' . $workername . '', serialize($params));
-                    $_SESSION['jobs']['stadef']['' . $defid . ''] = $job_handle;
+                    $jobHandle = $gmclient->doBackground('' . $workername . '', serialize($params));
+                    $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
                 }
             }
         }
@@ -398,10 +398,9 @@ class Statdefs extends MY_Controller
 
 
         $presysdef = $statDefinition->getType();
+        $data['statdefpredef'] = FALSE;
         if (!empty($presysdef) && $presysdef === 'sys') {
             $data['statdefpredef'] = TRUE;
-        } else {
-            $data['statdefpredef'] = FALSE;
         }
 
         $statdefpostparam = $statDefinition->getPostOptions();
@@ -429,7 +428,7 @@ class Statdefs extends MY_Controller
 
         );
 
-        
+
         if ($this->newStatDefSubmitValidate() === FALSE) {
             return $this->load->view('page', $data);
         }
@@ -488,18 +487,13 @@ class Statdefs extends MY_Controller
 
     public function newStatDef($providerid = null)
     {
-
-        if (empty($providerid) || !ctype_digit($providerid)) {
+        if (empty($providerid) || !ctype_digit($providerid) || $this->isStats() !== TRUE) {
             show_error('Page not found', 404);
-        }
-        $myLang = MY_Controller::getLang();
-        $isStats = $this->isStats();
-        if ($isStats !== TRUE) {
-            show_error('Feature disabled', 404);
         }
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
+        $myLang = MY_Controller::getLang();
         $this->title = lang('title_newstatdefs');
         /**
          * @var $provider models\Provider
@@ -636,13 +630,7 @@ class Statdefs extends MY_Controller
             }
             $this->form_validation->set_rules('postoptions', 'Post options', 'trim');
         } else {
-            $p = $this->ispreworkers;
-            $pworkers = array();
-            if (!empty($p) && is_array($p)) {
-                foreach ($p as $key => $value) {
-                    $pworkers[] = $key;
-                }
-            }
+            $pworkers = array_keys($this->ispreworkers);
             $allowedworkers = serialize($pworkers);
             $this->form_validation->set_rules('gworker', 'Predefined stats', 'required|trim|xss_clean|matches_inarray[' . $allowedworkers . ']');
         }
@@ -656,8 +644,7 @@ class Statdefs extends MY_Controller
      */
     private function getExistingStatsDefs($providerid)
     {
-        $r = $this->em->getRepository("models\ProviderStatsDef")->findBy(array('provider' => '' . $providerid . ''));
-        return $r;
+        return $this->em->getRepository("models\ProviderStatsDef")->findBy(array('provider' => '' . $providerid . ''));
     }
 
     public function remove($defid = null)
