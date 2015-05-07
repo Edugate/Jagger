@@ -48,7 +48,7 @@ echo '</div>';
 
 echo '<div class="row">';
 echo '<div class="small-3 large-3 columns"><label for="description" class="inline right">'.lang('rr_description').'</label></div>';
-echo '<div class="small-9 large-6 columns">'.form_textarea(array('name' => 'description', 'id' => 'description', 'value' => set_value('description','',FALSE), 'rows' => 20, 'cols' => 40));
+echo '<div class="small-9 large-6 columns">'.form_textarea(array('name' => 'description', 'id' => 'description', 'value' => set_value('description','',FALSE), 'rows' => 8, 'cols' => 40));
 echo '</div>';
 echo '<div></div>';
 echo '</div>';
@@ -56,7 +56,7 @@ echo '</div>';
 
 echo '<div class="row">';
 echo '<div class="small-3 large-3 columns"><label for="termsofuse" class="inline right">'.lang('rr_fed_tou').'</label></div>';
-echo '<div class="small-9 large-6 columns">'.form_textarea(array('name' => 'termsofuse', 'id' => 'termsofuse', 'value' => set_value('termsofuse','',FALSE), 'rows' => 20, 'cols' => 40));
+echo '<div class="small-9 large-6 columns">'.form_textarea(array('name' => 'termsofuse', 'id' => 'termsofuse', 'value' => set_value('termsofuse','',FALSE), 'rows' => 8, 'cols' => 40));
 echo '</div>';
 echo '<div></div>';
 echo '</div>';

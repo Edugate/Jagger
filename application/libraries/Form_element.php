@@ -1813,11 +1813,9 @@ class Form_element
         if (is_array($ses)) {
             $sessform = TRUE;
         }
-
+        $logos = array('' . strtolower($type) . '' => array());
         if ($type === 'BOTH') {
             $logos = array('idp' => array(), 'sp' => array());
-        } else {
-            $logos = array('' . strtolower($type) . '' => array());
         }
         if (!$sessform) {
             $metaext = $ent->getExtendMetadata();
