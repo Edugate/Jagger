@@ -29,7 +29,12 @@ class Metadata2array
     private $nameidsattrs = array();
     private $newNameSpaces = array();
     protected $ci;
+    protected $allowedEntcats = array();
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
     protected $em;
+    protected $doc, $xpath;
 
     function __construct()
     {
@@ -40,6 +45,10 @@ class Metadata2array
         $this->metaArray = array();
         $this->coclist = array();
         $this->regpollist = array();
+        $this->allowedEntcats = attrsEntCategoryList();
+        /**
+         * @var $tmpnemaids models\Attribute[]
+         */
         $tmpnemaids = $this->em->getRepository("models\Attribute")->findBy(array('name' => array('persistentId', 'transientId')));
         foreach ($tmpnemaids as $p) {
             $this->nameidsattrs['' . $p->getName() . ''] = $p->getOid();
@@ -149,7 +158,6 @@ class Metadata2array
         $isSp = false;
         $entity = array(
             'metadata' => null,
-            'details' => null,
             'entityid' => $node->getAttribute('entityID'),
             'validuntil' => $node->getAttribute('validUntil'),
             'rigistrar' => null,
@@ -163,18 +171,15 @@ class Metadata2array
                 'reqattrs' => array(),
             ),
         );
-        $allowedEntcats = attrsEntCategoryList();
         foreach ($node->childNodes as $gnode) {
             if ($gnode->nodeName === 'md:IDPSSODescriptor' || $gnode->nodeName === 'IDPSSODescriptor') {
                 $isIdp = true;
-                $entity['type'] = 'IDP';
                 if (!empty($full)) {
 
                     $entity['details']['idpssodescriptor'] = $this->idpSSODescriptorConvert($gnode);
                 }
             } elseif ($gnode->nodeName === 'md:SPSSODescriptor' || $gnode->nodeName === 'SPSSODescriptor') {
                 $isSp = true;
-                $entity['type'] = 'SP';
                 if (!empty($full)) {
 
                     $entity['details']['spssodescriptor'] = $this->spSSODescriptorConvert($gnode);
@@ -187,7 +192,6 @@ class Metadata2array
                 }
             } elseif ($gnode->nodeName === 'md:AttributeAuthorityDescriptor' || $gnode->nodeName === 'AttributeAuthorityDescriptor') {
                 $isIdp = true;
-                $entity['type'] = 'IDP';
                 $entity['details']['aadescriptor'] = $this->attributeAuthorityDescriptorConvert($gnode);
             } elseif ($gnode->nodeName === 'Extensions' || $gnode->nodeName === 'md:Extensions') {
                 if ($gnode->hasChildNodes()) {
@@ -209,7 +213,7 @@ class Metadata2array
                             }
                         } elseif ($enode->nodeName === 'mdattr:EntityAttributes' && $enode->hasChildNodes()) {
                             foreach ($enode->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute') as $enode2) {
-                                if ($enode2->hasAttributes() && in_array($enode2->getAttribute('Name'), $allowedEntcats) && $enode2->hasChildNodes()) {
+                                if ($enode2->hasAttributes() && in_array($enode2->getAttribute('Name'), $this->allowedEntcats) && $enode2->hasChildNodes()) {
                                     foreach ($enode2->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue') as $enode3) {
                                         $entity['coc']['' . $enode2->getAttribute('Name') . ''][] = trim($enode3->nodeValue);
                                         $this->coclist['' . $enode2->getAttribute('Name') . ''][] = trim($enode3->nodeValue);
@@ -226,7 +230,7 @@ class Metadata2array
                                 'name' => 'SigningMethod',
                                 'algorithm' => $enode->getAttribute('Algorithm'),
                                 'minkeysize' => $enode->getAttribute('MinKeySize'),
-                                'maxkeysize'=>$enode->getAttribute('MaxKeySize'),
+                                'maxkeysize' => $enode->getAttribute('MaxKeySize'),
 
                             );
                             $entity['algs'][] = $tmlentry;
@@ -242,6 +246,10 @@ class Metadata2array
         }
         if ($isIdp && $isSp) {
             $entity['type'] = 'BOTH';
+        } elseif ($isIdp) {
+            $entity['type'] = 'IDP';
+        } elseif ($isSp) {
+            $entity['type'] = 'SP';
         }
 
         if ($isSp && isset($entity['details']['spssodescriptor']['nameid']) && is_array($entity['details']['spssodescriptor']['nameid']) && count($entity['details']['spssodescriptor']['nameid']) > 0) {
@@ -398,9 +406,7 @@ class Metadata2array
                         }
                     }
                 }
-            }
-            elseif($child->nodeName === 'md:EncryptionMethod' || $child->nodeName === 'EncryptionMethod')
-            {
+            } elseif ($child->nodeName === 'md:EncryptionMethod' || $child->nodeName === 'EncryptionMethod') {
                 $cert['encmethods'][] = $child->getAttribute('Algorithm');
             }
         }
@@ -411,7 +417,7 @@ class Metadata2array
     {
         $result = array();
         foreach ($node->childNodes as $enode) {
-            if ($enode->nodeName === 'shibmd:Scope' || $enode->nodeName === 'Scope' || $enode->nodeName === 'saml1md:Scope') {
+            if ($enode->nodeName === 'shibmd:Scope' || $enode->nodeName === 'saml1md:Scope') {
                 $result['aascope'][] = trim($enode->nodeValue);
             }
         }
@@ -422,7 +428,7 @@ class Metadata2array
     {
         $ext = array();
         foreach ($node->childNodes as $enode) {
-            if ($enode->nodeName === 'shibmd:Scope' || $enode->nodeName === 'Scope' || $enode->nodeName === 'saml1md:Scope') {
+            if ($enode->nodeName === 'shibmd:Scope' ||  $enode->nodeName === 'saml1md:Scope') {
                 $ext['scope'][] = trim($enode->nodeValue);
             } elseif ($enode->nodeName === 'idpdisc:DiscoveryResponse') {
                 $ext['idpdisc'][] = array('binding' => $enode->getAttribute('Binding'), 'url' => $enode->getAttribute('Location'), 'order' => $enode->getAttribute('index'));
