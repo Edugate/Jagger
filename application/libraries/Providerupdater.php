@@ -115,7 +115,6 @@ class Providerupdater
     private function updateProviderExtend(models\Provider $ent, array $ch)
     {
         $m = array();
-        $entityType = $ent->getType();
         $entityTypes = $ent->getTypesToArray();
         $filteredTypes = array_filter($entityTypes);
         $extypes = array_keys($filteredTypes);
@@ -298,12 +297,6 @@ class Providerupdater
                 foreach ($ch['uii']['' . $v . 'sso']['logo'] as $ke => $ve) {
                     if (isset($ve['url']) && isset($ve['lang']) && isset($ve['size'])) {
                         $canAdd = true;
-                        $nlogo = new models\ExtendMetadata;
-                        $nlogo->setParent($uiinfoParent['' . $v . '']);
-                        $nlogo->setType('' . $v . '');
-                        $nlogo->setNamespace('mdui');
-                        $nlogo->setValue($ve['url']);
-                        $nlogo->setElement('Logo');
                         $attrs = array();
                         if (strcasecmp($ve['lang'], '0') != 0) {
                             $attrs['xml:lang'] = $ve['lang'];
@@ -321,7 +314,8 @@ class Providerupdater
                         } else {
                             $canAdd = false;
                         }
-                        $nlogo->setAttributes($attrs);
+                        $nlogo = new models\ExtendMetadata;
+                        $nlogo->setLogoNoProvider($ve['url'],$uiinfoParent['' . $v . ''],$attrs,$v);
                         if ($canAdd) {
                             $ent->setExtendMetadata($nlogo);
                             $this->em->persist($nlogo);
@@ -387,12 +381,7 @@ class Providerupdater
 
                         if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $this->langCodes)) {
                             $newelement = new models\ExtendMetadata;
-                            $newelement->setParent($uiinfoParent['idp']);
-                            $newelement->setType('idp');
-                            $newelement->setNamespace('mdui');
-                            $newelement->setValue($value3);
-                            $newelement->setElement($elvalue);
-                            $newelement->setAttributes(array('xml:lang' => $key3));
+                            $newelement->populateWithNoProvider($uiinfoParent['idp'],'idp','mdui',$value3,$elvalue,array('xml:lang' => $key3));
                             $ent->setExtendMetadata($newelement);
                             $this->em->persist($newelement);
                         } elseif (isset($exarray['' . $elvalue . '']['' . $key3 . ''])) {
@@ -444,12 +433,7 @@ class Providerupdater
 
                         if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $this->langCodes)) {
                             $newelement = new models\ExtendMetadata;
-                            $newelement->setParent($uiinfoParent['sp']);
-                            $newelement->setType('sp');
-                            $newelement->setNamespace('mdui');
-                            $newelement->setValue($value3);
-                            $newelement->setElement($elvalue);
-                            $newelement->setAttributes(array('xml:lang' => $key3));
+                            $newelement->populateWithNoProvider($uiinfoParent['sp'],'sp','mdui',$value3,$elvalue,array('xml:lang' => $key3));
                             $ent->setExtendMetadata($newelement);
                             $this->em->persist($newelement);
                         } elseif (isset($exarray['' . $elvalue . '']['' . $key3 . ''])) {
