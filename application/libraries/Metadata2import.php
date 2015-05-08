@@ -305,7 +305,6 @@ class Metadata2import
                                             } else {
                                                 $reqattr->setStatus('desired');
                                             }
-                                            $reqattr->setReason('');
                                             $importedProvider->setAttributesRequirement($reqattr);
                                             $this->em->persist($reqattr);
                                             $attrsset[] = $r['name'];
@@ -576,7 +575,6 @@ class Metadata2import
                                             } else {
                                                 $reqattr->setStatus('desired');
                                             }
-                                            $reqattr->setReason('');
                                             $importedProvider->setAttributesRequirement($reqattr);
                                             $this->em->persist($reqattr);
                                             $attrsset[] = $r['name'];
@@ -717,7 +715,6 @@ class Metadata2import
                                             } else {
                                                 $reqattr->setStatus('desired');
                                             }
-                                            $reqattr->setReason('');
                                             $existingProvider->setAttributesRequirement($reqattr);
                                             $this->em->persist($reqattr);
                                         } else {
