@@ -1826,6 +1826,27 @@ class Provider
         return $this->type;
     }
 
+    /**
+     * @return array
+     */
+    public function getTypesToArray()
+    {
+        $result = array('idp'=>false,'sp'=>false);
+        if(strcasecmp($this->type,'BOTH')==0)
+        {
+            $result = array('idp'=>true,'sp'=>true);
+        }
+        elseif(strcasecmp($this->type,'IDP')==0)
+        {
+            $result['idp'] = true;
+        }
+        else
+        {
+            $result['sp']= true;
+        }
+        return $result;
+    }
+
     public function getCountry()
     {
         return $this->country;
@@ -2526,7 +2547,13 @@ class Provider
             $this->setRegistrationAuthority($a['registrar']);
             if (!empty($a['regdate'])) {
                 $p = explode("T", $a['regdate']);
-                $ptime = str_replace('Z', '', $p['1']);
+                if(array_key_exists('1',$p)) {
+                    $ptime = str_replace('Z', '', $p['1']);
+                }
+                else
+                {
+                    $ptime = '00:00:00';
+                }
                 $pdate = \DateTime::createFromFormat('Y-m-d H:i:s', $p[0] . ' ' . substr($ptime, 0, 8));
                 if ($pdate instanceOf \DateTime) {
                     $this->setRegistrationDate($pdate);

@@ -50,4 +50,15 @@ class Attributes
           
     }
 
+    public function getAttributesToArrayById()
+    {
+        $tmp = $this->em->getRepository("models\Attribute")->findAll();
+        $result = array();
+        foreach($tmp as $attr)
+        {
+            $result[''.$attr->getId().'']= $attr;
+        }
+        return $result;
+    }
+
 }

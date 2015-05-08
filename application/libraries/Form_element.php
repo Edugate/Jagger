@@ -198,11 +198,11 @@ class Form_element
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
             }
 
-            $r .= '<dd class="accordion-navigation small-12 column">'.
-                '<div class="small-3 columns" >' .form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right')). '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' .
-                $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>'.
-                '<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>'.
-                lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>'.
+            $r .= '<dd class="accordion-navigation small-12 column">' .
+                '<div class="small-3 columns" >' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right')) . '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' .
+                $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>' .
+                '<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' .
+                lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>' .
                 '</dd>';
         }
         $r .= '</dl></div>';
@@ -462,16 +462,15 @@ class Form_element
         return $result;
     }
 
-    private function _genCertFieldFromSession($certObj = null, $idCert, $sessionCert, $sessionNamePart, $type, $showremove = false)
+    private function _genCertFieldFromSession($certObj = null, $crtid, $sessionCert, $sessionNamePart, $type, $showremove = false)
     {
         $name = $sessionNamePart;
         $certuse = $sessionCert['usage'];
         if (empty($certuse)) {
             $certuse = 'both';
         }
-        $crtid = $idCert;
         $readonly = false;
-        if (is_numeric($crtid)) {
+        if (ctype_digit($crtid)) {
             $readonly = true;
         }
         $certdata = set_value(getPEM('' . $name . '[' . $crtid . '][certdata]'), getPEM($sessionCert['certdata']), FALSE);
@@ -483,14 +482,14 @@ class Form_element
         }
         $row = '<div class="certgroup small-12 columns">';
 
-        $row .= '<div class="small-12 columns hidden">';
-        $row .= $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($sessionCert['type']), '', FALSE);
-        $row .= '</div>';
+        $row .= '<div class="small-12 columns hidden">' .
+            $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($sessionCert['type']), '', FALSE) .
+            '</div>';
 
 
-        $row .= '<div class="small-12 columns">';
-        $row .= $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE);
-        $row .= '</div>';
+        $row .= '<div class="small-12 columns">' .
+            $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE) .
+            '</div>';
 
 
         if (empty($sessionCert['keyname'])) {
@@ -498,15 +497,13 @@ class Form_element
         } else {
             $row .= '<div class="small-12 columns">';
         }
-        $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $sessionCert['keyname'], '', FALSE, NULL);
-        $row .= '</div>';
-        $row .= '<div class="small-12 columns">';
-        $row .= $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled'));
-        $row .= '</div>';
-
-
-        $row .= '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][certdata]" class="right inline">' . lang('rr_certificate') . '</label></div>';
-        $row .= '<div class="small-6 large-7 columns">';
+        $row .= $this->_generateLabelInput(lang('rr_keyname') . ' ' . showBubbleHelp(lang('rhelp_multikeynames')), '' . $name . '[' . $crtid . '][keyname]', $sessionCert['keyname'], '', FALSE, NULL) .
+            '</div>' .
+            '<div class="small-12 columns">' .
+            $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled')) .
+            '</div>' .
+            '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][certdata]" class="right inline">' . lang('rr_certificate') . '</label></div>' .
+            '<div class="small-6 large-7 columns">';
         $textarea = array(
             'name' => '' . $name . '[' . $crtid . '][certdata]',
             'id' => '' . $name . '[' . $crtid . '][certdata]',
@@ -530,20 +527,16 @@ class Form_element
         }
         $row .= '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][encmethods][]" class="right inline">EncryptionMethod</label></div><div class="small-9 column">';
         foreach ($tmplEncryptionMethods as $tmplEnc) {
+            $ischeck = '';
             if (in_array($tmplEnc, $certEncMethods)) {
                 $ischeck = ' checked="checked" ';
-            } else {
-                $ischeck = '';
             }
             $row .= '<div><label><input type="checkbox" name="' . $name . '[' . $crtid . '][encmethods][]" value="' . $tmplEnc . '" ' . $ischeck . '> ' . $tmplEnc . '</label></div>';
         }
 
-
         if ($showremove) {
             $row .= '<div class="small-12 columns"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert tiny right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
         }
-
-
         $row .= '</div>';
         return $row;
     }
@@ -568,11 +561,10 @@ class Form_element
             $crtid = 'x' . rand();
         }
         $readonly = false;
-        if (is_numeric($crtid)) {
+        if (ctype_digit($crtid)) {
             $readonly = true;
         }
         $row = '<div class="certgroup small-12 columns">';
-
         $row .= '<div class="small-12 columns hidden">';
         $row .= $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($cert->getType()), '', FALSE);
         $row .= '</div>';
@@ -1821,11 +1813,9 @@ class Form_element
         if (is_array($ses)) {
             $sessform = TRUE;
         }
-
+        $logos = array('' . strtolower($type) . '' => array());
         if ($type === 'BOTH') {
             $logos = array('idp' => array(), 'sp' => array());
-        } else {
-            $logos = array('' . strtolower($type) . '' => array());
         }
         if (!$sessform) {
             $metaext = $ent->getExtendMetadata();
@@ -2764,16 +2754,13 @@ class Form_element
                 $langs['' . $langset . ''] = $langset;
             }
         }
-
         $langselected = $langset;
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName(), FALSE)) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', $coc->getUrl(), FALSE)) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription(), FALSE)) . '</div></div>';
-        $r .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
-
-
-        return $r;
+        $result = '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName(), FALSE)) . '</div></div>' .
+            '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>' .
+            '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', $coc->getUrl(), FALSE)) . '</div></div>' .
+            '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription(), FALSE)) . '</div></div>' .
+            '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
+        return $result;
     }
 
     public function generateAddCoc()

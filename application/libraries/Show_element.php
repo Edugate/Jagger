@@ -39,29 +39,13 @@ class Show_element {
     /**
      * @todo fix it - not working
      */
-    public function displaySpecificArp($provider)
+    public function displaySpecificArp(models\Provider $provider)
     {
         $result = null;
-        if ($provider instanceof models\Provider)
-        {
-            $id = $provider->getId();
-            if (empty($id))
-            {
-                return null;
-            }
-        }
-        elseif (is_integer($provider))
-        {
-            $id = $provider;
-        }
-        else
-        {
-            return null;
-        }
-        $lang = MY_Controller::getLang();
-        $arps = $this->tmp_policies->getSPPolicy($id);
-        $no_arps = count($arps);
-        if ($no_arps == 0)
+        $providerId = $provider->getId();
+        $myLang = MY_Controller::getLang();
+        $arps = $this->tmp_policies->getSPPolicy($providerId);
+        if (count($arps) == 0)
         {
             return null;
         }
@@ -78,7 +62,7 @@ class Show_element {
             );         
             $spid = $cArp->getRequester();
             $sp_requester = $this->tmp_providers->getOneSpById($spid);
-            $requesterName = $sp_requester->getNameToWebInLang($lang, 'sp'); 
+            $requesterName = $sp_requester->getNameToWebInLang($myLang, 'sp');
             $this->entitiesmaps[$sp_requester->getEntityId()] = $requesterName;
         }
         $tmp_reqs = new models\AttributeRequirements;
@@ -94,7 +78,7 @@ class Show_element {
             {
                 $required_attrs = $tmp_reqs->getRequirementsBySP($sp_requester);
 
-                $requesterName = $sp_requester->getNameToWebInLang($lang, 'sp');
+                $requesterName = $sp_requester->getNameToWebInLang($myLang, 'sp');
                 if (empty($requesterName))
                 {
                     $requesterName = $sp_requester->getEntityId();
@@ -136,7 +120,7 @@ class Show_element {
             {
                 $result[$sp_requester->getEntityId()][$k1] = array (
                     'id'=>$v1['id'],
-                    'name'=>$sp_requester->getNameToWebInLang($lang, 'sp'),
+                    'name'=>$sp_requester->getNameToWebInLang($myLang, 'sp'),
                     'custom' => $v1['custom'],
                     'attr_id'=>$v1['attr_id'],
                     'spid' => $k,

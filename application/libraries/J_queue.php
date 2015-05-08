@@ -54,15 +54,15 @@ class J_queue
         $rejecttext = lang('rr_cancel');
         if (!$onlycancel) {
             $rejecttext = lang('rr_submitreject');
-            $approveForm = form_open('reports/awaiting/approve',array('id' => 'approvequeue') , array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes'));
-            $approveForm .= '<button type="submit" name="mysubmit" value="Accept request!" class="savebutton saveicon right">' . lang('rr_submitapprove') . '</button>'. form_close();
+            $approveForm = form_open('reports/awaiting/approve', array('id' => 'approvequeue'), array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes'));
+            $approveForm .= '<button type="submit" name="mysubmit" value="Accept request!" class="savebutton saveicon right">' . lang('rr_submitapprove') . '</button>' . form_close();
         }
 
         /* add reject form */
         $reject_hidden_attributes = array('qaction' => 'reject', 'qid' => $qid);
         $reject_attrid = array('id' => 'rejectqueue');
         $rejectForm = form_open('reports/awaiting/reject', $reject_attrid, $reject_hidden_attributes);
-        $rejectForm .= '<button type="submit" name="mysubmit" value="Reject request!" class="resetbutton reseticon left alert">' . $rejecttext . '</button>'.form_close();
+        $rejectForm .= '<button type="submit" name="mysubmit" value="Reject request!" class="resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
         $result = '<div class="small-12 large-6 columns"><div class="buttons panel clearfix" >' . $rejectForm . '' . $approveForm . '</div></div>';
         return $result;
     }
@@ -132,72 +132,30 @@ class J_queue
         $mailSubject = 'User Registration';
         $mailBody = 'Dear user,' . PHP_EOL;
         $mailBody .= 'User registration request to use the service ' . base_url() . ' has been accepted' . PHP_EOL;
-        $mailBody .= 'Details:' . PHP_EOL  .'Username: ' . $u->getUsername() . PHP_EOL;
+        $mailBody .= 'Details:' . PHP_EOL . 'Username: ' . $u->getUsername() . PHP_EOL;
         $mailBody .= 'E-mail: ' . $u->getEmail() . PHP_EOL;
         $recipient[] = $u->getEmail();
         $this->ci->email_sender->addToMailQueue(array(), null, $mailSubject, $mailBody, $recipient, $sync = false);
         return true;
     }
 
-    function displayApplyForEntityCategory(models\Queue $q)
+    private function genCocArray(models\Queue $q, $type)
     {
-
-        $result['entityid'] = $q->getName();
-        $result['entcatid'] = $q->getRecipient();
-        $r = array(
-            array('header' => lang('request')),
-            array('name' => lang('type'), 'value' => lang('req_entcatapply')),
-            array('name' => lang('rr_sourceip'), 'value' => $q->getIP())
-        );
-        $creator = $q->getCreator();
-        if (!empty($creator)) {
-            $r[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
-        } else {
-            $r[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
+        if ($type === 'entcat') {
+            $r = array(
+                array('header' => lang('request')),
+                array('name' => lang('type'), 'value' => lang('req_entcatapply')),
+                array('name' => lang('rr_sourceip'), 'value' => $q->getIP())
+            );
+            $typeLabel = lang('entcat');
+        } elseif ($type === 'regpol') {
+            $r = array(
+                array('header' => lang('request')),
+                array('name' => lang('type'), 'value' => lang('req_reqpolapply')),
+                array('name' => lang('rr_sourceip'), 'value' => $q->getIP())
+            );
+            $typeLabel = lang('rr_regpolicy');
         }
-
-        $entityid = $q->getName();
-        /**
-         * @var $provider models\Provider
-         */
-        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
-
-        if (!empty($provider)) {
-            $r[] = array('name' => lang('rr_provider'), 'value' => $entityid);
-        } else {
-
-            $r[] = array('name' => lang('rr_provider'), 'value' => $entityid . ' <span class="label alert">' . lang('prov_notexist') . '</span>');
-        }
-
-        $entcatid = $q->getRecipient();
-        /**
-         * @var $coc models\Coc
-         */
-        $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $entcatid, 'type' => 'entcat'));
-        $cocenabled = $coc->getAvailable();
-        if ($cocenabled) {
-            $lenabled = '';
-        } else {
-            $lenabled = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-        }
-        if (empty($coc)) {
-            $r[] = array('name' => lang('entcat'), 'value' => '<div data-alert class="alert-box alert">' . lang('entcat_notexist') . '</div>');
-        } else {
-            $r[] = array('name' => lang('entcat'), 'value' => $lenabled . ' ' . $coc->getName() . ' ' . $coc->getUrl());
-        }
-        return $r;
-    }
-
-    function displayApplyForRegistrationPolicy(models\Queue $q)
-    {
-
-        $result['entityid'] = $q->getName();
-        $result['entcatid'] = $q->getRecipient();
-        $r = array(
-            array('header' => lang('request')),
-            array('name' => lang('type'), 'value' => lang('req_reqpolapply')),
-            array('name' => lang('rr_sourceip'), 'value' => $q->getIP())
-        );
         $creator = $q->getCreator();
         if ($creator) {
             $r[] = array('name' => lang('requestor'), 'value' => $creator->getUsername());
@@ -205,7 +163,6 @@ class J_queue
             $r[] = array('name' => lang('requestor'), 'value' => lang('unknown'));
         }
         $entityid = $q->getName();
-
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
 
         if (!empty($provider)) {
@@ -214,21 +171,30 @@ class J_queue
 
             $r[] = array('name' => lang('rr_provider'), 'value' => $entityid . ' <span class="label alert">' . lang('prov_notexist') . '</span>');
         }
-
         $entcatid = $q->getRecipient();
-        $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $entcatid, 'type' => 'regpol'));
-        $cocenabled = $coc->getAvailable();
-        if ($cocenabled) {
-            $lenabled = '';
-        } else {
-            $lenabled = '<span class="label alert">' . lang('rr_disabled') . '</span>';
-        }
+        $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $entcatid, 'type' => ''.$type.''));
+
         if (empty($coc)) {
-            $r[] = array('name' => lang('rr_regpolicy'), 'value' => '<div data-alert class="alert-box alert">' . lang('regpol_notexist') . '</div>');
+            $r[] = array('name' => $typeLabel, 'value' => '<div data-alert class="alert-box alert">' . lang('regpol_notexist') . '</div>');
         } else {
-            $r[] = array('name' => lang('rr_regpolicy'), 'value' => '<span class="label info">' . $coc->getLang() . '</span> ' . $coc->getName() . ': ' . $coc->getUrl() . ' ' . $lenabled);
+            $lenabled = '';
+            if (!$coc->getAvailable())  {
+                $lenabled = '<span class="label alert">' . lang('rr_disabled') . '</span>';
+            }
+            $r[] = array('name' => $typeLabel, 'value' => '<span class="label info">' . $coc->getLang() . '</span> ' . $coc->getName() . ': ' . $coc->getUrl() . ' ' . $lenabled);
         }
         return $r;
+
+    }
+
+    function displayApplyForEntityCategory(models\Queue $q)
+    {
+        return $this->genCocArray($q,'entcat');
+    }
+
+    function displayApplyForRegistrationPolicy(models\Queue $q)
+    {
+        return $this->genCocArray($q,'regpol');
     }
 
     function displayRegisterUser(models\Queue $q)
