@@ -116,11 +116,9 @@ class Providerupdater
     {
         $m = array();
         $entityType = $ent->getType();
-        if (strcasecmp($entityType, 'BOTH') == 0) {
-            $extypes = array('idp', 'sp');
-        } else {
-            $extypes = array('' . strtolower($entityType) . '');
-        }
+        $entityTypes = $ent->getTypesToArray();
+        $filteredTypes = arrat_filter($entityTypes);
+        $extypes = array_keys($filteredTypes);
         /**
          * @var $extendsCollection models\ExtendMetadata[]
          */
@@ -162,7 +160,7 @@ class Providerupdater
             }
         }
 
-        if (in_array('idp', $extypes)) {
+        if ($entityTypes['idp'] === true) {
             $idpDiscoHints = array('geo'=>'GeolocationHint','domainhint'=>'DomainHint','iphint'=>'IPHint');
             if (empty($discohintsParent)) {
                 $discohintsParent = new models\ExtendMetadata;
@@ -339,7 +337,7 @@ class Providerupdater
         /**
          * start update UII
          */
-        if ($entityType !== 'SP') {
+        if ($entityTypes['sp'] !== true) {
             $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($doFilter) {
@@ -411,7 +409,7 @@ class Providerupdater
                 }
             }
         }
-        if ($entityType !== 'IDP') {
+        if ($entityTypes['idp'] !== true) {
             $doFilter = array('t' => array('sp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($doFilter) {
