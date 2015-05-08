@@ -1836,7 +1836,7 @@ class Provider
         {
             $result = array('idp'=>true,'sp'=>true);
         }
-        elseif(strcasecmp($this->type,'IDP'))
+        elseif(strcasecmp($this->type,'IDP')==0)
         {
             $result['idp'] = true;
         }

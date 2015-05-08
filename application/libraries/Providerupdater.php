@@ -117,7 +117,7 @@ class Providerupdater
         $m = array();
         $entityType = $ent->getType();
         $entityTypes = $ent->getTypesToArray();
-        $filteredTypes = arrat_filter($entityTypes);
+        $filteredTypes = array_filter($entityTypes);
         $extypes = array_keys($filteredTypes);
         /**
          * @var $extendsCollection models\ExtendMetadata[]
