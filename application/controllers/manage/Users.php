@@ -53,20 +53,12 @@ class Users extends MY_Controller
         return $this->form_validation->run();
     }
 
+    /**
+     * @return bool
+     */
     private function ajaxplusadmin()
     {
-        if (!$this->input->is_ajax_request()) {
-            return false;
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            return false;
-        }
-        $isAdmin = $this->j_auth->isAdministrator();
-        if (!$isAdmin) {
-            return false;
-        }
-        return true;
+        return $this->input->is_ajax_request() && $this->j_auth->logged_in() && $this->j_auth->isAdministrator();
     }
 
     /**
@@ -75,22 +67,18 @@ class Users extends MY_Controller
      */
     private function isOwner($encoded_user)
     {
+        $result = false;
         $decodedUser = base64url_decode(trim($encoded_user));
         $sessionUsername = $this->session->userdata('username');
         if (!empty($sessionUsername) && strlen(trim($sessionUsername)) > 0 && strcasecmp($decodedUser, $sessionUsername) == 0) {
-            return true;
-        } else {
-            return false;
+            $result =  true;
         }
+        return $result;
     }
 
     private function ajaxplusowner($encoded_user)
     {
-        if (!$this->input->is_ajax_request()) {
-            return false;
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             return false;
         }
         return $this->isOwner($encoded_user);
@@ -100,7 +88,7 @@ class Users extends MY_Controller
     {
         $roles = $user->getRoles();
         $result = array();
-        if (!empty($range) && $range === 'system') {
+        if ($range === 'system') {
             foreach ($roles as $r) {
                 $rtype = $r->getType();
                 if ($rtype === 'system') {
