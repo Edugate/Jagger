@@ -1,22 +1,22 @@
 <?php
 namespace models;
-/**
- * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
- */
+    /**
+     * ResourceRegistry3
+     *
+     * @package     RR3
+     * @author      Middleware Team HEAnet
+     * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+     * @license     MIT http://www.opensource.org/licenses/mit-license.php
+     *
+     */
 
-/**
- * AttributeRequirement Class
- * 
- * @package     RR3
- * @subpackage  Models
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
+    /**
+     * AttributeRequirement Class
+     *
+     * @package     RR3
+     * @subpackage  Models
+     * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+     */
 
 
 /**
@@ -73,12 +73,18 @@ class AttributeRequirement
     protected $reason;
 
 
-     public function setAttributeId($id)
-     {
-         $this->attribute_id = $id;
-         return $this;
 
-     }
+
+    function __construct()
+    {
+        $this->reason = '';
+    }
+    public function setAttributeId($id)
+    {
+        $this->attribute_id = $id;
+        return $this;
+
+    }
 
     public function setAttribute(Attribute $attribute)
     {
@@ -117,6 +123,10 @@ class AttributeRequirement
 
     public function setReason($reason = null)
     {
+        if(is_null($reason))
+        {
+            $reason = '';
+        }
         $this->reason = $reason;
         return $this;
     }
@@ -135,10 +145,11 @@ class AttributeRequirement
     {
         return $this->attribute_id;
     }
-	public function getFederation()
-	{
-		return $this->fed_id;
-	}
+
+    public function getFederation()
+    {
+        return $this->fed_id;
+    }
 
     public function getSP()
     {

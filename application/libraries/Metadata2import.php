@@ -28,6 +28,9 @@ class Metadata2import
     private $defaults;
     private $other;
     protected $ci;
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
     protected $em;
 
     function __construct()
@@ -82,6 +85,9 @@ class Metadata2import
 
     private function getAttributesByNames()
     {
+        /**
+         * @var $attrsDefinitions \models\Attribute[]
+         */
         $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
         $attributes = array();
         foreach ($attrsDefinitions as $v) {
@@ -102,6 +108,10 @@ class Metadata2import
             return false;
         }
 
+        /**
+         * @var $coclist models\Coc[]
+         * @var $regpollist models\Coc[]
+         */
         $coclist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
         $regpollist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
         $attributes = $this->getAttributesByNames();
@@ -183,6 +193,9 @@ class Metadata2import
             if (array_key_exists('email', $this->defaults) && !empty($this->defaults['email'])) {
                 $mailAddresses[] = $this->defaults['email'];
             } else {
+                /**
+                 * @var $a models\AclRole
+                 */
                 $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
                 $a_members = $a->getMembers();
                 foreach ($a_members as $m) {
@@ -207,6 +220,9 @@ class Metadata2import
 
         foreach ($federations as $f) {
             $fedMembershipCollection = $f->getMembership();
+            /**
+             * @var $membership \models\FederationMembers[]
+             */
             $membership = $fedMembershipCollection->toArray();
             $membershipByEnt = array();
             foreach ($membership as $k => $m) {
@@ -249,7 +265,7 @@ class Metadata2import
                                 if (isset($ncoclistarray['' . $attrname . ''])) {
                                     foreach ($v as $kv => $pv) {
                                         $y = array_search($v, $ncoclistarray['' . $attrname . '']);
-                                        if ($y != NULL && $y != FALSE) {
+                                        if ($y !== NULL && $y !== FALSE) {
                                             $celement = $coclistconverted['' . $y . ''];
                                             if (!empty($celement)) {
                                                 $importedProvider->setCoc($celement);
@@ -398,8 +414,6 @@ class Metadata2import
                                                 }
                                                 unset($ent['details']['reqattrs']['' . $k . '']);
                                                 $this->em->persist($r);
-                                            }
-                                            if ($found) {
                                                 break;
                                             }
                                         }
@@ -419,7 +433,6 @@ class Metadata2import
                                             } else {
                                                 $reqattr->setStatus('desired');
                                             }
-                                            $reqattr->setReason('');
                                             $existingProvider->setAttributesRequirement($reqattr);
                                             $this->em->persist($reqattr);
                                         } else {

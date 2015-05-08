@@ -64,6 +64,10 @@ class FederationMembers
    {
        return $this->id;
    }
+
+    /**
+     * @return Provider
+     */
    public function getProvider()
    {
       return $this->provider;
