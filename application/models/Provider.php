@@ -1826,6 +1826,27 @@ class Provider
         return $this->type;
     }
 
+    /**
+     * @return array
+     */
+    public function getTypesToArray()
+    {
+        $result = array('idp'=>false,'sp'=>false);
+        if(strcasecmp($this->type,'BOTH')==0)
+        {
+            $result = array('idp'=>true,'sp'=>true);
+        }
+        elseif(strcasecmp($this->type,'IDP'))
+        {
+            $result['idp'] = true;
+        }
+        else
+        {
+            $result['sp']= true;
+        }
+        return $result;
+    }
+
     public function getCountry()
     {
         return $this->country;

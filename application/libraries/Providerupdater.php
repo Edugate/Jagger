@@ -480,81 +480,71 @@ class Providerupdater
         return $ent;
     }
 
+    /**
+     * @return array
+     */
+    private function getDisallowedParts()
+    {
+        $result = array();
+        if(!$this->ci->j_auth->isAdministrator())
+        {
+            $result = $this->ci->config->item('entpartschangesdisallowed');
+        }
+        if (empty($result) || !is_array($result)) {
+                $result = array();
+        }
+        return $result;
+    }
     public function updateProvider(models\Provider $ent, array $ch)
     {
         // $m - array for modifications
         $entid = $ent->getId();
-        $isIDP = false;
-        $isSP = false;
+        $entityTypes = $ent->getTypesToArray();
         $m = array();
         $type = $ent->getType();
-        if(strcmp($type,'IDP') == 0)
-        {
-            $isIDP = true;
-        }
-        elseif(strcmp($type,'SP') == 0)
-        {
-            $isSP = true;
-        }
-        elseif(strcmp($type,'BOTH') == 0)
-        {
-            $isIDP = true;
-            $isSP = true;
-        }
-
         $allowedAABind = getAllowedSOAPBindings();
         $spartidx = array();
         $idpartidx = array('-1');
         $isAdmin = $this->ci->j_auth->isAdministrator();
-        if ($isAdmin) {
-            $dissalowedparts = array();
-        } else {
-            $dissalowedparts = $this->ci->config->item('entpartschangesdisallowed');
-            if (empty($dissalowedparts) || !is_array($dissalowedparts)) {
-                $dissalowedparts = array();
-            }
-        }
+
+        $dissalowedparts = $this->getDisallowedParts();
         log_message('debug', 'disallowedpart: ' . serialize($dissalowedparts));
 
 
         $this->updateProviderExtend($ent, $ch);
 
-        if (array_key_exists('reqattr', $ch) && $isSP) {
+        if (array_key_exists('reqattr', $ch) && $entityTypes['sp']===true) {
 
 
             log_message('debug', __METHOD__ . ' OKA: ' . count($ch['reqattr']));
-            $attrstmp = $this->em->getRepository("models\Attribute")->findAll();
-            foreach ($attrstmp as $attrv) {
-                $attributes['' . $attrv->getId() . ''] = $attrv;
-            }
-            $trs = $ent->getAttributesRequirement();
+            $attrsTmp = new models\Attributes();
+            $attributes = $attrsTmp->getAttributesToArrayById();
+            $attrsRequirement = $ent->getAttributesRequirement();
             $origAttrReqs = array();
             $attrIdsDefined = array();
-            foreach ($trs as $tr) {
+            foreach ($attrsRequirement as $tr) {
                 $keyid = $tr->getAttribute()->getId();
                 if (array_key_exists($keyid, $origAttrReqs)) {
                     log_message('warning', __METHOD__ . ' found duplicate in attr req for entityid:' . $ent->getEntityId());
-                    $trs->removeElement($tr);
+                    $attrsRequirement->removeElement($tr);
                     $this->em->remove($tr);
                     continue;
                 }
-
                 $origAttrReqs['' . $keyid . ''] = $tr;
             }
 
 
             foreach ($ch['reqattr'] as $newAttrReq) {
-                $alreadyDefined = false;
+                $alreadyDefined = true;
                 $idCheck = $newAttrReq['attrid'];
-                if (in_array($idCheck, $attrIdsDefined)) {
-                    $alreadyDefined = true;
-                } else {
+                if (!in_array($idCheck, $attrIdsDefined)) {
+                    $alreadyDefined = false;
                     $attrIdsDefined[] = $idCheck;
                 }
                 if (array_key_exists($idCheck, $origAttrReqs)) {
 
                     if ($alreadyDefined) {
-                        $trs->removeElement($origAttrReqs['' . $idCheck . '']);
+                        $attrsRequirement->removeElement($origAttrReqs['' . $idCheck . '']);
                         $this->em->remove($origAttrReqs['' . $idCheck . '']);
                     } else {
                         $origAttrReqs['' . $idCheck . '']->setReason($newAttrReq['reason']);
@@ -577,12 +567,12 @@ class Providerupdater
             }
             foreach ($origAttrReqs as $orv) {
 
-                $trs->removeElement($orv);
+                $attrsRequirement->removeElement($orv);
                 $this->em->remove($orv);
             }
         }
 
-        if ($isIDP) {
+        if ($entityTypes['idp'] === true) {
 
 
             /**
@@ -805,7 +795,7 @@ class Providerupdater
             }
         }
         else {
-            if ($isIDP) {
+            if ($entityTypes['idp']) {
                 if (isset($ch['nameids']['idpsso']) && is_array($ch['nameids']['idpsso'])) {
                     $ent->setNameIds('idpsso', $ch['nameids']['idpsso']);
                 } else {
@@ -817,7 +807,7 @@ class Providerupdater
                     $ent->setNameIds('aa', array());
                 }
             }
-            if ($isSP) {
+            if ($entityTypes['sp']===true) {
                 if (isset($ch['nameids']['spsso']) && is_array($ch['nameids']['spsso'])) {
                     $ent->setNameIds('spsso', $ch['nameids']['spsso']);
                 } else {
@@ -870,7 +860,7 @@ class Providerupdater
                 if (array_key_exists($origServiceType, $srvsInput)) {
                     if(array_key_exists($origServiceType,$idpBinds) && !($origServiceType === 'IDPArtifactResolutionService'))
                     {
-                        if(!$isIDP && $isSP)
+                        if(!$entityTypes['idp'] && $entityTypes['sp'])
                         {
                             $ent->removeServiceLocation($v);
                             continue;
@@ -1313,7 +1303,7 @@ class Providerupdater
              * setting new certs
              */
             foreach ($ch['crt'] as $k1 => $v1) {
-                if ($k1 === 'spsso' && $isSP) {
+                if ($k1 === 'spsso' && $entityTypes['sp'] ===true) {
                     foreach ($v1 as $k2 => $v2) {
                         $ncert = new models\Certificate();
                         $ncert->setType('spsso');
@@ -1328,7 +1318,7 @@ class Providerupdater
                         }
                         $this->em->persist($ncert);
                     }
-                } elseif ($k1 === 'idpsso' && $isIDP) {
+                } elseif ($k1 === 'idpsso' && $entityTypes['idp']) {
                     foreach ($v1 as $k2 => $v2) {
                         $ncert = new models\Certificate();
                         $ncert->setType('idpsso');
@@ -1344,7 +1334,7 @@ class Providerupdater
                         }
                         $this->em->persist($ncert);
                     }
-                } elseif ($k1 === 'aa' && $isIDP) {
+                } elseif ($k1 === 'aa' && $entityTypes['idp']) {
                     foreach ($v1 as $k2 => $v2) {
                         $ncert = new models\Certificate();
                         $ncert->setType('aa');
