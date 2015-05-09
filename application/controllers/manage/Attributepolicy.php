@@ -770,7 +770,6 @@ class Attributepolicy extends MY_Controller
             );
             return $this->load->view('page', $data);
         }
-        $myLang = MY_Controller::getLang();
         $idpNameInLang = $idp->getNameToWebInLang(MY_Controller::getLang(), 'idp');
         /**
          * @var $sp models\Provider
@@ -781,7 +780,7 @@ class Attributepolicy extends MY_Controller
             log_message('error', '(manage/attributepolicy/multi) Service Provider as requester not found with id:' . $requesterID);
             show_error(lang('rerror_spnotfound'), 404);
         }
-        $spNameInLang = $sp->getNameToWebInLang($myLang, 'sp');
+        $spNameInLang = $sp->getNameToWebInLang(MY_Controller::getLang(), 'sp');
         $data = array(
             'breadcrumbs' => array(
                 array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
