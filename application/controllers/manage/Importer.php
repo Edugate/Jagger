@@ -231,32 +231,21 @@ class Importer extends MY_Controller
      */
     private function _metadatasigner_validate($metadataurl, $sslvalidate = FALSE, $signed = FALSE, $certurl = FALSE, $certbody = FALSE)
     {
-        $curl_timeout = $this->curl_timeout;
         $maxsize = $this->curl_maxsize;
-        if($sslvalidate)
-        {
-            $curloptions = array(
-                CURLOPT_TIMEOUT => $curl_timeout,
-                CURLOPT_BUFFERSIZE => 128,
-                CURLOPT_NOPROGRESS => FALSE,
-                CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
-                    return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
-                }
-            );
+        $sslverifyhost = 0;
+        if ($sslvalidate) {
+            $sslverifyhost = 2;
         }
-        else
-        {
-            $curloptions = array(
-                CURLOPT_SSL_VERIFYPEER => $sslvalidate,
-                CURLOPT_SSL_VERIFYHOST => $sslvalidate,
-                CURLOPT_TIMEOUT => $curl_timeout,
-                CURLOPT_BUFFERSIZE => 128,
-                CURLOPT_NOPROGRESS => FALSE,
-                CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
-                    return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
-                }
-            );
-        }
+        $curloptions = array(
+            CURLOPT_SSL_VERIFYPEER => $sslvalidate,
+            CURLOPT_SSL_VERIFYHOST => $sslverifyhost,
+            CURLOPT_TIMEOUT => $this->curl_timeout,
+            CURLOPT_BUFFERSIZE => 128,
+            CURLOPT_NOPROGRESS => FALSE,
+            CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
+                return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
+            }
+        );
         $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), $curloptions);
         if (empty($this->xmlbody)) {
             $this->other_error[] = $this->curl->error_string;
@@ -282,27 +271,17 @@ class Importer extends MY_Controller
                 return FALSE;
             }
         } elseif (!empty($certurl)) {
-            if ($sslvalidate) {
-                $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
-                    CURLOPT_TIMEOUT => $curl_timeout,
-                    CURLOPT_BUFFERSIZE => 128,
-                    CURLOPT_NOPROGRESS => FALSE,
-                    CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
-                        return ($Downloaded > (1000 * 1024)) ? 1 : 0;
-                    }
-                ));
-            } else {
                 $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
                     CURLOPT_SSL_VERIFYPEER => $sslvalidate,
-                    CURLOPT_SSL_VERIFYHOST => $sslvalidate,
-                    CURLOPT_TIMEOUT => $curl_timeout,
+                    CURLOPT_SSL_VERIFYHOST => $sslverifyhost,
+                    CURLOPT_TIMEOUT => $this->curl_timeout,
                     CURLOPT_BUFFERSIZE => 128,
                     CURLOPT_NOPROGRESS => FALSE,
                     CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
                         return ($Downloaded > (1000 * 1024)) ? 1 : 0;
                     }
                 ));
-            }
+
             if (!empty($certdata) && validateX509($certdata)) {
                 $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certdata);
             } else {
