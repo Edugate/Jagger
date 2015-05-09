@@ -27,12 +27,20 @@ class Importer extends MY_Controller
     protected $other_error = array();
     private $access;
     protected $xmlbody;
-    protected $curl_maxsize;
+    protected $curl_maxsize, $curl_timeout;
     protected $xmlDOM;
 
     function __construct()
     {
         parent::__construct();
+        $this->curl_maxsize = $this->config->item('curl_metadata_maxsize');
+        if (!isset($this->curl_maxsize)) {
+            $this->curl_maxsize = 20000;
+        }
+        $this->curl_timeout = $this->config->item('curl_timeout');
+        if (!isset($this->curl_timeout)) {
+            $this->curl_timeout = 60;
+        }
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
         if (!$loggedin) {
@@ -92,11 +100,9 @@ class Importer extends MY_Controller
         $arg['cert'] = getPEM($this->input->post('cert'));
         $arg['validate'] = $this->input->post('validate');
         $arg['sslcheck'] = trim($this->input->post('sslcheck'));
-
+        $sslvalidate = TRUE;
         if (!empty($arg['sslcheck']) && $arg['sslcheck'] === 'ignore') {
             $sslvalidate = FALSE;
-        } else {
-            $sslvalidate = TRUE;
         }
 
         if ($arg['validate'] === 'accept') {
@@ -225,14 +231,7 @@ class Importer extends MY_Controller
      */
     private function _metadatasigner_validate($metadataurl, $sslvalidate = FALSE, $signed = FALSE, $certurl = FALSE, $certbody = FALSE)
     {
-        $curl_timeout = $this->config->item('curl_timeout');
-        $this->curl_maxsize = $this->config->item('curl_metadata_maxsize');
-        if (!isset($curl_timeout)) {
-            $curl_timeout = 60;
-        }
-        if (!isset($this->curl_maxsize)) {
-            $this->curl_maxsize = 20000;
-        }
+        $curl_timeout = $this->curl_timeout;
         $maxsize = $this->curl_maxsize;
         if ($sslvalidate) {
             $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), array(
