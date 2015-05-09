@@ -233,17 +233,20 @@ class Importer extends MY_Controller
     {
         $curl_timeout = $this->curl_timeout;
         $maxsize = $this->curl_maxsize;
-        if ($sslvalidate) {
-            $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), array(
+        if($sslvalidate)
+        {
+            $curloptions = array(
                 CURLOPT_TIMEOUT => $curl_timeout,
                 CURLOPT_BUFFERSIZE => 128,
                 CURLOPT_NOPROGRESS => FALSE,
                 CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
                     return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
                 }
-            ));
-        } else {
-            $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), array(
+            );
+        }
+        else
+        {
+            $curloptions = array(
                 CURLOPT_SSL_VERIFYPEER => $sslvalidate,
                 CURLOPT_SSL_VERIFYHOST => $sslvalidate,
                 CURLOPT_TIMEOUT => $curl_timeout,
@@ -252,8 +255,9 @@ class Importer extends MY_Controller
                 CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
                     return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
                 }
-            ));
+            );
         }
+        $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), $curloptions);
         if (empty($this->xmlbody)) {
             $this->other_error[] = $this->curl->error_string;
             return FALSE;
