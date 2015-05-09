@@ -868,7 +868,6 @@ class Providerupdater
                         }
                     }
                     elseif ($origServiceType === 'IDPArtifactResolutionService') {
-                        log_message('debug', 'GG:IDPArtifactResolutionService type found');
                         if ($type === 'SP') {
                             log_message('debug', 'GG:IDPArtifactResolutionService entity recognized as SP removin service');
                             $ent->removeServiceLocation($v);
