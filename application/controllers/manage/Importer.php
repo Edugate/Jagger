@@ -58,18 +58,17 @@ class Importer extends MY_Controller
         if (!$access) {
             $data['content_view'] = "nopermission";
             $data['error'] = lang('error403');
-            $this->load->view('page', $data);
         } else {
-
-            $data['title'] = lang('titleimportmeta');
-            $data['titlepage'] = lang('titleimportmeta');
-            $data['content_view'] = "manage/import_metadata_form";
-            $data['other_error'] = $this->other_error;
-            $data['global_erros'] = $this->globalerrors;
-            $data['federations'] = $this->form_element->getFederation();
-            $data['types'] = array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities'));
-            $this->load->view('page', $data);
+            $data = array(
+                'titlepage' => lang('titleimportmeta'),
+                'content_view' => 'manage/import_metadata_form',
+                'other_error' => $this->other_error,
+                'global_erros' => $this->globalerrors,
+                'federations' => $this->form_element->getFederation(),
+                'types' => array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities')),
+            );
         }
+        $this->load->view('page', $data);
     }
 
     function submit()
@@ -86,6 +85,7 @@ class Importer extends MY_Controller
         if ($this->_submit_validate() !== TRUE) {
             return $this->index();
         }
+
 
         $arg['metadataurl'] = $this->input->post('metadataurl');
         $arg['certurl'] = trim($this->input->post('certurl'));
@@ -144,30 +144,25 @@ class Importer extends MY_Controller
          * replace below if calling function
          * check if metadata_body if xml and valid against schema
          */
+        $local = false;
+        $active = false;
+        $static = false;
+        $overwrite = false;
+        $full = false;
         if ($arg['extorint'] == 'int') {
             $local = true;
-        } else {
-            $local = false;
         }
         if ($arg['active'] == 'yes') {
             $active = true;
-        } else {
-            $active = false;
         }
         if ($arg['static'] == 'yes') {
             $static = true;
-        } else {
-            $static = false;
         }
         if ($arg['overwrite'] == 'yes') {
             $overwrite = true;
-        } else {
-            $overwrite = false;
         }
         if ($arg['fullinformation'] == 'yes') {
             $full = true;
-        } else {
-            $full = false;
         }
         if (!($arg['type'] == 'idp' || $arg['type'] == 'sp' || $arg['type'] == 'all')) {
             log_message('error', 'Cannot import metadata because type of entities is not set correctly');
