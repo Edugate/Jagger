@@ -71,6 +71,7 @@ $config['username_min_length'] = 5;
 $config['Shib_required'] = array('Shib_mail','Shib_username');
 $config['Shib_username'] = 'eppn';
 $config['Shib_mail'] = 'mail';
+$config['Shib_groups'] = 'isMemberOf';
 /**
  * optional firstname and surname
  */
