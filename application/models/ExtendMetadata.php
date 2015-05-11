@@ -167,6 +167,10 @@ class ExtendMetadata {
 
     public function getAttributes()
     {
+	    if(is_null($this->attrs))
+	    {
+		    return array();
+	    }
         return unserialize($this->attrs);
     }
 
@@ -223,6 +227,16 @@ class ExtendMetadata {
         $attrs = array();
         $this->setAttributes($attrs);
     }
+
+    public function setAlgorithmMethod($value,$method)
+    {
+        $this->setType('ent');
+        $this->setNamespace('alg');
+        $this->setValue(trim($value));
+        $this->setElement($method);
+        return $this;
+    }
+
 
     public function setAttributes(array $attrs)
     {

@@ -27,23 +27,32 @@ class Reports extends MY_Controller {
     {
         parent::__construct();
         $this->load->library('j_auth');
+        MY_Controller::$menuactive = 'admins';
     }
 
     public function  index(){
         $loggedin = $this->j_auth->logged_in();
         if(!$loggedin)
         {
-
-               $this->session->set_flashdata('target', $this->current_site);
                redirect('auth/login', 'location');
-
         }
         if(!$this->j_auth->isAdministrator())
         {
             show_error('no perm',403);
         }
-        $data['titlepage'] = 'system reporter';
+
+        if(function_exists('apc_clear_cache'))
+        {
+           apc_clear_cache();
+        }
+        $this->title = lang('title_sysreports');
+        $data['titlepage'] =lang('title_sysreports') ;
         $data['content_view']= 'smanage/index_view';
+	    $data['breadcrumbs'] = array(
+		    array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
+		    array('url' => '#', 'name' => lang('title_sysreports'), 'type' => 'current'),
+
+	    );
         $this->load->view('page',$data);
 
 
@@ -88,6 +97,10 @@ class Reports extends MY_Controller {
        if(!$this->j_auth->isAdministrator()){
            show_error('No perm',403);
        }
+       $proxyDir = null; //to genearate to default proxy dir
+       $proxyFactory = $this->em->getProxyFactory();
+       $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
+       $proxyFactory->generateProxyClasses($metadatas, $proxyDir);
        $validator = new SchemaValidator($this->em);
        $errors = $validator->validateMapping();
        if(count($errors)>0)
@@ -116,6 +129,7 @@ class Reports extends MY_Controller {
        if(!$this->j_auth->isAdministrator()){
            show_error('Unauthorized request',403);
        }
+
        $validator = new SchemaValidator($this->em);
        $result = $validator->schemaInSyncWithMetadata();
        if($result)

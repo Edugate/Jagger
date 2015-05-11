@@ -60,7 +60,7 @@ class User {
     protected $salt;
 
     /**
-     * @Column(type="string", length=255, unique=true, nullable=false)
+     * @Column(type="string", length=255, unique=false, nullable=false)
      */
     protected $email;
 
@@ -182,19 +182,6 @@ class User {
         return $this;
     }
 
-    public function authenticateUser($user, $pass)
-    {
-        $encryted = self::encryptPassword($pass);
-        $founduser = self::findUser($user);
-        if (!$founduser)
-        {
-            return FALSE;
-        }
-        /**
-         * 
-         */
-        print_r($founduser);
-    }
 
     /**
      * Encrypt a Password
@@ -206,7 +193,6 @@ class User {
      */
     public function encryptPassword($password)
     {
-        log_message('debug', 'Model User: encryptPassword(' . $password . ')');
         $salt = $this->getSalt();
         log_message('debug', 'Model User: encryptPassword: got slat:' . $salt);
         $encrypted_password = sha1($password . $salt);
@@ -237,6 +223,19 @@ class User {
         {
             $this->getRoles()->add($role);
         }
+
+        return $this;
+    }
+
+    public function unsetRole(AclRole $role)
+    {
+        $already_there = $this->getRoles()->contains($role);
+        if ($already_there)
+        {
+            $this->getRoles()->removeElement($role);    
+        }
+        return $this;
+        
     }
 
     /**
@@ -247,46 +246,6 @@ class User {
     public function authenticate()
     {
         self::$current = $this;
-        return $this;
-    }
-
-    /**
-     * Find a User account by username or email
-     *
-     * @static
-     * @access	public
-     * @param	string	$identifier
-     * @return	User|FALSE
-     */
-    public static function findUser($identifier)
-    {
-        $CI = & get_instance();
-
-        $user = $this->CI->em->createQuery("SELECT u FROM models\User u WHERE u.username = '{$identifier}' OR u.email = '{$identifier}'")
-                ->getResult();
-
-        return $user ? $user[0] : FALSE;
-    }
-
-    public function findUserMail($username, $email)
-    {
-        $CI = & get_instance();
-
-        $user = $this->CI->em->createQuery("SELECT u FROM models\User u WHERE u.username = '{$username}' OR u.email = '{$email}'")
-                ->getResult();
-
-        return $user ? $user[0] : FALSE;
-
-
-    }
-
-    public static function fakeStatic()
-    {
-        return TRUE;
-    }
-
-    public function fake()
-    {
         return $this;
     }
 
@@ -370,13 +329,12 @@ class User {
     {
         log_message('debug', 'setUserpref');
         $this->userpref = serialize($pref);
-        //      return $this;
     }
 
     public function delEntityFromBookmark($id)
     {
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
@@ -391,7 +349,7 @@ class User {
     public function delFedFromBookmark($id)
     {
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
@@ -405,7 +363,7 @@ class User {
     public function setShowHelp($b)
     {
        $pref = $this->getUserpref();
-       if (empty($pref) or !is_array($pref))
+       if (empty($pref) || !is_array($pref))
        {
           $pref = array();
        }
@@ -419,7 +377,7 @@ class User {
     {
         log_message('debug', 'addEntityToBookmark');
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
@@ -446,12 +404,49 @@ class User {
     {
         log_message('debug', 'addFedToBookmark');
         $pref = $this->getUserpref();
-        if (empty($pref) or !is_array($pref))
+        if (empty($pref) || !is_array($pref))
         {
             $pref = array();
         }
         $pref['board']['fed'][$fedid] = array('name' => $fedname, 'url' => $fedencoded);
         $this->setUserpref($pref);
+        return $this;
+    }
+
+    public function getSecondFactor()
+    {
+       $pref = $this->getUserpref();
+       if(!empty($pref) && is_array($pref))
+       {
+           if(isset($pref['2f']) && !empty($pref['2f']))
+           {
+              return $pref['2f'];
+           }
+       }
+       return null;
+       
+    }
+    public function setSecondFactor($f=null)
+    {
+       if(!empty($f) && strcmp($f,'duo') == 0)
+       {
+          $factor = $f;
+       }   
+       else
+       {
+          $factor = null;
+       }
+
+       $pref = $this->getUserpref();
+       if (empty($pref) || !is_array($pref))
+       {
+           $pref = array();
+       }
+       $pref['2f'] = $factor;
+       $this->setUserpref($pref);
+       return $this;
+
+
     }
 
     public function setValid()
@@ -486,6 +481,16 @@ class User {
     {
         $fullname = $this->givenname . " " . $this->surname;
         return $fullname;
+    }
+
+    public function getGivenname()
+    {
+       return $this->givenname;
+    }
+
+    public function getSurname()
+    {
+        return $this->surname;
     }
 
     public function getEmail()
@@ -551,6 +556,9 @@ class User {
         return $this->local;
     }
 
+    /**
+     * @return \DateTime|null
+     */
     public function getLastlogin()
     {
         return $this->lastlogin;

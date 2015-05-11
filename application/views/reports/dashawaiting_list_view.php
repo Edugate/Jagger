@@ -13,10 +13,11 @@ if (!empty($error_message))
 }
 if (!empty($list))
 {
+  
     $tmpl = array('table_open' => '<table  id="detailsi" class="itablesorter">');
     $this->table->set_template($tmpl);
     $this->table->set_heading(lang('rr_tbltitle_date'), lang('rr_tbltitle_requester'), lang('rr_tbltitle_requesttype') ,'');
-    foreach ($list as $q)
+    foreach ($list['q'] as $q)
     {
         if ($q['confirmed'])
         {
@@ -26,9 +27,10 @@ if (!empty($list))
             $confirm = lang('rr_no');
         }
         $cdate = $q['idate'];
-        $detail = anchor(base_url()."/reports/awaiting/detail/" . $q['token'], '>>');
-        $this->table->add_row($q['idate'], $q['requester'], $q['recipientname'].'<br />'.$q['type'] . " - " . $q['action'], $detail);
+        $detail = anchor(base_url('reports/awaiting/detail/'.$q['token'].'') , '<i class="fi-arrow-right"></i>');
+        $this->table->add_row($q['idate'], $q['requesterCN'] ." (". $q['requester'] .")", $q['type'] . " - " . $q['action'], $detail);
     }
     echo $this->table->generate();
     $this->table->clear();
+    //@todo add list notification approval request
 }

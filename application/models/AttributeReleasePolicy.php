@@ -1,12 +1,11 @@
 <?php
 namespace models;
-use \Doctrine\Common\Collections\ArrayCollection;
 /**
- * ResourceRegistry3
+ * Jagger
  * 
  * @package     RR3
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -14,7 +13,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
 /**
  * AttributeReleasePolicy Class
  * 
- * @package     RR3
+ * @package     Jagger
  * @subpackage  Models
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */

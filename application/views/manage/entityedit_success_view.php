@@ -1,9 +1,9 @@
-<div id="subtitle"><h3><a href="<?php echo base_url().'providers/detail/show/'.$entdetail['id'];?>"><?php echo $entdetail['displayname'] ; ?></a></h3><h4><?php echo $entdetail['entityid']; ?></h4> </div>
 <?php
 $suff = $entdetail['id'];
 if(!empty($success_message))
 {
-echo '<div class="success">'.$success_message.'</div>';
+echo '<div data-alert class="alert-box success">'.$entdetail['entityid'].': '.$success_message.'</div>';
+
 }
 $redirectto = base_url().'providers/detail/show/'.$entdetail['id']
 ?>

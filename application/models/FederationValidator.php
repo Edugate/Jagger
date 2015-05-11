@@ -1,8 +1,6 @@
 <?php
 
-
 namespace models;
-
 
 /**
  * ResourceRegistry3
@@ -30,10 +28,9 @@ namespace models;
  * @Table(name="fedvalidator")
  * @author janusz
  */
-class FederationValidator {
+class FederationValidator
+{
 
-
-   
     /**
      * @Id
      * @Column(type="bigint", nullable=false)
@@ -58,6 +55,17 @@ class FederationValidator {
     protected $isEnabled;
 
     /**
+     * @Column(name="is_mandatory",type="boolean",nullable=false)
+     */
+    protected $isMandatory;
+
+    /**
+     * (in preparation) if true then it will be trigerred during SP/IDP registration
+     * @Column(name="is_regenabled",type="boolean", nullable=false)
+     */
+    protected $isEnabledForRegister;
+
+    /**
      * @Column(type="string",length=256, nullable=false)
      */
     protected $url;
@@ -77,18 +85,18 @@ class FederationValidator {
      * additional args sent in request
      * @Column(type="text", nullable=true)
      */
-     protected $optargs;
+    protected $optargs;
 
     /**
      * args seprator
      * @Column(type="string", length=10, nullable=true)
      */
-     protected $argseparator;
+    protected $argseparator;
 
-     /**
-      * @Column(name="documenttype",type="string",length=20,nullable=false)
-      */
-     protected $documentType;
+    /**
+     * @Column(name="documenttype",type="string",length=20,nullable=false)
+     */
+    protected $documentType;
 
     /**
      * @Column(type="text", nullable=false)
@@ -99,18 +107,16 @@ class FederationValidator {
      * @Column(type="string", length=256, nullable=false)
      */
     protected $returncodeelement;
+
     /**
      * @Column(type="string", length=512, nullable=false)
      */
     protected $returncodevalue;
-    
+
     /**
      * @Column(type="string", length=256, nullable=false)
      */
     protected $messagecodeelement;
-
-
-
 
     /**
      * @Column(name="created_at", type="datetime")
@@ -122,225 +128,274 @@ class FederationValidator {
      */
     protected $updatedAt;
 
-
-  
-
     public function __construct()
     {
         $this->isEnabled = false;
+        $this->isMandatory = false;
+        $this->isEnabledForRegister = false;
         $this->documentType = 'xml';
     }
 
     public function getId()
     {
-       return $this->id;
+        return $this->id;
     }
+
     public function getName()
     {
-       return $this->name;
+        return $this->name;
     }
 
     public function getFederation()
     {
-       return $this->federation;
+        return $this->federation;
     }
+
     public function getEnabled()
     {
-       return  $this->isEnabled;
+        return $this->isEnabled;
     }
+
+    public function isEnabledForRegistration()
+    {
+        return $this->isEnabledForRegister;
+    }
+
+    public function getMandatory()
+    {
+        return $this->isMandatory;
+    }
+
     public function getMethod()
     {
-       return $this->method;
+        return $this->method;
     }
+
     public function getUrl()
     {
-       return $this->url;
+        return $this->url;
     }
+
     public function getEntityParam()
     {
-       return $this->entityParam;
-    } 
+        return $this->entityParam;
+    }
+
     public function getOptargs()
     {
-      return unserialize($this->optargs);
+        return unserialize($this->optargs);
     }
+
     public function getOptargsToInputStr()
     {
-        $result ='';
+        $result = '';
         $first = true;
         $o = $this->getOptargs();
-        foreach($o as $k=>$v)
+        foreach ($o as $k => $v)
         {
-           if(!$first)
-           {
-              $result .= '$$'.$k;
-           }
-           else
-           {
-              $first=false;
-              $result .= $k;
-           }
-           if(isset($v))
-           {
-              $result .= '$:$'.$v;
-           }
-           
-
+            if (!$first)
+            {
+                $result .= '$$' . $k;
+            }
+            else
+            {
+                $first = false;
+                $result .= $k;
+            }
+            if (isset($v))
+            {
+                $result .= '$:$' . $v;
+            }
         }
         return $result;
     }
+
     public function getSeparator()
     {
-      return $this->argseparator;
+        return $this->argseparator;
     }
+
     public function getDocutmentType()
     {
-      return $this->documentType;
+        return $this->documentType;
     }
+
     public function getDescription()
     {
-      return $this->description;
+        return $this->description;
     }
+
     public function getReturnCodeElement()
     {
-      if(!empty($this->returncodeelement))
-      {
-         return unserialize($this->returncodeelement);
-      }
-      else
-      {
-         return array();
-      }
+        if (!empty($this->returncodeelement))
+        {
+            return unserialize($this->returncodeelement);
+        }
+        else
+        {
+            return array();
+        }
     }
+
     public function getReturnCodeValues()
     {
-        if(!empty($this->returncodevalue))
+        if (!empty($this->returncodevalue))
         {
-           return unserialize($this->returncodevalue);
+            return unserialize($this->returncodevalue);
         }
-        else{
-           return array();
-       }
+        else
+        {
+            return array();
+        }
     }
 
     public function getMessageCodeElements()
     {
-         return unserialize($this->messagecodeelement);
+        return unserialize($this->messagecodeelement);
     }
 
-
-    public function  setName($name)
+    public function setName($name)
     {
         $this->name = trim($name);
         return $this;
     }
+
     public function setFederation(Federation $federation)
     {
         $this->federation = $federation;
         return $this;
     }
+
     public function setEnabled($arg)
     {
         $this->isEnabled = $arg;
         return $this;
     }
+
+    public function setEnabledForRegister($arg)
+    {
+        if ($arg === TRUE)
+        {
+            $this->isEnabledForRegister = TRUE;
+        }
+        else
+        {
+            $this->isEnabledForRegister = FALSE;
+        }
+        return $this;
+    }
+
+    public function setMandatory($arg)
+    {
+        $this->isMandatory = $arg;
+        return $this;
+    }
+
     public function setUrl($url)
     {
         $this->url = trim($url);
         return $this;
     }
+
     public function setMethod($method)
     {
-        if(strcasecmp($method,'GET') == 0 || strcasecmp($method,'POST') == 0)
+        if (strcasecmp($method, 'GET') == 0 || strcasecmp($method, 'POST') == 0)
         {
-           $this->method = strtoupper($method);
-           return $this;
+            $this->method = strtoupper($method);
+            return $this;
         }
         else
         {
-           \log_message('error',__METHOD__.' received incorrect method value');
+            \log_message('error', __METHOD__ . ' received incorrect method value');
         }
     }
-   
+
     public function setEntityParam($param)
     {
         $this->entityParam = $param;
-    } 
+    }
 
-    public function  setSeparator($separator)
+    public function setSeparator($separator)
     {
         $this->argseparator = trim($separator);
     }
-    public function  setOptargs(array $args=null)
+
+    public function setOptargs(array $args = null)
     {
-        if(!empty($args))
+        if (!empty($args))
         {
-           $this->optargs = serialize($args);
+            $this->optargs = serialize($args);
         }
         else
         {
-           $this->optargs = serialize(array());
+            $this->optargs = serialize(array());
         }
     }
-    public function addOptarg($arg, $value=null)
+
+    public function addOptarg($arg, $value = null)
     {
         $tmpargs = $this->getOptargs();
-        $tmpargs[] = array(''.trim($arg).''=>trim($value));
+        $tmpargs[] = array('' . trim($arg) . '' => trim($value));
         $this->setOptargs($tmpargs);
         return $this;
     }
-    public function  delOptarg($arg)
+
+    public function delOptarg($arg)
     {
         $tmpargs = $this->getOptargs();
-        foreach($tmpargs as $k=>$v)
+        foreach ($tmpargs as $k => $v)
         {
-            if(array_key_exists($arg,$v))
+            if (array_key_exists($arg, $v))
             {
-                 unset($tmpargs[$k]);
+                unset($tmpargs[$k]);
             }
         }
         $this->setOptargs($tmpargs);
         return $this;
     }
+
     public function setDocumentType($type)
     {
-        if(strcasecmp($type,'xml')==0)
+        if (strcasecmp($type, 'xml') == 0)
         {
             $this->documentType = strtolower($type);
             return $this;
         }
     }
+
     public function setDescription($desc)
     {
         $this->description = $desc;
         return $this;
     }
+
     public function setReturnCodeElement(array $element)
     {
         $this->returncodeelement = serialize($element);
         return $this;
     }
+
     /**
      * @todo finish 
      */
     public function setReturnCodeValue(array $values)
     {
-       if(empty($values))
-       {
-          $values=array();
-       }
+        if (empty($values))
+        {
+            $values = array();
+        }
         $this->returncodevalue = serialize($values);
         return $this;
     }
+
     public function setMessageElement(array $msgs)
     {
-        if(empty($msgs))
+        if (empty($msgs))
         {
             $msgs = array();
         }
         $this->messagecodeelement = serialize($msgs);
         return $this;
-
     }
 
     /**
@@ -348,21 +403,20 @@ class FederationValidator {
      */
     public function created()
     {
-        $this->createdAt = new \DateTime("now",new \DateTimeZone('UTC'));
-        $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
-        if(empty($this->optargs))
+        $this->createdAt = new \DateTime("now", new \DateTimeZone('UTC'));
+        $this->updatedAt = new \DateTime("now", new \DateTimeZone('UTC'));
+        if (empty($this->optargs))
         {
-           $this->optargs = serialize(array());
+            $this->optargs = serialize(array());
         }
     }
 
-     /**
+    /**
      * @PreUpdate
      */
     public function updated()
     {
-        $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
+        $this->updatedAt = new \DateTime("now", new \DateTimeZone('UTC'));
     }
-
 
 }

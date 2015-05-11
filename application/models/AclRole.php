@@ -101,6 +101,10 @@ class AclRole {
      {
         return $this->parent;
      }
+     public function getChildren()
+     {
+        return $this->children;
+     }
      public function getDescription()
      {
         return $this->description;

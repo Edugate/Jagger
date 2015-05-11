@@ -62,3 +62,11 @@ if(!empty($showavailable))
 <?php
 echo '<div class="assignedlogosgrid" style="display:none">'.base_url().'manage/logomngmt/getAssignedLogosInGrid/'.$provider_detail['type'].'/'.$provider_detail['id'].'</div>';
 echo '<div class="availablelogosgrid" style="display:none">'.base_url().'manage/logomngmt/getAvailableLogosInGrid/'.$provider_detail['type'].'/'.$provider_detail['id'].'</div>';
+
+?>
+<div id="messagereveal" class="reveal-modal small" data-reveal>
+    <p class="infomsg"></p>
+   <p><button class="modal-close button mall">Close</a></button>
+  <a class="close-reveal-modal">&#215;</a>
+</div>
+

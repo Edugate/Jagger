@@ -29,7 +29,7 @@ function validateX509($cert, $args = NULL)
 	{
 		$cert = getPEM($cert);
         $cert_result = openssl_x509_parse($cert);
-        if (empty($cert_result) OR !is_array($cert_result))
+        if (empty($cert_result) || !is_array($cert_result))
         {
             return FALSE;
         }
@@ -127,10 +127,8 @@ function getPEM($value=null, $raw = false)
      );
     $cleaned_value = preg_replace($pattern, $cleaner, $value);
     $cleaned_value = trim($cleaned_value);
-
-    $cleaned_value = preg_replace('#(\\\r)#', '', $cleaned_value);
-    $cleaned_value = preg_replace('#(\\\n)#', "\n", $cleaned_value);
-
+    $cleaned_value = preg_replace('/[^\+\pL\pN.;=~\/]+/', '', $cleaned_value);
+    $cleaned_value = chunk_split($cleaned_value, 64, PHP_EOL);
     $cleaned_value = trim($cleaned_value);
 
     // Add or remove BEGIN/END lines

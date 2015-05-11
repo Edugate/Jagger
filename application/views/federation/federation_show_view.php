@@ -1,58 +1,70 @@
 <?php
-if (!$bookmarked)
+if(empty($federation_is_active))
 {
-    $blink = '<a href="' . base_url() . 'ajax/bookfed/' . $federation_id . '" class="bookentity"><img src="' . base_url() . 'images/icons/star--plus.png" /></a>';
+    echo '<div data-alert class="alert-box alert fedstatusinactive">' . lang('rr_fed_inactive_full') . '</div>';
 }
 else
 {
-    $blink = '<a href="' . base_url() . 'ajax/delbookfed/' . $federation_id . '" class="bookentity"><img src="' . base_url() . 'images/icons/star--minus.png" /></a>';
+     echo '<div data-alert class="alert-box alert fedstatusinactive hidden">' . lang('rr_fed_inactive_full') . '</div>';
 }
-?>
-<div><?php echo  $blink; ?></div>
-
-<?php
 echo '<div id="ifedtabs">';
 echo '<ul class="tabs" data-tab>
  <li class="tab-title active"><a href="#general">' . lang('tabgeneral') . '</a></li>
  <li class="tab-title"><a href="#membership">' . lang('tabMembership') . '</a></li>
  <li class="tab-title"><a href="#metadata">' . lang('rr_metadata') . '</a></li>
  <li class="tab-title"><a href="#attrs">' . lang('tabAttrs') . '</a></li>';
-if(!empty($fvalidator))
-{
-  echo '<li class="tab-title"><a href="#fvalidators">' . lang('tabFvalidators') . '</a></li>';
+if (!empty($fvalidator)) {
+    echo '<li class="tab-title"><a href="#fvalidators">' . lang('tabFvalidators') . '</a></li>';
 }
-echo '<li class="tab-title"><a href="#management">' . lang('tabMngt') . '</a></li>
- </ul>
- ';
+echo '<li class="tab-title"><a href="#management">' . lang('tabMngt') . '</a></li>';
 
-$tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
+echo '</ul>';
 
+$tmpl = array('table_open' => '<table id="detailsnosort" >');
+$tmpl2 = array('table_open' => '<table style="border: 0px">');
 echo '<div class="tabs-content">';
-foreach ($result as $k => $v)
-{
-    if($k !== 'general')
-    {
-       echo '<div id="' . $k . '" class="content nopadding">';
+foreach ($result as $k => $v) {
+    if ($k !== 'general') {
+        echo '<div id="' . $k . '" class="content nopadding">';
+        $this->table->set_template($tmpl);
+        echo $this->table->generate($v);
+        $this->table->clear();
+        echo '</div>';
+    } else {
+
+        echo '<div id="' . $k . '" class="content active nopadding">';
+
+        if (!empty($fedpiechart)) {
+            $this->table->set_template($tmpl2);
+            echo '<div class="row">';
+
+            echo '<div class="medium-8 column">';
+            echo $this->table->generate($v);
+            echo '</div>';
+            echo '<div class="medium-4 column">';
+            echo $fedpiechart;
+            echo '</div>';
+
+            echo '</div>';
+        } else {
+            $this->table->set_template($tmpl);
+            echo $this->table->generate($v);
+        }
+
+        $this->table->clear();
+
+        echo '</div>';
+
     }
-    else
-    {
-       echo '<div id="' . $k . '" class="content active nopadding">';
-    
-    }
-    $this->table->set_template($tmpl);
-    $this->table->set_heading('', '' . lang('coldetails') . '');
-    echo $this->table->generate($v);
-    $this->table->clear();
-    echo '</div>';
+
 }
 echo '</div>';
 echo '</div>';
 
-echo confirmDialog(''.lang('title_confirm').'', ''.lang('douwanttoproceed').':', ''.lang('rr_yes').'', ''.lang('rr_no').'');
+echo confirmDialog('' . lang('title_confirm') . '', '' . lang('douwanttoproceed') . ':', '' . lang('rr_yes') . '', '' . lang('rr_no') . '');
 
-if(!empty($hiddenspan))
-{
-echo $hiddenspan;
+if (!empty($hiddenspan)) {
+    echo $hiddenspan;
 }
 ?>
 <div class="metadataresult" style="display: none"></div>

@@ -1,8 +1,6 @@
 <?php
-
 namespace models;
 
-use \Doctrine\Common\Collections\ArrayCollection;
 /**
  * ResourceRegistry3
  * 
@@ -71,6 +69,8 @@ class StaticMetadata
     public function getMetadata($addNS=null)
     {
         $mresult = base64_decode($this->metadata);
+        
+$mresult = preg_replace('/\<\?xml(.*)\>/', '', $mresult);
 
 		if($addNS)
 		{
@@ -96,9 +96,9 @@ class StaticMetadata
 			$mresult = $top . $mresult .$down;
 
 		}
-		//return htmlspecialchars_decode($mresult);
 		return $mresult;
     }
+
 
 	public function getMetadataToDecoded()
 	{

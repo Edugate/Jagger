@@ -15,14 +15,14 @@ echo '<div></div>';
 echo '</div>';
 echo '<div class="row">';
 echo '<div class="small-3 large-3 columns"><label for="fedname" class="inline right">'.lang('rr_fed_name').'</label></div>';
-$fedarray = array('name'=>'fedname','id'=>'fedname', 'value'=>set_value('fedname'),'required'=>'required');
+$fedarray = array('name'=>'fedname','id'=>'fedname', 'value'=>set_value('fedname','',FALSE),'required'=>'required');
 echo '<div class="small-9 large-6 columns">'.form_input($fedarray).'</div>';
 echo '<div></div>';
 echo '</div>';
 
 echo '<div class="row">';
 echo '<div class="small-3 large-3 columns"><label for="fedurn" class="inline right">'.lang('fednameinmeta').'</label></div>';
-$urnarray = array('name'=>'fedurn','placeholder'=>'urn:mace:heanet.ie:edugate:...','id'=>'fedurn','value'=>set_value('fedurn'),'required'=>'required');
+$urnarray = array('name'=>'fedurn','placeholder'=>'urn:mace:heanet.ie:edugate:...','id'=>'fedurn','value'=>set_value('fedurn','',FALSE),'required'=>'required');
 echo '<div class="small-9 large-6 columns">'.form_input($urnarray).'</div>';
 echo '<div></div>';
 echo '</div>';
@@ -48,7 +48,7 @@ echo '</div>';
 
 echo '<div class="row">';
 echo '<div class="small-3 large-3 columns"><label for="description" class="inline right">'.lang('rr_description').'</label></div>';
-echo '<div class="small-9 large-6 columns">'.form_textarea(array('name' => 'description', 'id' => 'description', 'value' => set_value('description'), 'rows' => 20, 'cols' => 40));
+echo '<div class="small-9 large-6 columns">'.form_textarea(array('name' => 'description', 'id' => 'description', 'value' => set_value('description','',FALSE), 'rows' => 8, 'cols' => 40));
 echo '</div>';
 echo '<div></div>';
 echo '</div>';
@@ -56,7 +56,7 @@ echo '</div>';
 
 echo '<div class="row">';
 echo '<div class="small-3 large-3 columns"><label for="termsofuse" class="inline right">'.lang('rr_fed_tou').'</label></div>';
-echo '<div class="small-9 large-6 columns">'.form_textarea(array('name' => 'termsofuse', 'id' => 'termsofuse', 'value' => set_value('termsofuse'), 'rows' => 20, 'cols' => 40));
+echo '<div class="small-9 large-6 columns">'.form_textarea(array('name' => 'termsofuse', 'id' => 'termsofuse', 'value' => set_value('termsofuse','',FALSE), 'rows' => 8, 'cols' => 40));
 echo '</div>';
 echo '<div></div>';
 echo '</div>';

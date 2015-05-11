@@ -1,6 +1,5 @@
 <?php
 namespace models;
-use \Doctrine\Common\Collections\ArrayCollection;
 /**
  * ResourceRegistry3
  * 
@@ -103,7 +102,7 @@ class Contact {
 
     public function setType($type)
     {
-        if (($type == 'technical') OR ($type == 'administrative') OR ($type == 'support') OR ($type == 'billing') OR ($type == 'other'))
+        if (($type == 'technical') || ($type == 'administrative') || ($type == 'support') || ($type == 'billing') || ($type == 'other'))
         {
             $this->type = $type;
             return $this;
@@ -190,40 +189,6 @@ class Contact {
         $c['phone'] = $this->getPhone();
         $c['email'] = $this->getEmail();
         return $c;
-    }
-
-    public function getContactToXML(\DOMElement $parent)
-    {
-        $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ContactPerson');
-        $e->setAttribute('contactType', $this->type);
-        if(!empty($this->givenname))
-        { 
-           $Contact_GivenName_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:GivenName');
-           $Contact_GivenName_Node->appendChild($e->ownerDocument->createTextNode($this->givenname));
-           $e->appendChild($Contact_GivenName_Node);
-        }
-
-        $Contact_Surname_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SurName');
-        if(!empty($this->surname))
-        {
-           $Contact_Surname_Node->appendChild($e->ownerDocument->createTextNode($this->surname));
-        }
-        else
-        {
-           $Contact_Surname_Node->appendChild($e->ownerDocument->createTextNode($this->email));
-        }
-        $Contact_Email_Node = $e->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:EmailAddress');
-        $Contact_Email_Node->appendChild($e->ownerDocument->createTextNode($this->email));
-
-        $e->appendChild($Contact_Surname_Node);
-        $e->appendChild($Contact_Email_Node);
-        return $e;
-    }
-
-    public function temp_getContactToXML(\DOMElement $parent)
-    {
-        $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:ContactPerson');
-        return $e;
     }
 
 }

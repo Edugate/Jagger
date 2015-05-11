@@ -5,11 +5,20 @@ if (!empty($errors_v)) {
 }
 if(!empty($success_message))
 {
-   echo '<div data-alert class="alert-box success">'.$success_message.'</div>';
-
+    echo '<div data-alert class="alert-box success">'.$success_message.'</div>';
+    $redirectto = base_url().'manage/regpolicy/show';
+    ?>
+    <script type="text/javascript">
+        function Redirect()
+        {
+            window.location.href="<?php echo $redirectto;?>";
+        }
+        setTimeout('Redirect()', 1000);
+    </script>
+<?php
 }
-if(!empty($form))
+elseif(!empty($form))
 {
-       echo $form;
+    echo $form;
 
 }

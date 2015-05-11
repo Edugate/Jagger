@@ -25,18 +25,17 @@ class Attribute_policyajax extends MY_Controller {
         
     }
 
-    public function retrieveattrpath($idpid=null)
+    public function getattrpath($idpid,$spid,$attrid)
     {
-        if(!$this->input->is_ajax_request() OR (empty($idpid) OR !is_numeric($idpid)))
+        if(!$this->input->is_ajax_request())
         {
             show_error('method not allowed',403);
         }
-        $enabled = $this->config->item('arpbyinherit');
-        if(empty($enabled) or $enabled !== TRUE)
-        {
-           set_status_header(403);
-           echo 'functionality disabled';
-           return;
+        $loggedin = $this->j_auth->logged_in();
+        if (!$loggedin) {
+            set_status_header(403);
+            echo 'lost session';
+            return;
         }
         $this->load->library('zacl');
         $tmp_arps = new models\AttributeReleasePolicies;
@@ -59,31 +58,31 @@ class Attribute_policyajax extends MY_Controller {
           return;
         }
 
-        $requester = $this->input->post('requester');
-        $attrname = $this->input->post('attribute');
+        $requester = $spid;
+        $attrname = $attrid;
         
-        if(empty($requester) or empty($attrname))
+        if(empty($requester) || empty($attrname))
         {
            set_status_header(403);
            echo 'missing params';
            return;
         }
 
-        $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('name'=>$attrname));
+        $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id'=>$attrname));
         if(empty($attribute))
         {
            set_status_header(403);
            echo 'missing attr';
            return;
         }
-        $sp = $this->em->getRepository("models\Provider")->findOneBy(array('entityid'=>$requester,'type'=>array('SP','BOTH')));
+        $sp = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>$requester,'type'=>array('SP','BOTH')));
         if(empty($sp))
         {
            set_status_header(403);
            echo 'missing sp';
            return;
         }
-        $result = array('status'=>'ok','requester'=>$requester,'attributename'=>$attrname);
+        $result = array('status'=>'ok','requester'=>$sp->getEntityId(),'attributename'=>$attribute->getName());
         $result['details'] = array();
         $supportedAttr = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute'=>$attribute,'idp'=>$idp,'type'=>'supported'));
         $supported = false;
@@ -91,7 +90,6 @@ class Attribute_policyajax extends MY_Controller {
         {
             $result['supported'] = true;
             $result['details'][] = array('name'=>'','value'=>lang('rr_supported'));
-            $supported = true;
         }           
         else
         {
@@ -99,7 +97,6 @@ class Attribute_policyajax extends MY_Controller {
             $result['details'][] = array('name'=>'','value'=>lang('attrnotsupported'));
         }
         $globalPolicy =  $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute'=>$attribute,'idp'=>$idp,'type'=>'global'));
-        $global = 0;
         if(empty($globalPolicy))
         {
             $result['global'] = null;
@@ -178,8 +175,7 @@ class Attribute_policyajax extends MY_Controller {
         }
         $this->output->set_content_type('application/json');
         echo json_encode($result);
-   
-
+  
 
     }
     public function submit_sp($idp_id) {
@@ -187,13 +183,6 @@ class Attribute_policyajax extends MY_Controller {
         if(!$this->input->is_ajax_request())
         {
             show_error('method not allowed',403);
-        }
-        $enabled = $this->config->item('arpbyinherit');
-        if(empty($enabled) or $enabled !== TRUE)
-        {
-           set_status_header(403);
-           echo 'functionality disabled';
-           return;
         }
         if(!is_numeric($idp_id))
         {
@@ -231,7 +220,7 @@ class Attribute_policyajax extends MY_Controller {
         }
         $tmp_a = $this->config->item('policy_dropdown');
         $idpid = $this->input->post('idpid');
-        if (empty($idpid) or !is_numeric($idpid)) {
+        if (empty($idpid) || !is_numeric($idpid)) {
             set_status_header(403);
             log_message('warning',  'idpid in post not provided or not numeric');
             echo lang('missedinfoinpost');
@@ -244,7 +233,7 @@ class Attribute_policyajax extends MY_Controller {
             return;
         }
         $policy = trim($this->input->post('policy'));
-        if (!isset($policy) or !is_numeric($policy)) {
+        if (!isset($policy) || !is_numeric($policy)) {
             log_message('error',  'policy in post not provided or not numeric:' . $policy);
             set_status_header(403);
             echo lang('wrongpolicyval');
@@ -268,7 +257,7 @@ class Attribute_policyajax extends MY_Controller {
            return;
         }
 
-        if (!($policy == 0 or $policy == 1 or $policy == 2 )) {
+        if (!($policy == 0 || $policy == 1 || $policy == 2 )) {
             log_message('error', 'wrong policy in post: ' . $policy);
             set_status_header(403);
             echo lang('wrongpolicyval');
@@ -317,7 +306,7 @@ class Attribute_policyajax extends MY_Controller {
         }
         $keyPrefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
-        $cache2 = 'arp2_'.$idp_id;
+        $cache2 = 'arp_'.$idp_id;
         $this->cache->delete($cache2);
         $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idp_id), -1);
         if($custom)

@@ -1,6 +1,5 @@
 <?php
 namespace models;
-use \Doctrine\Common\Collections\ArrayCollection;
 /**
  * ResourceRegistry3
  * 
@@ -63,6 +62,11 @@ class Certificate
      */
     protected $certdata;
 
+    /**
+     * @Column(type="text", nullable=true)
+     */
+    protected $encmethods;
+
 
     /**
      * @todo add automatic generate subject
@@ -98,7 +102,6 @@ class Certificate
     public function setCertdata($certdata = null)
     {
         
-        //      $certdata = preg_replace(array('/\s{2,}/', '/[\t\n]/'), '', $certdata);
         $this->certdata = trim($certdata);
         return $this;
     }
@@ -126,7 +129,7 @@ class Certificate
      */
     public function setCertUse($use = NULL)
     {
-        if (!empty($use) && ($use == 'signing' OR $use == 'encryption'))
+        if (!empty($use) && ($use === 'signing' || $use === 'encryption'))
         {
             $this->certusage = $use;
         } else
@@ -173,7 +176,7 @@ class Certificate
 */
     public function setCertType($type=null)
     {
-        if (empty($type) or $type === 'x509')
+        if (empty($type) || $type === 'x509')
         {
             $type = 'X509Certificate';
         }
@@ -204,6 +207,29 @@ class Certificate
     {
         $bool = TRUE;
         $this->setDefault($bool);
+        return $this;
+    }
+
+    public function setEncryptMethods($enc=null)
+    {
+
+        if(!empty($enc) && is_array($enc))
+        {
+            $this->encmethods = serialize(array_unique($enc));
+        }
+        else
+        {
+            $this->encmethods = null;
+        }
+        return $this;
+
+    }
+
+    public  function addEncryptionMethod($str)
+    {
+        $r = $this->getEncryptMethods();
+        $r[] = trim($str);
+        $this->setEncryptMethods($r);
         return $this;
     }
 
@@ -274,6 +300,19 @@ class Certificate
         return $this->certdata;
     }
 
+    public function getEncryptMethods()
+    {
+        $result = $this->encmethods;
+        if($result !== null)
+        {
+            return unserialize($result);
+        }
+        else
+        {
+            return array();
+        }
+    }
+
     public function getKeyname()
     {
         return $this->keyname;
@@ -311,7 +350,6 @@ class Certificate
         if ($this->getCertType() == 'X509Certificate')
         {
             $parsed = openssl_x509_parse($cert);
-            //$validFrom = date('Y-m-d H:i:s', $parsed['validFrom_time_t']);
             $validTo = date('Y-m-d H:i:s', $parsed['validTo_time_t']);
             return $validTo;
         } else
@@ -333,9 +371,6 @@ class Certificate
         if ($this->getCertType() == 'X509Certificate')
         {
             $parsed = openssl_x509_parse($cert);
-            $validFrom = date('Y-m-d H:i:s', $parsed['validFrom_time_t']);
-            $validTo = date('Y-m-d H:i:s', $parsed['validTo_time_t']);
-            $now = date('Y-m-d H:i:s', time());
             $period = $parsed['validTo_time_t'] - time();
             $days = (int) $period / 60 / 60 / 24;
 
@@ -417,49 +452,7 @@ class Certificate
          return $c;
  
     }
-    public function getCertificateToXML(\DOMElement $parent)
-    {
-        $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:KeyDescriptor');
-        /**
-         * usage null/singing/encrypting
-         */
-        //$use = $this->getCertUse();
-
-        $certbody = $this->getCertDataNoHeaders();
-         
-        if(empty($this->keyname) && empty($certbody))
-        {
-           return null;
-        }
-        if (!empty($this->certusage))
-        {
-            $e->setAttribute('use', $this->certusage);
-        }
-        $KeyInfo_Node = $e->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:KeyInfo');
-        if (!empty($this->keyname))
-        {
-            $keynames = explode(',',$this->keyname);
-            foreach($keynames as $v)
-            {
-                $KeyName_Node = $KeyInfo_Node->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:KeyName', $v);
-                $KeyInfo_Node->appendChild($KeyName_Node);
-            }
-        }
-        if ($this->getCertType() === 'X509Certificate')
-        {
-            if(!empty($certbody))
-            {
-               $CertType_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Data');
-               $CertBody_Node = $parent->ownerDocument->createElementNS('http://www.w3.org/2000/09/xmldsig#', 'ds:X509Certificate', $this->getCertDataNoHeaders());
-
-               $CertType_Node->appendChild($CertBody_Node);
-               $KeyInfo_Node->appendChild($CertType_Node);
-            }
-        }
-        $e->appendChild($KeyInfo_Node);
-        return $e;
-    }
-
+ 
     function getPEM($value, $raw = false)
     {
 

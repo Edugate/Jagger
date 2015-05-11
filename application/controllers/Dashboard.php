@@ -25,6 +25,28 @@ class Dashboard extends MY_Controller {
         parent::__construct();
     }
 
+
+
+    private function isMigrationUptodate()
+    {
+        $this->load->config('migration');
+        $targetVersion = config_item('migration_version');
+        /**
+         * @var $c models\Migration[]
+         */
+        $c = $this->em->getRepository("models\Migration")->findAll();
+        $currentVersion = 0;
+        foreach($c as $v)
+        {
+            $currentVersion = $v->getVersion();
+        }
+        if($currentVersion < $targetVersion)
+        {
+            return false;
+        }
+        return true;
+    }
+
     function index()
     {
         $this->load->library('j_auth');
@@ -33,26 +55,41 @@ class Dashboard extends MY_Controller {
         if (!$loggedin)
         {
             $data['content_view'] = 'staticpages_view' ;
-            $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode'=>'front_page'));
+            /**
+             * @var $frontpage models\Staticpage
+             */
+            try {
+                $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode' => 'front_page', 'enabled' => true, 'ispublic' => true));
+            }
+            catch(Exception $e)
+            {
+
+                log_message('error',__METHOD__.' '.$e);
+                show_error('Internal server error',500);
+            }
             if (!empty($frontpage))
             {
-                $data['pcontent'] = $frontpage->getContent();
+                $data['pcontent'] = jaggerTagsReplacer($frontpage->getContent());
                 $data['ptitle'] = $frontpage->getTitle();
             }
-            $this->load->view('page',$data);
-            return;  
+            return $this->load->view('page',$data);
         }
-        
-        $this->load->library('zacl');
-        
+        try {
+            $this->load->library('zacl');
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__ .' '.$e);
+            show_error('Internal server error',500);
+        }
         $this->load->library('table');
-        $q = $this->em->getRepository("models\Queue")->findAll();
-        $this->inqueue = count($q);
-
-        $acc = FALSE;
+        /**
+         * @var $queues models\Queue[]
+         */
+        $queues = $this->em->getRepository("models\Queue")->findAll();
+        $this->inqueue = count($queues);
         $acc = $this->zacl->check_acl('dashboard', 'read', 'default', '');
         $data['inqueue'] = $this->inqueue;
-
         if (empty($acc))
         {
             $this->title = lang('title_accessdenied');
@@ -62,6 +99,20 @@ class Dashboard extends MY_Controller {
         }
         else
         {
+            $isAdmin = $this->j_auth->isAdministrator();
+            if($isAdmin)
+            {
+                $isnotified = $this->session->userdata('alertnotified');
+                if(empty($isnotified))
+                {
+                    $isMigrationUptodate = $this->isMigrationUptodate();
+                    if($isMigrationUptodate!==TRUE)
+                    {
+                        $data['alertdashboard'] = 'Administration/System (migration) steps are required to make system uptodate';
+                    }
+                    $this->session->set_userdata(array('alertnotified'=>TRUE));
+                }
+            }
             $this->title = lang('dashboard');
             $board = $this->session->userdata('board');
             if(empty($board))
@@ -109,7 +160,6 @@ class Dashboard extends MY_Controller {
             $data['sps'] = $sps;
             $data['feds'] = $feds;
             $data['titlepage'] = lang('quick_access');
-             
             $data['content_view'] = 'default_body';
             $this->load->view('page', $data);
         }

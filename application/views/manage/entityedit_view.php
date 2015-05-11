@@ -21,7 +21,7 @@ if(!empty($sessform))
 
 <?php
     $action = current_url();
-    $attrs = array('id' => 'formver2');
+    $attrs = array('id' => 'providereditform');
     echo '<div class="tabs-content">';
     echo form_open($action, $attrs);
 
@@ -81,16 +81,20 @@ if(!empty($sessform))
          {
             echo '<div class="small-12 columns"><div class="section">'.lang('yourcontactdetails').'</div></div>';
             echo '<div class="small-12 columns">';
-            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactname'),'f[primarycnt][fname]').'</div>'; 
-            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][fname]','name'=>'f[primarycnt][fname]','value'=>set_value('f[primarycnt][fname]'))).'</div>'; 
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactfirstname'),'f[primarycnt][fname]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][fname]','name'=>'f[primarycnt][fname]','value'=>set_value('f[primarycnt][fname]','',FALSE))).'</div>';
+            echo '</div>';
+            echo '<div class="small-12 columns">';
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactlastname'),'f[primarycnt][lname]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][lname]','name'=>'f[primarycnt][lname]','value'=>set_value('f[primarycnt][lname]','',FALSE))).'</div>';
             echo '</div>';
             echo '<div class="small-12 columns">';
             echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactemail'),'f[primarycnt][mail]').'</div>'; 
-            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][mail]','name'=>'f[primarycnt][mail]','value'=>set_value('f[primarycnt][mail]'))).'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][mail]','name'=>'f[primarycnt][mail]','value'=>set_value('f[primarycnt][mail]','',FALSE))).'</div>';
             echo '</div>';
             echo '<div class="small-12 columns">';
             echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactphone'),'f[primarycnt][phone]').'</div>'; 
-            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][phone]','name'=>'f[primarycnt][phone]','value'=>set_value('f[primarycnt][phone]'))).'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][phone]','name'=>'f[primarycnt][phone]','value'=>set_value('f[primarycnt][phone]','',FALSE))).'</div>';
             echo '</div>';
          }
          else
@@ -101,8 +105,12 @@ if(!empty($sessform))
             echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][username]','name'=>'f[primarycnt][username]','disabled'=>'disabled','readonly'=>'readonly','value'=>''.$loggeduser['username'].'')).'</div>'; 
             echo '</div>';
             echo '<div class="small-12 columns">';
-            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactname'),'f[primarycnt][fname]').'</div>'; 
-            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][fname]','name'=>'f[primarycnt][fname]','disabled'=>'disabled','readonly'=>'readonly','value'=>''.$loggeduser['fullname'].'')).'</div>'; 
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactfirstname'),'f[primarycnt][fname]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][fname]','name'=>'f[primarycnt][fname]','disabled'=>'disabled','readonly'=>'readonly','value'=>''.$loggeduser['fname'].'')).'</div>'; 
+            echo '</div>';
+            echo '<div class="small-12 columns">';
+            echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactlastname'),'f[primarycnt][lname]').'</div>'; 
+            echo '<div class="small-6 large-7 columns end">'.form_input(array('id'=>'f[primarycnt][lname]','name'=>'f[primarycnt][lname]','disabled'=>'disabled','readonly'=>'readonly','value'=>''.$loggeduser['lname'].'')).'</div>'; 
             echo '</div>';
             echo '<div class="small-12 columns">';
             echo  '<div class="small-3 columns">'.jform_label(lang('rr_contactemail'),'f[primarycnt][mail]').'</div>'; 
@@ -168,17 +176,19 @@ if(!empty($sessform))
     echo '</div>';
    if(empty($registerForm))
    {
-    echo '<div class="buttons">
-        <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('discardall').'</button>
-        <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
-        <button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnupdate').'
-      </button></div>';
+    echo '<div class="small-12 column small-centered">
+       <ul class="button-group radius">
+        <li><button type="submit" name="discard" value="discard" class="resetbutton reseticon alert">'.lang('rr_cancel').'</button></li>
+        <li><button type="submit" name="modify" value="savedraft" class="savebutton saveicon secondary">'.lang('savedraft').'</button></li>
+        <li><button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnupdate').'
+      </button></li></ul></div>';
    }
    else
    {
-    echo '<div class="buttons">
-        <button type="submit" name="discard" value="discard" class="resetbutton reseticon">'.lang('btnstartagain').'</button>
-        <button type="submit" name="modify" value="savedraft" class="savebutton saveicon">'.lang('savedraft').'</button>
+    echo '<div class="buttons center small-12 column text-center">
+        
+        <button type="submit" name="discard" value="discard" class="resetbutton reseticon alert">'.lang('btnstartagain').'</button>
+        <button type="submit" name="modify" value="savedraft" class="savebutton saveicon secondary">'.lang('savedraft').'</button>
         <button type="submit" name="modify" value="modify" class="savebutton saveicon">'.lang('btnregister').'
       </button></div>';
 

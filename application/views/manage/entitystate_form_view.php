@@ -73,7 +73,7 @@ echo form_input(array(
             'id'=>'validfromdate',
             'name'=>'validfromdate',
             'value'=>$current_validfromdate,
-            'class'=>'inputdate validfrom',
+            'class'=>'datepicker',
             'placeholder'=>'YY-MM-DD'
          ));
 echo '</div>';
@@ -96,7 +96,7 @@ echo form_input(array(
            'id'=>'validuntildate',
            'name'=>'validuntildate',
            'value'=>$current_validuntildate,
-           'class'=>'inputdate validto',
+           'class'=>'datepicker',
            'placeholder'=>'YY-MM-DD'
            ));
 echo '</div>';

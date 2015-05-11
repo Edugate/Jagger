@@ -63,9 +63,17 @@ class Timelines extends MY_Controller {
                 }
             }
         }
-
+        $data['titlepage'] = '<a href="'.base_url().'federations/manage/show/'.base64url_encode($fed->getName()).'">'.lang('rr_federation').': '.$fed->getName().'</a>';
+        $data['subtitlepage'] = lang('rr_progressforfed');
         $data['content_view'] = 'reports/registered_timeline_view';
         $data['grid'] = $diag;
+
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+            array('url' => base_url('federations/manage/show/'.base64url_encode($fed->getName()).''), 'name' => '' . $fed->getName() . ''),
+            array('url'=>'#','type'=>'current','name'=>lang('rr_progressforfed'))
+
+        );
         $this->load->view('page', $data);
     }
 

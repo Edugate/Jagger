@@ -2,7 +2,6 @@
 
 namespace models;
 
-use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ResourceRegistry3
@@ -162,6 +161,9 @@ class Tracker {
         return $this->sourceip;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getCreated()
     {
         return $this->createdAt;

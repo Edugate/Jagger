@@ -1,8 +1,6 @@
 <?php
-
 namespace models;
 
-use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ResourceRegistry3
@@ -87,7 +85,6 @@ class ServiceLocation {
         {
             $p->updated();
         }
-        //    $this->updatedAt = new \DateTime("now");
     }
 
     public function getProvider()
@@ -169,6 +166,15 @@ class ServiceLocation {
         $this->bindingName = 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol';
         $this->url = $url;
         $this->ordered_no = $index;
+        return $this;
+    }
+
+    public function setInFull($type,$bind,$url,$idx=null)
+    {
+        $this->type = $type;
+        $this->bindingName = $bind;
+        $this->url = $url;
+        $this->ordered_no = $idx;
         return $this;
     }
 

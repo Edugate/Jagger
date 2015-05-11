@@ -1,5 +1,10 @@
 
 <?php
+
+if(empty($sp_available))
+{
+    echo '<div data-alert class="alert-box warning">'.lang('rr_spdisabled').'</div>';
+}
 $tmpl = array ( 'table_open'  => '<table id="detailsnosort">' );
 
 $this->table->set_template($tmpl);
@@ -21,7 +26,7 @@ foreach($arps as $arp)
 	else
 	{
 		$status = $arp['req_status'];
-		$reason = $arp['req_reason'];
+		$reason = html_escape($arp['req_reason']);
 	}
 
 	if($arp['attr_policy'] === null)
@@ -35,11 +40,15 @@ foreach($arps as $arp)
 	);
 
 }
+$btns = array(
+    '<a href="'.base_url('manage/attributepolicy/globals/'.$provider_id.'').'" class="button alert">'.lang('rr_cancel').'</a>',
+    '<button type="submit" value="modify" class="savebutton saveicon">'.lang('rr_modify').'</button>'
+);
 $reset_button = '';
 $modify_button = '<button type="submit" value="modify" class="savebutton saveicon">'.lang('rr_modify').'</button>';
 $sp_link = anchor(base_url()."providers/detail/show/".$requester_id,$requester);
 $idp_link = anchor(base_url()."providers/detail/show/".$provider_id,$provider);
-$attr_req_link = anchor(base_url()."manage/attribute_requirement/sp/".$requester_id,'<img src="' . base_url() . 'images/icons/arrow.png" />');
+
 if(!empty($excluded))
 {
       echo ' <div alert-data class="alert-box warning">'.lang('rr_arpexcludedpersp').'</div> ';
@@ -52,9 +61,10 @@ if(count($tbl_row)>0)
 		'spid'=>$requester_id,
 		'type'=>'sp',
 		);
-	echo form_open(base_url().'manage/attribute_policy/submit_multi/'.$provider_id,$form_attributes,$form_hidden);
+	echo form_open(base_url().'manage/attributepolicy/submit_multi/'.$provider_id,$form_attributes,$form_hidden);
 	echo $this->table->generate($tbl_row);
-	echo '<div class="buttons">'.$reset_button . $modify_button.'</div>';
+    $this->table->clear();
+	echo '<div class="buttons">'.revealBtnsRow($btns).'</div>';
 	echo form_close();
 }
 else

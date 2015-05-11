@@ -14,7 +14,7 @@ class Migration_certificatesupdate extends CI_Migration {
            {
                if($c->getType() == 'sso')
                {
-                   if($type == 'IDP' OR $type == 'BOTH')
+                   if($type === 'IDP' || $type === 'BOTH')
                    { 
                       $c->setAsIDPSSO();
                    }

@@ -54,8 +54,6 @@ class Logomngmt extends MY_Controller
         $local = $provider->getLocal();
         $canEdit = (boolean) ($has_write_access && $unlocked && $local);
         $attributes = array('class' => 'span-16', 'id' => 'assignedlogos');
-        $target_url = base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id;
-        $data['targeturl'] = $target_url;
         $existing_logos = $this->em->getRepository("models\ExtendMetadata")->findBy(array('etype' => $type, 'namespace' => 'mdui', 'element' => 'Logo', 'provider' => $id));
 
         $count_existing_logos = count($existing_logos);
@@ -167,8 +165,6 @@ class Logomngmt extends MY_Controller
                 $logo_attr['width'] = $original_sizes['0'];
                 $logo_attr['height'] = $original_sizes['1'];
             }
-            $element_name = 'Logo';
-            $scheme = 'mdui';
             $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $type));
             if (empty($parent)) {
                 $parent = new models\ExtendMetadata;
@@ -194,20 +190,18 @@ class Logomngmt extends MY_Controller
 
     public function unsign($type = null, $id = null)
     {
-        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST')) {
-            set_status_header(403);
-            echo lang('error403');
-            return;
+        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || !$this->j_auth->logged_in()) {
+            $s=403;
+            $msg =  lang('error403');
         }
-        if (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
-            set_status_header(404);
-            echo lang('error403');
-            return;
+        elseif (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
+            $s=404;
+            $msg =lang('error403');
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            set_status_header(403);
-            echo lang('errsess');
+        if(!empty($s))
+        {
+            set_status_header($s);
+            echo $msg;
             return;
         }
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id, 'type' => array('BOTH', '' . strtoupper($type) . '')));
@@ -217,16 +211,15 @@ class Logomngmt extends MY_Controller
             return;
         }
         $this->load->library('zacl');
-        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
+        $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         $unlocked = !($provider->getLocked());
         $local = $provider->getLocal();
-        $canEdit = (boolean) ($has_write_access && $unlocked && $local);
+        $canEdit = (boolean) ($hasWriteAccess && $unlocked && $local);
         if (!$canEdit) {
             set_status_header(403);
             echo lang('error403');
             return;
         }
-
         $logoidPost = $this->input->post('logoid');
         if (empty($logoidPost) || !ctype_digit($logoidPost)) {
             set_status_header(403);
@@ -239,19 +232,17 @@ class Logomngmt extends MY_Controller
             echo lang('logo404');
             return;
         }
+        $this->em->remove($existingLogo);
         try
-        {
-            $this->em->remove($existingLogo);
+        {   
             $this->em->flush();
-            echo lang('rr_logoisunsigned');
-            return;
+            echo lang('rr_logoisunsigned');      
         }
         catch (Exception $e)
         {
             log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
-            echo 'Server Error occured';
-            return;
+            echo 'Server Error occured';        
         }
     }
 
@@ -320,7 +311,6 @@ class Logomngmt extends MY_Controller
                 );
 
                 $finfo = new finfo(FILEINFO_MIME_TYPE);
-                $finforaw = new finfo(FILEINFO_RAW);
                 $mimeType = $finfo->buffer($datafile);
                 if (!array_key_exists($mimeType, $img_mimes)) {
                     set_status_header(403);
@@ -342,8 +332,6 @@ class Logomngmt extends MY_Controller
                 $imagewidth = $imagesize['0'];
                 $imageheight = $imagesize['1'];
                 $imagelocation = $extlogourl;
-                $element_name = 'Logo';
-                $scheme = 'mdui';
                 $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $provtype));
                 if (empty($parent)) {
                     $parent = new models\ExtendMetadata;

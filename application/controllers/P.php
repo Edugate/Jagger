@@ -51,9 +51,30 @@ class P extends MY_Controller {
        }
        $this->title = $page->getTitle(); 
        $data['ptitle'] = $page->getTitle();
-       $data['pcontent'] = $page->getContent();
+       $data['pcontent'] = jaggerTagsReplacer($page->getContent());
        $data['content_view'] = 'staticpages_view';
        $this->load->view('page',$data);
     }
+    public function documentfile($p)
+    {
+         $datastorage = $this->config->item('datastorage_path'); 
+         if(empty($datastorage))
+         {
+              show_error('Not found ', 404);
+              return;
+         }
+         $documentfilesdit = $datastorage.'docs/';
+         $isValidName = preg_match('/^[a-zA-Z0-9_.\-]+$/i',$p);
+         if(!$isValidName)
+         {
+            show_error('Not found ', 404);
+            return;
+         }
+         $this->load->helper('download');
+         $data = file_get_contents($documentfilesdit.$p);
+         force_download($p, $data); 
+
+    }
+
 
 }

@@ -1,20 +1,12 @@
 <?php
 define('APPPATH', dirname(__FILE__) . '/');
-//define('BASEPATH', APPPATH . '/../system/');
 define('BASEPATH',  '/opt/codeigniter/system/');
 define('ENVIRONMENT', 'development');
 define('ATTR_DEFAULT_TABLE_COLLATE', 'utf8_general_ci');
 define('ATTR_DEFAULT_TABLE_CHARSET', 'utf8');
-//define('ATTR_DEFAULT_TABLE_CHARSET', 'latin1');
 chdir(APPPATH);
-
-require_once 'libraries/Doctrine/Common/ClassLoader.php';
-
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine', 'libraries');
-$classLoader->register();
-
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', 'libraries/Doctrine');
-$classLoader->register();
+require_once(APPPATH.'vendor/autoload.php');
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
 
 $configFile = getcwd() . '/libraries/Doctrine.php';
 
@@ -35,7 +27,6 @@ if (file_exists($configFile)) {
         }
     }
 }
-
 $doctrine = new Doctrine;
 $em = $doctrine->em;
 
@@ -45,3 +36,5 @@ $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
 ));
 
 \Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet);
+
+

@@ -4,15 +4,10 @@ Requirements:
  *) Apache >= 2.2 with enabled modules: rewrite, unique_id
  *) Shibboleth-SP >= 2.4 - optional needed for federated access
  *) Codeigniter framework 3.0 - it's not official release yet
-    from git://github.com/EllisLab/CodeIgniter.git
-    please use release/3.0 branch
- *) Doctrine 2.3.3
-    http://www.doctrine-project.org/downloads/DoctrineORM-2.3.3-full.tar.gz
-    into APP_PATH/libraries/Doctrine
- *) Zend Framework
-    Only Zend-ACL (Acl dir, Acl.php,  Exception.php) part from http://framework.zend.com/download/current/
-    into APP_PATH/libraries/Zend
+    from https://github.com/bcit-ci/CodeIgniter
+    please use develop branch or 3.0 if released
  *) memcached
+ *) composer https://getcomposer.org/
  *) optional -  install gearman-php and gearnam-server     
 
 
@@ -23,7 +18,7 @@ Lets presume you want to install Jagger in /usr/local/www-sites/rr3
 1. download Jagger (ResourceRegistry3) repository into /usr/local/www-sites/rr3
 
 2. download codeigniter develop branch from git repository
-   git://github.com/EllisLab/CodeIgniter.git
+   git://github.com/bcit-ci/CodeIgniter.git
    into /opt/codeigniter
 
 3. apache settings:
@@ -77,19 +72,11 @@ php.ini :
        date_default_timezone_set('Europe/Dublin');
    *) find line containing $system_path and set correct path to you system codeigniter
       example: $system_path = '/opt/codeigniter/system';
-8. Doctrine (install.sh script should do it for you)
-   RR3 has been tested with Doctrine 2.2.2
-   Check if Doctrine is installed already in /usr/local/www-sites/rr3/application/libraries/Doctrine 
-   This folder should contain Common,  DBAL,  ORM,  Symfony
-   If not please download from http://www.doctrine-project.org/downloads/DoctrineORM-2.2.2-full.tar.gz
-   Modify /usr/local/www-sites/rr3/application/doctrine.php
-   find line containing define('BASEPATH'
-   and set correct path to codeigniter system dir
-   example: define('BASEPATH',  '/opt/codeigniter/system/');
+8. Go to application folder and run composer install
+   It will download third party libs like Doctrine ans Zend-ACL
 
-9.  Zend Framework (install.sh script should do it for you)
-    Only Zend-ACL (Acl dir, Acl.php,  Exception.php) part from http://framework.zend.com/download/current/
-    into APP_PATH/libraries/Zend
+9. In config.php file don't forget add
+   $config['composer_autoload'] = TRUE;
 
  
 10. populate database:

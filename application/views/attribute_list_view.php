@@ -11,16 +11,13 @@
 if($isadmin)
 {
 ?>
-<div class="small-12 text-right"><a href="<?php echo base_url().'attributes/attributes/add'; ?>" class="addbutton addicon button small"><?php echo lang('rr_add');?></a></div>
+<div class="small-12 text-right"><a href="<?php echo base_url('attributes/attributes/add'); ?>" class="addbutton addicon button small"><?php echo lang('addattr_btn');?></a></div>
 <?php
 }
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-$tmpl = array('table_open' => '<table  id="details" class="tablesorter drop-shadow lifted">');
+
+$tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
 
     $this->table->set_template($tmpl);
-    $this->table->set_heading(''.lang('attrname').'',''.lang('attrfullname').'',''.lang('attroid').'',''.lang('attrurn').'');
+    $this->table->set_heading(''.lang('attrname').'',''.lang('attrfullname').'',''.lang('attrsaml2').'',''.lang('attrsaml1').'');
     echo $this->table->generate($attributes);
 ?>

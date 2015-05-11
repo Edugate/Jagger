@@ -28,8 +28,8 @@ function showHelp($string)
 
 function showBubbleHelp($string)
 {
-    //$h = '<button type="button" class="bubblepopup" style="background: transparent; border:0px" value="'.htmlspecialchars($string).'"><img src="'.base_url().'images/icons/question.png"></button>';
-    $h = '<span data-tooltip class="has-tip" data-options="show_on:large" title="'.htmlspecialchars($string).'"><img src="'.base_url().'images/icons/question.png"></span>';
+    
+    $h = '<span data-tooltip class="has-tip" data-options="show_on:large" title="'.htmlspecialchars($string).'"><i class="fi-info" ></i></span>';
     return $h;
 
 }
@@ -39,7 +39,7 @@ function genIcon($type, $title=null)
     $preurl = base_url().'images/icons/';
     
     $icons = array(
-          'locked' => 'lock.png',
+          'locked' => 'fi-lock',
           'disabled' => 'minus-button.png',
           'expired' => 'calendar--minus.png',
           'mstatic' => 'ui-toolbar--arrow.png',
@@ -48,15 +48,21 @@ function genIcon($type, $title=null)
           'edit' => 'pencil-field.png',
           'bookmarkadd' => 'star--plus.png',
           );
-    if(array_key_exists($type,$icons))
+    if($type==="locked")
+    {
+        $result = '<i class="'.$icons[''.$type.''].'"></i>';
+        
+    }
+    else if(array_key_exists($type,$icons))
     {
          $result = '<img src="'.$preurl.$icons[$type].'" title="'.$title.'"/>';
-         return $result;
+         
     }
     else
     {
         return null;
     }
+    return $result;
 
 }
 

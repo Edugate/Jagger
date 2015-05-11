@@ -30,12 +30,7 @@ $config['fake_mail_from'] = 'FAKEMAIL';
 $config['reply_to'] = 'REPLYTO';
 $config['mail_subject_suffix'] = '[SUBJECT_SUFFIX]';
 $config['mail_header'] = "Dear technical contact person\r\n";
-$config['mail_footer'] = "\r\n \r\n
-YOUR FOOTER \r\n
--- \r\n
-COMPANY\r\n
-Phone: xxxxxxxxx\r\n
-email:xxxxxxxxxxxx\r\n";
+
 
 /** 
  * overwrite builtin messages and localized

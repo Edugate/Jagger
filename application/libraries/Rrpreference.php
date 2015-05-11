@@ -21,6 +21,8 @@ if (!defined('BASEPATH'))
 
 class Rrpreference {
 
+    protected $ci;
+    protected $em;
 
     function __construct()
     {
@@ -47,6 +49,36 @@ class Rrpreference {
         }
      
     }
+
+    public function cleanFromCache()
+    {
+        $this->ci->j_cache->library('rrpreference', 'prefToArray', array('global'),-1);
+        return true;
+    }
+
+    public function getTextValueByName($name)
+    {
+        $r = $this->getPreferences($name);
+        if(array_key_exists('value',$r) && isset($r['status']) && !empty($r['status']) )
+        {
+            return $r['value'];
+        }
+        else {
+            return null;
+        }
+    }
+    public function getStatusByName($name)
+    {
+        $r = $this->getPreferences($name);
+        if(array_key_exists('status',$r) )
+        {
+            return $r['status'];
+        }
+        else {
+            return false;
+        }
+    }
+
     public function prefToArray($type)
     {
         $result = array();
@@ -56,7 +88,7 @@ class Rrpreference {
              foreach($y as $r)
              {
 
-               $result[''.$r->getName().''] = array('descname'=>$r->getDescname(), 'value'=>$r->getValue(), 'status'=>$r->getEnabled());
+               $result[''.$r->getName().''] = array('name'=>$r->getName(), 'descname'=>$r->getDescname(), 'value'=>$r->getValue(), 'status'=>$r->getEnabled(),'type'=>$r->getType(),'servalue'=>$r->getSerializedValue());
              }
      
         }

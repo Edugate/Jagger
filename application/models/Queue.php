@@ -1,8 +1,6 @@
 <?php
-
 namespace models;
 
-use \Doctrine\Common\Collections\ArrayCollection;
 /**
  * ResourceRegistry3
  * 
@@ -92,6 +90,16 @@ class Queue {
     protected $email;
 
     /**
+     * @Column(type="string", length=255,nullable=true)
+     */
+    protected $fullname;
+
+    /**
+     * @Column(type="string", length=64, nullable=false)
+     */
+    protected $srcip;
+
+    /**
      * @Column(type="string", length=32)
      */
     protected $token;
@@ -107,7 +115,9 @@ class Queue {
     private $createdAt;
 
     public function __construct() {
+        $ci =  &get_instance();
         $this->is_confirmed = false;
+        $this->srcip = $ci->input->ip_address();
     }
 
     /**
@@ -228,6 +238,19 @@ class Queue {
         return $this;
     }
 
+    public function setFullname($a)
+    {
+       $this->fullname = trim($a);
+       return $this;
+    }
+     
+    public function setIP($ip)
+    {
+       $this->srcip = $ip;
+       return $this;
+
+    }
+
     private function makeToken() {
         $length = 31;
 
@@ -249,6 +272,7 @@ class Queue {
         return $this->id;
     }
 
+
     public function getCreator() {
         return $this->creator;
     }
@@ -265,8 +289,32 @@ class Queue {
         return unserialize($this->objdata);
     }
 
+    public function getCN() {
+        $data = unserialize($this->objdata);
+        $cn = '';
+        if(array_key_exists('fname',$data))
+        {
+           $cn .= $data['fname'] . " ";
+        }
+        if(array_key_exists('sname',$data))
+        {
+           $cn .= $data['sname'];
+        }
+        return $cn;
+    }
+
     public function getName() {
         return $this->name;
+    }
+
+    public function getFullname()
+    {
+        return $this->fullname;
+    }
+    
+    public function getIP()
+    {
+       return $this->srcip;
     }
 
     public function getObjType() {

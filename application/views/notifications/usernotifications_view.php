@@ -7,7 +7,7 @@ if(!empty($warnmessage))
  
 }
 ?>
-<div class="small-12 columns text-right"><button id="registernotification2" class="addbutton addicon" type="button" ><?php echo lang('rr_add');?></button></div>
+<div class="small-12 columns text-right"><button class="small" type="button" data-reveal-id="notificationaddmodal"><?php echo lang('rr_add');?></button></div>
 <?php
   if(count($rows)>1)
   {
@@ -24,27 +24,33 @@ if(!empty($warnmessage))
  */
    $rrs = array('id'=>'notificationupdateform');
 
-   $this->load->helper('form');
-   echo '<div id="notificationupdatemodal" class="reveal-modal" data-reveal>';
+   echo '<div id="notificationupdatemodal" class="reveal-modal small" data-reveal>';
    echo form_open(base_url().'notification/subscriber/updatestatus/',$rrs);
    echo form_input(array('name'=>'noteid','id'=>'noteid','type'=>'hidden','value'=>''));
+$btns = array(
+    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="submit" name="updstatus">'. lang('btnupdate').'</button>'
+);
    ?>
-      <div class="header">
-      <span><?php echo 'update status'; ?></span>
+      <div class="header row">
+      <h3><?php echo lang('updnotifstatus'); ?></h3>
       </div>
       <div></div>
       <p class="message"></p>
-     <div>
+     <div class="row">
       <?php
        echo form_dropdown('status', $statusdropdown,set_value('status'));
      ?>
     </div>
-      <div class="buttons">
-      <div class="no"><?php echo lang('rr_cancel');?></div>
-      <div class="yes"><?php echo lang('btnupdate');?></div>
+      <div class="row">
+          <?php
+          echo revealBtnsRow($btns);
+          ?>
+
      </div>
    <?php
    echo form_close();
+   echo' <a class="close-reveal-modal">&#215;</a>';
    echo '</div>';
 
 /**
@@ -52,12 +58,15 @@ if(!empty($warnmessage))
  */
    $rrs = array('id'=>'notificationaddform');
 
-   $this->load->helper('form');
    echo '<div id="notificationaddmodal" class="reveal-modal" data-reveal>';
    echo form_open(base_url().'notifications/subscriber/add/'.$encodeduser.'',$rrs);
+$btns = array(
+     '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="submit" class="">'. lang('rr_add').'</button>'
+);
    ?>
       <div class="header">
-      <span><?php echo lang('registerfornotification'); ?></span>
+      <h3><?php echo lang('registerfornotification'); ?></h3>
       </div>
       <div class="help"><?php echo lang('rhelp_addnotification'); ?></div>
       <p class="message"></p>
@@ -68,7 +77,6 @@ if(!empty($warnmessage))
        $typedropdown[''] = lang('rr_pleaseselect');
        foreach($codes as $k=>$v)
        {
-         //$typedropdown[''.$k.''] = lang(''.$v['desclang'].'');
          $typedropdown[''.$v['group'].''][$k] = lang(''.$v['desclang'].'');
        }
        echo form_fieldset();
@@ -89,11 +97,14 @@ if(!empty($warnmessage))
        echo form_fieldset_close();
      ?>
     </div>
-      <div class="buttons">
-      <div class="no"><?php echo lang('rr_cancel');?></div>
-      <div class="yes"><?php echo lang('rr_add');?></div>
+      <div class="row">
+          <?php
+          echo revealBtnsRow($btns);
+          ?>
+
      </div>
    <?php
    echo form_close();
+   echo' <a class="close-reveal-modal">&#215;</a>';
    echo '</div>';
 

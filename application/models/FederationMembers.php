@@ -1,6 +1,5 @@
 <?php
 namespace models;
-use \Doctrine\Common\Collections\ArrayCollection;
 
 
 
@@ -80,16 +79,16 @@ class FederationMembers
       return $this->joinstate;
    }
 
-   public function getIsFinalMembership()
+   public function isFinalMembership()
    {
       return !($this->isDisabled || $this->isBanned || ($this->joinstate == 2));
  
    }
-   public function getIsDisabled()
+   public function isDisabled()
    {
       return $this->isDisabled;
    }
-   public function getIsBanned()
+   public function isBanned()
    {
       return $this->isBanned;
    }
@@ -110,12 +109,12 @@ class FederationMembers
        $this->joinstate = $state;
        return $this;
    }
-   public function setIsBanned($bool)
+   public function setBanned($bool)
    {
        $this->isBanned = $bool;
        return $this;
    }
-   public function setIsDisabled($bool)
+   public function setDisabled($bool)
    {
        $this->isDisabled = $bool;
        return $this;

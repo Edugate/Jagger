@@ -190,7 +190,7 @@ class J_cache
 		}
 
 		// Check directory permissions
-		if ( ! is_dir($this->_path) OR ! is_really_writable($this->_path))
+		if ( ! is_dir($this->_path) || ! is_really_writable($this->_path))
 		{
 			return FALSE;
 		}
@@ -242,7 +242,7 @@ class J_cache
 				$cache_created = filemtime($this->_path.$this->_filename.'.cache');
 
 				// If dependency doesn't exist or is newer than this cache, delete and return FALSE
-				if (! file_exists($this->_path.$dep.'.cache') or filemtime($this->_path.$dep.'.cache') > $cache_created)
+				if (! file_exists($this->_path.$dep.'.cache') || filemtime($this->_path.$dep.'.cache') > $cache_created)
 				{
 					$this->delete($filename);
 					return FALSE;
@@ -290,7 +290,7 @@ class J_cache
 		$this->_contents = array('__cache_contents' => $this->_contents);
 
 		// Check directory permissions
-		if ( ! is_dir($this->_path) OR ! is_really_writable($this->_path))
+		if ( ! is_dir($this->_path) || ! is_really_writable($this->_path))
 		{
 			return;
 		}
@@ -329,7 +329,6 @@ class J_cache
 		{
 			$this->_contents['__cache_expires'] = $this->_expires + time();
 		}
-		// ...or add default expiration if its set
 		elseif (! empty($this->_default_expires) )
 		{
 			$this->_contents['__cache_expires'] = $this->_default_expires + time();

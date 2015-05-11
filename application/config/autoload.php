@@ -53,7 +53,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('doctrine','rrpreference','j_auth','tracker','email','j_cache','table','curl','email_sender');
+$autoload['libraries'] = array('doctrine','rrpreference','j_auth','tracker','email','j_cache','table','curl','email_sender','duo');
 $autoload['drivers'] = array('session');
 
 
@@ -66,7 +66,7 @@ $autoload['drivers'] = array('session');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url','encoder','cert','random_generator','iconhelp','metadata_elements','language','memory','protocols','webelement','shortcodes');
+$autoload['helper'] = array('url','form','encoder','cert','random_generator','iconhelp','metadata_elements','language','memory','protocols','webelement','shortcodes');
 
 
 /*

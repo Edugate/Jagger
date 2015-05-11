@@ -3,7 +3,6 @@
  {
 echo '<div class="error">';
 echo $this->upload->display_errors('<p>', '</p');
-   //  echo $error;
 echo '</div>';
  }
  if(!empty($message))

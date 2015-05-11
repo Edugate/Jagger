@@ -12,7 +12,7 @@ if (!empty($error))
 
 $attributes = array('class' => 'span-16', 'id' => 'formver1');
 $hidden = array('idpid' => $idpid);
-$target = base_url() . 'manage/attribute_policy/show_feds/'.$idpid;
+$target = base_url() . 'manage/attributepolicy/show_feds/'.$idpid;
 echo '<div id="pagetitle">'.lang('mngtarpforfed').'</div>';
 echo '<div id="subtitle"><h3><a href="'.base_url().'providers/detail/show/'.$idpid.'">'.$idpname.'</a></h3></div>';
 

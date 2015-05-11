@@ -3,7 +3,7 @@ $all_converted = array();
 $idps = array();
 $sps = array();
 $base_url = base_url();
-if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
+if (empty($grid) || !isset($grid['known']) || count($grid['known']) == 0)
 {
 
     echo '<div class="notice">'.lang('rr_noentitywithregdate').'</div>';
@@ -80,13 +80,6 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
 
     $line2 .= ']';
 
-    if (!empty($fedname))
-    {
-        $graphTitle = lang('rr_progressforfed').': '. '<a href="'.base_url().'federations/manage/show/'.base64url_encode($fedname).'">'.$fedname.'</a>';
-    } else
-    {
-        $graphTitle = lang('rr_progresslocalents');
-    }
     ?>
  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
@@ -98,7 +91,6 @@ if (empty($grid) or !isset($grid['known']) or count($grid['known']) == 0)
         echo '<script type="text/javascript" src="' . $base_url . 'js/jqplot.highlighter.min.js"></script>';
         ?>
 
-<div id="subtitle"><h3><?php echo  $graphTitle; ?></h3></div>
     <div class="span-23" style="overflow: visible">
         <div id="chart1" style="overflow: visible ;width: 600;height: 400px; margin: 25px;">
         </div> 

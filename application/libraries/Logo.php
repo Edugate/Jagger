@@ -39,7 +39,6 @@ class Logo {
 
     function getImageFiles()
     {
-        //return $this->logo_basepath;
         $handle = opendir($this->logo_basepath);
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $imagestable = array();
@@ -48,7 +47,7 @@ class Logo {
              if($file !== '.' && $file !== '..')
              {
                    $filetype = finfo_file($finfo,$this->logo_basepath . $file);
-                   if($filetype == 'image/jpeg' or $filetype == 'image/png')
+                   if($filetype == 'image/jpeg' || $filetype == 'image/png')
                    {
                        $size = getimagesize($this->logo_basepath . $file);
                        $imagestable[] = array(

@@ -35,6 +35,17 @@ class Msigner extends MY_Controller {
        }
 
 
+       $digestmethod = $this->config->item('signdigest');
+       if(empty($digestmethod))
+       {
+          log_message('debug',__METHOD__.' signdigest empty or not found in config file, using system default: SHA-1');
+          $digestmethod = 'SHA-1';
+       }
+       else
+       {
+          log_message('debug',__METHOD__.' signdigest default set to: '.$digestmethod);
+       }
+
        $type =  $this->uri->segment(3);
        $id = $this->uri->segment(4);
        if(empty($type) || empty($id))
@@ -99,14 +110,24 @@ class Msigner extends MY_Controller {
                echo lang('error403');
                return;
            }
-           //$encfedname = base64url_encode($fed->getName());
+           $digest1 = $fed->getDigest();
+           if(empty($digest1))
+           {
+              $digest1 = $digestmethod;
+           }
+           $digest2 = $fed->getDigestExport();
+           if(empty($digest2))
+           {
+              $digest2 = $digestmethod;
+           }
+           log_message('debug' , __METHOD__. ' final digestsign is set to: '.$digest1. 'and for export-federation if enabled set to: '.$digest2);
            $encfedname = $fed->getSysname();
            $sourceurl = base_url().'metadata/federation/'.$encfedname.'/metadata.xml';
-           $options[] = array('src'=>''.$sourceurl.'','type'=>'federation','encname'=>''.$encfedname.'');
+           $options[] = array('src'=>''.$sourceurl.'','type'=>'federation','encname'=>''.$encfedname.'','digest'=>''.$digest1.'');
            $localexport = $fed->getLocalExport();
            if(!empty($localexport))
            {
-              $options[] = array('src'=>''.base_url().'metadata/federationexport/'.$encfedname.'/metadata.xml','type'=>'federationexport','encname'=>''.$encfedname.'');
+              $options[] = array('src'=>''.base_url().'metadata/federationexport/'.$encfedname.'/metadata.xml','type'=>'federationexport','encname'=>''.$encfedname.'','digest'=>''.$digest2.'');
            }
 
            foreach($options as $opt)
@@ -140,10 +161,15 @@ class Msigner extends MY_Controller {
               echo lang('error403');
               return;
           }
+          $digest1 = $provider->getDigest();
+          if(empty($digest1))
+          {
+             $digest1 = $digestmethod;
+          }
           $options = array();
           $encodedentity = base64url_encode($provider->getEntityId()); 
           $sourceurl = base_url().'metadata/circle/'.$encodedentity.'/metadata.xml';
-          $options[] = array('src'=>''.$sourceurl.'','type'=>'provider','encname'=>''.$encodedentity.'');
+          $options[] = array('src'=>''.$sourceurl.'','type'=>'provider','encname'=>''.$encodedentity.'','digest'=>''.$digest1.'');
           foreach($options as $opt)
           {
               try{

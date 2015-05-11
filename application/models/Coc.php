@@ -1,8 +1,5 @@
 <?php
-
 namespace models;
-
-use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ResourceRegistry3
@@ -51,6 +48,12 @@ class Coc {
     protected $type;
 
     /**
+     * allowed subtypes: for entcat: http://macedir.org/entity-category-support, http://macedir.org/entity-category 
+     * @Column(type="string", length=128, nullable=true)
+     */
+    protected $subtype;
+
+    /**
      * @Column(type="string", length=512, nullable=false )
      */
     protected $url;
@@ -71,7 +74,7 @@ class Coc {
     protected $lang;
 
     /**
-     * @ManyToMany(targetEntity="Provider",mappedBy="coc")
+     * @ManyToMany(targetEntity="Provider",mappedBy="coc",fetch="EXTRA_LAZY")
      */
     protected $provider;
  
@@ -88,12 +91,18 @@ class Coc {
  
     public function getName()
     {
-        return $this->name;   
+        return trim($this->name);
     }
 
     public function getType()
     {
        return $this->type;
+    }
+
+    public function getSubtype()
+    {
+       return $this->subtype;
+
     }
      
     public function getUrl()
@@ -118,6 +127,10 @@ class Coc {
     {
        return $this->provider;
     }
+    public function  getProvidersCount()
+    {
+        return $this->provider->count();
+    }
     
     public function setName($name)
     {
@@ -131,6 +144,12 @@ class Coc {
     public function setType($type)
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function setSubtype($a)
+    {
+        $this->subtype = $a;
         return $this;
     }
    
@@ -165,6 +184,17 @@ class Coc {
         {
            $this->is_enabled = FALSE;
         }
+        return $this;
+    }
+    
+    public function setEntityCategory($name,$url,$subtype,$description,$isavailable)
+    {
+        $this->name = trim($name);
+        $this->url = trim($url);
+        $this->subtype = trim($subtype);
+        $this->cdescription = trim($description);
+        $this->is_enabled = $isavailable;
+        $this->type = 'entcat';
         return $this;
     }
 

@@ -31,7 +31,6 @@ class Migration_attributesupdate extends CI_Migration {
            array('n'=>'initials','f'=>'Initials','oid'=>'urn:oid:2.5.4.43','urn'=>'urn:mace:dir:attribute-def:initials','desc'=>'The initials attribute type contains the initials of some or all of an individual\'s names, but not the surname(s).'),
         );
 
-//        $this->em->flush();
 
        foreach($newattrs as $n)
        {

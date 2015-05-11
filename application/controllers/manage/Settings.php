@@ -73,9 +73,7 @@ class Settings extends MY_Controller
                 foreach ($splist as $s)
                 {
                     $splist_dropdown[$s->getId()] = $s->getDisplayName();
-                    //$splist_dropdown[$s->getId()] = $s->getDisplayName()." (".$s->getEntityId().")";
                 }
-                //print_r($splist_dropdown);
                 if (count($splist_dropdown) < 1)
                 {
                     $data['error'] = "No service providers found";
@@ -90,9 +88,7 @@ class Settings extends MY_Controller
             foreach ($splist as $s)
             {
                 $splist_dropdown[$s->getId()] = $s->getDisplayName();
-                //$splist_dropdown[$s->getId()] = $s->getDisplayName()." (".$s->getEntityId().")";
             }
-            //print_r($splist_dropdown);
             if (count($splist_dropdown) < 1)
             {
                 $data['error'] = "No service providers found";
@@ -105,8 +101,6 @@ class Settings extends MY_Controller
             {
                 $data['target'] = $sent_target;
             }
-            //$data['content_view'] = 'manage/settings_sp_view';
-            //$this->load->view('page',$data);
         }
         $data['content_view'] = 'manage/settings_sp_view';
         $this->load->view('page', $data);
@@ -125,7 +119,6 @@ class Settings extends MY_Controller
             $s_a['current_idp'] = $sent_idp;
 			$tmp = new models\Providers;
 			$idpObj=$tmp->getOneIdPById($sent_idp);
-           // $idpObj = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $sent_idp));
 
             $s_a['current_idp_name'] = $idpObj->getDisplayname();
             $this->session->set_userdata($s_a);
@@ -141,9 +134,7 @@ class Settings extends MY_Controller
                 foreach ($idplist as $s)
                 {
                     $idplist_dropdown[$s->getId()] = $s->getDisplayName();
-                    //$splist_dropdown[$s->getId()] = $s->getDisplayName()." (".$s->getEntityId().")";
                 }
-                //print_r($splist_dropdown);
                 if (count($idplist_dropdown) < 1)
                 {
                     $data['error'] = "No service providers found";
@@ -158,9 +149,7 @@ class Settings extends MY_Controller
             foreach ($idplist as $s)
             {
                 $idplist_dropdown[$s->getId()] = $s->getDisplayName();
-                //$splist_dropdown[$s->getId()] = $s->getDisplayName()." (".$s->getEntityId().")";
             }
-            //print_r($splist_dropdown);
             if (count($idplist_dropdown) < 1)
             {
                 $data['error'] = "No service providers found";
@@ -173,8 +162,6 @@ class Settings extends MY_Controller
             {
                 $data['target'] = $sent_target;
             }
-            //$data['content_view'] = 'manage/settings_sp_view';
-            //$this->load->view('page',$data);
         }
         $data['content_view'] = 'manage/settings_idp_view';
         $this->load->view('page', $data);

@@ -1,6 +1,5 @@
 <?php
 namespace models;
-use \Doctrine\Common\Collections\ArrayCollection;
 /**
  * ResourceRegistry3
  * 

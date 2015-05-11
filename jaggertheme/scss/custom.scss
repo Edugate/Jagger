@@ -49,11 +49,6 @@ article {
   min-height: 100%;
   
 }
-.tabs-content {
-
-  //background-color: white;
-
-}
 #navbuttons1 {
   @include sub-nav();
 }
@@ -80,36 +75,8 @@ div.error {
     $radius: true
   );
 }
-a#showhelps {
-  border: 0px;
-  position:fixed;
-  top:90px;
-  right:2px;
-  img {
 
-  width: 25px;
-  }
-  img.iconhelpshow {
-  -khtml-opacity:.50;
- -moz-opacity:.50;
- -ms-filter:"alpha(opacity=50)";
-  filter:alpha(opacity=50);
-  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.5);
-  opacity:.50;
 
-  }
-}
-a.bookentity {
-  padding: 5px;
-  background-color: lighten(black,40%);
-  width: 24px;
-  height: 24px;
-  border: 0px;
-  position:fixed;
-  top:120px;
-  right:2px;
-
-}
 .subtitle, #subtitle, #pagetitle {
  text-align: center;
   
@@ -156,10 +123,10 @@ a.bookentity {
 @include label();
 }
 
-.lbl-disabled {
+.lbl-disabled, .lbl-pactive-0 {
   background-color: $alert-background;
 }
-.lbl-locked, .lbl-static {
+.lbl-locked, .lbl-static, .lbl-plocked-1, .lbl-pstatic-1 {
    background-color: $warning-background;
 
 }
@@ -210,40 +177,38 @@ a.bookentity {
 }
 
 
-div.perm {
+div.perm, td.perm, span.perm {
     background-color: #00FF00;
     text-transform: uppercase;
     font-weight: bold;
 }
-div.perm:not(:empty){
-   cursor: pointer;
-}
-div.dis {
+div.dis, td.dis , span.dis{
     background-color: #E3E5FF;
-//    text-transform: uppercase;
+    text-transform: uppercase;
 
     font-weight: bold;
 }
-div.dis:not(:empty){
-   cursor: pointer;
-}
-div.spec {
+div.spec, td.spec, span.spec {
     background-color: #FFFF00;
- //   text-transform: uppercase;
+    text-transform: uppercase;
 
     font-weight: bold;
 }
-div.spec:not(:empty){
-   cursor: pointer;
-}
-div.den {
+div.den, td.den, span.den {
     background-color: red;
- //text-transform: uppercase;
+   text-transform: uppercase;
 
     font-weight: bold;
 }
-div.den:not(:empty){
+div.perm:not(:empty),div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty),div.den:not(:empty){
    cursor: pointer;
+}
+td.perm:not(:empty),div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty),div.den:not(:empty){
+   cursor: pointer;
+}
+#idpmatrixdiv td {
+  cursor: pointer;
+
 }
 
 fieldset {
@@ -422,15 +387,34 @@ span.alert{
 
   color:red;
 }
+
+.accordion-icon:before {
+  font-family: "foundation-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  text-decoration: inherit;
+  padding-right: 5px;
+
+ content: "\f199";
+    
+}
+.active > .accordion-icon:before {
+    content: "\f176 ";
+ }
+
 .accordionButton {
  cursor: pointer;
 
 }
+
 td.highlight {
 
         background-color: darken($body-bg,10%);
-   //     color: white;
-
         font-weight: bolder;
         text-align: left;
 
@@ -442,6 +426,7 @@ ul.no-bullet {
 }
 code {
  white-space: pre;
+ font-size: smaller;
 
 }
 
@@ -463,16 +448,13 @@ code {
        $bg : $info-color
   );
 
+ width: 20rem;
+
+
 
 }
-.section {
+.section , .groupradiosection{
    background-color: $info-color;
-   font-size: bigger;
-   font-weight: bold;
-   padding: 5px;
-   margin-top: 5px;
-   margin-bottom: 5px;
-
 }
 
 div.alert {
@@ -483,6 +465,29 @@ div.alert {
 
   background-color: transparent;
   border: 0px !important;
+}
+
+.buttons div.yes {
+
+ @include button;
+}
+.buttons div.no {
+
+ @include button(
+$button-med,
+    // Primary color set in settings file. Default: $primary-color.
+    $alert-color,
+    // If true, set to button radius which is $global-radius or explicitly set radius amount in px (ex. $radius:10px). Default:false.
+    false,
+    // We can set $full-width:true to remove side padding extend width. Default:false
+    false,
+    // We can set $disabled:true to create a disabled transparent button. Default:false
+    false,
+    // $is-input - <input>s and <button>s take on strange padding. We added this to help fix that. Default:false
+    false
+
+
+);
 }
 
 ul.tabs {
@@ -524,12 +529,25 @@ ul.subtab > .tab-title.active{
   }
   
 }
+.imgsource > img {
+  max-height: 100px;
+}
+
+dd.accordion-navigation {
+  margin-top: 5px;
+
+}
 
 pre.xml {
 
   
   max-width: $row-width*(3/4);
   overflow: auto;
+  line-height: 100%;
+
+}
+#xmlmeta pre.xml {
+    max-width: 100%;
 
 }
 .xml {
@@ -556,4 +574,68 @@ pre.xml {
 .xml .re2 {color: #000000; font-weight: bold;}
 .xml .ln-xtra, .xml li.ln-xtra, .xml div.ln-xtra {background-color: #ffc;}
 .xml span.xtra { display:block; }
+
+.table-header-rotated {
+  border-collapse: collapse;
+  .csstransforms & td {
+    width: 2px;
+  }
+  .no-csstransforms & th {
+    padding: 0px 0px;
+  }
+  td {
+    text-align: center;
+    padding: 0px 0px;
+    border: 1px solid #ccc;
+    font-size:0.7rem;
+  }
+  .csstransforms & th.rotate {
+    height: 120px;
+    white-space: nowrap;
+    // Firefox needs the extra DIV for some reason, otherwise the text disappears if you rotate 
+    > div {
+      transform: 
+        // Magic Numbers
+        translate(5px, 47px)
+        // 45 is really 360-45
+        rotate(315deg);
+
+      -webkit-transform:
+        translate(5px, 47px)
+        rotate(315deg);
+
+      -ms-transform:
+        translate(5px, 47px)
+        rotate(315deg);
+
+      -moz-transform:
+        translate(5px, 47px)
+        rotate(315deg);
+      
+
+      max-width: 5px;
+    }
+    > div > span {
+      border-bottom: 1px solid #ccc;
+      padding: 1px 1px;
+      text-size: 0.3rem;
+      
+    }
+  }
+  th.row-header {
+    padding: 0 10px;
+    border-bottom: 1px solid #ccc;
+    font-size : 0.3rem;
+  }
+}
+.modal-close {
+
+position: relative !important;
+}
+
+.lightover:hover{
+background-color: #ffff99;
+
+}
+
 

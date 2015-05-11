@@ -94,7 +94,7 @@ class FederationCategory
        return $this->federations;
     }
 
-    public function getIsDefault()
+    public function isDefault()
     {
        return $this->isdefault;
     }

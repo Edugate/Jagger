@@ -7,7 +7,7 @@ if(!empty($error_message))
 if($showaddbutton)
 {
 
-echo '<div class="small-12 text-right"><a href="'.base_url().'manage/coc/add" class="button small">'.lang('addentcat_btn').'</a></div>';
+echo '<div class="small-12 text-right"><a href="'.base_url().'manage/ec/add" class="button small">'.lang('addentcat_btn').'</a></div>';
  
 }
 
@@ -15,8 +15,36 @@ if(!empty($rows))
 {
      $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
      $this->table->set_template($tmpl);
-     $this->table->set_heading(lang('entcat_shortname'),lang('rr_status'),lang('entcat_url'),lang('entcat_description'),lang('rr_action'));
+     $this->table->set_heading(lang('rr_displayname'),lang('rr_attr_name'),lang('entcat_value') ,lang('entcat_description'),lang('rr_status'),lang('rr_action'));
      echo $this->table->generate($rows);
      $this->table->clear();    
 
 }
+$btns = array(
+    '<button class="button alert modal-close" value="cancel" name="cancel" type="reset">'.lang('rr_no').'</button>',
+    '<a href="#" class="yes button">' . lang('rr_yes') . '</a>'
+);
+
+echo '<div id="confirmremover" class="reveal-modal small" data-reveal>';
+
+echo '<h3>'.lang('douwanttoproceed').'</h3>';
+echo '<div>'.lang('ecrmstr').': <span class="data-fieldname"></span></div>';
+echo '<div>'.lang('countentconnected').': <span class="data-counter"></span></div>';
+echo form_open();
+
+
+echo '<p><div class="buttons small-12 columns small-text-right">';
+
+    echo revealBtnsRow($btns);
+echo '</div></p>';
+
+echo form_close();
+echo '<a class="close-reveal-modal">&#215;</a>';
+echo '</div>';
+
+
+echo '<div id="ecmembers" class="reveal-modal small" data-reveal>';
+echo '<h4>'.lang('modtl_listentconec').'</h4>';
+echo '<div class="datacontent"></div>';
+echo '<a class="close-reveal-modal">&#215;</a>';
+echo '</div>';
