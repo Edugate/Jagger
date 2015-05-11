@@ -392,6 +392,19 @@ class Auth extends MY_Controller {
         }
     }
 
+    private function getShibGroups()
+    {
+        $groupsVarName = $this->config->item('Shib_groups');
+        if (isset($_SERVER[$groupsVarName])) {
+            return $_SERVER[$groupsVarName];
+        } elseif (isset($_SERVER['REDIRECT_' . $groupsVarName])) {
+            return $_SERVER['REDIRECT_' . $groupsVarName];
+        } else {
+            return FALSE;
+        }
+    }
+
+
     private function get_shib_username()
     {
         $username_var = $this->config->item('Shib_username');
@@ -539,8 +552,68 @@ class Auth extends MY_Controller {
         $this->tracker->save_track('user', 'create', $username, 'user autocreated in the system', false);
         $this->em->flush();
         
-        
+        $this->assignRolesFromAA($user);
         return true;
+    }
+
+    private function assignRolesFromAA($user) {
+        if (empty($this->config->item('Shib_groups'))) {
+            // Groups not retrieved from AA, do nothing and exit
+            return;
+        }
+
+        $groups = $this->getShibGroups();
+        $group_administrator = $this->config->item('register_group_administrator');
+        $group_member = $this->config->item('register_group_member');
+        $group_guest = $this->config->item('register_group_guest');
+
+        // Check configuration parameters for group names in the AA
+        if (empty($group_administrator)) {
+            $group_administrator = 'Administrator';
+        }
+        if (empty($group_member)) {
+            $group_member = 'Member';
+        }
+        if (empty($group_guest)) {
+            $group_guest = 'Guest';
+        }
+
+        // Obtain user group by looking at AA attribute
+        if (strstr($groups, $group_administrator) !== false)
+        {
+            $userGroup = 'Administrator';
+        }
+        else if (strstr($groups, $group_member) !== false)
+        {
+            $userGroup = 'Member';
+        }
+        else if (strstr($groups, $group_guest) !== false)
+        {
+            $userGroup = 'Guest';
+        }
+        else
+        {
+            log_message('warning', 'The group attribute is not present in federated authentication');
+            return;
+        }
+
+        // Remove user from old groups
+        foreach ($user->getRoles() as $role)
+        {
+            $user->unsetRole($role);
+        }
+
+        // Assign user to the right group
+        $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $userGroup));
+        if (!empty($member))
+        {
+            $user->setRole($member);
+            log_message('debug', 'The user has the ' . $member->getName() . ' role.');
+        }
+
+        $this->em->persist($user);
+        $user->updated();
+        $this->em->flush();
     }
 
     public function fedauth($timeoffset = null)
@@ -607,6 +680,7 @@ class Auth extends MY_Controller {
             $track_details = 'Authn from ' . $ip . '  with federated access';
             $this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
             $this->em->flush();
+            $this->assignRolesFromAA($user);
         } else
         {
             $fname_var = $this->get_shib_fname();
@@ -647,6 +721,7 @@ class Auth extends MY_Controller {
                 redirect(current_url(), 'location');
             }
         }
+
         redirect(base_url(), 'location');
     }
 
