@@ -658,6 +658,26 @@ class Attributepolicy extends MY_Controller
         return $this->globals($idp_id);
     }
 
+    private function genArpInArray()
+    {
+        $arpInArray = array();
+        foreach($this->attributes as $attribute)
+        {
+            $arpInArray[''.$attribute->getName().''] = array(
+                'attr_name' => $attribute->getName(),
+                'supported'=>0,
+                'attr_id' => $attribute->getId(),
+                'attr_policy'=>null,
+                'idp_id'=>null,
+                'sp_id'=>null,
+                'req_status'=>null,
+                'req_reason'=>null
+            );
+
+        }
+        return $arpInArray;
+    }
+
     public function submit_multi($idpID)
     {
         $changes = array();
@@ -796,11 +816,15 @@ class Attributepolicy extends MY_Controller
             'policy_dropdown' => $this->config->item('policy_dropdown'),
             'sp_available' => $sp->getAvailable(),
         );
+
+        /**
+         * @todo finish
+         */
         /**
          * @var $arps models\AttributeReleasePolicy[]
          */
         $arps = $this->tmpArps->getSpecificPolicyAttributes($idp, $requesterID);
-        $arpsInArray = array();
+        $arpsInArray = $this->genArpInArray();
         foreach ($arps as $a) {
             $attributeName = $a->getAttribute()->getName();
             $arpsInArray['' . $attributeName . ''] = array(
