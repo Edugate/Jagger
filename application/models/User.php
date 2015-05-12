@@ -277,21 +277,49 @@ class User {
     public function setLocalEnabled()
     {
         $this->local = TRUE;
+        return $this;
     }
 
     public function setLocalDisabled()
     {
         $this->local = FALSE;
+        return $this;
     }
 
     public function setFederatedEnabled()
     {
         $this->federated = TRUE;
+        return $this;
     }
 
     public function setFederatedDisabled()
     {
         $this->federated = FALSE;
+        return $this;
+    }
+
+
+    /**
+     * @param $type
+     * @return $this
+     */
+    public function setAccessType($type)
+    {
+        $this->federated = false;
+        $this->local = false;
+        if($type === 'both')
+        {
+            $this->federated = true;
+            $this->local = true;
+        }
+        elseif($type === 'fed')
+        {
+            $this->federated = true;
+        }
+        elseif($type === 'local')
+        {
+            $this->local = true;
+        }
         return $this;
     }
 

@@ -361,7 +361,7 @@ class Entityedit extends MY_Controller
                 foreach ($certGroups as $key => $val) {
                     if (array_key_exists($key, $y['f']['crt'])) {
                         foreach ($y['f']['crt'][''.$key.''] as $k => $v) {
-                            if (is_numeric($k)) {
+                            if (ctype_digit($k)) {
                                 $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][certdata]', $val.'/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
                             } else {
                                 $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][certdata]', $val.'/Certificate body', 'trim|required|getPEM|verify_cert');
@@ -438,7 +438,7 @@ class Entityedit extends MY_Controller
                                 $acsindexes[] = $v['order'];
                             }
                             $acsurls[] = 1;
-                            if (!empty($tmporder) && !is_numeric($tmporder)) {
+                            if (!empty($tmporder) && !ctype_digit($tmporder)) {
                                 $this->tmp_error = 'One of the index order in ACS is not numeric';
                                 $optValidationsPassed = FALSE;
                             }
@@ -480,7 +480,7 @@ class Entityedit extends MY_Controller
                             if (!empty($v['order'])) {
                                 $spartindexes[] = $v['order'];
                             }
-                            if (!empty($tmporder) && !is_numeric($tmporder)) {
+                            if (!empty($tmporder) && !ctype_digit($tmporder)) {
                                 $this->tmp_error = 'One of the index order in SP ArtifactResolutionService is not numeric';
                                 $optValidationsPassed = FALSE;
                             }
@@ -506,7 +506,7 @@ class Entityedit extends MY_Controller
                             if (!empty($v['order'])) {
                                 $idpartindexes[] = $v['order'];
                             }
-                            if (!empty($tmporder) && !is_numeric($tmporder)) {
+                            if (!empty($tmporder) && !ctype_digit($tmporder)) {
                                 $this->tmp_error = 'One of the index order in IDP ArtifactResolutionService is not numeric';
                                 $optValidationsPassed = FALSE;
                             }
@@ -534,7 +534,7 @@ class Entityedit extends MY_Controller
                             if (!empty($v['order'])) {
                                 $drindexes[] = $v['order'];
                             }
-                            if (!empty($tmporder) && !is_numeric($tmporder)) {
+                            if (!empty($tmporder) && !ctype_digit($tmporder)) {
                                 $this->tmp_error = 'One of the index order in DiscoveryResponse is not numeric';
                                 $optValidationsPassed = FALSE;
                             }

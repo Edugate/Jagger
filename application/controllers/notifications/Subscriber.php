@@ -24,7 +24,6 @@ class Subscriber extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        $this->load->helper('shortcodes');
     }
 
     private function getSubscriptionsToJson(models\User $subscriptionOwner)
@@ -36,29 +35,26 @@ class Subscriber extends MY_Controller
         $result = array();
 
         foreach ($userSubscriptions as $subscription) {
-            $prov = $subscription->getProvider();
-            if (empty($prov)) {
-                $provid = null;
-                $provname = null;
-            } else {
-                $provid = $prov->getId();
-                $provname = $prov->getEntityId();
+            $provider = $subscription->getProvider();
+            $providerId = null;
+            $providerEntityId = null;
+            if (!empty($provider)) {
+                $providerId = $provider->getId();
+                $providerEntityId = $provider->getEntityId();
             }
-            $fed = $subscription->getFederation();
-            if (empty($fed)) {
-                $federationId = null;
-                $federationName = null;
-            } else {
-                $federationId = $fed->getId();
-                $federationName = $fed->getName();
+            $federationId = null;
+            $federationName = null;
+            $federation = $subscription->getFederation();
+            if (!empty($federation)) {
+                $federationId = $federation->getId();
+                $federationName = $federation->getName();
             }
             $isApproved = $subscription->getApproved();
             $isEnabled = $subscription->getEnabled();
-            $status = '';
             if ($isEnabled && $isApproved) {
                 $status = lang('subscisactive');
             } else {
-
+                $status = '';
                 if (!$isEnabled) {
                     $status .= lang('subscdisabled') . '; ';
                 }
@@ -71,8 +67,8 @@ class Subscriber extends MY_Controller
                 'delivery' => $subscription->getNotificationType(),
                 'type' => $subscription->getType(),
                 'langtype' => lang($subscription->getType()),
-                'providerid' => $provid,
-                'providername' => $provname,
+                'providerid' => $providerId,
+                'providername' => $providerEntityId,
                 'federationid' => $federationId,
                 'federationname' => $federationName,
                 'rcptto' => $subscription->getRcpt(),
@@ -94,10 +90,8 @@ class Subscriber extends MY_Controller
         if (empty($encodeduser)) {
             show_error('not found', 404);
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
-            return;
         }
         $this->load->library('zacl');
         $decodeduser = base64url_decode($encodeduser);
@@ -119,26 +113,30 @@ class Subscriber extends MY_Controller
         if (empty($subscribtionOwner)) {
             show_error('not found', 404);
         }
-        $data['encodeduser'] = $encodeduser;
-        $data['subscriber']['username'] = $subscribtionOwner->getUsername();
-        $data['subscriber']['fullname'] = $subscribtionOwner->getFullname();
-        $data['subscriber']['email'] = $subscribtionOwner->getEmail();
-        $data['titlepage'] = $data['subscriber']['username'];
-        $data['subtitlepage'] = lang('title_usersubscriptions');
+
+        $data = array(
+            'encodeduser' => $encodeduser,
+            'subscriber' => array(
+                'username' => $subscribtionOwner->getUsername(),
+                'fullname' => $subscribtionOwner->getFullname(),
+                'email' => $subscribtionOwner->getEmail(),
+            ),
+            'titlepage' => $subscribtionOwner->getUsername(),
+            'subtitlepage' => lang('title_usersubscriptions')
+        );
+
+
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
-        if (!$accessListUsers)
-        {
+        if (!$accessListUsers) {
             $data['breadcrumbs'] = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
-                array('url' => base_url('manage/users/show/'.$encodeduser.''), 'name' => html_escape($subscribtionOwner->getUsername())),
+                array('url' => base_url('manage/users/show/' . $encodeduser . ''), 'name' => html_escape($subscribtionOwner->getUsername())),
                 array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
             );
-        }
-        else
-        {
+        } else {
             $data['breadcrumbs'] = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
-                array('url' => base_url('manage/users/show/'.$encodeduser.''), 'name' => html_escape($subscribtionOwner->getUsername()),),
+                array('url' => base_url('manage/users/show/' . $encodeduser . ''), 'name' => html_escape($subscribtionOwner->getUsername()),),
                 array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
             );
         }
@@ -181,15 +179,10 @@ class Subscriber extends MY_Controller
 
     public function add($encodeduser = null)
     {
-        if (!$this->input->is_ajax_request() || empty($encodeduser)) {
+
+        if (!$this->input->is_ajax_request() || empty($encodeduser) || !$this->j_auth->logged_in()) {
             set_status_header(403);
             echo 'denied';
-            return;
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            set_status_header(403);
-            echo 'not loggedin';
             return;
         }
         $username = $this->j_auth->current_user();
@@ -376,53 +369,46 @@ class Subscriber extends MY_Controller
             return;
         }
         $success = false;
-        if ($userMatchOwner && (strcmp($status, 'remove') === 0 || strcmp($status, 'disable') === 0 || strcmp($status, 'enable') === 0)) {
-            if (strcmp($status, 'remove') === 0) {
+        if ($userMatchOwner && (strcmp($status, 'remove') == 0 || strcmp($status, 'disable') == 0 || strcmp($status, 'enable') == 0)) {
+            if (strcmp($status, 'remove') == 0) {
                 $this->em->remove($notification);
-                $this->em->flush();
-                $success = true;
-            } elseif (strcmp($status, 'disable') === 0) {
+            } elseif (strcmp($status, 'disable') == 0) {
                 $notification->setEnabled(false);
                 $this->em->persist($notification);
-                $this->em->flush();
-                $success = true;
-            } elseif (strcmp($status, 'enable') === 0) {
+            } elseif (strcmp($status, 'enable') == 0) {
                 $notification->setEnabled(true);
                 $this->em->persist($notification);
-                $this->em->flush();
-                $success = true;
             }
-        } elseif ($isAdministrator) {
+            $success = true;
+        } elseif ($isAdministrator && in_array($status, array('remove', 'disable', 'enable', 'approve', 'disapprove'))) {
             if (strcmp($status, 'remove') === 0) {
                 $this->em->remove($notification);
-                $this->em->flush();
-                $success = true;
-            } elseif (strcmp($status, 'disable') === 0) {
+            } elseif (strcmp($status, 'disable') == 0) {
                 $notification->setEnabled(false);
                 $this->em->persist($notification);
-                $this->em->flush();
-                $success = true;
-            } elseif (strcmp($status, 'enable') === 0) {
+            } elseif (strcmp($status, 'enable') == 0) {
                 $notification->setEnabled(true);
                 $this->em->persist($notification);
-                $this->em->flush();
-                $success = true;
-            } elseif (strcmp($status, 'approve') === 0) {
+            } elseif (strcmp($status, 'approve') == 0) {
                 $notification->setApproved(true);
                 $this->em->persist($notification);
-                $this->em->flush();
-                $success = true;
-            } elseif (strcmp($status, 'disapprove') === 0) {
+            } elseif (strcmp($status, 'disapprove') == 0) {
                 $notification->setApproved(false);
                 $this->em->persist($notification);
-                $this->em->flush();
-                $success = true;
             }
+            $success = true;
         }
         if ($success) {
-            $refreshed = $this->getSubscriptionsToJson($notificationOwner);
-            $this->output->set_content_type('application/json');
-            echo $refreshed;
+            try {
+                $this->em->flush();
+                $refreshed = $this->getSubscriptionsToJson($notificationOwner);
+                $this->output->set_content_type('application/json');
+                echo $refreshed;
+            } catch (Exception $e) {
+                set_status_header(500);
+                echo 'Internal server error';
+                log_message('error', __METHOD__ . ' ' . $e);
+            }
         }
     }
 

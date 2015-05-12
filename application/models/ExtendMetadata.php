@@ -205,6 +205,29 @@ class ExtendMetadata {
         $this->evalue = $value;
     }
 
+
+    public function populateWithNoProvider(ExtendMetadata $parent,$type,$namespace,$value,$element,$attrs)
+    {
+        $this->setParent($parent);
+        $this->etype = $type;
+        $this->namespace = $namespace;
+        $this->setValue($value);
+        $this->element = $element;
+        $this->setAttributes($attrs);
+        return $this;
+    }
+
+    public function setLogoNoProvider($filename,ExtendMetadata $parent,array $attrs, $type)
+    {
+        $this->setValue($filename);
+        $this->setParent($parent);
+        $this->namespace = 'mdui';
+        $this->element = 'Logo';
+        $this->etype = $type;
+        $this->setAttributes($attrs);
+        return $this;
+    }
+
     public function setLogo($filename, Provider $provider, ExtendMetadata $parent, array $attrs, $type)
     {
         $this->setValue($filename);

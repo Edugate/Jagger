@@ -53,20 +53,12 @@ class Users extends MY_Controller
         return $this->form_validation->run();
     }
 
+    /**
+     * @return bool
+     */
     private function ajaxplusadmin()
     {
-        if (!$this->input->is_ajax_request()) {
-            return false;
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            return false;
-        }
-        $isAdmin = $this->j_auth->isAdministrator();
-        if (!$isAdmin) {
-            return false;
-        }
-        return true;
+        return $this->input->is_ajax_request() && $this->j_auth->logged_in() && $this->j_auth->isAdministrator();
     }
 
     /**
@@ -75,22 +67,18 @@ class Users extends MY_Controller
      */
     private function isOwner($encoded_user)
     {
+        $result = false;
         $decodedUser = base64url_decode(trim($encoded_user));
         $sessionUsername = $this->session->userdata('username');
         if (!empty($sessionUsername) && strlen(trim($sessionUsername)) > 0 && strcasecmp($decodedUser, $sessionUsername) == 0) {
-            return true;
-        } else {
-            return false;
+            $result =  true;
         }
+        return $result;
     }
 
     private function ajaxplusowner($encoded_user)
     {
-        if (!$this->input->is_ajax_request()) {
-            return false;
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             return false;
         }
         return $this->isOwner($encoded_user);
@@ -100,7 +88,7 @@ class Users extends MY_Controller
     {
         $roles = $user->getRoles();
         $result = array();
-        if (!empty($range) && $range === 'system') {
+        if ($range === 'system') {
             foreach ($roles as $r) {
                 $rtype = $r->getType();
                 if ($rtype === 'system') {
@@ -301,13 +289,7 @@ class Users extends MY_Controller
 
     public function add()
     {
-        if (!$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'Permission denied';
-            return;
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             set_status_header(403);
             echo 'Permission denied';
             return;
@@ -337,17 +319,7 @@ class Users extends MY_Controller
             $user->setEmail($email);
             $user->setGivenname($fname);
             $user->setSurname($sname);
-            if ($access == 'both') {
-                $user->setLocalEnabled();
-                $user->setFederatedEnabled();
-            } elseif ($access == 'fed') {
-                $user->setLocalDisabled();
-                $user->setFederatedEnabled();
-            } elseif ($access == 'local') {
-                $user->setLocalEnabled();
-                $user->setFederatedDisabled();
-            }
-
+            $user->setAccessType($access);
             $user->setAccepted();
             $user->setEnabled();
             $user->setValid();
@@ -406,8 +378,7 @@ class Users extends MY_Controller
         if (!$write_access) {
             $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $userpref = $user->getUserpref();
         if (isset($userpref['board'])) {
@@ -434,7 +405,7 @@ class Users extends MY_Controller
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             show_error('Internal server error', 500);
-            return;
+
         }
         if (empty($user)) {
             show_error('User not found', 404);
@@ -448,8 +419,7 @@ class Users extends MY_Controller
         if (!($access || $match)) {
             $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
         if (!$accessListUsers) {
@@ -809,14 +779,12 @@ class Users extends MY_Controller
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if (empty($user)) {
             show_error(lang('error404'), 404);
-            return;
         }
         $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
         if (!$manage_access) {
             $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         if ($this->accessmodifySubmitValidate() === TRUE) {
             $i = $this->input->post('authz');
@@ -833,8 +801,7 @@ class Users extends MY_Controller
             $form .= form_fieldset_close() . form_close();
             $data['content_view'] = 'manage/user_access_edit_view';
             $data['form'] = $form;
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
     }
 
@@ -855,8 +822,7 @@ class Users extends MY_Controller
         if (!$write_access && !$manage_access) {
             $data['error'] = 'You have no access';
             $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
         if (!$accessListUsers) {

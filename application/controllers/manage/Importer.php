@@ -27,12 +27,20 @@ class Importer extends MY_Controller
     protected $other_error = array();
     private $access;
     protected $xmlbody;
-    protected $curl_maxsize;
+    protected $curl_maxsize, $curl_timeout;
     protected $xmlDOM;
 
     function __construct()
     {
         parent::__construct();
+        $this->curl_maxsize = $this->config->item('curl_metadata_maxsize');
+        if (!isset($this->curl_maxsize)) {
+            $this->curl_maxsize = 20000;
+        }
+        $this->curl_timeout = $this->config->item('curl_timeout');
+        if (!isset($this->curl_timeout)) {
+            $this->curl_timeout = 60;
+        }
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
         if (!$loggedin) {
@@ -58,18 +66,17 @@ class Importer extends MY_Controller
         if (!$access) {
             $data['content_view'] = "nopermission";
             $data['error'] = lang('error403');
-            $this->load->view('page', $data);
         } else {
-
-            $data['title'] = lang('titleimportmeta');
-            $data['titlepage'] = lang('titleimportmeta');
-            $data['content_view'] = "manage/import_metadata_form";
-            $data['other_error'] = $this->other_error;
-            $data['global_erros'] = $this->globalerrors;
-            $data['federations'] = $this->form_element->getFederation();
-            $data['types'] = array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities'));
-            $this->load->view('page', $data);
+            $data = array(
+                'titlepage' => lang('titleimportmeta'),
+                'content_view' => 'manage/import_metadata_form',
+                'other_error' => $this->other_error,
+                'global_erros' => $this->globalerrors,
+                'federations' => $this->form_element->getFederation(),
+                'types' => array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities')),
+            );
         }
+        $this->load->view('page', $data);
     }
 
     function submit()
@@ -87,16 +94,15 @@ class Importer extends MY_Controller
             return $this->index();
         }
 
+
         $arg['metadataurl'] = $this->input->post('metadataurl');
         $arg['certurl'] = trim($this->input->post('certurl'));
         $arg['cert'] = getPEM($this->input->post('cert'));
         $arg['validate'] = $this->input->post('validate');
         $arg['sslcheck'] = trim($this->input->post('sslcheck'));
-
+        $sslvalidate = TRUE;
         if (!empty($arg['sslcheck']) && $arg['sslcheck'] === 'ignore') {
             $sslvalidate = FALSE;
-        } else {
-            $sslvalidate = TRUE;
         }
 
         if ($arg['validate'] === 'accept') {
@@ -144,30 +150,25 @@ class Importer extends MY_Controller
          * replace below if calling function
          * check if metadata_body if xml and valid against schema
          */
+        $local = false;
+        $active = false;
+        $static = false;
+        $overwrite = false;
+        $full = false;
         if ($arg['extorint'] == 'int') {
             $local = true;
-        } else {
-            $local = false;
         }
         if ($arg['active'] == 'yes') {
             $active = true;
-        } else {
-            $active = false;
         }
         if ($arg['static'] == 'yes') {
             $static = true;
-        } else {
-            $static = false;
         }
         if ($arg['overwrite'] == 'yes') {
             $overwrite = true;
-        } else {
-            $overwrite = false;
         }
         if ($arg['fullinformation'] == 'yes') {
             $full = true;
-        } else {
-            $full = false;
         }
         if (!($arg['type'] == 'idp' || $arg['type'] == 'sp' || $arg['type'] == 'all')) {
             log_message('error', 'Cannot import metadata because type of entities is not set correctly');
@@ -230,36 +231,22 @@ class Importer extends MY_Controller
      */
     private function _metadatasigner_validate($metadataurl, $sslvalidate = FALSE, $signed = FALSE, $certurl = FALSE, $certbody = FALSE)
     {
-        $curl_timeout = $this->config->item('curl_timeout');
-        $this->curl_maxsize = $this->config->item('curl_metadata_maxsize');
-        if (!isset($curl_timeout)) {
-            $curl_timeout = 60;
-        }
-        if (!isset($this->curl_maxsize)) {
-            $this->curl_maxsize = 20000;
-        }
         $maxsize = $this->curl_maxsize;
+        $sslverifyhost = 0;
         if ($sslvalidate) {
-            $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), array(
-                CURLOPT_TIMEOUT => $curl_timeout,
-                CURLOPT_BUFFERSIZE => 128,
-                CURLOPT_NOPROGRESS => FALSE,
-                CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
-                    return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
-                }
-            ));
-        } else {
-            $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), array(
-                CURLOPT_SSL_VERIFYPEER => $sslvalidate,
-                CURLOPT_SSL_VERIFYHOST => $sslvalidate,
-                CURLOPT_TIMEOUT => $curl_timeout,
-                CURLOPT_BUFFERSIZE => 128,
-                CURLOPT_NOPROGRESS => FALSE,
-                CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
-                    return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
-                }
-            ));
+            $sslverifyhost = 2;
         }
+        $curloptions = array(
+            CURLOPT_SSL_VERIFYPEER => $sslvalidate,
+            CURLOPT_SSL_VERIFYHOST => $sslverifyhost,
+            CURLOPT_TIMEOUT => $this->curl_timeout,
+            CURLOPT_BUFFERSIZE => 128,
+            CURLOPT_NOPROGRESS => FALSE,
+            CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
+                return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
+            }
+        );
+        $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), $curloptions);
         if (empty($this->xmlbody)) {
             $this->other_error[] = $this->curl->error_string;
             return FALSE;
@@ -284,27 +271,17 @@ class Importer extends MY_Controller
                 return FALSE;
             }
         } elseif (!empty($certurl)) {
-            if ($sslvalidate) {
-                $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
-                    CURLOPT_TIMEOUT => $curl_timeout,
-                    CURLOPT_BUFFERSIZE => 128,
-                    CURLOPT_NOPROGRESS => FALSE,
-                    CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
-                        return ($Downloaded > (1000 * 1024)) ? 1 : 0;
-                    }
-                ));
-            } else {
                 $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
                     CURLOPT_SSL_VERIFYPEER => $sslvalidate,
-                    CURLOPT_SSL_VERIFYHOST => $sslvalidate,
-                    CURLOPT_TIMEOUT => $curl_timeout,
+                    CURLOPT_SSL_VERIFYHOST => $sslverifyhost,
+                    CURLOPT_TIMEOUT => $this->curl_timeout,
                     CURLOPT_BUFFERSIZE => 128,
                     CURLOPT_NOPROGRESS => FALSE,
                     CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
                         return ($Downloaded > (1000 * 1024)) ? 1 : 0;
                     }
                 ));
-            }
+
             if (!empty($certdata) && validateX509($certdata)) {
                 $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certdata);
             } else {

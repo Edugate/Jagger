@@ -21,7 +21,7 @@ if (!defined('BASEPATH'))
 class Entitystate extends MY_Controller {
 
     protected $id;
-    protected $tmp_providers;
+    protected $tmpProviders;
     protected $entity;
 
     public function __construct()
@@ -34,12 +34,12 @@ class Entitystate extends MY_Controller {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
-        $this->tmp_providers = new models\Providers;
+        $this->tmpProviders = new models\Providers;
         $this->load->library('form_element');
         $this->load->library('form_validation');
         $this->load->library('metadata_validator');
         $this->load->library('zacl');
-        $this->tmp_providers = new models\Providers();
+        $this->tmpProviders = new models\Providers();
         $this->entity = null;
     }
 
@@ -60,13 +60,13 @@ class Entitystate extends MY_Controller {
 
     public function regpolicies($id)
     {
-        if (!is_numeric($id))
+        if (!ctype_digit($id))
         {
             show_error('Incorrect entity id provided', 404);
         }
         else
         {
-            $this->entity = $this->tmp_providers->getOneById($id);
+            $this->entity = $this->tmpProviders->getOneById($id);
         }
         if (empty($this->entity))
         {
@@ -85,10 +85,10 @@ class Entitystate extends MY_Controller {
         {
            $data['titlepage'] = '';
         }
-        $lang = MY_Controller::getLang();
+        $myLang = MY_Controller::getLang();
         $isLocked = $this->entity->getLocked();
         $isLocal = $this->entity->getLocal();
-        $titlename = $this->entity->getNameToWebInLang($lang, $this->entity->getType());
+        $titlename = $this->entity->getNameToWebInLang($myLang, $this->entity->getType());
         $data['titlepage'] .= ' <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>';
         $data['subtitlepage'] = lang('title_regpols');
         $data['providerid'] = $this->entity->getId();
@@ -113,17 +113,14 @@ class Entitystate extends MY_Controller {
         if (!$has_write_access)
         {
             show_error('No sufficient permision to edit entity', 403);
-            return;
         }
         elseif ($isLocked)
         {
             show_error('entity id locked', 403);
-            return;
         }
         elseif(!$isLocal)
         {
             show_error('external entity, cannot be modified',403);
-            return;
         }
 
         $isAdmin = $this->j_auth->isAdministrator();
@@ -183,15 +180,17 @@ class Entitystate extends MY_Controller {
         }
     }
 
+
+
     public function modify($id)
     {
-        if (!is_numeric($id))
+        if (!ctype_digit($id))
         {
             show_error('Incorrect entity id provided', 404);
         }
         else
         {
-            $this->entity = $this->tmp_providers->getOneById($id);
+            $this->entity = $this->tmpProviders->getOneById($id);
         }
         if (!isset($this->entity))
         {
