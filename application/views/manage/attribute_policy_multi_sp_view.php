@@ -13,6 +13,10 @@ $tbl_row = array();
 foreach($arps as $arp)
 {
 
+    if(empty($arp['supported']) && is_null($arp['attr_policy']) && is_null($arp['req_status']))
+    {
+        continue;
+    }
 	$attrname = $arp['attr_name'];
 	if(empty($arp['supported']))
 	{

@@ -827,53 +827,22 @@ class Attributepolicy extends MY_Controller
         $arpsInArray = $this->genArpInArray();
         foreach ($arps as $a) {
             $attributeName = $a->getAttribute()->getName();
-            $arpsInArray['' . $attributeName . ''] = array(
-                'attr_name' => $attributeName,
-                'supported' => 0,
-                'attr_id' => $a->getAttribute()->getId(),
-                'attr_policy' => $a->getPolicy(),
-                'idp_id' => $a->getProvider()->getId(),
-                'sp_id' => $a->getRequester(),
-                'req_status' => null,
-                'req_reason' => null,
-            );
+            $arpsInArray['' . $attributeName . '']['attr_policy'] =  $a->getPolicy();
+            $arpsInArray['' . $attributeName . '']['idp_id'] =  $idpID;
+            $arpsInArray['' . $attributeName . '']['sp_id'] = $a->getRequester() ;
         }
         $supportedAttrs = $this->tmpArps->getSupportedAttributes($idp);
         foreach ($supportedAttrs as $p) {
             $attributeName = $p->getAttribute()->getName();
-            if (!array_key_exists('attr_id', $arpsInArray[$attributeName])) {
-                $arpsInArray['' . $attributeName . ''] = array(
-                    'attr_name' => $attributeName,
-                    'attr_id' => $p->getAttribute()->getId(),
-                    'attr_policy' => null,
-                    'idp_id' => $p->getProvider()->getId(),
-                    'sp_id' => $requesterID,
-                    'req_status' => null,
-                    'req_reason' => null
-                );
-            }
             $arpsInArray['' . $attributeName . '']['supported'] = 1;
         }
         $requirements = $tmp_requirements->getRequirementsBySP($sp);
         foreach ($requirements as $r) {
             $attributeName = $r->getAttribute()->getName();
-            if (!array_key_exists($attributeName, $arpsInArray)) {
-                $arpsInArray['' . $attributeName . ''] = array(
-                    'attr_name' => $attributeName,
-                    'supported' => 0,
-                    'attr_id' => $r->getAttribute()->getId(),
-                    'attr_policy' => null,
-                    'idp_id' => null,
-                    'sp_id' => $r->getSP()->getId(),
-                    'req_status' => null,
-                    'req_reason' => null,
-                );
-            }
-
-            $arpsInArray[$attributeName]['attr_name'] = $attributeName;
             $arpsInArray[$attributeName]['req_status'] = $r->getStatus();
             $arpsInArray[$attributeName]['req_reason'] = $r->getReason();
         }
+
         $data['arps'] = $arpsInArray;
 
         $data['policy_dropdown']['100'] = lang('dropnotset');
