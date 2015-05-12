@@ -422,7 +422,7 @@ class Users extends MY_Controller
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             show_error('Internal server error', 500);
-            return;
+
         }
         if (empty($user)) {
             show_error('User not found', 404);
@@ -436,8 +436,7 @@ class Users extends MY_Controller
         if (!($access || $match)) {
             $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
         if (!$accessListUsers) {
@@ -797,14 +796,12 @@ class Users extends MY_Controller
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if (empty($user)) {
             show_error(lang('error404'), 404);
-            return;
         }
         $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
         if (!$manage_access) {
             $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         if ($this->accessmodifySubmitValidate() === TRUE) {
             $i = $this->input->post('authz');
@@ -821,8 +818,7 @@ class Users extends MY_Controller
             $form .= form_fieldset_close() . form_close();
             $data['content_view'] = 'manage/user_access_edit_view';
             $data['form'] = $form;
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
     }
 
@@ -843,8 +839,7 @@ class Users extends MY_Controller
         if (!$write_access && !$manage_access) {
             $data['error'] = 'You have no access';
             $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
         if (!$accessListUsers) {

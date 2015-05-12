@@ -71,7 +71,7 @@ class Fededit extends MY_Controller {
 
     public function show($fedid)
     {
-        if (!is_numeric($fedid))
+        if (!ctype_digit($fedid))
         {
             show_error(lang('wrongarggiven'), 403);
         }

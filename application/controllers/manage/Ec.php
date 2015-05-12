@@ -228,7 +228,7 @@ class Ec extends MY_Controller {
     {
         $this->title = lang('title_entcatedit');
 
-        if (empty($id) || !is_numeric($id))
+        if (!(!empty($id) && ctype_digit($id)))
         {
             show_error('Not found', 404);
             return;

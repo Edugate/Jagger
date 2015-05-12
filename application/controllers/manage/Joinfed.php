@@ -47,9 +47,8 @@ class Joinfed extends MY_Controller
 
     public function joinfederation($providerid = null)
     {
-        if (empty($providerid) || !is_numeric($providerid)) {
+        if (empty($providerid) || !ctype_digit($providerid)) {
             show_error(lang('error_incorrectprovid'), 404);
-            return;
         }
         /**
          * @var $ent models\Provider
@@ -57,18 +56,15 @@ class Joinfed extends MY_Controller
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if (empty($ent)) {
             show_error(lang('rerror_provnotfound'), 404);
-            return;
         }
         else
         {
             $hasWriteAccess = $this->zacl->check_acl($ent->getId(), 'write', 'entity');
             if (!$hasWriteAccess) {
                 show_error('No access', 403);
-                return;
             }
             if ($ent->getLocked()) {
                 show_error(lang('error_lockednoedit'), 403);
-                return;
             }
         }
         $myLang = MY_Controller::getLang();
@@ -119,7 +115,6 @@ class Joinfed extends MY_Controller
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
             if (empty($federation)) {
                 show_error('' . lang('error_nofedyouwantjoin') . '', 404);
-                return;
             }
             if (!$federations->contains($federation)) {
                 /**
@@ -186,10 +181,7 @@ class Joinfed extends MY_Controller
 
                     $data['content_view'] = 'manage/joinfederation_view';
                     $data['success_message'] = lang('confirmreqsuccess');
-                    $this->load->view('page', $data);
-                    return;
-
-
+                    return $this->load->view('page', $data);
                 }
 
 
