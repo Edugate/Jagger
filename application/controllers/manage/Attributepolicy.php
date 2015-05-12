@@ -311,10 +311,10 @@ class Attributepolicy extends MY_Controller
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
         $data = array(
-            'content_view' => 'manage / attribute_policy_view',
+            'content_view' => 'manage/attribute_policy_view',
             'breadcrumbs' => array(
-                array('url' => base_url('providers / idp_list / showlist'), 'name' => lang('identityproviders')),
-                array('url' => base_url('providers / detail / show / ' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
+                array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+                array('url' => base_url('providers/detail/show / ' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
                 array('url' => '#', 'name' => lang('rr_attributereleasepolicy'), 'type' => 'current'),
             ),
             'titlepage' => lang('identityprovider') . ': ' . '<a href="' . base_url() . 'providers/detail/show/' . $idp_id . '">' . $providerNameInLang . '</a>',
@@ -356,7 +356,7 @@ class Attributepolicy extends MY_Controller
             $data['formdown'][$key->getId()] = $key->getNameToWebInLang($myLang, 'sp') . ' (' . $key->getEntityId() . ')';
         }
 
-        return $this->load->view('page', $data);
+         $this->load->view('page', $data);
     }
 
     /**
