@@ -289,13 +289,7 @@ class Users extends MY_Controller
 
     public function add()
     {
-        if (!$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'Permission denied';
-            return;
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             set_status_header(403);
             echo 'Permission denied';
             return;
@@ -325,17 +319,7 @@ class Users extends MY_Controller
             $user->setEmail($email);
             $user->setGivenname($fname);
             $user->setSurname($sname);
-            if ($access == 'both') {
-                $user->setLocalEnabled();
-                $user->setFederatedEnabled();
-            } elseif ($access == 'fed') {
-                $user->setLocalDisabled();
-                $user->setFederatedEnabled();
-            } elseif ($access == 'local') {
-                $user->setLocalEnabled();
-                $user->setFederatedDisabled();
-            }
-
+            $user->setAccessType($access);
             $user->setAccepted();
             $user->setEnabled();
             $user->setValid();
@@ -394,8 +378,7 @@ class Users extends MY_Controller
         if (!$write_access) {
             $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $userpref = $user->getUserpref();
         if (isset($userpref['board'])) {
