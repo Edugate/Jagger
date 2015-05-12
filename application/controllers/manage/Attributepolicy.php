@@ -200,7 +200,7 @@ class Attributepolicy extends MY_Controller
 
         if ($type === 'global') {
             $attr_policy = $this->tmpArps->getOneGlobalPolicy($idpID, $attrID);
-            $action = base_url('manage / attributepolicy / submit_global');
+            $action = base_url('manage/attributepolicy/submit_global');
             $subtitle = lang('rr_defaultarp');
         } elseif ($type === 'fed') {
             $attr_policy = $this->tmpArps->getOneFedPolicy($idpID, $attrID, $requester);
@@ -213,7 +213,7 @@ class Attributepolicy extends MY_Controller
                 $data['fed_name'] = $federation->getName();
                 $data['fed_url'] = base64url_encode($federation->getName());
             }
-            $action = base_url('manage / attributepolicy / submit_fed / ' . $idpID);
+            $action = base_url('manage/attributepolicy/submit_fed/' . $idpID);
             $subtitle = lang('rr_arpforfed');
         } else {  //type==sp
             $attr_policy = $this->tmpArps->getOneSPPolicy($idpID, $attrID, $requester);
@@ -230,7 +230,7 @@ class Attributepolicy extends MY_Controller
                 show_error(lang('rerror_spnotfound') . ' id:' . $requester, 404);
             }
             $link_sp = anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
-            $action = base_url('manage / attributepolicy / submit_sp / ' . $idpID);
+            $action = base_url('manage/attributepolicy/submit_sp/' . $idpID);
             $data['subtitlepage'] = lang('rr_specarpforsp') . ' : <br />' . $link_sp;
         }
         if ($idp->getLocked()) {
@@ -267,12 +267,12 @@ class Attributepolicy extends MY_Controller
 
         $data['subtitlepage'] = $subtitle;
         $data['breadcrumbs'] = array(
-            array('url' => base_url('providers / idp_list / showlist'), 'name' => lang('identityproviders')),
-            array('url' => base_url('providers / detail / show / ' . $idpID . ''), 'name' => '' . $providerNameInLang . ''),
-            array('url' => base_url('manage / attributepolicy / globals / ' . $idpID . ''), 'name' => lang('rr_attributereleasepolicy')),
+            array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+            array('url' => base_url('providers/detail/show/ ' . $idpID . ''), 'name' => '' . $providerNameInLang . ''),
+            array('url' => base_url('manage/attributepolicy/globals/' . $idpID . ''), 'name' => lang('rr_attributereleasepolicy')),
         );
 
-        $data['content_view'] = 'manage / attribute_policy_detail_view';
+        $data['content_view'] = 'manage/attribute_policy_detail_view';
         return $this->load->view('page', $data);
     }
 
@@ -314,7 +314,7 @@ class Attributepolicy extends MY_Controller
             'content_view' => 'manage/attribute_policy_view',
             'breadcrumbs' => array(
                 array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-                array('url' => base_url('providers/detail/show / ' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
+                array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
                 array('url' => '#', 'name' => lang('rr_attributereleasepolicy'), 'type' => 'current'),
             ),
             'titlepage' => lang('identityprovider') . ': ' . '<a href="' . base_url() . 'providers/detail/show/' . $idp_id . '">' . $providerNameInLang . '</a>',
