@@ -328,7 +328,7 @@ class Manage extends MY_Controller
         if (!empty($b) && is_array($b) && isset($b['fed']['' . $federation->getId() . ''])) {
             $bookmarked = true;
         } else {
-            $sideicons[] = '<a href="' . base_url() . 'ajax/bookfed/' . $federation->getId() . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus"></i></a>';
+            $sideicons[] = '<a href="' . base_url() . 'ajax/bookfed/' . $federation->getId() . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-bookmark"></i></a>';
 
         }
 

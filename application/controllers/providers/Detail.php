@@ -218,7 +218,7 @@ class Detail extends MY_Controller
 
 		$data = $this->providerdetails->generateForControllerProvidersDetail($ent);
 		if (empty($data['bookmarked'])) {
-			$data['sideicons'][] = '<a href="' . base_url() . 'ajax/bookmarkentity/' . $data['entid'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-plus" style="color: white"></i></a>';
+			$data['sideicons'][] = '<a href="' . base_url() . 'ajax/bookmarkentity/' . $data['entid'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-bookmark" style="color: white"></i></a>';
 
 		}
 		/**
