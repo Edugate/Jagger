@@ -411,7 +411,8 @@ class Auth extends MY_Controller
 	}
 	
 	private function assignRolesFromAA($user) {
-		if (empty($this->config->item('Shib_groups'))) {
+        $shibGroupsCnf = $this->config->item('Shib_groups');
+		if (empty($shibGroupsCnf)) {
 			// Groups not retrieved from AA, do nothing and exit
 			return;
 		}
