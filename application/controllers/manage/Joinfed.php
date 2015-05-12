@@ -17,7 +17,6 @@ if (!defined('BASEPATH'))
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
 class Joinfed extends MY_Controller
 {
 
@@ -34,6 +33,7 @@ class Joinfed extends MY_Controller
             $this->load->library('zacl');
 
         }
+        $this->load->helper('form');
     }
 
     private function submit_validate()
@@ -47,7 +47,7 @@ class Joinfed extends MY_Controller
 
     public function joinfederation($providerid = null)
     {
-        if (empty($providerid) || !ctype_digit($providerid)) {
+        if (!ctype_digit($providerid)) {
             show_error(lang('error_incorrectprovid'), 404);
         }
         /**
@@ -57,15 +57,10 @@ class Joinfed extends MY_Controller
         if (empty($ent)) {
             show_error(lang('rerror_provnotfound'), 404);
         }
-        else
-        {
-            $hasWriteAccess = $this->zacl->check_acl($ent->getId(), 'write', 'entity');
-            if (!$hasWriteAccess) {
-                show_error('No access', 403);
-            }
-            if ($ent->getLocked()) {
-                show_error(lang('error_lockednoedit'), 403);
-            }
+
+        $hasWriteAccess = $this->zacl->check_acl($ent->getId(), 'write', 'entity');
+        if (!$hasWriteAccess || $ent->getLocked() ) {
+            show_error('Permission denied', 403);
         }
         $myLang = MY_Controller::getLang();
         $entType = strtolower($ent->getType());
@@ -74,23 +69,20 @@ class Joinfed extends MY_Controller
             'name' => $nameInLang,
             'entityid' => $ent->getEntityId(),
             'providerid' => $ent->getId(),
-            'titlepage' =>  '<a href="' . base_url() . 'providers/detail/show/' . $ent->getId() . '">' . $nameInLang . '</a>',
+            'titlepage' => '<a href="' . base_url() . 'providers/detail/show/' . $ent->getId() . '">' . $nameInLang . '</a>',
             'subtitlepage' => lang('fedejoinform')
         );
-        $this->title =  $nameInLang. ':' . lang('joinfederation');
-        if(strcasecmp($entType,'SP')==0)
-        {
-            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
+        $this->title = $nameInLang . ':' . lang('joinfederation');
+        if (strcasecmp($entType, 'SP') == 0) {
+            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
+        } else {
+            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
         }
-        else
-        {
-            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
-        }
-	    $data['breadcrumbs'] = array(
+        $data['breadcrumbs'] = array(
             $plist,
-		    array('url'=>base_url('providers/detail/show/'.$ent->getId().''),'name'=>''.html_escape($nameInLang).''),
-		    array('url'=>'#','name'=>lang('fedejoinform'),'type'=>'current'),
-	    );
+            array('url' => base_url('providers/detail/show/' . $ent->getId() . ''), 'name' => '' . html_escape($nameInLang) . ''),
+            array('url' => '#', 'name' => lang('fedejoinform'), 'type' => 'current'),
+        );
         /**
          * @var $allFederations models\Federation[]
          */
@@ -142,19 +134,19 @@ class Joinfed extends MY_Controller
                     if (!empty($overrideconfig) && is_array($overrideconfig) && array_key_exists('joinfed', $overrideconfig) && !empty($overrideconfig['joinfed'])) {
                         $b = $overrideconfig['joinfed'];
                     } else {
-                        $b = "Hi,".PHP_EOL.
-                            "Just few moments ago Administator of Provider %s (%s)".PHP_EOL.
-                            "sent request to Administrators of Federation: %s".PHP_EOL.
-                            "to access  him as new federation member.".PHP_EOL.
-                            "To accept or reject this request please go to Resource Registry".PHP_EOL.
-                            "%s".PHP_EOL.PHP_EOL.PHP_EOL."======= additional message attached by requestor ===========".
-                            PHP_EOL."%s".PHP_EOL."=============================================================".PHP_EOL;
+                        $b = "Hi," . PHP_EOL .
+                            "Just few moments ago Administator of Provider %s (%s)" . PHP_EOL .
+                            "sent request to Administrators of Federation: %s" . PHP_EOL .
+                            "to access  him as new federation member." . PHP_EOL .
+                            "To accept or reject this request please go to Resource Registry" . PHP_EOL .
+                            "%s" . PHP_EOL . PHP_EOL . PHP_EOL . "======= additional message attached by requestor ===========" .
+                            PHP_EOL . "%s" . PHP_EOL . "=============================================================" . PHP_EOL;
                     }
                     $localizedmail = $this->config->item('localizedmail');
                     if (!empty($localizedmail) && is_array($localizedmail) && array_key_exists('joinfed', $localizedmail) && !empty($localizedmail['joinfed'])) {
                         $c = $localizedmail['joinfed'];
                         $mail_body .= sprintf($c, $providername, $providerentityid, $fedname, $awaitingurl, $message);
-                        $mail_body .= "\r\n\r\n" . sprintf($b, $providername, $providerentityid, $fedname, $awaitingurl, $message);
+                        $mail_body .= PHP_EOL.PHP_EOL . sprintf($b, $providername, $providerentityid, $fedname, $awaitingurl, $message);
                     } else {
                         $mail_body .= sprintf($b, $providername, $providerentityid, $fedname, $awaitingurl, $message);
                     }
@@ -172,9 +164,9 @@ class Joinfed extends MY_Controller
                     $this->email_sender->addToMailQueue(array('joinfedreq', 'gjoinfedreq'), $federation, $mail_sbj, $mail_body, array(), FALSE);
                     try {
                         $this->em->flush();
-                        log_message('info','JAGGER: '.__METHOD__.' '.$this->session->userdata('username').': request to join federation: entityID: '.$ent->getEntityId().', fed: '.$federation->getName());
+                        log_message('info', 'JAGGER: ' . __METHOD__ . ' ' . $this->session->userdata('username') . ': request to join federation: entityID: ' . $ent->getEntityId() . ', fed: ' . $federation->getName());
                     } catch (Exception $e) {
-                        log_message('error','JAGGER: '. $e);
+                        log_message('error', 'JAGGER: ' . $e);
                         show_error('Internal server error', 500);
 
                     }
@@ -196,26 +188,9 @@ class Joinfed extends MY_Controller
                     natcasesort($feds_dropdown);
                 }
                 $feds_dropdown = $n + $feds_dropdown;
-                $this->load->helper('form');
-                $buttons = '<div class="buttons small-9 columns text-right end"><button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_apply') . '</button></div>';
 
-                $form = form_open(current_url(), array('id' => 'joinfed'));
-                $form .= form_fieldset(lang('joinfederation'));
-
-                $form .= '<div class="small-12 columns"><div class="small-3 columns">';
-                $form .= '<label for="fedid" class="right inline">' . lang('rr_selectfedtojoin') . '</label></div>';
-                $addid = 'id="fedid"';
-                $form .= '<div class="small-6 large-7 columns end">' . form_dropdown('fedid', $feds_dropdown, '0', $addid) . '</div>';
-                $form .= '</div><div class="small-12 columns">';
-
-                $form .= '<div class="small-3 columns"><label for="formmessage" class="inline right">' . lang('rr_message') . '</label></div>';
-                $form .= '<div class="small-6 large-7 columns end">' . form_textarea('formmessage', set_value('formmessage')) . '</div>';
-                $form .= '</div>';
-                $form .= form_fieldset_close();
-
-                $form .= $buttons;
-                $form .= form_close();
-                $data['form'] = $form;
+                $data['feds_dropdown'] =  $feds_dropdown;
+                $data['showform'] = true;
                 $data['content_view'] = 'manage/joinfederation_view';
                 $this->load->view('page', $data);
             } else {
