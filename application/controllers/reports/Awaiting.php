@@ -368,7 +368,7 @@ class Awaiting extends MY_Controller
                     'content_view' => 'reports/awaiting_detail_view',
                     'error_message' => $this->error_message
                 );
-                $result['data']['userdata'][]['2cols'] = $buttons;
+                $result['data']['requestdata'][]['2cols'] = $buttons;
             } else {
                 $result['data'] = array(
                     'content_view' => 'nopermission',
