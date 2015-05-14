@@ -51,8 +51,8 @@ class Entityedit extends MY_Controller
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmpError = '';
         $this->type = null;
-        $partschangesdisallowed = $this->config->item('entpartschangesdisallowed');
-        if (!empty($partschangesdisallowed) && is_array($partschangesdisallowed)) {
+        $partsdisallowed = $this->config->item('entpartschangesdisallowed');
+        if (!empty($partsdisallowed) && is_array($partsdisallowed)) {
             $this->disallowedParts = $this->config->item('entpartschangesdisallowed');
         }
         $this->allowedDigestMethods = j_DigestMethods();
@@ -704,6 +704,9 @@ class Entityedit extends MY_Controller
         }
 
 
+        $data = array(
+             'error_messages2' => &$this->tmpError,
+        );
         /**
          * @var $ent models\Provider
          */
@@ -774,14 +777,14 @@ class Entityedit extends MY_Controller
         if (!empty($showsuccess)) {
             $data['success_message'] = lang('updated');
             $data['content_view'] = 'manage/entityedit_success_view';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
+
         }
         /**
          * menutabs array('id'=>xx,'v')
          */
 
-        $data['error_messages2'] = $this->tmpError;
+
         $this->session->set_flashdata('entformerror', '');
 
 
@@ -833,8 +836,13 @@ class Entityedit extends MY_Controller
     public function register($t = null)
     {
         MY_Controller::$menuactive = 'reg';
+
+        $data = array(
+            'registerForm'=>true,
+            'error_messages2'=>&$this->tmpError
+        );
         $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places';
-        $data['registerForm'] = TRUE;
+
         $t = trim($t);
         if (empty($t) || !(strcmp($t, 'idp') == 0 || strcmp($t, 'sp') == 0)) {
             show_error('Not found', 404);
@@ -1149,8 +1157,6 @@ class Entityedit extends MY_Controller
             $data['sessform'] = true;
         }
         $data['titlepage'] .= '  - ' . lang('subtl_advancedmode') . '';
-
-        $data['error_messages2'] = $this->tmpError;
         $this->session->set_flashdata('entformerror', '');
         $this->load->library('providerformelements', array('provider' => $ent, 'session' => $entsession));
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral());
@@ -1166,7 +1172,6 @@ class Entityedit extends MY_Controller
         }
         $data['menutabs'] = $menutabs;
         $data['content_view'] = 'manage/entityedit_view.php';
-
         $this->load->view('page', $data);
     }
 
