@@ -26,15 +26,16 @@ class Metadata extends MY_Controller
 {
 
 
+
     function __construct()
     {
         parent::__construct();
-        $this->output->set_content_type('text/xml');
+        $this->output->set_content_type('application/samlmetadata+xml');
         $keyPrefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
     }
 
-    public function federation($federationName = NULL, $t = NULL)
+    public function federation($federationName = NULL, $limitType = NULL)
     {
         $this->load->library('providertoxml');
         if (empty($federationName))
@@ -44,9 +45,9 @@ class Metadata extends MY_Controller
         $data = array();
         $excludeType = null;
         $name = $federationName;
-        if (!empty($t) && ((strcasecmp($t, 'SP') == 0) || (strcasecmp($t, 'IDP') == 0) ))
+        if (!empty($limitType) && ((strcasecmp($limitType, 'SP') == 0) || (strcasecmp($limitType, 'IDP') == 0) ))
         {
-            if (strcasecmp($t, 'SP') == 0)
+            if (strcasecmp($limitType, 'SP') == 0)
             {
                 $excludeType = 'IDP';
             }
@@ -65,20 +66,12 @@ class Metadata extends MY_Controller
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name, 'is_active'=>true));
 
         if (empty($federation))
         {
-            show_404('page', 'log_error');
-        }
-        $isactive = $federation->getActive();
-        if (empty($isactive))
-        {
-            /**
-             * dont display metadata if federation is inactive
-             */
-            set_status_header(404);
-            echo 'The federation is no active';
+            set_status_header(400);
+            echo 'Federation not found or is inactive';
             return;
         }
         $publisher = $federation->getPublisher();
@@ -105,8 +98,8 @@ class Metadata extends MY_Controller
         if ($includeAttrRequirement)
         {
             $options['attrs'] = 1;
-            $attrfedreq_tmp = new models\AttributeRequirements;
-            $options['fedreqattrs'] = $attrfedreq_tmp->getRequirementsByFed($federation);
+            $tmpAttrRequirements = new models\AttributeRequirements;
+            $options['fedreqattrs'] = $tmpAttrRequirements->getRequirementsByFed($federation);
         }
         $tmpm = new models\Providers;
         /**
@@ -200,7 +193,7 @@ class Metadata extends MY_Controller
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE,'is_active'=>TRUE));
 
         if (empty($federation))
         {
@@ -210,22 +203,13 @@ class Metadata extends MY_Controller
         /**
          * check if federation is active
          */
-        $isactive = $federation->getActive();
-        if (empty($isactive))
-        {
-            /**
-             * dont display metadata if federation is inactive
-             */
-            show_error('federation is not active', 404);
-        }
         $termsofuse = $federation->getTou();
-        $include_attrs = $federation->getAttrsInmeta();
+        $isAttrReqsIncluded = $federation->getAttrsInmeta();
         $options = array('attrs' => 0, 'fedreqattrs' => array());
-        if ($include_attrs)
+        if ($isAttrReqsIncluded)
         {
-            $options['attrs'] = 1;
             $attrfedreq_tmp = new models\AttributeRequirements;
-            $options['fedreqattrs'] = $attrfedreq_tmp->getRequirementsByFed($federation);
+            $options = array('attrs' => 1, 'fedreqattrs' => $attrfedreq_tmp->getRequirementsByFed($federation));
         }
         $tmpm = new models\Providers;
         /**
@@ -295,7 +279,7 @@ class Metadata extends MY_Controller
         $data['out'] = $xmlOut->outputMemory();
         $mem = memory_get_usage();
         $mem = round($mem / 1048576, 2);
-        log_message('info', 'Memory usage: ' . $mem . 'M');
+        log_message('info', __METHOD__.': Memory usage: ' . $mem . 'M');
         $this->load->view('metadata_view', $data);
     }
 
@@ -318,9 +302,9 @@ class Metadata extends MY_Controller
         }
     }
 
-    public function service($entityId = null, $m = null)
+    public function service($entityId = null, $fileName = null)
     {
-        if (empty($entityId) || empty($m) || strcmp($m, 'metadata.xml') != 0)
+        if (empty($entityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0)
         {
             show_error('Page not found', 404);
         }
@@ -391,14 +375,14 @@ class Metadata extends MY_Controller
         return $result;
     }
 
-    public function circle($entityId = NULL, $m = NULL)
+    public function circle($entityId = NULL, $fileName = NULL)
     {
         $isEnabled = $this->isCircleFeatureEnabled();
         if (!$isEnabled)
         {
             show_error('Circle of trust  metadata : Feature is disabled', 404);
         }
-        if (empty($entityId) || empty($m) || strcmp($m, 'metadata.xml') != 0)
+        if (empty($entityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0)
         {
             show_error('Request not allowed', 403);
         }
@@ -411,23 +395,23 @@ class Metadata extends MY_Controller
         $data = array();
         $name = base64url_decode($entityId);
         /**
-         * @var $me models\Provider
+         * @var $provider models\Provider
          */
-        $me = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $name . ''));
-        if (empty($me))
+        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $name . ''));
+        if (empty($provider))
         {
             log_message('debug', 'Failed generating circle metadata for ' . $name);
             show_error('unknown provider', 404);
             return;
         }
-        if (!$this->isProviderAllowedForCircle($me))
+        if (!$this->isProviderAllowedForCircle($provider))
         {
-            log_message('warning', 'Cannot generate circle metadata for external provider:' . $me->getEntityId());
+            log_message('warning', 'Cannot generate circle metadata for external provider:' . $provider->getEntityId());
             log_message('debug', 'To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE');
-            show_error($me->getEntityId() . ': This is not managed localy. Cannot generate circle metadata', 403);
+            show_error($provider->getEntityId() . ': This is not managed localy. Cannot generate circle metadata', 403);
             return;
         }
-        $mtype = $me->getType();
+        $mtype = $provider->getType();
         $excludeType = null;
         if (strcasecmp($mtype, 'BOTH') != 0)
         {
@@ -435,7 +419,7 @@ class Metadata extends MY_Controller
         }
         $options['attrs'] = 1;
         $p = new models\Providers;
-        $tFeds = $p->getTrustedActiveFeds($me);
+        $tFeds = $p->getTrustedActiveFeds($provider);
         $feds = array();
         foreach ($tFeds as $f)
         {
@@ -461,7 +445,7 @@ class Metadata extends MY_Controller
         $xmlOut = $this->providertoxml->createXMLDocument();
         $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
         $xmlOut->writeAttribute('ID', '' . $idprefix . $idsuffix . '');
-        $xmlOut->writeAttribute('Name', '' . $me->getEntityId() . '');
+        $xmlOut->writeAttribute('Name', '' . $provider->getEntityId() . '');
         $xmlOut->writeAttribute('validUntil', '' . $validuntil . '');
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
         $regNamespaces = h_metadataNamespaces();
@@ -520,32 +504,32 @@ class Metadata extends MY_Controller
             show_error('Not found', 404);
             return null;
         }
-        $q = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $tokenid));
-        if (empty($q))
+        $queue = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $tokenid));
+        if (empty($queue))
         {
             show_error('Not found', 404);
             return null;
         }
-        $queueAction = $q->getAction();
-        $queueObjType = $q->getType();
+        $queueAction = $queue->getAction();
+        $queueObjType = $queue->getType();
         if (!(strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0)))
         {
             show_error('Not found', 404);
             return null;
         }
-        $d = $q->getData();
+        $queueData = $queue->getData();
         $this->load->library('providertoxml');
-        if (!isset($d['metadata']))
+        if (!isset($queueData['metadata']))
         {
             $entity = new models\Provider;
-            $entity->importFromArray($d);
+            $entity->importFromArray($queueData);
             $options['attrs'] = 1;
             if (empty($entity))
             {
                 show_error('Not found', 404);
             }
-            $y = $this->providertoxml->entityConvertNewDocument($entity, $options);
-            $data['out'] = $y->outputMemory();
+            $result = $this->providertoxml->entityConvertNewDocument($entity, $options);
+            $data['out'] = $result->outputMemory();
         }
         else
         {
@@ -554,7 +538,7 @@ class Metadata extends MY_Controller
             $metadataDOM = new \DOMDocument();
             $metadataDOM->strictErrorChecking = FALSE;
             $metadataDOM->WarningChecking = FALSE;
-            $metadataDOM->loadXML(base64_decode($d['metadata']));
+            $metadataDOM->loadXML(base64_decode($queueData['metadata']));
             $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
             if (!$isValid)
             {

@@ -1,11 +1,15 @@
 
 <?php
-if(!empty($error_messages) || !empty($error_messages2))
+$validationErrs =  validation_errors('<div>', '</div>');
+
+
+
+if(!empty($validationErrs) || !empty($error_messages2))
 {
    echo '<div class="alert alert-box" alert-data>';
-   if (!empty($error_messages))
+   if (!empty($validationErrs))
    {
-      echo $error_messages;
+      echo $validationErrs;
    }
    if (!empty($error_messages2))
    {
@@ -36,16 +40,16 @@ if(!empty($sessform))
            $active = true;
 
         }
-        foreach ($menutabs as $m)
+        foreach ($menutabs as $validationErrs)
         {
-            if(!$active && $m['id'] === 'organization')
+            if(!$active && $validationErrs['id'] === 'organization')
             {
-                echo '<li class="tab-title active"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
+                echo '<li class="tab-title active"><a href="#' . $validationErrs['id'] . '">' . $validationErrs['value'] . '</a></li>';
                 $active = true;
             }
             else
             {
-                echo '<li class="tab-title"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
+                echo '<li class="tab-title"><a href="#' . $validationErrs['id'] . '">' . $validationErrs['value'] . '</a></li>';
             }
             
         }
@@ -126,26 +130,26 @@ if(!empty($sessform))
         echo '</div>';
 
     }
-    foreach ($menutabs as $m)
+    foreach ($menutabs as $validationErrs)
     {
-        if(!$active && $m['id'] === 'organization')
+        if(!$active && $validationErrs['id'] === 'organization')
         {
-           echo '<div id="' . $m['id'] . '" class="content tabgroup active">';
+           echo '<div id="' . $validationErrs['id'] . '" class="content tabgroup active">';
            $active = true;
         }
         else
         {
-           echo '<div id="' . $m['id'] . '" class="content tabgroup">';
+           echo '<div id="' . $validationErrs['id'] . '" class="content tabgroup">';
 
         }
          
         /**
          * start form elemts
          */
-        if (!empty($m['form']) and is_array($m['form']))
+        if (!empty($validationErrs['form']) and is_array($validationErrs['form']))
         {
             $counter = 0;
-            foreach ($m['form'] as $g)
+            foreach ($validationErrs['form'] as $g)
             {
                 if(empty($g))
                 {

@@ -160,9 +160,9 @@ class Providerdetails
 				}
 
 				$dateTimeNow = new DateTime('now');
-				$dateTimeNowInTimeStamp = $dateTimeNow->format('U');
+				$nowInTimeStamp = $dateTimeNow->format('U');
 
-				if (isset($res['validTo_time_t']) && ($dateTimeNowInTimeStamp > $res['validTo_time_t'])) {
+				if (isset($res['validTo_time_t']) && ($nowInTimeStamp > $res['validTo_time_t'])) {
 
 					$validto = new DateTime();
 					$validto->setTimestamp($res['validTo_time_t']);
