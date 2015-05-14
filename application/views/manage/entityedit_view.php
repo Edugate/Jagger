@@ -40,16 +40,16 @@ if(!empty($sessform))
            $active = true;
 
         }
-        foreach ($menutabs as $validationErrs)
+        foreach ($menutabs as $m)
         {
-            if(!$active && $validationErrs['id'] === 'organization')
+            if(!$active && $m['id'] === 'organization')
             {
-                echo '<li class="tab-title active"><a href="#' . $validationErrs['id'] . '">' . $validationErrs['value'] . '</a></li>';
+                echo '<li class="tab-title active"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
                 $active = true;
             }
             else
             {
-                echo '<li class="tab-title"><a href="#' . $validationErrs['id'] . '">' . $validationErrs['value'] . '</a></li>';
+                echo '<li class="tab-title"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
             }
             
         }
@@ -130,26 +130,26 @@ if(!empty($sessform))
         echo '</div>';
 
     }
-    foreach ($menutabs as $validationErrs)
+    foreach ($menutabs as $m)
     {
-        if(!$active && $validationErrs['id'] === 'organization')
+        if(!$active && $m['id'] === 'organization')
         {
-           echo '<div id="' . $validationErrs['id'] . '" class="content tabgroup active">';
+           echo '<div id="' . $m['id'] . '" class="content tabgroup active">';
            $active = true;
         }
         else
         {
-           echo '<div id="' . $validationErrs['id'] . '" class="content tabgroup">';
+           echo '<div id="' . $m['id'] . '" class="content tabgroup">';
 
         }
          
         /**
          * start form elemts
          */
-        if (!empty($validationErrs['form']) && is_array($validationErrs['form']))
+        if (!empty($m['form']) and is_array($m['form']))
         {
             $counter = 0;
-            foreach ($validationErrs['form'] as $g)
+            foreach ($m['form'] as $g)
             {
                 if(empty($g))
                 {
