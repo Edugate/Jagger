@@ -784,10 +784,6 @@ class Entityedit extends MY_Controller
          * menutabs array('id'=>xx,'v')
          */
 
-
-        $this->session->set_flashdata('entformerror', '');
-
-
         $this->load->library('providerformelements', array('provider' => $ent, 'session' => $entsession));
 
 
@@ -1157,7 +1153,6 @@ class Entityedit extends MY_Controller
             $data['sessform'] = true;
         }
         $data['titlepage'] .= '  - ' . lang('subtl_advancedmode') . '';
-        $this->session->set_flashdata('entformerror', '');
         $this->load->library('providerformelements', array('provider' => $ent, 'session' => $entsession));
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral());
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
