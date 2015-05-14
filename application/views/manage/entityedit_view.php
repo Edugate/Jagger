@@ -146,7 +146,7 @@ if(!empty($sessform))
         /**
          * start form elemts
          */
-        if (!empty($m['form']) and is_array($m['form']))
+        if (!empty($m['form']) && is_array($m['form']))
         {
             $counter = 0;
             foreach ($m['form'] as $g)
