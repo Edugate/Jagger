@@ -558,7 +558,7 @@ class Metadata extends MY_Controller
         if (!$isAjax)
         {
             $limits = $this->config->item('unsignedmeta_iplimits');
-            if (!empty($limits) and is_array($limits) and count($limits) > 0)
+            if (!empty($limits) && is_array($limits) && count($limits) > 0)
             {
                 $remoteip = $this->input->ip_address();
                 if (in_array($remoteip, $limits))

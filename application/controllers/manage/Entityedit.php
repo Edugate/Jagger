@@ -780,7 +780,7 @@ class Entityedit extends MY_Controller
         /**
          * menutabs array('id'=>xx,'v')
          */
-        
+
         $data['error_messages2'] = $this->tmpError;
         $this->session->set_flashdata('entformerror', '');
 

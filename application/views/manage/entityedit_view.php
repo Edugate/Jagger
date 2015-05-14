@@ -146,7 +146,7 @@ if(!empty($sessform))
         /**
          * start form elemts
          */
-        if (!empty($validationErrs['form']) and is_array($validationErrs['form']))
+        if (!empty($validationErrs['form']) && is_array($validationErrs['form']))
         {
             $counter = 0;
             foreach ($validationErrs['form'] as $g)
