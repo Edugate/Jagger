@@ -20,26 +20,23 @@ if (!defined('BASEPATH'))
  */
 class Importer extends MY_Controller
 {
-
-    private $tmp_providers;
-    private $tmp_attributes;
-    private $tmp_arps;
-    protected $other_error = array();
+    protected $otherErrors = array();
+    protected $globalerrors = array();
     private $access;
     protected $xmlbody;
-    protected $curl_maxsize, $curl_timeout;
+    protected $curlMaxsize, $curlTimeout;
     protected $xmlDOM;
 
     function __construct()
     {
         parent::__construct();
-        $this->curl_maxsize = $this->config->item('curl_metadata_maxsize');
-        if (!isset($this->curl_maxsize)) {
-            $this->curl_maxsize = 20000;
+        $this->curlMaxsize = $this->config->item('curl_metadata_maxsize');
+        if (!isset($this->curlMaxsize)) {
+            $this->curlMaxsize = 20000;
         }
-        $this->curl_timeout = $this->config->item('curl_timeout');
-        if (!isset($this->curl_timeout)) {
-            $this->curl_timeout = 60;
+        $this->curlTimeout = $this->config->item('curl_timeout');
+        if (!isset($this->curlTimeout)) {
+            $this->curlTimeout = 60;
         }
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
@@ -49,9 +46,6 @@ class Importer extends MY_Controller
         } else {
             $this->load->helper(array('cert', 'form'));
             $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'xmlvalidator'));
-            $this->tmp_providers = new models\Providers;
-            $this->tmp_attributes = new models\Attributes;
-            $this->tmp_arps = new models\AttributeReleasePolicies;
             $this->load->library('zacl');
             $this->access = $this->zacl->check_acl('importer', 'create', '', '');
         }
@@ -70,7 +64,7 @@ class Importer extends MY_Controller
             $data = array(
                 'titlepage' => lang('titleimportmeta'),
                 'content_view' => 'manage/import_metadata_form',
-                'other_error' => $this->other_error,
+                'other_error' => $this->otherErrors,
                 'global_erros' => $this->globalerrors,
                 'federations' => $this->form_element->getFederation(),
                 'types' => array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities')),
@@ -82,7 +76,7 @@ class Importer extends MY_Controller
     function submit()
     {
         $this->globalerrors = array();
-        $this->other_error = array();
+        $this->otherErrors = array();
         $access = $this->access;
         if (!$access) {
             show_error('no access', 403);
@@ -114,7 +108,7 @@ class Importer extends MY_Controller
                 $mcerturl = $arg['certurl'];
                 $mcert = FALSE;
             } else {
-                $this->other_error[] = lang('certsignerurlbodymissing');
+                $this->otherErrors[] = lang('certsignerurlbodymissing');
                 return $this->index();
             }
         } else {
@@ -141,7 +135,7 @@ class Importer extends MY_Controller
 
         $fed = $tmp->getOneByName($arg['federation']);
         if (empty($fed)) {
-            $this->other_error[] = 'No permission to add entities to selected federation';
+            $this->otherErrors[] = 'No permission to add entities to selected federation';
             return $this->index();
         }
 
@@ -200,7 +194,7 @@ class Importer extends MY_Controller
                 $data['success_details'] = $this->globalnotices['metadataimportmessage'];
             }
             $data['content_view'] = "manage/import_metadata_success_view";
-            $this->load->view('page', $data);
+            return $this->load->view('page', $data);
         } else {
             return $this->index();
         }
@@ -231,7 +225,7 @@ class Importer extends MY_Controller
      */
     private function _metadatasigner_validate($metadataurl, $sslvalidate = FALSE, $signed = FALSE, $certurl = FALSE, $certbody = FALSE)
     {
-        $maxsize = $this->curl_maxsize;
+        $maxsize = $this->curlMaxsize;
         $sslverifyhost = 0;
         if ($sslvalidate) {
             $sslverifyhost = 2;
@@ -239,7 +233,7 @@ class Importer extends MY_Controller
         $curloptions = array(
             CURLOPT_SSL_VERIFYPEER => $sslvalidate,
             CURLOPT_SSL_VERIFYHOST => $sslverifyhost,
-            CURLOPT_TIMEOUT => $this->curl_timeout,
+            CURLOPT_TIMEOUT => $this->curlTimeout,
             CURLOPT_BUFFERSIZE => 128,
             CURLOPT_NOPROGRESS => FALSE,
             CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
@@ -248,7 +242,7 @@ class Importer extends MY_Controller
         );
         $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), $curloptions);
         if (empty($this->xmlbody)) {
-            $this->other_error[] = $this->curl->error_string;
+            $this->otherErrors[] = $this->curl->error_string;
             return FALSE;
         }
         libxml_use_internal_errors(true);
@@ -267,14 +261,14 @@ class Importer extends MY_Controller
             if (validateX509($certbody)) {
                 $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certbody);
             } else {
-                $this->other_error[] = lang('einvalidcertsignerdata');
+                $this->otherErrors[] = lang('einvalidcertsignerdata');
                 return FALSE;
             }
         } elseif (!empty($certurl)) {
                 $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
                     CURLOPT_SSL_VERIFYPEER => $sslvalidate,
                     CURLOPT_SSL_VERIFYHOST => $sslverifyhost,
-                    CURLOPT_TIMEOUT => $this->curl_timeout,
+                    CURLOPT_TIMEOUT => $this->curlTimeout,
                     CURLOPT_BUFFERSIZE => 128,
                     CURLOPT_NOPROGRESS => FALSE,
                     CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
@@ -285,7 +279,7 @@ class Importer extends MY_Controller
             if (!empty($certdata) && validateX509($certdata)) {
                 $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certdata);
             } else {
-                $this->other_error[] = lang('einvalidcertsignerurl');
+                $this->otherErrors[] = lang('einvalidcertsignerurl');
                 return FALSE;
             }
         }
