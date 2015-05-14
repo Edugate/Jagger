@@ -1,11 +1,15 @@
-
 <?php
-if(!empty($error_messages) || !empty($error_messages2))
+
+$validationErrs =  validation_errors('<div>', '</div>');
+
+
+
+if(!empty($validationErrs) || !empty($error_messages2))
 {
    echo '<div class="alert alert-box" alert-data>';
-   if (!empty($error_messages))
+   if (!empty($validationErrs))
    {
-      echo $error_messages;
+      echo $validationErrs;
    }
    if (!empty($error_messages2))
    {
@@ -142,7 +146,7 @@ if(!empty($sessform))
         /**
          * start form elemts
          */
-        if (!empty($m['form']) and is_array($m['form']))
+        if (!empty($m['form']) && is_array($m['form']))
         {
             $counter = 0;
             foreach ($m['form'] as $g)

@@ -107,12 +107,12 @@ class Queue {
     /**
      * @Column(name="is_confirmed",type="boolean")
      */
-    private $is_confirmed;
+    protected $is_confirmed;
 
     /**
      * @Column(name="created_at", type="string", length=255)
      */
-    private $createdAt;
+    protected $createdAt;
 
     public function __construct() {
         $ci =  &get_instance();

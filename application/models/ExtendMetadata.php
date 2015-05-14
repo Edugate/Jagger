@@ -69,7 +69,7 @@ class ExtendMetadata {
     /**
      * @OneToMany(targetEntity="ExtendMetadata", mappedBy="parent",cascade={"persist", "remove"})
      */
-    private $children;
+    protected $children;
 
     /**
      * @Column(name="element",type="string",length=32)

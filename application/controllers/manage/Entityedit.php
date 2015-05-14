@@ -33,31 +33,30 @@ if (!defined('BASEPATH'))
 class Entityedit extends MY_Controller
 {
 
-    protected $current_site;
-    protected $tmp_providers;
-    protected $tmp_error;
+    protected $tmpProviders;
+    protected $tmpError;
     protected $type;
-    protected $disallowedparts = array();
+    protected $disallowedParts = array();
     protected $entityid;
     protected $idpssoscope = array();
     protected $aascope = array();
     protected $allowedDigestMethods;
-    protected $allowedSigningMethods;
+    protected $allowedSignMethods;
 
     public function __construct()
     {
         parent::__construct();
         $this->load->library(array('curl', 'form_element', 'form_validation', 'approval', 'providertoxml'));
-        $this->tmp_providers = new models\Providers;
+        $this->tmpProviders = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
-        $this->tmp_error = '';
+        $this->tmpError = '';
         $this->type = null;
-        $entpartschangesdisallowed = $this->config->item('entpartschangesdisallowed');
-        if (!empty($entpartschangesdisallowed) && is_array($entpartschangesdisallowed)) {
-            $this->disallowedparts = $this->config->item('entpartschangesdisallowed');
+        $partsdisallowed = $this->config->item('entpartschangesdisallowed');
+        if (!empty($partsdisallowed) && is_array($partsdisallowed)) {
+            $this->disallowedParts = $this->config->item('entpartschangesdisallowed');
         }
         $this->allowedDigestMethods = j_DigestMethods();
-        $this->allowedSigningMethods = j_SignatureAlgorithms();
+        $this->allowedSignMethods = j_SignatureAlgorithms();
     }
 
     private function externalValidation($metaid, models\FederationValidator $fedValidator)
@@ -90,7 +89,7 @@ class Entityedit extends MY_Controller
         $data = $this->curl->execute();
         if (empty($data)) {
             log_message('warning', __METHOD__ . 'External validator : returned empty result: ' . $this->curl->error_string);
-            $this->tmp_error .= 'Federation validator : returned empty response, please tray again or contact support';
+            $this->tmpError .= 'Federation validator : returned empty response, please tray again or contact support';
             return false;
         }
         log_message('debug', __METHOD__ . 'External validator : data received from validator: ' . $data);
@@ -103,7 +102,7 @@ class Entityedit extends MY_Controller
             $sxe = simplexml_load_string($data);
             if (!$sxe) {
                 log_message('warning', __METHOD__ . ' Received invalid xml document from external validator');
-                $this->tmp_error .= 'Received invalid response from  External validator, please tray again or contact support';
+                $this->tmpError .= 'Received invalid response from  External validator, please tray again or contact support';
                 return false;
             }
             /**
@@ -125,8 +124,8 @@ class Entityedit extends MY_Controller
             }
             $codeDomeValue = null;
             if (empty($codeDoms->length)) {
-                log_message('warning', __METHOD__.' External validator: expected return code element not received from externalvalidaor');
-                $this->tmp_error .= 'Received invalid response from  External validator, please tray again or contact support';
+                log_message('warning', __METHOD__ . ' External validator: expected return code element not received from externalvalidaor');
+                $this->tmpError .= 'Received invalid response from  External validator, please tray again or contact support';
                 return false;
             }
             $codeDomeValue = trim($codeDoms->item(0)->nodeValue);
@@ -134,7 +133,7 @@ class Entityedit extends MY_Controller
                 log_message('debug', __METHOD__ . ' found expected element with value ' . $codeDomeValue);
             } else {
                 log_message('warning', __METHOD__ . ' found expected element but with no value');
-                $this->tmp_error .= 'Received invalid response from  External validator, please tray again or contact support';
+                $this->tmpError .= 'Received invalid response from  External validator, please tray again or contact support';
                 return false;
             }
             $expectedReturnValues = $fedValidator->getReturnCodeValues();
@@ -167,7 +166,7 @@ class Entityedit extends MY_Controller
                         $g = trim($o->item($i)->nodeValue);
                         log_message('debug', __METHOD__ . ' value for ' . $v . ' element: ' . $g);
                         if (!empty($g)) {
-                            $result['message'][$v][] = htmlspecialchars($g);
+                            $result['message'][$v][] = html_escape($g);
                         }
                     }
                 }
@@ -177,20 +176,20 @@ class Entityedit extends MY_Controller
             }
 
         }
-        $this->tmp_error .= 'Validator reponse: ' . $result['returncode'] . '<br />';
+        $this->tmpError .= 'Validator reponse: ' . $result['returncode'] . '<br />';
 
 
         if (isset($result['message']) && is_array($result['message'])) {
             foreach ($result['message'] as $ke => $ee) {
-                $this->tmp_error .= html_escape($ke) . ':';
+                $this->tmpError .= html_escape($ke) . ':';
                 if (is_array($ee)) {
                     foreach ($ee as $pe) {
-                        $this->tmp_error .= html_escape($pe) . ';';
+                        $this->tmpError .= html_escape($pe) . ';';
                     }
                 } else {
-                    $this->tmp_error .= html_escape($ee);
+                    $this->tmpError .= html_escape($ee);
                 }
-                $this->tmp_error .= '<br />';
+                $this->tmpError .= '<br />';
 
             }
         }
@@ -222,13 +221,13 @@ class Entityedit extends MY_Controller
                 $staticisdefault = TRUE;
             }
             if (!$register) {
-                if (in_array('entityid', $this->disallowedparts)) {
+                if (in_array('entityid', $this->disallowedParts)) {
                     $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|valid_urnorurl|min_length[4]|max_length[255]|matches_value[' . $this->entityid . ']');
                 } else {
                     $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|valid_urnorurl|min_length[4]|max_length[255]|entityid_unique_update[' . $id . ']');
                 }
-                if (in_array('scope', $this->disallowedparts)) {
-                    $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope') . ' (IDPSSOdescriptor)', 'trim|valid_scopes|strtolower|max_length[2500]|str_matches_array[' . serialize($this->idpssoscope) . ']');
+                if (in_array('scope', $this->disallowedParts)) {
+                    $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope') . ' (IDPSSODescriptor)', 'trim|valid_scopes|strtolower|max_length[2500]|str_matches_array[' . serialize($this->idpssoscope) . ']');
                     $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope') . ' (AuttributeAuthorityDescriptor)', 'trim|strtolower|valid_scopes|max_length[2500]|str_matches_array[' . serialize($this->aascope) . ']');
                 } else {
                     $this->form_validation->set_rules('f[scopes][idpsso]', lang('rr_scope'), 'trim|strtolower|valid_scopes|max_length[2500]');
@@ -252,18 +251,18 @@ class Entityedit extends MY_Controller
             $this->form_validation->set_rules('f[registrationtime]', lang('rr_regtime'), 'trim|valid_time_hhmm');
             $this->form_validation->set_rules('f[privacyurl]', lang('rr_defaultprivacyurl'), 'trim|valid_url');
             $this->form_validation->set_rules('f[algs][digest][]', 'DigestMethod', 'trim|in_list[' . implode(",", $this->allowedDigestMethods) . ']');
-            $this->form_validation->set_rules('f[algs][signing][]', 'SigningMethod', 'trim|in_list[' . implode(",", $this->allowedSigningMethods) . ']');
+            $this->form_validation->set_rules('f[algs][signing][]', 'SigningMethod', 'trim|in_list[' . implode(",", $this->allowedSignMethods) . ']');
 
             if (array_key_exists('lname', $y['f'])) {
                 foreach ($y['f']['lname'] as $k => $v) {
                     $this->form_validation->set_rules('f[lname][' . $k . ']', ucfirst(lang('e_orgname')) . ' ' . $k, 'strip_tags|trim');
                 }
                 if (count(array_filter($y['f']['lname'])) == 0) {
-                    $this->tmp_error = lang('errnoorgnames');
+                    $this->tmpError = lang('errnoorgnames');
                     $optValidationsPassed = FALSE;
                 }
             } else {
-                $this->tmp_error = lang('errnoorgnames');
+                $this->tmpError = lang('errnoorgnames');
                 $optValidationsPassed = FALSE;
             }
             if (array_key_exists('ldisplayname', $y['f'])) {
@@ -271,11 +270,11 @@ class Entityedit extends MY_Controller
                     $this->form_validation->set_rules('f[ldisplayname][' . $k . ']', ucfirst(lang('e_orgdisplayname')) . ' ' . $k, 'strip_tags|trim');
                 }
                 if (count(array_filter($y['f']['ldisplayname'])) == 0) {
-                    $this->tmp_error = lang('errnoorgdisnames');
+                    $this->tmpError = lang('errnoorgdisnames');
                     $optValidationsPassed = FALSE;
                 }
             } else {
-                $this->tmp_error = lang('errnoorgdisnames');
+                $this->tmpError = lang('errnoorgdisnames');
                 $optValidationsPassed = FALSE;
             }
 
@@ -284,7 +283,7 @@ class Entityedit extends MY_Controller
                     /**
                      * @todo GEO validation
                      */
-                    $this->form_validation->set_rules('f[uii][idpsso][geo][' . $k . ']', lang('rr_geo').' ', 'strip_tags|trim|min_length[3]|max_length[40]|valid_latlng');
+                    $this->form_validation->set_rules('f[uii][idpsso][geo][' . $k . ']', lang('rr_geo') . ' ', 'strip_tags|trim|min_length[3]|max_length[40]|valid_latlng');
                 }
             }
 
@@ -320,16 +319,14 @@ class Entityedit extends MY_Controller
                     $this->form_validation->set_rules('f[lhelpdesk][' . $k . ']', lang('e_orgurl') . ' ', 'strip_tags|trim|valid_url');
                 }
                 $y['f']['lhelpdesk'] = array_filter($y['f']['lhelpdesk']);
-                if(count($y['f']['lhelpdesk']) == 0)
-                {
-                    $this->tmp_error = lang('errnoorgurls');
+                if (count($y['f']['lhelpdesk']) == 0) {
+                    $this->tmpError = lang('errnoorgurls');
                     $optValidationsPassed = FALSE;
                 }
             } else {
-                $this->tmp_error = lang('errnoorgurls');
+                $this->tmpError = lang('errnoorgurls');
                 $optValidationsPassed = FALSE;
             }
-
 
 
             if (array_key_exists('contact', $y['f'])) {
@@ -353,21 +350,21 @@ class Entityedit extends MY_Controller
             $allowedEnryptionMethods = j_KeyEncryptionAlgorithms();
             $allowedEnryptionMethodsInList = implode(",", $allowedEnryptionMethods);
             $certGroups = array(
-                'spsso'=>'SPSSODescriptor',
-                'idpsso'=>'IDPSSODescriptor',
-                'aa'=>'AttributeAuthorityDescriptor'
+                'spsso' => 'SPSSODescriptor',
+                'idpsso' => 'IDPSSODescriptor',
+                'aa' => 'AttributeAuthorityDescriptor'
             );
             if (array_key_exists('crt', $y['f'])) {
                 foreach ($certGroups as $key => $val) {
                     if (array_key_exists($key, $y['f']['crt'])) {
-                        foreach ($y['f']['crt'][''.$key.''] as $k => $v) {
+                        foreach ($y['f']['crt']['' . $key . ''] as $k => $v) {
                             if (ctype_digit($k)) {
-                                $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][certdata]', $val.'/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
+                                $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][certdata]', $val . '/Certificate body', 'trim|required|getPEM|verify_cert_nokeysize');
                             } else {
-                                $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][certdata]', $val.'/Certificate body', 'trim|required|getPEM|verify_cert');
+                                $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][certdata]', $val . '/Certificate body', 'trim|required|getPEM|verify_cert');
                             }
-                            $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
-                            $this->form_validation->set_rules('f[crt]['.$key.'][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
+                            $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
+                            $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
 
 
                         }
@@ -386,9 +383,8 @@ class Entityedit extends MY_Controller
                 if (array_key_exists('IDPAttributeService', $y['f']['srv'])) {
                     foreach ($y['f']['srv']['IDPAttributeService'] as $k => $v) {
                         $this->form_validation->set_rules('f[srv][IDPAttributeService][' . $k . '][url]', 'AttributeAuthorityDescriptor/AttributeService: ' . html_escape($y['f']['srv']['IDPAttributeService']['' . $k . '']['bind']), 'strip_tags|trim|max_length[254]|valid_url');
-                        if(!empty($y['f']['srv']['IDPAttributeService'][''.$k.'']['url']))
-                        {
-                           ++$aaSrvsLocations;
+                        if (!empty($y['f']['srv']['IDPAttributeService']['' . $k . '']['url'])) {
+                            ++$aaSrvsLocations;
                         }
                     }
 
@@ -429,7 +425,7 @@ class Entityedit extends MY_Controller
                     foreach ($y['f']['srv']['AssertionConsumerService'] as $k => $v) {
                         $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][url]', 'AssertionConsumerService URL', 'strip_tags|trim|max_length[254]|valid_url');
                         $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][bind]', 'AssertionConsumerService Binding protocol', 'trim|htmlspecialchars');
-                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][order]', 'AssertionConsumerService index', 'trim|htmlspecialchars');
+                        $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][order]', 'AssertionConsumerService index', 'trim|required|numeric');
 
                         $tmpurl = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['url']);
                         $tmporder = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['order']);
@@ -438,10 +434,6 @@ class Entityedit extends MY_Controller
                                 $acsindexes[] = $v['order'];
                             }
                             $acsurls[] = 1;
-                            if (!empty($tmporder) && !ctype_digit($tmporder)) {
-                                $this->tmp_error = 'One of the index order in ACS is not numeric';
-                                $optValidationsPassed = FALSE;
-                            }
                             if (array_key_exists('default', $y['f']['srv']['AssertionConsumerService']['' . $k . ''])) {
                                 $acsdefault[] = 1;
                             }
@@ -450,17 +442,17 @@ class Entityedit extends MY_Controller
                     if ($this->type != 'IDP') {
                         if (count($acsindexes) != count(array_unique($acsindexes))) {
 
-                            $this->tmp_error = 'Not unique indexes found for ACS';
+                            $this->tmpError = 'Not unique indexes found for ACS';
                             $optValidationsPassed = FALSE;
                         }
                         if (count($acsurls) < 1 && empty($staticisdefault)) {
 
-                            $this->tmp_error = lang('rr_acsurlatleastone');
+                            $this->tmpError = lang('rr_acsurlatleastone');
                             $optValidationsPassed = FALSE;
                         }
                         if (count($acsdefault) > 1) {
 
-                            $this->tmp_error = lang('rr_acsurlonlyonedefault');
+                            $this->tmpError = lang('rr_acsurlonlyonedefault');
                             $optValidationsPassed = FALSE;
                         }
                     }
@@ -481,7 +473,7 @@ class Entityedit extends MY_Controller
                                 $spartindexes[] = $v['order'];
                             }
                             if (!empty($tmporder) && !ctype_digit($tmporder)) {
-                                $this->tmp_error = 'One of the index order in SP ArtifactResolutionService is not numeric';
+                                $this->tmpError = 'One of the index order in SP ArtifactResolutionService is not numeric';
                                 $optValidationsPassed = FALSE;
                             }
                         }
@@ -489,7 +481,7 @@ class Entityedit extends MY_Controller
                     if (strcasecmp($this->type, 'IDP') != 0) {
                         if (count($spartindexes) != count(array_unique($spartindexes))) {
 
-                            $this->tmp_error = 'Not unique indexes found for SP ArtifactResolutionService';
+                            $this->tmpError = 'Not unique indexes found for SP ArtifactResolutionService';
                             $optValidationsPassed = FALSE;
                         }
                     }
@@ -507,7 +499,7 @@ class Entityedit extends MY_Controller
                                 $idpartindexes[] = $v['order'];
                             }
                             if (!empty($tmporder) && !ctype_digit($tmporder)) {
-                                $this->tmp_error = 'One of the index order in IDP ArtifactResolutionService is not numeric';
+                                $this->tmpError = 'One of the index order in IDP ArtifactResolutionService is not numeric';
                                 $optValidationsPassed = FALSE;
                             }
                         }
@@ -515,7 +507,7 @@ class Entityedit extends MY_Controller
                     if ($this->type != 'SP') {
                         if (count($idpartindexes) != count(array_unique($idpartindexes))) {
 
-                            $this->tmp_error = 'Not unique indexes found for IDP ArtifactResolutionService';
+                            $this->tmpError = 'Not unique indexes found for IDP ArtifactResolutionService';
                             $optValidationsPassed = FALSE;
                         }
                     }
@@ -535,14 +527,14 @@ class Entityedit extends MY_Controller
                                 $drindexes[] = $v['order'];
                             }
                             if (!empty($tmporder) && !ctype_digit($tmporder)) {
-                                $this->tmp_error = 'One of the index order in DiscoveryResponse is not numeric';
+                                $this->tmpError = 'One of the index order in DiscoveryResponse is not numeric';
                                 $optValidationsPassed = FALSE;
                             }
                         }
                     }
                     if (strcasecmp($this->type, 'IDP') != 0) {
                         if (count($drindexes) != count(array_unique($drindexes))) {
-                            $this->tmp_error = 'Not unique indexes found for DiscoveryResponse';
+                            $this->tmpError = 'Not unique indexes found for DiscoveryResponse';
                             $optValidationsPassed = FALSE;
                         }
                     }
@@ -557,19 +549,19 @@ class Entityedit extends MY_Controller
             if (strcasecmp($this->type, 'SP') != 0) {
 
                 if (empty($idpssoSrvsLocations) && empty($aaSrvsLocations) && !$staticisdefault) {
-                    $this->tmp_error = lang('errmissssoaasrvs');
+                    $this->tmpError = lang('errmissssoaasrvs');
                     return false;
                 }
                 if (!empty($nossobindings) && is_array($nossobindings) && count($nossobindings) > 0 && count(array_unique($nossobindings)) < count($nossobindings)) {
-                    $this->tmp_error = 'duplicate binding protocols for SSO found in sent form';
+                    $this->tmpError = 'duplicate binding protocols for SSO found in sent form';
                     $optValidationsPassed = FALSE;
                 }
                 if (!empty($noidpslo) && is_array($noidpslo) && count($noidpslo) > 0 && count(array_unique($noidpslo)) < count($noidpslo)) {
-                    $this->tmp_error = 'duplicate binding protocols for IDP SLO found in sent form';
+                    $this->tmpError = 'duplicate binding protocols for IDP SLO found in sent form';
                     $optValidationsPassed = FALSE;
                 }
                 if (!empty($nospslo) && is_array($nospslo) && count($nospslo) > 0 && count(array_unique($nospslo)) < count($nospslo)) {
-                    $this->tmp_error = 'duplicate binding protocols for SP SLO found in sent form';
+                    $this->tmpError = 'duplicate binding protocols for SP SLO found in sent form';
                     $optValidationsPassed = FALSE;
                 }
             }
@@ -700,25 +692,25 @@ class Entityedit extends MY_Controller
 
     public function show($id)
     {
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
         try {
             $this->load->library('zacl');
-        }
-        catch(Exception $e)
-        {
-            log_message('error',__METHOD__.' '.$e);
-            show_error('Internal server error',500);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+            show_error('Internal server error', 500);
             return;
         }
 
 
+        $data = array(
+             'error_messages2' => &$this->tmpError,
+        );
         /**
          * @var $ent models\Provider
          */
-        $ent = $this->tmp_providers->getOneById($id);
+        $ent = $this->tmpProviders->getOneById($id);
         if (empty($ent)) {
             show_error('Provider not found', '404');
         }
@@ -740,7 +732,7 @@ class Entityedit extends MY_Controller
 
         if ($this->input->post('discard')) {
             $this->discardDraft($id);
-            redirect(base_url('providers/detail/show/'.$id.''), 'location');
+            redirect(base_url('providers/detail/show/' . $id . ''), 'location');
         } elseif ($this->submitValidate($id) === TRUE) {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
@@ -785,16 +777,12 @@ class Entityedit extends MY_Controller
         if (!empty($showsuccess)) {
             $data['success_message'] = lang('updated');
             $data['content_view'] = 'manage/entityedit_success_view';
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
+
         }
         /**
          * menutabs array('id'=>xx,'v')
          */
-        $data['error_messages'] = validation_errors('<p>', '</p>');
-        $data['error_messages2'] = $this->tmp_error;
-        $this->session->set_flashdata('entformerror', '');
-
 
         $this->load->library('providerformelements', array('provider' => $ent, 'session' => $entsession));
 
@@ -844,12 +832,16 @@ class Entityedit extends MY_Controller
     public function register($t = null)
     {
         MY_Controller::$menuactive = 'reg';
+
+        $data = array(
+            'registerForm'=>true,
+            'error_messages2'=>&$this->tmpError
+        );
         $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places';
-        $data['registerForm'] = TRUE;
+
         $t = trim($t);
         if (empty($t) || !(strcmp($t, 'idp') == 0 || strcmp($t, 'sp') == 0)) {
             show_error('Not found', 404);
-            return;
         }
         $ent = new models\Provider;
         $ent->setLocal(TRUE);
@@ -871,14 +863,11 @@ class Entityedit extends MY_Controller
         /**
          * @var $u models\User
          */
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            $data['anonymous'] = TRUE;
-        } else {
+        $data['anonymous'] = TRUE;
+        if ($this->j_auth->logged_in()) {
             $data['anonymous'] = FALSE;
             $currentusername = $this->j_auth->current_user();
             $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $currentusername . ''));
-
             $data['loggeduser'] = array(
                 'username' => '' . $currentusername . '',
                 'fullname' => '' . $u->getFullname() . '',
@@ -924,7 +913,7 @@ class Entityedit extends MY_Controller
                 $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
                 if (!$isValid) {
                     log_message('warning', __METHOD__ . ' invalid metadata had been pasted in registration form');
-                    $this->tmp_error = lang('err_pastedtxtnotvalidmeta');
+                    $this->tmpError = lang('err_pastedtxtnotvalidmeta');
                 } else {
                     $this->discardDraft($t);
                     $this->load->library('metadata2array');
@@ -940,8 +929,8 @@ class Entityedit extends MY_Controller
                      */
                     $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
                     if (count($domlist) == 1) {
-                        foreach ($domlist as $l) {
-                            $entarray = $this->metadata2array->entityDOMToArray($l, TRUE);
+                        foreach ($domlist as $domelement) {
+                            $entarray = $this->metadata2array->entityDOMToArray($domelement, TRUE);
                         }
                         $o = current($entarray);
                         if (isset($o['type']) && strcasecmp($o['type'], $t) == 0) {
@@ -979,7 +968,7 @@ class Entityedit extends MY_Controller
                                 }
                             }
                         } else {
-                            $this->tmp_error = lang('regcantimporttype');
+                            $this->tmpError = lang('regcantimporttype');
                         }
                     }
                 }
@@ -994,7 +983,7 @@ class Entityedit extends MY_Controller
                 \log_message('debug', __METHOD__ . 'submittype=modify');
                 $this->load->library('providerupdater');
                 $c = $this->getFromDraft($t);
-                if (!empty($c) && is_array($c)) {
+                if (is_array($c)) {
 
                     \log_message('debug', __METHOD__ . ' GKS data from draft: ' . serialize($c));
                     $ent = $this->providerupdater->updateProvider($ent, $c);
@@ -1164,9 +1153,6 @@ class Entityedit extends MY_Controller
             $data['sessform'] = true;
         }
         $data['titlepage'] .= '  - ' . lang('subtl_advancedmode') . '';
-        $data['error_messages'] = validation_errors('<div>', '</div>');
-        $data['error_messages2'] = $this->tmp_error;
-        $this->session->set_flashdata('entformerror', '');
         $this->load->library('providerformelements', array('provider' => $ent, 'session' => $entsession));
         $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral());
         $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
@@ -1181,7 +1167,6 @@ class Entityedit extends MY_Controller
         }
         $data['menutabs'] = $menutabs;
         $data['content_view'] = 'manage/entityedit_view.php';
-
         $this->load->view('page', $data);
     }
 

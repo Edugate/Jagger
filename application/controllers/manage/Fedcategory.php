@@ -159,7 +159,7 @@ class Fedcategory extends MY_Controller {
                 $this->em->flush();
                 $data['success_message'] = 'Federation category has been removed';
                 $data['content_view'] = 'manage/fedcatremoved_view';
-                $this->load->view('page',$data);
+                return $this->load->view('page',$data);
             }
         }
 

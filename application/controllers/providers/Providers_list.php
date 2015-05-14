@@ -70,7 +70,7 @@ class Providers_list extends MY_Controller {
     }
 
     /**
-     * get list provider via ajax
+     * @param $type
      */
     function show($type)
     {
@@ -87,8 +87,8 @@ class Providers_list extends MY_Controller {
             echo 'Incorrect type of entities provided';
             return;
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
+
+        if (!$this->j_auth->logged_in())
         {
             set_status_header(403);
             echo 'Not authenticated - access denied';
@@ -106,8 +106,8 @@ class Providers_list extends MY_Controller {
 
         $action = 'read';
         $group = 'default';
-        $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
-        if (!$has_read_access)
+        $hasReadAccess = $this->zacl->check_acl($resource, $action, $group, '');
+        if (!$hasReadAccess)
         {
             set_status_header(403);
             echo 'no permission';
@@ -119,18 +119,6 @@ class Providers_list extends MY_Controller {
         echo json_encode($result);
     }
 
-    private function getMembers($fed,$type=null)
-    {
-        $federation = $this->em->getRepository("models\Federatin")->findOneBy(array('sysname'=>''.$fed.''));
-        if(!empty($federation))
-        {
-            return null;
-        }
-        $this->load->library('j_ncache');
-        
-        $members = $federation->getMembers();
-        
-    }
     private function getList($type, $fresh = null)
     {
         $lang = MY_Controller::getLang();
@@ -171,11 +159,15 @@ class Providers_list extends MY_Controller {
             log_message('debug', 'list of ' . $type . '(s) for lang (' . $lang . ') not found in cache ... retriving from db');
             $tmpprovs = new models\Providers();
             $typeToUpper = strtoupper($type);
+            /**
+             * @var $list models\Provider[]
+             */
             $list = $tmpprovs->getProvidersListPartialInfo($typeToUpper);
-            $i = 0;
+            $counter = 0;
+            $data = array();
             foreach ($list as $v)
             {
-                $data['"' . $i++ . '"'] = array(
+                $data['"' . $counter++ . '"'] = array(
                     'pid' => $v->getId(),
                     'plocked' => (int) $v->getLocked(),
                     'pactive' => (int) $v->getActive(),
