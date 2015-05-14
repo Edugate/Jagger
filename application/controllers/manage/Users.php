@@ -354,38 +354,6 @@ class Users extends MY_Controller
         }
     }
 
-    public function bookmarkedit($encoded_username, $type = null)
-    {
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            redirect('auth/login', 'location');
-        }
-        if (empty($type)) {
-            show_error(lang('error404'), 404);
-        }
-        $allowedtypes = array('idp', 'sp', 'fed');
-        if (!in_array($type, $allowedtypes)) {
-            show_error('' . lang('rerror_incorrectenttype') . '', 404);
-        }
-        $username = base64url_decode($encoded_username);
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        if (empty($user)) {
-            show_error('User not found', 404);
-        }
-        $this->load->library('zacl');
-        $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
-        if (!$write_access) {
-            $data['error'] = lang('error403');
-            $data['content_view'] = 'nopermission';
-            return $this->load->view('page', $data);
-        }
-        $userpref = $user->getUserpref();
-        if (isset($userpref['board'])) {
-        }
-        $data['content_view'] = 'manage/userbookmarkedit_view';
-        $this->load->view('page', $data);
-    }
-
     public function show($encodedUsername)
     {
         if (!$this->j_auth->logged_in()) {
