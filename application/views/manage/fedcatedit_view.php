@@ -51,12 +51,16 @@ foreach($multi as $m)
     'checked'     => $c,
     'class'       => 'inline right',
     );
-   echo '<div class="small-12 columns"><div class="small-3 columns">'.form_checkbox($data).'</div><div class="small-6 large-7 columns end">'.$m['fedname'].'</div></div>';
+   echo '<div class="small-12 columns"><div class="small-1 medium-2 large-3 columns">'.form_checkbox($data).'</div><div class="small-9 medium-10 large-6 columns end">'.$m['fedname'].'</div></div>';
 
 }
 
 echo '</fieldset>';
-echo '<div class="buttons"><button type="submit" id="rmfedcategory" name="formsubmit" value="remove" class="resetbutton deleteicon alert">'.lang('rr_remove').'</button> <button type="submit" name="formsubmit" value="update" class="savebutton saveicon">'.lang('rr_save').'</button></div>';
+$btns = array(
+    '<button type="submit" id="rmfedcategory" name="formsubmit" value="remove" class="resetbutton deleteicon alert">'.lang('rr_remove').'</button>',
+    '<button type="submit" name="formsubmit" value="update" class="savebutton saveicon">'.lang('rr_save').'</button>'
+);
+echo revealBtnsRow($btns);
 echo form_close();
 
 echo confirmDialog(''.lang('title_confirm').'', ''.sprintf(lang('douwanttoremove'),lang('fedcategory')).'', ''.lang('rr_yes').'', ''.lang('rr_no').'');
