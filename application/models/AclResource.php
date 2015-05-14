@@ -61,7 +61,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
      /**
       * @OneToMany(targetEntity="AclResource", mappedBy="parent", cascade={"remove"})
       */
-     private $children;
+     protected $children;
 
 
 

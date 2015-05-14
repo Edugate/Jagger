@@ -77,12 +77,12 @@ class Tracker {
     /**
      * @Column(name="created_at", type="datetime")
      */
-    private $createdAt;
+    protected $createdAt;
 
     /**
      * @Column(name="detail",type="text",nullable=true)
      */
-    private $detail;
+    protected $detail;
 
 
     public function setResourceType($type = null)

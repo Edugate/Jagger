@@ -66,7 +66,7 @@ class AclRole {
      /**
       * @OneToMany(targetEntity="AclRole", mappedBy="parent")
       */
-     private $children;
+     protected $children;
 
     /**
      * @ManyToMany(targetEntity="User", mappedBy="roles", indexBy="username")
