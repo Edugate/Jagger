@@ -683,6 +683,10 @@ class Entityedit extends MY_Controller
 
     public function show($id)
     {
+        if(!ctype_digit($id))
+        {
+            show_404();
+        }
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }

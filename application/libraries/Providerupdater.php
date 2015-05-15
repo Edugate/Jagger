@@ -1000,6 +1000,31 @@ class Providerupdater
                             }
                             unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
                         }
+                    } elseif($origServiceType === 'SPSingleLogoutService'){
+                        if($type ==='IDP')
+                        {
+                            $ent->removeServiceLocation($v);
+                            unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
+                        }else{
+                             if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . '']) && !empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url'])) {
+                                 if(!empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'],$spslobinds))
+                                 {
+                                     $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
+                                     $this->em->persist($v);
+                                     $spslobinds[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'];
+                                 }
+                                 else
+                                 {
+                                     $ent->removeServiceLocation($v);
+                                      $this->em->remove($v);
+                                 }
+
+                            } else {
+                                $ent->removeServiceLocation($v);
+                                $this->em->remove($v);
+                            }
+                            unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
+                        }
                     }
                 }
             }
@@ -1076,7 +1101,7 @@ class Providerupdater
                                 $this->em->persist($newservice);
                                 $spslobinds[] = $v1['bind'];
                             } else {
-                                log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity' . $ent->getEntityId());
+                                log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity ' . $ent->getEntityId()).' - removing';
                             }
                         }
                     }
