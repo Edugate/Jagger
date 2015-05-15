@@ -347,6 +347,10 @@ class Metadata2array
                 'desc' => array()
             ),
         );
+        $bindProts = array(
+            'singlelogout'=>array(),
+        );
+
         foreach ($node->childNodes as $child) {
             if ($child->nodeName === 'md:Extensions' || $child->nodeName === 'Extensions') {
                 $result['extensions'] = $this->extensionsToArray($child);
@@ -367,10 +371,14 @@ class Metadata2array
                     'isdefault' => $child->getAttribute('isDefault')
                 );
             } elseif ($child->nodeName === 'md:SingleLogoutService' || $child->nodeName === 'SingleLogoutService') {
-                $result['servicelocations']['singlelogout'][] = array(
-                    'binding' => $child->getAttribute('Binding'),
-                    'location' => $child->getAttribute('Location')
-                );
+                $bindProto = trim($child->getAttribute('Binding'));
+                if(!in_array($bindProto,$bindProts['singlelogout'])) {
+                    $result['servicelocations']['singlelogout'][] = array(
+                        'binding' => $bindProto,
+                        'location' => trim($child->getAttribute('Location'))
+                    );
+                    $bindProts['singlelogout'][]=$bindProto;
+                }
             } elseif ($child->nodeName === 'md:ManageNameIDService' || $child->nodeName === 'ManageNameIDService') {
                 $result['servicelocations']['managenameidservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
