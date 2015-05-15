@@ -1,25 +1,16 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
+
 /**
  * ResourceRegistry3
  *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
+ * @package   RR3
+ * @copyright Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  * Entityedit Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
-
-/**
+ * @author   Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  * @property Curl $curl
  * @property ProviderUpdater $providerupdater
  * @property Form_element $form_element
@@ -205,10 +196,10 @@ class Entityedit extends MY_Controller
             $register = true;
             $this->type = strtoupper($id);
         }
-        $optValidationsPassed = TRUE;
+        $optValidationsPassed = true;
         $result = false;
         $y = $this->input->post();
-        $staticisdefault = FALSE;
+        $staticisdefault = false;
         if (isset($y['f'])) {
             $loggedin = $this->j_auth->logged_in();
 
@@ -218,7 +209,7 @@ class Entityedit extends MY_Controller
 
             // required if not static is set
             if (isset($y['f']['usestatic']) && $y['f']['usestatic'] === 'accept') {
-                $staticisdefault = TRUE;
+                $staticisdefault = true;
             }
             if (!$register) {
                 if (in_array('entityid', $this->disallowedParts)) {
@@ -259,11 +250,11 @@ class Entityedit extends MY_Controller
                 }
                 if (count(array_filter($y['f']['lname'])) == 0) {
                     $this->tmpError = lang('errnoorgnames');
-                    $optValidationsPassed = FALSE;
+                    $optValidationsPassed = false;
                 }
             } else {
                 $this->tmpError = lang('errnoorgnames');
-                $optValidationsPassed = FALSE;
+                $optValidationsPassed = false;
             }
             if (array_key_exists('ldisplayname', $y['f'])) {
                 foreach ($y['f']['ldisplayname'] as $k => $v) {
@@ -271,11 +262,11 @@ class Entityedit extends MY_Controller
                 }
                 if (count(array_filter($y['f']['ldisplayname'])) == 0) {
                     $this->tmpError = lang('errnoorgdisnames');
-                    $optValidationsPassed = FALSE;
+                    $optValidationsPassed = false;
                 }
             } else {
                 $this->tmpError = lang('errnoorgdisnames');
-                $optValidationsPassed = FALSE;
+                $optValidationsPassed = false;
             }
 
             if (isset($y['f']['uii']['idpsso']['geo']) && is_array($y['f']['uii']['idpsso']['geo'])) {
@@ -321,11 +312,11 @@ class Entityedit extends MY_Controller
                 $y['f']['lhelpdesk'] = array_filter($y['f']['lhelpdesk']);
                 if (count($y['f']['lhelpdesk']) == 0) {
                     $this->tmpError = lang('errnoorgurls');
-                    $optValidationsPassed = FALSE;
+                    $optValidationsPassed = false;
                 }
             } else {
                 $this->tmpError = lang('errnoorgurls');
-                $optValidationsPassed = FALSE;
+                $optValidationsPassed = false;
             }
 
 
@@ -443,17 +434,17 @@ class Entityedit extends MY_Controller
                         if (count($acsindexes) != count(array_unique($acsindexes))) {
 
                             $this->tmpError = 'Not unique indexes found for ACS';
-                            $optValidationsPassed = FALSE;
+                            $optValidationsPassed = false;
                         }
                         if (count($acsurls) < 1 && empty($staticisdefault)) {
 
                             $this->tmpError = lang('rr_acsurlatleastone');
-                            $optValidationsPassed = FALSE;
+                            $optValidationsPassed = false;
                         }
                         if (count($acsdefault) > 1) {
 
                             $this->tmpError = lang('rr_acsurlonlyonedefault');
-                            $optValidationsPassed = FALSE;
+                            $optValidationsPassed = false;
                         }
                     }
                 }
@@ -474,7 +465,7 @@ class Entityedit extends MY_Controller
                             }
                             if (!empty($tmporder) && !ctype_digit($tmporder)) {
                                 $this->tmpError = 'One of the index order in SP ArtifactResolutionService is not numeric';
-                                $optValidationsPassed = FALSE;
+                                $optValidationsPassed = false;
                             }
                         }
                     }
@@ -482,7 +473,7 @@ class Entityedit extends MY_Controller
                         if (count($spartindexes) != count(array_unique($spartindexes))) {
 
                             $this->tmpError = 'Not unique indexes found for SP ArtifactResolutionService';
-                            $optValidationsPassed = FALSE;
+                            $optValidationsPassed = false;
                         }
                     }
                 }
@@ -500,7 +491,7 @@ class Entityedit extends MY_Controller
                             }
                             if (!empty($tmporder) && !ctype_digit($tmporder)) {
                                 $this->tmpError = 'One of the index order in IDP ArtifactResolutionService is not numeric';
-                                $optValidationsPassed = FALSE;
+                                $optValidationsPassed = false;
                             }
                         }
                     }
@@ -508,7 +499,7 @@ class Entityedit extends MY_Controller
                         if (count($idpartindexes) != count(array_unique($idpartindexes))) {
 
                             $this->tmpError = 'Not unique indexes found for IDP ArtifactResolutionService';
-                            $optValidationsPassed = FALSE;
+                            $optValidationsPassed = false;
                         }
                     }
                 }
@@ -528,14 +519,14 @@ class Entityedit extends MY_Controller
                             }
                             if (!empty($tmporder) && !ctype_digit($tmporder)) {
                                 $this->tmpError = 'One of the index order in DiscoveryResponse is not numeric';
-                                $optValidationsPassed = FALSE;
+                                $optValidationsPassed = false;
                             }
                         }
                     }
                     if (strcasecmp($this->type, 'IDP') != 0) {
                         if (count($drindexes) != count(array_unique($drindexes))) {
                             $this->tmpError = 'Not unique indexes found for DiscoveryResponse';
-                            $optValidationsPassed = FALSE;
+                            $optValidationsPassed = false;
                         }
                     }
                 }
@@ -554,15 +545,15 @@ class Entityedit extends MY_Controller
                 }
                 if (!empty($nossobindings) && is_array($nossobindings) && count($nossobindings) > 0 && count(array_unique($nossobindings)) < count($nossobindings)) {
                     $this->tmpError = 'duplicate binding protocols for SSO found in sent form';
-                    $optValidationsPassed = FALSE;
+                    $optValidationsPassed = false;
                 }
                 if (!empty($noidpslo) && is_array($noidpslo) && count($noidpslo) > 0 && count(array_unique($noidpslo)) < count($noidpslo)) {
                     $this->tmpError = 'duplicate binding protocols for IDP SLO found in sent form';
-                    $optValidationsPassed = FALSE;
+                    $optValidationsPassed = false;
                 }
                 if (!empty($nospslo) && is_array($nospslo) && count($nospslo) > 0 && count(array_unique($nospslo)) < count($nospslo)) {
                     $this->tmpError = 'duplicate binding protocols for SP SLO found in sent form';
-                    $optValidationsPassed = FALSE;
+                    $optValidationsPassed = false;
                 }
             }
         }
@@ -700,12 +691,11 @@ class Entityedit extends MY_Controller
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             show_error('Internal server error', 500);
-            return;
         }
 
 
         $data = array(
-             'error_messages2' => &$this->tmpError,
+            'error_messages2' => &$this->tmpError,
         );
         /**
          * @var $ent models\Provider
@@ -733,7 +723,7 @@ class Entityedit extends MY_Controller
         if ($this->input->post('discard')) {
             $this->discardDraft($id);
             redirect(base_url('providers/detail/show/' . $id . ''), 'location');
-        } elseif ($this->submitValidate($id) === TRUE) {
+        } elseif ($this->submitValidate($id) === true) {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
             $this->saveToDraft($id, $y);
@@ -753,7 +743,7 @@ class Entityedit extends MY_Controller
                         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
                         $this->cache->delete($cacheId);
                         $this->cache->delete($cacheId2);
-                        $showsuccess = TRUE;
+                        $showsuccess = true;
                     }
                 }
             }
@@ -787,20 +777,9 @@ class Entityedit extends MY_Controller
         $this->load->library('providerformelements', array('provider' => $ent, 'session' => $entsession));
 
 
-        $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral());
-        $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
-        $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
-        if (strcasecmp($this->type, 'SP') != 0) {
-            $menutabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => $this->form_element->generateUIHintForm($ent, $entsession));
-        }
-        $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
-        $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
-        $menutabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
-        if (strcasecmp($this->type, 'IDP') != 0) {
-            $menutabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
-        }
-        $menutabs[] = array('id' => 'staticmetadata', 'value' => '' . lang('tabstaticmeta') . '', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
-        $data['menutabs'] = $menutabs;
+        $data['menutabs'] = $this->genTabs($ent, $entsession, false);
+
+
         $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['entdetail']['id'] . '">' . $data['entdetail']['displayname'] . '</a>';
         $data['content_view'] = 'manage/entityedit_view.php';
 
@@ -834,8 +813,8 @@ class Entityedit extends MY_Controller
         MY_Controller::$menuactive = 'reg';
 
         $data = array(
-            'registerForm'=>true,
-            'error_messages2'=>&$this->tmpError
+            'registerForm' => true,
+            'error_messages2' => &$this->tmpError
         );
         $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places';
 
@@ -844,7 +823,7 @@ class Entityedit extends MY_Controller
             show_error('Not found', 404);
         }
         $ent = new models\Provider;
-        $ent->setLocal(TRUE);
+        $ent->setLocal(true);
         if (strcmp($t, 'idp') == 0) {
             $ent->setType('IDP');
             $data['titlepage'] = lang('rr_idp_register_title');
@@ -863,7 +842,7 @@ class Entityedit extends MY_Controller
         /**
          * @var $u models\User
          */
-        $data['anonymous'] = TRUE;
+        $data['anonymous'] = true;
         if ($this->j_auth->logged_in()) {
             $data['anonymous'] = FALSE;
             $currentusername = $this->j_auth->current_user();
@@ -880,7 +859,7 @@ class Entityedit extends MY_Controller
         /**
          * @var $fedCollection models\Federation[]
          */
-        $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => TRUE, 'is_active' => TRUE));
+        $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => true, 'is_active' => true));
         if (count($fedCollection) > 0) {
             $data['federations'] = array();
             /**
@@ -930,7 +909,7 @@ class Entityedit extends MY_Controller
                     $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
                     if (count($domlist) == 1) {
                         foreach ($domlist as $domelement) {
-                            $entarray = $this->metadata2array->entityDOMToArray($domelement, TRUE);
+                            $entarray = $this->metadata2array->entityDOMToArray($domelement, true);
                         }
                         $o = current($entarray);
                         if (isset($o['type']) && strcasecmp($o['type'], $t) == 0) {
@@ -976,7 +955,7 @@ class Entityedit extends MY_Controller
         } elseif ($this->input->post('discard')) {
             $this->discardDraft($t);
             redirect(base_url() . 'providers/' . strtolower($t) . '_registration', 'location');
-        } elseif ($this->submitValidate($t) === TRUE) {
+        } elseif ($this->submitValidate($t) === true) {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
             if ($submittype === 'modify') {
@@ -996,7 +975,7 @@ class Entityedit extends MY_Controller
                             $ent->setRegistrationDate($dateNow);
 
                         }
-                        $ent->setActive(TRUE);
+                        $ent->setActive(true);
                         /// create queue
                         $q = new models\Queue;
                         if (!empty($u)) {
@@ -1053,7 +1032,7 @@ class Entityedit extends MY_Controller
                             }
 
                         }
-                        $convertedToArray = $ent->convertToArray(True);
+                        $convertedToArray = $ent->convertToArray(true);
                         $this->load->library('providertoxml');
                         $options['attrs'] = 1;
                         $xmlOut = $this->providertoxml->entityConvertNewDocument($ent, $options);
@@ -1154,20 +1133,41 @@ class Entityedit extends MY_Controller
         }
         $data['titlepage'] .= '  - ' . lang('subtl_advancedmode') . '';
         $this->load->library('providerformelements', array('provider' => $ent, 'session' => $entsession));
-        $menutabs[] = array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral());
-        $menutabs[] = array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession));
-        $menutabs[] = array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession));
-        if (strcasecmp($ent->getType(), 'SP') != 0) {
-            $menutabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => $this->form_element->generateUIHintForm($ent, $entsession));
-        }
-        $menutabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
-        $menutabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
-        if (strcasecmp($ent->getType(), 'IDP') != 0) {
-            $menutabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
-        }
-        $data['menutabs'] = $menutabs;
+
+        $data['menutabs'] = $this->genTabs($ent, $entsession, true);
         $data['content_view'] = 'manage/entityedit_view.php';
         $this->load->view('page', $data);
+    }
+
+    private function genTabs(\models\Provider $ent, $entsession, $register = false)
+    {
+        $tabs = array(
+            array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral()),
+            array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession)),
+            array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession)),
+
+        );
+        if (strcasecmp($ent->getType(), 'SP') != 0) {
+            $tabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => $this->form_element->generateUIHintForm($ent, $entsession));
+        }
+        $tabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
+        $tabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
+        if ($register) {
+
+            if (strcasecmp($ent->getType(), 'IDP') != 0) {
+                $tabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
+            }
+        } else {
+
+            $tabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
+            if (strcasecmp($this->type, 'IDP') != 0) {
+                $tabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
+            }
+            $tabs[] = array('id' => 'staticmetadata', 'value' => '' . lang('tabstaticmeta') . '', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
+
+        }
+
+        return $tabs;
     }
 
     function registersuccess()
