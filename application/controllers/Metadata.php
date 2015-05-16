@@ -142,7 +142,6 @@ class Metadata extends MY_Controller
 
             if (strcmp($mtype, 'IDP') == 0)
             {
-                $cacheId = 'mcircle_' . $m->getId();
                 $metadataCached = $this->j_ncache->getMcircleMeta($m->getId());
                 if (!empty($metadataCached))
                 {
@@ -297,7 +296,7 @@ class Metadata extends MY_Controller
         }
         else
         {
-            show_error('Not found 2');
+            show_error('Not found 2', 404);
         }
     }
 
