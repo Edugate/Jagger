@@ -82,10 +82,10 @@ class Providertoxml
         if (function_exists('customGenerateEntityDescriptorID')) {
             $this->isGenIdFnExist = true;
         }
-        $registrationAutority = $this->ci->config->item('registrationAutority');
-        $load_registrationAutority = $this->ci->config->item('load_registrationAutority');
+        $regAuthor = $this->ci->config->item('registrationAutority');
+        $loadRegAuthor = $this->ci->config->item('load_registrationAutority');
         $this->useGlobalRegistrar = false;
-        if (!empty($registrationAutority) && !empty($load_registrationAutority)) {
+        if (!empty($regAuthor) && !empty($loadRegAuthor)) {
             $this->useGlobalRegistrar = true;
             $this->globalRegistrar = $this->ci->config->item('registrationAutority');
             $this->globalRegpolicy = $this->ci->config->item('registrationPolicy');
@@ -100,12 +100,6 @@ class Providertoxml
         $this->em = $this->ci->doctrine->em;
         $this->em->getRepository("models\Coc")->findAll();
     }
-
-    public function providerConvertToXML(\models\Provider $ent)
-    {
-
-    }
-
     private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent)
     {
 
@@ -204,7 +198,7 @@ class Providertoxml
                     $xml->startElementNs('saml', 'Attribute', null);
                     $xml->writeAttribute('Name', $k);
                     $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-                    foreach ($v as $k1 => $v1) {
+                    foreach ($v as $v1) {
 
                         $xml->startElementNs('saml', 'AttributeValue', null);
                         $xml->text($v1->getUrl());
@@ -868,7 +862,7 @@ class Providertoxml
 
         foreach ($rolesFns as $fn) {
             if (strcmp($fn, 'createSPSSODescriptor') == 0) {
-                $this->$fn($xml, $ent, $options);
+                call_user_func_array(array($this,$fn),array($xml,$ent,$options));
             } elseif(strcmp($fn, 'createIDPSSODescriptor') == 0  && $isValidIDPSSO) {
                 $this->$fn($xml, $ent);
             } elseif(strcmp($fn, 'createAttributeAuthorityDescriptor') == 0  && $isValidAA) {
@@ -910,24 +904,24 @@ class Providertoxml
     public function entityConvertNewDocument(\models\Provider $ent, $options, $outputXML = false)
     {
         $type = $ent->getType();
-        $hasIdpRole = FALSE;
-        $hasSpRole = FALSE;
+        $hasIdpRole = false;
+        $hasSpRole = false;
         if (strcasecmp($type, 'IDP') == 0) {
             $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor');
-            $hasIdpRole = TRUE;
+            $hasIdpRole = true;
         } elseif (strcasecmp($type, 'SP') == 0) {
-            $hasSpRole = TRUE;
+            $hasSpRole = true;
             $rolesFns = array('createSPSSODescriptor');
         } else {
-            $hasIdpRole = TRUE;
-            $hasSpRole = TRUE;
+            $hasIdpRole = true;
+            $hasSpRole = true;
             $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor', 'createSPSSODescriptor');
         }
         $islocal = $ent->getLocal();
         $valiUntil = $ent->getValidTo();
 
-        $isValidIDPSSO = FALSE;
-        $isValidAA = FALSE;
+        $isValidIDPSSO = false;
+        $isValidAA = false;
         if ($hasIdpRole) {
             $isValidIDPSSO = $this->verifyIDPSSO($ent);
             $isValidAA = $this->verifyAA($ent);
@@ -966,7 +960,7 @@ class Providertoxml
 
         foreach ($rolesFns as $fn) {
             if (strcmp($fn, 'createSPSSODescriptor') == 0) {
-                $this->$fn($xml, $ent, $options);
+                call_user_func_array(array(__CLASS__,$fn),array($xml,$ent,$options));
             } elseif(strcmp($fn, 'createIDPSSODescriptor') == 0  && $isValidIDPSSO) {
                 $this->$fn($xml, $ent);
             } elseif(strcmp($fn, 'createAttributeAuthorityDescriptor') == 0  && $isValidAA) {
@@ -988,9 +982,9 @@ class Providertoxml
 
     public function entityStaticConvert(\XMLWriter $xml, \models\Provider $ent)
     {
-        $s = $ent->getStaticMetadata();
-        if (!empty($s)) {
-            $meta = $s->getMetadata();
+        $staticMeta = $ent->getStaticMetadata();
+        if (!empty($staticMeta)) {
+            $meta = $staticMeta->getMetadata();
             $xml->writeRaw($meta);
         }
         return $xml;
