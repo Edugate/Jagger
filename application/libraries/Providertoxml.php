@@ -806,11 +806,11 @@ class Providertoxml
     }
 
 
-    // if $doCacheId is set it saves entiy in cache with key = ${systemprefix}.$doCacheId
+    // if $doCacheId is set it saves entiy in cache with key = ${systemprefix}.'mcircle_'.$doCacheId
     public function entityConvert(\XMLWriter $xmlOut, \models\Provider $ent, $options, $doCacheId = null)
     {
 
-        if (!$doCacheId) {
+        if (empty($doCacheId)) {
             $xml = $xmlOut;
         } else {
             $xml = new XMLWriter();
@@ -880,12 +880,12 @@ class Providertoxml
         $this->createContacts($xml, $ent);
 
         $xml->endElement();
-        if (!$doCacheId) {
+        if (empty($doCacheId)) {
             return $xml;
         } else {
             $entityPart = $xml->outputMemory();
 
-            $this->ci->cache->save($doCacheId, $entityPart, 600);
+            $this->ci->j_ncache->saveMcircleMeta($doCacheId, $entityPart);
             $xmlOut->writeRaw($entityPart);
             return $xmlOut;
         }

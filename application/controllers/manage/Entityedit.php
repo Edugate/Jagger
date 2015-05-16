@@ -37,7 +37,7 @@ class Entityedit extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->library(array('curl', 'form_element', 'form_validation', 'approval', 'providertoxml'));
+        $this->load->library(array('curl', 'form_element', 'form_validation', 'approval', 'providertoxml','j_ncache'));
         $this->tmpProviders = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmpError = '';
@@ -738,15 +738,11 @@ class Entityedit extends MY_Controller
 
                     $updateresult = $this->providerupdater->updateProvider($ent, $c);
                     if ($updateresult) {
-                        $cacheId = 'mcircle_' . $ent->getId();
-                        $cacheId2 = 'mstatus_' . $ent->getId();
                         $this->em->persist($ent);
                         $this->em->flush();
                         $this->discardDraft($id);
-                        $keyPrefix = getCachePrefix();
-                        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
-                        $this->cache->delete($cacheId);
-                        $this->cache->delete($cacheId2);
+                        $this->j_ncache->cleanMcirclceMeta($id);
+                        $this->j_ncache->cleanEntityStatus($id);
                         $showsuccess = true;
                     }
                 }
@@ -1040,7 +1036,6 @@ class Entityedit extends MY_Controller
                         $this->load->library('providertoxml');
                         $options['attrs'] = 1;
                         $xmlOut = $this->providertoxml->entityConvertNewDocument($ent, $options);
-                        $this->load->library('j_ncache');
                         $tmpid = rand(10, 1000);
                         log_message('debug', 'JAGGER RAND: ' . $tmpid);
                         $xmloutput = $xmlOut->outputMemory();
