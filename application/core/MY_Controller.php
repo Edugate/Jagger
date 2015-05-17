@@ -11,7 +11,7 @@ if (!defined('BASEPATH'))
  * 
  * @package     RR3
  * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
@@ -60,7 +60,7 @@ class MY_Controller extends CI_Controller {
 
     public static $langselect = array();
     public static $menuactive;
-    protected static $current_language = 'en';
+    protected static $currLang = 'en';
     private static $langs;
     public $title;
     public $globalerrors = array();
@@ -91,10 +91,10 @@ class MY_Controller extends CI_Controller {
             'pt' => array('path' => 'pt', 'val' => 'português'),
             'sr' => array('path' => 'sr', 'val' => 'srpski'),
         );
-        $cookie_lang = $this->input->cookie('rrlang', TRUE);
+        $cookieLang = $this->input->cookie('rrlang', TRUE);
         $cookdefaultlang = $this->config->item('rr_lang');
         $addlangs = $this->config->item('guilangs');
-        if(!empty($addlangs) && is_array($addlangs))
+        if(is_array($addlangs))
         {
             foreach($addlangs as $k=>$v)
             {
@@ -108,30 +108,30 @@ class MY_Controller extends CI_Controller {
         else
         {
             $this->lang->load('rr_lang', '' . $cookdefaultlang . '');
-            self::$current_language = '' . $cookdefaultlang . '';
+            self::$currLang = '' . $cookdefaultlang . '';
         }
-        $defaultlang_cookie = array(
+        $defaultlangCookie = array(
             'name' => 'rrlang',
             'value' => '' . $cookdefaultlang . '',
             'expire' => '2600000',
             'secure' => TRUE
         );
 
-        if (!empty($cookie_lang) && (strcmp($cookie_lang,'english') ==0 ||  array_key_exists($cookie_lang, self::$langs)))
+        if (!empty($cookieLang) && (strcmp($cookieLang,'english') ==0 ||  array_key_exists($cookieLang, self::$langs)))
         {
-            $this->lang->load('rr_lang', $cookie_lang);
-            if ($cookie_lang === 'english')
+            $this->lang->load('rr_lang', $cookieLang);
+            if ($cookieLang === 'english')
             {
-                self::$current_language = 'en';
+                self::$currLang = 'en';
             }
             else
             {
-                self::$current_language = $cookie_lang;
+                self::$currLang = $cookieLang;
             }
         }
         else
         {
-            $this->input->set_cookie($defaultlang_cookie);
+            $this->input->set_cookie($defaultlangCookie);
         }
 
         self::$langselect = languagesCodes($this->config->item('langselectlimit'));
@@ -147,7 +147,7 @@ class MY_Controller extends CI_Controller {
 
     public static function getLang()
     {
-        return self::$current_language;
+        return self::$currLang;
     }
 
     public static function guiLangs()
