@@ -100,13 +100,20 @@ class Providertoxml
         $this->em = $this->ci->doctrine->em;
         $this->em->getRepository("models\Coc")->findAll();
     }
-    private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent)
-    {
 
+    private function getRegistrar(\models\Provider $ent)
+    {
         $registrar = $ent->getRegistrationAuthority();
         if (empty($registrar) && $ent->getLocal() && $this->useGlobalRegistrar) {
             $registrar = $this->globalRegistrar;
         }
+        return $registrar;
+    }
+
+    private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent)
+    {
+
+        $registrar = $this->getRegistrar($ent);
         /**
          * @var $cocs models\Coc[]
          */
@@ -130,30 +137,25 @@ class Providertoxml
         /**
          * @var $extendMeta models\ExtendMetadata[]
          */
-        $doFilter1 = array('DigestMethod', 'SigningMethod');
+        $doFilter1 = array('f1' => array('DigestMethod', 'SigningMethod'), 'f2' => array('ent'));
+
         $extendMeta = $ent->getExtendMetadata()->filter(
             function (models\ExtendMetadata $entry) use ($doFilter1) {
-                return in_array($entry->getElement(), $doFilter1);
+                return in_array($entry->getElement(), $doFilter1['f1']) && in_array($entry->getType(), $doFilter1['f2']);
             }
         );
 
         $algs = array();
-        foreach($extendMeta as $e)
-        {
-            $type = $e->getType();
-            if($type==='ent')
-            {
-                $algs[] = $e;
-            }
+        foreach ($extendMeta as $e) {
+            $algs[] = $e;
         }
 
         $algsCount = count($algs);
 
         if (!empty($registrar) || count($cocsByGroups['entcat']) || $algsCount > 0) {
             $xml->startElementNs('md', 'Extensions', null);
-            if($algsCount>0)
-            {
-                $xml->writeAttribute('xmlns:alg','urn:oasis:names:tc:SAML:metadata:algsupport');
+            if ($algsCount > 0) {
+                $xml->writeAttribute('xmlns:alg', 'urn:oasis:names:tc:SAML:metadata:algsupport');
             }
 
             if (!empty($registrar)) {
@@ -164,7 +166,7 @@ class Providertoxml
                  */
                 $registerDate = $ent->getRegistrationDate();
                 if (!empty($registerDate)) {
-                    $xml->writeAttribute('registrationInstant', $registerDate->format('Y-m-d') . 'T' . $registerDate->format('H:i:s') . 'Z');
+                    $xml->writeAttribute('registrationInstant', $registerDate->format('Y-m-d\TH:i:s\Z'));
                     if (count($cocsByGroups['regpol']) > 0) {
 
                         $langsset = array();
@@ -209,18 +211,15 @@ class Providertoxml
                 $xml->endElement();
             }
 
-            foreach($algs as $alg)
-            {
+            foreach ($algs as $alg) {
                 $algElement = $alg->getElement();
                 $algAlgorithm = $alg->getEvalue();
-                $xml->startElementNs('alg',$algElement,null);
-                $xml->writeAttribute('Algorithm',$algAlgorithm);
+                $xml->startElementNs('alg', $algElement, null);
+                $xml->writeAttribute('Algorithm', $algAlgorithm);
                 $algattrs = $alg->getAttributes();
-	            if(is_array($algattrs)) {
-		            foreach ($algattrs as $k => $a) {
-			            $xml->writeAttribute($k, $a);
-		            }
-	            }
+                foreach ($algattrs as $k => $a) {
+                    $xml->writeAttribute($k, $a);
+                }
                 $xml->endElement();
             }
             $xml->endElement(); //end extensions element
@@ -264,7 +263,7 @@ class Providertoxml
         $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
         $extarrayKeys = array_keys($extarray);
         foreach ($extendMeta as $v) {
-            if ( in_array($v->getElement(),$extarrayKeys) &&  (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui')) {
+            if (in_array($v->getElement(), $extarrayKeys) && (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui')) {
                 $extarray['' . $v->getElement() . ''][] = $v;
                 $toGenerate = TRUE;
             }
@@ -277,8 +276,8 @@ class Providertoxml
 
         $enLang = array();
         foreach (array('DisplayName', 'Description', 'InformationURL', 'PrivacyStatementURL') as $mduiElement) {
-            $enLang['' . $mduiElement . ''] = FALSE;
 
+            $enLang['' . $mduiElement . ''] = FALSE;
 
             foreach ($extarray['' . $mduiElement . ''] as $value) {
                 $lang = $value->getAttributes();
@@ -407,10 +406,9 @@ class Providertoxml
             }
             $xml->endElement(); // KeyInfo
             $encMethods = $cert->getEncryptMethods();
-            foreach($encMethods as $enc)
-            {
-                $xml->startElementNs('md','EncryptionMethod',null);
-                $xml->writeAttribute('Algorithm',$enc);
+            foreach ($encMethods as $enc) {
+                $xml->startElementNs('md', 'EncryptionMethod', null);
+                $xml->writeAttribute('Algorithm', $enc);
                 $xml->endElement();
             }
 
@@ -431,9 +429,14 @@ class Providertoxml
                 $requiredAttributes['' . $reqAttr->getAttribute()->getId() . ''] = $reqAttr;
             }
         }
-        if (count($requiredAttributes) == 0 && (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0)) {
-            return $xml;
+        $finalReqAttrs = &$requiredAttributes;
+        if (count($finalReqAttrs) == 0) {
+            if (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0) {
+                return $xml;
+            }
+            $finalReqAttrs = &$options['fedreqattrs'];
         }
+
 
         $xml->startElementNs('md', 'AttributeConsumingService', null);
         $xml->writeAttribute('index', '0');
@@ -471,43 +474,19 @@ class Providertoxml
                 $xml->endElement();
             }
         }
-
-        if (count($requiredAttributes) > 0) {
-            foreach ($requiredAttributes as $attr) {
-
-
-                $xml->startElementNs('md', 'RequestedAttribute', null);
-                $xml->writeAttribute('FriendlyName', $attr->getAttribute()->getName());
-                $xml->writeAttribute('Name', $attr->getAttribute()->getOid());
-                $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-                if (strcmp($attr->getStatus(), 'required') == 0) {
-                    $xml->writeAttribute('isRequired', 'true');
-                } else {
-                    $xml->writeAttribute('isRequired', 'false');
-                }
-                $xml->endElement();
-            }
+        foreach ($finalReqAttrs as $attr) {
+            $xml->startElementNs('md', 'RequestedAttribute', null);
+            $xml->writeAttribute('FriendlyName', $attr->getAttribute()->getName());
+            $xml->writeAttribute('Name', $attr->getAttribute()->getOid());
+            $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+            $xml->writeAttribute('isRequired', '' . $attr->isRequiredToStr() . '');
+            $xml->endElement();
         }
-	    else
-	    {
-		    foreach ($options['fedreqattrs'] as $attr) {
-			    $xml->startElementNs('md', 'RequestedAttribute', null);
-			    $xml->writeAttribute('FriendlyName', $attr->getAttribute()->getName());
-			    $xml->writeAttribute('Name', $attr->getAttribute()->getOid());
-			    $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-			    if (strcmp($attr->getStatus(), 'required') == 0) {
-				    $xml->writeAttribute('isRequired', 'true');
-			    } else {
-				    $xml->writeAttribute('isRequired', 'false');
-			    }
-			    $xml->endElement();
-		    }
-	    }
-
         $xml->endElement();
         return $xml;
     }
 
+    /** @noinspection PhpUnusedPrivateMethodInspection */
     private function createIDPSSODescriptor(\XMLWriter $xml, \models\Provider $ent)
     {
         $protocol = $ent->getProtocolSupport('idpsso');
@@ -581,6 +560,7 @@ class Providertoxml
         return $xml;
     }
 
+    /** @noinspection PhpUnusedPrivateMethodInspection */
     private function createAttributeAuthorityDescriptor(\XMLWriter $xml, \models\Provider $ent)
     {
         $doFilter = array('IDPAttributeService');
@@ -631,6 +611,7 @@ class Providertoxml
         return $xml;
     }
 
+    /** @noinspection PhpUnusedPrivateMethodInspection */
     private function createSPSSODescriptor(\XMLWriter $xml, \models\Provider $ent, $options)
     {
         $protocol = $ent->getProtocolSupport('spsso');
@@ -862,14 +843,14 @@ class Providertoxml
 
         foreach ($rolesFns as $fn) {
             if (strcmp($fn, 'createSPSSODescriptor') == 0) {
-                call_user_func_array(array($this,$fn),array($xml,$ent,$options));
-            } elseif(strcmp($fn, 'createIDPSSODescriptor') == 0  && $isValidIDPSSO) {
+                call_user_func_array(array($this, $fn), array($xml, $ent, $options));
+            } elseif (strcmp($fn, 'createIDPSSODescriptor') == 0 && $isValidIDPSSO) {
                 $this->$fn($xml, $ent);
-            } elseif(strcmp($fn, 'createAttributeAuthorityDescriptor') == 0  && $isValidAA) {
+            } elseif (strcmp($fn, 'createAttributeAuthorityDescriptor') == 0 && $isValidAA) {
                 $this->$fn($xml, $ent);
             }
         }
-        
+
         $this->createOrganization($xml, $ent);
         $this->createContacts($xml, $ent);
 
@@ -925,7 +906,7 @@ class Providertoxml
         if ($hasIdpRole) {
             $isValidIDPSSO = $this->verifyIDPSSO($ent);
             $isValidAA = $this->verifyAA($ent);
-            $canProceed =  ($isValidIDPSSO || $isValidAA);
+            $canProceed = ($isValidIDPSSO || $isValidAA);
             if (!$canProceed) {
                 return null;
             }
@@ -960,10 +941,10 @@ class Providertoxml
 
         foreach ($rolesFns as $fn) {
             if (strcmp($fn, 'createSPSSODescriptor') == 0) {
-                call_user_func_array(array(__CLASS__,$fn),array($xml,$ent,$options));
-            } elseif(strcmp($fn, 'createIDPSSODescriptor') == 0  && $isValidIDPSSO) {
+                call_user_func_array(array(__CLASS__, $fn), array($xml, $ent, $options));
+            } elseif (strcmp($fn, 'createIDPSSODescriptor') == 0 && $isValidIDPSSO) {
                 $this->$fn($xml, $ent);
-            } elseif(strcmp($fn, 'createAttributeAuthorityDescriptor') == 0  && $isValidAA) {
+            } elseif (strcmp($fn, 'createAttributeAuthorityDescriptor') == 0 && $isValidAA) {
                 $this->$fn($xml, $ent);
             }
         }
