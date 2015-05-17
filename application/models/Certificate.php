@@ -1,30 +1,30 @@
 <?php
 namespace models;
-/**
- * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
- */
+    /**
+     * ResourceRegistry3
+     *
+     * @package     RR3
+     * @author      Middleware Team HEAnet
+     * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+     * @license     MIT http://www.opensource.org/licenses/mit-license.php
+     *
+     */
 
-/**
- * Certificate Class
- * 
- * @package     RR3
- * @subpackage  Models
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
+    /**
+     * Certificate Class
+     *
+     * @package     RR3
+     * @subpackage  Models
+     * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+     */
 
 
 /**
  * Certificate Model
  *
  * This model for attributes definitions
- * 
- * @Entity 
+ *
+ * @Entity
  * @HasLifecycleCallbacks
  * @Table(name="certificate")
  * @author janusz
@@ -101,14 +101,14 @@ class Certificate
     // Begin generic set/get methods
     public function setCertdata($certdata = null)
     {
-        
+
         $this->certdata = trim($certdata);
         return $this;
     }
 
     public function setKeyname($keyname = null)
     {
-        $this->keyname = str_replace(' ','',$keyname);
+        $this->keyname = str_replace(' ', '', $keyname);
         return $this;
     }
 
@@ -129,11 +129,9 @@ class Certificate
      */
     public function setCertUse($use = NULL)
     {
-        if (!empty($use) && ($use === 'signing' || $use === 'encryption'))
-        {
+        if (!empty($use) && ($use === 'signing' || $use === 'encryption')) {
             $this->certusage = $use;
-        } else
-        {
+        } else {
             $this->certusage = NULL;
         }
         return $this;
@@ -144,40 +142,27 @@ class Certificate
      */
     public function setType($type = null)
     {
-        if (empty($type))
-        {
+        if (empty($type)) {
             $type = 'sso';
         }
         $this->type = $type;
         return $this;
     }
+
     public function setAsSPSSO()
     {
-       $this->setType('spsso');
-       return $this;
-    }
-    public function setAsIDPSSO()
-    {
-       $this->setType('idpsso');
-       return $this;
-    }
-/*
-    public function setAsSSO()
-    {
-        $this->setType('sso');
+        $this->setType('spsso');
         return $this;
     }
 
-    public function setAsAA()
+    public function setAsIDPSSO()
     {
-        $this->setType('aa');
+        $this->setType('idpsso');
         return $this;
     }
-*/
-    public function setCertType($type=null)
+    public function setCertType($type = null)
     {
-        if (empty($type) || $type === 'x509')
-        {
+        if (empty($type) || $type === 'x509') {
             $type = 'X509Certificate';
         }
         $this->certtype = $type;
@@ -191,7 +176,7 @@ class Certificate
     }
 
     /**
-     * it's private because preferred calling functions 
+     * it's private because preferred calling functions
      * setAsDefault() or setAsNonDefault()
      */
     private function setDefault($bool)
@@ -210,22 +195,19 @@ class Certificate
         return $this;
     }
 
-    public function setEncryptMethods($enc=null)
+    public function setEncryptMethods($enc = null)
     {
 
-        if(!empty($enc) && is_array($enc))
-        {
+        if (!empty($enc) && is_array($enc)) {
             $this->encmethods = serialize(array_unique($enc));
-        }
-        else
-        {
+        } else {
             $this->encmethods = null;
         }
         return $this;
 
     }
 
-    public  function addEncryptionMethod($str)
+    public function addEncryptionMethod($str)
     {
         $r = $this->getEncryptMethods();
         $r[] = trim($str);
@@ -266,10 +248,8 @@ class Certificate
     {
         $cert = $this->certdata;
         $output = null;
-        if (!empty($cert))
-        {
-            if ($this->getCertType() == 'X509Certificate')
-            {
+        if (!empty($cert)) {
+            if ($this->getCertType() == 'X509Certificate') {
                 $output = str_replace('-----BEGIN CERTIFICATE-----', '', $cert);
                 $output = str_replace('-----END CERTIFICATE-----', '', $output);
             }
@@ -279,19 +259,17 @@ class Certificate
 
     public function getCertDataWithHeaders()
     {
-        $cert = $this->certdata;
+        $cert = trim($this->certdata);
         $output = null;
-        if (!empty($cert))
-        {
-            if ($this->getCertType() == 'X509Certificate')
-            {
+        if (!empty($cert)) {
+            if ($this->getCertType() == 'X509Certificate') {
                 $output = str_replace('-----BEGIN CERTIFICATE-----', '', $cert);
                 $output = str_replace('-----END CERTIFICATE-----', '', $output);
             }
         }
         $output2 = '-----BEGIN CERTIFICATE-----';
         $output2 .= $output;
-        $output2 .='-----END CERTIFICATE-----';
+        $output2 .= '-----END CERTIFICATE-----';
         return $output2;
     }
 
@@ -303,12 +281,9 @@ class Certificate
     public function getEncryptMethods()
     {
         $result = $this->encmethods;
-        if($result !== null)
-        {
+        if ($result !== null) {
             return unserialize($result);
-        }
-        else
-        {
+        } else {
             return array();
         }
     }
@@ -325,17 +300,15 @@ class Certificate
 
     public function getFingerprint($alg = null)
     {
-        if(empty($alg))
-        {
-           $alg = 'md5';
+        if (empty($alg)) {
+            $alg = 'md5';
         }
         $certdata = $this->getCertDataNoHeaders();
-        if(empty($certdata))
-        {
-           return null;
+        if (empty($certdata)) {
+            return null;
         }
         $certdata = trim($certdata);
-        $certdata = str_replace( array("\n\r","\n","\r"), '',$certdata);
+        $certdata = str_replace(array("\n\r", "\n", "\r"), '', $certdata);
         $bin = base64_decode($certdata);
         return $alg($bin);
     }
@@ -343,17 +316,14 @@ class Certificate
     public function getTimeValidTo()
     {
         $cert = $this->getPEM($this->getCertData());
-        if (empty($cert))
-        {
+        if (empty($cert)) {
             return null;
         }
-        if ($this->getCertType() == 'X509Certificate')
-        {
+        if ($this->getCertType() == 'X509Certificate') {
             $parsed = openssl_x509_parse($cert);
             $validTo = date('Y-m-d H:i:s', $parsed['validTo_time_t']);
             return $validTo;
-        } else
-        {
+        } else {
             return null;
         }
     }
@@ -364,95 +334,82 @@ class Certificate
     public function getTimeValid($type = null)
     {
         $cert = $this->getPEM($this->getCertData());
-        if (empty($cert))
-        {
+        if (empty($cert)) {
             return null;
         }
-        if ($this->getCertType() == 'X509Certificate')
-        {
+        if ($this->getCertType() == 'X509Certificate') {
             $parsed = openssl_x509_parse($cert);
             $period = $parsed['validTo_time_t'] - time();
-            $days = (int) $period / 60 / 60 / 24;
-
-            if ($period > 0)
-            {
+            $days = (int)$period / 60 / 60 / 24;
+            $boolreturn = false;
+            if ($period > 0) {
                 $boolreturn = true;
-            } else
-            {
-                $boolreturn = false;
             }
-            if (empty($type))
-            {
+            if (empty($type)) {
                 return $boolreturn;
-            } else
-            {
+            } else {
                 return $days;
             }
-        } else
-        {
+        } else {
             /**
              * @todo check if can be used different encryption methods
              */
             return null;
         }
     }
+
     /**
      * @prePersist
      */
-     public function fixCert()
-     {
-         if($this->certtype === 'X509Certificate')
-         {
-              if(!empty($this->certdata))
-              {
-                 $i = explode("\n",$this->certdata);
-                 $c = count($i);
-                 if($c < 2)
-                 {
-                      $pem = chunk_split($this->certdata, 64, "\n");
-                      $this->certdata = $pem;
-                 }
-              }
-         }
+    public function fixCert()
+    {
+        if ($this->certtype === 'X509Certificate') {
+            if (!empty($this->certdata)) {
+                $i = explode("\n", $this->certdata);
+                $c = count($i);
+                if ($c < 2) {
+                    $pem = chunk_split($this->certdata, 64, "\n");
+                    $this->certdata = $pem;
+                }
+            }
+        }
 
-     }
+    }
 
     /**
      * @PreUpdate
      */
     public function updated()
     {
-         if($this->certtype == 'X509Certificate')
-         {
-              if(!empty($this->certdata))
-              {
-                 $this->certdata = self::reformatPEM($this->certdata);
-              }
-         }
+        if ($this->certtype == 'X509Certificate') {
+            if (!empty($this->certdata)) {
+                $this->certdata = self::reformatPEM($this->certdata);
+            }
+        }
     }
 
-   
+
     public function importFromArray(array $c)
     {
-         $this->setType($c['type']);
-         $this->setCertUse($c['usage']);
-         $this->setCertData($c['certdata']);
-         $this->setKeyname($c['keyname']);
-         $this->setCertType($c['certtype']);
+        $this->setType($c['type']);
+        $this->setCertUse($c['usage']);
+        $this->setCertData($c['certdata']);
+        $this->setKeyname($c['keyname']);
+        $this->setCertType($c['certtype']);
     }
 
     public function convertToArray()
     {
-         $c = array();
-         $c['type'] = $this->getType();
-         $c['usage'] = $this->getCertUse();
-         $c['certdata'] = $this->getCertData();
-         $c['keyname'] = $this->getKeyname();
-         $c['certtype'] = $this->getCertType();
-         return $c;
- 
+        $c = array();
+        $c['type'] = $this->getType();
+        $c['usage'] = $this->getCertUse();
+        $c['certdata'] = $this->getCertData();
+        $c['keyname'] = $this->getKeyname();
+        $c['certtype'] = $this->getCertType();
+        return $c;
+
     }
- 
+
     function getPEM($value, $raw = false)
     {
 
@@ -462,49 +419,45 @@ class Certificate
         $cleaned_value = trim($cleaned_value);
 
         // Add or remove BEGIN/END lines
-        if ($raw)
-        {
+        if ($raw) {
             $cleaned_value = preg_replace('-----BEGIN CERTIFICATE-----', '', $cleaned_value);
             $cleaned_value = preg_replace('-----END CERTIFICATE-----', '', $cleaned_value);
             $cleaned_value = trim($cleaned_value);
-        } else
-        {
-            if (!empty($cleaned_value) && !preg_match('/-----BEGIN CERTIFICATE-----/', $cleaned_value))
-            {
+        } else {
+            if (!empty($cleaned_value) && !preg_match('/-----BEGIN CERTIFICATE-----/', $cleaned_value)) {
                 $cleaned_value = "-----BEGIN CERTIFICATE-----\n" . $cleaned_value;
             }
-            if (!empty($cleaned_value) && !preg_match('/-----END CERTIFICATE-----/', $cleaned_value))
-            {
+            if (!empty($cleaned_value) && !preg_match('/-----END CERTIFICATE-----/', $cleaned_value)) {
                 $cleaned_value .= "\n-----END CERTIFICATE-----";
             }
         }
 
         return $cleaned_value;
     }
+
     static function  reformatPEM($value)
     {
-       if(!empty($value))
-       {
+        if (!empty($value)) {
             $pattern = array(
-               '0'=>'/(.*)-----BEGIN CERTIFICATE-----/s',
-               '1'=>'/-----END CERTIFICATE-----(.*)/s'
+                '0' => '/(.*)-----BEGIN CERTIFICATE-----/s',
+                '1' => '/-----END CERTIFICATE-----(.*)/s'
             );
             $cleaner = array(
-               '0'=>'',
-               '1'=>''
+                '0' => '',
+                '1' => ''
             );
-         $cleaned_value = preg_replace($pattern, $cleaner, $value);
-         $cleaned_value = preg_replace("/\r\n/","", $cleaned_value);
-         $cleaned_value = preg_replace("/\n+/","", $cleaned_value);
-         $cleaned_value = preg_replace('/\s\s+/', "", $cleaned_value);
-         $cleaned_value = preg_replace('/\s*/', "", $cleaned_value);
-         $cleaned_value= trim($cleaned_value);
-         $pem = chunk_split($cleaned_value, 64, PHP_EOL);
-         $pem = '-----BEGIN CERTIFICATE-----'.PHP_EOL.$pem.'-----END CERTIFICATE-----';
-         return $pem;
-      }
-      return $value;
-}
+            $cleaned_value = preg_replace($pattern, $cleaner, $value);
+            $cleaned_value = preg_replace("/\r\n/", "", $cleaned_value);
+            $cleaned_value = preg_replace("/\n+/", "", $cleaned_value);
+            $cleaned_value = preg_replace('/\s\s+/', "", $cleaned_value);
+            $cleaned_value = preg_replace('/\s*/', "", $cleaned_value);
+            $cleaned_value = trim($cleaned_value);
+            $pem = chunk_split($cleaned_value, 64, PHP_EOL);
+            $pem = '-----BEGIN CERTIFICATE-----' . PHP_EOL . $pem . '-----END CERTIFICATE-----';
+            return $pem;
+        }
+        return $value;
+    }
 
 }
 

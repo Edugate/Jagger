@@ -259,17 +259,22 @@ class Providertoxml
     private function createUIIInfo(\XMLWriter $xml, \models\Provider $ent, $role)
     {
         $toGenerate = FALSE;
-        $extendMeta = $ent->getExtendMetadata();
+        $doFilter = array(
+            'elements'=>array('DisplayName','Description','Logo','InformationURL','PrivacyStatementURL'),
+            'type'=>array($role),
+            'namespace'=>array('mdui')
+        );
+        $extendMeta = $ent->getExtendMetadata()->filter(
+            function (models\ExtendMetadata $entry) use ($doFilter) {
+                return in_array($entry->getType(), $doFilter['type']) && in_array($entry->getElement(), $doFilter['elements']) &&  in_array($entry->getNamespace(), $doFilter['namespace']) ;
+            }
+        );
         $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
-        $extarrayKeys = array_keys($extarray);
         foreach ($extendMeta as $v) {
-            if (in_array($v->getElement(), $extarrayKeys) && (strcasecmp($v->getType(), $role) == 0) && ($v->getNamespace() === 'mdui')) {
                 $extarray['' . $v->getElement() . ''][] = $v;
                 $toGenerate = TRUE;
-            }
         }
         if ($toGenerate === FALSE) {
-
             return $xml;
         }
         $xml->startElementNs('mdui', 'UIInfo', null);
