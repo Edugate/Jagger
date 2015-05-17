@@ -289,32 +289,33 @@ class Form_element
     public function NgenerateCertificatesForm(models\Provider $ent, $ses = null)
     {
         $result = array();
-        $sessform = FALSE;
+        $sessform = false;
         $enttype = $ent->getType();
         $c = $ent->getCertificates();
 
-        $origcerts = array();
+        $providerId = $ent->getId();
+        $origcerts = array('idpsso' => array(), 'spsso' => array(), 'aa' => array());
         $tmpid = 100;
         foreach ($c as $v) {
-            $tid = $v->getId();
+            $tid = $providerId;
             if (empty($tid)) {
                 $tid = 'x' . $tmpid++;
             }
             $origcerts['' . $v->getType() . '']['' . $tid . ''] = $v;
         }
-        if (!empty($ses) && is_array($ses)) {
-            $sessform = TRUE;
+        if (is_array($ses)) {
+            $sessform = true;
         }
 
         if (strcmp($enttype, 'SP') != 0) {
             $Part = '<fieldset><legend>IDPSSODescriptor</legend><div>';
             $idpssocerts = array();
 // start CERTS IDPSSODescriptor
-            if ($sessform && isset($ses['crt']['idpsso'])) {
+            if ($sessform) {
                 foreach ($ses['crt']['idpsso'] as $key => $value) {
                     $idpssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][idpsso]", 'idpsso', TRUE);
                 }
-            } elseif (isset($origcerts['idpsso'])) {
+            } else {
                 foreach ($origcerts['idpsso'] as $k => $v) {
                     $idpssocerts[] = $this->_genCertFieldFromObj($v, "f[crt][idpsso]", TRUE);
                 }
@@ -327,11 +328,11 @@ class Form_element
             $Part = '<fieldset><legend>AttributeAuthorityDescriptor</legend><div>';
             $aacerts = array();
 // start CERTS AttributeAuthorityDescriptor
-            if ($sessform && isset($ses['crt']['aa'])) {
+            if ($sessform) {
                 foreach ($ses['crt']['aa'] as $key => $value) {
                     $aacerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][aa]", 'aa', TRUE);
                 }
-            } elseif (isset($origcerts['aa'])) {
+            } else {
                 foreach ($origcerts['aa'] as $k => $v) {
                     $aacerts[] = $this->_genCertFieldFromObj($v, "f[crt][aa]", TRUE);
                 }
@@ -346,11 +347,11 @@ class Form_element
         if (strcmp($enttype, 'IDP') != 0) {
             $Part = '<fieldset><legend>SPSSODescriptor</legend><div>';
             $spssocerts = array();
-            if ($sessform && isset($ses['crt']['spsso'])) {
+            if ($sessform) {
                 foreach ($ses['crt']['spsso'] as $key => $value) {
                     $spssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][spsso]", 'spsso', TRUE);
                 }
-            } elseif (isset($origcerts['spsso'])) {
+            } else {
                 foreach ($origcerts['spsso'] as $k => $v) {
                     $spssocerts[] = $this->_genCertFieldFromObj($v, "f[crt][spsso]", TRUE);
                 }

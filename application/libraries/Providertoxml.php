@@ -135,23 +135,16 @@ class Providertoxml
         }
 
         /**
-         * @var $extendMeta models\ExtendMetadata[]
+         * @var $algMethods models\ExtendMetadata[]
          */
         $doFilter1 = array('f1' => array('DigestMethod', 'SigningMethod'), 'f2' => array('ent'));
 
-        $extendMeta = $ent->getExtendMetadata()->filter(
+        $algMethods = $ent->getExtendMetadata()->filter(
             function (models\ExtendMetadata $entry) use ($doFilter1) {
                 return in_array($entry->getElement(), $doFilter1['f1']) && in_array($entry->getType(), $doFilter1['f2']);
             }
         );
-
-        $algs = array();
-        foreach ($extendMeta as $e) {
-            $algs[] = $e;
-        }
-
-        $algsCount = count($algs);
-
+        $algsCount = $algMethods->count();
         if (!empty($registrar) || count($cocsByGroups['entcat']) || $algsCount > 0) {
             $xml->startElementNs('md', 'Extensions', null);
             if ($algsCount > 0) {
@@ -168,7 +161,6 @@ class Providertoxml
                 if (!empty($registerDate)) {
                     $xml->writeAttribute('registrationInstant', $registerDate->format('Y-m-d\TH:i:s\Z'));
                     if (count($cocsByGroups['regpol']) > 0) {
-
                         $langsset = array();
                         foreach ($cocsByGroups['regpol'] as $v) {
                             $vlang = $v->getLang();
@@ -201,7 +193,6 @@ class Providertoxml
                     $xml->writeAttribute('Name', $k);
                     $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
                     foreach ($v as $v1) {
-
                         $xml->startElementNs('saml', 'AttributeValue', null);
                         $xml->text($v1->getUrl());
                         $xml->endElement();
@@ -211,11 +202,9 @@ class Providertoxml
                 $xml->endElement();
             }
 
-            foreach ($algs as $alg) {
-                $algElement = $alg->getElement();
-                $algAlgorithm = $alg->getEvalue();
-                $xml->startElementNs('alg', $algElement, null);
-                $xml->writeAttribute('Algorithm', $algAlgorithm);
+            foreach ($algMethods as $alg) {
+                $xml->startElementNs('alg', $alg->getElement(), null);
+                $xml->writeAttribute('Algorithm', $alg->getEvalue());
                 $algattrs = $alg->getAttributes();
                 foreach ($algattrs as $k => $a) {
                     $xml->writeAttribute($k, $a);
@@ -799,18 +788,15 @@ class Providertoxml
             $xml->setIndentString(' ');
         }
         $type = $ent->getType();
-        $hasIdpRole = FALSE;
-        $hasSpRole = FALSE;
+        $hasIdpRole = true;
+        $hasSpRole = true;
+        $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor', 'createSPSSODescriptor');
         if (strcasecmp($type, 'IDP') == 0) {
             $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor');
-            $hasIdpRole = TRUE;
+            $hasSpRole = false;
         } elseif (strcasecmp($type, 'SP') == 0) {
-            $hasSpRole = TRUE;
+            $hasIdpRole = false;
             $rolesFns = array('createSPSSODescriptor');
-        } else {
-            $hasIdpRole = TRUE;
-            $hasSpRole = TRUE;
-            $rolesFns = array('createIDPSSODescriptor', 'createAttributeAuthorityDescriptor', 'createSPSSODescriptor');
         }
         $islocal = $ent->getLocal();
         $valiUntil = $ent->getValidTo();
@@ -864,7 +850,6 @@ class Providertoxml
             return $xml;
         } else {
             $entityPart = $xml->outputMemory();
-
             $this->ci->j_ncache->saveMcircleMeta($doCacheId, $entityPart);
             $xmlOut->writeRaw($entityPart);
             return $xmlOut;
