@@ -4,21 +4,22 @@ if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Idp_edit Class
- * 
+ *
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Entitystate extends MY_Controller {
+class Entitystate extends MY_Controller
+{
 
     protected $id;
     protected $tmpProviders;
@@ -29,8 +30,7 @@ class Entitystate extends MY_Controller {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
@@ -56,34 +56,28 @@ class Entitystate extends MY_Controller {
         return $this->form_validation->run();
     }
 
-    
 
     public function regpolicies($id)
     {
-        if (!ctype_digit($id))
-        {
+        if (!ctype_digit($id)) {
             show_error('Incorrect entity id provided', 404);
         }
-        else
-        {
-            $this->entity = $this->tmpProviders->getOneById($id);
-        }
-        if (empty($this->entity))
-        {
+
+        $this->entity = $this->tmpProviders->getOneById($id);
+
+        if (empty($this->entity)) {
             show_error('Provider not found', 404);
         }
         $type = $this->entity->getType();
-        if($type === 'IDP')
-        {
-           $data['titlepage'] = lang('identityprovider').':';
-        }
-        elseif($type === 'SP')
-        {
-           $data['titlepage'] = lang('serviceprovider').':';
-        }
-        else
-        {
-           $data['titlepage'] = '';
+        if ($type === 'IDP') {
+            $data['titlepage'] = lang('identityprovider') . ':';
+            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
+        } elseif ($type === 'SP') {
+            $data['titlepage'] = lang('serviceprovider') . ':';
+            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
+        } else {
+            $data['titlepage'] = '';
+            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
         }
         $myLang = MY_Controller::getLang();
         $isLocked = $this->entity->getLocked();
@@ -93,120 +87,78 @@ class Entitystate extends MY_Controller {
         $data['subtitlepage'] = lang('title_regpols');
         $data['providerid'] = $this->entity->getId();
         $has_write_access = $this->zacl->check_acl($this->entity->getId(), 'write', 'entity', '');
-
-        if(strcasecmp($this->entity->getType(),'SP')==0)
-        {
-            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
-        }
-        else
-        {
-            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
-        }
-	    $data['breadcrumbs'] = array(
+        $data['breadcrumbs'] = array(
             $plist,
-            array('url'=>base_url('providers/detail/show/'.$this->entity->getId().''),'name'=>''.html_escape($titlename).''),
-            array('url'=>'#','name'=>lang('title_regpols'),'type'=>'current'),
+            array('url' => base_url('providers/detail/show/' . $this->entity->getId() . ''), 'name' => '' . html_escape($titlename) . ''),
+            array('url' => '#', 'name' => lang('title_regpols'), 'type' => 'current'),
 
 
-	    );
+        );
 
-        if (!$has_write_access)
-        {
+        if (!$has_write_access) {
             show_error('No sufficient permision to edit entity', 403);
-        }
-        elseif ($isLocked)
-        {
+        } elseif ($isLocked) {
             show_error('entity id locked', 403);
-        }
-        elseif(!$isLocal)
-        {
-            show_error('external entity, cannot be modified',403);
+        } elseif (!$isLocal) {
+            show_error('external entity, cannot be modified', 403);
         }
 
         $isAdmin = $this->j_auth->isAdministrator();
-        
-        if (!$_POST)
-        {
+
+        if (!$_POST) {
             $data['r'] = $this->form_element->NgenerateRegistrationPolicies($this->entity);
             $data['content_view'] = 'manage/entityedit_regpolicies';
-            $this->load->view('page', $data);
+            return $this->load->view('page', $data);
         }
-        else
-        {
-            $p = $this->input->post('entregpolform');
-            if(!empty($p) && strcmp($p,$this->entity->getId())==0)
-            {
-                $this->load->library('providerupdater');
-                $process['regpol'] = array();
-                $input = $this->input->post('f');
-                if (!empty($input) && isset($input['regpol']))
-                {
-                   foreach($input['regpol'] as $p => $v)
-                   {
-                       foreach($v as $k=>$l)
-                       {
-                            $process['regpol'][] = $l;
-                       }
-                   }
-                }
-                $this->load->library('approval');
-                $this->providerupdater->updateRegPolicies($this->entity, $process,$isAdmin);
-                try
-                {
-                  $this->em->flush();
-                  $data['content_view'] = 'manage/entityedit_regpolicies_success';
-                  if($isAdmin)
-                  {
-                     $this->globalnotices[] = lang('updated');
-                  }
-                  elseif(count($this->globalnotices) == 0)
-                  {
-                     $this->globalnotices[]  = lang('requestsentforapproval');
-                  }
-                  $this->load->view('page',$data);
-                  return;
-                }
-                catch(Exception $e)
-                {
-                   log_message('error',__METHOD__.' '.$e);
-                   show_error('Internal server error',500);
-                   return;
-                }
 
-                $data['r'] = $this->form_element->NgenerateRegistrationPolicies($this->entity);
-                $data['content_view'] = 'manage/entityedit_regpolicies';
+        $p = $this->input->post('entregpolform');
+        if (!empty($p) && strcmp($p, $this->entity->getId()) == 0) {
+            $this->load->library('providerupdater');
+            $process['regpol'] = array();
+            $input = $this->input->post('f');
+            if (!empty($input) && isset($input['regpol'])) {
+                foreach ($input['regpol'] as $p => $v) {
+                    foreach ($v as $k => $l) {
+                        $process['regpol'][] = $l;
+                    }
+                }
+            }
+            $this->load->library('approval');
+            $this->providerupdater->updateRegPolicies($this->entity, $process, $isAdmin);
+            try {
+                $this->em->flush();
+                $data['content_view'] = 'manage/entityedit_regpolicies_success';
+                if ($isAdmin) {
+                    $this->globalnotices[] = lang('updated');
+                } elseif (count($this->globalnotices) == 0) {
+                    $this->globalnotices[] = lang('requestsentforapproval');
+                }
                 $this->load->view('page', $data);
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
+                show_error('Internal server error', 500);
             }
         }
-    }
 
+    }
 
 
     public function modify($id)
     {
-        if (!ctype_digit($id))
-        {
+        if (!ctype_digit($id)) {
             show_error('Incorrect entity id provided', 404);
-        }
-        else
-        {
+        } else {
             $this->entity = $this->tmpProviders->getOneById($id);
         }
-        if (!isset($this->entity))
-        {
+        if (!isset($this->entity)) {
             show_error('Provider not found', 404);
         }
         $type = $this->entity->getType();
-        if (strcasecmp($type, 'SP') == 0)
-        {
+        if (strcasecmp($type, 'SP') == 0) {
             $titleprefix = lang('serviceprovider');
-        }
-        elseif (strcasecmp($type, 'IDP') == 0)
-        {
+        } elseif (strcasecmp($type, 'IDP') == 0) {
             $titleprefix = lang('identityprovider');
-        }
-        else
-        {
+        } else {
             $titleprefix = '';
         }
         $lang = MY_Controller::getLang();
@@ -218,41 +170,32 @@ class Entitystate extends MY_Controller {
         $data['current_locked'] = $this->entity->getLocked();
         $data['current_active'] = $this->entity->getActive();
         $data['current_extint'] = $this->entity->getLocal();
-        $data['current_publicvisible'] = (int) $this->entity->getPublicVisible();
-        if(strcasecmp($this->entity->getType(),'SP')==0)
-        {
-            $plist = array('url'=>base_url('providers/sp_list/showlist'),'name'=>lang('serviceproviders'));
+        $data['current_publicvisible'] = (int)$this->entity->getPublicVisible();
+        if (strcasecmp($this->entity->getType(), 'SP') == 0) {
+            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
+        } else {
+            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
         }
-        else
-        {
-            $plist = array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders'));
-        }
-	    $data['breadcrumbs'] = array(
+        $data['breadcrumbs'] = array(
             $plist,
-		    array('url'=>base_url('providers/detail/show/'.$this->entity->getId().''),'name'=>''.html_escape($titlename).''),
-		    array('url'=>'#','name'=>lang('rr_status_mngmt'),'type'=>'current'),
+            array('url' => base_url('providers/detail/show/' . $this->entity->getId() . ''), 'name' => '' . html_escape($titlename) . ''),
+            array('url' => '#', 'name' => lang('rr_status_mngmt'), 'type' => 'current'),
 
 
-	    );
+        );
         $validfrom = $this->entity->getValidFrom();
-        if (!empty($validfrom))
-        {
+        if (!empty($validfrom)) {
             $validfromdate = date('Y-m-d', $validfrom->format('U'));
             $validfromtime = date('H:i', $validfrom->format('U'));
-        }
-        else
-        {
+        } else {
             $validfromdate = '';
             $validfromtime = '';
         }
         $validuntil = $this->entity->getValidTo();
-        if (!empty($validuntil))
-        {
+        if (!empty($validuntil)) {
             $validuntildate = date('Y-m-d', $validuntil->format('U'));
             $validuntiltime = date('H:i', $validuntil->format('U'));
-        }
-        else
-        {
+        } else {
             $validuntildate = '';
             $validuntiltime = '';
         }
@@ -261,15 +204,13 @@ class Entitystate extends MY_Controller {
         $data['current_validfromdate'] = $validfromdate;
         $data['current_validfromtime'] = $validfromtime;
         $has_manage_access = $this->zacl->check_acl($this->entity->getId(), 'manage', 'entity', '');
-        if (!$has_manage_access)
-        {
+        if (!$has_manage_access) {
             show_error('No sufficient permision to manage entity', 403);
             return;
         }
 
 
-        if ($this->_submit_validate() === TRUE)
-        {
+        if ($this->_submit_validate() === TRUE) {
             $locked = $this->input->post('elock');
             $active = $this->input->post('eactive');
             $extint = $this->input->post('extint');
@@ -281,106 +222,76 @@ class Entitystate extends MY_Controller {
 
             $changed = false;
             $differ = array();
-            if (isset($locked))
-            {
-                if ($data['current_locked'] != $locked)
-                {
+            if (isset($locked)) {
+                if ($data['current_locked'] != $locked) {
 
-                    if ($locked == '1')
-                    {
+                    if ($locked == '1') {
                         $differ['Lock'] = array('before' => 'unlocked', 'after' => 'locked');
                         $this->entity->Lock();
-                    }
-                    elseif ($locked == '0')
-                    {
+                    } elseif ($locked == '0') {
                         $this->entity->Unlock();
                         $differ['Lock'] = array('before' => 'locked', 'after' => 'unlocked');
                     }
                     $changed = true;
                 }
             }
-            if (isset($active))
-            {
-                if ($data['current_active'] != $active)
-                {
-                    if ($active == '1')
-                    {
+            if (isset($active)) {
+                if ($data['current_active'] != $active) {
+                    if ($active == '1') {
                         $this->entity->Activate();
                         $differ['Active'] = array('before' => 'disabled', 'after' => 'enabled');
-                    }
-                    elseif ($active == '0')
-                    {
+                    } elseif ($active == '0') {
                         $this->entity->Disactivate();
                         $differ['Active'] = array('before' => 'enabled', 'after' => 'disabled');
                     }
                     $changed = true;
                 }
             }
-            if (isset($publicvisible))
-            {
-                if ($data['current_publicvisible'] != $publicvisible)
-                {
-                    if ($publicvisible == '1')
-                    {
+            if (isset($publicvisible)) {
+                if ($data['current_publicvisible'] != $publicvisible) {
+                    if ($publicvisible == '1') {
                         $this->entity->setVisiblePublic();
                         $differ['PublicVisible'] = array('before' => 'disabled', 'after' => 'enabled');
-                    }
-                    elseif ($publicvisible == '0')
-                    {
+                    } elseif ($publicvisible == '0') {
                         $this->entity->setHidePublic();
                         $differ['PublicVisible'] = array('before' => 'enabled', 'after' => 'disabled');
                     }
                     $changed = true;
                 }
             }
-            if (isset($extint))
-            {
-                if ($data['current_extint'] != $extint)
-                {
-                    if ($extint == '1')
-                    {
+            if (isset($extint)) {
+                if ($data['current_extint'] != $extint) {
+                    if ($extint == '1') {
                         $this->entity->setAsLocal();
                         $this->entity->createAclResource();
                         $differ['Local/External'] = array('before' => 'external', 'after' => 'local');
-                    }
-                    elseif ($extint == '0')
-                    {
+                    } elseif ($extint == '0') {
                         $this->entity->setAsExternal();
                         $differ['Local/External'] = array('before' => 'local', 'after' => 'external');
                     }
                     $changed = true;
                 }
             }
-            if (!empty($validuntildate) && !empty($validuntiltime))
-            {
+            if (!empty($validuntildate) && !empty($validuntiltime)) {
                 $validuntil = new DateTime($validuntildate . 'T' . $validuntiltime);
                 $this->entity->setValidTo($validuntil);
-            }
-            else
-            {
+            } else {
                 $this->entity->setValidTo(null);
             }
-            if (!empty($validfromdate) && !empty($validfromtime))
-            {
+            if (!empty($validfromdate) && !empty($validfromtime)) {
                 $validfrom = new DateTime($validfromdate . 'T' . $validfromtime);
                 $this->entity->setValidFrom($validfrom);
-            }
-            else
-            {
+            } else {
                 $this->entity->setValidFrom(null);
             }
-            if (count($differ) > 0)
-            {
+            if (count($differ) > 0) {
                 $this->tracker->save_track('idp', 'modification', $this->entity->getEntityId(), serialize($differ), false);
             }
             $this->em->persist($this->entity);
-            try
-            {
+            try {
                 $this->em->flush();
                 $data['success_message'] = lang('rr_entstate_updated');
-            }
-            catch (Exception $e)
-            {
+            } catch (Exception $e) {
                 $data['error'] = 'Unkwown error occured during saving changes';
                 log_message('error', __METHOD__ . ' ' . $e);
             }
@@ -388,30 +299,24 @@ class Entitystate extends MY_Controller {
         $data['current_locked'] = $this->entity->getLocked();
         $data['current_active'] = $this->entity->getActive();
         $data['current_extint'] = $this->entity->getLocal();
-        $data['current_publicvisible'] = (int) $this->entity->getPublicVisible();
+        $data['current_publicvisible'] = (int)$this->entity->getPublicVisible();
         $data['entityid'] = $this->entity->getEntityId();
         $data['name'] = $this->entity->getName();
         $data['id'] = $this->entity->getId();
         $data['type'] = strtolower($this->entity->getType());
         $validfrom = $this->entity->getValidFrom();
-        if (!empty($validfrom))
-        {
+        if (!empty($validfrom)) {
             $validfromdate = date('Y-m-d', $validfrom->format('U') + j_auth::$timeOffset);
             $validfromtime = date('H:i', $validfrom->format('U') + j_auth::$timeOffset);
-        }
-        else
-        {
+        } else {
             $validfromdate = '';
             $validfromtime = '';
         }
         $validuntil = $this->entity->getValidTo();
-        if (!empty($validuntil))
-        {
+        if (!empty($validuntil)) {
             $validuntildate = date('Y-m-d', $validuntil->format('U'));
             $validuntiltime = date('H:i', $validuntil->format('U'));
-        }
-        else
-        {
+        } else {
             $validuntildate = '';
             $validuntiltime = '';
         }
@@ -419,7 +324,6 @@ class Entitystate extends MY_Controller {
         $data['current_validuntiltime'] = $validuntiltime;
         $data['current_validfromdate'] = $validfromdate;
         $data['current_validfromtime'] = $validfromtime;
-
 
 
         $data['content_view'] = 'manage/entitystate_form_view';

@@ -334,7 +334,7 @@ class Provider
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
-    
+
     public function __toString()
     {
         return $this->entityid;
