@@ -137,6 +137,7 @@ class Certificate
         return $this;
     }
 
+
     /**
      * setAsSSO() or setAsAA()
      */
@@ -238,6 +239,15 @@ class Certificate
 
     public function getCertUse()
     {
+        return $this->certusage;
+    }
+
+    public function getCertUseInStr()
+    {
+        if(empty($this->certusage))
+        {
+            return 'both';
+        }
         return $this->certusage;
     }
 
