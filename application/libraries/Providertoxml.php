@@ -415,15 +415,16 @@ class Providertoxml
     private function createAttributeConsumingService(\XMLWriter $xml, \models\Provider $ent, $options)
     {
 
-        $reqColl = $ent->getAttributesRequirement();
-        $requiredAttributes = array();
-        foreach ($reqColl as $reqAttr) {
-            $toShow = $reqAttr->getAttribute()->showInMetadata();
-            if ($toShow) {
-                $requiredAttributes['' . $reqAttr->getAttribute()->getId() . ''] = $reqAttr;
+        /**
+         * @var $reqColl \models\AttributeRequirement[]
+         */
+        $filterShow = array(true);
+        $reqColl = $ent->getAttributesRequirement()->filter(
+            function(models\AttributeRequirement $entry) use ($filterShow){
+                return in_array($entry->getAttribute()->showInMetadata(), $filterShow);
             }
-        }
-        $finalReqAttrs = &$requiredAttributes;
+        );
+        $finalReqAttrs = &$reqColl;
         if (count($finalReqAttrs) == 0) {
             if (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0) {
                 return $xml;
