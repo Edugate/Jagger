@@ -174,14 +174,13 @@ class Manage extends MY_Controller
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
         if (empty($federation)) {
             show_error('Federation not found', 404);
-            return;
         }
         /**
          * @var $federationMembers models\Provider[]
          */
         $federationMembers = $federation->getActiveMembers();
         $members_ids = array();
-        if (!empty($type) && (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp') == 0)) {
+        if (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp') == 0) {
             foreach ($federationMembers as $m) {
                 $entype = $m->getType();
                 if (strcasecmp($entype, $type) == 0) {
@@ -195,7 +194,6 @@ class Manage extends MY_Controller
         }
         if (count($members_ids) == 0) {
             show_error(lang('error_nomembersforfed'), 404);
-            return;
         }
         /**
          * @var $contacts models\Contact[]
@@ -210,7 +208,6 @@ class Manage extends MY_Controller
         foreach ($cont_array as $key => $value) {
             $result .= $key . ';' . trim($value) . ';' . PHP_EOL;
         }
-
         $this->load->helper('download');
         force_download('federationcontactlist.txt', $result, 'text/plain');
     }
@@ -319,13 +316,13 @@ class Manage extends MY_Controller
             $sideicons[] = '<a href="#" title="' . lang('noperm_fededit') . '"><i class="fi-prohibited"></i></a>';
 
         } else {
-            $sideicons[] = '<a href="' . base_url() . 'manage/fededit/show/' . $federation->getId() . '" title="' . lang('rr_fededit') . '"><i class="fi-pencil"></i></a>';
-            $editAttributesLink = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federation->getId() . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
+            $sideicons[] = '<a href="' . base_url() . 'manage/fededit/show/' . $federationID . '" title="' . lang('rr_fededit') . '"><i class="fi-pencil"></i></a>';
+            $editAttributesLink = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federationID . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
         }
 
         $bookmarked = false;
         $b = $this->session->userdata('board');
-        if (!empty($b) && is_array($b) && isset($b['fed']['' . $federation->getId() . ''])) {
+        if (is_array($b) && isset($b['fed']['' . $federationID . ''])) {
             $bookmarked = true;
         } else {
             $sideicons[] = '<a href="' . base_url() . 'ajax/bookfed/' . $federation->getId() . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-bookmark"></i></a>';
@@ -660,18 +657,16 @@ class Manage extends MY_Controller
         $entitiesDescriptorId = $federation->getDescriptorId();
         if (!empty($entitiesDescriptorId)) {
             return array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
-        } else {
-            $validfor = new \DateTime("now", new \DateTimezone('UTC'));
-            $idprefix = '';
-            $prefid = $this->config->item('fedmetadataidprefix');
-            if (!empty($prefid)) {
-                $idprefix = $prefid;
-            }
-            $idsuffix = $validfor->format('YmdHis');
-            $entitiesDescriptorId = $idprefix . $idsuffix;
-            return array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
         }
-
+        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+        $idprefix = '';
+        $prefid = $this->config->item('fedmetadataidprefix');
+        if (!empty($prefid)) {
+            $idprefix = $prefid;
+        }
+        $idsuffix = $validfor->format('YmdHis');
+        $entitiesDescriptorId = $idprefix . $idsuffix;
+        return array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
     }
 
     private function genValidators(\models\Federation $federation, $hasWriteAccess = false)
