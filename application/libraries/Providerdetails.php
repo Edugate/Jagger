@@ -143,7 +143,6 @@ class Providerdetails
 				$r = openssl_pkey_get_public($ncert);
 				$keysize = 0;
 				if (!empty($r)) {
-					$data = array();
 					$data = openssl_pkey_get_details($r);
 					if (isset($data['bits'])) {
 						$keysize = $data['bits'];

@@ -547,20 +547,16 @@ class Form_element
         $tmplEncryptionMethods = j_KeyEncryptionAlgorithms();
         $certuse = $cert->getCertUseInStr();
         $certdata = getPEM($cert->getCertData());
-
         $keysize = getKeysize($certdata);
 
         if (empty($keysize)) {
             $keysize = lang('unknown');
         }
-
+ $readonly = true;
         $crtid = $cert->getId();
         if (empty($crtid)) {
             $crtid = 'x' . rand();
-        }
-        $readonly = false;
-        if (ctype_digit($crtid)) {
-            $readonly = true;
+            $readonly = false;
         }
         $row = '<div class="certgroup small-12 columns">' .
             '<div class="small-12 columns hidden">' .
@@ -568,9 +564,9 @@ class Form_element
             '</div>';
 
 
-        $row .= '<div class="small-12 columns">';
-        $row .= $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE);
-        $row .= '</div>';
+        $row .= '<div class="small-12 columns">'.
+            $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE).
+            '</div>';
 
         $tmpkeyname = $cert->getKeyname();
 
@@ -583,9 +579,9 @@ class Form_element
         $row .= '</div>';
 
 
-        $row .= '<div class="small-12 columns">';
-        $row .= $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled'));
-        $row .= '</div>';
+        $row .= '<div class="small-12 columns">'.
+            $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled')).
+            '</div>';
 
 //$name . '[' . $crtid . '][certdata]
         $row .= '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][certdata]" class="right inline">' . lang('rr_certificate') . '</label></div>';
@@ -607,10 +603,9 @@ class Form_element
         $certEncMethods = $cert->getEncryptMethods();
         $row .= '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][encmethods][]" class="right inline">EncryptionMethod</label></div><div class="small-9 column">';
         foreach ($tmplEncryptionMethods as $tmplEnc) {
+            $ischeck = '';
             if (in_array($tmplEnc, $certEncMethods)) {
                 $ischeck = ' checked="checked" ';
-            } else {
-                $ischeck = '';
             }
             $row .= '<div><label><input type="checkbox" name="' . $name . '[' . $crtid . '][encmethods][]" value="' . $tmplEnc . '" ' . $ischeck . '> ' . $tmplEnc . '</label></div>';
         }
