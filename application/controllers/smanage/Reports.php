@@ -163,19 +163,9 @@ class Reports extends MY_Controller {
 
     public function vmigrate()
     {
-       if(!$this->input->is_ajax_request()){
-           set_status_header(401);
-           echo 'Bad request';
-           return;
-       }
-       if(!$this->j_auth->logged_in()){
+       if(!$this->input->is_ajax_request() || !$this->j_auth->logged_in() || !$this->j_auth->isAdministrator()){
            set_status_header(403);
-           echo 'Session lost';
-           return;
-       }
-       if(!$this->j_auth->isAdministrator()){
-           set_status_header(403);
-           echo 'No permission';
+           echo 'Access denied';
            return;
        }
 
@@ -216,7 +206,6 @@ class Reports extends MY_Controller {
                 echo  '<div class="success alert-box" data-alert>'.lang('rr_sysuptodate').' : '.$t.'</div>';
            }
        }
-      
        
     }
 

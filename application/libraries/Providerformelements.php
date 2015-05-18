@@ -60,11 +60,8 @@ class Providerformelements
         $ent = &$this->ent;
         $entid = $ent->getId();
         $ses = &$this->ses;
+        $sessform = is_array($this->ses);
 
-        $sessform = FALSE;
-        if (!empty($ses) && is_array($ses)) {
-            $sessform = TRUE;
-        }
         $t_regauthority = $ent->getRegistrationAuthority();
         $t_regdate = '';
         $t_regtime = '';
@@ -101,7 +98,6 @@ class Providerformelements
                     'a1' => 'lnameadd',
                     'a2' => 'lnamelangcode',
                     'a3'=>'f[lname][XXX]',
-
                     'a4' => lang('e_orgname')
                 ),
             ),
@@ -124,7 +120,6 @@ class Providerformelements
                     'a1' => 'lhelpdeskadd',
                     'a2' => 'lhelpdesklangcode',
                     'a3' => 'f[lhelpdesk][XXX]',
-
                     'a4' => lang('rr_helpdeskurl')
                 ),
             ),

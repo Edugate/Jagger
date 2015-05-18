@@ -247,8 +247,9 @@ class Providertoxml
 
     private function createUIIInfo(\XMLWriter $xml, \models\Provider $ent, $role)
     {
+        $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
         $doFilter = array(
-            'elements'=>array('DisplayName','Description','Logo','InformationURL','PrivacyStatementURL'),
+            'elements'=>array_keys($extarray),
             'type'=>array($role),
             'namespace'=>array('mdui')
         );
@@ -261,7 +262,7 @@ class Providertoxml
         {
              return $xml;
         }
-        $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
+
         foreach ($extendMeta as $v) {
                 $extarray['' . $v->getElement() . ''][] = $v;
         }
@@ -280,19 +281,6 @@ class Providertoxml
                     $xml->startElementNs('mdui', '' . $mduiElement . '', null);
                     $xml->writeAttribute('xml:lang', $lang['xml:lang']);
                     $xml->text($value->getElementValue());
-                    $xml->endElement();
-                }
-            }
-
-            if (!$enLang['' . $mduiElement . '']) {
-                if (strcmp('PrivacyStatementURL', $mduiElement) == 0) {
-                    $t = $ent->getPrivacyUrl();
-                }
-
-                if (!empty($t)) {
-                    $xml->startElementNs('mdui', '' . $mduiElement . '', null);
-                    $xml->writeAttribute('xml:lang', 'en');
-                    $xml->text($t);
                     $xml->endElement();
                 }
             }
@@ -416,10 +404,9 @@ class Providertoxml
         /**
          * @var $reqColl \models\AttributeRequirement[]
          */
-        $filterShow = array(true);
         $reqColl = $ent->getAttributesRequirement()->filter(
-            function(models\AttributeRequirement $entry) use ($filterShow){
-                return in_array($entry->getAttribute()->showInMetadata(), $filterShow);
+            function(models\AttributeRequirement $entry){
+                return in_array($entry->getAttribute()->showInMetadata(), array(true));
             }
         );
         $finalReqAttrs = &$reqColl;
