@@ -20,45 +20,37 @@ if (!defined('BASEPATH'))
 class Attribute_policyajax extends MY_Controller
 {
 
+    protected  $tmpArps;
     public function __construct()
     {
         parent::__construct();
+        $this->tmpArps = new models\AttributeReleasePolicies;
 
     }
 
     public function getattrpath($idpid, $spid, $attrid)
     {
-        if (!$this->input->is_ajax_request()) {
-            show_error('method not allowed', 403);
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        $isValidRequest = (ctype_digit($idpid) && ctype_digit($spid) && ctype_digit($attrid) && $this->input->is_ajax_request() && $this->j_auth->logged_in());
+        if (!$isValidRequest) {
             set_status_header(403);
-            echo 'lost session';
+            echo 'Access denied';
             return;
         }
-        $this->load->library('zacl');
-        $tmp_arps = new models\AttributeReleasePolicies;
-        $dropdownInLang = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'));
-
-
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
         if (empty($idp)) {
             set_status_header(404);
             echo 'idp not found';
             return;
         }
-        $has_write_access = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$has_write_access) {
+        if(!$this->checkAccess($idp))
+        {
             set_status_header(403);
-            echo 'no permission';
+            echo 'Access denied';
             return;
         }
-        if (empty($spid) || empty($attrid) || !ctype_digit($spid) || !ctype_digit($attrid)) {
-            set_status_header(403);
-            echo 'missing params';
-            return;
-        }
+
+        $dropdownInLang = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'));
+
 
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attrid));
         if (empty($attribute)) {
@@ -96,7 +88,7 @@ class Attribute_policyajax extends MY_Controller
         $fedsmerged = array();
         foreach ($spfeds as $s) {
             if ($idpfeds->contains($s)) {
-                $tmpattrfed = $tmp_arps->getOneFedPolicyAttribute($idp, $s, $attribute->getId());
+                $tmpattrfed = $this->tmpArps->getOneFedPolicyAttribute($idp, $s, $attribute->getId());
                 if (!empty($tmpattrfed)) {
                     $tmpattrfedPolicy = $tmpattrfed->getPolicy();
                     if ($tmpattrfedPolicy !== null && $tmpattrfedPolicy >= $attrfed) {
@@ -117,8 +109,8 @@ class Attribute_policyajax extends MY_Controller
             $result['details'][] = array('name' => lang('rr_federation'), 'value' => $dropdownInLang['' . $attrfed . ''] . $fedsuffix);
         }
 
-        $specificPolicy = $tmp_arps->getOneSPPolicy($idp->getId(), $attribute->getId(), $sp->getId());
-        $customPolicy = $tmp_arps->getOneSPCustomPolicy($idp->getId(), $attribute->getId(), $sp->getId());
+        $specificPolicy = $this->tmpArps->getOneSPPolicy($idp->getId(), $attribute->getId(), $sp->getId());
+        $customPolicy = $this->tmpArps->getOneSPCustomPolicy($idp->getId(), $attribute->getId(), $sp->getId());
         if (empty($specificPolicy)) {
             $result['details'][] = array('name' => lang('rr_requester'), 'value' => $dropdownInLang['100'] . ' => ' . lang('rr_inheritfromparent'));
         } else {
@@ -145,32 +137,39 @@ class Attribute_policyajax extends MY_Controller
 
     }
 
-    public function submit_sp($idp_id)
+    /**
+     * @param \models\Provider $provider
+     * @return bool
+     */
+    private function checkAccess(models\Provider $provider)
+    {
+        $this->load->library('zacl');
+        $isLocked = $provider->getLocked();
+        $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
+        return ($hasWriteAccess && $isLocked);
+    }
+
+    public function submit_sp($idpID)
     {
 
-        if (empty($idp_id) || !ctype_digit($idp_id) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in() ) {
+        if (!ctype_digit($idpID) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in() ) {
             set_status_header(403);
             echo 'Access denied';
             return;
         }
-        $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idp_id, 'type' => array('IDP', 'BOTH')));
+        $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID, 'type' => array('IDP', 'BOTH')));
         if (empty($idp)) {
             set_status_header(404);
             echo lang('rerror_providernotexist');
             return;
         }
+        if(!$this->checkAccess($idp))
+        {
+            set_status_header(403);
+            echo 'Access denied';
+            return;
+        }
         $this->load->library('zacl');
-        $has_write_access = $this->zacl->check_acl($idp_id, 'write', 'entity', '');
-        if (!$has_write_access) {
-            set_status_header(403);
-            echo 'no permission';
-            return;
-        }
-        if ($idp->getLocked()) {
-            set_status_header(403);
-            echo lang('rr_lockedentity');
-            return;
-        }
         $tmp_a = $this->config->item('policy_dropdown');
         $idpid = $this->input->post('idpid');
         if (empty($idpid) || !ctype_digit($idpid)) {
@@ -179,8 +178,8 @@ class Attribute_policyajax extends MY_Controller
             echo lang('missedinfoinpost');
             return;
         }
-        if ($idp_id != $idpid) {
-            log_message('error', 'idp id from post is not equal with idp in url, idp in post:' . $idpid . ', idp in url:' . $idp_id);
+        if ($idpID != $idpid) {
+            log_message('error', 'idp id from post is not equal with idp in url, idp in post:' . $idpid . ', idp in url:' . $idpID);
             set_status_header(403);
             echo lang('unknownerror');
             return;
@@ -217,8 +216,8 @@ class Attribute_policyajax extends MY_Controller
 
         $changes = array();
         $tmp_arps = new models\AttributeReleasePolicies;
-        $arp = $tmp_arps->getOneSPPolicy($idp_id, $attribute->getId(), $sp->getId());
-        $customsp = $tmp_arps->getOneSPCustomPolicy($idp_id, $attribute->getId(), $sp->getId());
+        $arp = $tmp_arps->getOneSPPolicy($idpID, $attribute->getId(), $sp->getId());
+        $customsp = $tmp_arps->getOneSPCustomPolicy($idpID, $attribute->getId(), $sp->getId());
         $custom = true;
         if (empty($customsp)) {
             $custom = false;
@@ -229,29 +228,28 @@ class Attribute_policyajax extends MY_Controller
             $this->em->persist($arp);
             if ($policy != $old_policy) {
                 $changes['attr: ' . $attribute->getName() . ''] = array(
-                    'before' => 'policy for ' . htmlentities($sp->getEntityId()) . ' : ' . $tmp_a[$old_policy] . '',
+                    'before' => 'policy for ' .$sp->getEntityId(). ' : ' . $tmp_a[$old_policy] . '',
                     'after' => $tmp_a[$policy],
                 );
                 $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
             }
-            $this->em->flush();
             log_message('debug', 'action: modify - modifying arp from policy ' . $old_policy . ' to ' . $policy);
         } else {
             $narp = new models\AttributeReleasePolicy;
             $narp->setSpecificPolicy($idp, $attribute, $sp->getId(), $policy);
             $this->em->persist($narp);
             $changes['attr: ' . $attribute->getName() . ''] = array(
-                'before' => 'policy for ' . htmlentities($sp->getEntityId()) . ' : not set/inherited',
+                'before' => 'policy for ' . $sp->getEntityId() . ' : not set/inherited',
                 'after' => $tmp_a[$policy],
             );
             $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
-            $this->em->flush();
         }
+        $this->em->flush();
         $keyPrefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
-        $cache2 = 'arp_' . $idp_id;
+        $cache2 = 'arp_' . $idpID;
         $this->cache->delete($cache2);
-        $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idp_id), -1);
+        $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpID), -1);
         if ($custom) {
             echo $policy . 'c';
         } else {
