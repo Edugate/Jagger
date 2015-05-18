@@ -2583,9 +2583,6 @@ class Form_element
         $f .= '<div class="small-12 columns">';
         $f .= '<div class="small-3 columns text-right">' . form_label(lang('rr_isfedpublic') . ' ' . showBubbleHelp(lang('rhelppublicfed')), 'ispublic') . '</div><div class="small-8 large-7 columns end">' . form_checkbox('ispublic', 'accept', set_value('ispublic', $federation->getPublic())) . '</div>';
         $f .= '</div>';
-        $f .= '<div class="small-12 columns">';
-        $f .= '<div class="small-3 columns text-right">' . form_label(lang('rr_include_attr_in_meta'), 'incattrs') . '</div><div class="small-8 large-7 columns">' . form_checkbox('incattrs', 'accept', set_value('incattrs', $federation->getAttrsInmeta())) . '</div><div class="small-1 large-2 "></div></div>';
-        $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
         $f .= '<div class="small-3 columns text-right">' . form_label(lang('rr_lexport_enabled'), 'lexport') . '</div><div class="small-8 large-7 columns">' . form_checkbox('lexport', 'accept', set_value('lexport', $federation->getLocalExport())) . '</div><div class="small-1 large-2 "></div>';

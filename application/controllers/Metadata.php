@@ -3,17 +3,17 @@
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * Jagger
- * 
+ *
  * @package     Jagger
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Metadata Class
- * 
+ *
  * @package     Jagger
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
@@ -26,7 +26,6 @@ class Metadata extends MY_Controller
 {
 
 
-
     function __construct()
     {
         parent::__construct();
@@ -37,27 +36,21 @@ class Metadata extends MY_Controller
     public function federation($federationName = NULL, $limitType = NULL)
     {
         $this->load->library('providertoxml');
-        if (empty($federationName))
-        {
+        if (empty($federationName)) {
             show_error('Not found', 404);
         }
         $data = array();
         $excludeType = null;
         $name = $federationName;
-        if (!empty($limitType) && ((strcasecmp($limitType, 'SP') == 0) || (strcasecmp($limitType, 'IDP') == 0) ))
-        {
-            if (strcasecmp($limitType, 'SP') == 0)
-            {
+        if (!empty($limitType) && ((strcasecmp($limitType, 'SP') == 0) || (strcasecmp($limitType, 'IDP') == 0))) {
+            if (strcasecmp($limitType, 'SP') == 0) {
                 $excludeType = 'IDP';
-            }
-            else
-            {
+            } else {
                 $excludeType = 'SP';
             }
         }
         $permitPull = $this->checkAccess();
-        if ($permitPull !== TRUE)
-        {
+        if ($permitPull !== TRUE) {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
             show_error('Access denied', 403);
         }
@@ -65,10 +58,9 @@ class Metadata extends MY_Controller
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name, 'is_active'=>true));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name, 'is_active' => true));
 
-        if (empty($federation))
-        {
+        if (empty($federation)) {
             set_status_header(400);
             echo 'Federation not found or is inactive';
             return;
@@ -79,27 +71,20 @@ class Metadata extends MY_Controller
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
         $entitiesDescriptorId = $federation->getDescriptorId();
-        if(empty($entitiesDescriptorId))
-        {
-            $idprefix ='';
+        if (empty($entitiesDescriptorId)) {
+            $idprefix = '';
             $prefid = $this->config->item('fedmetadataidprefix');
-            if (!empty($prefid))
-            {
+            if (!empty($prefid)) {
                 $idprefix = $prefid;
             }
             $idsuffix = $validfor->format('YmdHis');
             $entitiesDescriptorId = $idprefix . $idsuffix;
         }
 
-
-        $includeAttrRequirement = $federation->getAttrsInmeta();
         $options = array('attrs' => 0, 'fedreqattrs' => array());
-        if ($includeAttrRequirement)
-        {
-            $options['attrs'] = 1;
-            $tmpAttrRequirements = new models\AttributeRequirements;
-            $options['fedreqattrs'] = $tmpAttrRequirements->getRequirementsByFed($federation);
-        }
+        $tmpAttrRequirements = new models\AttributeRequirements;
+        $options = array('attrs' => 1, 'fedreqattrs' => $tmpAttrRequirements->getRequirementsByFed($federation));
+
         $tmpm = new models\Providers;
         /**
          * @var $members \models\Provider[]
@@ -119,12 +104,10 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
         $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v)
-        {
+        foreach ($regNamespaces as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
-        if (!empty($publisher))
-        {
+        if (!empty($publisher)) {
             $xmlOut->startElementNs('md', 'Extensions', null);
             $xmlOut->startElementNs('mdrpi', 'PublicationInfo', null);
             $xmlOut->writeAttribute('creationInstant', $creationInstant);
@@ -132,19 +115,16 @@ class Metadata extends MY_Controller
             $xmlOut->endElement(); // PublicationInfo
             $xmlOut->endElement(); // Extensions
         }
-        foreach ($members as $k => $m)
-        {
+        foreach ($members as $k => $m) {
             $cacheId = null;
             $mtype = $m->getType();
 
             $xmlOut->startComment();
             $xmlOut->text(PHP_EOL . $m->getEntityId() . PHP_EOL);
 
-            if (strcmp($mtype, 'IDP') == 0)
-            {
+            if (strcmp($mtype, 'IDP') == 0) {
                 $metadataCached = $this->j_ncache->getMcircleMeta($m->getId());
-                if (!empty($metadataCached))
-                {
+                if (!empty($metadataCached)) {
                     $xmlOut->endComment();
                     $xmlOut->writeRaw($metadataCached);
                     unset($members[$k]);
@@ -152,14 +132,11 @@ class Metadata extends MY_Controller
                 }
             }
 
-            if ($m->isStaticMetadata())
-            {
+            if ($m->isStaticMetadata()) {
                 $xmlOut->text('static' . PHP_EOL);
                 $xmlOut->endComment();
                 $this->providertoxml->entityStaticConvert($xmlOut, $m);
-            }
-            else
-            {
+            } else {
                 $xmlOut->endComment();
                 $this->providertoxml->entityConvert($xmlOut, $m, $options, $m->getId());
             }
@@ -176,14 +153,12 @@ class Metadata extends MY_Controller
 
     public function federationexport($federationName = NULL)
     {
-        if (empty($federationName))
-        {
+        if (empty($federationName)) {
             show_error('Not found', 404);
         }
         $data = array();
         $permitPull = $this->checkAccess();
-        if ($permitPull !== TRUE)
-        {
+        if ($permitPull !== TRUE) {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
             show_error('Access denied', 403);
         }
@@ -191,10 +166,9 @@ class Metadata extends MY_Controller
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE,'is_active'=>TRUE));
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE, 'is_active' => TRUE));
 
-        if (empty($federation))
-        {
+        if (empty($federation)) {
             show_404('page', 'log_error');
         }
         $this->load->library('providertoxml');
@@ -202,13 +176,9 @@ class Metadata extends MY_Controller
          * check if federation is active
          */
         $termsofuse = $federation->getTou();
-        $isAttrReqsIncluded = $federation->getAttrsInmeta();
-        $options = array('attrs' => 0, 'fedreqattrs' => array());
-        if ($isAttrReqsIncluded)
-        {
-            $attrfedreq_tmp = new models\AttributeRequirements;
-            $options = array('attrs' => 1, 'fedreqattrs' => $attrfedreq_tmp->getRequirementsByFed($federation));
-        }
+        $attrfedreq_tmp = new models\AttributeRequirements;
+        $options = array('attrs' => 1, 'fedreqattrs' => $attrfedreq_tmp->getRequirementsByFed($federation));
+
         $tmpm = new models\Providers;
         /**
          * @var $members models\Provider[]
@@ -219,7 +189,7 @@ class Metadata extends MY_Controller
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
 
         $entitiesDescriptorId = $federation->getDescriptorId();
-        if(strlen($entitiesDescriptorId) == 0) {
+        if (strlen($entitiesDescriptorId) == 0) {
 
             $idprefix = $this->config->item('fedexportmetadataidprefix');
             if (empty($idprefix)) {
@@ -227,18 +197,15 @@ class Metadata extends MY_Controller
             }
             $idsuffix = $validfor->format('YmdHis');
             $entitiesDescriptorId = $idprefix . $idsuffix;
-        }
-        else
-        {
-            $entitiesDescriptorId = 'export-'.$entitiesDescriptorId.'';
+        } else {
+            $entitiesDescriptorId = 'export-' . $entitiesDescriptorId . '';
         }
         $xmlOut = $this->providertoxml->createXMLDocument();
         $topcomment = PHP_EOL . '===============================================================' . PHP_EOL . '= Federation metadata containing only localy managed entities.=' . PHP_EOL . '===============================================================' . PHP_EOL;
         // EntitiesDescriptor
         $xmlOut->startComment();
         $xmlOut->text($topcomment);
-        if (!empty($termsofuse))
-        {
+        if (!empty($termsofuse)) {
             $toucomment = PHP_EOL . "TERMS OF USE:" . PHP_EOL . $termsofuse . PHP_EOL;
             $xmlOut->text(h_metadataComment($toucomment));
         }
@@ -250,23 +217,18 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
         $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v)
-        {
+        foreach ($regNamespaces as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
-        foreach ($members as $k => $m)
-        {
+        foreach ($members as $k => $m) {
 
             $xmlOut->startComment();
             $xmlOut->text($m->getEntityId());
-            if ($m->isStaticMetadata())
-            {
+            if ($m->isStaticMetadata()) {
                 $xmlOut->text(PHP_EOL . 'static' . PHP_EOL);
                 $xmlOut->endComment();
                 $this->providertoxml->entityStaticConvert($xmlOut, $m);
-            }
-            else
-            {
+            } else {
                 $xmlOut->endComment();
                 $this->providertoxml->entityConvert($xmlOut, $m, $options);
             }
@@ -277,33 +239,28 @@ class Metadata extends MY_Controller
         $data['out'] = $xmlOut->outputMemory();
         $mem = memory_get_usage();
         $mem = round($mem / 1048576, 2);
-        log_message('info', __METHOD__.': Memory usage: ' . $mem . 'M');
+        log_message('info', __METHOD__ . ': Memory usage: ' . $mem . 'M');
         $this->load->view('metadata_view', $data);
     }
 
     public function preregister($tmpid)
     {
-        if(!ctype_digit($tmpid))
-        {
+        if (!ctype_digit($tmpid)) {
             show_error('Not found');
         }
         $this->load->library('j_ncache');
         $cachedMetadata = $this->j_ncache->getPreregisterMetadata($tmpid);
-        if(!empty($cachedMetadata))
-        {
+        if (!empty($cachedMetadata)) {
             $data['out'] = $cachedMetadata;
             $this->load->view('metadata_view', $data);
-        }
-        else
-        {
+        } else {
             show_error('Not found 2', 404);
         }
     }
 
     public function service($entityId = null, $fileName = null)
     {
-        if (empty($entityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0)
-        {
+        if (empty($entityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0) {
             show_error('Page not found', 404);
         }
 
@@ -316,11 +273,9 @@ class Metadata extends MY_Controller
          * @var $entity models\Provider
          */
         $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
-        if (!empty($entity))
-        {
+        if (!empty($entity)) {
             $isStatic = $entity->isStaticMetadata();
-            if ($isStatic)
-            {
+            if ($isStatic) {
                 $xmlOut = $this->providertoxml->createXMLDocument();
                 $this->providertoxml->entityStaticConvert($xmlOut, $entity);
                 $xmlOut->endDocument();
@@ -329,27 +284,20 @@ class Metadata extends MY_Controller
                 $mem = round($mem / 1048576, 2);
                 log_message('info', 'Memory usage: ' . $mem . 'M');
                 $this->load->view('metadata_view', $data);
-            }
-            else
-            {
+            } else {
                 $xmlOut = $this->providertoxml->entityConvertNewDocument($entity, $options);
             }
-            if (!empty($xmlOut))
-            {
+            if (!empty($xmlOut)) {
                 $data['out'] = $xmlOut->outputMemory();
                 $mem = memory_get_usage();
                 $mem = round($mem / 1048576, 2);
                 log_message('info', 'Memory usage: ' . $mem . 'M');
                 $this->load->view('metadata_view', $data);
-            }
-            else
-            {
+            } else {
                 log_message('error', __METHOD__ . ' empty xml has been generated');
                 show_error('Internal server error', 500);
             }
-        }
-        else
-        {
+        } else {
             log_message('debug', 'Identity Provider not found');
             show_error('Identity Provider not found', 404);
         }
@@ -366,8 +314,7 @@ class Metadata extends MY_Controller
         $circleForExternalAllowed = $this->config->item('disable_extcirclemeta');
         $isLocal = $provider->getLocal();
         $result = true;
-        if (!$isLocal && (!empty($circleForExternalAllowed) && $circleForExternalAllowed === true))
-        {
+        if (!$isLocal && (!empty($circleForExternalAllowed) && $circleForExternalAllowed === true)) {
             $result = false;
         }
         return $result;
@@ -376,17 +323,14 @@ class Metadata extends MY_Controller
     public function circle($entityId = NULL, $fileName = NULL)
     {
         $isEnabled = $this->isCircleFeatureEnabled();
-        if (!$isEnabled)
-        {
+        if (!$isEnabled) {
             show_error('Circle of trust  metadata : Feature is disabled', 404);
         }
-        if (empty($entityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0)
-        {
+        if (empty($entityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0) {
             show_error('Request not allowed', 403);
         }
         $permitPull = $this->checkAccess();
-        if ($permitPull !== TRUE)
-        {
+        if ($permitPull !== TRUE) {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
             show_error('Access denied', 403);
         }
@@ -396,14 +340,12 @@ class Metadata extends MY_Controller
          * @var $provider models\Provider
          */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $name . ''));
-        if (empty($provider))
-        {
+        if (empty($provider)) {
             log_message('debug', 'Failed generating circle metadata for ' . $name);
             show_error('unknown provider', 404);
             return;
         }
-        if (!$this->isProviderAllowedForCircle($provider))
-        {
+        if (!$this->isProviderAllowedForCircle($provider)) {
             log_message('warning', 'Cannot generate circle metadata for external provider:' . $provider->getEntityId());
             log_message('debug', 'To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE');
             show_error($provider->getEntityId() . ': This is not managed localy. Cannot generate circle metadata', 403);
@@ -411,16 +353,14 @@ class Metadata extends MY_Controller
         }
         $mtype = $provider->getType();
         $excludeType = null;
-        if (strcasecmp($mtype, 'BOTH') != 0)
-        {
+        if (strcasecmp($mtype, 'BOTH') != 0) {
             $excludeType = $mtype;
         }
         $options['attrs'] = 1;
         $p = new models\Providers;
         $tFeds = $p->getTrustedActiveFeds($provider);
         $feds = array();
-        foreach ($tFeds as $f)
-        {
+        foreach ($tFeds as $f) {
             $feds[] = $f->getId();
         }
 
@@ -435,8 +375,7 @@ class Metadata extends MY_Controller
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
         $idprefix = '';
         $prefid = $this->config->item('circlemetadataidprefix');
-        if (!empty($prefid))
-        {
+        if (!empty($prefid)) {
             $idprefix = $prefid;
         }
         $this->load->library('providertoxml');
@@ -447,33 +386,25 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('validUntil', '' . $validuntil . '');
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
         $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v)
-        {
+        foreach ($regNamespaces as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
 
-        foreach ($members as $keyMember => $valueMember)
-        {
+        foreach ($members as $keyMember => $valueMember) {
             $metadataCached = $this->j_ncache->getMcircleMeta($valueMember->getId());
             $xmlOut->startComment();
             $xmlOut->text($valueMember->getEntityId());
-            if (!empty($metadataCached))
-            {
+            if (!empty($metadataCached)) {
 
                 $xmlOut->endComment();
                 $xmlOut->writeRaw($metadataCached);
-            }
-            else
-            {
+            } else {
 
-                if ($valueMember->isStaticMetadata())
-                {
+                if ($valueMember->isStaticMetadata()) {
                     $xmlOut->text(PHP_EOL . 'static' . PHP_EOL);
                     $xmlOut->endComment();
                     $this->providertoxml->entityStaticConvert($xmlOut, $valueMember);
-                }
-                else
-                {
+                } else {
                     $xmlOut->endComment();
                     $this->providertoxml->entityConvert($xmlOut, $valueMember, $options, $valueMember->getId());
                 }
@@ -495,40 +426,33 @@ class Metadata extends MY_Controller
      */
     public function queue($tokenid)
     {
-        if (strlen($tokenid) > 100 || !ctype_alnum($tokenid))
-        {
+        if (strlen($tokenid) > 100 || !ctype_alnum($tokenid)) {
             show_error('Not found', 404);
             return null;
         }
         $queue = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $tokenid));
-        if (empty($queue))
-        {
+        if (empty($queue)) {
             show_error('Not found', 404);
             return null;
         }
         $queueAction = $queue->getAction();
         $queueObjType = $queue->getType();
-        if (!(strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0)))
-        {
+        if (!(strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0))) {
             show_error('Not found', 404);
             return null;
         }
         $queueData = $queue->getData();
         $this->load->library('providertoxml');
-        if (!isset($queueData['metadata']))
-        {
+        if (!isset($queueData['metadata'])) {
             $entity = new models\Provider;
             $entity->importFromArray($queueData);
             $options['attrs'] = 1;
-            if (empty($entity))
-            {
+            if (empty($entity)) {
                 show_error('Not found', 404);
             }
             $result = $this->providertoxml->entityConvertNewDocument($entity, $options);
             $data['out'] = $result->outputMemory();
-        }
-        else
-        {
+        } else {
             $this->load->library('xmlvalidator');
             libxml_use_internal_errors(true);
             $metadataDOM = new \DOMDocument();
@@ -536,8 +460,7 @@ class Metadata extends MY_Controller
             $metadataDOM->WarningChecking = FALSE;
             $metadataDOM->loadXML(base64_decode($queueData['metadata']));
             $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
-            if (!$isValid)
-            {
+            if (!$isValid) {
                 show_error('invalida metadata', 404);
                 return false;
             }
@@ -551,24 +474,17 @@ class Metadata extends MY_Controller
         $permitPull = FALSE;
 
         $isAjax = $this->input->is_ajax_request();
-        if (!$isAjax)
-        {
+        if (!$isAjax) {
             $limits = $this->config->item('unsignedmeta_iplimits');
-            if (!empty($limits) && is_array($limits) && count($limits) > 0)
-            {
+            if (!empty($limits) && is_array($limits) && count($limits) > 0) {
                 $remoteip = $this->input->ip_address();
-                if (in_array($remoteip, $limits))
-                {
+                if (in_array($remoteip, $limits)) {
                     $permitPull = TRUE;
                 }
-            }
-            else
-            {
+            } else {
                 $permitPull = TRUE;
             }
-        }
-        else
-        {
+        } else {
             $permitPull = TRUE;
         }
 

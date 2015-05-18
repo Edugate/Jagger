@@ -240,11 +240,6 @@ class Manage extends MY_Controller
         $metaLinkSigned = base_url() . 'signedmetadata/federation/' . $federation->getSysname() . '/metadata.xml';
         $metaExportLink = base_url() . 'metadata/federationexport/' . $federation->getSysname() . '/metadata.xml';
         $metaExportLinkSigned = base_url() . 'signedmetadata/federationexport/' . $federation->getSysname() . '/metadata.xml';
-        if ($federation->getAttrsInmeta()) {
-            $d[] = array('data' => array('data' => '<div data-alert class="alert-box info">' . lang('rr_meta_with_attr') . '</div>', 'class' => '', 'colspan' => 2));
-        } else {
-            $d[] = array('data' => array('data' => '<div data-alert class="alert-box info">' . lang('rr_meta_with_noattr') . '</div>', 'class' => '', 'colspan' => 2));
-        }
         if (!$federation->getActive()) {
             $d[] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span> ' . $metaLink);
             $d[] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span> ' . $metaLinkSigned);

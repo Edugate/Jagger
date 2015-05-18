@@ -52,7 +52,6 @@ class Fededit extends MY_Controller
         $this->form_validation->set_rules('descid', lang('rr_fed_descid'), 'trim|min_length[1]|max_length[128]|alpha_numeric');
         $this->form_validation->set_rules('description', lang('rr_fed_desc'), 'trim|min_length[5]|max_length[2000]');
         $this->form_validation->set_rules('tou', lang('rr_fed_tou'), 'strip_tags|trim|min_length[5]|max_length[1000]');
-        $this->form_validation->set_rules('incattrs', lang('rr_include_attr_in_meta'), 'strip_tags|trim|max_length[10]');
         $this->form_validation->set_rules('ispublic', lang('rr_isfedpublic'), 'strip_tags|trim|max_length[10]');
         $this->form_validation->set_rules('lexport', lang('rr_lexport_enabled'), 'strip_tags|trim|max_length[10]');
         $this->form_validation->set_rules('publisher', lang('rr_fed_publisher'), 'strip_tags|trim|max_length[500]');
@@ -104,7 +103,6 @@ class Fededit extends MY_Controller
             $indesc = $this->input->post('description');
             $intou = $this->input->post('tou');
             $infedid = $this->input->post('fed');
-            $incattrs = $this->input->post('incattrs');
             $lexport = $this->input->post('lexport');
             $ispublic = $this->input->post('ispublic');
             $publisher = $this->input->post('publisher');
@@ -127,11 +125,6 @@ class Fededit extends MY_Controller
             $fed->setAltMetaUrl($altMetaUrl);
             $fed->setName($fedname);
             $fed->setUrn($inurn);
-            if ($incattrs == 'accept') {
-                $fed->setAttrsInmeta(TRUE);
-            } elseif (empty($incattrs)) {
-                $fed->setAttrsInmeta(FALSE);
-            }
             if (empty($ispublic)) {
                 $fed->unPublish();
             } elseif ($ispublic === 'accept') {

@@ -110,7 +110,7 @@ class Federation {
     protected $digestexport;
 
     /**
-     * add attribute requirements into generated metadata
+     * deprecated
      * @Column(name="attrreq_inmeta", type="boolean", nullable=false)
      */
     protected $attrreq_inmeta = FALSE;
@@ -187,6 +187,8 @@ class Federation {
         $this->is_protected = FALSE;
         $this->is_local = TRUE;
         $this->usealtmetaurl = FALSE;
+        // deprecate//
+        $this->attrreq_inmeta = TRUE;
     }
 
     public function setName($name)
@@ -443,6 +445,7 @@ class Federation {
         return $this->is_active;
     }
 
+    // deprecated
     public function getAttrsInmeta()
     {
         return $this->attrreq_inmeta;
@@ -458,6 +461,7 @@ class Federation {
         return $this->altmetaurl;
     }
 
+    //deprecated
     public function setAttrsInmeta($r)
     {
         if ($r === TRUE)
