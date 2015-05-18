@@ -31,8 +31,7 @@ class Metadata extends MY_Controller
     {
         parent::__construct();
         $this->output->set_content_type('application/samlmetadata+xml');
-        $keyPrefix = getCachePrefix();
-        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
+        $this->load->library('j_ncache');
     }
 
     public function federation($federationName = NULL, $limitType = NULL)
@@ -143,8 +142,7 @@ class Metadata extends MY_Controller
 
             if (strcmp($mtype, 'IDP') == 0)
             {
-                $cacheId = 'mcircle_' . $m->getId();
-                $metadataCached = $this->cache->get($cacheId);
+                $metadataCached = $this->j_ncache->getMcircleMeta($m->getId());
                 if (!empty($metadataCached))
                 {
                     $xmlOut->endComment();
@@ -163,7 +161,7 @@ class Metadata extends MY_Controller
             else
             {
                 $xmlOut->endComment();
-                $this->providertoxml->entityConvert($xmlOut, $m, $options, $cacheId);
+                $this->providertoxml->entityConvert($xmlOut, $m, $options, $m->getId());
             }
             unset($members[$k]);
         }
@@ -298,7 +296,7 @@ class Metadata extends MY_Controller
         }
         else
         {
-            show_error('Not found 2');
+            show_error('Not found 2', 404);
         }
     }
 
@@ -456,9 +454,7 @@ class Metadata extends MY_Controller
 
         foreach ($members as $keyMember => $valueMember)
         {
-
-            $cacheId = 'mcircle_' . $valueMember->getId() . '';
-            $metadataCached = $this->cache->get($cacheId);
+            $metadataCached = $this->j_ncache->getMcircleMeta($valueMember->getId());
             $xmlOut->startComment();
             $xmlOut->text($valueMember->getEntityId());
             if (!empty($metadataCached))
@@ -479,7 +475,7 @@ class Metadata extends MY_Controller
                 else
                 {
                     $xmlOut->endComment();
-                    $this->providertoxml->entityConvert($xmlOut, $valueMember, $options, $cacheId);
+                    $this->providertoxml->entityConvert($xmlOut, $valueMember, $options, $valueMember->getId());
                 }
             }
             unset($members[$keyMember]);

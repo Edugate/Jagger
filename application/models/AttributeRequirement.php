@@ -171,4 +171,13 @@ class AttributeRequirement
         return $this->reason;
     }
 
+    public function isRequiredToStr()
+    {
+        if(strcmp($this->status[0],'r')==0 )
+        {
+            return 'true';
+        }
+        return 'false';
+    }
+
 }

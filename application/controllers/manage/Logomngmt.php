@@ -3,17 +3,17 @@
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * Jagger
- * 
+ *
  * @package     Jagger
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Logo Class
- * 
+ *
  * @package     Jagger
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
@@ -35,8 +35,7 @@ class Logomngmt extends MY_Controller
             echo lang('error403');
             return;
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->j_auth->logged_in()) {
             set_status_header(403);
             echo lang('errsess');
             return;
@@ -104,20 +103,9 @@ class Logomngmt extends MY_Controller
 
     public function assign($type = null, $id = null)
     {
-        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST')) {
+        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0) ||!$this->j_auth->logged_in() ) {
             set_status_header(403);
             echo lang('error403');
-            return;
-        }
-        if (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
-            set_status_header(404);
-            echo lang('error404');
-            return;
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            set_status_header(403);
-            echo lang('errsess');
             return;
         }
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id, 'type' => array('BOTH', '' . strtoupper($type) . '')));
@@ -234,15 +222,15 @@ class Logomngmt extends MY_Controller
         }
         $this->em->remove($existingLogo);
         try
-        {   
+        {
             $this->em->flush();
-            echo lang('rr_logoisunsigned');      
+            echo lang('rr_logoisunsigned');
         }
         catch (Exception $e)
         {
             log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
-            echo 'Server Error occured';        
+            echo 'Server Error occured';
         }
     }
 
@@ -317,7 +305,7 @@ class Logomngmt extends MY_Controller
                     echo lang('rr_errextlogourlformat');
                     return;
                 }
-                if (!function_exists('getimagesizefromstring')) 
+                if (!function_exists('getimagesizefromstring'))
                 {
                     function getimagesizefromstring($string_data)
                     {
@@ -327,7 +315,7 @@ class Logomngmt extends MY_Controller
                 }
                 $imagesize = getimagesizefromstring($datafile);
                 if (!empty($imagesize) && is_array($imagesize) && isset($imagesize['0']) && isset($imagesize['1'])) {
-                    
+
                 }
                 $imagewidth = $imagesize['0'];
                 $imageheight = $imagesize['1'];

@@ -225,7 +225,7 @@ class Form_element
             'billing' => lang('rr_cnt_type_bill'),
             'other' => lang('rr_cnt_type_other')
         );
-        if (!empty($ses) && is_array($ses)) {
+        if (is_array($ses)) {
             $r = TRUE;
         }
         $result = array();
@@ -263,7 +263,7 @@ class Form_element
                 unset($ses['contact']['' . $tid . '']);
             }
         }
-        if ($r && count($ses['contact']) > 0) {
+        if ($r) {
             foreach ($ses['contact'] as $k => $v) {
                 $n = '<fieldset class="newcontact"><legend>' . lang('rr_contact') . '</legend><div>';
 
@@ -289,32 +289,33 @@ class Form_element
     public function NgenerateCertificatesForm(models\Provider $ent, $ses = null)
     {
         $result = array();
-        $sessform = FALSE;
+        $sessform = false;
         $enttype = $ent->getType();
         $c = $ent->getCertificates();
 
-        $origcerts = array();
+        $providerId = $ent->getId();
+        $origcerts = array('idpsso' => array(), 'spsso' => array(), 'aa' => array());
         $tmpid = 100;
         foreach ($c as $v) {
-            $tid = $v->getId();
+            $tid = $providerId;
             if (empty($tid)) {
                 $tid = 'x' . $tmpid++;
             }
             $origcerts['' . $v->getType() . '']['' . $tid . ''] = $v;
         }
-        if (!empty($ses) && is_array($ses)) {
-            $sessform = TRUE;
+        if (is_array($ses)) {
+            $sessform = true;
         }
 
         if (strcmp($enttype, 'SP') != 0) {
             $Part = '<fieldset><legend>IDPSSODescriptor</legend><div>';
             $idpssocerts = array();
 // start CERTS IDPSSODescriptor
-            if ($sessform && isset($ses['crt']['idpsso'])) {
+            if ($sessform) {
                 foreach ($ses['crt']['idpsso'] as $key => $value) {
-                    $idpssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][idpsso]", 'idpsso', TRUE);
+                    $idpssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][idpsso]",  TRUE);
                 }
-            } elseif (isset($origcerts['idpsso'])) {
+            } else {
                 foreach ($origcerts['idpsso'] as $k => $v) {
                     $idpssocerts[] = $this->_genCertFieldFromObj($v, "f[crt][idpsso]", TRUE);
                 }
@@ -327,11 +328,11 @@ class Form_element
             $Part = '<fieldset><legend>AttributeAuthorityDescriptor</legend><div>';
             $aacerts = array();
 // start CERTS AttributeAuthorityDescriptor
-            if ($sessform && isset($ses['crt']['aa'])) {
+            if ($sessform) {
                 foreach ($ses['crt']['aa'] as $key => $value) {
-                    $aacerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][aa]", 'aa', TRUE);
+                    $aacerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][aa]",  TRUE);
                 }
-            } elseif (isset($origcerts['aa'])) {
+            } else {
                 foreach ($origcerts['aa'] as $k => $v) {
                     $aacerts[] = $this->_genCertFieldFromObj($v, "f[crt][aa]", TRUE);
                 }
@@ -346,11 +347,11 @@ class Form_element
         if (strcmp($enttype, 'IDP') != 0) {
             $Part = '<fieldset><legend>SPSSODescriptor</legend><div>';
             $spssocerts = array();
-            if ($sessform && isset($ses['crt']['spsso'])) {
+            if ($sessform) {
                 foreach ($ses['crt']['spsso'] as $key => $value) {
-                    $spssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][spsso]", 'spsso', TRUE);
+                    $spssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][spsso]",  TRUE);
                 }
-            } elseif (isset($origcerts['spsso'])) {
+            } else {
                 foreach ($origcerts['spsso'] as $k => $v) {
                     $spssocerts[] = $this->_genCertFieldFromObj($v, "f[crt][spsso]", TRUE);
                 }
@@ -462,7 +463,7 @@ class Form_element
         return $result;
     }
 
-    private function _genCertFieldFromSession($certObj = null, $crtid, $sessionCert, $sessionNamePart, $type, $showremove = false)
+    private function _genCertFieldFromSession($certObj = null, $crtid, $sessionCert, $sessionNamePart, $showremove = false)
     {
         $name = $sessionNamePart;
         $certuse = $sessionCert['usage'];
@@ -474,9 +475,9 @@ class Form_element
             $readonly = true;
         }
         $certdata = set_value(getPEM('' . $name . '[' . $crtid . '][certdata]'), getPEM($sessionCert['certdata']), FALSE);
-        if (!empty($certdata)) {
-            $keysize = getKeysize($certdata);
-        }
+
+        $keysize = getKeysize($certdata);
+
         if (empty($keysize)) {
             $keysize = lang('unknown');
         }
@@ -544,35 +545,28 @@ class Form_element
     private function _genCertFieldFromObj(models\Certificate $cert, $name, $showremove = FALSE)
     {
         $tmplEncryptionMethods = j_KeyEncryptionAlgorithms();
-        $certuse = $cert->getCertUse();
-        if (empty($certuse)) {
-            $certuse = 'both';
-        }
+        $certuse = $cert->getCertUseInStr();
         $certdata = getPEM($cert->getCertData());
-        if (!empty($certdata)) {
-            $keysize = getKeysize($certdata);
-        }
+        $keysize = getKeysize($certdata);
+
         if (empty($keysize)) {
             $keysize = lang('unknown');
         }
-
+ $readonly = true;
         $crtid = $cert->getId();
         if (empty($crtid)) {
             $crtid = 'x' . rand();
+            $readonly = false;
         }
-        $readonly = false;
-        if (ctype_digit($crtid)) {
-            $readonly = true;
-        }
-        $row = '<div class="certgroup small-12 columns">';
-        $row .= '<div class="small-12 columns hidden">';
-        $row .= $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($cert->getType()), '', FALSE);
-        $row .= '</div>';
+        $row = '<div class="certgroup small-12 columns">' .
+            '<div class="small-12 columns hidden">' .
+            $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($cert->getType()), '', FALSE) .
+            '</div>';
 
 
-        $row .= '<div class="small-12 columns">';
-        $row .= $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE);
-        $row .= '</div>';
+        $row .= '<div class="small-12 columns">'.
+            $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE).
+            '</div>';
 
         $tmpkeyname = $cert->getKeyname();
 
@@ -585,9 +579,9 @@ class Form_element
         $row .= '</div>';
 
 
-        $row .= '<div class="small-12 columns">';
-        $row .= $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled'));
-        $row .= '</div>';
+        $row .= '<div class="small-12 columns">'.
+            $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled')).
+            '</div>';
 
 //$name . '[' . $crtid . '][certdata]
         $row .= '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][certdata]" class="right inline">' . lang('rr_certificate') . '</label></div>';
@@ -609,10 +603,9 @@ class Form_element
         $certEncMethods = $cert->getEncryptMethods();
         $row .= '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][encmethods][]" class="right inline">EncryptionMethod</label></div><div class="small-9 column">';
         foreach ($tmplEncryptionMethods as $tmplEnc) {
+            $ischeck = '';
             if (in_array($tmplEnc, $certEncMethods)) {
                 $ischeck = ' checked="checked" ';
-            } else {
-                $ischeck = '';
             }
             $row .= '<div><label><input type="checkbox" name="' . $name . '[' . $crtid . '][encmethods][]" value="' . $tmplEnc . '" ' . $ischeck . '> ' . $tmplEnc . '</label></div>';
         }
