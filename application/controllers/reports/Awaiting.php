@@ -88,11 +88,8 @@ class Awaiting extends MY_Controller
          * @var $creator models\User
          */
         $creator = $q->getCreator();
-        if (!empty($creator)) {
-            $name = $creator->getUsername();
-            if (strcasecmp($name, $currentUser) == 0) {
+        if (!empty($creator) &&  strcasecmp($creator->getUsername(), $currentUser) == 0) {
                 return true;
-            }
         }
         $action = $q->getAction();
         $recipient = $q->getRecipient();
@@ -344,21 +341,19 @@ class Awaiting extends MY_Controller
         );
 
         if (empty($queueObject)) {
-            $data = array(
+            return $this->load->view('page', array(
                 'content_view' => 'error_message',
                 'error_message' => lang('rerror_qid_noexist')
-            );
-            return $this->load->view('page', $data);
+            ));
         }
         $objType = $queueObject->getObjType();
         $objAction = $queueObject->getAction();
         $recipientType = $queueObject->getRecipientType();
         if (!$this->hasQAccess($queueObject)) {
-            $result['data'] = array(
+            return $this->load->view('page', array(
                 'content_view' => 'nopermission',
                 'error' => lang('rr_nopermission')
-            );
-            return $this->load->view('page', $result['data']);
+            ));
         }
         $approveaccess = $this->hasApproveAccess($queueObject);
         $buttons = $this->j_queue->displayFormsButtons($queueObject->getId(), !$approveaccess);
@@ -379,7 +374,8 @@ class Awaiting extends MY_Controller
         {
             $result['data'] = array(
                 'requestdata' => $this->j_queue->displayApplyForEntityCategory($queueObject),
-                'content_view' => 'reports/awaiting_detail_view'
+                'content_view' => 'reports/awaiting_detail_view',
+
             );
             $result['data']['requestdata'][]['2cols'] = $buttons;
 
