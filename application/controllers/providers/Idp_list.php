@@ -40,131 +40,6 @@ class Idp_list extends MY_Controller {
         $this->load->library('zacl');
     }
 
-    // deprecated to be removed soon
-    private function show($limit=null)
-    {
-        MY_Controller::$menuactive = 'idps';
-        $this->title = lang('title_idplist');
-        $this->load->helper('iconhelp');
-        $lockicon =  '<span class="lbl lbl-locked">'.lang('rr_locked').'</span>';
-        $disabledicon = '<span class="lbl lbl-disabled">'.lang('rr_disabled').'</span>';
-        $expiredicon ='<span class="lbl lbl-disabled">'.lang('rr_expired').'</span>';
-        $staticon = '<span class="lbl lbl-static">'.lang('rr_static').'</span>';
-        $exticon = '<span class="lbl lbl-external">'.lang('rr_external').'</span>';
-        $hiddenicon = '<span class="lbl lbl-disabled">'.lang('lbl_publichidden').'</span>';
-        $resource = 'idp_list';
-        $action = 'read';
-        $group = 'default';
-        $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
-        if (!$has_read_access)
-        {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rerror_nopermtolistidps');
-            $this->load->view('page', $data);
-            return;
-        }
-        $idprows = array();
-        $col = new models\Providers();
-        if(empty($limit))
-        {
-            $data['typeidps'] = 'local';
-            $idps = $col->getIdpsLightLocal();
-        }
-        elseif($limit === 'ext')
-        {
-           $data['typeidps'] = 'external';
-           $idps = $col->getIdpsLightExternal();
-        }
-        else
-        {
-            $data['typeidps'] = 'all';
-            $idps = $col->getIdpsLight();
-        }
-        $data['idps_count'] = count($idps);
-        $linktitlediexp = lang('rr_disexp_link_title');
-        $lang = MY_Controller::getLang();
-        foreach ($idps as $i)
-        {
-            $i_link = base_url() . "providers/detail/show/" . $i->getId();
-            $iconsblock = '';
-            
-            if($i->getLocked())
-            {
-               $iconsblock .= $lockicon .' '; 
-            }
-            if(!($i->getActive()))
-            {
-               $iconsblock .= $disabledicon .' ';
-            }
-            if(!($i->isValidFromTo()))
-            {
-               $iconsblock .= $expiredicon .' ';
-            }
-            if(!($i->getLocal()))
-            {
-              $iconsblock .= $exticon .' ';
-            }
-            if($i->getStatic())
-            {
-               $iconsblock .= $staticon .' ';
-            }
-            if(!$i->getPublicVisible())
-            {
-               $iconsblock .= $hiddenicon .' ';
-            }
-            $displayname = $i->getNameToWebInLang($lang,'idp');
-            if(empty($displayname))
-            {
-                $displayname = $i->getEntityId();
-            }
-            
-            if ($i->getAvailable())
-            {
-                $col1 = anchor($i_link, $displayname) . '<div class="s2">' . $i->getEntityId() . '</div>';
-            }
-            else
-            {
-                $col1 = '<span class="additions"><span class="alert" title="'.$linktitlediexp.'">'.anchor($i_link, $displayname).'</span><div class="s2">'. $i->getEntityId().'</div></span>';
-            }
-            $regdate = $i->getRegistrationDate();
-            if(isset($regdate))
-            {
-                $col2 = date('Y-m-d',$regdate->format('U')+j_auth::$timeOffset);
-            }
-            else
-            {
-                $col2 = '';
-            }
-            $help_url = $i->getHelpdeskUrl();
-            if (!empty($help_url))
-            {
-                $col3 = auto_link($help_url, 'url');
-            }
-            else
-            {
-                $col3 = '';
-            }
-            $idprows[] = array('data' => array('data' =>  $col1 ),$iconsblock, $col2,'<div class="squiz s2">'.$col3.'</div>');
-        }
-        if($data['typeidps'] === 'local')
-        {
-            $t = lang('rr_tbltitle_listlocalidps');
-        }
-        elseif($data['typeidps'] === 'external')
-        {
-            $t = lang('rr_tbltitle_listextidps');
-        }
-        else
-        {
-            $t = lang('rr_tbltitle_listidps');
-        }
-        $data['titlepage'] = $t.' ('. lang('rr_found') .' '.$data['idps_count'].')';
-
-        $data['idprows'] = $idprows;
-        $data['content_view'] = 'providers/idp_list_view';
-        $this->load->view('page', $data);
-    }
-
     function showlist()
     {
 
@@ -174,13 +49,12 @@ class Idp_list extends MY_Controller {
         $resource = 'idp_list';
         $action = 'read';
         $group = 'default';
-        $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
-        if (!$has_read_access)
+        $hasReadAccess = $this->zacl->check_acl($resource, $action, $group, '');
+        if (!$hasReadAccess)
         {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rerror_nopermtolistidps');
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
 
         $data['entitytype'] = 'idp';
