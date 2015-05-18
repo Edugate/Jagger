@@ -49,6 +49,7 @@ if (!defined('BASEPATH'))
  * @property Show_element $show_element
  * @property J_auth $j_auth
  * @property Arp_generator $arp_generator
+ * @property Providerdetails $providerdetails
  * @property Rrpreference $rrpreference
  * @property User_manage $user_manage
  * @property Form_element $form_element
