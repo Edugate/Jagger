@@ -143,7 +143,7 @@ class Providers
 		}
 
 		$fedmembers = $this->em->getRepository("models\FederationMembers")->findBy(array('federation' => $feds, 'isDisabled' => FALSE, 'isBanned' => FALSE, 'joinstate' => array('0', '1', '3')));
-		if ($entype === 'IDP' or $entype === 'SP') {
+		if ($entype === 'IDP' || $entype === 'SP') {
 			foreach ($fedmembers as $m) {
 				$pr = $m->getProvider();
 				if (strcmp($pr->getType(), $entype) != 0) {

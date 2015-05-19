@@ -364,7 +364,7 @@ class Arp_generator {
         /* get custom policies */
         $custom_attrs = $tmp_s_attrs->getCustomSpPolicyAttributes($idp);
         $custom_policies = array();
-        if (!empty($custom_attrs) and count($custom_attrs) > 0)
+        if (!empty($custom_attrs) && count($custom_attrs) > 0)
         {
             log_message('debug', "Found custom permit/deny for IDP EntityID: " . $idp->getEntityId());
             foreach ($custom_attrs as $key)

@@ -147,7 +147,7 @@ class Fvalidatoredit extends MY_Controller {
 
             $optparamsTmp = explode('$$', $this->input->post('voptparams'));
             $optparams = array();
-            if (!empty($optparamsTmp) && is_array($optparamsTmp) and count($optparamsTmp) > 0)
+            if (!empty($optparamsTmp) && is_array($optparamsTmp) && count($optparamsTmp) > 0)
             {
                 foreach ($optparamsTmp as $k => $v)
                 {
