@@ -297,7 +297,7 @@ class Form_element
         $origcerts = array('idpsso' => array(), 'spsso' => array(), 'aa' => array());
         $tmpid = 100;
         foreach ($c as $v) {
-            $tid = $providerId;
+            $tid = $v->getId();
             if (empty($tid)) {
                 $tid = 'x' . $tmpid++;
             }
