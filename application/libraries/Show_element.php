@@ -397,7 +397,6 @@ class Show_element {
     {
         $source = $this->displayDefaultArp($provider);
         $attributes = array();
-        $prefix_url = base_url() . 'manage/attributepolicy/detail/';
         $icon = '<i class="fi-pencil"></i>';
         $supported = $this->tmp_policies->getSupportedAttributes($provider);
         $supported_attrs = array();
@@ -420,13 +419,13 @@ class Show_element {
                     $attr_name = $s['name'];
                 }
                 $link = anchor("#",  $icon,array('data-jagger-attrid'=>$s['attrid'],'data-jagger-attrname'=>$s['name']) );
-                $attributes[] = array('' . $attr_name . '' . $link . '', $s['release']);
+                $attributes[] = array('' . $attr_name . '', $s['release'], $link);
             }
 
             $tmpl = array('table_open' => '<table  id="detailsnosort">');
 
             $this->ci->table->set_template($tmpl);
-            $this->ci->table->set_heading(''.lang('attrname').'', ''.lang('policy').'');
+            $this->ci->table->set_heading(''.lang('attrname').'', ''.lang('policy').'',lang('rr_action'));
             if (empty($disable_caption))
             {
                 $provname = $provider->getName();

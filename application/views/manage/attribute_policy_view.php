@@ -49,9 +49,9 @@ if(!empty($fedid))
 $target = base_url() . 'manage/attribute_policyajax/updatedefault/'.$idpid.'';
 if (count($attrs_array_newform) > 0)
 {
-    echo '<span class="span-22">';
-    echo '<div class="accordionButton buttons"><button class="savebutton saveicon">'.lang('setdefaultpolicyfornewsupattrs').'</button> </div>';
-    echo '<div class="accordionContent">';
+    echo '<div class="row"><div class="small-12 medium-6 medium-offset-6 column text-right">';
+    echo '<div class="accordionButton buttons"><button class="savebutton saveicon small">'.lang('setdefaultpolicyfornewsupattrs').'</button> </div>';
+    echo '<div class="accordionContent text-left">';
     echo form_open($target, $attributes, $hidden);
     echo form_fieldset(); 
     echo '<ol>';
@@ -70,7 +70,7 @@ if (count($attrs_array_newform) > 0)
     echo form_fieldset_close();
 
     echo form_close();
-    echo '</div></span>';
+    echo '</div></div></div>';
 }
 
 if (!empty($default_policy))
