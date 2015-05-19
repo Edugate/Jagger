@@ -28,7 +28,7 @@ class Attributepolicy extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$$this->j_auth->logged_in()) {
+        if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $this->load->helper('form');
