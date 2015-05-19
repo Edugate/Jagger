@@ -257,7 +257,6 @@ class Show_element {
         }
         $source = $this->displaySpecificArp($provider);
         $attributes = array();
-        $supported_attrs_url = base_url() . "manage/supported_attributes/idp/" . $provider->getId();
         $prefix_url = base_url() . "manage/attributepolicy/detail/";
         $prefix_multi_url = base_url() . "manage/attributepolicy/multi/";
         $icon = '<i class="fi-pencil"></i>';
@@ -291,15 +290,6 @@ class Show_element {
                     else
                     {
                         $attr_name = $attr_key;
-                    }
-
-                    if (empty($attr_value['id']))
-                    {
-                        $policy_id = 0;
-                    }
-                    else
-                    {
-                        $policy_id = $attr_value['id'];
                     }
                     $link = anchor($prefix_url  . $provider->getId() . '/' . $attr_value['attr_id'] . '/sp/' . $attr_value['spid'],  $icon );
                     $permited_values = '';
