@@ -28,12 +28,9 @@ class Attributepolicy extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
-        $this->current_site = current_url();
-        if (!$loggedin) {
+        if (!$$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-
         $this->load->helper('form');
         $this->load->library(array('table', 'form_element', 'show_element', 'zacl'));
         $this->tmpProviders = new models\Providers;
@@ -277,26 +274,26 @@ class Attributepolicy extends MY_Controller
     }
 
     /**
-     * @param $idp_id
+     * @param $idpID
      * @return object|string
      */
-    public function globals($idp_id)
+    public function globals($idpID)
     {
 
         $this->title = lang('rr_attributereleasepolicy');
-        if (empty($idp_id) || !ctype_digit($idp_id)) {
+        if (!ctype_digit($idpID)) {
             show_error('Incorrect id provided', 404);
         }
         /**
          * @var $idp models\Provider
          */
-        $idp = $this->tmpProviders->getOneIdpById($idp_id);
+        $idp = $this->tmpProviders->getOneIdpById($idpID);
 
         /**
          * display 404 if idp not found
          */
         if (empty($idp)) {
-            log_message('debug', 'Identity Provider with id ' . $idp . ' not found');
+            log_message('debug', 'Identity Provider with id ' . $idpID . ' not found');
             show_error(lang('rerror_idpnotfound'), 404);
         }
         $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
@@ -317,9 +314,9 @@ class Attributepolicy extends MY_Controller
                 array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
                 array('url' => '#', 'name' => lang('rr_attributereleasepolicy'), 'type' => 'current'),
             ),
-            'titlepage' => lang('identityprovider') . ': ' . '<a href="' . base_url() . 'providers/detail/show/' . $idp_id . '">' . $providerNameInLang . '</a>',
+            'titlepage' => lang('identityprovider') . ': ' . '<a href="' . base_url() . 'providers/detail/show/' . $idpID . '">' . $providerNameInLang . '</a>',
             'subtitlepage' => lang('rr_attributereleasepolicy'),
-            'idpid' => $idp_id,
+            'idpid' => $idpID,
             'idp_name' => $providerNameInLang,
             'idp_entityid' => $idp->getEntityId(),
             'default_policy' => $this->displayDefaultPolicy($idp),

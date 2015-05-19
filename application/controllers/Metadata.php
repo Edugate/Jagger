@@ -80,8 +80,6 @@ class Metadata extends MY_Controller
             $idsuffix = $validfor->format('YmdHis');
             $entitiesDescriptorId = $idprefix . $idsuffix;
         }
-
-        $options = array('attrs' => 0, 'fedreqattrs' => array());
         $tmpAttrRequirements = new models\AttributeRequirements;
         $options = array('attrs' => 1, 'fedreqattrs' => $tmpAttrRequirements->getRequirementsByFed($federation));
 

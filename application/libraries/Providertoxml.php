@@ -409,8 +409,13 @@ class Providertoxml
                 return in_array($entry->getAttribute()->showInMetadata(), array(true));
             }
         );
+        $reqCollHidden = $ent->getAttributesRequirement()->filter(
+            function(models\AttributeRequirement $entry){
+                return in_array($entry->getAttribute()->showInMetadata(), array(false));
+            }
+        );
         $finalReqAttrs = &$reqColl;
-        if (count($finalReqAttrs) == 0) {
+        if (count($finalReqAttrs) == 0 && count($reqCollHidden)==0) {
             if (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0) {
                 return $xml;
             }
