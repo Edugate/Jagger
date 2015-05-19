@@ -20,12 +20,30 @@ if (!defined('BASEPATH'))
 class Attribute_policyajax extends MY_Controller
 {
 
-    protected  $tmpArps;
+    protected $tmpArps;
+
     public function __construct()
     {
         parent::__construct();
         $this->tmpArps = new models\AttributeReleasePolicies;
 
+    }
+
+    public function getglobalattrpolicy($idpid, $attrid)
+    {
+        $isValidRequest = (ctype_digit($idpid) && ctype_digit($attrid) && $this->input->is_ajax_request() && $this->j_auth->logged_in());
+        if (!$isValidRequest) {
+            set_status_header(403);
+            echo 'Access denied';
+            return;
+        }
+        $globalPolicy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $attrid, 'idp' => $idpid, 'type' => 'global'));
+        if (empty($globalPolicy)) {
+            set_status_header(403);
+            echo 'no found';
+            return;
+        }
+        echo $globalPolicy->getPolicy();
     }
 
     public function getattrpath($idpid, $spid, $attrid)
@@ -42,8 +60,7 @@ class Attribute_policyajax extends MY_Controller
             echo 'idp not found';
             return;
         }
-        if(!$this->checkAccess($idp))
-        {
+        if (!$this->checkAccess($idp)) {
             set_status_header(403);
             echo 'Access denied';
             return;
@@ -152,7 +169,7 @@ class Attribute_policyajax extends MY_Controller
     public function submit_sp($idpID)
     {
 
-        if (!ctype_digit($idpID) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in() ) {
+        if (!ctype_digit($idpID) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             set_status_header(403);
             echo 'Access denied';
             return;
@@ -163,8 +180,7 @@ class Attribute_policyajax extends MY_Controller
             echo lang('rerror_providernotexist');
             return;
         }
-        if(!$this->checkAccess($idp))
-        {
+        if (!$this->checkAccess($idp)) {
             set_status_header(403);
             echo 'Access denied';
             return;
@@ -228,7 +244,7 @@ class Attribute_policyajax extends MY_Controller
             $this->em->persist($arp);
             if ($policy != $old_policy) {
                 $changes['attr: ' . $attribute->getName() . ''] = array(
-                    'before' => 'policy for ' .$sp->getEntityId(). ' : ' . $tmp_a[$old_policy] . '',
+                    'before' => 'policy for ' . $sp->getEntityId() . ' : ' . $tmp_a[$old_policy] . '',
                     'after' => $tmp_a[$policy],
                 );
                 $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
@@ -257,6 +273,86 @@ class Attribute_policyajax extends MY_Controller
         }
         return;
 
+
+    }
+
+    public function updatedefault($idpID)
+    {
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+            set_status_header(401);
+            echo 'access denied';
+            return;
+        }
+        $postIdpID = trim($this->input->post('idpid'));
+        $postAttrID = trim($this->input->post('attribute'));
+        $postPolicy = trim($this->input->post('policy'));
+        $allowedPols = array(0, 1, 2, 100);
+        if (!ctype_digit($postAttrID) || !ctype_digit($postIdpID) || !ctype_digit($postPolicy) || strcasecmp($postIdpID, $idpID) != 0 || !in_array($postPolicy, $allowedPols)) {
+            set_status_header(403);
+            echo 'access denied';
+            return;
+        }
+
+        $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID));
+        $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $postAttrID));
+        if (empty($idp) || empty($attribute)) {
+            set_status_header(404);
+            echo 'Not found 2';
+            return;
+        }
+        $changes = array();
+        $statusPol = null;
+        $dropdown = $this->config->item('policy_dropdown');
+        $dropdown[100]=lang('dropnotset');
+        /**
+         * @var $globalPolicy models\AttributeReleasePolicy
+         */
+        $globalPolicy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $postAttrID, 'idp' => $idpID, 'type' => 'global'));
+        if (strcmp($postPolicy, '100') == 0) {
+            if(empty($globalPolicy))
+            {
+                $statusPol = 100;
+            }
+            else {
+                $changes['before'] = $dropdown[''.$globalPolicy->getPolicy().''];
+                $changes['after'] = $dropdown[100];
+                $this->em->remove($globalPolicy);
+                $statusPol = 100;
+            }
+
+        } elseif(empty($globalPolicy)) {
+            $npolicy = new models\AttributeReleasePolicy();
+            $npolicy->setGlobalPolicy($idp,$attribute,$postPolicy);
+            $this->em->persist($npolicy);
+            $statusPol = $postPolicy;
+
+
+        }
+        else
+        {
+            $globalPolicy->setPolicy($postPolicy);
+            $this->em->persist($globalPolicy);
+            $statusPol = $postPolicy;
+        }
+        try{
+            $this->em->flush();
+
+            $policyStr ='';
+            if(array_key_exists($statusPol,$dropdown))
+            {
+                $policyStr = $dropdown[$statusPol];
+            }
+            $result = array('status'=>1,'policy'=>$statusPol,'attrid'=>$postAttrID,'policystr'=>$policyStr);
+            $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpID), -1);
+            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+
+        }
+        catch(Exception $e){
+            log_message('error',__METHOD__.' '.$e);
+            set_status_header(500);
+            echo 'internal server error';
+
+        }
 
     }
 

@@ -419,7 +419,7 @@ class Show_element {
                 {
                     $attr_name = $s['name'];
                 }
-                $link = anchor($prefix_url . "" . $provider->getId() . "/" . $s['attrid'] . "/global/0",  $icon );
+                $link = anchor("#",  $icon,array('data-jagger-attrid'=>$s['attrid'],'data-jagger-attrname'=>$s['name']) );
                 $attributes[] = array('' . $attr_name . '' . $link . '', $s['release']);
             }
 

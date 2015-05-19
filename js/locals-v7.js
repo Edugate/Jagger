@@ -2341,7 +2341,72 @@ $(document).ready(function () {
             }
         });
     }
+
 ///////////////////
+    if($('#defaultarptab').length >0 )
+    {
+
+        var arptable = $('#defaultarptab');
+        var modal = $('#globalpolicyupdater');
+        var modalForm = $('#globalpolicyupdater').find("form").first();
+        var addDefaultForm = $('#adddefaultpolicy');
+        var modalAttrId = modal.find("input[name='attribute']").first();
+        var modalDropdown =modal.find("select[name='policy']").first();
+        var link1 = modal.attr("data-jagger-link");
+        var attrnameval = modal.find("span.dynamicval").first();
+        arptable.on('click','a', function(e) {
+            e.preventDefault();
+            var attrid = $(this).attr('data-jagger-attrid');
+            var attrname = $(this).attr('data-jagger-attrname');
+            modalAttrId.val(attrid);
+            $.ajax({
+                type: "GET",
+                url: link1+'/'+attrid,
+                cache: false,
+                success: function(data){
+                    modalDropdown.find("option:selected").prop("selected",false);
+                    modalDropdown.find("option[value=" + data + "]").prop("selected",true);
+                    attrnameval.html(attrname);
+
+                },
+                error: function(){
+                    alert('error');
+                }
+            });
+
+            modal.foundation('reveal','open');
+        });
+        modal.on('click','.yes', function(e){
+            e.preventDefault();
+            var posturl = modalForm.attr('action');
+            var serializedData = modalForm.serializeArray();
+            $.ajax({
+                type: "POST",
+                url: posturl,
+                data: serializedData,
+                dataType: "json",
+                success: function(data){
+                   modal.foundation('reveal','close');
+                    location.reload();
+                }
+            });
+        });
+        addDefaultForm.on('click','button', function(e){
+            e.preventDefault();
+            var posturl =addDefaultForm.attr('action');
+            var serializedData = addDefaultForm.serializeArray();
+            $.ajax({
+                type: "POST",
+                url: posturl,
+                data: serializedData,
+                dataType: "json",
+                success: function(data){
+                    modal.foundation('reveal','close');
+                    location.reload();
+                }
+            });
+        });
+    }
 
     var helpactivity = $("#showhelps");
     if (helpactivity.length) {

@@ -136,7 +136,7 @@ class Metadata extends MY_Controller
                 $this->providertoxml->entityStaticConvert($xmlOut, $m);
             } else {
                 $xmlOut->endComment();
-                $this->providertoxml->entityConvert($xmlOut, $m, $options, $m->getId());
+                $this->providertoxml->entityConvert($xmlOut, $m, $options);
             }
             unset($members[$k]);
         }

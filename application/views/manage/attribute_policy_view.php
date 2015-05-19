@@ -40,13 +40,13 @@ echo '</div>';
 <div id="defaultarptab" class="content active">
 <?php
 
-$attributes = array('class' => 'email', 'id' => 'formver2');
+$attributes = array('id' => 'adddefaultpolicy');
 $hidden = array('spid' => $spid, 'idpid' => $idpid);
 if(!empty($fedid))
 {
 	$hidden['fedid'] = $fedid;
 }
-$target = base_url() . 'manage/attributepolicy/submit_global';
+$target = base_url() . 'manage/attribute_policyajax/updatedefault/'.$idpid.'';
 if (count($attrs_array_newform) > 0)
 {
     echo '<span class="span-22">';
@@ -65,8 +65,7 @@ if (count($attrs_array_newform) > 0)
     echo form_dropdown('policy', array('0' => ''.lang('dropnever').'', '1' => ''.lang('dropokreq').'', '2' => ''.lang('dropokreqdes').''),set_value('policy'));
     echo '</li></ol>';
     echo '<div class="buttons">';
-    echo '<button type="submit" name="submit" value="Cancel" class="resetbutton reseticon small alert">'.lang('rr_cancel').'</button>';
-    echo '<button type="submit" name="submit" value="Add default policy" class="savebutton saveicon small">'.lang('adddefaultpolicy').'</button>';
+    echo '<button class="small button">'.lang('adddefaultpolicy').'</button>';
     echo '</span>';
     echo form_fieldset_close();
 
@@ -112,3 +111,33 @@ echo lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_at
 </div>
 </div>
 </div>
+<?php
+
+
+echo '<div id="globalpolicyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getglobalattrpolicy/' . $idpid . '') . '">
+  <h4>' . lang('confirmupdpolicy') . '</h4>
+  <h5>'.lang('rr_defaultarp').': <span class="dynamicval"></span></h5>
+  <div>
+ ';
+echo '<div class="attrflow row"></div>';
+echo form_open(base_url('manage/attribute_policyajax/updatedefault/'. $idpid.''));
+echo form_input(array('name' => 'attribute', 'type' => 'hidden', 'value' => ''));
+echo form_input(array('name' => 'idpid', 'type' => 'hidden', 'value' => '' . $idpid . ''));
+$dropdown = $this->config->item('policy_dropdown');
+echo '<div class="row">';
+
+$dropdown['100'] = lang('dropnotset');
+echo '<div class="medium-3 columns medium-text-right"><label for="policy" class="inline" >' . lang('policy') . '</label></div>';
+echo '<div class="medium-9 columns">' . form_dropdown('policy', $dropdown, '') . '</div>';
+echo '</div>';
+echo '<div class="row">';
+$buttons = array(
+    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<div class="yes button">' . lang('btnupdate') . '</div>'
+);
+echo revealBtnsRow($buttons);
+echo '</div>';
+echo '
+</form>
+  <a class="close-reveal-modal">&#215;</a>
+</div>';

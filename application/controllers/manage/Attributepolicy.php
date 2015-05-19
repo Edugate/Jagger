@@ -61,92 +61,7 @@ class Attributepolicy extends MY_Controller
         return $result . '<br />';
     }
 
-    /**
-     * return string
-     */
-    public function submit_global()
-    {
 
-        /**
-         * @todo add validate submit
-         */
-        $idpid = $this->input->post('idpid');
-        $attr = $this->input->post('attribute');
-        $policy = $this->input->post('policy');
-        $action = $this->input->post('submit');
-        $is_policy = false;
-        if (ctype_digit($policy) && in_array($policy,array('0','1','2'))) {
-            $is_policy = true;
-        }
-        if (empty($idpid) || !ctype_digit($idpid) || !$is_policy) {
-            show_error(lang('unknownerror'), 503);
-        }
-        /**
-         * @var $idp models\Provider
-         */
-        $idp = $this->tmpProviders->getOneIdpById($idpid);
-        if (empty($idp)) {
-            show_error(lang('rerror_providernotexist'), 404);
-        }
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess || $idp->getLocked()) {
-            return $this->load->view('page', array(
-                'content_view' => 'nopermission',
-                'error' => lang('rr_nopermission')
-            ));
-
-        }
-
-        $tmp_a = $this->config->item('policy_dropdown');
-        /**
-         * @var $attribute models\Attribute
-         * @var $attrPolicy models\AttributeReleasePolicy
-         */
-        $attribute = $this->tmpAttributes->getAttributeById($attr);
-        $attrPolicy = $this->tmpArps->getOneGlobalPolicy($idpid, $attr);
-        $changes = array();
-        if (empty($attrPolicy) && ($action === 'modify' || $action === 'Add default policy')) {
-            $attrPolicy = new models\AttributeReleasePolicy;
-            if (empty($idp) || empty($attribute)) {
-                log_message('debug', 'Cannot create new policy for idpid = ' . $idpid . ' because idp attribute not found');
-                show_error(lang('unknownerror'), 503);
-            }
-
-            $attrPolicy->setGlobalPolicy($idp, $attribute, $policy);
-            $changes['attr: ' . $attribute->getName() . ''] = array(
-                'before' => 'no default policy',
-                'after' => $tmp_a[$policy]
-            );
-            $this->em->persist($attrPolicy);
-        } elseif ($action === 'Cancel') {
-            return $this->globals($idpid);
-        } else {
-            if ($attrPolicy->getPolicy() === $policy) {
-                $changes['attr: ' . $attribute->getName() . ''] = array(
-                    'before' => $tmp_a[$attrPolicy->getPolicy()] . ' (default policy)',
-                    'after' => $tmp_a[$policy]
-                );
-            }
-            $attrPolicy->setPolicy($policy);
-
-        }
-        if ($action === 'delete' && !empty($attrPolicy)) {
-            $changes['attr: ' . $attribute->getName() . ''] = array(
-                'before' => $tmp_a[$attrPolicy->getPolicy()] . ' (default policy)',
-                'after' => 'policy removed'
-            );
-
-            $this->em->remove($attrPolicy);
-
-        }
-
-        $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpid), -1);
-        if (count($changes) > 0) {
-            $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
-        }
-        $this->em->flush();
-        return $this->globals($idpid);
-    }
 
     /**
      * for global policy requester should be set to 0
@@ -157,7 +72,7 @@ class Attributepolicy extends MY_Controller
             log_message('error', "Idp id or attr id is set incorectly");
             show_error(lang('error404'), 404);
         }
-        if (!in_array($type, array('global', 'fed', 'sp'))) {
+        if (!in_array($type, array('fed', 'sp'))) {
             log_message('error', "The type of policy is: " . $type . ". Should be one of: global,fed,sp");
             show_error(lang('error_wrongpolicytype'), 404);
         }
@@ -195,11 +110,7 @@ class Attributepolicy extends MY_Controller
             show_error('' . lang('error_attrnotfoundwithid') . ': ' . $attrID);
         }
 
-        if ($type === 'global') {
-            $attr_policy = $this->tmpArps->getOneGlobalPolicy($idpID, $attrID);
-            $action = base_url('manage/attributepolicy/submit_global');
-            $subtitle = lang('rr_defaultarp');
-        } elseif ($type === 'fed') {
+        if ($type === 'fed') {
             $attr_policy = $this->tmpArps->getOneFedPolicy($idpID, $attrID, $requester);
             $tmp_feds = new models\Federations;
             /**
