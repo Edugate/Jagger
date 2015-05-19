@@ -421,6 +421,10 @@ class Providertoxml
             }
             $finalReqAttrs = &$options['fedreqattrs'];
         }
+        if (count($finalReqAttrs) == 0)
+        {
+            return $xml;
+        }
 
 
         $xml->startElementNs('md', 'AttributeConsumingService', null);
