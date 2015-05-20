@@ -35,20 +35,20 @@ class Metadata extends MY_Controller
 
     public function federation($federationName = NULL, $limitType = NULL)
     {
-        $this->load->library('providertoxml');
         if (empty($federationName)) {
             show_error('Not found', 404);
         }
+        $this->load->library('providertoxml');
         $data = array();
         $excludeType = null;
         $name = $federationName;
-        if (!empty($limitType) && ((strcasecmp($limitType, 'SP') == 0) || (strcasecmp($limitType, 'IDP') == 0))) {
-            if (strcasecmp($limitType, 'SP') == 0) {
-                $excludeType = 'IDP';
-            } else {
-                $excludeType = 'SP';
-            }
+
+        if (strcasecmp($limitType, 'SP') == 0) {
+            $excludeType = 'IDP';
+        } elseif (strcasecmp($limitType, 'IDP') == 0) {
+            $excludeType = 'SP';
         }
+
         $permitPull = $this->checkAccess();
         if ($permitPull !== TRUE) {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
@@ -61,7 +61,7 @@ class Metadata extends MY_Controller
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name, 'is_active' => true));
 
         if (empty($federation)) {
-            set_status_header(400);
+            set_status_header(404);
             echo 'Federation not found or is inactive';
             return;
         }
@@ -136,7 +136,7 @@ class Metadata extends MY_Controller
                 $this->providertoxml->entityStaticConvert($xmlOut, $m);
             } else {
                 $xmlOut->endComment();
-                $this->providertoxml->entityConvert($xmlOut, $m, $options, $m->getId());
+                $this->providertoxml->entityConvert($xmlOut, $m, $options);
             }
             unset($members[$k]);
         }
@@ -341,13 +341,11 @@ class Metadata extends MY_Controller
         if (empty($provider)) {
             log_message('debug', 'Failed generating circle metadata for ' . $name);
             show_error('unknown provider', 404);
-            return;
         }
         if (!$this->isProviderAllowedForCircle($provider)) {
             log_message('warning', 'Cannot generate circle metadata for external provider:' . $provider->getEntityId());
             log_message('debug', 'To enable generate circle metadata for external entities please set disable_extcirclemeta in config to FALSE');
             show_error($provider->getEntityId() . ': This is not managed localy. Cannot generate circle metadata', 403);
-            return;
         }
         $mtype = $provider->getType();
         $excludeType = null;
@@ -431,13 +429,11 @@ class Metadata extends MY_Controller
         $queue = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $tokenid));
         if (empty($queue)) {
             show_error('Not found', 404);
-            return null;
         }
         $queueAction = $queue->getAction();
         $queueObjType = $queue->getType();
         if (!(strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0))) {
             show_error('Not found', 404);
-            return null;
         }
         $queueData = $queue->getData();
         $this->load->library('providertoxml');
@@ -460,7 +456,6 @@ class Metadata extends MY_Controller
             $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
             if (!$isValid) {
                 show_error('invalida metadata', 404);
-                return false;
             }
             $data['out'] = $metadataDOM->saveXML();
         }

@@ -40,18 +40,18 @@ echo '</div>';
 <div id="defaultarptab" class="content active">
 <?php
 
-$attributes = array('class' => 'email', 'id' => 'formver2');
+$attributes = array('id' => 'adddefaultpolicy');
 $hidden = array('spid' => $spid, 'idpid' => $idpid);
 if(!empty($fedid))
 {
 	$hidden['fedid'] = $fedid;
 }
-$target = base_url() . 'manage/attributepolicy/submit_global';
+$target = base_url() . 'manage/attribute_policyajax/updatedefault/'.$idpid.'';
 if (count($attrs_array_newform) > 0)
 {
-    echo '<span class="span-22">';
-    echo '<div class="accordionButton buttons"><button class="savebutton saveicon">'.lang('setdefaultpolicyfornewsupattrs').'</button> </div>';
-    echo '<div class="accordionContent">';
+    echo '<div class="row"><div class="small-12 medium-6 medium-offset-6 column text-right">';
+    echo '<div class="accordionButton buttons"><button class="savebutton saveicon small">'.lang('setdefaultpolicyfornewsupattrs').'</button> </div>';
+    echo '<div class="accordionContent text-left">';
     echo form_open($target, $attributes, $hidden);
     echo form_fieldset(); 
     echo '<ol>';
@@ -65,13 +65,12 @@ if (count($attrs_array_newform) > 0)
     echo form_dropdown('policy', array('0' => ''.lang('dropnever').'', '1' => ''.lang('dropokreq').'', '2' => ''.lang('dropokreqdes').''),set_value('policy'));
     echo '</li></ol>';
     echo '<div class="buttons">';
-    echo '<button type="submit" name="submit" value="Cancel" class="resetbutton reseticon small alert">'.lang('rr_cancel').'</button>';
-    echo '<button type="submit" name="submit" value="Add default policy" class="savebutton saveicon small">'.lang('adddefaultpolicy').'</button>';
+    echo '<button class="small button">'.lang('adddefaultpolicy').'</button>';
     echo '</span>';
     echo form_fieldset_close();
 
     echo form_close();
-    echo '</div></span>';
+    echo '</div></div></div>';
 }
 
 if (!empty($default_policy))
@@ -84,9 +83,6 @@ if (!empty($default_policy))
 echo '</div>';
 echo '<div id="fedarptab" class="content" >';
 
-echo '<div class="buttons clear">';
-echo anchor('manage/attributepolicy/show_feds/'.$idpid.'','<span class="buttons"><button class="savebutton saveicon small">'.lang('rr_arpforfed').'</button></span>');
-echo '</div>';
 
 if (!empty($federations_policy))
 {
@@ -112,3 +108,59 @@ echo lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_at
 </div>
 </div>
 </div>
+<?php
+
+/**
+ * globalpolicyupdater modal
+ */
+echo '<div id="globalpolicyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getglobalattrpolicy/' . $idpid . '') . '">
+  <h4>' . lang('confirmupdpolicy') . '</h4>
+  <h5>'.lang('rr_defaultarp').': <span class="dynamicval"></span></h5>
+  <div>
+ ';
+echo '<div class="attrflow row"></div>';
+echo form_open(base_url('manage/attribute_policyajax/updatedefault/'. $idpid.''));
+echo form_input(array('name' => 'attribute', 'type' => 'hidden', 'value' => ''));
+echo form_input(array('name' => 'idpid', 'type' => 'hidden', 'value' => '' . $idpid . ''));
+$dropdown = $this->config->item('policy_dropdown');
+echo '<div class="row">';
+$dropdown['100'] = lang('dropnotset');
+echo '<div class="medium-3 columns medium-text-right"><label for="policy" class="inline" >' . lang('policy') . '</label></div>';
+echo '<div class="medium-9 columns">' . form_dropdown('policy', $dropdown, '') . '</div>';
+echo '</div>';
+echo '<div class="row">';
+$buttons = array(
+    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<div class="yes button">' . lang('btnupdate') . '</div>'
+);
+echo revealBtnsRow($buttons);
+echo '</div></form><a class="close-reveal-modal">&#215;</a></div>';
+
+/**
+ * fedpolicyupdater modal
+ */
+
+echo '<div id="fedpolicyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getfedattrpolicy/' . $idpid . '') . '">
+  <h4>' . lang('confirmupdpolicy') . '</h4>
+  <h5>Fed Attr: <span class="dynamicval"></span></h5>
+  <div>
+ ';
+echo '<div class="attrflow row"></div>';
+echo form_open(base_url('manage/attribute_policyajax/updatefed/'. $idpid.''));
+echo form_input(array('name' => 'attribute', 'type' => 'hidden', 'value' => ''));
+echo form_input(array('name' => 'idpid', 'type' => 'hidden', 'value' => '' . $idpid . ''));
+echo form_input(array('name' => 'fedid', 'type' => 'hidden', 'value' => ''));
+$dropdown = $this->config->item('policy_dropdown');
+echo '<div class="row">';
+$dropdown['100'] = lang('dropnotset');
+echo '<div class="medium-3 columns medium-text-right"><label for="policy" class="inline" >' . lang('policy') . '</label></div>';
+echo '<div class="medium-9 columns">' . form_dropdown('policy', $dropdown, '') . '</div>';
+echo '</div>';
+echo '<div class="row">';
+$buttons = array(
+    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<div class="yes button">' . lang('btnupdate') . '</div>'
+);
+echo revealBtnsRow($buttons);
+echo '</div></form><a class="close-reveal-modal">&#215;</a></div>';
+
