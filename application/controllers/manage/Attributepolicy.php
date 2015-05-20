@@ -110,38 +110,27 @@ class Attributepolicy extends MY_Controller
         }
         $data['sp_name'] = $sp->getNameToWebInLang($myLang, 'sp');
 
-        $link_sp = anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
         $action = base_url('manage/attributepolicy/submit_sp/' . $idpID);
-        $data['subtitlepage'] = lang('rr_specarpforsp') . ' : <br />' . $link_sp;
+        $data['subtitlepage'] = lang('rr_specarpforsp') . ' : <br />' . anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
 
         if ($idp->getLocked()) {
             $subtitle .= '<div class="lblsubttitlepos" ><small > ' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . ' </small ></div > ';
         }
+        $data['attribute_name'] = $attribute->getName();
+        $data['idp_name'] = $providerNameInLang;
+        $data['idp_id'] = $idp->getId();
+        $data['requester_id'] = $requester;
+        $data['type'] = $type;
         if (empty($attr_policy)) {
             $data['error_message'] = lang('arpnotfound');
-            $message = 'Policy not found for: ';
-            $message .= '[idp_id = ' . $idpID . ', attr_id = ' . $attrID . ', type = ' . $type . ', requester = ' . $requester . ']';
+            $message = 'Policy not found for: [idp_id = ' . $idpID . ', attr_id = ' . $attrID . ', type = ' . $type . ', requester = ' . $requester . ']';
             log_message('debug', $message);
-            $data['attribute_name'] = $attribute->getName();
-            $data['idp_name'] = $providerNameInLang;
-            $data['idp_id'] = $idpID;
-            $data['requester_id'] = $requester;
-            $data['type'] = $type;
             $narp = new models\AttributeReleasePolicy;
-            $narp->setProvider($idp);
-            $narp->setAttribute($attribute);
-            $narp->setType('sp');
-            $narp->setRequester($sp->getId());
-            $narp->setPolicy(0);
+            $narp->setSpecificPolicy($idp, $attribute, $sp->getId(), 0);
             $submit_type = 'create';
             $data['edit_form'] = $this->form_element->generateEditPolicyForm($narp, $action, $submit_type);
         } else {
             log_message('debug', 'Policy has been found for: [idp_id = ' . $idpID . ', attr_id = ' . $attrID . ', type = ' . $type . ', requester = ' . $requester . ']');
-            $data['attribute_name'] = $attribute->getName();
-            $data['idp_name'] = $providerNameInLang;
-            $data['idp_id'] = $idp->getId();
-            $data['requester_id'] = $requester;
-            $data['type'] = $type;
             $submit_type = 'modify';
             $data['edit_form'] = $this->form_element->generateEditPolicyForm($attr_policy, $action, $submit_type);
         }
