@@ -83,9 +83,6 @@ if (!empty($default_policy))
 echo '</div>';
 echo '<div id="fedarptab" class="content" >';
 
-echo '<div class="buttons clear">';
-echo anchor('manage/attributepolicy/show_feds/'.$idpid.'','<span class="buttons"><button class="savebutton saveicon small">'.lang('rr_arpforfed').'</button></span>');
-echo '</div>';
 
 if (!empty($federations_policy))
 {
@@ -113,7 +110,7 @@ echo lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_at
 </div>
 <?php
 
-
+/////////////////////////////////////
 echo '<div id="globalpolicyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getglobalattrpolicy/' . $idpid . '') . '">
   <h4>' . lang('confirmupdpolicy') . '</h4>
   <h5>'.lang('rr_defaultarp').': <span class="dynamicval"></span></h5>
@@ -125,7 +122,6 @@ echo form_input(array('name' => 'attribute', 'type' => 'hidden', 'value' => ''))
 echo form_input(array('name' => 'idpid', 'type' => 'hidden', 'value' => '' . $idpid . ''));
 $dropdown = $this->config->item('policy_dropdown');
 echo '<div class="row">';
-
 $dropdown['100'] = lang('dropnotset');
 echo '<div class="medium-3 columns medium-text-right"><label for="policy" class="inline" >' . lang('policy') . '</label></div>';
 echo '<div class="medium-9 columns">' . form_dropdown('policy', $dropdown, '') . '</div>';
@@ -136,8 +132,30 @@ $buttons = array(
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo revealBtnsRow($buttons);
+echo '</div></form><a class="close-reveal-modal">&#215;</a></div>';
+////////////////////////////////
+/////////////////////////////////////
+echo '<div id="fedpolicyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getfedattrpolicy/' . $idpid . '') . '">
+  <h4>' . lang('confirmupdpolicy') . '</h4>
+  <h5>Fed Attr: <span class="dynamicval"></span></h5>
+  <div>
+ ';
+echo '<div class="attrflow row"></div>';
+echo form_open(base_url('manage/attribute_policyajax/updatefed/'. $idpid.''));
+echo form_input(array('name' => 'attribute', 'type' => 'hidden', 'value' => ''));
+echo form_input(array('name' => 'idpid', 'type' => 'hidden', 'value' => '' . $idpid . ''));
+echo form_input(array('name' => 'fedid', 'type' => 'hidden', 'value' => ''));
+$dropdown = $this->config->item('policy_dropdown');
+echo '<div class="row">';
+$dropdown['100'] = lang('dropnotset');
+echo '<div class="medium-3 columns medium-text-right"><label for="policy" class="inline" >' . lang('policy') . '</label></div>';
+echo '<div class="medium-9 columns">' . form_dropdown('policy', $dropdown, '') . '</div>';
 echo '</div>';
-echo '
-</form>
-  <a class="close-reveal-modal">&#215;</a>
-</div>';
+echo '<div class="row">';
+$buttons = array(
+    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<div class="yes button">' . lang('btnupdate') . '</div>'
+);
+echo revealBtnsRow($buttons);
+echo '</div></form><a class="close-reveal-modal">&#215;</a></div>';
+////////////////////////////////

@@ -17,7 +17,6 @@ namespace models;
  * @subpackage  Models
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-
 /**
  * AttributeReleasePolicy Model
  *
@@ -200,7 +199,18 @@ class AttributeReleasePolicy {
         $this->setPolicy($policy);
         return $this;
     }
-
+  /**
+     * set global policy for Provider - Attribute
+     */
+    public function setFedPolicy(Provider $idp, Attribute $attribute, Federation $federation, $policy)
+    {
+        $this->setAttribute($attribute);
+        $this->setProvider($idp);
+        $this->setRequester($federation->getId());
+        $this->setType('fed');
+        $this->setPolicy($policy);
+        return $this;
+    }
     public function setSpecificPolicy(Provider $idp, Attribute $attribute, $requester, $policy)
     {
         $this->setAttribute($attribute);

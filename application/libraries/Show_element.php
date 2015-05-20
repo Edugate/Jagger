@@ -169,6 +169,12 @@ class Show_element {
     {
         $result = null;
         $id = $provider->getId();
+        $tmpProviders = new models\Providers();
+        $trustedFeds = $tmpProviders->getTrustedActiveFeds($provider);
+        foreach($trustedFeds as $f)
+        {
+            $result[''.$f->getId().''] = array();
+        }
         $arps = $this->tmp_policies->getFedPolicyAttributes($provider);
         if (empty($arps))
         {
@@ -340,11 +346,11 @@ class Show_element {
     public function generateTableFederationsArp(models\Provider $provider, $disabledcaption = NULL)
     {
         $result = null;
-        $supported = $this->tmp_policies->getSupportedAttributes($provider);
-        $supported_attrs = array();
-        foreach ($supported as $sa)
+        $tmpSupAttrs = $this->tmp_policies->getSupportedAttributes($provider);
+        $supportedAttrs = array();
+        foreach ($tmpSupAttrs as $sa)
         {
-            $supported_attrs[$sa->getAttribute()->getName()] = $sa->getAttribute()->getId();
+            $supportedAttrs[$sa->getAttribute()->getName()] = $sa->getAttribute()->getId();
         }
         $source = $this->displayFederationsArp($provider);
         $attributes = array();
@@ -354,7 +360,7 @@ class Show_element {
         {
             $tmpl = array('table_open' => '<table  id="detailsnosort">');
             $this->ci->table->set_template($tmpl);
-            $this->ci->table->set_heading(''.lang('rr_attr_name').'', ''.lang('policy').'');
+            $this->ci->table->set_heading(''.lang('rr_attr_name').'', ''.lang('policy').'',lang('rr_action'));
             if(empty($disabledcaption))
             {
                $this->ci->table->set_caption(''.lang('rr_arpforfeds').'');
@@ -362,20 +368,28 @@ class Show_element {
             foreach ($source as $s)
             {
 
-                $attributes[] = array('data' => array('data' => ''.lang('rr_federation').': <b>' . $s['fedname'] . '</b>', 'colspan' => 2, 'class' => 'highlight'));
-                foreach ($s['attrs'] as $attr_key => $attr_value)
-                {
-                    $edit_link = anchor($prefix_url . "" . $provider->getId() . "/" . $attr_value['attrid'] . "/fed/" . $s['fedid'], $icon );
-                    if (!array_key_exists($attr_value['name'], $supported_attrs))
-                    {
-                        $attr_name = '<span class="alert" title="'.lang('attrnotsupported').'">' . $attr_value['name'] . '</span>';
-                        $attributes[] = array('' . $attr_name . '' . $edit_link . '', $attr_value['release']);
-                    }
-                    else
-                    {
-                        $attributes[] = array('' . $attr_value['name'] . '' . $edit_link . '', $attr_value['release']);
+                $attributes[] = array('data' => array('data' => ''.lang('rr_federation').': <b>' . $s['fedname'] . '</b>', 'colspan' => 3, 'class' => 'highlight'));
+                $workingSupAttrs =  $supportedAttrs;
+                if(array_key_exists('attrs',$s)) {
+                    foreach ($s['attrs'] as $attr_key => $attr_value) {
+                        $edit_link = anchor($prefix_url . "" . $provider->getId() . "/" . $attr_value['attrid'] . "/fed/" . $s['fedid'], $icon, array('data-jagger-attrid' => $attr_value['attrid'], 'data-jagger-fedid' => $s['fedid'], 'data-jagger-attrname' => $attr_value['name']));
+                        if (!array_key_exists($attr_value['name'], $supportedAttrs)) {
+                            $attr_name = '<span class="alert" title="' . lang('attrnotsupported') . '">' . $attr_value['name'] . '</span>';
+                            $attributes[] = array('' . $attr_name . '', $attr_value['release'], $edit_link);
+                        } else {
+                            $attributes[] = array('' . $attr_value['name'] . '', '<span class="dynstate">' . $attr_value['release'] . '</span>', $edit_link);
+                            unset($workingSupAttrs['' . $attr_value['name'] . '']);
+
+                        }
+
                     }
                 }
+                foreach($workingSupAttrs as $k=>$v)
+                {
+                    $edit_link = anchor($prefix_url . "" . $provider->getId() . "/" . $v . "/fed/" . $s['fedid'], $icon, array('data-jagger-attrid'=>$v,'data-jagger-fedid'=>$s['fedid'],'data-jagger-attrname'=>$k) );
+                    $attributes[] = array('' . $k . '', '<span class="dynstate">'.lang('rr_notset').'</span>',$edit_link );
+                }
+
             }
 
             $result = $this->ci->table->generate($attributes);
@@ -423,7 +437,7 @@ class Show_element {
                 {
                      $provname = $provider->getEntityid();
                 }
-                $this->ci->table->set_caption(''.lang('rr_defaultarp').': <b>' . $provname . '</b>' . anchor(base_url() . "providers/detail/show/" . $provider->getId(), '<img src="' . base_url() . 'images/icons/home.png" />'));
+                $this->ci->table->set_caption(''.lang('rr_defaultarp').': <b>' . $provname . '</b>' . anchor(base_url() . "providers/detail/show/" . $provider->getId(), '<i class="fi-home"></i>'));
             }
             $result = $this->ci->table->generate($attributes);
             $this->ci->table->clear();

@@ -62,7 +62,6 @@ class Attributepolicy extends MY_Controller
     }
 
 
-
     /**
      * for global policy requester should be set to 0
      */
@@ -72,8 +71,8 @@ class Attributepolicy extends MY_Controller
             log_message('error', "Idp id or attr id is set incorectly");
             show_error(lang('error404'), 404);
         }
-        if (!in_array($type, array('fed', 'sp'))) {
-            log_message('error', "The type of policy is: " . $type . ". Should be one of: global,fed,sp");
+        if (!in_array($type, array('sp'))) {
+            log_message('error', "The type of policy is: " . $type . ". Should be one of: sp");
             show_error(lang('error_wrongpolicytype'), 404);
         }
 
@@ -109,38 +108,23 @@ class Attributepolicy extends MY_Controller
             log_message('error', 'Attribute not found with id:' . $attrID);
             show_error('' . lang('error_attrnotfoundwithid') . ': ' . $attrID);
         }
+        $attr_policy = $this->tmpArps->getOneSPPolicy($idpID, $attrID, $requester);
 
-        if ($type === 'fed') {
-            $attr_policy = $this->tmpArps->getOneFedPolicy($idpID, $attrID, $requester);
-            $tmp_feds = new models\Federations;
-            /**
-             * @var $federation models\Federation
-             */
-            $federation = $tmp_feds->getOneFederationById($requester);
-            if (!empty($federation)) {
-                $data['fed_name'] = $federation->getName();
-                $data['fed_url'] = base64url_encode($federation->getName());
-            }
-            $action = base_url('manage/attributepolicy/submit_fed/' . $idpID);
-            $subtitle = lang('rr_arpforfed');
-        } else {  //type==sp
-            $attr_policy = $this->tmpArps->getOneSPPolicy($idpID, $attrID, $requester);
-
-            /**
-             * @var $sp models\Provider
-             */
-            $sp = $this->tmpProviders->getOneSpById($requester);
-            if (!empty($sp)) {
-                log_message('debug', 'SP found with id: ' . $requester);
-                $data['sp_name'] = $sp->getNameToWebInLang($myLang, 'sp');
-            } else {
-                log_message('debug', 'SP not found with id: ' . $requester);
-                show_error(lang('rerror_spnotfound') . ' id:' . $requester, 404);
-            }
-            $link_sp = anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
-            $action = base_url('manage/attributepolicy/submit_sp/' . $idpID);
-            $data['subtitlepage'] = lang('rr_specarpforsp') . ' : <br />' . $link_sp;
+        /**
+         * @var $sp models\Provider
+         */
+        $sp = $this->tmpProviders->getOneSpById($requester);
+        if (!empty($sp)) {
+            log_message('debug', 'SP found with id: ' . $requester);
+            $data['sp_name'] = $sp->getNameToWebInLang($myLang, 'sp');
+        } else {
+            log_message('debug', 'SP not found with id: ' . $requester);
+            show_error(lang('rerror_spnotfound') . ' id:' . $requester, 404);
         }
+        $link_sp = anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
+        $action = base_url('manage/attributepolicy/submit_sp/' . $idpID);
+        $data['subtitlepage'] = lang('rr_specarpforsp') . ' : <br />' . $link_sp;
+
         if ($idp->getLocked()) {
             $subtitle .= '<div class="lblsubttitlepos" ><small > ' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . ' </small ></div > ';
         }
@@ -264,7 +248,7 @@ class Attributepolicy extends MY_Controller
             $data['formdown'][$key->getId()] = $key->getNameToWebInLang($myLang, 'sp') . ' (' . $key->getEntityId() . ')';
         }
 
-         $this->load->view('page', $data);
+        $this->load->view('page', $data);
     }
 
     /**

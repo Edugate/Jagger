@@ -112,9 +112,6 @@ jQuery.uiTableFilter.has_words = function (str, words, caseSensitive) {
 /// third party plugin //
 
 
-
-
-
 ////////////////
 /// JAGGER /////
 ////////////////
@@ -213,7 +210,7 @@ var createRowTaskParams = function (label1, label2) {
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     ;
-    return  $('<div class=\"row\"><div class=\"small-6 column\"><label>' + label1 + '<input name=\"params[' + rname + '][name]\" type=\"text\" value=\"\"/></label></div>' +
+    return $('<div class=\"row\"><div class=\"small-6 column\"><label>' + label1 + '<input name=\"params[' + rname + '][name]\" type=\"text\" value=\"\"/></label></div>' +
     '<div class=\"small-6 column\"><label>' + label2 + '<input name=\"params[' + rname + '][value]\" type="text"  value=\"\"/></label></div></div>');
 };
 
@@ -477,9 +474,9 @@ var GINIT = {
         });
 
 
-        $("#taskformaddparam").on('click', function(e){
+        $("#taskformaddparam").on('click', function (e) {
             var currentRow = $(this).closest('div.row');
-            var row = createRowTaskParams('','');
+            var row = createRowTaskParams('', '');
             row.insertBefore(currentRow);
             return false;
 
@@ -576,7 +573,7 @@ var GINIT = {
                 });
             }
         });
-        $("#newusermodal").on('submit', 'form',function(e){
+        $("#newusermodal").on('submit', 'form', function (e) {
             e.preventDefault();
             var modal = $(this);
             var url = modal.attr('action');
@@ -586,18 +583,16 @@ var GINIT = {
                 type: "POST",
                 data: modal.serializeArray(),
                 beforeSend: function () {
-                        msgdiv.hide().empty();
+                    msgdiv.hide().empty();
                 },
-                success: function(data){
-                    if(data && data ==='OK')
-                    {
+                success: function (data) {
+                    if (data && data === 'OK') {
                         $("#newusermodal").foundation('reveal', 'close');
                         msgdiv.hide().empty();
                         location.reload();
 
                     }
-                    else
-                    {
+                    else {
                         msgdiv.html(data).show();
                     }
                 }
@@ -654,7 +649,7 @@ var GINIT = {
             return false;
         });
 
-        $(".policymembers").on('click', function(e){
+        $(".policymembers").on('click', function (e) {
             var link = $(this).attr('data-jagger-jsource');
             var modal = $('#regpolmembers');
             var content = modal.find(".datacontent").first();
@@ -662,16 +657,16 @@ var GINIT = {
                 type: "GET",
                 url: link,
                 beforeSend: function () {
-                        content.empty();
-                    },
+                    content.empty();
+                },
                 success: function (data) {
-                    if(data){
+                    if (data) {
                         var listbody = $('<ul/>');
                         listbody.addClass('no-bullet');
                         var result = [];
                         var a = 0;
                         $.each(data, function (i, v) {
-                            result[a++] = '<li><a href="'+baseurl+'providers/detail/show/'+ v.provid+'">'+ v.name+' </a><small>('+ v.entityid+')</small></li>';
+                            result[a++] = '<li><a href="' + baseurl + 'providers/detail/show/' + v.provid + '">' + v.name + ' </a><small>(' + v.entityid + ')</small></li>';
                         })
                         listbody.append(result.join(''));
                         content.append(listbody);
@@ -681,7 +676,7 @@ var GINIT = {
 
             });
         });
-        $(".ecmembers").on('click', function(e){
+        $(".ecmembers").on('click', function (e) {
             var link = $(this).attr('data-jagger-jsource');
             var modal = $('#ecmembers');
             var content = modal.find(".datacontent").first();
@@ -692,13 +687,13 @@ var GINIT = {
                     content.empty();
                 },
                 success: function (data) {
-                    if(data){
+                    if (data) {
                         var listbody = $('<ul/>');
                         listbody.addClass('no-bullet');
                         var result = [];
                         var a = 0;
                         $.each(data, function (i, v) {
-                            result[a++] = '<li><a href="'+baseurl+'providers/detail/show/'+ v.provid+'">'+ v.name+' </a><small>('+ v.entityid+')</small></li>';
+                            result[a++] = '<li><a href="' + baseurl + 'providers/detail/show/' + v.provid + '">' + v.name + ' </a><small>(' + v.entityid + ')</small></li>';
                         })
                         listbody.append(result.join(''));
                         content.append(listbody);
@@ -709,7 +704,7 @@ var GINIT = {
             });
         });
 
-        $(".rmusericon").on('click',function(e){
+        $(".rmusericon").on('click', function (e) {
             var modal = $("#removeusermodal");
             var msgdiv = modal.find("#removeusermodalmsg").first();
             var username = $(this).attr('data-jagger-username');
@@ -718,7 +713,7 @@ var GINIT = {
             var inputencusr = modal.find('#encodedusr').first();
             var closebtn = modal.find("button[name='close']");
             var cancelbtn = modal.find("button[name='cancel']");
-            var submitbtn =modal.find("button[name='remove']");
+            var submitbtn = modal.find("button[name='remove']");
             var inputusername = modal.find("input[name='username']");
             inputusername.val('');
             inputencusr.val(encusername);
@@ -729,37 +724,35 @@ var GINIT = {
             closebtn.hide();
 
 
-            modal.foundation('reveal','open');
+            modal.foundation('reveal', 'open');
             return false;
         });
 
 
-        $("#removeusermodal form").on('submit', function(e){
+        $("#removeusermodal form").on('submit', function (e) {
             e.preventDefault();
             var msgdiv = $(this).find("#removeusermodalmsg").first();
             var inputencusr = $(this).find('#encodedusr').first();
             var link = $(this).attr('action');
             var closebtn = $(this).find("button[name='close']");
             var cancelbtn = $(this).find("button[name='cancel']");
-            var submitbtn =$(this).find("button[name='remove']");
+            var submitbtn = $(this).find("button[name='remove']");
             $.ajax({
                     type: "POST",
                     url: link,
                     data: $(this).serializeArray(),
-                    beforeSend: function(){
+                    beforeSend: function () {
                         msgdiv.html('').hide().removeClass('alert').removeClass('success');
                         submitbtn.show();
                         cancelbtn.show();
                         closebtn.hide();
                     },
-                    success: function(data)
-                    {
-                       var cell = $(document).find('a[data-jagger-encodeduser="'+inputencusr.val()+'"]');
+                    success: function (data) {
+                        var cell = $(document).find('a[data-jagger-encodeduser="' + inputencusr.val() + '"]');
 
-                        if(cell)
-                        {
+                        if (cell) {
 
-                           cell.closest('tr').hide();
+                            cell.closest('tr').hide();
 
                         }
 
@@ -770,12 +763,11 @@ var GINIT = {
                         return false;
                     },
                     error: function (xhr, status, error) {
-                    var alertmsg = '' + error + '';
-                    msgdiv.html(xhr.responseText).addClass('alert').show();
-                    return false;
+                        var alertmsg = '' + error + '';
+                        msgdiv.html(xhr.responseText).addClass('alert').show();
+                        return false;
                     }
                 }
-
             );
 
         });
@@ -2058,7 +2050,7 @@ $(document).ready(function () {
 
     }
 
-    $('#spmatrixload').on('click',function(e){
+    $('#spmatrixload').on('click', function (e) {
         var loadbutton = $(this);
         var link = $(this).attr('data-jagger-ajaxurl');
         var resulttarget = $(document).find('#spmatrixdiv').first();
@@ -2067,13 +2059,12 @@ $(document).ready(function () {
             url: link,
             cache: false,
             dataType: "json",
-            beforeSend: function(){
+            beforeSend: function () {
                 $("#spinner").show();
             },
             success: function (json) {
                 $("#spinner").hide();
-                if(json)
-                {
+                if (json) {
 
                     var attrdefs = json.attrs;
                     var policies = json.data;
@@ -2094,49 +2085,43 @@ $(document).ready(function () {
                     if (countAttr > 52) {
                         $("#container").css({"max-width": "100%"});
                     }
-                    var cell, requiredAttr, pAttr,cl;
+                    var cell, requiredAttr, pAttr, cl;
                     tbl += '</tr></thead><tbody>';
                     $.each(policies, function (i, a) {
 
-                        tbl += '<tr><td data-jagger-entidlink="' + a.idpid + '" class="searchcol"><a href="'+prefurl+'/'+ a.idpid+'" title="' + a.entityid + '" >' + a.name + '</a><span class="hidden">' + i + '</span></td>';
-                         $.each(attrdefs, function (k, v) {
-                             cl = '';
-                             requiredAttr = a['data']['attributes'][''+k+''];
-                             cell = v[0].toUpperCase();
-                             if(requiredAttr === undefined)
-                             {
-                                 cl = 'dis'
-                             }
-                             else if(requiredAttr === 0 )
-                             {
-                                 cl = 'den'
-                             }
-                             else if(requiredAttr === 1)
-                             {
-                                 if(cell === 'R')
-                                 {
-                                     cl = 'perm';
-                                 }
-                                 else
-                                 {
-                                     cl = 'den';
-                                 }
-                             }
-                             else if (requiredAttr === 2)
-                             {
-                                 cl = 'perm';
-                             }
+                        tbl += '<tr><td data-jagger-entidlink="' + a.idpid + '" class="searchcol"><a href="' + prefurl + '/' + a.idpid + '" title="' + a.entityid + '" >' + a.name + '</a><span class="hidden">' + i + '</span></td>';
+                        $.each(attrdefs, function (k, v) {
+                            cl = '';
+                            requiredAttr = a['data']['attributes']['' + k + ''];
+                            cell = v[0].toUpperCase();
+                            if (requiredAttr === undefined) {
+                                cl = 'dis'
+                            }
+                            else if (requiredAttr === 0) {
+                                cl = 'den'
+                            }
+                            else if (requiredAttr === 1) {
+                                if (cell === 'R') {
+                                    cl = 'perm';
+                                }
+                                else {
+                                    cl = 'den';
+                                }
+                            }
+                            else if (requiredAttr === 2) {
+                                cl = 'perm';
+                            }
 
-                             tbl += '<td class="'+cl+'">';
-                             tbl += cell + '</td>';
-                         });
+                            tbl += '<td class="' + cl + '">';
+                            tbl += cell + '</td>';
+                        });
                     });
                     tbl += '</tbody></table>';
                     loadbutton.hide();
                     resulttarget.html(tbl);
                 }
             },
-            error: function(){
+            error: function () {
                 $("#spinner").hide();
             }
         })
@@ -2342,41 +2327,95 @@ $(document).ready(function () {
         });
     }
 
+    if ($('#fedarptab').length > 0) {
+        var fedarptable = $('#fedarptab').find('table').first();
+        var fedmodal = $('#fedpolicyupdater');
+        var fedmodalForm = $('#fedpolicyupdater').find("form").first();
+        var fedmodalAttrId = fedmodal.find("input[name='attribute']").first();
+        var fedmodalFedId = fedmodal.find("input[name='fedid']").first();
+        var fedmodalDropdown = fedmodal.find("select[name='policy']").first();
+        var fedlink1 = fedmodal.attr("data-jagger-link");
+        var fedattrnameval = fedmodal.find("span.dynamicval").first();
+        var dynstate;
+        fedarptable.on('click', 'a', function (e) {
+            e.preventDefault();
+            var tablerow = $(this).closest('tr');
+            dynstate = tablerow.find('span.dynstate').first();
+            var fedattrid = $(this).attr('data-jagger-attrid');
+            var fedattrname = $(this).attr('data-jagger-attrname');
+            var fedid = $(this).attr('data-jagger-fedid');
+            fedmodalAttrId.val(fedattrid);
+            fedmodalFedId.val(fedid);
+            $.ajax({
+                type: "GET",
+                url: fedlink1 + '/' + fedid+'/'+fedattrid,
+                cache: false,
+                dataType: 'json',
+                success: function (data) {
+                    fedmodalDropdown.find("option:selected").prop("selected", false);
+                    fedmodalDropdown.find("option[value=" + data.policy + "]").prop("selected", true);
+                    fedattrnameval.html(fedattrname);
+                    fedmodal.foundation('reveal', 'open');
+
+                },
+                error: function () {
+                    alert('error');
+                }
+            });
+
+
+        });
+        fedmodal.on('click', '.yes', function (e) {
+            e.preventDefault();
+            var posturl = fedmodalForm.attr('action');
+            var serializedData = fedmodalForm.serializeArray();
+            $.ajax({
+                type: "POST",
+                url: posturl,
+                data: serializedData,
+                dataType: "json",
+                success: function (data) {
+                    modal.foundation('reveal', 'close');
+                    dynstate.html(data.policystr);
+                }
+            });
+        });
+    }
 ///////////////////
-    if($('#defaultarptab').length >0 )
-    {
+    if ($('#defaultarptab').length > 0) {
 
         var arptable = $('#defaultarptab');
         var modal = $('#globalpolicyupdater');
         var modalForm = $('#globalpolicyupdater').find("form").first();
         var addDefaultForm = $('#adddefaultpolicy');
         var modalAttrId = modal.find("input[name='attribute']").first();
-        var modalDropdown =modal.find("select[name='policy']").first();
+        var modalDropdown = modal.find("select[name='policy']").first();
         var link1 = modal.attr("data-jagger-link");
         var attrnameval = modal.find("span.dynamicval").first();
-        arptable.on('click','a', function(e) {
+        arptable.on('click', 'a', function (e) {
             e.preventDefault();
             var attrid = $(this).attr('data-jagger-attrid');
             var attrname = $(this).attr('data-jagger-attrname');
             modalAttrId.val(attrid);
             $.ajax({
                 type: "GET",
-                url: link1+'/'+attrid,
+                url: link1 + '/' + attrid,
                 cache: false,
-                success: function(data){
-                    modalDropdown.find("option:selected").prop("selected",false);
-                    modalDropdown.find("option[value=" + data + "]").prop("selected",true);
+                success: function (data) {
+                    modalDropdown.find("option:selected").prop("selected", false);
+                    modalDropdown.find("option[value=" + data + "]").prop("selected", true);
                     attrnameval.html(attrname);
+                    modal.foundation('reveal', 'open');
 
                 },
-                error: function(){
+                error: function () {
                     alert('error');
                 }
             });
 
-            modal.foundation('reveal','open');
+
         });
-        modal.on('click','.yes', function(e){
+        modal.on('click', '.yes', function (e) {
             e.preventDefault();
             var posturl = modalForm.attr('action');
             var serializedData = modalForm.serializeArray();
@@ -2385,23 +2424,23 @@ $(document).ready(function () {
                 url: posturl,
                 data: serializedData,
                 dataType: "json",
-                success: function(data){
-                   modal.foundation('reveal','close');
+                success: function (data) {
+                    modal.foundation('reveal', 'close');
                     location.reload();
                 }
             });
         });
-        addDefaultForm.on('click','button', function(e){
+        addDefaultForm.on('click', 'button', function (e) {
             e.preventDefault();
-            var posturl =addDefaultForm.attr('action');
+            var posturl = addDefaultForm.attr('action');
             var serializedData = addDefaultForm.serializeArray();
             $.ajax({
                 type: "POST",
                 url: posturl,
                 data: serializedData,
                 dataType: "json",
-                success: function(data){
-                    modal.foundation('reveal','close');
+                success: function (data) {
+                    modal.foundation('reveal', 'close');
                     location.reload();
                 }
             });
@@ -3221,7 +3260,7 @@ $(document).ready(function () {
     });
 
 
-    $(document).on('submit',"#notificationaddform",function(e){
+    $(document).on('submit', "#notificationaddform", function (e) {
         e.preventDefault();
         var notiform = $(this);
         var serializedData = notiform.serializeArray();
@@ -3229,17 +3268,17 @@ $(document).ready(function () {
             type: "POST",
             url: notiform.attr('action'),
             data: notiform.serializeArray(),
-                success: function (data) {
-                    $(".message").html(data);
-                    if (data === 'OK') {
-                        $('#notificationaddmodal').foundation('reveal', 'close');
-                        location.reload();
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    window.alert('Error occured: ' + errorThrown);
+            success: function (data) {
+                $(".message").html(data);
+                if (data === 'OK') {
+                    $('#notificationaddmodal').foundation('reveal', 'close');
+                    location.reload();
                 }
-            });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                window.alert('Error occured: ' + errorThrown);
+            }
+        });
 
 
     });
@@ -3297,7 +3336,7 @@ $(document).ready(function () {
 
     });
 
-     function sconfirm(message, callback) {
+    function sconfirm(message, callback) {
         $('#sconfirm').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
             position: ["20%",],
@@ -3705,7 +3744,7 @@ $('button[name="updaterole"]').click(function (e) {
         cache: false,
         data: form.serializeArray(),
         dataType: "json",
-        beforeSend: function(){
+        beforeSend: function () {
             messagediv.removeClass('alert').empty().hide();
         },
         success: function (json) {
@@ -3719,7 +3758,7 @@ $('button[name="updaterole"]').click(function (e) {
                 $('span#currentroles').empty().append(txtToReplace.substring(0, txtToReplace.length - 1));
             }
         },
-        error: function(jqXHR, textStatus, errorThrow){
+        error: function (jqXHR, textStatus, errorThrow) {
             messagediv.html(jqXHR.responseText).addClass('alert').show();
         }
 
@@ -3857,7 +3896,7 @@ $("#updateprefsmodal").on('submit', function (e) {
                     var type = data.type;
                     if (type === 'text') {
 
-                        rowRecord.find('span[data-jagger-name="vtext"]').first().html(nl2br(data.vtext,false));
+                        rowRecord.find('span[data-jagger-name="vtext"]').first().html(nl2br(data.vtext, false));
                     }
                     var sStatus = rowRecord.find('span[data-jagger-name="status"]').first();
                     if (data.status) {
@@ -3942,10 +3981,6 @@ $(document).on('click', 'a.updateprefs', function (e) {
     return false;
 
 });
-
-
-
-
 
 
 $(".select2").select2();
