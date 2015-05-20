@@ -71,9 +71,9 @@ class Providerupdater
         if (!array_key_exists('crt', $ch) || empty($ch['crt']) || !is_array($ch['crt'])) {
             return false;
         }
-        $tmpcrt = $ent->getCertificates();
+        $origCertificates = $ent->getCertificates();
         $allowedusecase = array('signing', 'encryption', 'both');
-        foreach ($tmpcrt as $v) {
+        foreach ($origCertificates as $v) {
             if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''])) {
                 $tkeyname = false;
                 $tdata = false;
