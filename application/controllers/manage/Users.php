@@ -220,14 +220,15 @@ class Users extends MY_Controller
         $this->em->persist($user);
         try {
             $this->em->flush();
+            $result = array('secondfactor' => $secondfactor);
+            $this->output->set_content_type('application/json')->set_output(json_encode($result));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
             echo 'DB problem';
             return;
         }
-        $result = array('secondfactor' => $secondfactor);
-        $this->output->set_content_type('application/json')->set_output(json_encode($result));
+
     }
 
     public function updateRole($encodeduser)
