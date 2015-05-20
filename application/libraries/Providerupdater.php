@@ -61,7 +61,56 @@ class Providerupdater
     private function updateChanges($name, $old, $new)
     {
 
-        $this->changes[] = array('old' => $old, 'new' => $new);
+        $this->logtracks['' . $name . ''] = array('before' => $old, 'after' => $new);
+    }
+
+    private function updateReqAttrs(\models\Provider $ent, array $ch)
+    {
+        if (!isset($ch['reqattr'])) {
+            return false;
+        }
+
+        $attrsTmp = new models\Attributes();
+        /**
+         * @var $attributes models\Attribute[]
+         * @var $attrsRequirement models\AttributeRequirement[]
+         */
+        $attributes = $attrsTmp->getAttributesToArrayById();
+        $attrsRequirement = $ent->getAttributesRequirement();
+        $convertedInput = array();
+        foreach ($ch['reqattr'] as $attr) {
+            if (isset($attr['attrid']) && array_key_exists($attr['attrid'], $attributes)) {
+                $convertedInput['' . $attr['attrid'] . ''] = $attr;
+            }
+        }
+
+        foreach ($attrsRequirement as $orig) {
+            $keyid = $orig->getAttribute()->getId();
+            if (!array_key_exists($keyid, $convertedInput)) {
+                $attrsRequirement->removeElement($orig);
+                $this->em->remove($orig);
+                continue;
+            }
+            $orig->setReason($convertedInput['' . $keyid . '']['reason']);
+            $orig->setStatus($convertedInput['' . $keyid . '']['status']);
+            $this->em->persist($orig);
+            unset($convertedInput[''.$keyid.'']);
+        }
+        foreach ($convertedInput as $k => $v) {
+            $nreq = new models\AttributeRequirement;
+            $nreq->setStatus($v['status']);
+            $nreq->setReason($v['reason']);
+            $nreq->setType('SP');
+            $nreq->setSP($ent);
+            $nreq->setAttribute($attributes['' . $k . '']);
+            $ent->setAttributesRequirement($nreq);
+            $this->em->persist($nreq);
+        }
+
+        /**
+         * @todo changelog
+         */
+
     }
 
     /**
@@ -82,20 +131,20 @@ class Providerupdater
         $origcntArray = array();
         $newcntArray = array();
         foreach ($origContacts as $v) {
-            $i = $v->getId();
+            $contactID = $v->getId();
 
-            $origcntArray[$i] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+            $origcntArray[$contactID] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
 
-            if (array_key_exists($i, $newContacts)) {
-                if (!isset($newContacts['' . $i . '']) || empty($newContacts['' . $i . '']['email'])) {
+            if (array_key_exists($contactID, $newContacts)) {
+                if (!isset($newContacts['' . $contactID . '']) || empty($newContacts['' . $contactID . '']['email'])) {
                     $ent->removeContact($v);
                     $this->em->remove($v);
                 } else {
-                    $v->setAllInfo($newContacts['' . $i . '']['fname'],$newContacts['' . $i . '']['sname'],$newContacts['' . $i . '']['type'],$newContacts['' . $i . '']['email'],$ent);
+                    $v->setAllInfo($newContacts['' . $contactID . '']['fname'], $newContacts['' . $contactID . '']['sname'], $newContacts['' . $contactID . '']['type'], $newContacts['' . $contactID . '']['email'], $ent);
                     $this->em->persist($v);
-                    $newcntArray['' . $i . ''] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+                    $newcntArray['' . $contactID . ''] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
                 }
-                unset($newContacts['' . $i . '']);
+                unset($newContacts['' . $contactID . '']);
             } else {
                 $ent->removeContact($v);
                 $this->em->remove($v);
@@ -104,7 +153,7 @@ class Providerupdater
         foreach ($newContacts as $cc) {
             if (!empty($cc['email']) && !empty($cc['type'])) {
                 $ncontact = new models\Contact();
-                $ncontact->setAllInfo($cc['fname'],$cc['sname'],$cc['type'],$cc['email'],$ent);
+                $ncontact->setAllInfo($cc['fname'], $cc['sname'], $cc['type'], $cc['email'], $ent);
                 $this->em->persist($ncontact);
             }
         }
@@ -121,7 +170,7 @@ class Providerupdater
         $diff1 = array_diff_assoc($newcntArray, $origcntArray);
         $diff2 = array_diff_assoc($origcntArray, $newcntArray);
         if (count($diff1) > 0 || count($diff2) > 0) {
-            $this->updateChanges('contacts',arrayWithKeysToHtml($origcntArray),arrayWithKeysToHtml($newcntArray));
+            $this->updateChanges('contacts', arrayWithKeysToHtml($origcntArray), arrayWithKeysToHtml($newcntArray));
         }
 
         return true;
@@ -184,6 +233,7 @@ class Providerupdater
                 $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($this->logtracks), FALSE);
             }
         }
+
         return $ent;
 
     }
@@ -572,65 +622,11 @@ class Providerupdater
 
 
         $this->updateProviderExtend($ent, $ch);
+        if ($entityTypes['sp'] === true) {
+            $this->updateReqAttrs($ent, $ch);
 
-        if (array_key_exists('reqattr', $ch) && $entityTypes['sp'] === true) {
-
-
-            log_message('debug', __METHOD__ . ' OKA: ' . count($ch['reqattr']));
-            $attrsTmp = new models\Attributes();
-            $attributes = $attrsTmp->getAttributesToArrayById();
-            $attrsRequirement = $ent->getAttributesRequirement();
-            $origAttrReqs = array();
-            $attrIdsDefined = array();
-            foreach ($attrsRequirement as $tr) {
-                $keyid = $tr->getAttribute()->getId();
-                if (array_key_exists($keyid, $origAttrReqs)) {
-                    log_message('warning', __METHOD__ . ' found duplicate in attr req for entityid:' . $ent->getEntityId());
-                    $attrsRequirement->removeElement($tr);
-                    $this->em->remove($tr);
-                    continue;
-                }
-                $origAttrReqs['' . $keyid . ''] = $tr;
-            }
-
-
-            foreach ($ch['reqattr'] as $newAttrReq) {
-                $alreadyDefined = true;
-                $idCheck = $newAttrReq['attrid'];
-                if (!in_array($idCheck, $attrIdsDefined)) {
-                    $alreadyDefined = false;
-                    $attrIdsDefined[] = $idCheck;
-                }
-                if (array_key_exists($idCheck, $origAttrReqs)) {
-
-                    if ($alreadyDefined) {
-                        $attrsRequirement->removeElement($origAttrReqs['' . $idCheck . '']);
-                        $this->em->remove($origAttrReqs['' . $idCheck . '']);
-                    } else {
-                        $origAttrReqs['' . $idCheck . '']->setReason($newAttrReq['reason']);
-                        $origAttrReqs['' . $idCheck . '']->setStatus($newAttrReq['status']);
-                        $this->em->persist($origAttrReqs['' . $idCheck . '']);
-                        unset($origAttrReqs['' . $idCheck . '']);
-                    }
-                } elseif (!$alreadyDefined && isset($attributes['' . $idCheck . ''])) {
-                    log_message('debug', __METHOD__ . ' OKA: new reqattr');
-                    $nreq = new models\AttributeRequirement;
-                    $nreq->setStatus($newAttrReq['status']);
-                    $nreq->setReason($newAttrReq['reason']);
-                    $nreq->setType('SP');
-                    $nreq->setSP($ent);
-                    $nreq->setAttribute($attributes['' . $idCheck . '']);
-                    $ent->setAttributesRequirement($nreq);
-                    $this->em->persist($nreq);
-                    unset($origAttrReqs['' . $idCheck . '']);
-                }
-            }
-            foreach ($origAttrReqs as $orv) {
-
-                $attrsRequirement->removeElement($orv);
-                $this->em->remove($orv);
-            }
         }
+
 
         if ($entityTypes['idp'] === true) {
 
