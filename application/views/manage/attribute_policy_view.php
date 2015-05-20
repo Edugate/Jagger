@@ -110,7 +110,9 @@ echo lang('rr_supportedattributes').' <a href="'.base_url().'manage/supported_at
 </div>
 <?php
 
-/////////////////////////////////////
+/**
+ * globalpolicyupdater modal
+ */
 echo '<div id="globalpolicyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getglobalattrpolicy/' . $idpid . '') . '">
   <h4>' . lang('confirmupdpolicy') . '</h4>
   <h5>'.lang('rr_defaultarp').': <span class="dynamicval"></span></h5>
@@ -133,8 +135,11 @@ $buttons = array(
 );
 echo revealBtnsRow($buttons);
 echo '</div></form><a class="close-reveal-modal">&#215;</a></div>';
-////////////////////////////////
-/////////////////////////////////////
+
+/**
+ * fedpolicyupdater modal
+ */
+
 echo '<div id="fedpolicyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getfedattrpolicy/' . $idpid . '') . '">
   <h4>' . lang('confirmupdpolicy') . '</h4>
   <h5>Fed Attr: <span class="dynamicval"></span></h5>
@@ -158,4 +163,4 @@ $buttons = array(
 );
 echo revealBtnsRow($buttons);
 echo '</div></form><a class="close-reveal-modal">&#215;</a></div>';
-////////////////////////////////
+
