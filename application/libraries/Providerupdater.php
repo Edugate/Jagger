@@ -30,6 +30,7 @@ class Providerupdater
     protected $allowedLangCodes;
     protected $langCodes;
     protected $changes = array();
+    protected $entityTypes = array();
 
     function __construct()
     {
@@ -64,12 +65,119 @@ class Providerupdater
         $this->logtracks['' . $name . ''] = array('before' => $old, 'after' => $new);
     }
 
+
+    private function updateCerts(\models\Provider $ent, array $ch)
+    {
+        if (!array_key_exists('crt', $ch) || empty($ch['crt']) || !is_array($ch['crt'])) {
+            return false;
+        }
+        $tmpcrt = $ent->getCertificates();
+        $allowedusecase = array('signing', 'encryption', 'both');
+        foreach ($tmpcrt as $v) {
+            if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''])) {
+                $tkeyname = false;
+                $tdata = false;
+                $crtusecase = $ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['usage'];
+                if (!empty($crtusecase) && in_array($crtusecase, $allowedusecase)) {
+                    $v->setCertUse($crtusecase);
+                }
+                if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname'])) {
+                    if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname'])) {
+                        $tkeyname = true;
+                    }
+                    $v->setKeyname($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']);
+                }
+                if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata'])) {
+                    if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata'])) {
+                        $tdata = true;
+                    }
+                    $v->setCertData($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']);
+                }
+                if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods'])) {
+                    if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods']) && is_array($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods'])) {
+                        $v->setEncryptMethods(array_filter($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods']));
+                    } else {
+                        $v->setEncryptMethods(null);
+                    }
+                }
+                if ($tdata === false && $tkeyname === false) {
+                    $ent->removeCertificate($v);
+                    $this->em->remove($v);
+                } else {
+                    $this->em->persist($v);
+                }
+                unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
+            } else {
+                $ent->removeCertificate($v);
+                $this->em->remove($v);
+            }
+        }
+        /**
+         * setting new certs
+         */
+        foreach ($ch['crt'] as $k1 => $v1) {
+            if ($k1 === 'spsso' && $this->entityTypes['sp'] === true) {
+                foreach ($v1 as $k2 => $v2) {
+                    $ncert = new models\Certificate();
+                    $ncert->setType('spsso');
+                    $ncert->setCertType();
+                    $ncert->setCertUse($v2['usage']);
+                    $ent->setCertificate($ncert);
+                    $ncert->setProvider($ent);
+                    $ncert->setKeyname($v2['keyname']);
+                    $ncert->setCertData($v2['certdata']);
+                    if (isset($v2['encmethods'])) {
+                        $ncert->setEncryptMethods($v2['encmethods']);
+                    }
+                    $this->em->persist($ncert);
+                }
+            } elseif ($k1 === 'idpsso' && $this->entityTypes['idp']) {
+                foreach ($v1 as $k2 => $v2) {
+                    $ncert = new models\Certificate();
+                    $ncert->setType('idpsso');
+                    $ncert->setCertType();
+                    $ncert->setCertUse($v2['usage']);
+                    $ent->setCertificate($ncert);
+                    $ncert->setProvider($ent);
+                    $ncert->setKeyname($v2['keyname']);
+                    $ncert->setCertData($v2['certdata']);
+                    $ncert->setCertData($v2['certdata']);
+                    if (isset($v2['encmethods'])) {
+                        $ncert->setEncryptMethods($v2['encmethods']);
+                    }
+                    $this->em->persist($ncert);
+                }
+            } elseif ($k1 === 'aa' && $this->entityTypes['idp']) {
+                foreach ($v1 as $k2 => $v2) {
+                    $ncert = new models\Certificate();
+                    $ncert->setType('aa');
+                    $ncert->setCertType();
+                    $ncert->setCertUse($v2['usage']);
+                    $ent->setCertificate($ncert);
+                    $ncert->setProvider($ent);
+                    $ncert->setKeyname($v2['keyname']);
+                    $ncert->setCertData(getPem($v2['certdata']));
+                    $ncert->setCertData($v2['certdata']);
+                    if (isset($v2['encmethods'])) {
+                        $ncert->setEncryptMethods($v2['encmethods']);
+                    }
+                    $this->em->persist($ncert);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * @param \models\Provider $ent
+     * @param array $ch
+     * @return bool
+     */
     private function updateReqAttrs(\models\Provider $ent, array $ch)
     {
         if (!isset($ch['reqattr'])) {
             return false;
         }
-
         $attrsTmp = new models\Attributes();
         /**
          * @var $attributes models\Attribute[]
@@ -83,8 +191,10 @@ class Providerupdater
                 $convertedInput['' . $attr['attrid'] . ''] = $attr;
             }
         }
+        $changes = array('before' => array(), 'after' => array());
 
         foreach ($attrsRequirement as $orig) {
+            $changes['before'][$orig->getAttribute()->getName()] = $orig->getStatus();
             $keyid = $orig->getAttribute()->getId();
             if (!array_key_exists($keyid, $convertedInput)) {
                 $attrsRequirement->removeElement($orig);
@@ -94,7 +204,8 @@ class Providerupdater
             $orig->setReason($convertedInput['' . $keyid . '']['reason']);
             $orig->setStatus($convertedInput['' . $keyid . '']['status']);
             $this->em->persist($orig);
-            unset($convertedInput[''.$keyid.'']);
+            $changes['after'][$orig->getAttribute()->getName()] = $orig->getStatus();
+            unset($convertedInput['' . $keyid . '']);
         }
         foreach ($convertedInput as $k => $v) {
             $nreq = new models\AttributeRequirement;
@@ -105,12 +216,14 @@ class Providerupdater
             $nreq->setAttribute($attributes['' . $k . '']);
             $ent->setAttributesRequirement($nreq);
             $this->em->persist($nreq);
+            $changes['after'][$nreq->getAttribute()->getName()] = $v['status'];
         }
-
-        /**
-         * @todo changelog
-         */
-
+        $diff1 = array_diff_assoc($changes['before'], $changes['after']);
+        $diff2 = array_diff_assoc($changes['after'], $changes['before']);
+        if (count($diff1) > 0 || count($diff2) > 0) {
+            $this->updateChanges('requiredAttrs', arrayWithKeysToHtml($changes['before']), arrayWithKeysToHtml($changes['after']));
+        }
+        return true;
     }
 
     /**
@@ -610,6 +723,7 @@ class Providerupdater
             //  $this->em->persist($dump);
         }
         $entityTypes = $ent->getTypesToArray();
+        $this->entityTypes = $entityTypes;
         $changeList = array();
         $type = $ent->getType();
         $allowedAABind = getAllowedSOAPBindings();
@@ -1323,111 +1437,8 @@ class Providerupdater
         /**
          * END update service locations
          */
-        /**
-         * BEGIN update certs
-         */
-        /**
-         * @todo add track
-         */
-        if (array_key_exists('crt', $ch) && !empty($ch['crt']) && is_array($ch['crt'])) {
-            $tmpcrt = $ent->getCertificates();
-            $allowedusecase = array('signing', 'encryption', 'both');
-            foreach ($tmpcrt as $v) {
-                if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''])) {
-                    $tkeyname = false;
-                    $tdata = false;
-                    $crtusecase = $ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['usage'];
-                    if (!empty($crtusecase) && in_array($crtusecase, $allowedusecase)) {
-                        $v->setCertUse($crtusecase);
-                    }
-                    if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname'])) {
-                        if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname'])) {
-                            $tkeyname = true;
-                        }
-                        $v->setKeyname($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']);
-                    }
-                    if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata'])) {
-                        if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata'])) {
-                            $tdata = true;
-                        }
-                        $v->setCertData($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']);
-                    }
-                    if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods'])) {
-                        if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods']) && is_array($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods'])) {
-                            $v->setEncryptMethods(array_filter($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods']));
-                        } else {
-                            $v->setEncryptMethods(null);
-                        }
-                    }
-                    if ($tdata === false && $tkeyname === false) {
-                        $ent->removeCertificate($v);
-                        $this->em->remove($v);
-                    } else {
-                        $this->em->persist($v);
-                    }
-                    unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
-                } else {
-                    $ent->removeCertificate($v);
-                    $this->em->remove($v);
-                }
-            }
-            /**
-             * setting new certs
-             */
-            foreach ($ch['crt'] as $k1 => $v1) {
-                if ($k1 === 'spsso' && $entityTypes['sp'] === true) {
-                    foreach ($v1 as $k2 => $v2) {
-                        $ncert = new models\Certificate();
-                        $ncert->setType('spsso');
-                        $ncert->setCertType();
-                        $ncert->setCertUse($v2['usage']);
-                        $ent->setCertificate($ncert);
-                        $ncert->setProvider($ent);
-                        $ncert->setKeyname($v2['keyname']);
-                        $ncert->setCertData($v2['certdata']);
-                        if (isset($v2['encmethods'])) {
-                            $ncert->setEncryptMethods($v2['encmethods']);
-                        }
-                        $this->em->persist($ncert);
-                    }
-                } elseif ($k1 === 'idpsso' && $entityTypes['idp']) {
-                    foreach ($v1 as $k2 => $v2) {
-                        $ncert = new models\Certificate();
-                        $ncert->setType('idpsso');
-                        $ncert->setCertType();
-                        $ncert->setCertUse($v2['usage']);
-                        $ent->setCertificate($ncert);
-                        $ncert->setProvider($ent);
-                        $ncert->setKeyname($v2['keyname']);
-                        $ncert->setCertData($v2['certdata']);
-                        $ncert->setCertData($v2['certdata']);
-                        if (isset($v2['encmethods'])) {
-                            $ncert->setEncryptMethods($v2['encmethods']);
-                        }
-                        $this->em->persist($ncert);
-                    }
-                } elseif ($k1 === 'aa' && $entityTypes['idp']) {
-                    foreach ($v1 as $k2 => $v2) {
-                        $ncert = new models\Certificate();
-                        $ncert->setType('aa');
-                        $ncert->setCertType();
-                        $ncert->setCertUse($v2['usage']);
-                        $ent->setCertificate($ncert);
-                        $ncert->setProvider($ent);
-                        $ncert->setKeyname($v2['keyname']);
-                        $ncert->setCertData(getPem($v2['certdata']));
-                        $ncert->setCertData($v2['certdata']);
-                        if (isset($v2['encmethods'])) {
-                            $ncert->setEncryptMethods($v2['encmethods']);
-                        }
-                        $this->em->persist($ncert);
-                    }
-                }
-            }
-        }
-        /**
-         * END update certs
-         */
+
+        $this->updateCerts($ent, $ch);
         $this->updateContacts($ent, $ch);
 
 
