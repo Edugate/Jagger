@@ -25,7 +25,7 @@ namespace models;
  *
  * This is a sample model to demonstrate how to use the AnnotationDriver
  *
- * @Entity
+ * @Entity(readOnly=true)
  * @HasLifecycleCallbacks
  * @Table(name="tracker",indexes={@Index(name="resourcetype_idx", columns={"resourcetype"}),@Index(name="subtype_idx", columns={"subtype"})})
  * @author janusz

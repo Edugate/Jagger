@@ -481,7 +481,7 @@ class Form_element
         if (empty($keysize)) {
             $keysize = lang('unknown');
         }
-        $row = '<div class="certgroup small-12 columns">';
+        $row = '<div class="certgroup small-12 columns f">';
 
         $row .= '<div class="small-12 columns hidden">' .
             $this->_generateLabelSelect(lang('rr_certificatetype'), '' . $name . '[' . $crtid . '][type]', array('x509' => 'x509'), set_value($sessionCert['type']), '', FALSE) .
@@ -538,7 +538,7 @@ class Form_element
         if ($showremove) {
             $row .= '<div class="small-12 columns"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert tiny right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
         }
-        $row .= '</div>';
+        $row .= '</div></div></div>';
         return $row;
     }
 

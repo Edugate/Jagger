@@ -29,6 +29,7 @@ class Providerupdater
     protected $logtracks;
     protected $allowedLangCodes;
     protected $langCodes;
+    protected $changes = array();
 
     function __construct()
     {
@@ -50,6 +51,80 @@ class Providerupdater
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param $name
+     * @param $old
+     * @param $new
+     */
+    private function updateChanges($name, $old, $new)
+    {
+
+        $this->changes[] = array('old' => $old, 'new' => $new);
+    }
+
+    /**
+     * @param \models\Provider $ent
+     * @param array $ch
+     * @return bool
+     */
+    private function updateContacts(models\Provider $ent, array $ch)
+    {
+        if (!array_key_exists('contact', $ch) || !is_array($ch['contact'])) {
+            return false;
+        }
+        $newContacts = $ch['contact'];
+        /**
+         * @var $origContacts models\Contact[]
+         */
+        $origContacts = $ent->getContacts();
+        $origcntArray = array();
+        $newcntArray = array();
+        foreach ($origContacts as $v) {
+            $i = $v->getId();
+
+            $origcntArray[$i] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+
+            if (array_key_exists($i, $newContacts)) {
+                if (!isset($newContacts['' . $i . '']) || empty($newContacts['' . $i . '']['email'])) {
+                    $ent->removeContact($v);
+                    $this->em->remove($v);
+                } else {
+                    $v->setAllInfo($newContacts['' . $i . '']['fname'],$newContacts['' . $i . '']['sname'],$newContacts['' . $i . '']['type'],$newContacts['' . $i . '']['email'],$ent);
+                    $this->em->persist($v);
+                    $newcntArray['' . $i . ''] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+                }
+                unset($newContacts['' . $i . '']);
+            } else {
+                $ent->removeContact($v);
+                $this->em->remove($v);
+            }
+        }
+        foreach ($newContacts as $cc) {
+            if (!empty($cc['email']) && !empty($cc['type'])) {
+                $ncontact = new models\Contact();
+                $ncontact->setAllInfo($cc['fname'],$cc['sname'],$cc['type'],$cc['email'],$ent);
+                $this->em->persist($ncontact);
+            }
+        }
+        $newcnts = $ent->getContacts();
+        $counter = 0;
+        foreach ($newcnts as $v) {
+            $counter++;
+            $idc = $v->getId();
+            if (empty($idc)) {
+                $idc = 'n' . $counter;
+            }
+            $newcntArray[$idc] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+        }
+        $diff1 = array_diff_assoc($newcntArray, $origcntArray);
+        $diff2 = array_diff_assoc($origcntArray, $newcntArray);
+        if (count($diff1) > 0 || count($diff2) > 0) {
+            $this->updateChanges('contacts',arrayWithKeysToHtml($origcntArray),arrayWithKeysToHtml($newcntArray));
+        }
+
+        return true;
     }
 
     /**
@@ -477,6 +552,13 @@ class Providerupdater
     {
         // $changeList - array for modifications
         $entid = $ent->getId();
+        if (!empty($entid)) {
+            $dump = new models\MetadataRevision($ent);
+            $this->ci->load->library('providertoxml');
+            $dumpXML = $this->ci->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), true);
+            $dump->setMeta($dumpXML);
+            //  $this->em->persist($dump);
+        }
         $entityTypes = $ent->getTypesToArray();
         $changeList = array();
         $type = $ent->getType();
@@ -1000,24 +1082,20 @@ class Providerupdater
                             }
                             unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
                         }
-                    } elseif($origServiceType === 'SPSingleLogoutService'){
-                        if($type ==='IDP')
-                        {
+                    } elseif ($origServiceType === 'SPSingleLogoutService') {
+                        if ($type === 'IDP') {
                             $ent->removeServiceLocation($v);
                             unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
-                        }else{
-                             if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . '']) && !empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url'])) {
-                                 if(!empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'],$spslobinds))
-                                 {
-                                     $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
-                                     $this->em->persist($v);
-                                     $spslobinds[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'];
-                                 }
-                                 else
-                                 {
-                                     $ent->removeServiceLocation($v);
-                                      $this->em->remove($v);
-                                 }
+                        } else {
+                            if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . '']) && !empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url'])) {
+                                if (!empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'], $spslobinds)) {
+                                    $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
+                                    $this->em->persist($v);
+                                    $spslobinds[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'];
+                                } else {
+                                    $ent->removeServiceLocation($v);
+                                    $this->em->remove($v);
+                                }
 
                             } else {
                                 $ent->removeServiceLocation($v);
@@ -1101,7 +1179,7 @@ class Providerupdater
                                 $this->em->persist($newservice);
                                 $spslobinds[] = $v1['bind'];
                             } else {
-                                log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity ' . $ent->getEntityId()).' - removing';
+                                log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity ' . $ent->getEntityId()) . ' - removing';
                             }
                         }
                     }
@@ -1354,60 +1432,7 @@ class Providerupdater
         /**
          * END update certs
          */
-        if (array_key_exists('contact', $ch) && is_array($ch['contact'])) {
-            $ncnt = $ch['contact'];
-            $orgcnt = $ent->getContacts();
-            $origcntArray = array();
-            $newcntArray = array();
-            foreach ($orgcnt as $v) {
-                $i = $v->getId();
-                $origcntArray[$i] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
-                if (array_key_exists($i, $ncnt)) {
-                    if (!isset($ncnt['' . $i . '']) || empty($ncnt['' . $i . '']['email'])) {
-                        $ent->removeContact($v);
-                        $this->em->remove($v);
-                    } else {
-                        $v->setType($ncnt['' . $i . '']['type']);
-                        $v->setGivenname($ncnt['' . $i . '']['fname']);
-                        $v->setSurname($ncnt['' . $i . '']['sname']);
-                        $v->setEmail($ncnt['' . $i . '']['email']);
-                        $this->em->persist($v);
-                        $newcntArray['' . $i . ''] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
-                        unset($ncnt['' . $i . '']);
-                    }
-                } else {
-                    $ent->removeContact($v);
-                    $this->em->remove($v);
-                }
-            }
-            foreach ($ncnt as $cc) {
-                if (!empty($cc['email']) && !empty($cc['type'])) {
-                    $ncontact = new models\Contact();
-                    $ncontact->setEmail($cc['email']);
-                    $ncontact->setType($cc['type']);
-                    $ncontact->setSurname($cc['sname']);
-                    $ncontact->setGivenname($cc['fname']);
-                    $ent->setContact($ncontact);
-                    $ncontact->setProvider($ent);
-                    $this->em->persist($ncontact);
-                }
-            }
-            $newcnts = $ent->getContacts();
-            $counter = 0;
-            foreach ($newcnts as $v) {
-                $counter++;
-                $idc = $v->getId();
-                if (empty($idc)) {
-                    $idc = 'n' . $counter;
-                }
-                $newcntArray[$idc] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
-            }
-            $diff1 = array_diff_assoc($newcntArray, $origcntArray);
-            $diff2 = array_diff_assoc($origcntArray, $newcntArray);
-            if (count($diff1) > 0 || count($diff2) > 0) {
-                $changeList['Contacts'] = array('before' => arrayWithKeysToHtml($origcntArray), 'after' => arrayWithKeysToHtml($newcntArray));
-            }
-        }
+        $this->updateContacts($ent, $ch);
 
 
         if (!array_key_exists('usestatic', $ch)) {
