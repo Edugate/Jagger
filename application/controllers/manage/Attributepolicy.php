@@ -81,14 +81,15 @@ class Attributepolicy extends MY_Controller
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
 
-        $data = array(
-            'titlepage' => anchor(base_url('providers/detail/show/' . $idp->getId() . ''), lang('rr_provider') . ': ' . $providerNameInLang),
-            'provider_entity' => $idp->getEntityId()
-        );
+
         $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
         if (!$hasWriteAccess) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rr_nopermission');
+            $data = array(
+                'titlepage' => anchor(base_url('providers/detail/show/' . $idp->getId() . ''), lang('rr_provider') . ': ' . $providerNameInLang),
+                'provider_entity' => $idp->getEntityId(),
+                'content_view' => 'nopermission',
+                'error' => lang('rr_nopermission')
+            );
             return $this->load->view('page', $data);
         }
         /**
@@ -100,7 +101,6 @@ class Attributepolicy extends MY_Controller
             show_error('' . lang('error_attrnotfoundwithid') . ': ' . $attrID);
         }
         $attr_policy = $this->tmpArps->getOneSPPolicy($idpID, $attrID, $requester);
-
         /**
          * @var $sp models\Provider
          */
@@ -108,19 +108,26 @@ class Attributepolicy extends MY_Controller
         if (empty($sp)) {
             show_error(lang('rerror_spnotfound') . ' id:' . $requester, 404);
         }
-        $data['sp_name'] = $sp->getNameToWebInLang($myLang, 'sp');
-
         $action = base_url('manage/attributepolicy/submit_sp/' . $idpID);
-        $data['subtitlepage'] = lang('rr_specarpforsp') . ' : <br />' . anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
-
         if ($idp->getLocked()) {
             $subtitle .= '<div class="lblsubttitlepos" ><small > ' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . ' </small ></div > ';
         }
-        $data['attribute_name'] = $attribute->getName();
-        $data['idp_name'] = $providerNameInLang;
-        $data['idp_id'] = $idp->getId();
-        $data['requester_id'] = $requester;
-        $data['type'] = $type;
+        $data = array(
+            'titlepage' => anchor(base_url('providers/detail/show/' . $idp->getId() . ''), lang('rr_provider') . ': ' . $providerNameInLang),
+            'provider_entity' => $idp->getEntityId(),
+            'sp_name' => $sp->getNameToWebInLang($myLang, 'sp'),
+            'subtitlepage' => lang('rr_specarpforsp') . ' : <br />' . anchor(base_url() . "providers/detail/show/" . $sp->getId(), $sp->getNameToWebInLang($myLang, 'sp')),
+            'attribute_name' => $attribute->getName(),
+            'idp_name' => $providerNameInLang,
+            'idp_id' => $idp->getId(),
+            'requester_id' => $requester,
+            'type' => $type,
+            'breadcrumbs' => array(
+                array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+                array('url' => base_url('providers/detail/show/ ' . $idpID . ''), 'name' => '' . $providerNameInLang . ''),
+                array('url' => base_url('manage/attributepolicy/globals/' . $idpID . ''), 'name' => lang('rr_attributereleasepolicy')),
+            )
+        );
         if (empty($attr_policy)) {
             $data['error_message'] = lang('arpnotfound');
             $message = 'Policy not found for: [idp_id = ' . $idpID . ', attr_id = ' . $attrID . ', type = ' . $type . ', requester = ' . $requester . ']';
@@ -136,11 +143,7 @@ class Attributepolicy extends MY_Controller
         }
 
         $data['subtitlepage'] = $subtitle;
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-            array('url' => base_url('providers/detail/show/ ' . $idpID . ''), 'name' => '' . $providerNameInLang . ''),
-            array('url' => base_url('manage/attributepolicy/globals/' . $idpID . ''), 'name' => lang('rr_attributereleasepolicy')),
-        );
+       
 
         $data['content_view'] = 'manage/attribute_policy_detail_view';
         return $this->load->view('page', $data);
