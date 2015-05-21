@@ -67,39 +67,31 @@ class Attributepolicy extends MY_Controller
      */
     public function detail($idpID, $attrID, $type, $requester)
     {
-        if (!ctype_digit($idpID) || !ctype_digit($attrID)) {
-            log_message('error', "Idp id or attr id is set incorectly");
+        if (!ctype_digit($idpID) || !ctype_digit($attrID) || !in_array($type, array('sp'))) {
             show_error(lang('error404'), 404);
         }
-        if (!in_array($type, array('sp'))) {
-            log_message('error', "The type of policy is: " . $type . ". Should be one of: sp");
-            show_error(lang('error_wrongpolicytype'), 404);
-        }
-
         $subtitle = null;
         /**
          * @var $idp models\Provider
          */
         $idp = $this->tmpProviders->getOneIdPById($idpID);
         if (empty($idp)) {
-            log_message('error', 'IdP not found with id:' . $idpID);
             show_error(lang('rerror_idpnotfound') . ' id:' . $idpID);
         }
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'idp');
 
-        $data['titlepage'] = anchor(base_url() . "providers/detail/show/" . $idp->getId(), lang('rr_provider') . ': ' . $providerNameInLang);
-        $data['provider_entity'] = $idp->getEntityId();
 
-        $has_write_access = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
-        if (!$has_write_access) {
-            $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rr_nopermission');
+        $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            $data = array(
+                'titlepage' => anchor(base_url('providers/detail/show/' . $idp->getId() . ''), lang('rr_provider') . ': ' . $providerNameInLang),
+                'provider_entity' => $idp->getEntityId(),
+                'content_view' => 'nopermission',
+                'error' => lang('rr_nopermission')
+            );
             return $this->load->view('page', $data);
         }
-
-        $sp = null;
-
         /**
          * @var $attribute models\Attribute
          */
@@ -109,60 +101,49 @@ class Attributepolicy extends MY_Controller
             show_error('' . lang('error_attrnotfoundwithid') . ': ' . $attrID);
         }
         $attr_policy = $this->tmpArps->getOneSPPolicy($idpID, $attrID, $requester);
-
         /**
          * @var $sp models\Provider
          */
         $sp = $this->tmpProviders->getOneSpById($requester);
-        if (!empty($sp)) {
-            log_message('debug', 'SP found with id: ' . $requester);
-            $data['sp_name'] = $sp->getNameToWebInLang($myLang, 'sp');
-        } else {
-            log_message('debug', 'SP not found with id: ' . $requester);
+        if (empty($sp)) {
             show_error(lang('rerror_spnotfound') . ' id:' . $requester, 404);
         }
-        $link_sp = anchor(base_url() . "providers/detail/show/" . $sp->getId(), $data['sp_name']);
         $action = base_url('manage/attributepolicy/submit_sp/' . $idpID);
-        $data['subtitlepage'] = lang('rr_specarpforsp') . ' : <br />' . $link_sp;
-
         if ($idp->getLocked()) {
             $subtitle .= '<div class="lblsubttitlepos" ><small > ' . makeLabel('locked', lang('rr_locked'), lang('rr_locked')) . ' </small ></div > ';
         }
-        if (empty($attr_policy) && $type === 'sp') {
+        $data = array(
+            'titlepage' => anchor(base_url('providers/detail/show/' . $idp->getId() . ''), lang('rr_provider') . ': ' . $providerNameInLang),
+            'provider_entity' => $idp->getEntityId(),
+            'sp_name' => $sp->getNameToWebInLang($myLang, 'sp'),
+            'subtitlepage' => lang('rr_specarpforsp') . ' : <br />' . anchor(base_url() . "providers/detail/show/" . $sp->getId(), $sp->getNameToWebInLang($myLang, 'sp')),
+            'attribute_name' => $attribute->getName(),
+            'idp_name' => $providerNameInLang,
+            'idp_id' => $idp->getId(),
+            'requester_id' => $requester,
+            'type' => $type,
+            'breadcrumbs' => array(
+                array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+                array('url' => base_url('providers/detail/show/ ' . $idpID . ''), 'name' => '' . $providerNameInLang . ''),
+                array('url' => base_url('manage/attributepolicy/globals/' . $idpID . ''), 'name' => lang('rr_attributereleasepolicy')),
+            )
+        );
+        if (empty($attr_policy)) {
             $data['error_message'] = lang('arpnotfound');
-            $message = 'Policy not found for: ';
-            $message .= '[idp_id = ' . $idpID . ', attr_id = ' . $attrID . ', type = ' . $type . ', requester = ' . $requester . ']';
+            $message = 'Policy not found for: [idp_id = ' . $idpID . ', attr_id = ' . $attrID . ', type = ' . $type . ', requester = ' . $requester . ']';
             log_message('debug', $message);
-            $data['attribute_name'] = $attribute->getName();
-            $data['idp_name'] = $idp->getName();
-            $data['idp_id'] = $idpID;
-            $data['requester_id'] = $requester;
-            $data['type'] = $type;
             $narp = new models\AttributeReleasePolicy;
-            $narp->setProvider($idp);
-            $narp->setAttribute($attribute);
-            $narp->setType('sp');
-            $narp->setRequester($sp->getId());
-            $narp->setPolicy(0);
+            $narp->setSpecificPolicy($idp, $attribute, $sp->getId(), 0);
             $submit_type = 'create';
             $data['edit_form'] = $this->form_element->generateEditPolicyForm($narp, $action, $submit_type);
         } else {
             log_message('debug', 'Policy has been found for: [idp_id = ' . $idpID . ', attr_id = ' . $attrID . ', type = ' . $type . ', requester = ' . $requester . ']');
-            $data['attribute_name'] = $attribute->getName();
-            $data['idp_name'] = $idp->getName();
-            $data['idp_id'] = $idp->getId();
-            $data['requester_id'] = $requester;
-            $data['type'] = $type;
             $submit_type = 'modify';
             $data['edit_form'] = $this->form_element->generateEditPolicyForm($attr_policy, $action, $submit_type);
         }
 
         $data['subtitlepage'] = $subtitle;
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-            array('url' => base_url('providers/detail/show/ ' . $idpID . ''), 'name' => '' . $providerNameInLang . ''),
-            array('url' => base_url('manage/attributepolicy/globals/' . $idpID . ''), 'name' => lang('rr_attributereleasepolicy')),
-        );
+       
 
         $data['content_view'] = 'manage/attribute_policy_detail_view';
         return $this->load->view('page', $data);
@@ -250,7 +231,7 @@ class Attributepolicy extends MY_Controller
 
         $this->load->view('page', $data);
     }
-    
+
     public function submit_sp($idp_id)
     {
         log_message('debug', 'submit_sp submited');

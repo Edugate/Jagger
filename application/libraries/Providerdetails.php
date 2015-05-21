@@ -974,11 +974,8 @@ class Providerdetails
 		 */
 		$subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
 		$xmldata = $this->CI->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), TRUE);
-		if (!empty($xmldata)) {
-			$xmlToHtml = $xmldata;
-		}
 		$xmlmetatitle = '<img src="' . base_url() . 'images/jicons/xml3.svg" style="height: 20px"/> ';
-		$subresult[1] = array('section' => 'xmlmeta', 'title' => $xmlmetatitle, 'data' => '<code>' . $this->CI->geshilib->highlight($xmlToHtml, 'xml', $params) . '</code>');
+		$subresult[1] = array('section' => 'xmlmeta', 'title' => $xmlmetatitle, 'data' => '<code>' . $this->CI->geshilib->highlight($xmldata, 'xml', $params) . '</code>');
 
 		$d = array();
 		if (count($entityCategories) == 0) {

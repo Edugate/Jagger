@@ -29,6 +29,8 @@ class Providerupdater
     protected $logtracks;
     protected $allowedLangCodes;
     protected $langCodes;
+    protected $changes = array();
+    protected $entityTypes = array();
 
     function __construct()
     {
@@ -50,6 +52,230 @@ class Providerupdater
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param $name
+     * @param $old
+     * @param $new
+     */
+    private function updateChanges($name, $old, $new)
+    {
+
+        $this->logtracks['' . $name . ''] = array('before' => $old, 'after' => $new);
+    }
+
+
+    private function updateCerts(\models\Provider $ent, array $ch)
+    {
+        if (!array_key_exists('crt', $ch) || empty($ch['crt']) || !is_array($ch['crt'])) {
+            return false;
+        }
+        $changes = array('before'=>array(),'after'=>array());
+        /**
+         * @var $origCertificates models\Certificate[]
+         */
+        $origCertificates = $ent->getCertificates();
+        foreach ($origCertificates as $v) {
+            $changes['before'][] = $v->getType().':'.$v->getCertUseInStr().':'.$v->getFingerprint();
+            if (!isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''])) {
+                $ent->removeCertificate($v);
+                $this->em->remove($v);
+                continue;
+            }
+            $curCrt = $ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''];
+            $tkeyname = false;
+            $tdata = false;
+            if (isset($curCrt['usage'])) {
+                $v->setCertUse($curCrt['usage']);
+            }
+            if (isset($curCrt['keyname'])) {
+                if (!empty($curCrt['keyname'])) {
+                    $tkeyname = true;
+                }
+                $v->setKeyname($curCrt['keyname']);
+            }
+            if (isset($curCrt['certdata'])) {
+                if (!empty($curCrt['certdata'])) {
+                    $tdata = true;
+                }
+                $v->setCertData($curCrt['certdata']);
+            }
+            if (isset($curCrt['encmethods'])) {
+                if (!empty($curCrt['encmethods']) && is_array($curCrt['encmethods'])) {
+                    $v->setEncryptMethods(array_filter($curCrt['encmethods']));
+                } else {
+                    $v->setEncryptMethods(null);
+                }
+            }
+            if ($tdata === false && $tkeyname === false) {
+                $ent->removeCertificate($v);
+                $this->em->remove($v);
+            } else {
+                $this->em->persist($v);
+                $changes['after'][] = $v->getType().':'.$v->getCertUseInStr().':'.$v->getFingerprint();
+            }
+            unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
+
+        }
+        /**
+         * setting new certs
+         */
+        if ($this->entityTypes['sp'] !== true) {
+            unset($ch['crt']['spsso']);
+        }
+        if ($this->entityTypes['idp'] !== true) {
+            unset($ch['crt']['idpsso']);
+            unset($ch['crt']['aa']);
+        }
+        foreach ($ch['crt'] as $k1 => $v1) {
+            if (!in_array($k1, array('spsso', 'idpsso', 'aa'))) {
+                continue;
+            }
+            foreach ($v1 as $k2 => $v2) {
+                $ncert = new models\Certificate();
+                $ncert->setType($k1);
+                $ncert->setCertType();
+                $ncert->setCertUse($v2['usage']);
+                $ncert->setKeyname($v2['keyname']);
+                $ncert->setCertData($v2['certdata']);
+                if (isset($v2['encmethods'])) {
+                    $ncert->setEncryptMethods($v2['encmethods']);
+                }
+                $ent->setCertificate($ncert);
+                $ncert->setProvider($ent);
+                $this->em->persist($ncert);
+                $changes['after'][] = $ncert->getType().':'.$ncert->getCertUseInStr().':'.$ncert->getFingerprint();
+            }
+        }
+         $diff1 = array_diff_assoc($changes['before'], $changes['after']);
+        $diff2 = array_diff_assoc($changes['after'], $changes['before']);
+        if (count($diff1) > 0 || count($diff2) > 0) {
+            $this->updateChanges('certs', arrayWithKeysToHtml($changes['before']), arrayWithKeysToHtml($changes['after']));
+        }
+        return true;
+
+    }
+
+    /**
+     * @param \models\Provider $ent
+     * @param array $ch
+     * @return bool
+     */
+    private function updateReqAttrs(\models\Provider $ent, array $ch)
+    {
+        if (!isset($ch['reqattr'])) {
+            return false;
+        }
+        $attrsTmp = new models\Attributes();
+        /**
+         * @var $attributes models\Attribute[]
+         * @var $attrsRequirement models\AttributeRequirement[]
+         */
+        $attributes = $attrsTmp->getAttributesToArrayById();
+        $attrsRequirement = $ent->getAttributesRequirement();
+        $convertedInput = array();
+        foreach ($ch['reqattr'] as $attr) {
+            if (isset($attr['attrid']) && array_key_exists($attr['attrid'], $attributes)) {
+                $convertedInput['' . $attr['attrid'] . ''] = $attr;
+            }
+        }
+        $changes = array('before' => array(), 'after' => array());
+
+        foreach ($attrsRequirement as $orig) {
+            $changes['before'][$orig->getAttribute()->getName()] = $orig->getStatus();
+            $keyid = $orig->getAttribute()->getId();
+            if (!array_key_exists($keyid, $convertedInput)) {
+                $attrsRequirement->removeElement($orig);
+                $this->em->remove($orig);
+                continue;
+            }
+            $orig->setReason($convertedInput['' . $keyid . '']['reason']);
+            $orig->setStatus($convertedInput['' . $keyid . '']['status']);
+            $this->em->persist($orig);
+            $changes['after'][$orig->getAttribute()->getName()] = $orig->getStatus();
+            unset($convertedInput['' . $keyid . '']);
+        }
+        foreach ($convertedInput as $k => $v) {
+            $nreq = new models\AttributeRequirement;
+            $nreq->setStatus($v['status']);
+            $nreq->setReason($v['reason']);
+            $nreq->setType('SP');
+            $nreq->setSP($ent);
+            $nreq->setAttribute($attributes['' . $k . '']);
+            $ent->setAttributesRequirement($nreq);
+            $this->em->persist($nreq);
+            $changes['after'][$nreq->getAttribute()->getName()] = $v['status'];
+        }
+        $diff1 = array_diff_assoc($changes['before'], $changes['after']);
+        $diff2 = array_diff_assoc($changes['after'], $changes['before']);
+        if (count($diff1) > 0 || count($diff2) > 0) {
+            $this->updateChanges('requiredAttrs', arrayWithKeysToHtml($changes['before']), arrayWithKeysToHtml($changes['after']));
+        }
+        return true;
+    }
+
+    /**
+     * @param \models\Provider $ent
+     * @param array $ch
+     * @return bool
+     */
+    private function updateContacts(models\Provider $ent, array $ch)
+    {
+        if (!array_key_exists('contact', $ch) || !is_array($ch['contact'])) {
+            return false;
+        }
+        $newContacts = $ch['contact'];
+        /**
+         * @var $origContacts models\Contact[]
+         */
+        $origContacts = $ent->getContacts();
+        $origcntArray = array();
+        $newcntArray = array();
+        foreach ($origContacts as $v) {
+            $contactID = $v->getId();
+
+            $origcntArray[$contactID] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+
+            if (array_key_exists($contactID, $newContacts)) {
+                if (!isset($newContacts['' . $contactID . '']) || empty($newContacts['' . $contactID . '']['email'])) {
+                    $ent->removeContact($v);
+                    $this->em->remove($v);
+                } else {
+                    $v->setAllInfo($newContacts['' . $contactID . '']['fname'], $newContacts['' . $contactID . '']['sname'], $newContacts['' . $contactID . '']['type'], $newContacts['' . $contactID . '']['email'], $ent);
+                    $this->em->persist($v);
+                    $newcntArray['' . $contactID . ''] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+                }
+                unset($newContacts['' . $contactID . '']);
+            } else {
+                $ent->removeContact($v);
+                $this->em->remove($v);
+            }
+        }
+        foreach ($newContacts as $cc) {
+            if (!empty($cc['email']) && !empty($cc['type'])) {
+                $ncontact = new models\Contact();
+                $ncontact->setAllInfo($cc['fname'], $cc['sname'], $cc['type'], $cc['email'], $ent);
+                $this->em->persist($ncontact);
+            }
+        }
+        $newcnts = $ent->getContacts();
+        $counter = 0;
+        foreach ($newcnts as $v) {
+            $counter++;
+            $idc = $v->getId();
+            if (empty($idc)) {
+                $idc = 'n' . $counter;
+            }
+            $newcntArray[$idc] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+        }
+        $diff1 = array_diff_assoc($newcntArray, $origcntArray);
+        $diff2 = array_diff_assoc($origcntArray, $newcntArray);
+        if (count($diff1) > 0 || count($diff2) > 0) {
+            $this->updateChanges('contacts', arrayWithKeysToHtml($origcntArray), arrayWithKeysToHtml($newcntArray));
+        }
+
+        return true;
     }
 
     /**
@@ -109,6 +335,7 @@ class Providerupdater
                 $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($this->logtracks), FALSE);
             }
         }
+
         return $ent;
 
     }
@@ -478,6 +705,7 @@ class Providerupdater
         // $changeList - array for modifications
         $entid = $ent->getId();
         $entityTypes = $ent->getTypesToArray();
+        $this->entityTypes = $entityTypes;
         $changeList = array();
         $type = $ent->getType();
         $allowedAABind = getAllowedSOAPBindings();
@@ -490,65 +718,11 @@ class Providerupdater
 
 
         $this->updateProviderExtend($ent, $ch);
+        if ($entityTypes['sp'] === true) {
+            $this->updateReqAttrs($ent, $ch);
 
-        if (array_key_exists('reqattr', $ch) && $entityTypes['sp'] === true) {
-
-
-            log_message('debug', __METHOD__ . ' OKA: ' . count($ch['reqattr']));
-            $attrsTmp = new models\Attributes();
-            $attributes = $attrsTmp->getAttributesToArrayById();
-            $attrsRequirement = $ent->getAttributesRequirement();
-            $origAttrReqs = array();
-            $attrIdsDefined = array();
-            foreach ($attrsRequirement as $tr) {
-                $keyid = $tr->getAttribute()->getId();
-                if (array_key_exists($keyid, $origAttrReqs)) {
-                    log_message('warning', __METHOD__ . ' found duplicate in attr req for entityid:' . $ent->getEntityId());
-                    $attrsRequirement->removeElement($tr);
-                    $this->em->remove($tr);
-                    continue;
-                }
-                $origAttrReqs['' . $keyid . ''] = $tr;
-            }
-
-
-            foreach ($ch['reqattr'] as $newAttrReq) {
-                $alreadyDefined = true;
-                $idCheck = $newAttrReq['attrid'];
-                if (!in_array($idCheck, $attrIdsDefined)) {
-                    $alreadyDefined = false;
-                    $attrIdsDefined[] = $idCheck;
-                }
-                if (array_key_exists($idCheck, $origAttrReqs)) {
-
-                    if ($alreadyDefined) {
-                        $attrsRequirement->removeElement($origAttrReqs['' . $idCheck . '']);
-                        $this->em->remove($origAttrReqs['' . $idCheck . '']);
-                    } else {
-                        $origAttrReqs['' . $idCheck . '']->setReason($newAttrReq['reason']);
-                        $origAttrReqs['' . $idCheck . '']->setStatus($newAttrReq['status']);
-                        $this->em->persist($origAttrReqs['' . $idCheck . '']);
-                        unset($origAttrReqs['' . $idCheck . '']);
-                    }
-                } elseif (!$alreadyDefined && isset($attributes['' . $idCheck . ''])) {
-                    log_message('debug', __METHOD__ . ' OKA: new reqattr');
-                    $nreq = new models\AttributeRequirement;
-                    $nreq->setStatus($newAttrReq['status']);
-                    $nreq->setReason($newAttrReq['reason']);
-                    $nreq->setType('SP');
-                    $nreq->setSP($ent);
-                    $nreq->setAttribute($attributes['' . $idCheck . '']);
-                    $ent->setAttributesRequirement($nreq);
-                    $this->em->persist($nreq);
-                    unset($origAttrReqs['' . $idCheck . '']);
-                }
-            }
-            foreach ($origAttrReqs as $orv) {
-
-                $attrsRequirement->removeElement($orv);
-                $this->em->remove($orv);
-            }
         }
+
 
         if ($entityTypes['idp'] === true) {
 
@@ -1000,24 +1174,20 @@ class Providerupdater
                             }
                             unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
                         }
-                    } elseif($origServiceType === 'SPSingleLogoutService'){
-                        if($type ==='IDP')
-                        {
+                    } elseif ($origServiceType === 'SPSingleLogoutService') {
+                        if ($type === 'IDP') {
                             $ent->removeServiceLocation($v);
                             unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
-                        }else{
-                             if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . '']) && !empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url'])) {
-                                 if(!empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'],$spslobinds))
-                                 {
-                                     $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
-                                     $this->em->persist($v);
-                                     $spslobinds[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'];
-                                 }
-                                 else
-                                 {
-                                     $ent->removeServiceLocation($v);
-                                      $this->em->remove($v);
-                                 }
+                        } else {
+                            if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . '']) && !empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url'])) {
+                                if (!empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'], $spslobinds)) {
+                                    $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
+                                    $this->em->persist($v);
+                                    $spslobinds[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'];
+                                } else {
+                                    $ent->removeServiceLocation($v);
+                                    $this->em->remove($v);
+                                }
 
                             } else {
                                 $ent->removeServiceLocation($v);
@@ -1101,7 +1271,7 @@ class Providerupdater
                                 $this->em->persist($newservice);
                                 $spslobinds[] = $v1['bind'];
                             } else {
-                                log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity ' . $ent->getEntityId()).' - removing';
+                                log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity ' . $ent->getEntityId() . ' - removing');
                             }
                         }
                     }
@@ -1249,165 +1419,9 @@ class Providerupdater
         /**
          * END update service locations
          */
-        /**
-         * BEGIN update certs
-         */
-        /**
-         * @todo add track
-         */
-        if (array_key_exists('crt', $ch) && !empty($ch['crt']) && is_array($ch['crt'])) {
-            $tmpcrt = $ent->getCertificates();
-            $allowedusecase = array('signing', 'encryption', 'both');
-            foreach ($tmpcrt as $v) {
-                if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''])) {
-                    $tkeyname = false;
-                    $tdata = false;
-                    $crtusecase = $ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['usage'];
-                    if (!empty($crtusecase) && in_array($crtusecase, $allowedusecase)) {
-                        $v->setCertUse($crtusecase);
-                    }
-                    if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname'])) {
-                        if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname'])) {
-                            $tkeyname = true;
-                        }
-                        $v->setKeyname($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']);
-                    }
-                    if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata'])) {
-                        if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata'])) {
-                            $tdata = true;
-                        }
-                        $v->setCertData($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']);
-                    }
-                    if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods'])) {
-                        if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods']) && is_array($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods'])) {
-                            $v->setEncryptMethods(array_filter($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods']));
-                        } else {
-                            $v->setEncryptMethods(null);
-                        }
-                    }
-                    if ($tdata === false && $tkeyname === false) {
-                        $ent->removeCertificate($v);
-                        $this->em->remove($v);
-                    } else {
-                        $this->em->persist($v);
-                    }
-                    unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
-                } else {
-                    $ent->removeCertificate($v);
-                    $this->em->remove($v);
-                }
-            }
-            /**
-             * setting new certs
-             */
-            foreach ($ch['crt'] as $k1 => $v1) {
-                if ($k1 === 'spsso' && $entityTypes['sp'] === true) {
-                    foreach ($v1 as $k2 => $v2) {
-                        $ncert = new models\Certificate();
-                        $ncert->setType('spsso');
-                        $ncert->setCertType();
-                        $ncert->setCertUse($v2['usage']);
-                        $ent->setCertificate($ncert);
-                        $ncert->setProvider($ent);
-                        $ncert->setKeyname($v2['keyname']);
-                        $ncert->setCertData($v2['certdata']);
-                        if (isset($v2['encmethods'])) {
-                            $ncert->setEncryptMethods($v2['encmethods']);
-                        }
-                        $this->em->persist($ncert);
-                    }
-                } elseif ($k1 === 'idpsso' && $entityTypes['idp']) {
-                    foreach ($v1 as $k2 => $v2) {
-                        $ncert = new models\Certificate();
-                        $ncert->setType('idpsso');
-                        $ncert->setCertType();
-                        $ncert->setCertUse($v2['usage']);
-                        $ent->setCertificate($ncert);
-                        $ncert->setProvider($ent);
-                        $ncert->setKeyname($v2['keyname']);
-                        $ncert->setCertData($v2['certdata']);
-                        $ncert->setCertData($v2['certdata']);
-                        if (isset($v2['encmethods'])) {
-                            $ncert->setEncryptMethods($v2['encmethods']);
-                        }
-                        $this->em->persist($ncert);
-                    }
-                } elseif ($k1 === 'aa' && $entityTypes['idp']) {
-                    foreach ($v1 as $k2 => $v2) {
-                        $ncert = new models\Certificate();
-                        $ncert->setType('aa');
-                        $ncert->setCertType();
-                        $ncert->setCertUse($v2['usage']);
-                        $ent->setCertificate($ncert);
-                        $ncert->setProvider($ent);
-                        $ncert->setKeyname($v2['keyname']);
-                        $ncert->setCertData(getPem($v2['certdata']));
-                        $ncert->setCertData($v2['certdata']);
-                        if (isset($v2['encmethods'])) {
-                            $ncert->setEncryptMethods($v2['encmethods']);
-                        }
-                        $this->em->persist($ncert);
-                    }
-                }
-            }
-        }
-        /**
-         * END update certs
-         */
-        if (array_key_exists('contact', $ch) && is_array($ch['contact'])) {
-            $ncnt = $ch['contact'];
-            $orgcnt = $ent->getContacts();
-            $origcntArray = array();
-            $newcntArray = array();
-            foreach ($orgcnt as $v) {
-                $i = $v->getId();
-                $origcntArray[$i] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
-                if (array_key_exists($i, $ncnt)) {
-                    if (!isset($ncnt['' . $i . '']) || empty($ncnt['' . $i . '']['email'])) {
-                        $ent->removeContact($v);
-                        $this->em->remove($v);
-                    } else {
-                        $v->setType($ncnt['' . $i . '']['type']);
-                        $v->setGivenname($ncnt['' . $i . '']['fname']);
-                        $v->setSurname($ncnt['' . $i . '']['sname']);
-                        $v->setEmail($ncnt['' . $i . '']['email']);
-                        $this->em->persist($v);
-                        $newcntArray['' . $i . ''] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
-                        unset($ncnt['' . $i . '']);
-                    }
-                } else {
-                    $ent->removeContact($v);
-                    $this->em->remove($v);
-                }
-            }
-            foreach ($ncnt as $cc) {
-                if (!empty($cc['email']) && !empty($cc['type'])) {
-                    $ncontact = new models\Contact();
-                    $ncontact->setEmail($cc['email']);
-                    $ncontact->setType($cc['type']);
-                    $ncontact->setSurname($cc['sname']);
-                    $ncontact->setGivenname($cc['fname']);
-                    $ent->setContact($ncontact);
-                    $ncontact->setProvider($ent);
-                    $this->em->persist($ncontact);
-                }
-            }
-            $newcnts = $ent->getContacts();
-            $counter = 0;
-            foreach ($newcnts as $v) {
-                $counter++;
-                $idc = $v->getId();
-                if (empty($idc)) {
-                    $idc = 'n' . $counter;
-                }
-                $newcntArray[$idc] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
-            }
-            $diff1 = array_diff_assoc($newcntArray, $origcntArray);
-            $diff2 = array_diff_assoc($origcntArray, $newcntArray);
-            if (count($diff1) > 0 || count($diff2) > 0) {
-                $changeList['Contacts'] = array('before' => arrayWithKeysToHtml($origcntArray), 'after' => arrayWithKeysToHtml($newcntArray));
-            }
-        }
+
+        $this->updateCerts($ent, $ch);
+        $this->updateContacts($ent, $ch);
 
 
         if (!array_key_exists('usestatic', $ch)) {

@@ -170,6 +170,16 @@ class Contact {
         return $this->type;
     }
 
+    public function setAllInfo($fname,$sname,$type,$mail,Provider $provider)
+    {
+        $this->email = $mail;
+        $this->givenname = $fname;
+        $this->type = $type;
+        $this->surname = $sname;
+        $this->setProvider($provider);
+        $provider->setContact($this);
+        return $this;
+    }
     public function importFromArray(array $c)
     {
         $this->setGivenName($c['givenname']);
