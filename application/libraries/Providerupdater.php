@@ -126,6 +126,33 @@ class Providerupdater
         return $srvInput;
     }
 
+    private function updateRegistrationAuthor(\models\Provider $ent, array $ch)
+    {
+        if (array_key_exists('regauthority', $ch)) {
+            $ent->setRegistrationAuthority($ch['regauthority']);
+        }
+        if (array_key_exists('registrationdate', $ch)) {
+            $prevregdate = '';
+            $prevregtime = '';
+            $prevregistrationdate = $ent->getRegistrationDate();
+            if (isset($prevregistrationdate)) {
+                $prevregdate = date('Y-m-d', $prevregistrationdate->format('U') + j_auth::$timeOffset);
+                $prevregtime = date('H:i', $prevregistrationdate->format('U') + j_auth::$timeOffset);
+            }
+            if (!array_key_exists('registrationtime', $ch) || empty($ch['registrationtime'])) {
+                $tmpnow = new \DateTime('now');
+                $ch['registrationtime'] = $tmpnow->format('H:i');
+            }
+            if ($prevregdate !== $ch['registrationdate'] || $prevregtime !== $ch['registrationtime']) {
+                if (!empty($ch['registrationdate'])) {
+                    $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i', $ch['registrationdate'] . ' ' . $ch['registrationtime']));
+                } else {
+                    $ent->setRegistrationDate(null);
+                }
+            }
+        }
+    }
+
     private function updateServices(\models\Provider $ent, array $ch)
     {
 
@@ -1132,32 +1159,11 @@ class Providerupdater
 
 
         if ($isAdmin) {
-            if (array_key_exists('regauthority', $ch)) {
-                if ($ent->getRegistrationAuthority() !== $ch['regauthority']) {
-                    $changeList['RegistrationAuthority'] = array('before' => $ent->getRegistrationAuthority(), 'after' => $ch['regauthority']);
-                }
-                $ent->setRegistrationAuthority($ch['regauthority']);
-            }
-            if (array_key_exists('registrationdate', $ch)) {
-                $prevregdate = '';
-                $prevregtime = '';
-                $prevregistrationdate = $ent->getRegistrationDate();
-                if (isset($prevregistrationdate)) {
-                    $prevregdate = date('Y-m-d', $prevregistrationdate->format('U') + j_auth::$timeOffset);
-                    $prevregtime = date('H:i', $prevregistrationdate->format('U') + j_auth::$timeOffset);
-                }
-                if (!array_key_exists('registrationtime', $ch) || empty($ch['registrationtime'])) {
-                    $tmpnow = new \DateTime('now');
-                    $ch['registrationtime'] = $tmpnow->format('H:i');
-                }
-                if ($prevregdate !== $ch['registrationdate'] || $prevregtime !== $ch['registrationtime']) {
-                    $changeList['RegistrationDate'] = array('before' => $prevregdate . ' ' . $prevregtime, 'after' => '' . $ch['registrationdate'] . ' ' . $ch['registrationtime'] . '');
-                    if (!empty($ch['registrationdate'])) {
-                        $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i', $ch['registrationdate'] . ' ' . $ch['registrationtime']));
-                    } else {
-                        $ent->setRegistrationDate(null);
-                    }
-                }
+            $regAuthorityBefore = $ent->getRegistrationAuthority();
+            $this->updateRegistrationAuthor($ent,$ch);
+            $regAuthorityAfter = $ent->getRegistrationAuthority();
+            if(strcasecmp($regAuthorityBefore,$regAuthorityAfter)!=0) {
+                $changeList['RegistrAuthority'] = array('before' => $regAuthorityBefore, 'after' => $regAuthorityAfter);
             }
         }
 
