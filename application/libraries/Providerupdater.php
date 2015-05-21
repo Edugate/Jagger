@@ -145,7 +145,7 @@ class Providerupdater
         $ch['srv'] = $this->cleanIncorrectServicesInput($ent, $ch['srv']);
 
         /**
-         * @var $services models\SeviceLocation[]
+         * @var $services models\ServiceLocation[]
          */
         $services = $ent->getServiceLocations();
 
@@ -188,260 +188,171 @@ class Providerupdater
         }
 
 
+        foreach ($ch['srv'] as $srvType => $srvform) {
+            if (array_key_exists($srvType, $servicesByType)) {
+                foreach ($srvform as $k => $v) {
+                    if (array_key_exists($k, $servicesByType['' . $srvType . ''])) {
+                        // update service and unset from input
+                        unset($ch['srv']['' . $srvType . '']['' . $k . '']);
+                    }
 
-        /*foreach($ch['srv'] as $srvType => $srvform)
-        {
-            if(!array_key_exists($srvType,$servicesByType))
-            {
-                foreach($srvform as $k=>$v)
-                {
-                    $this->createService($ent,$v,$srvType);
-                    unset($ch['srv'][''.$srvType.''][''.$k.'']);
                 }
             }
-        }*/
+        }
 
-        /////////////////////// OLD ///////////////////////
+        $validationBinds = array(
+            'IDPArtifactResolutionService' => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => array(), 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding' => array()),
+            'SPArtifactResolutionService' => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => array(), 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding' => array()),
+            'DiscoveryResponse' => array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol' => array()),
+            'SPSingleLogoutService' => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
+            'IDPSingleLogoutService' => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
+            'SingleSignOnService' => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:mace:shibboleth:1.0:profiles:AuthnRequest' => false),
+            'IDPAttributeService' => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding' => false),
+            'AssertionConsumerService' => array(
+                'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => array(),
+                'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => array(),
+                'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => array(),
+                'urn:oasis:names:tc:SAML:2.0:bindings:PAOS' => array(),
+                'urn:oasis:names:tc:SAML:2.0:profiles:browser-post' => array(),
+                'urn:oasis:names:tc:SAML:1.0:profiles:browser-post' => array(),
+                'urn:oasis:names:tc:SAML:1.0:profiles:artifact-01' => array()
+            ),
 
-        foreach ($services as $v) {
-            $origServicesInArray['' . $v->getId() . ''] = '' . $v->getType() . ' ::: ' . $v->getBindingName() . ' ::: ' . $v->getUrl() . ' ::: ' . $v->getOrder() . ' ::: ' . (int)$v->getDefault() . '';
-            $origServiceType = $v->getType();
 
-            if (array_key_exists($origServiceType, $idpBinds) && !($origServiceType === 'IDPArtifactResolutionService')) {
-                if (array_key_exists($v->getId(), $srvsInput[$origServiceType])) {
-                    if ($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'] == $v->getBindingName()) {
-                        if (empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url'])) {
-                            $ent->removeServiceLocation($v);
-                        } else {
-                            if (!in_array($v->getBindingName(), $idpBinds['' . $origServiceType . ''])) {
+        );
+        $acsdefaultset = false;
+        $c = 20;
+        foreach ($services as $srv) {
+            $srvType = $srv->getType();
+            $inputSrv = &$ch['srv']['' . $srvType . '']['' . $srv->getId() . ''];
+            $inputBind = null;
+            $inputUrl = null;
+            $inputOrder = null;
+            $inputDefault = null;
 
-                                $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
-                                $this->em->persist($v);
-                                $idpBinds['' . $origServiceType . ''][] = $v->getBindingName();
-                            } else {
-                                log_message('error', 'Found more than one SingSignOnService with the same binding protocol for entity:' . $ent->getEntityId());
-                                log_message('debug', 'Removing duplicate entry');
-                                $ent->removeServiceLocation($v);
-                            }
-                            unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
-                        }
-                    }
-                }
-            } elseif ($origServiceType === 'IDPArtifactResolutionService') {
-
-                if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . ''])) {
-                    if (empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']) || empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'])) {
-                        $ent->removeServiceLocation($v);
-                    } else {
-                        $v->setDefault(FALSE);
-                        $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
-                        if (isset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order'], $idpartidx)) {
-                            $v->setOrder($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order']);
-                            $idpartidx[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order'];
-                        } else {
-                            $maxidpartindex = max($idpartidx) + 1;
-                            $v->setOrder($maxidpartindex);
-                            $idpartidx[] = $maxidpartindex;
-                        }
-                        $v->setBindingName($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind']);
-                        $this->em->persist($v);
-                    }
-                } else {
-                    $ent->removeServiceLocation($v);
-                }
-                unset($srvsInput[$origServiceType][$v->getId()]);
-
-            } elseif ($origServiceType === 'AssertionConsumerService') {
-                log_message('debug', 'GG:AssertionConsumerService type found');
-                if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . ''])) {
-                    if (empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']) || empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'])) {
-                        $ent->removeServiceLocation($v);
-                    } else {
-                        if ($acsdefaultset || empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['default'])) {
-                            $v->setDefault(FALSE);
-                        } else {
-                            $v->setDefault(TRUE);
-                            $acsdefaultset = TRUE;
-                        }
-                        $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
-                        if (isset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order'], $acsidx)) {
-                            $v->setOrder($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order']);
-                            $acsidx[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order'];
-                        } else {
-                            $maxacsindex = max($acsidx) + 1;
-                            $v->setOrder($maxacsindex);
-                            $acsidx[] = $maxacsindex;
-                        }
-                        $v->setBindingName($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind']);
-                        $this->em->persist($v);
-                    }
-                } else {
-
-                    $ent->removeServiceLocation($v);
-                }
-                unset($srvsInput[$origServiceType][$v->getId()]);
-            } elseif ($origServiceType === 'SPArtifactResolutionService') {
-                log_message('debug', 'GG:SPArtifactResolutionService type found');
-
-                if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . ''])) {
-                    if (empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']) || empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'])) {
-                        $ent->removeServiceLocation($v);
-                    } else {
-                        $v->setDefault(FALSE);
-                        $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
-                        if (isset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order'], $spartidx)) {
-                            $v->setOrder($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order']);
-                            $spartidx[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order'];
-                        } else {
-                            $maxspartindex = max($spartidx) + 1;
-                            $v->setOrder($maxspartindex);
-                            $spartidx[] = $maxspartindex;
-                        }
-                        $v->setBindingName($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind']);
-                        $this->em->persist($v);
-                    }
-                } else {
-                    $ent->removeServiceLocation($v);
-                }
-                unset($srvsInput[$origServiceType][$v->getId()]);
-
-            } elseif ($origServiceType === 'DiscoveryResponse') {
-                log_message('debug', 'GG:DiscoveryResponse type found');
-                if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . ''])) {
-                    if (empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']) || empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'])) {
-                        $ent->removeServiceLocation($v);
-                    } else {
-                        $v->setDefault(FALSE);
-
-                        $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
-                        if (isset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order'], $acsidx)) {
-                            $v->setOrder($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order']);
-                            $dridx[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['order'];
-                        } else {
-                            $maxdrindex = max($dridx) + 1;
-                            $v->setOrder($maxdrindex);
-                            $dridx[] = $maxdrindex;
-                        }
-                        $v->setBindingName('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol');
-                        $this->em->persist($v);
-                    }
-                } else {
-                    $ent->removeServiceLocation($v);
-                }
-                unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
-
-            } elseif ($origServiceType === 'RequestInitiator') {
-                log_message('debug', 'GG:RequestInitiator type found');
-                if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . '']) && !empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url'])) {
-                    $v->setDefault(FALSE);
-                    $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
-                    $v->setOrderNull();
-                    $v->setBindingName('urn:oasis:names:tc:SAML:profiles:SSO:request-init');
-                    $this->em->persist($v);
-                } else {
-                    $ent->removeServiceLocation($v);
-                    $this->em->remove($v);
-                }
-                unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
-
-            } elseif ($origServiceType === 'SPSingleLogoutService') {
-                if (array_key_exists($v->getId(), $srvsInput['' . $origServiceType . '']) && !empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url'])) {
-                    if (!empty($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind']) && !in_array($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'], $spslobinds)) {
-                        $v->setUrl($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['url']);
-                        $this->em->persist($v);
-                        $spslobinds[] = $srvsInput['' . $origServiceType . '']['' . $v->getId() . '']['bind'];
-                    } else {
-                        $ent->removeServiceLocation($v);
-                        $this->em->remove($v);
-                    }
-
-                } else {
-                    $ent->removeServiceLocation($v);
-                    $this->em->remove($v);
-                }
-                unset($srvsInput['' . $origServiceType . '']['' . $v->getId() . '']);
-
+            if (array_key_exists('bind', $inputSrv)) {
+                $inputBind = $inputSrv['bind'];
             }
+            if (array_key_exists('url', $inputSrv)) {
+                $inputUrl = $inputSrv['url'];
+            }
+            if (array_key_exists('order', $inputSrv)) {
+                $inputOrder = $inputSrv['order'];
+            }
+            if (array_key_exists('default', $inputSrv)) {
+                $inputDefault = $inputSrv['default'];
+            }
+            if (empty($inputUrl) || (empty($inputBind) && $srvType === 'RequestInitiator')) {
+                unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                $ent->removeServiceLocation($srv);
+                continue;
+            }
+            if ($srvType === 'RequestInitiator') {
+                $srv->setUrl($inputUrl);
+                $this->em->persist($srv);
+                unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                continue;
+            }
+
+            if (in_array($srvType, array('IDPArtifactResolutionService', 'SPArtifactResolutionService', 'DiscoveryResponse'))) {
+                if (array_key_exists($inputBind, $validationBinds['' . $srvType . ''])) {
+                    if (in_array($inputOrder, $validationBinds['' . $srvType . '']['' . $inputBind . '']) || is_null($inputOrder)) {
+                        $inputOrder = $c++;
+                    }
+                    $srv->setUrl($inputUrl);
+                    $srv->setBindingName($inputBind);
+                    $srv->setOrder($inputOrder);
+                    $this->em->persist($srv);
+                    $validationBinds['' . $srvType . '']['' . $inputBind . ''][] = $inputOrder;
+                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+
+                } else {
+                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                    $ent->removeServiceLocation($srv);
+                }
+
+                continue;
+            }
+            if (in_array($srvType, array('SPSingleLogoutService', 'IDPSingleLogoutService', 'SingleSignOnService', 'IDPAttributeService'))) {
+
+                if (array_key_exists($inputBind, $validationBinds['' . $srvType . ''])) {
+                    if ($validationBinds['' . $srvType . '']['' . $inputBind . ''] === true) {
+                        unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                        $ent->removeServiceLocation($srv);
+                        continue;
+                    }
+                    $srv->setUrl($inputUrl);
+                    $srv->setBindingName($inputBind);;
+                    $this->em->persist($srv);
+                    $validationBinds['' . $srvType . '']['' . $inputBind . ''] === true;
+                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+
+                } else {
+                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                    $ent->removeServiceLocation($srv);
+                }
+
+                continue;
+            }
+            if ($srvType === 'AssertionConsumerService') {
+
+                if (array_key_exists($inputBind, $validationBinds['' . $srvType . ''])) {
+                    if (in_array($inputOrder, $validationBinds['' . $srvType . '']['' . $inputBind . '']) || is_null($inputOrder)) {
+                        $inputOrder = $c++;
+                    }
+                    $srv->setUrl($inputUrl);
+                    $srv->setBindingName($inputBind);
+                    $srv->setOrder($inputOrder);
+                    if (strcasecmp($inputDefault, '1') == 0 && $acsdefaultset !== true) {
+                        $srv->setDefault(true);
+                        $acsdefaultset = true;
+                    } else {
+                        $srv->setDefault(false);
+                    }
+                    $this->em->persist($srv);
+                    $validationBinds['' . $srvType . '']['' . $inputBind . ''][] = $inputOrder;
+                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+
+                } else {
+                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                    $ent->removeServiceLocation($srv);
+                }
+
+                continue;
+            }
+
 
         }
+
+        foreach ($srvsInput as $srvType => $v) {
+            if (in_array($srvType, array('SPSingleLogoutService', 'IDPSingleLogoutService', 'SingleSignOnService', 'IDPAttributeService'))) {
+                foreach ($v as $k1 => $v1) {
+                    if (empty($v1['bind']) && !empty($v1['url'])) {
+                        if (array_key_exists($v['bind'], $validationBinds['' . $srvType . '']) && $validationBinds['' . $srvType . '']['' . $v['bind'] . ''] !== true) {
+                            $newservice = new models\ServiceLocation();
+                            $newservice->setBindingName($v1['bind']);
+                            $newservice->setUrl($v1['url']);
+                            $newservice->setType($srvType);
+                            $newservice->setProvider($ent);
+                            $ent->setServiceLocation($newservice);
+                            $this->em->persist($newservice);
+                            $validationBinds['' . $srvType . '']['' . $v['bind'] . ''] = true;
+                            continue;
+                        }
+                    }
+                }
+            } elseif (in_array($srvType, array('IDPArtifactResolutionService', 'SPArtifactResolutionService', 'DiscoveryResponse'))) {
+
+            }
+        }
+        /////////////////////// OLD ///////////////////////
+
 
         /**
          * adding new service locations from form
          */
         foreach ($srvsInput as $k => $v) {
-            if ($k === 'SingleSignOnService' && $this->entityTypes['idp'] === true) {
-                foreach ($srvsInput[$k] as $k1 => $v1) {
-                    if (!empty($v1['bind']) && !empty($v1['url'])) {
-                        log_message('debug', 'GGG new sso');
-                        if (!in_array($v1['bind'], $ssobinds)) {
-                            $newservice = new models\ServiceLocation();
-                            $newservice->setBindingName($v1['bind']);
-                            $newservice->setUrl($v1['url']);
-                            $newservice->setType('SingleSignOnService');
-                            $newservice->setProvider($ent);
-                            $ent->setServiceLocation($newservice);
-                            $this->em->persist($newservice);
-                            $ssobinds[] = $v1['bind'];
-                        } else {
-                            log_message('error', 'SingSignOnService url already set for binding proto: ' . $v1['bind'] . ' for entity' . $ent->getEntityId());
-                        }
-                    }
-                }
-            } elseif ($k === 'IDPSingleLogoutService' && $this->entityTypes['idp'] === true) {
-                foreach ($srvsInput[$k] as $k1 => $v1) {
-                    if (!empty($v1['bind']) && !empty($v1['url'])) {
-                        log_message('debug', 'GGG new IDP SingleLogout');
-                        if (!in_array($v1['bind'], $idpslobinds)) {
-                            $newservice = new models\ServiceLocation();
-                            $newservice->setBindingName($v1['bind']);
-                            $newservice->setUrl($v1['url']);
-                            $newservice->setType('IDPSingleLogoutService');
-                            $newservice->setProvider($ent);
-                            $ent->setServiceLocation($newservice);
-                            $this->em->persist($newservice);
-                            $idpslobinds[] = $v1['bind'];
-                        } else {
-                            log_message('error', 'IDP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity' . $ent->getEntityId());
-                        }
-                    }
-                }
-            } elseif ($k === 'IDPAttributeService' && $this->entityTypes['idp'] === true) {
-                foreach ($srvsInput[$k] as $k1 => $v1) {
-                    if (!empty($v1['bind']) && !empty($v1['url']) && in_array($v1['bind'], $allowedAABind)) {
-                        log_message('debug', 'GGG new IDP IDPAttributeService');
-                        if (!in_array($v1['bind'], $idpaabinds)) {
-                            $newservice = new models\ServiceLocation();
-                            $newservice->setBindingName($v1['bind']);
-                            $newservice->setUrl($v1['url']);
-                            $newservice->setType('IDPAttributeService');
-                            $newservice->setProvider($ent);
-                            $ent->setServiceLocation($newservice);
-                            $this->em->persist($newservice);
-                            $idpaabinds[] = $v1['bind'];
-                        } else {
-                            log_message('error', 'IDP AttributeService url already set for binding proto: ' . $v1['bind'] . ' for entity' . $ent->getEntityId());
-                        }
-                    }
-                }
-            } elseif ($k === 'SPSingleLogoutService' && $this->entityTypes['sp'] === true) {
-                foreach ($srvsInput[$k] as $k1 => $v1) {
-                    if (!empty($v1['bind']) && !empty($v1['url'])) {
-                        log_message('debug', 'GGG new SP SingleLogout');
-                        if (!in_array($v1['bind'], $spslobinds)) {
-                            $newservice = new models\ServiceLocation();
-                            $newservice->setBindingName($v1['bind']);
-                            $newservice->setUrl($v1['url']);
-                            $newservice->setType('SPSingleLogoutService');
-                            $newservice->setProvider($ent);
-                            $ent->setServiceLocation($newservice);
-                            $this->em->persist($newservice);
-                            $spslobinds[] = $v1['bind'];
-                        } else {
-                            log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity ' . $ent->getEntityId() . ' - removing');
-                        }
-                    }
-                }
-            } elseif ($k === 'AssertionConsumerService' && $this->entityTypes['sp'] === true) {
+            if ($k === 'AssertionConsumerService' && $this->entityTypes['sp'] === true) {
                 foreach ($srvsInput[$k] as $k1 => $v1) {
                     if (!empty($v1['bind']) && !empty($v1['url'])) {
                         log_message('debug', 'GGG new SP AsserttionConsumerService');
@@ -564,24 +475,6 @@ class Providerupdater
         }
 
 
-        $newsrvs = $ent->getServiceLocations();
-        $newServicesInArray = array();
-        $counter = 0;
-        foreach ($newsrvs as $v) {
-            $vid = $v->getId();
-            if (empty($vid)) {
-                $d = 'n' . $counter;
-            } else {
-                $d = $v->getId();
-            }
-            $newServicesInArray[$d] = '' . $v->getType() . ' ::: ' . $v->getBindingName() . ' ::: ' . $v->getUrl() . ' ::: ' . $v->getOrder() . ' ::: ' . (int)$v->getDefault() . '';
-            $counter++;
-        }
-        $diff1 = array_diff_assoc($newServicesInArray, $origServicesInArray);
-        $diff2 = array_diff_assoc($origServicesInArray, $newServicesInArray);
-        if (count($diff1) > 0 || count($diff2) > 0) {
-            $changeList['ServiceLocations'] = array('before' => arrayWithKeysToHtml($diff2), 'after' => arrayWithKeysToHtml($diff1));
-        }
         /**
          * END update service locations
          */
