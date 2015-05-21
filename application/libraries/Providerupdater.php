@@ -71,8 +71,13 @@ class Providerupdater
         if (!array_key_exists('crt', $ch) || empty($ch['crt']) || !is_array($ch['crt'])) {
             return false;
         }
+        $changes = array('before'=>array(),'after'=>array());
+        /**
+         * @var $origCertificates models\Certificate[]
+         */
         $origCertificates = $ent->getCertificates();
         foreach ($origCertificates as $v) {
+            $changes['before'][] = $v->getType().':'.$v->getCertUseInStr().':'.$v->getFingerprint();
             if (!isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''])) {
                 $ent->removeCertificate($v);
                 $this->em->remove($v);
@@ -108,6 +113,7 @@ class Providerupdater
                 $this->em->remove($v);
             } else {
                 $this->em->persist($v);
+                $changes['after'][] = $v->getType().':'.$v->getCertUseInStr().':'.$v->getFingerprint();
             }
             unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
 
@@ -139,7 +145,13 @@ class Providerupdater
                 $ent->setCertificate($ncert);
                 $ncert->setProvider($ent);
                 $this->em->persist($ncert);
+                $changes['after'][] = $ncert->getType().':'.$ncert->getCertUseInStr().':'.$ncert->getFingerprint();
             }
+        }
+         $diff1 = array_diff_assoc($changes['before'], $changes['after']);
+        $diff2 = array_diff_assoc($changes['after'], $changes['before']);
+        if (count($diff1) > 0 || count($diff2) > 0) {
+            $this->updateChanges('certs', arrayWithKeysToHtml($changes['before']), arrayWithKeysToHtml($changes['after']));
         }
         return true;
 
