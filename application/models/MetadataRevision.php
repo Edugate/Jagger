@@ -8,7 +8,6 @@
 
 namespace models;
 
-use Doctrine\ORM\Mapping\Version;
 
 /**
  * @Entity(readOnly=true)
@@ -65,3 +64,4 @@ class MetadataRevision
     }
 
 }
+

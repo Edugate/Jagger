@@ -715,13 +715,6 @@ class Providerupdater
     {
         // $changeList - array for modifications
         $entid = $ent->getId();
-        if (!empty($entid)) {
-            $dump = new models\MetadataRevision($ent);
-            $this->ci->load->library('providertoxml');
-            $dumpXML = $this->ci->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), true);
-            $dump->setMeta($dumpXML);
-            //  $this->em->persist($dump);
-        }
         $entityTypes = $ent->getTypesToArray();
         $this->entityTypes = $entityTypes;
         $changeList = array();
