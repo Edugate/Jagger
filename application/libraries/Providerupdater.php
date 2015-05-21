@@ -78,28 +78,27 @@ class Providerupdater
                 $this->em->remove($v);
                 continue;
             }
+            $curCrt = $ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''];
             $tkeyname = false;
             $tdata = false;
-            if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['usage'])) {
-                $v->setCertUse($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['usage']);
+            if (isset($curCrt['usage'])) {
+                $v->setCertUse($curCrt['usage']);
             }
-
-
-            if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname'])) {
-                if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname'])) {
+            if (isset($curCrt['keyname'])) {
+                if (!empty($curCrt['keyname'])) {
                     $tkeyname = true;
                 }
-                $v->setKeyname($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['keyname']);
+                $v->setKeyname($curCrt['keyname']);
             }
-            if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata'])) {
-                if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata'])) {
+            if (isset($curCrt['certdata'])) {
+                if (!empty($curCrt['certdata'])) {
                     $tdata = true;
                 }
-                $v->setCertData($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['certdata']);
+                $v->setCertData($curCrt['certdata']);
             }
-            if (isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods'])) {
-                if (!empty($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods']) && is_array($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods'])) {
-                    $v->setEncryptMethods(array_filter($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']['encmethods']));
+            if (isset($curCrt['encmethods'])) {
+                if (!empty($curCrt['encmethods']) && is_array($curCrt['encmethods'])) {
+                    $v->setEncryptMethods(array_filter($curCrt['encmethods']));
                 } else {
                     $v->setEncryptMethods(null);
                 }
@@ -132,16 +131,17 @@ class Providerupdater
                 $ncert->setType($k1);
                 $ncert->setCertType();
                 $ncert->setCertUse($v2['usage']);
-                $ent->setCertificate($ncert);
-                $ncert->setProvider($ent);
                 $ncert->setKeyname($v2['keyname']);
                 $ncert->setCertData($v2['certdata']);
                 if (isset($v2['encmethods'])) {
                     $ncert->setEncryptMethods($v2['encmethods']);
                 }
+                $ent->setCertificate($ncert);
+                $ncert->setProvider($ent);
                 $this->em->persist($ncert);
             }
         }
+        return true;
 
     }
 
@@ -1259,7 +1259,7 @@ class Providerupdater
                                 $this->em->persist($newservice);
                                 $spslobinds[] = $v1['bind'];
                             } else {
-                                log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity ' . $ent->getEntityId()) . ' - removing';
+                                log_message('error', 'SP SingLogout url already set for binding proto: ' . $v1['bind'] . ' for entity ' . $ent->getEntityId() . ' - removing');
                             }
                         }
                     }
