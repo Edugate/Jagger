@@ -3314,7 +3314,7 @@ $(document).ready(function () {
 
                 });
             }
-            else if (valueSelected === "requeststoproviders") {
+            else if (valueSelected === "requeststoproviders" || valueSelected === "providermodified") {
                 $.ajax({
                     type: "GET",
                     url: baseurl + 'ajax/getproviders',

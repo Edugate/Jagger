@@ -92,7 +92,19 @@ class Email_sender
                 if ($fedId == $objId) {
                     $alreadyMailTo[] = $s->getRcpt();
                 }
-            } elseif ($type === 'fedmembersmodified') {
+            }
+            elseif($type === 'providermodified'){
+                if ($obj instanceOf models\Provider)
+                {
+                    $objId = $obj->getId();
+                    $prov = $s->getProvider();
+                    if(!empty($prov) && $prov->getId() === $objId)
+                    {
+                        $alreadyMailTo[] = $s->getRcpt();
+                    }
+                }
+            }
+            elseif ($type === 'fedmembersmodified') {
 
                 if (empty($obj)) {
                     continue;
@@ -286,6 +298,7 @@ class Email_sender
                 }
 
                 $this->addToMailQueue('fedmembersmodified', $federations, 'Provider has been modified', $body, false);
+                $this->addToMailQueue('providermodified', $ent, 'Provider has been modified', $body, false);
             }
 
     }

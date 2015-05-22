@@ -267,7 +267,7 @@ class Subscriber extends MY_Controller
             $this->em->persist($notification);
             $this->em->flush();
             echo "OK";
-        } elseif (strcmp($ntype, 'requeststoproviders') == 0) {
+        } elseif (strcmp($ntype, 'requeststoproviders') == 0 || strcmp($ntype, 'providermodified') == 0) {
             /**
              * @var $provider models\Provider
              */

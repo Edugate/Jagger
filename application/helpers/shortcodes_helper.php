@@ -20,6 +20,7 @@ function notificationCodes()
         'fedmembersmodified' => array('desc' => 'details of any member of specified Federation has been modified', 'desclang' => 'fedmembersmodified', 'group' => 'special'),
         'grequeststoproviders' => array('desc' => 'All request sent to any provider', 'desclang' => 'grequeststoproviders', 'group' => 'global'),
         'requeststoproviders' => array('desc' => 'Request sent to any defined provider', 'desclang' => 'requeststoproviders', 'group' => 'special'),
+        'providermodified' => array('desc' => 'notify about modification of selected provider', 'desclang' => 'providermodified', 'group' => 'special'),
 
     );
 
