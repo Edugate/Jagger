@@ -693,19 +693,20 @@ class Providerupdater
         /**
          * @var $extendsCollection models\ExtendMetadata[]
          */
-        $doFilter = array('elements'=>array('GeolocationHint','DomainHint','IPHint','DiscoHints'),'namespace'=>'mdui');
-        $extendsCollection = $ent->getExtendMetadata()->filter(function(models\ExtendMetadata $entry) use ($doFilter){
-            return in_array($entry->getElement(),$doFilter['elements']) && $entry->getNamespace() === $doFilter['namespace'];
+        $doFilter = array('elements' => array('GeolocationHint', 'DomainHint', 'IPHint', 'DiscoHints'), 'namespace' => 'mdui');
+        $extendsCollection = $ent->getExtendMetadata()->filter(function (models\ExtendMetadata $entry) use ($doFilter) {
+            return in_array($entry->getElement(), $doFilter['elements']) && $entry->getNamespace() === $doFilter['namespace'];
         });
         $extendsInArray = array();
         foreach ($extendsCollection as $e) {
-            $extendsInArray['' . $e->getType() . '']['' . $e->getNamespace() . '']['' . $e->getElement() . ''][] = $e;
-            if ($e->getElement() === 'DiscoHints' && $e->getType() === 'idp') {
+
+            $extendsInArray['' . $e->getElement() . ''][] = $e;
+            if ($e->getElement() === 'DiscoHints') {
                 $discohintsParent = $e;
             }
         }
 
-        $idpDiscoHints = array('geo' => 'GeolocationHint', 'domainhint' => 'DomainHint', 'iphint' => 'IPHint');
+        $hintElements = array('geo' => 'GeolocationHint', 'domainhint' => 'DomainHint', 'iphint' => 'IPHint');
         if (empty($discohintsParent)) {
             $discohintsParent = new models\ExtendMetadata;
             $discohintsParent->setType('idp');
@@ -713,11 +714,11 @@ class Providerupdater
             $discohintsParent->setElement('DiscoHints');
             $ent->setExtendMetadata($discohintsParent);
         }
-        foreach ($idpDiscoHints as $key => $value) {
+        foreach ($hintElements as $key => $value) {
             if (isset($ch['uii']['idpsso']['' . $key . '']) && is_array($ch['uii']['idpsso']['' . $key . ''])) {
                 $ch['uii']['idpsso']['' . $key . ''] = array_unique($ch['uii']['idpsso']['' . $key . '']);
-                if (isset($extendsInArray['idp']['mdui']['' . $value . ''])) {
-                    foreach ($extendsInArray['idp']['mdui']['' . $value . ''] as $k => $v) {
+                if (isset($extendsInArray['' . $value . ''])) {
+                    foreach ($extendsInArray['' . $value . ''] as $k => $v) {
                         $vId = $v->getId();
                         if (array_key_exists($vId, $ch['uii']['idpsso']['' . $key . '']) && !empty($ch['uii']['idpsso']['' . $key . '']['' . $vId . ''])) {
                             $v->setValue($ch['uii']['idpsso']['' . $key . '']['' . $vId . '']);
@@ -745,6 +746,9 @@ class Providerupdater
             }
         }
 
+        $extendsCollection = $ent->getExtendMetadata()->filter(function (models\ExtendMetadata $entry) use ($doFilter) {
+            return in_array($entry->getElement(), $doFilter['elements']) && $entry->getNamespace() === $doFilter['namespace'];
+        });
         return true;
 
     }
@@ -763,9 +767,12 @@ class Providerupdater
         /**
          * @var $extendsCollection models\ExtendMetadata[]
          */
-        $extendsCollection = $ent->getExtendMetadata();
+        $excludeFilter = array('GeolocationHint', 'DomainHint', 'IPHint', 'DiscoHints');
+        $extendsCollection = $ent->getExtendMetadata()->filter(function (models\ExtendMetadata $entry) use ($excludeFilter) {
+            return !in_array($entry->getElement(), $excludeFilter);
+        });
+
         $uiinfoParent = array('idp' => null, 'sp' => null);
-        $discohintsParent = null;
         $extendsInArray = array();
         foreach ($extendsCollection as $e) {
             $extendsInArray['' . $e->getType() . '']['' . $e->getNamespace() . '']['' . $e->getElement() . ''][] = $e;
@@ -1080,6 +1087,14 @@ class Providerupdater
         log_message('debug', 'disallowedpart: ' . serialize($dissalowedparts));
 
 
+        $extendChanges = array();
+        /**
+         * @var $tmpExtend models\ExtendMetadata[]
+         */
+        $tmpExtend = $ent->getExtendMetadata();
+        foreach ($tmpExtend as $vext) {
+            $extendChanges[''.$vext->getNamespace().':'.$vext->getElement() . '']['before'][] = $vext->getValueAndLang();
+        }
         $this->updateProviderExtend($ent, $ch);
         if ($entityTypes['sp'] === true) {
             $this->updateReqAttrs($ent, $ch);
@@ -1350,6 +1365,25 @@ class Providerupdater
                 }
             }
         }
+        $tmpExtend = $ent->getExtendMetadata();
+        foreach ($tmpExtend as $vext) {
+            $extendChanges[''.$vext->getNamespace().':'. $vext->getElement() . '']['after'][] = $vext->getValueAndLang();
+        }
+        foreach ($extendChanges as $k => $v) {
+            if (!array_key_exists('before', $v)) {
+                $v['before'] = array();
+            }
+            if (!array_key_exists('after', $v)) {
+                $v['after'] = array();
+            }
+            $diff1 = array_diff_assoc($v['before'], $v['after']);
+            $diff2 = array_diff_assoc($v['after'], $v['before']);
+            if (count($diff1) > 0 || count($diff2) > 0) {
+                $this->updateChanges(''.$k.'', arrayWithKeysToHtml($v['before']), arrayWithKeysToHtml($v['after']));
+            }
+        }
+
+
         $this->logtracks = array_merge($this->logtracks, $changeList);
         if (count($this->logtracks) > 0 && !empty($entid)) {
             $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($this->logtracks), FALSE);

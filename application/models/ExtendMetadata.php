@@ -174,6 +174,17 @@ class ExtendMetadata {
         return unserialize($this->attrs);
     }
 
+    public function getValueAndLang()
+    {
+        $attr = $this->getAttributes();
+        $lang = '';
+        if(array_key_exists('xml:lang',$attr))
+        {
+            $lang = $attr['xml:lang'];
+        }
+        return $lang.':'.$this->evalue;
+    }
+
     public function setType($type)
     {
         $this->etype = $type;
