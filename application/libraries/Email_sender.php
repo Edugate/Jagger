@@ -207,7 +207,9 @@ class Email_sender
     }
 
     /**
-     *  TEMPLATES
+     * @param $group
+     * @param $replacements
+     * @return array|null
      */
     function generateLocalizedMail($group, $replacements)
     {
@@ -248,7 +250,39 @@ class Email_sender
         return $result;
     }
 
-    function providerRegRequest($type, $args, $lang = null)
+    /**
+     * @param \models\Provider $ent
+     * @param \models\Tracker $tracker
+     */
+    function providerIsModified(\models\Provider $ent, \models\Tracker $tracker)
+    {
+
+            /**
+             * @var $federations models\Federation[]
+             */
+            $federations = $ent->getActiveFederations()->toArray();
+
+            $trackChange = @unserialize($tracker->getDetail());
+            $body ='Dear user,'.PHP_EOL;
+            $body .='Provider ('.$ent->getEntityId().' has been modified by '.$this->ci->j_auth->current_user().' from '.$this->ci->input->ip_address().PHP_EOL.PHP_EOL;
+            if(is_array($trackChange)) {
+                foreach ($trackChange as $k => $v) {
+                    $rows = '';
+                    if (is_array($v)) {
+                        $rows = '';
+                        foreach ($v as $p => $l) {
+                            $rows .= sprintf("%s:".PHP_EOL."%s" . PHP_EOL, $p, str_replace("<br />", "\n", $l));
+                        }
+                    }
+                    $body .= sprintf("= %s =" . PHP_EOL . "%s" . PHP_EOL, $k, $rows);
+                }
+
+                $this->addToMailQueue('fedmembersmodified', $federations, 'Provider has been modified', $body, false);
+            }
+
+    }
+
+    function providerRegRequest($type, $args)
     {
         $params = array(
             'requestermail' => '',
