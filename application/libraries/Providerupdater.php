@@ -161,6 +161,15 @@ class Providerupdater
             return false;
         }
 
+        $before = array();
+        /**
+         * @var $srvsBefore \models\ServiceLocation[]
+         */
+        $srvsBefore = $ent->getServiceLocations();
+        foreach($srvsBefore as $s)
+        {
+            $before[] = ''.$s->getType().':'.$s->getBindingName().':'.$s->getUrl().':'.$s->getOrder().':'.(int) $s->getDefault();
+        }
         $this->cleanIncorrectServices($ent);
 
         $ch['srv'] = $this->cleanIncorrectServicesInput($ent, $ch['srv']);
@@ -388,6 +397,21 @@ class Providerupdater
                 }
             }
         }
+
+        $after = array();
+        /**
+         * @var $srvsAfter \models\ServiceLocation[]
+         */
+        $srvsAfter = $ent->getServiceLocations();
+        foreach($srvsAfter as $s)
+        {
+            $after[] = ''.$s->getType().':'.$s->getBindingName().':'.$s->getUrl().':'.$s->getOrder().':'.(int) $s->getDefault();
+        }
+        $diff1 = array_diff_assoc($before, $after);
+        $diff2 = array_diff_assoc($after, $before);
+        if (count($diff1) > 0 || count($diff2) > 0) {
+            $this->updateChanges('ServiceLocation', arrayWithKeysToHtml($before), arrayWithKeysToHtml($after));
+        }
         return true;
     }
 
@@ -555,27 +579,31 @@ class Providerupdater
          * @var $origContacts models\Contact[]
          */
         $origContacts = $ent->getContacts();
+        log_message('debug', 'JANUSZ 1: ' . $origContacts->count());
         $origcntArray = array();
         $newcntArray = array();
         foreach ($origContacts as $v) {
             $contactID = $v->getId();
 
-            $origcntArray[$contactID] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
-
-            if (array_key_exists($contactID, $newContacts)) {
-                if (!isset($newContacts['' . $contactID . '']) || empty($newContacts['' . $contactID . '']['email'])) {
-                    $ent->removeContact($v);
-                    $this->em->remove($v);
-                } else {
-                    $v->setAllInfo($newContacts['' . $contactID . '']['fname'], $newContacts['' . $contactID . '']['sname'], $newContacts['' . $contactID . '']['type'], $newContacts['' . $contactID . '']['email'], $ent);
-                    $this->em->persist($v);
-                    $newcntArray['' . $contactID . ''] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
-                }
-                unset($newContacts['' . $contactID . '']);
-            } else {
+            $origcntArray[] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+            if (!array_key_exists($contactID, $newContacts)) {
                 $ent->removeContact($v);
                 $this->em->remove($v);
+                continue;
             }
+
+            if (!isset($newContacts['' . $contactID . '']) || empty($newContacts['' . $contactID . '']['email'])) {
+
+                $ent->removeContact($v);
+                $this->em->remove($v);
+                unset($newContacts['' . $contactID . '']);
+                continue;
+            }
+            $v->setAllInfoNoProvider($newContacts['' . $contactID . '']['fname'], $newContacts['' . $contactID . '']['sname'], $newContacts['' . $contactID . '']['type'], $newContacts['' . $contactID . '']['email']);
+            $this->em->persist($v);
+
+            unset($newContacts['' . $contactID . '']);
+
         }
         foreach ($newContacts as $cc) {
             if (!empty($cc['email']) && !empty($cc['type'])) {
@@ -585,21 +613,14 @@ class Providerupdater
             }
         }
         $newcnts = $ent->getContacts();
-        $counter = 0;
         foreach ($newcnts as $v) {
-            $counter++;
-            $idc = $v->getId();
-            if (empty($idc)) {
-                $idc = 'n' . $counter;
-            }
-            $newcntArray[$idc] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+            $newcntArray[] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
         }
         $diff1 = array_diff_assoc($newcntArray, $origcntArray);
         $diff2 = array_diff_assoc($origcntArray, $newcntArray);
         if (count($diff1) > 0 || count($diff2) > 0) {
             $this->updateChanges('contacts', arrayWithKeysToHtml($origcntArray), arrayWithKeysToHtml($newcntArray));
         }
-
         return true;
     }
 
@@ -1160,9 +1181,9 @@ class Providerupdater
 
         if ($isAdmin) {
             $regAuthorityBefore = $ent->getRegistrationAuthority();
-            $this->updateRegistrationAuthor($ent,$ch);
+            $this->updateRegistrationAuthor($ent, $ch);
             $regAuthorityAfter = $ent->getRegistrationAuthority();
-            if(strcasecmp($regAuthorityBefore,$regAuthorityAfter)!=0) {
+            if (strcasecmp($regAuthorityBefore, $regAuthorityAfter) != 0) {
                 $changeList['RegistrAuthority'] = array('before' => $regAuthorityBefore, 'after' => $regAuthorityAfter);
             }
         }
