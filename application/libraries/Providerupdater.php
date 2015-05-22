@@ -579,7 +579,6 @@ class Providerupdater
          * @var $origContacts models\Contact[]
          */
         $origContacts = $ent->getContacts();
-        log_message('debug', 'JANUSZ 1: ' . $origContacts->count());
         $origcntArray = array();
         $newcntArray = array();
         foreach ($origContacts as $v) {

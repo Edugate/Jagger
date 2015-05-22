@@ -739,6 +739,51 @@ class Entityedit extends MY_Controller
                     $updateresult = $this->providerupdater->updateProvider($ent, $c);
                     if ($updateresult) {
                         $this->em->persist($ent);
+
+                        $tracker = null;
+                        $unitInsertCollection = $this->em->getUnitOfWork()->getScheduledEntityInsertions();
+                        foreach($unitInsertCollection as $objToInstert)
+                        {
+                            if($objToInstert instanceof models\Tracker)
+                            {
+
+                                if($objToInstert->getResourceType() === 'ent' && $objToInstert->getSubType() === 'modification')
+                                {
+                                    $tracker = $objToInstert;
+                                    break;
+                                }
+                            }
+                        }
+                        if(!empty($tracker))
+                        {
+
+                            /**
+                             * @var $federations models\Federation[]
+                             */
+                            $federations = $ent->getActiveFederations()->toArray();
+
+                            $trackChange = @unserialize($tracker->getDetail());
+                            $body ='Dear user,'.PHP_EOL;
+                            $body .='Provider ('.$ent->getEntityId().' has been modified by '.$this->j_auth->current_user().' from '.$this->input->ip_address().PHP_EOL;
+                            if(is_array($trackChange)) {
+                                foreach ($trackChange as $k => $v) {
+                                    $rows = '';
+                                    if (is_array($v)) {
+                                        $rows = '';
+                                        foreach ($v as $p => $l) {
+                                            $rows .= sprintf("%s: %s" . PHP_EOL, $p, str_replace("<br />", "\n", $l));
+                                        }
+                                    }
+                                    $body .= sprintf("%s:" . PHP_EOL . " %s" . PHP_EOL . "==============" . PHP_EOL, $k, $rows);
+                                }
+
+                                $this->email_sender->addToMailQueue('fedmembersmodified', $federations, 'Provider has been modified', $body, false);
+                            }
+                        }
+
+
+
+
                         $this->em->flush();
                         $this->discardDraft($id);
                         $this->j_ncache->cleanMcirclceMeta($id);

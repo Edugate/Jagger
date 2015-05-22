@@ -241,7 +241,7 @@ class Subscriber extends MY_Controller
             return;
         }
         ///////////////////////////////////////////////////////
-        if (strcmp($ntype, 'joinfedreq') == 0 || strcmp($ntype, 'fedmemberschanged') == 0) {
+        if (strcmp($ntype, 'joinfedreq') == 0 || strcmp($ntype, 'fedmemberschanged') == 0 || strcmp($ntype, 'fedmembersmodified') == 0) {
             /**
              * @var $federation models\Federation
              */
