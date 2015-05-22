@@ -166,9 +166,8 @@ class Providerupdater
          * @var $srvsBefore \models\ServiceLocation[]
          */
         $srvsBefore = $ent->getServiceLocations();
-        foreach($srvsBefore as $s)
-        {
-            $before[] = ''.$s->getType().':'.$s->getBindingName().':'.$s->getUrl().':'.$s->getOrder().':'.(int) $s->getDefault();
+        foreach ($srvsBefore as $s) {
+            $before[] = '' . $s->getType() . ':' . $s->getBindingName() . ':' . $s->getUrl() . ':' . $s->getOrder() . ':' . (int)$s->getDefault();
         }
         $this->cleanIncorrectServices($ent);
 
@@ -403,9 +402,8 @@ class Providerupdater
          * @var $srvsAfter \models\ServiceLocation[]
          */
         $srvsAfter = $ent->getServiceLocations();
-        foreach($srvsAfter as $s)
-        {
-            $after[] = ''.$s->getType().':'.$s->getBindingName().':'.$s->getUrl().':'.$s->getOrder().':'.(int) $s->getDefault();
+        foreach ($srvsAfter as $s) {
+            $after[] = '' . $s->getType() . ':' . $s->getBindingName() . ':' . $s->getUrl() . ':' . $s->getOrder() . ':' . (int)$s->getDefault();
         }
         $diff1 = array_diff_assoc($before, $after);
         $diff2 = array_diff_assoc($after, $before);
@@ -559,7 +557,7 @@ class Providerupdater
         $diff1 = array_diff_assoc($changes['before'], $changes['after']);
         $diff2 = array_diff_assoc($changes['after'], $changes['before']);
         if (count($diff1) > 0 || count($diff2) > 0) {
-            $this->updateChanges('requiredAttrs', arrayWithKeysToHtml($changes['before']), arrayWithKeysToHtml($changes['after']));
+            $this->updateChanges('Required Attributes', arrayWithKeysToHtml($changes['before']), arrayWithKeysToHtml($changes['after']));
         }
         return true;
     }
@@ -618,7 +616,7 @@ class Providerupdater
         $diff1 = array_diff_assoc($newcntArray, $origcntArray);
         $diff2 = array_diff_assoc($origcntArray, $newcntArray);
         if (count($diff1) > 0 || count($diff2) > 0) {
-            $this->updateChanges('contacts', arrayWithKeysToHtml($origcntArray), arrayWithKeysToHtml($newcntArray));
+            $this->updateChanges('Contacts', arrayWithKeysToHtml($origcntArray), arrayWithKeysToHtml($newcntArray));
         }
         return true;
     }
@@ -686,6 +684,71 @@ class Providerupdater
 
     }
 
+    private function updateUiiHints(models\Provider $ent, array $ch)
+    {
+        if (!isset($ch['uii']['idpsso']) || !is_array($ch['uii']['idpsso'])) {
+            return false;
+        }
+        $discohintsParent = null;
+        /**
+         * @var $extendsCollection models\ExtendMetadata[]
+         */
+        $doFilter = array('elements'=>array('GeolocationHint','DomainHint','IPHint','DiscoHints'),'namespace'=>'mdui');
+        $extendsCollection = $ent->getExtendMetadata()->filter(function(models\ExtendMetadata $entry) use ($doFilter){
+            return in_array($entry->getElement(),$doFilter['elements']) && $entry->getNamespace() === $doFilter['namespace'];
+        });
+        $extendsInArray = array();
+        foreach ($extendsCollection as $e) {
+            $extendsInArray['' . $e->getType() . '']['' . $e->getNamespace() . '']['' . $e->getElement() . ''][] = $e;
+            if ($e->getElement() === 'DiscoHints' && $e->getType() === 'idp') {
+                $discohintsParent = $e;
+            }
+        }
+
+        $idpDiscoHints = array('geo' => 'GeolocationHint', 'domainhint' => 'DomainHint', 'iphint' => 'IPHint');
+        if (empty($discohintsParent)) {
+            $discohintsParent = new models\ExtendMetadata;
+            $discohintsParent->setType('idp');
+            $discohintsParent->setNamespace('mdui');
+            $discohintsParent->setElement('DiscoHints');
+            $ent->setExtendMetadata($discohintsParent);
+        }
+        foreach ($idpDiscoHints as $key => $value) {
+            if (isset($ch['uii']['idpsso']['' . $key . '']) && is_array($ch['uii']['idpsso']['' . $key . ''])) {
+                $ch['uii']['idpsso']['' . $key . ''] = array_unique($ch['uii']['idpsso']['' . $key . '']);
+                if (isset($extendsInArray['idp']['mdui']['' . $value . ''])) {
+                    foreach ($extendsInArray['idp']['mdui']['' . $value . ''] as $k => $v) {
+                        $vId = $v->getId();
+                        if (array_key_exists($vId, $ch['uii']['idpsso']['' . $key . '']) && !empty($ch['uii']['idpsso']['' . $key . '']['' . $vId . ''])) {
+                            $v->setValue($ch['uii']['idpsso']['' . $key . '']['' . $vId . '']);
+                            $this->em->persist($v);
+                        } else {
+                            $ent->getExtendMetadata()->removeElement($v);
+                            $this->em->remove($v);
+                        }
+                        unset($ch['uii']['idpsso']['' . $key . '']['' . $vId . '']);
+                    }
+                }
+                foreach ($ch['uii']['idpsso']['' . $key . ''] as $v) {
+                    if (!empty($v)) {
+                        $newExtend = new models\ExtendMetadata;
+                        $newExtend->setParent($discohintsParent);
+                        $newExtend->setType('idp');
+                        $newExtend->setNamespace('mdui');
+                        $newExtend->setElement('' . $value . '');
+                        $newExtend->setValue($v);
+                        $newExtend->setAttributes(array());
+                        $ent->setExtendMetadata($newExtend);
+                        $this->em->persist($newExtend);
+                    }
+                }
+            }
+        }
+
+        return true;
+
+    }
+
     /**
      * @param \models\Provider $ent
      * @param array $ch
@@ -708,8 +771,6 @@ class Providerupdater
             $extendsInArray['' . $e->getType() . '']['' . $e->getNamespace() . '']['' . $e->getElement() . ''][] = $e;
             if ($e->getElement() === 'UIInfo') {
                 $uiinfoParent['' . $e->getType() . ''] = $e;
-            } elseif ($e->getElement() === 'DiscoHints' && $e->getType() === 'idp') {
-                $discohintsParent = $e;
             }
         }
 
@@ -735,48 +796,6 @@ class Providerupdater
                     $this->em->persist($dig);
                 }
 
-            }
-        }
-
-        if ($entityTypes['idp'] === true) {
-            $idpDiscoHints = array('geo' => 'GeolocationHint', 'domainhint' => 'DomainHint', 'iphint' => 'IPHint');
-            if (empty($discohintsParent)) {
-                $discohintsParent = new models\ExtendMetadata;
-                $discohintsParent->setType('idp');
-                $discohintsParent->setNamespace('mdui');
-                $discohintsParent->setElement('DiscoHints');
-                $ent->setExtendMetadata($discohintsParent);
-            }
-            foreach ($idpDiscoHints as $key => $value) {
-                if (isset($ch['uii']['idpsso']['' . $key . '']) && is_array($ch['uii']['idpsso']['' . $key . ''])) {
-                    $ch['uii']['idpsso']['' . $key . ''] = array_unique($ch['uii']['idpsso']['' . $key . '']);
-                    if (isset($extendsInArray['idp']['mdui']['' . $value . ''])) {
-                        foreach ($extendsInArray['idp']['mdui']['' . $value . ''] as $k => $v) {
-                            $vId = $v->getId();
-                            if (array_key_exists($vId, $ch['uii']['idpsso']['' . $key . '']) && !empty($ch['uii']['idpsso']['' . $key . '']['' . $vId . ''])) {
-                                $v->setValue($ch['uii']['idpsso']['' . $key . '']['' . $vId . '']);
-                                $this->em->persist($v);
-                            } else {
-                                $ent->getExtendMetadata()->removeElement($v);
-                                $this->em->remove($v);
-                            }
-                            unset($ch['uii']['idpsso']['' . $key . '']['' . $vId . '']);
-                        }
-                    }
-                    foreach ($ch['uii']['idpsso']['' . $key . ''] as $v) {
-                        if (!empty($v)) {
-                            $newExtend = new models\ExtendMetadata;
-                            $newExtend->setParent($discohintsParent);
-                            $newExtend->setType('idp');
-                            $newExtend->setNamespace('mdui');
-                            $newExtend->setElement('' . $value . '');
-                            $newExtend->setValue($v);
-                            $newExtend->setAttributes(array());
-                            $ent->setExtendMetadata($newExtend);
-                            $this->em->persist($newExtend);
-                        }
-                    }
-                }
             }
         }
         foreach ($extypes as $v) {
@@ -1070,6 +1089,7 @@ class Providerupdater
 
         if ($entityTypes['idp'] === true) {
 
+            $this->updateUiiHints($ent, $ch);
 
             /**
              * set scopes
