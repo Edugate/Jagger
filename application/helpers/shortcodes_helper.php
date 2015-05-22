@@ -17,8 +17,11 @@ function notificationCodes()
         'joinfedreq' => array('desc' => 'join federation request', 'desclang' => 'joinfedreq', 'group' => 'special'),
         'gfedmemberschanged' => array('desc' => 'members collection changed for any federation', 'desclang' => 'gfedmemberschanged', 'group' => 'global'),
         'fedmemberschanged' => array('desc' => 'members collection changed for seleceted federation', 'desclang' => 'fedmemberschanged', 'group' => 'special'),
+        'fedmembersmodified' => array('desc' => 'details of any member of specified Federation has been modified', 'desclang' => 'fedmembersmodified', 'group' => 'special'),
         'grequeststoproviders' => array('desc' => 'All request sent to any provider', 'desclang' => 'grequeststoproviders', 'group' => 'global'),
-        'requeststoproviders' => array('desc' => 'Request sent to any defined provider', 'desclang' => 'requeststoproviders', 'group' => 'special')
+        'requeststoproviders' => array('desc' => 'Request sent to any defined provider', 'desclang' => 'requeststoproviders', 'group' => 'special'),
+        'providermodified' => array('desc' => 'notify about modification of selected provider', 'desclang' => 'providermodified', 'group' => 'special'),
+
     );
 
     return $result;

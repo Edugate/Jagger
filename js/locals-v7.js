@@ -3297,7 +3297,7 @@ $(document).ready(function () {
             var selprovider = $('#sprovider');
             selfed.find('option').remove();
             selprovider.find('option').remove();
-            if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged") {
+            if (valueSelected === "joinfedreq" || valueSelected === "fedmemberschanged" || valueSelected === "fedmembersmodified") {
                 $.ajax({
                     type: "GET",
                     url: baseurl + 'ajax/getfeds',
@@ -3314,7 +3314,7 @@ $(document).ready(function () {
 
                 });
             }
-            else if (valueSelected === "requeststoproviders") {
+            else if (valueSelected === "requeststoproviders" || valueSelected === "providermodified") {
                 $.ajax({
                     type: "GET",
                     url: baseurl + 'ajax/getproviders',

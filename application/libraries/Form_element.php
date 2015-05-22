@@ -1504,7 +1504,7 @@ class Form_element
                     $row .= $this->_generateLabelInput($v['bind'], 'f[srv][SPSingleLogoutService][' . $k . '][url]', $v['url'], '', FALSE, NULL);
                     $row .= '</div>';
                     $spslo[] = $row;
-                    unset($spslotmpl[array_search($v['bind'], $slotmpl)]);
+                    unset($spslotmpl[array_search($v['bind'], $spslotmpl)]);
                 }
             }
             $ni = 0;

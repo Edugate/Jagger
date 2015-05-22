@@ -228,39 +228,5 @@ class ServiceLocation {
         $this->setDefault($s['default']);
     }
 
-    public function getServiceLocationToXML(\DOMElement $parent, $options = null)
-    {
-        $stype = $this->type;
-        if (!empty($options))
-        {
-            if (($options === 'IDPSSODescriptor') && ($stype === 'SingleSignOnService'))
-            {
-                $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:SingleSignOnService');
-                $e->setAttribute("Binding", $this->bindingName);
-                $e->setAttribute("Location", $this->url);
-            }
-            elseif (($options === 'SPSSODescriptor') && ($stype === 'AssertionConsumerService'))
-            {
-                $e = $parent->ownerDocument->createElementNS('urn:oasis:names:tc:SAML:2.0:metadata', 'md:AssertionConsumerService');
-                $e->setAttribute("Binding", $this->bindingName);
-                $e->setAttribute("Location", $this->url);
-                $e->setAttribute("index", $this->ordered_no);
-                $is_defaultsrc = $this->getDefault();
-                if (!empty($is_defaultsrc))
-                {
-                    $e->setAttribute("isDefault", 'true');
-                }
-            }
-            else
-            {
-                $e = NULL;
-            }
-        }
-        else
-        {
-            $e = NULL;
-        }
-        return $e;
-    }
 
 }

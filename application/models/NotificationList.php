@@ -161,9 +161,9 @@ class NotificationList
     {
         if ($this->notificationtype == 'mail') {
             if (empty($this->email)) {
-                return $this->getSubscriber()->getEmail();
+                return strtolower($this->getSubscriber()->getEmail());
             }
-            return $this->email;
+            return strtolower($this->email);
         } else {
             return $this->mobile;
         }

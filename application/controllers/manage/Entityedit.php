@@ -680,6 +680,28 @@ class Entityedit extends MY_Controller
         }
         return true;
     }
+    private function notifyOnChange(\models\Provider $ent)
+    {
+
+        $tracker = null;
+        $unitInsertCollection = $this->em->getUnitOfWork()->getScheduledEntityInsertions();
+        foreach($unitInsertCollection as $objToInsert)
+        {
+            if($objToInsert instanceof models\Tracker)
+            {
+
+                if($objToInsert->getResourceType() === 'ent' && $objToInsert->getSubType() === 'modification')
+                {
+                    $tracker = $objToInsert;
+                    break;
+                }
+            }
+        }
+        if(!empty($tracker))
+        {
+            $this->email_sender->providerIsModified($ent,$tracker);
+        }
+    }
 
     public function show($id)
     {
@@ -739,11 +761,21 @@ class Entityedit extends MY_Controller
                     $updateresult = $this->providerupdater->updateProvider($ent, $c);
                     if ($updateresult) {
                         $this->em->persist($ent);
-                        $this->em->flush();
-                        $this->discardDraft($id);
-                        $this->j_ncache->cleanMcirclceMeta($id);
-                        $this->j_ncache->cleanEntityStatus($id);
-                        $showsuccess = true;
+
+                        $this->notifyOnChange($ent);
+
+                        try {
+                            $this->em->flush();
+                            $this->discardDraft($id);
+                            $this->j_ncache->cleanMcirclceMeta($id);
+                            $this->j_ncache->cleanEntityStatus($id);
+                            $showsuccess = true;
+                        }
+                        catch(Exception $exception)
+                        {
+                            log_message('error',__METHOD__.' '.$exception);
+                            show_error('Internal server error',500);
+                        }
                     }
                 }
             }
@@ -1101,7 +1133,7 @@ class Entityedit extends MY_Controller
 
                             $messageTemplate = $this->email_sender->generateLocalizedMail($mailTemplateGroup, $messageTemplateArgs);
                             if (empty($messageTemplate)) {
-                                $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams, NULL);
+                                $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams);
                             }
                             if (!empty($messageTemplate)) {
                                 $this->email_sender->addToMailQueue(array('greqisterreq', $notificationGroup), null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);

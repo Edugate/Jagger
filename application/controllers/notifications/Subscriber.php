@@ -241,7 +241,7 @@ class Subscriber extends MY_Controller
             return;
         }
         ///////////////////////////////////////////////////////
-        if (strcmp($ntype, 'joinfedreq') == 0 || strcmp($ntype, 'fedmemberschanged') == 0) {
+        if (strcmp($ntype, 'joinfedreq') == 0 || strcmp($ntype, 'fedmemberschanged') == 0 || strcmp($ntype, 'fedmembersmodified') == 0) {
             /**
              * @var $federation models\Federation
              */
@@ -267,7 +267,7 @@ class Subscriber extends MY_Controller
             $this->em->persist($notification);
             $this->em->flush();
             echo "OK";
-        } elseif (strcmp($ntype, 'requeststoproviders') == 0) {
+        } elseif (strcmp($ntype, 'requeststoproviders') == 0 || strcmp($ntype, 'providermodified') == 0) {
             /**
              * @var $provider models\Provider
              */

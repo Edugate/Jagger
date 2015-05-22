@@ -169,7 +169,14 @@ class Contact {
     {
         return $this->type;
     }
-
+    public function setAllInfoNoProvider($fname,$sname,$type,$mail)
+    {
+        $this->email = $mail;
+        $this->givenname = $fname;
+        $this->type = $type;
+        $this->surname = $sname;
+        return $this;
+    }
     public function setAllInfo($fname,$sname,$type,$mail,Provider $provider)
     {
         $this->email = $mail;
