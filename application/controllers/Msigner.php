@@ -29,7 +29,7 @@ class Msigner extends MY_Controller {
    {
        if(!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
        {
-          set_status_header(403)
+          set_status_header(403);
           echo 'Access denied';
            return;
        }
