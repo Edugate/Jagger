@@ -41,14 +41,10 @@ class Msigner extends MY_Controller {
           log_message('debug',__METHOD__.' signdigest empty or not found in config file, using system default: SHA-1');
           $digestmethod = 'SHA-1';
        }
-       else
-       {
-          log_message('debug',__METHOD__.' signdigest default set to: '.$digestmethod);
-       }
 
        $type =  $this->uri->segment(3);
        $id = $this->uri->segment(4);
-       if(empty($type) || empty($id))
+       if(empty($type) || empty($id) || !ctype_digit($id))
        {
            set_status_header(404);
            echo 'empty type or id: '.lang('error404');
@@ -86,7 +82,7 @@ class Msigner extends MY_Controller {
 
 
        $options = array();
-       if($type === 'federation' && is_numeric($id))
+       if($type === 'federation')
        {
            $fed = $this->em->getRepository("models\Federation")->findOneBy(array('id'=>''.$id.''));
            if(empty($fed))
@@ -130,7 +126,7 @@ class Msigner extends MY_Controller {
            return;
 
        }
-       elseif($type === 'provider' && is_numeric($id))
+       elseif($type === 'provider')
        {
           $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id'=>''.$id.''));
           if(empty($provider))
@@ -140,14 +136,8 @@ class Msigner extends MY_Controller {
                return;
           }
           $is_local = $provider->getLocal();
-          if($is_local !== TRUE)
-          {
-               set_status_header(403);
-               echo lang('error403');
-               return;
-          }
           $has_write_access = $this->zacl->check_acl($provider->getId(), 'write','entity');
-          if(!$has_write_access)
+          if($is_local !== TRUE || !$has_write_access)
           {
               set_status_header(403);
               echo lang('error403');

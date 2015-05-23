@@ -363,7 +363,7 @@ class Users extends MY_Controller
         $this->load->library('zacl');
         $encodedUsername = trim($encodedUsername);
         $username = base64url_decode($encodedUsername);
-        $limit_authn = 15;
+        $limitAuthnRows = 15;
         /**
          * @var $user models\User
          */
@@ -408,7 +408,7 @@ class Users extends MY_Controller
          * @var $authn_logs models\Tracker[]
          * @var $action_logs models\Tracker[]
          */
-        $authn_logs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limit_authn);
+        $authn_logs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
         $action_logs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
 
         $data['caption'] = html_escape($user->getUsername());
@@ -470,21 +470,21 @@ class Users extends MY_Controller
 
         if (!empty($board) && is_array($board)) {
             if (array_key_exists('idp', $board) && is_array($board['idp'])) {
-                $bookmarks .= '<p><ul class="no-bullet"><b>' . lang('identityproviders') . '</b>';
+                $bookmarks .= '<p><b>'.lang('identityproviders').'</b><ul class="no-bullet">';
                 foreach ($board['idp'] as $key => $value) {
-                    $bookmarks .= '<li><a href="' . base_url() . 'providers/detail/show/' . $key . '">' . $value['name'] . '</a><br /> <small>' . $value['entity'] . '</small></li>';
+                    $bookmarks .= '<li><a href="'.base_url('providers/detail/show/'.$key.'').'">'. $value['name'].'</a><br /><small>' . $value['entity'] . '</small></li>';
                 }
                 $bookmarks .= '</ul></p>';
             }
             if (array_key_exists('sp', $board) && is_array($board['sp'])) {
-                $bookmarks .= '<p><ul class="no-bullet"><b>' . lang('serviceproviders') . '</b>';
+                $bookmarks .= '<p><b>'.lang('serviceproviders') .'</b><ul class="no-bullet">';
                 foreach ($board['sp'] as $key => $value) {
                     $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
                 }
                 $bookmarks .= '</ul></p>';
             }
             if (array_key_exists('fed', $board) && is_array($board['fed'])) {
-                $bookmarks .= '<p><ul class="no-bullet"><b>' . lang('federations') . '</b>';
+                $bookmarks .= '<p><b>' . lang('federations') . '</b><ul class="no-bullet">';
                 foreach ($board['fed'] as $key => $value) {
                     $bookmarks .= '<li><a href="' . base_url() . 'federations/manage/show/' . $value['url'] . '">' . $value['name'] . '</a></li>';
                 }
@@ -492,9 +492,10 @@ class Users extends MY_Controller
             }
         }
         $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
-        $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limit_authn, 'class' => 'highlight', 'colspan' => 2));
+        $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limitAuthnRows, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authn_logs as $ath) {
-            $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U') + j_auth::$timeOffset);
+
+            $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
             $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
             $tab3[] = array('key' => $date, 'val' => $detail);
         }
@@ -503,7 +504,7 @@ class Users extends MY_Controller
         foreach ($action_logs as $ath) {
             $subtype = $ath->getSubType();
             if ($subtype == 'modification') {
-                $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U') + j_auth::$timeOffset);
+                $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
                 $d = unserialize($ath->getDetail());
                 $dstr = '<br />';
                 if (is_array($d)) {
@@ -525,7 +526,7 @@ class Users extends MY_Controller
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $dstr;
                 $tab4[] = array('key' => $date, 'val' => $detail);
             } elseif ($subtype == 'create' || $subtype == 'remove') {
-                $date = date('Y-m-d H:i:s', $ath->getCreated()->format('U') + j_auth::$timeOffset);
+                $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
                 $tab4[] = array('key' => $date, 'val' => $detail);
             }
@@ -626,19 +627,19 @@ class Users extends MY_Controller
         $showlink = base_url('manage/users/show');
 
         foreach ($users as $u) {
-            $encoded_username = base64url_encode($u->getUsername());
+            $encodedUsername = base64url_encode($u->getUsername());
             $roles = $u->getRoleNames();
             if (in_array('Administrator', $roles)) {
                 $action = '';
             } else {
-                $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encoded_username . '"><i class="fi-trash"></i><a>';
+                $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encodedUsername . '"><i class="fi-trash"></i><a>';
             }
             $last = $u->getLastlogin();
             $lastlogin = '';
             if (!empty($last)) {
-                $lastlogin = date('Y-m-d H:i:s', $last->format('U') + j_auth::$timeOffset);
+                $lastlogin = $last->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
             }
-            $usersList[] = array('user' => anchor($showlink . '/' . $encoded_username, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(), $action);
+            $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(), $action);
         }
         $data = array(
             'breadcrumbs' => array(
@@ -707,13 +708,13 @@ class Users extends MY_Controller
                     echo 'You cannot remover user who has Admninitrator role set';
                     return;
                 }
-                $selected_username = strtolower($user->getUsername());
-                $current_username = strtolower($this->session->userdata('username'));
-                if (strcmp($selected_username, $current_username) != 0) {
+                $selectedUsername = strtolower($user->getUsername());
+                $currentUsername = strtolower($this->session->userdata('username'));
+                if (strcmp($selectedUsername, $currentUsername) != 0) {
                     $this->user_manage->remove($user);
                     echo 'user has been removed';
                     $this->load->library('tracker');
-                    $this->tracker->save_track('user', 'remove', $selected_username, 'user removed from the system', true);
+                    $this->tracker->save_track('user', 'remove', $selectedUsername, 'user removed from the system', true);
                 } else {
                     set_status_header(403);
                     echo lang('error_cannotrmyouself');
@@ -739,18 +740,18 @@ class Users extends MY_Controller
         if (empty($user)) {
             show_error(lang('error404'), 404);
         }
-        $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
-        if (!$manage_access) {
+        $hasManageAccess = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
+        if (!$hasManageAccess) {
             $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
             return $this->load->view('page', $data);
         }
         if ($this->accessmodifySubmitValidate() === TRUE) {
-            $i = $this->input->post('authz');
+            $this->input->post('authz');
         } else {
-            $form_attributes = array('id' => 'formver2', 'class' => 'span-16');
+            $formAttributes = array('id' => 'formver2', 'class' => 'span-16');
             $action = current_url();
-            $form = form_open($action, $form_attributes) . form_fieldset('Access manage for user ' . $username);
+            $form = form_open($action, $formAttributes) . form_fieldset('Access manage for user ' . $username);
             $form .= '<ol><li>' . form_label('Authorization', 'authz') . '<ol>';
             $form .= '<li>Local authentication' . form_checkbox('authz[local]', '1', $user->getLocal()) . '</li>';
             $form .= '<li>Federated access' . form_checkbox('authz[federated]', '1', $user->getFederated()) . '</li>';
@@ -776,9 +777,9 @@ class Users extends MY_Controller
             show_error('User not found', 404);
         }
         $this->load->library('zacl');
-        $manage_access = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
-        $write_access = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
-        if (!$write_access && !$manage_access) {
+        $hasManageAccess = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
+        $hasWriteAccess = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
+        if (!$hasWriteAccess && !$hasManageAccess) {
             $data['error'] = 'You have no access';
             $data['content_view'] = 'nopermission';
             return $this->load->view('page', $data);
@@ -800,8 +801,8 @@ class Users extends MY_Controller
         $data = array(
             'breadcrumbs' => $breadcrumbs,
             'encoded_username' => $encodedUsername,
-            'manage_access' => $manage_access,
-            'write_access' => $write_access,
+            'manage_access' => $hasManageAccess,
+            'write_access' => $hasWriteAccess,
         );
         if (!$this->modifySubmitValidate()) {
             $data['titlepage'] = lang('rr_changepass') . ': ' . html_escape($user->getUsername());
@@ -809,7 +810,7 @@ class Users extends MY_Controller
             $this->load->view('page', $data);
         } else {
             $password = $this->input->post('password');
-            if ($manage_access) {
+            if ($hasManageAccess) {
                 $user->setPassword($password);
                 $user->setLocalEnabled();
                 $this->em->persist($user);
