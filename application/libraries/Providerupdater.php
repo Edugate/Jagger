@@ -704,7 +704,6 @@ class Providerupdater
                 $discohintsParent = $e;
             }
         }
-
         $hintElements = array('geo' => 'GeolocationHint', 'domainhint' => 'DomainHint', 'iphint' => 'IPHint');
         if (empty($discohintsParent)) {
             $discohintsParent = new models\ExtendMetadata;
@@ -737,12 +736,7 @@ class Providerupdater
                 }
             }
         }
-
-        $extendsCollection = $ent->getExtendMetadata()->filter(function (models\ExtendMetadata $entry) use ($doFilter) {
-            return in_array($entry->getElement(), $doFilter['elements']) && $entry->getNamespace() === $doFilter['namespace'];
-        });
         return true;
-
     }
 
     /**
@@ -752,7 +746,6 @@ class Providerupdater
      */
     private function updateProviderExtend(models\Provider $ent, array $ch)
     {
-        $m = array();
         $entityTypes = $ent->getTypesToArray();
         $filteredTypes = array_filter($entityTypes);
         $extypes = array_keys($filteredTypes);
@@ -853,13 +846,6 @@ class Providerupdater
                             $nprvurl->setParent($uiinfoParent['' . $v . '']);
                             $this->em->persist($nprvurl);
                         }
-                    }
-                    $diff1 = array_diff_assoc($origs, $newex);
-                    $diff2 = array_diff_assoc($newex, $origs);
-                    if (count($diff1) > 0 || count($diff2) > 0) {
-                        $mk = 'PrivacyStatementURLs' . strtoupper($v);
-                        $m['' . $mk . ''] = array('before' => arrayWithKeysToHtml($origs), 'after' => arrayWithKeysToHtml($newex));
-
                     }
 
                 }
@@ -1045,7 +1031,6 @@ class Providerupdater
                 $this->em->persist($v);
             }
         }
-        $this->logtracks = array_merge($this->logtracks, $m);
         return $ent;
     }
 
@@ -1092,8 +1077,6 @@ class Providerupdater
             $this->updateReqAttrs($ent, $ch);
 
         }
-
-
         if ($entityTypes['idp'] === true) {
 
             $this->updateUiiHints($ent, $ch);
@@ -1210,7 +1193,7 @@ class Providerupdater
             $this->updateRegistrationAuthor($ent, $ch);
             $regAuthorityAfter = $ent->getRegistrationAuthority();
             if (strcasecmp($regAuthorityBefore, $regAuthorityAfter) != 0) {
-                $changeList['RegistrAuthority'] = array('before' => $regAuthorityBefore, 'after' => $regAuthorityAfter);
+                $changeList['RegistrationAuthority'] = array('before' => $regAuthorityBefore, 'after' => $regAuthorityAfter);
             }
         }
 
@@ -1250,7 +1233,7 @@ class Providerupdater
 
         if (array_key_exists('privacyurl', $ch)) {
             if ($ent->getPrivacyURL() !== $ch['privacyurl']) {
-                $changeList['PrivacyURL general'] = array('before' => $ent->getPrivacyURL(), 'after' => $ch['privacyurl']);
+                $changeList['PrivacyStatementURL general'] = array('before' => $ent->getPrivacyURL(), 'after' => $ch['privacyurl']);
             }
             $ent->setPrivacyUrl($ch['privacyurl']);
         }
