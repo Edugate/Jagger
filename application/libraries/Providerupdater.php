@@ -155,10 +155,8 @@ class Providerupdater
 
     private function updateServices(\models\Provider $ent, array $ch)
     {
-
-        if (!array_key_exists('srv', $ch) && !is_array($ch['srv'])) {
-            log_message('error', __METHOD__);
-            return false;
+        if (!array_key_exists('srv', $ch) || !is_array($ch['srv'])) {
+            throw new Exception('The form has not been passed properly');
         }
 
         $before = array();
@@ -319,9 +317,7 @@ class Providerupdater
                     if (!empty($v1['bind']) && !empty($v1['url'])) {
                         if (array_key_exists($v1['bind'], $validationBinds['' . $srvType . '']) && $validationBinds['' . $srvType . '']['' . $v1['bind'] . ''] !== true) {
                             $newservice = new models\ServiceLocation();
-                            $newservice->setBindingName($v1['bind']);
-                            $newservice->setUrl($v1['url']);
-                            $newservice->setType($srvType);
+                            $newservice->setInFull($srvType,$v1['bind'],$v1['url'],null);
                             $newservice->setProvider($ent);
                             $ent->setServiceLocation($newservice);
                             $this->em->persist($newservice);
@@ -413,7 +409,7 @@ class Providerupdater
 
     private function updateCerts(\models\Provider $ent, array $ch)
     {
-        if (!array_key_exists('crt', $ch) || empty($ch['crt']) || !is_array($ch['crt'])) {
+        if (!array_key_exists('crt', $ch) || !is_array($ch['crt'])) {
             return false;
         }
         $changes = array('before' => array(), 'after' => array());
@@ -935,10 +931,6 @@ class Providerupdater
                             return ($entry->getType() === 'idp') && ($entry->getNamespace() === 'mdui') && in_array($entry->getElement(), $doFilter);
                         });
                     foreach ($collection as $c) {
-                        $cid = $c->getId();
-                        if ($cid === 1283948) {
-                            log_message('debug', 'DUPA still is here: ' . $cid);
-                        }
                         $attrs = $c->getAttributes();
                         $lang = $attrs['xml:lang'];
                         if (!isset($ch['uii']['idpsso']['' . $elkey . '']['' . $lang . ''])) {

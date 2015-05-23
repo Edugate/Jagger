@@ -219,8 +219,6 @@ class Entitystate extends MY_Controller
             $validfromtime = $this->input->post('validfromtime');
             $validuntildate = $this->input->post('validuntildate');
             $validuntiltime = $this->input->post('validuntiltime');
-
-            $changed = false;
             $differ = array();
             if (isset($locked)) {
                 if ($data['current_locked'] != $locked) {
@@ -232,7 +230,6 @@ class Entitystate extends MY_Controller
                         $this->entity->Unlock();
                         $differ['Lock'] = array('before' => 'locked', 'after' => 'unlocked');
                     }
-                    $changed = true;
                 }
             }
             if (isset($active)) {
@@ -244,7 +241,6 @@ class Entitystate extends MY_Controller
                         $this->entity->Disactivate();
                         $differ['Active'] = array('before' => 'enabled', 'after' => 'disabled');
                     }
-                    $changed = true;
                 }
             }
             if (isset($publicvisible)) {
@@ -256,7 +252,6 @@ class Entitystate extends MY_Controller
                         $this->entity->setHidePublic();
                         $differ['PublicVisible'] = array('before' => 'enabled', 'after' => 'disabled');
                     }
-                    $changed = true;
                 }
             }
             if (isset($extint)) {
@@ -269,7 +264,6 @@ class Entitystate extends MY_Controller
                         $this->entity->setAsExternal();
                         $differ['Local/External'] = array('before' => 'local', 'after' => 'external');
                     }
-                    $changed = true;
                 }
             }
             if (!empty($validuntildate) && !empty($validuntiltime)) {
@@ -324,8 +318,6 @@ class Entitystate extends MY_Controller
         $data['current_validuntiltime'] = $validuntiltime;
         $data['current_validfromdate'] = $validfromdate;
         $data['current_validfromtime'] = $validfromtime;
-
-
         $data['content_view'] = 'manage/entitystate_form_view';
         $this->load->view('page', $data);
     }
