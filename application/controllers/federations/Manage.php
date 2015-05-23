@@ -604,7 +604,7 @@ class Manage extends MY_Controller
                         '================================================================' . PHP_EOL;
                 }
 
-                $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), $sync = false);
+                $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), false);
                 $this->em->flush();
 
 

@@ -182,14 +182,12 @@ class Providerupdater
         /**
          * START update service locations
          */
-        $servicesByType = array();
         $srvsInput = &$ch['srv'];
         foreach ($services as $srv) {
             if (!isset($ch['srv']['' . $srv->getType() . '']['' . $srv->getId() . ''])) {
                 $ent->removeServiceLocation($srv);
                 continue;
             }
-            $servicesByType['' . $srv->getType() . ''][$srv->getId()] = $srv;
         }
 
         $validationBinds = array(
@@ -802,12 +800,10 @@ class Providerupdater
 
             if (isset($ch['prvurl']) && is_array($ch['prvurl'])) {
                 $origex = array();
-                $origs = array();
                 if (isset($extendsInArray['' . $v . '']['mdui']['PrivacyStatementURL'])) {
                     foreach ($extendsInArray['' . $v . '']['mdui']['PrivacyStatementURL'] as $value) {
                         $l = $value->getAttributes();
                         $origex['' . $l['xml:lang'] . ''] = $value;
-                        $origs['' . $l['xml:lang'] . ''] = $value->getElementValue();
                     }
                 }
 

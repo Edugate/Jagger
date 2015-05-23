@@ -86,7 +86,7 @@ class Fedcategory extends MY_Controller {
     public function edit($cat = null)
     {
         
-        if (!empty($cat) && !ctype_digit($cat))
+        if (!ctype_digit($cat))
         {
             show_error('not found', 404);
         }
@@ -106,8 +106,6 @@ class Fedcategory extends MY_Controller {
             $submittype = $this->input->post('formsubmit');
             if (strcasecmp($submittype, 'update') == 0)
             {
-
-
                 $postedFeds = $this->input->post('fed');
                 $buttonname = $this->input->post('buttonname');
                 $fullname = $this->input->post('fullname');
@@ -211,7 +209,6 @@ class Fedcategory extends MY_Controller {
         {
            $data['showaddbtn'] = TRUE;
         }
-        $editLinkLang = lang('rr_edit');
         $baseurl = base_url();
         foreach ($cats as $c)
         {

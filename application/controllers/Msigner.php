@@ -22,16 +22,16 @@ class Msigner extends MY_Controller {
    function __construct()
    {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
         $this->tmp_providers = new models\Providers;
    }
   
    function signer()
    {
-       if(!$this->input->is_ajax_request())
+       if(!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
        {
-          show_error('access denied',403);
-          return;
+          set_status_header(403)
+          echo 'Access denied';
+           return;
        }
 
 
@@ -55,14 +55,6 @@ class Msigner extends MY_Controller {
            return;
        }
 
-       $loggedin = $this->j_auth->logged_in();
-       if (!$loggedin)
-       {
-           set_status_header(403);
-           echo 'User session not valid';
-           return;
-
-       }
        $this->load->library('zacl');
 
 
@@ -132,7 +124,7 @@ class Msigner extends MY_Controller {
 
            foreach($options as $opt)
            {
-              $result = $client->doBackground('metadatasigner',''.json_encode($opt).'' );
+              $client->doBackground('metadatasigner',''.json_encode($opt).'' );
            }
            echo lang('taskssent'); 
            return;
@@ -173,7 +165,7 @@ class Msigner extends MY_Controller {
           foreach($options as $opt)
           {
               try{
-                $result = $client->doBackground('metadatasigner',''.json_encode($opt).'' );
+                $client->doBackground('metadatasigner',''.json_encode($opt).'' );
               }
               catch(GearmanException $e)
               {
