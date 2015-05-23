@@ -54,7 +54,7 @@ class Premoval extends MY_Controller
         }
         $this->title = lang('rr_rmprovider');
         $type = $provider->getType();
-        $providernameinlang =  html_escape($provider->getNameToWebInLang(MY_Controller::getLang()));
+        $providernameinlang = html_escape($provider->getNameToWebInLang(MY_Controller::getLang()));
         if ($type === 'IDP') {
 
             $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
@@ -66,8 +66,8 @@ class Premoval extends MY_Controller
             $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
         }
         $data = array(
-            'titlepage'=>'<a href="' . base_url() . 'providers/detail/show/' . $provider->getId() . '">' . $providernameinlang . '</a>',
-            'subtitlepage'=>$this->title,
+            'titlepage' => '<a href="' . base_url() . 'providers/detail/show/' . $provider->getId() . '">' . $providernameinlang . '</a>',
+            'subtitlepage' => $this->title,
             'showform' => false,
             'error_message' => null,
             'content_view' => 'manage/removeprovider_view',
@@ -85,7 +85,7 @@ class Premoval extends MY_Controller
         );
         $enabled = $provider->getActive();
         $rmaccess = $this->zacl->check_acl($provider->getId(), 'manage', 'entity', '');
-        if (!$rmaccess) {
+        if ($enabled || !$rmaccess) {
             $data['error_message'] = lang('rr_noperm');
             $data['showform'] = false;
             return $this->load->view('page', $data);
@@ -95,49 +95,43 @@ class Premoval extends MY_Controller
         if ($this->_submitValidate() === TRUE) {
             if ($enabled) {
                 show_error('You must change status as inactive first', 403);
-            } else {
-                $entitytoremove = $this->input->post('entity');
-                if (strcmp($entitytoremove, $provider->getEntityId()) != 0) {
-                    $data['error_message'] = 'entityID you filled didn\'t match provider\'s entiyID';
-                    $data['showform'] = true;
-                    $this->load->view('page', $data);
-                } else {
-
-                    $this->load->library('ProviderRemover');
-                    $federations = $provider->getFederations();
-                    $status = $this->providerremover->removeProvider($provider);
-                    if ($status) {
-                        $this->load->library('j_ncache');
-                        $this->j_ncache->cleanProvidersList('idp');
-                        $this->j_ncache->cleanProvidersList('sp');
-
-                        $this->load->library('tracker');
-                        $this->tracker->remove_ProviderTrack($data['entityid']);
-
-                        foreach ($federations as $f) {
-                            $body = 'Dear user' . PHP_EOL.'Provider ' . $provider->getEntityId() . ' has been removed from federation ' . $f->getName() . PHP_EOL;
-                            $this->email_sender->addToMailQueue(array('fedmemberschanged'), $f, 'Federation members changed', $body, array(), false);
-                        }
-                        $body = 'Dear user' . PHP_EOL.'Provider ' . $provider->getEntityId() . ' has been removed from federations:' . PHP_EOL;
-                        foreach ($federations as $f) {
-                            $body .= $f->getName() . PHP_EOL;
-                        }
-                        $this->email_sender->addToMailQueue(array('gfedmemberschanged'), null, 'Federations members changed', $body, array(), false);
-                        $body = 'Dear Administrator'.PHP_EOL.$this->j_auth->current_user() . "(IP:" . $this->input->ip_address() . ") removed provider:" . $data['entityid'] . "from the system" . PHP_EOL;
-                        $this->email_sender->addToMailQueue(array(), null,'Provider has been removed from system' , $body, array(), false);
-                        $this->em->flush();
-                        $data['success_message'] = lang('rr_provider') . ' ' . $data['entityid'] . ' ' . lang('rr_hasbeenremoved');
-                        $data['showform'] = false;
-                        return $this->load->view('page', $data);
-                    }
-                }
             }
-        } else {
-
-            if ($enabled) {
-                $data['error_message'] = 'Provider is still enabled. To be able remove it you must disable it first';
+            $entitytoremove = $this->input->post('entity');
+            if (strcmp($entitytoremove, $provider->getEntityId()) != 0) {
+                $data['error_message'] = 'entityID you filled didn\'t match provider\'s entityID';
+                $data['showform'] = true;
                 return $this->load->view('page', $data);
             }
+            $this->load->library('ProviderRemover');
+            $federations = $provider->getFederations();
+            $status = $this->providerremover->removeProvider($provider);
+            if ($status) {
+                $this->load->library('j_ncache');
+                $this->j_ncache->cleanProvidersList('idp');
+                $this->j_ncache->cleanProvidersList('sp');
+
+                $this->load->library('tracker');
+                $this->tracker->remove_ProviderTrack($data['entityid']);
+
+                foreach ($federations as $f) {
+                    $body = 'Dear user' . PHP_EOL . 'Provider ' . $provider->getEntityId() . ' has been removed from federation ' . $f->getName() . PHP_EOL;
+                    $this->email_sender->addToMailQueue(array('fedmemberschanged'), $f, 'Federation members changed', $body, array(), false);
+                }
+                $body = 'Dear user' . PHP_EOL . 'Provider ' . $provider->getEntityId() . ' has been removed from federations:' . PHP_EOL;
+                foreach ($federations as $f) {
+                    $body .= $f->getName() . PHP_EOL;
+                }
+                $this->email_sender->addToMailQueue(array('gfedmemberschanged'), null, 'Federations members changed', $body, array(), false);
+                $body = 'Dear Administrator' . PHP_EOL . $this->j_auth->current_user() . "(IP:" . $this->input->ip_address() . ") removed provider:" . $data['entityid'] . "from the system" . PHP_EOL;
+                $this->email_sender->addToMailQueue(array(), null, 'Provider has been removed from system', $body, array(), false);
+                $this->em->flush();
+                $data['success_message'] = lang('rr_provider') . ' ' . $data['entityid'] . ' ' . lang('rr_hasbeenremoved');
+                $data['showform'] = false;
+                return $this->load->view('page', $data);
+            }
+
+
+        } else {
             $data['showform'] = true;
             $this->load->view('page', $data);
         }

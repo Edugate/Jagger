@@ -7,7 +7,7 @@ if (!empty($error_message) || !empty($errors_v))
     echo '<div data-alert class="alert-box alert">';
     if (!empty($error_message))
     {
-        echo $error_message . '<br />';
+        echo $error_message;
     }
     if (!empty($errors_v))
     {
@@ -18,13 +18,12 @@ if (!empty($error_message) || !empty($errors_v))
 
 if (!empty($success_message))
 {
-    echo '<div class="success">' . $success_message . '</div>';
+    echo '<div data-alert class="alert-box success">' . $success_message . '</div>';
 }
 if ($showform)
 {
     $attributes = array('class' => 'span-16', 'id' => 'formver1');
     echo form_open(current_url(), $attributes);
-   // echo form_fieldset(lang('rr_provider_rmform'));
     echo '<div data-alert class="alert-box info text-center">'.$entityid.'</div>';
     echo '<div class="small-12 column">';
     echo '<div class="medium-3 column">';
@@ -36,9 +35,8 @@ if ($showform)
     echo '</div>';
     echo '</div>';
     $btns = array(
-        '<a href="'.$providerurl.'" class="button alert">Cancel</a>',
+        '<a href="'.$providerurl.'" class="button alert">'.lang('rr_cancel').'</a>',
         '<button name="submit" type="submit" id="submit" value="Remove" class="resetbutton deleteicon">' . lang('rr_btn_rmprovider') . '</button>');
-
     echo revealBtnsRow($btns);
 
     echo form_close();
