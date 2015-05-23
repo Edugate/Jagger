@@ -285,4 +285,12 @@ class ExtendMetadata {
         $this->setAttributes($attrs);
     }
 
+    public function createDiscoHintParent()
+    {
+        $this->setType('idp');
+        $this->setNamespace('mdui');
+        $this->setElement('DiscoHints');
+        return $this;
+    }
+
 }

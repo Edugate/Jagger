@@ -213,8 +213,6 @@ class Providertoxml
             }
             $xml->endElement(); //end extensions element
         }
-
-
         return $xml;
     }
 
@@ -475,7 +473,11 @@ class Providertoxml
         return $xml;
     }
 
-    /** @noinspection PhpUnusedPrivateMethodInspection */
+    /**
+     * @param XMLWriter $xml
+     * @param \models\Provider $ent
+     * @return XMLWriter
+     */
     private function createIDPSSODescriptor(\XMLWriter $xml, \models\Provider $ent)
     {
         $protocol = $ent->getProtocolSupport('idpsso');
@@ -549,7 +551,11 @@ class Providertoxml
         return $xml;
     }
 
-    /** @noinspection PhpUnusedPrivateMethodInspection */
+    /**
+     * @param XMLWriter $xml
+     * @param \models\Provider $ent
+     * @return XMLWriter
+     */
     private function createAttributeAuthorityDescriptor(\XMLWriter $xml, \models\Provider $ent)
     {
         $doFilter = array('IDPAttributeService');
@@ -600,7 +606,12 @@ class Providertoxml
         return $xml;
     }
 
-    /** @noinspection PhpUnusedPrivateMethodInspection */
+    /**
+     * @param XMLWriter $xml
+     * @param \models\Provider $ent
+     * @param $options
+     * @return XMLWriter
+     */
     private function createSPSSODescriptor(\XMLWriter $xml, \models\Provider $ent, $options)
     {
         $protocol = $ent->getProtocolSupport('spsso');
@@ -948,6 +959,9 @@ class Providertoxml
 
     public function entityStaticConvert(\XMLWriter $xml, \models\Provider $ent)
     {
+        /**
+         * @var $staticMeta \models\StaticMetadata
+         */
         $staticMeta = $ent->getStaticMetadata();
         if (!empty($staticMeta)) {
             $meta = $staticMeta->getMetadata();

@@ -699,7 +699,6 @@ class Providerupdater
         });
         $extendsInArray = array();
         foreach ($extendsCollection as $e) {
-
             $extendsInArray['' . $e->getElement() . ''][] = $e;
             if ($e->getElement() === 'DiscoHints') {
                 $discohintsParent = $e;
@@ -709,9 +708,7 @@ class Providerupdater
         $hintElements = array('geo' => 'GeolocationHint', 'domainhint' => 'DomainHint', 'iphint' => 'IPHint');
         if (empty($discohintsParent)) {
             $discohintsParent = new models\ExtendMetadata;
-            $discohintsParent->setType('idp');
-            $discohintsParent->setNamespace('mdui');
-            $discohintsParent->setElement('DiscoHints');
+            $discohintsParent->createDiscoHintParent();
             $ent->setExtendMetadata($discohintsParent);
         }
         foreach ($hintElements as $key => $value) {
@@ -733,12 +730,7 @@ class Providerupdater
                 foreach ($ch['uii']['idpsso']['' . $key . ''] as $v) {
                     if (!empty($v)) {
                         $newExtend = new models\ExtendMetadata;
-                        $newExtend->setParent($discohintsParent);
-                        $newExtend->setType('idp');
-                        $newExtend->setNamespace('mdui');
-                        $newExtend->setElement('' . $value . '');
-                        $newExtend->setValue($v);
-                        $newExtend->setAttributes(array());
+                        $newExtend->populateWithNoProvider($discohintsParent,'idp','mdui',$v,$value,array());
                         $ent->setExtendMetadata($newExtend);
                         $this->em->persist($newExtend);
                     }
