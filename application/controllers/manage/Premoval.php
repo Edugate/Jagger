@@ -25,10 +25,7 @@ class Premoval extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
-        $this->current_site = current_url();
-        if (!$loggedin) {
-            $this->session->set_flashdata('target', base_url());
+        if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
@@ -44,9 +41,10 @@ class Premoval extends MY_Controller
 
     public function providertoremove($id = null)
     {
-        if (empty($id) || !ctype_digit($id)) {
+        if (!ctype_digit($id)) {
             show_error('Not found', 404);
         }
+
         /**
          * @var $provider models\Provider
          */
@@ -54,14 +52,36 @@ class Premoval extends MY_Controller
         if (empty($provider)) {
             show_error('Provider not found', 404);
         }
+        $this->title = lang('rr_rmprovider');
+        $type = $provider->getType();
+        $providernameinlang =  html_escape($provider->getNameToWebInLang(MY_Controller::getLang()));
+        if ($type === 'IDP') {
+
+            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
+        } elseif ($type === 'SP') {
+
+            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
+        } else {
+
+            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
+        }
         $data = array(
+            'titlepage'=>'<a href="' . base_url() . 'providers/detail/show/' . $provider->getId() . '">' . $providernameinlang . '</a>',
+            'subtitlepage'=>$this->title,
             'showform' => false,
             'error_message' => null,
             'content_view' => 'manage/removeprovider_view',
             'entityid' => $provider->getEntityId(),
             'type' => $provider->getType(),
             'providerid' => $provider->getId(),
+            'providernameinlang' => $providernameinlang,
+            'providerurl' => base_url() . 'providers/detail/show/' . $provider->getId(),
             'link' => anchor(base_url() . 'providers/detail/show/' . $provider->getId() . '', '<i class="fi-arrow-right"></i>'),
+            'breadcrumbs' => array(
+                $plist,
+                array('url' => base_url('providers/detail/show/' . $provider->getId() . ''), 'name' => '' . html_escape($providernameinlang) . ''),
+                array('url' => '#', 'name' => lang('rr_rmprovider'), 'type' => 'current'),
+            ),
         );
         $enabled = $provider->getActive();
         $rmaccess = $this->zacl->check_acl($provider->getId(), 'manage', 'entity', '');
@@ -95,28 +115,20 @@ class Premoval extends MY_Controller
                         $this->tracker->remove_ProviderTrack($data['entityid']);
 
                         foreach ($federations as $f) {
-                            $subject = 'Federation members changed';
-                            $body = 'Dear user' . PHP_EOL;
-                            $body .= 'Provider ' . $provider->getEntityId() . ' has been removed from federation ' . $f->getName() . PHP_EOL;
-                            $this->email_sender->addToMailQueue(array('fedmemberschanged'), $f, $subject, $body, array(), false);
+                            $body = 'Dear user' . PHP_EOL.'Provider ' . $provider->getEntityId() . ' has been removed from federation ' . $f->getName() . PHP_EOL;
+                            $this->email_sender->addToMailQueue(array('fedmemberschanged'), $f, 'Federation members changed', $body, array(), false);
                         }
-                        $subject = 'Federations members changed';
-                        $body = 'Dear user' . PHP_EOL;
-                        $body .= 'Provider ' . $provider->getEntityId() . ' has been removed from federations:' . PHP_EOL;
+                        $body = 'Dear user' . PHP_EOL.'Provider ' . $provider->getEntityId() . ' has been removed from federations:' . PHP_EOL;
                         foreach ($federations as $f) {
                             $body .= $f->getName() . PHP_EOL;
                         }
-                        $this->email_sender->addToMailQueue(array('gfedmemberschanged'), null, $subject, $body, array(), false);
-                        $sbj = 'Provider has been removed from system';
-                        $body = 'Dear Administrator' . PHP_EOL;
-                        $body .= $this->j_auth->current_user() . "(IP:" . $this->input->ip_address() . ") removed provider:" . $data['entityid'] . "from the system" . PHP_EOL;
-
-                        $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), false);
+                        $this->email_sender->addToMailQueue(array('gfedmemberschanged'), null, 'Federations members changed', $body, array(), false);
+                        $body = 'Dear Administrator'.PHP_EOL.$this->j_auth->current_user() . "(IP:" . $this->input->ip_address() . ") removed provider:" . $data['entityid'] . "from the system" . PHP_EOL;
+                        $this->email_sender->addToMailQueue(array(), null,'Provider has been removed from system' , $body, array(), false);
                         $this->em->flush();
-
                         $data['success_message'] = lang('rr_provider') . ' ' . $data['entityid'] . ' ' . lang('rr_hasbeenremoved');
                         $data['showform'] = false;
-                        $this->load->view('page', $data);
+                        return $this->load->view('page', $data);
                     }
                 }
             }
@@ -124,6 +136,7 @@ class Premoval extends MY_Controller
 
             if ($enabled) {
                 $data['error_message'] = 'Provider is still enabled. To be able remove it you must disable it first';
+                return $this->load->view('page', $data);
             }
             $data['showform'] = true;
             $this->load->view('page', $data);

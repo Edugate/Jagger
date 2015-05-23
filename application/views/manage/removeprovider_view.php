@@ -1,10 +1,10 @@
 <?php
 
-echo '<div id="subtitle">' . lang('rr_removing') . ' ' . $entityid . ' ' . $link . '</div>';
-$errors_v = validation_errors('<span class="span-12">', '</span><br />');
+
+$errors_v = validation_errors('<div>', '</div>');
 if (!empty($error_message) || !empty($errors_v))
 {
-    echo '<div class="alert">';
+    echo '<div data-alert class="alert-box alert">';
     if (!empty($error_message))
     {
         echo $error_message . '<br />';
@@ -24,15 +24,22 @@ if ($showform)
 {
     $attributes = array('class' => 'span-16', 'id' => 'formver1');
     echo form_open(current_url(), $attributes);
-    echo form_fieldset(lang('rr_provider_rmform'));
-    echo '<ol>';
-    echo '<li>';
+   // echo form_fieldset(lang('rr_provider_rmform'));
+    echo '<div data-alert class="alert-box info text-center">'.$entityid.'</div>';
+    echo '<div class="small-12 column">';
+    echo '<div class="medium-3 column">';
     $in = array('name' => 'entity', 'id' => 'entity');
-    echo form_label(lang('rr_plsenterentityid'), 'entity');
+    echo '<label for="entity" class="medium-text-right inline">'.lang('rr_plsenterentityid').'</label>';
+    echo '</div>';
+    echo '<div class="medium-9 column">';
     echo form_input($in);
-    echo '</li>';
-    echo '</ol>';
-    echo form_fieldset_close();
-    echo '<div class="buttons"><button name="submit" type="submit" id="submit" value="Remove" class="resetbutton deleteicon">' . lang('rr_btn_rmprovider') . '</button></div>';
+    echo '</div>';
+    echo '</div>';
+    $btns = array(
+        '<a href="'.$providerurl.'" class="button alert">Cancel</a>',
+        '<button name="submit" type="submit" id="submit" value="Remove" class="resetbutton deleteicon">' . lang('rr_btn_rmprovider') . '</button>');
+
+    echo revealBtnsRow($btns);
+
     echo form_close();
 }
