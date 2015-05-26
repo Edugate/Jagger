@@ -40,7 +40,7 @@ class Users extends MY_Controller
     {
         log_message('debug', '(add user) validating form initialized');
         $usernameMinLength = $this->config->item('username_min_length') ?: 5;
-        $this->form_validation->set_rules('username', '' . lang('rr_username') . '', 'trim|required|min_length[' . $usernameMinLength . ']|max_length[128]|user_username_unique[username]|xss_clean');
+        $this->form_validation->set_rules('username', '' . lang('rr_username') . '', 'trim|required|min_length[' . $usernameMinLength . ']|max_length[128]|user_username_unique[username]');
         $this->form_validation->set_rules('email', 'E-mail', 'trim|required|min_length[5]|max_length[128]|valid_email');
         $this->form_validation->set_rules('access', 'Access type', 'trim|required');
         $accesstype = trim($this->input->post('access'));
@@ -257,40 +257,22 @@ class Users extends MY_Controller
 
     public function add()
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo 'Permission denied';
-            return;
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in() || !$this->j_auth->isAdministrator()) {
+            return $this->output->set_status_header(403)->set_output('Permission denied');
         }
         $this->load->library('zacl');
-        $access = $this->zacl->check_acl('user', 'create', 'default', '');
-        if (!$access) {
-            set_status_header(403);
-            echo 'Permission denied';
-            return;
-        }
         if ($this->addSubmitValidate()) {
             $username = $this->input->post('username');
             $email = $this->input->post('email');
             $fname = $this->input->post('fname');
             $sname = $this->input->post('sname');
             $access = $this->input->post('access');
-            if (!strcasecmp($access, 'fed') == 0) {
-                $password = $this->input->post('password');
-            } else {
+            $password = $this->input->post('password');
+            if (strcasecmp($access, 'fed') == 0) {
                 $password = str_generator();
             }
             $user = new models\User;
-            $user->setSalt();
-            $user->setUsername($username);
-            $user->setPassword($password);
-            $user->setEmail($email);
-            $user->setGivenname($fname);
-            $user->setSurname($sname);
-            $user->setAccessType($access);
-            $user->setAccepted();
-            $user->setEnabled();
-            $user->setValid();
+            $user->genNewValidUser($username,$password,$email,$fname,$sname,$access);
             /**
              * @var $member models\AclRole
              */
@@ -418,6 +400,7 @@ class Users extends MY_Controller
         $bookmarks = '';
 
         $board = $user->getBookmarks();
+        
         $bookmarks .= '<p><b>' . lang('identityproviders') . '</b><ul class="no-bullet">';
         foreach ($board['idp'] as $key => $value) {
             $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';

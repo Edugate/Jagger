@@ -6,16 +6,16 @@ use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 /**
  * User Class
- * 
+ *
  * @package     RR3
  * @subpackage  Models
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
@@ -27,7 +27,8 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * @Table(name="user")
  * @author janusz
  */
-class User {
+class User
+{
 
     protected $em;
 
@@ -109,7 +110,7 @@ class User {
     protected $enabled;
 
     /**
-     * 
+     *
      * @Column(type="boolean")
      */
     protected $validated;
@@ -120,7 +121,7 @@ class User {
      */
     protected $roles;
 
-    /** 
+    /**
      * @OneToMany(targetEntity="NotificationList",  mappedBy="subscriber", cascade={"persist", "remove"})
      */
     protected $subscriptions;
@@ -149,8 +150,7 @@ class User {
         $length = 10;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
         $string = '';
-        for ($p = 0; $p < $length; $p++)
-        {
+        for ($p = 0; $p < $length; $p++) {
             $string .= $characters[mt_rand(0, (strlen($characters)) - 1)];
         }
 
@@ -164,9 +164,9 @@ class User {
     /**
      * Encrypt the password before we store it
      *
-     * @access	public
-     * @param	string	$password
-     * @return	void
+     * @access    public
+     * @param    string $password
+     * @return    void
      */
     public function setPassword($password)
     {
@@ -187,9 +187,9 @@ class User {
      * Encrypt a Password
      *
      * @static
-     * @access	public
-     * @param	string	$password
-     * @return	void
+     * @access    public
+     * @param    string $password
+     * @return    void
      */
     public function encryptPassword($password)
     {
@@ -206,8 +206,7 @@ class User {
         $length = 10;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
         $string = '';
-        for ($p = 0; $p < $length; $p++)
-        {
+        for ($p = 0; $p < $length; $p++) {
             $string .= $characters[mt_rand(0, (strlen($characters)) - 1)];
         }
         $this->salt = $string;
@@ -219,8 +218,7 @@ class User {
     public function setRole(AclRole $role)
     {
         $already_there = $this->getRoles()->contains($role);
-        if (empty($already_there))
-        {
+        if (empty($already_there)) {
             $this->getRoles()->add($role);
         }
 
@@ -230,18 +228,17 @@ class User {
     public function unsetRole(AclRole $role)
     {
         $already_there = $this->getRoles()->contains($role);
-        if ($already_there)
-        {
-            $this->getRoles()->removeElement($role);    
+        if ($already_there) {
+            $this->getRoles()->removeElement($role);
         }
         return $this;
-        
+
     }
 
     /**
      * Authenticate this User by setting self::current to $this
      *
-     * @return	User
+     * @return    User
      */
     public function authenticate()
     {
@@ -298,6 +295,22 @@ class User {
         return $this;
     }
 
+    public function genNewValidUser($username, $password, $email, $fname, $sname, $access)
+    {
+        $this->setSalt();
+        $this->setUsername($username);
+        $this->setPassword($password);
+        $this->setEmail($email);
+        $this->setGivenname($fname);
+        $this->setSurname($sname);
+        $this->setAccessType($access);
+        $this->setAccepted();
+        $this->setEnabled();
+        $this->setValid();
+        return $this;
+
+    }
+
 
     /**
      * @param $type
@@ -307,17 +320,12 @@ class User {
     {
         $this->federated = false;
         $this->local = false;
-        if($type === 'both')
-        {
+        if ($type === 'both') {
             $this->federated = true;
             $this->local = true;
-        }
-        elseif($type === 'fed')
-        {
+        } elseif ($type === 'fed') {
             $this->federated = true;
-        }
-        elseif($type === 'local')
-        {
+        } elseif ($type === 'local') {
             $this->local = true;
         }
         return $this;
@@ -362,12 +370,9 @@ class User {
     public function delEntityFromBookmark($id)
     {
         $pref = $this->getUserpref();
-        if (empty($pref) || !is_array($pref))
-        {
+        if (empty($pref) || !is_array($pref)) {
             $pref = array();
-        }
-        else
-        {
+        } else {
             unset($pref['board']['idp'][$id]);
             unset($pref['board']['sp'][$id]);
         }
@@ -377,12 +382,9 @@ class User {
     public function delFedFromBookmark($id)
     {
         $pref = $this->getUserpref();
-        if (empty($pref) || !is_array($pref))
-        {
+        if (empty($pref) || !is_array($pref)) {
             $pref = array();
-        }
-        else
-        {
+        } else {
             unset($pref['board']['fed'][$id]);
         }
         $this->setUserpref($pref);
@@ -390,38 +392,31 @@ class User {
 
     public function setShowHelp($b)
     {
-       $pref = $this->getUserpref();
-       if (empty($pref) || !is_array($pref))
-       {
-          $pref = array();
-       }
-       $pref['showhelp'] = $b;
-       $this->setUserpref($pref);
-       return $this;
-       
+        $pref = $this->getUserpref();
+        if (empty($pref) || !is_array($pref)) {
+            $pref = array();
+        }
+        $pref['showhelp'] = $b;
+        $this->setUserpref($pref);
+        return $this;
+
     }
 
     public function addEntityToBookmark($entid, $entname, $enttype, $entityid)
     {
         log_message('debug', 'addEntityToBookmark');
         $pref = $this->getUserpref();
-        if (empty($pref) || !is_array($pref))
-        {
+        if (empty($pref) || !is_array($pref)) {
             $pref = array();
         }
-        if ($enttype == 'IDP')
-        {
+        if ($enttype == 'IDP') {
             log_message('debug', 'addEntityToBookmark : IDP');
 
             $pref['board']['idp'][$entid] = array('name' => $entname, 'entity' => $entityid);
-        }
-        elseif ($enttype == 'SP')
-        {
+        } elseif ($enttype == 'SP') {
             log_message('debug', 'addEntityToBookmark : SP');
             $pref['board']['sp'][$entid] = array('name' => $entname, 'entity' => $entityid);
-        }
-        else
-        {
+        } else {
             $pref['board']['idp'][$entid] = array('name' => $entname, 'entity' => $entityid);
             $pref['board']['sp'][$entid] = array('name' => $entname, 'entity' => $entityid);
         }
@@ -432,8 +427,7 @@ class User {
     {
         log_message('debug', 'addFedToBookmark');
         $pref = $this->getUserpref();
-        if (empty($pref) || !is_array($pref))
-        {
+        if (empty($pref) || !is_array($pref)) {
             $pref = array();
         }
         $pref['board']['fed'][$fedid] = array('name' => $fedname, 'url' => $fedencoded);
@@ -443,36 +437,31 @@ class User {
 
     public function getSecondFactor()
     {
-       $pref = $this->getUserpref();
-       if(!empty($pref) && is_array($pref))
-       {
-           if(isset($pref['2f']) && !empty($pref['2f']))
-           {
-              return $pref['2f'];
-           }
-       }
-       return null;
-       
-    }
-    public function setSecondFactor($f=null)
-    {
-       if(!empty($f) && strcmp($f,'duo') == 0)
-       {
-          $factor = $f;
-       }   
-       else
-       {
-          $factor = null;
-       }
+        $pref = $this->getUserpref();
+        if (!empty($pref) && is_array($pref)) {
+            if (isset($pref['2f']) && !empty($pref['2f'])) {
+                return $pref['2f'];
+            }
+        }
+        return null;
 
-       $pref = $this->getUserpref();
-       if (empty($pref) || !is_array($pref))
-       {
-           $pref = array();
-       }
-       $pref['2f'] = $factor;
-       $this->setUserpref($pref);
-       return $this;
+    }
+
+    public function setSecondFactor($f = null)
+    {
+        if (!empty($f) && strcmp($f, 'duo') == 0) {
+            $factor = $f;
+        } else {
+            $factor = null;
+        }
+
+        $pref = $this->getUserpref();
+        if (empty($pref) || !is_array($pref)) {
+            $pref = array();
+        }
+        $pref['2f'] = $factor;
+        $this->setUserpref($pref);
+        return $this;
 
 
     }
@@ -492,7 +481,7 @@ class User {
      */
     public function updated()
     {
-        $this->lastlogin = new \DateTime("now",new \DateTimeZone('UTC'));
+        $this->lastlogin = new \DateTime("now", new \DateTimeZone('UTC'));
     }
 
     public function getId()
@@ -513,7 +502,7 @@ class User {
 
     public function getGivenname()
     {
-       return $this->givenname;
+        return $this->givenname;
     }
 
     public function getSurname()
@@ -539,15 +528,12 @@ class User {
         $data = array('username' => $this->getUsername(),
             'user_id' => $this->getId());
         $userpref = $this->getUserpref();
-        if(isset($userpref['showhelp']) && $userpref['showhelp'] === TRUE)
-        {
+        if (isset($userpref['showhelp']) && $userpref['showhelp'] === TRUE) {
             $data['showhelp'] = TRUE;
+        } else {
+            $data['showhelp'] = FALSE;
         }
-        else
-        {
-             $data['showhelp'] = FALSE;
-        }
-        
+
         return $data;
     }
 
@@ -559,13 +545,10 @@ class User {
 
     public function getUserpref()
     {
-        if(!empty($this->userpref))
-        {
-          return unserialize($this->userpref);
-        }
-        else
-        {
-          return array();
+        if (!empty($this->userpref)) {
+            return unserialize($this->userpref);
+        } else {
+            return array();
         }
     }
 
@@ -573,10 +556,9 @@ class User {
     {
 
         $prefs = $this->getUserpref();
-        $board = array('idp'=>array(),'sp'=>array(),'fed'=>array());
-        if(array_key_exists('board',$prefs))
-        {
-            $board = array_merge($board,$prefs['board']);
+        $board = array('idp' => array(), 'sp' => array(), 'fed' => array());
+        if (array_key_exists('board', $prefs)) {
+            $board = array_merge($board, $prefs['board']);
         }
         return $board;
     }
@@ -618,8 +600,7 @@ class User {
     {
         $rolename = array();
         $roles = $this->getRoles();
-        foreach ($roles as $r)
-        {
+        foreach ($roles as $r) {
             $rolename[] = $r->getName();
         }
         return $rolename;
@@ -627,20 +608,19 @@ class User {
 
     public function getSubscriptions()
     {
-       return $this->subscriptions;
+        return $this->subscriptions;
     }
-    
+
     public function addSubscription(NotificationList $arg)
     {
-       $isin = $this->getSubscriptions()->contains($arg);
-       if(empty($isin))
-       {
-           $this->getSubscriptions()->add($arg);
-           $arg->setSubscriber($this);
-       }
-       return $this;
+        $isin = $this->getSubscriptions()->contains($arg);
+        if (empty($isin)) {
+            $this->getSubscriptions()->add($arg);
+            $arg->setSubscriber($this);
+        }
+        return $this;
     }
-    
+
 
     // End method stubs
 }
