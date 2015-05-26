@@ -569,6 +569,18 @@ class User {
         }
     }
 
+    public function getBookmarks()
+    {
+
+        $prefs = $this->getUserpref();
+        $board = array('idp'=>array(),'sp'=>array(),'fed'=>array());
+        if(array_key_exists('board',$prefs))
+        {
+            $board = array_merge($board,$prefs['board']);
+        }
+        return $board;
+    }
+
     public function isEnabled()
     {
         return $this->enabled;

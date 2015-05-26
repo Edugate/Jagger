@@ -137,19 +137,17 @@ class Users extends MY_Controller
     private function findUserOrExit($encodedusername)
     {
         $username = base64url_decode(trim($encodedusername));
-         /**
+        /**
          * @var $user models\User
          */
         try {
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        }
-        catch (Exception $e) {
-            log_message('error',__METHOD__.' '.$e);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
             $this->output->set_status_header(500)->set_output('Internal Server error')->_display();
             exit;
         }
-        if(empty($user))
-        {
+        if (empty($user)) {
             $this->output->set_status_header(404)->set_output('User not found')->_display();
             exit;
         }
@@ -163,7 +161,7 @@ class Users extends MY_Controller
             echo 'denied2';
             return;
         }
-        $user=$this->findUserOrExit($encodeduser);
+        $user = $this->findUserOrExit($encodeduser);
         $resultInJsonEncoded = $this->getRolenamesToJson($user, 'system');
 
         $this->output
@@ -227,7 +225,7 @@ class Users extends MY_Controller
         }
         $username = base64url_decode(trim($encodeduser));
         $loggedUsername = $this->j_auth->current_user();
-        
+
         $user = $this->findUserOrExit($encodeduser);
         $inputroles = $this->input->post('checkrole[]');
         $currentRoles = $user->getRoles();
@@ -332,22 +330,8 @@ class Users extends MY_Controller
         }
         $this->load->library('zacl');
         $encodedUsername = trim($encodedUsername);
-        $username = base64url_decode($encodedUsername);
         $limitAuthnRows = 15;
-        /**
-         * @var $user models\User
-         */
-        try {
-            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            show_error('Internal server error', 500);
-
-        }
-        if (empty($user)) {
-            show_error('User not found', 404);
-        }
-
+        $user = $this->findUserOrExit($encodedUsername);
         $loggedUsername = $this->j_auth->current_user();
         $isOwner = (strcasecmp($loggedUsername, $user->getUsername()) == 0);
         $isAdmin = $this->j_auth->isAdministrator();
@@ -400,9 +384,15 @@ class Users extends MY_Controller
             $manageBtn = $this->manageRoleBtn($encodedUsername);
         }
         $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_twofactorauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
+        $this->load->library('rrpreference');
+        $allowed2fglobal = $this->rrpreference->getStatusByName('user2fset');
+        $bb = '';
+        if ($isAdmin || ($isOwner && $allowed2fglobal)) {
+            $bb = $this->manage2fBtn($encodedUsername);
+        }
 
         $tab1 = array(
-            array('key' => lang('rr_username'), 'val' => htmlspecialchars($user->getUsername())),
+            array('key' => lang('rr_username'), 'val' => html_escape($user->getUsername())),
             $passEditRow,
             array('key' => '' . lang('rr_userfullname') . '', 'val' => html_escape($user->getFullname())),
             array('key' => '' . lang('rr_uemail') . '', 'val' => html_escape($user->getEmail())),
@@ -411,15 +401,6 @@ class Users extends MY_Controller
             array('key' => '' . lang('rrnotifications') . '', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encodedUsername . '', lang('rrmynotifications')))
         );
 
-        $this->load->library('rrpreference');
-        $allowed2fglobal = $this->rrpreference->getStatusByName('user2fset');
-
-
-        if ($isAdmin || ($isOwner && $allowed2fglobal)) {
-            $bb = $this->manage2fBtn($encodedUsername);
-        } else {
-            $bb = '';
-        }
         if ($secondFactor) {
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="' . $secondFactor . ' ">' . $secondFactor . '</span>';
             if ($systemTwoFactorAuthn) {
@@ -431,37 +412,32 @@ class Users extends MY_Controller
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="none">none</span>';
             $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . $bb);
         }
+
+
         $tab2[] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
         $bookmarks = '';
-        $userpref = $user->getUserpref();
-        if (isset($userpref['board'])) {
-            $board = $userpref['board'];
-        }
 
-        if (!empty($board) && is_array($board)) {
-            if (array_key_exists('idp', $board) && is_array($board['idp'])) {
-                $bookmarks .= '<p><b>' . lang('identityproviders') . '</b><ul class="no-bullet">';
-                foreach ($board['idp'] as $key => $value) {
-                    $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
-                }
-                $bookmarks .= '</ul></p>';
-            }
-            if (array_key_exists('sp', $board) && is_array($board['sp'])) {
-                $bookmarks .= '<p><b>' . lang('serviceproviders') . '</b><ul class="no-bullet">';
-                foreach ($board['sp'] as $key => $value) {
-                    $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
-                }
-                $bookmarks .= '</ul></p>';
-            }
-            if (array_key_exists('fed', $board) && is_array($board['fed'])) {
-                $bookmarks .= '<p><b>' . lang('federations') . '</b><ul class="no-bullet">';
-                foreach ($board['fed'] as $key => $value) {
-                    $bookmarks .= '<li><a href="' . base_url() . 'federations/manage/show/' . $value['url'] . '">' . $value['name'] . '</a></li>';
-                }
-                $bookmarks .= '</ul></p>';
-            }
+        $board = $user->getBookmarks();
+        $bookmarks .= '<p><b>' . lang('identityproviders') . '</b><ul class="no-bullet">';
+        foreach ($board['idp'] as $key => $value) {
+            $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
         }
+        $bookmarks .= '</ul></p>';
+        $bookmarks .= '<p><b>' . lang('serviceproviders') . '</b><ul class="no-bullet">';
+        foreach ($board['sp'] as $key => $value) {
+            $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
+        }
+        $bookmarks .= '</ul></p>';
+        $bookmarks .= '<p><b>' . lang('federations') . '</b><ul class="no-bullet">';
+        foreach ($board['fed'] as $key => $value) {
+            $bookmarks .= '<li><a href="' . base_url() . 'federations/manage/show/' . $value['url'] . '">' . $value['name'] . '</a></li>';
+        }
+        $bookmarks .= '</ul></p>';
+
+
         $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
+
+
         $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limitAuthnRows, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authnLogs as $ath) {
 
