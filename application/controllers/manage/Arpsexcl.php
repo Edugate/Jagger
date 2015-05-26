@@ -20,38 +20,38 @@ if (!defined('BASEPATH'))
 class Arpsexcl extends MY_Controller
 {
 
+    protected $tmpProviders;
+
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->tmp_providers = new models\Providers;
-        $this->load->library(array('form_element', 'form_validation', 'metadata_validator', 'zacl'));
+        $this->tmpProviders = new models\Providers;
+        $this->load->library(array('form_element', 'form_validation', 'zacl'));
     }
 
-    public function idp($id)
+    public function idp($providerID)
     {
-        if (!ctype_digit($id)) {
+        if (!ctype_digit($providerID)) {
             show_error('Incorrect id provided', 404);
         }
-        $tmp_providers = new models\Providers;
+        $success = null;
         /**
          * @var $idp models\Provider
          */
-        $idp = $tmp_providers->getOneIdpById($id);
+        $idp = $this->tmpProviders->getOneIdpById($providerID);
         if (empty($idp)) {
-            log_message('error', __METHOD__ . "IdP edit: Identity Provider with id=" . $id . " not found");
+            log_message('error', __METHOD__ . "IdP edit: Identity Provider with id=" . $providerID . " not found");
             show_error(lang('rerror_idpnotfound'), 404);
-            return;
         }
 
         $myLang = MY_Controller::getLang();
         $providerNameInLang = $idp->getNameToWebInLang($myLang, 'IDP');
         $locked = $idp->getLocked();
         $hasWriteAccess = $this->zacl->check_acl($idp->getId(), 'write', 'entity', '');
-        if (!$hasWriteAccess) {
+        if (!$hasWriteAccess || $locked) {
             $data = array(
                 'content_view' => 'nopermission',
                 'error' => '' . lang('rrerror_noperm_provedit') . ': ' . $idp->getEntityid() . '',
@@ -64,24 +64,7 @@ class Arpsexcl extends MY_Controller
                 ),
             );
 
-            $this->load->view('page', $data);
-            return;
-        }
-        if ($locked) {
-            log_message('debug', $idp->getEntityid() . ': is locked and cannot be edited');
-            $data = array(
-                'content_view' => 'nopermission',
-                'error' => lang('rr_lockedentity') . $idp->getEntityid(),
-                'breadcrumbs' => array(
-                    array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-                    array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
-                    array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
-                    array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
-
-                ),
-            );
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
         $isLocal = $idp->getLocal();
         if (!$isLocal) {
@@ -94,10 +77,9 @@ class Arpsexcl extends MY_Controller
                 array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
 
             );
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view('page', $data);
         }
-        if ($this->_submit_validate() === TRUE) {
+        if ($this->_submit_validate() === true) {
             $excarray = $this->input->post('exc');
             if (empty($excarray)) {
                 $excarray = array();
@@ -105,17 +87,27 @@ class Arpsexcl extends MY_Controller
             foreach ($excarray as $k => $v) {
                 if (empty($v)) {
                     unset($excarray[$k]);
-
                 }
             }
             $idp->setExcarps($excarray);
             $this->em->persist($idp);
-            $this->em->flush();
+            try {
+                $this->em->flush();
+
+                $success = lang('updated');
+            }
+            catch(Exception $e)
+            {
+                log_message('error',__METHOD__.' '.$e);
+                show_error('Internal server error',500);
+            }
 
         }
 
+
         $this->title = $providerNameInLang . ': ARP excludes';
         $data = array(
+            'success'=>$success,
             'rows' => $this->form_element->excludedArpsForm($idp),
             'idp_name' => $idp->getName(),
             'idp_id' => $idp->getId(),
@@ -137,8 +129,17 @@ class Arpsexcl extends MY_Controller
 
     private function _submit_validate()
     {
-        $this->form_validation->set_rules('exc[]' . 'eccc', 'required|max_length[1]');
+
+        $exc = $this->input->post('exc');
+        if(is_array($exc))
+        {
+            foreach($exc as $k=>$v)
+            {
+                $this->form_validation->set_rules('exc['.$k.']' , 'Excluded entity', 'trim');
+            }
+        }
         return $this->form_validation->run();
+
     }
 
 }

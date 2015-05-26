@@ -1,5 +1,12 @@
 <?php
-
+$errors_v = validation_errors('<div>', '</div>');
+if (!empty($errors_v)) {
+    echo '<div data-alert class="alert-box alert">'.$errors_v.'</div>';
+}
+if(!empty($success))
+{
+     echo '<div data-alert class="alert-box success">'.$success.'</div>';
+}
 if(!empty($rows) && is_array($rows))
 {
     $attrs = array('id'=>'arpexlusions');
@@ -11,11 +18,15 @@ if(!empty($rows) && is_array($rows))
       
     }
     echo form_fieldset_close();
-    echo '<div class="buttons mall-11 medium-9 large-8 small-centered columns">';
-    echo '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">
-                  '.lang('rr_reset').'</button> ';
-    echo '<button type="submit" name="modify" value="submit" class="savebutton saveicon">
-                  '.lang('rr_save').'</button>';
+    $btns = array(
+        '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">
+                  '.lang('rr_reset').'</button>',
+        '<button type="submit" name="modify" value="submit" class="savebutton saveicon">
+                  '.lang('rr_save').'</button>'
+    );
+    echo '<div class="small-12 columns">';
+
+    echo revealBtnsRow($btns);
     echo  '</div>';
     echo form_close();
 }
