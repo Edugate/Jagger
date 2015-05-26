@@ -124,10 +124,10 @@ class Users extends MY_Controller
         }
         $result = $this->getRolenamesToJson($user);
         $this->output
-        ->set_status_header(200)
-        ->set_content_type('application/json', 'utf-8')
-        ->set_output(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
-        ->_display();
+            ->set_status_header(200)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+            ->_display();
     }
 
     public function currentSroles($encodeduser)
@@ -157,9 +157,9 @@ class Users extends MY_Controller
         $resultInJsonEncoded = $this->getRolenamesToJson($user, 'system');
 
         $this->output
-        ->set_status_header(200)
-        ->set_content_type('application/json', 'utf-8')
-        ->set_output($resultInJsonEncoded);
+            ->set_status_header(200)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output($resultInJsonEncoded);
     }
 
     public function updateSecondFactor($encodeduser)
@@ -195,15 +195,11 @@ class Users extends MY_Controller
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            echo 'DB problem';
-            return;
+            return $this->output->set_status_header(500)->set_output('DB issue');
         }
 
         if (empty($user)) {
-            set_status_header(404);
-            echo 'user not found';
-            return;
+            return $this->output->set_status_header(404)->set_output('user not found');
         }
         $secondfactor = $this->input->post('secondfactor');
         $allowed2ef = $this->config->item('2fengines');
@@ -222,9 +218,7 @@ class Users extends MY_Controller
             $this->output->set_content_type('application/json')->set_output(json_encode($result));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            echo 'DB problem';
-            return;
+            return $this->output->set_status_header(500)->set_output('DB issue');
         }
 
     }
@@ -243,8 +237,7 @@ class Users extends MY_Controller
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            return;
+            return $this->output->set_status_header(500)->set_output('Internal server problem');
         }
         if (empty($user)) {
             set_status_header(404);
@@ -254,16 +247,14 @@ class Users extends MY_Controller
 
         $inputroles = $this->input->post('checkrole[]');
         $currentRoles = $user->getRoles();
-        foreach ($currentRoles as $r) {
-            $currentRolename = $r->getName();
-            $roleType = $r->getType();
+        foreach ($currentRoles as $resultInJson) {
+            $currentRolename = $resultInJson->getName();
+            $roleType = $resultInJson->getType();
             if (!in_array($currentRolename, $inputroles) && ($roleType === 'system')) {
                 if (strcasecmp($loggedUsername, $username) == 0 && strcasecmp($currentRolename, 'administrator') == 0) {
-                    set_status_header(403);
-                    echo 'You are not allowed to remove Administrator role from your own account';
-                    return;
+                    return $this->output->set_status_header(403)->set_output('You are not allowed to remove Administrator role from your own account');
                 }
-                $user->unsetRole($r);
+                $user->unsetRole($resultInJson);
             }
         }
         /**
@@ -278,9 +269,8 @@ class Users extends MY_Controller
         }
         $this->em->persist($user);
         $this->em->flush();
-        $r = $this->getRolenamesToJson($user);
-        echo $r;
-        return;
+        $resultInJson = $this->getRolenamesToJson($user);
+        $this->output->set_content_type('application/json')->set_output($resultInJson);
     }
 
     public function add()
@@ -340,7 +330,7 @@ class Users extends MY_Controller
                 echo 'OK';
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
-                show_error('Error occurred', 500);
+                return $this->output->set_status_header(500)->set_output('Internal server error');
             }
         } else {
             $errors = validation_errors('<div>', '</div>');
@@ -430,11 +420,11 @@ class Users extends MY_Controller
         $tab1 = array(
             array('key' => lang('rr_username'), 'val' => htmlspecialchars($user->getUsername())),
             $passEditRow,
-            array('key' => ''.lang('rr_userfullname').'', 'val' => html_escape($user->getFullname())),
-            array('key' => ''.lang('rr_uemail').'', 'val' => html_escape($user->getEmail())),
-            array('key' => ''.lang('rr_typeaccess').'', 'val' => implode(", ", $accessTypeStr)),
-            array('key' => ''.lang('rr_assignedroles').'', 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn),
-            array('key' => ''.lang('rrnotifications').'', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encodedUsername . '', lang('rrmynotifications')))
+            array('key' => '' . lang('rr_userfullname') . '', 'val' => html_escape($user->getFullname())),
+            array('key' => '' . lang('rr_uemail') . '', 'val' => html_escape($user->getEmail())),
+            array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(", ", $accessTypeStr)),
+            array('key' => '' . lang('rr_assignedroles') . '', 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn),
+            array('key' => '' . lang('rrnotifications') . '', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encodedUsername . '', lang('rrmynotifications')))
         );
 
         $this->load->library('rrpreference');
@@ -466,14 +456,14 @@ class Users extends MY_Controller
 
         if (!empty($board) && is_array($board)) {
             if (array_key_exists('idp', $board) && is_array($board['idp'])) {
-                $bookmarks .= '<p><b>'.lang('identityproviders').'</b><ul class="no-bullet">';
+                $bookmarks .= '<p><b>' . lang('identityproviders') . '</b><ul class="no-bullet">';
                 foreach ($board['idp'] as $key => $value) {
-                    $bookmarks .= '<li><a href="'.base_url('providers/detail/show/'.$key.'').'">'. $value['name'].'</a><br /><small>' . $value['entity'] . '</small></li>';
+                    $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
                 }
                 $bookmarks .= '</ul></p>';
             }
             if (array_key_exists('sp', $board) && is_array($board['sp'])) {
-                $bookmarks .= '<p><b>'.lang('serviceproviders') .'</b><ul class="no-bullet">';
+                $bookmarks .= '<p><b>' . lang('serviceproviders') . '</b><ul class="no-bullet">';
                 foreach ($board['sp'] as $key => $value) {
                     $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
                 }
@@ -491,7 +481,7 @@ class Users extends MY_Controller
         $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limitAuthnRows, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authnLogs as $ath) {
 
-            $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
+            $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
             $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
             $tab3[] = array('key' => $date, 'val' => $detail);
         }
@@ -500,7 +490,7 @@ class Users extends MY_Controller
         foreach ($actionLogs as $ath) {
             $subtype = $ath->getSubType();
             if ($subtype == 'modification') {
-                $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
+                $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
                 $d = unserialize($ath->getDetail());
                 $dstr = '<br />';
                 if (is_array($d)) {
@@ -522,7 +512,7 @@ class Users extends MY_Controller
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $dstr;
                 $tab4[] = array('key' => $date, 'val' => $detail);
             } elseif ($subtype == 'create' || $subtype == 'remove') {
-                $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
+                $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
                 $tab4[] = array('key' => $date, 'val' => $detail);
             }
@@ -633,7 +623,7 @@ class Users extends MY_Controller
             $last = $u->getLastlogin();
             $lastlogin = '';
             if (!empty($last)) {
-                $lastlogin = $last->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
+                $lastlogin = $last->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
             }
             $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(), $action);
         }
