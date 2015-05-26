@@ -313,7 +313,7 @@ class Form_element
 // start CERTS IDPSSODescriptor
             if ($sessform) {
                 foreach ($ses['crt']['idpsso'] as $key => $value) {
-                    $idpssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][idpsso]",  TRUE);
+                    $idpssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][idpsso]", TRUE);
                 }
             } else {
                 foreach ($origcerts['idpsso'] as $k => $v) {
@@ -330,7 +330,7 @@ class Form_element
 // start CERTS AttributeAuthorityDescriptor
             if ($sessform) {
                 foreach ($ses['crt']['aa'] as $key => $value) {
-                    $aacerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][aa]",  TRUE);
+                    $aacerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][aa]", TRUE);
                 }
             } else {
                 foreach ($origcerts['aa'] as $k => $v) {
@@ -349,7 +349,7 @@ class Form_element
             $spssocerts = array();
             if ($sessform) {
                 foreach ($ses['crt']['spsso'] as $key => $value) {
-                    $spssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][spsso]",  TRUE);
+                    $spssocerts[] = $this->_genCertFieldFromSession($certObj = null, $key, $value, "f[crt][spsso]", TRUE);
                 }
             } else {
                 foreach ($origcerts['spsso'] as $k => $v) {
@@ -552,7 +552,7 @@ class Form_element
         if (empty($keysize)) {
             $keysize = lang('unknown');
         }
- $readonly = true;
+        $readonly = true;
         $crtid = $cert->getId();
         if (empty($crtid)) {
             $crtid = 'x' . rand();
@@ -564,8 +564,8 @@ class Form_element
             '</div>';
 
 
-        $row .= '<div class="small-12 columns">'.
-            $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE).
+        $row .= '<div class="small-12 columns">' .
+            $this->_generateLabelSelect(lang('rr_certificateuse'), '' . $name . '[' . $crtid . '][usage]', array('signing' => '' . lang('rr_certsigning') . '', 'encryption' => '' . lang('rr_certencryption') . '', 'both' => '' . lang('rr_certsignandencr') . ''), $certuse, '', FALSE) .
             '</div>';
 
         $tmpkeyname = $cert->getKeyname();
@@ -579,8 +579,8 @@ class Form_element
         $row .= '</div>';
 
 
-        $row .= '<div class="small-12 columns">'.
-            $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled')).
+        $row .= '<div class="small-12 columns">' .
+            $this->_generateLabelInput(lang('rr_computedkeysize'), 'keysize', $keysize, '', FALSE, array('disabled' => 'disabled')) .
             '</div>';
 
 //$name . '[' . $crtid . '][certdata]
@@ -2622,17 +2622,20 @@ class Form_element
     {
         $tmp_providers = new models\Providers();
         $excluded = $idp->getExcarps();
-        $members = $tmp_providers->getCircleMembersSP($idp);
-        if (is_array($excluded))
-            $rows = array();
+        $members = $tmp_providers->getCircleMembersLight($idp);
+        $membersInArray = array();
+        foreach ($members as $m) {
+            $membersInArray[] = $m->getEntityId();
+        }
+        $membersInArray = array_diff_assoc($membersInArray, $excluded);
+        $rows = array();
         foreach ($excluded as $v) {
-            $members->remove($v);
-            $rows[] = '<input type="checkbox" name="exc[]" id="' . $v . '" value="' . $v . '" checked="checked" /><label for="' . $v . '">' . $v . '</label>';
-        }
-        foreach ($members as $v) {
-            $rows[] = '<input type="checkbox" name="exc[]" id="' . $v->getEntityId() . '" value="' . $v->getEntityId() . '"  /><label for="' . $v->getEntityId() . '">' . $v->getEntityId() . '</label>';
-        }
 
+            $rows[] = '<input type="checkbox" name="exc[]"  checked="checked"   value="' . $v . '" /><label for="' . $v . '">' . html_escape($v) . '</label>';
+        }
+        foreach ($membersInArray as $v) {
+            $rows[] = '<input type="checkbox" name="exc[]" value="' . $v . '"  /><label for="' . $v . '">' . html_escape($v) . '</label>';
+        }
         return $rows;
     }
 
