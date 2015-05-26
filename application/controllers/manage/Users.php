@@ -130,6 +130,32 @@ class Users extends MY_Controller
             ->_display();
     }
 
+    /**
+     * @param $encodedusername
+     * @return \models\User
+     */
+    private function findUserOrExit($encodedusername)
+    {
+        $username = base64url_decode(trim($encodedusername));
+         /**
+         * @var $user models\User
+         */
+        try {
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        }
+        catch (Exception $e) {
+            log_message('error',__METHOD__.' '.$e);
+            $this->output->set_status_header(500)->set_output('Internal Server error')->_display();
+            exit;
+        }
+        if(empty($user))
+        {
+            $this->output->set_status_header(404)->set_output('User not found')->_display();
+            exit;
+        }
+        return $user;
+    }
+
     public function currentSroles($encodeduser)
     {
         if (!$this->ajaxplusadmin()) {
@@ -137,23 +163,7 @@ class Users extends MY_Controller
             echo 'denied2';
             return;
         }
-        $username = base64url_decode(trim($encodeduser));
-        /**
-         * @var $user models\User
-         */
-        try {
-            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            return;
-        }
-
-        if (empty($user)) {
-            set_status_header(404);
-            echo 'user not found';
-            return;
-        }
+        $user=$this->findUserOrExit($encodeduser);
         $resultInJsonEncoded = $this->getRolenamesToJson($user, 'system');
 
         $this->output
@@ -186,21 +196,8 @@ class Users extends MY_Controller
 
         }
 
+        $user = $this->findUserOrExit($encodeduser);
 
-        $username = base64url_decode($encodeduser);
-        /**
-         * @var $user models\User
-         */
-        try {
-            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            return $this->output->set_status_header(500)->set_output('DB issue');
-        }
-
-        if (empty($user)) {
-            return $this->output->set_status_header(404)->set_output('user not found');
-        }
         $secondfactor = $this->input->post('secondfactor');
         $allowed2ef = $this->config->item('2fengines');
         if (empty($allowed2ef) || !is_array($allowed2ef)) {
@@ -230,21 +227,8 @@ class Users extends MY_Controller
         }
         $username = base64url_decode(trim($encodeduser));
         $loggedUsername = $this->j_auth->current_user();
-        /**
-         * @var $user models\User
-         */
-        try {
-            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            return $this->output->set_status_header(500)->set_output('Internal server problem');
-        }
-        if (empty($user)) {
-            set_status_header(404);
-            echo 'user not found';
-            return;
-        }
-
+        
+        $user = $this->findUserOrExit($encodeduser);
         $inputroles = $this->input->post('checkrole[]');
         $currentRoles = $user->getRoles();
         foreach ($currentRoles as $resultInJson) {
