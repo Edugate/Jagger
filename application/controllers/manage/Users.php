@@ -107,9 +107,7 @@ class Users extends MY_Controller
     {
         $encodeduser = strip_tags($encodeduser);
         if (!$this->ajaxplusadmin() && !$this->ajaxplusowner($encodeduser)) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $username = base64url_decode(trim($encodeduser));
         /**
@@ -119,24 +117,24 @@ class Users extends MY_Controller
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            return;
+            return $this->output->set_status_header(500)->set_output('');
         }
         if (empty($user)) {
-            set_status_header(404);
-            echo 'user not found';
-            return;
+            return $this->output->set_status_header(404)->set_output('User not found');
         }
         $result = $this->getRolenamesToJson($user);
-        echo $result;
-        return;
+        $this->output
+        ->set_status_header(200)
+        ->set_content_type('application/json', 'utf-8')
+        ->set_output(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+        ->_display();
     }
 
     public function currentSroles($encodeduser)
     {
         if (!$this->ajaxplusadmin()) {
             set_status_header(403);
-            echo 'denied';
+            echo 'denied2';
             return;
         }
         $username = base64url_decode(trim($encodeduser));
@@ -156,18 +154,18 @@ class Users extends MY_Controller
             echo 'user not found';
             return;
         }
-        $result = $this->getRolenamesToJson($user, 'system');
-        echo $result;
-        return;
+        $resultInJsonEncoded = $this->getRolenamesToJson($user, 'system');
+
+        $this->output
+        ->set_status_header(200)
+        ->set_content_type('application/json', 'utf-8')
+        ->set_output($resultInJsonEncoded);
     }
 
     public function updateSecondFactor($encodeduser)
     {
         if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo 'denied';
-            return;
-
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
 
@@ -182,7 +180,7 @@ class Users extends MY_Controller
 
         if (!$isAdmin && !$userAllowed) {
             set_status_header(403);
-            echo 'denied';
+            echo 'denied4';
             return;
 
 
@@ -234,9 +232,7 @@ class Users extends MY_Controller
     public function updateRole($encodeduser)
     {
         if (!$this->ajaxplusadmin()) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $username = base64url_decode(trim($encodeduser));
         $loggedUsername = $this->j_auth->current_user();
@@ -405,24 +401,24 @@ class Users extends MY_Controller
         }
 
         /**
-         * @var $authn_logs models\Tracker[]
-         * @var $action_logs models\Tracker[]
+         * @var $authnLogs models\Tracker[]
+         * @var $actionLogs models\Tracker[]
          */
-        $authn_logs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
-        $action_logs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
+        $authnLogs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
+        $actionLogs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
 
         $data['caption'] = html_escape($user->getUsername());
-        $local_access = $user->getLocal();
-        $federated_access = $user->getFederated();
+        $localAccess = $user->getLocal();
+        $federatedAccess = $user->getFederated();
 
         $systemTwoFactorAuthn = $this->config->item('twofactorauthn');
         $secondFactor = $user->getSecondFactor();
-        $access_type_str = array();
-        if ($local_access) {
-            $access_type_str[] = lang('rr_local_authn');
+        $accessTypeStr = array();
+        if ($localAccess) {
+            $accessTypeStr[] = lang('rr_local_authn');
         }
-        if ($federated_access) {
-            $access_type_str[] = lang('federated_access');
+        if ($federatedAccess) {
+            $accessTypeStr[] = lang('federated_access');
         }
 
         $manageBtn = '';
@@ -436,7 +432,7 @@ class Users extends MY_Controller
             $passEditRow,
             array('key' => ''.lang('rr_userfullname').'', 'val' => html_escape($user->getFullname())),
             array('key' => ''.lang('rr_uemail').'', 'val' => html_escape($user->getEmail())),
-            array('key' => ''.lang('rr_typeaccess').'', 'val' => implode(", ", $access_type_str)),
+            array('key' => ''.lang('rr_typeaccess').'', 'val' => implode(", ", $accessTypeStr)),
             array('key' => ''.lang('rr_assignedroles').'', 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn),
             array('key' => ''.lang('rrnotifications').'', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encodedUsername . '', lang('rrmynotifications')))
         );
@@ -493,7 +489,7 @@ class Users extends MY_Controller
         }
         $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
         $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limitAuthnRows, 'class' => 'highlight', 'colspan' => 2));
-        foreach ($authn_logs as $ath) {
+        foreach ($authnLogs as $ath) {
 
             $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
             $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
@@ -501,7 +497,7 @@ class Users extends MY_Controller
         }
 
         $tab4[] = array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2));
-        foreach ($action_logs as $ath) {
+        foreach ($actionLogs as $ath) {
             $subtype = $ath->getSubType();
             if ($subtype == 'modification') {
                 $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
