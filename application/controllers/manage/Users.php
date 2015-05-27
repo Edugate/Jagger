@@ -1,27 +1,22 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
+ * @package   RR3
+ * @author    Middleware Team HEAnet
+ * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
- */
-
-/**
+ *
  * Users Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Users extends MY_Controller
 {
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->load->helper(array('cert', 'form'));
@@ -201,7 +196,7 @@ class Users extends MY_Controller
         if (empty($allowed2ef) || !is_array($allowed2ef)) {
             $allowed2ef = array();
         }
-        if (in_array($secondfactor, $allowed2ef,true)) {
+        if (in_array($secondfactor, $allowed2ef, true)) {
             $user->setSecondFactor($secondfactor);
         } else {
             $user->setSecondFactor(null);
@@ -323,14 +318,13 @@ class Users extends MY_Controller
             return $this->load->view('page', array('error' => lang('error403'), 'content_view' => 'nopermission'));
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
+        $breadcrumbs = array(
+            array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
+            array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
+        );
         if (!$accessListUsers) {
             $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
-                array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
-            );
-        } else {
-            $breadcrumbs = array(
-                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
                 array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
             );
         }
@@ -656,42 +650,6 @@ class Users extends MY_Controller
 
     }
 
-    public function accessedit($encodedUsername)
-    {
-
-        if (!$this->j_auth->logged_in()) {
-            redirect('auth/login', 'location');
-        }
-        $this->load->library('zacl');
-        $username = base64url_decode($encodedUsername);
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        if (empty($user)) {
-            show_error(lang('error404'), 404);
-        }
-        $hasManageAccess = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
-        if (!$hasManageAccess) {
-            $data['error'] = lang('error403');
-            $data['content_view'] = 'nopermission';
-            return $this->load->view('page', $data);
-        }
-        if ($this->accessmodifySubmitValidate() === TRUE) {
-            $this->input->post('authz');
-        } else {
-            $formAttributes = array('id' => 'formver2', 'class' => 'span-16');
-            $action = current_url();
-            $form = form_open($action, $formAttributes) . form_fieldset('Access manage for user ' . $username);
-            $form .= '<ol><li>' . form_label('Authorization', 'authz') . '<ol>';
-            $form .= '<li>Local authentication' . form_checkbox('authz[local]', '1', $user->getLocal()) . '</li>';
-            $form .= '<li>Federated access' . form_checkbox('authz[federated]', '1', $user->getFederated()) . '</li>';
-            $form .= '</ol></li><li>' . form_label('Account enabled', 'status');
-            $form .= '<ol><li>' . form_checkbox('status', '1', $user->isEnabled()) . '</li>';
-            $form .= '</ol></li></ol><div class="buttons"><button type="submit" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
-            $form .= form_fieldset_close() . form_close();
-            $data['content_view'] = 'manage/user_access_edit_view';
-            $data['form'] = $form;
-            return $this->load->view('page', $data);
-        }
-    }
 
     public function passedit($encodedUsername)
     {
