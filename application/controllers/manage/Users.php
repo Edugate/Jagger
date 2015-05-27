@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 /**
  * ResourceRegistry3
  *
@@ -227,7 +228,7 @@ class Users extends MY_Controller
         foreach ($currentRoles as $resultInJson) {
             $currentRolename = $resultInJson->getName();
             $roleType = $resultInJson->getType();
-            if (($roleType === 'system') && !in_array($currentRolename, $inputroles,true)) {
+            if (($roleType === 'system') && !in_array($currentRolename, $inputroles, true)) {
                 if (strcasecmp($loggedUsername, $username) == 0 && strcasecmp($currentRolename, 'administrator') == 0) {
                     return $this->output->set_status_header(403)->set_output('You are not allowed to remove Administrator role from your own account');
                 }
@@ -240,7 +241,7 @@ class Users extends MY_Controller
         $sysroles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
         foreach ($sysroles as $newRole) {
             $newRolename = $newRole->getName();
-            if (in_array($newRolename, $inputroles,true)) {
+            if (in_array($newRolename, $inputroles, true)) {
                 $user->setRole($newRole);
             }
         }
@@ -267,7 +268,7 @@ class Users extends MY_Controller
                 $password = str_generator();
             }
             $user = new models\User;
-            $user->genNewValidUser($username,$password,$email,$fname,$sname,$access);
+            $user->genNewValidUser($username, $password, $email, $fname, $sname, $access);
             /**
              * @var $member models\AclRole
              */
@@ -300,6 +301,26 @@ class Users extends MY_Controller
         }
     }
 
+    private function getBookmarks(models\User $user)
+    {
+        $bookmarksSections = array('idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'fed' => lang('federations'));
+        $board = $user->getBookmarks();
+
+        $bookmarks = array();
+        foreach (array_keys($board) as $sect) {
+            $bookmarks[] = '<p><b>' . $bookmarksSections[$sect] . '</b><ul class="no-bullet">';
+            foreach ($board[$sect] as $key => $value) {
+                if ($sect === 'fed') {
+                    $bookmarks[] = '<li><a href="' . base_url() . 'federations/manage/show/' . $value['url'] . '">' . $value['name'] . '</a></li>';
+                } else {
+                    $bookmarks[] = '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
+                }
+            }
+            $bookmarks[] = '</ul></p>';
+        }
+        return $bookmarks;
+    }
+
     public function show($encodedUsername)
     {
         if (!$this->j_auth->logged_in()) {
@@ -328,10 +349,9 @@ class Users extends MY_Controller
                 array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
             );
         }
-
         $passEditRow = array('key' => lang('rr_password'), 'val' => '<i class="fi-lock"></i>');
         if ($hasWriteAccess) {
-            $passEditRow = array('key' => lang('rr_password'), 'val' => '<span><a href="' . base_url('manage/users/passedit/' . $encodedUsername . '') . '" class="edit" title="edit" ><i class="fi-pencil"></i></a></span>');
+            $passEditRow['val'] = '<a href="' . base_url('manage/users/passedit/' . $encodedUsername . '') . '" title="edit" ><i class="fi-pencil"></i></a>';
         }
 
         /**
@@ -360,7 +380,6 @@ class Users extends MY_Controller
             $manageBtn = $this->manageRoleBtn($encodedUsername);
         }
         $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_twofactorauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
-        $this->load->library('rrpreference');
         $allowed2fglobal = $this->rrpreference->getStatusByName('user2fset');
         $bb = '';
         if ($isAdmin || ($isOwner && $allowed2fglobal)) {
@@ -391,28 +410,10 @@ class Users extends MY_Controller
 
 
         $tab2[] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
-        $bookmarks = '';
-
-        $board = $user->getBookmarks();
-
-        $bookmarks .= '<p><b>' . lang('identityproviders') . '</b><ul class="no-bullet">';
-        foreach ($board['idp'] as $key => $value) {
-            $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
-        }
-        $bookmarks .= '</ul></p>';
-        $bookmarks .= '<p><b>' . lang('serviceproviders') . '</b><ul class="no-bullet">';
-        foreach ($board['sp'] as $key => $value) {
-            $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
-        }
-        $bookmarks .= '</ul></p>';
-        $bookmarks .= '<p><b>' . lang('federations') . '</b><ul class="no-bullet">';
-        foreach ($board['fed'] as $key => $value) {
-            $bookmarks .= '<li><a href="' . base_url() . 'federations/manage/show/' . $value['url'] . '">' . $value['name'] . '</a></li>';
-        }
-        $bookmarks .= '</ul></p>';
 
 
-        $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
+        $bookmarks = $this->getBookmarks($user);
+        $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => implode('', $bookmarks));
 
 
         $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limitAuthnRows, 'class' => 'highlight', 'colspan' => 2));
@@ -551,7 +552,7 @@ class Users extends MY_Controller
         foreach ($users as $u) {
             $encodedUsername = base64url_encode($u->getUsername());
             $roles = $u->getRoleNames();
-            if (in_array('Administrator', $roles,true)) {
+            if (in_array('Administrator', $roles, true)) {
                 $action = '';
             } else {
                 $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encodedUsername . '"><i class="fi-trash"></i><a>';
@@ -625,7 +626,7 @@ class Users extends MY_Controller
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
             if (!empty($user)) {
                 $userRoles = $user->getRoleNames();
-                if (in_array('Administrator', $userRoles,true)) {
+                if (in_array('Administrator', $userRoles, true)) {
                     set_status_header(403);
                     echo 'You cannot remover user who has Admninitrator role set';
                     return;
