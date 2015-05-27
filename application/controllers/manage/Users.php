@@ -361,7 +361,7 @@ class Users extends MY_Controller
         $authnLogs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
         $actionLogs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
 
-        $data['caption'] = html_escape($user->getUsername());
+
         $localAccess = $user->getLocal();
         $federatedAccess = $user->getFederated();
 
@@ -408,20 +408,16 @@ class Users extends MY_Controller
             $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . $bb);
         }
 
-
-        $tab2[] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
-
-
         $bookmarks = $this->getBookmarks($user);
         $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => implode('', $bookmarks));
 
 
         $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limitAuthnRows, 'class' => 'highlight', 'colspan' => 2));
         foreach ($authnLogs as $ath) {
-
-            $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
-            $detail = $ath->getDetail() . '<br /><small><i>' . $ath->getAgent() . '</i></small>';
-            $tab3[] = array('key' => $date, 'val' => $detail);
+            $tab3[] = array(
+                'key' => $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s'),
+                'val' => $ath->getDetail() . '<br /><small><i>' . $ath->getAgent() . '</i></small>'
+            );
         }
 
         $tab4[] = array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2));
@@ -447,7 +443,7 @@ class Users extends MY_Controller
                         }
                     }
                 }
-                $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $dstr;
+                $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . '  ' . $dstr;
                 $tab4[] = array('key' => $date, 'val' => $detail);
             } elseif ($subtype == 'create' || $subtype == 'remove') {
                 $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
@@ -479,9 +475,8 @@ class Users extends MY_Controller
                 'tabdata' => $tab4,
             )
         );
-
         $data['breadcrumbs'] = $breadcrumbs;
-        $data['titlepage'] = lang('rr_detforuser') . ': ' . $data['caption'];
+        $data['titlepage'] = lang('rr_detforuser') . ': ' . html_escape($user->getUsername()) ;
         $data['content_view'] = 'manage/userdetail_view';
         $this->load->view('page', $data);
     }
