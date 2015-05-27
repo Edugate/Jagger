@@ -118,7 +118,7 @@ class Settings extends MY_Controller
         {
             $s_a['current_idp'] = $sent_idp;
 			$tmp = new models\Providers;
-			$idpObj=$tmp->getOneIdPById($sent_idp);
+			$idpObj=$tmp->getOneIdpById($sent_idp);
 
             $s_a['current_idp_name'] = $idpObj->getDisplayname();
             $this->session->set_userdata($s_a);

@@ -44,7 +44,7 @@ class Users extends MY_Controller
         $this->form_validation->set_rules('email', 'E-mail', 'trim|required|min_length[5]|max_length[128]|valid_email');
         $this->form_validation->set_rules('access', 'Access type', 'trim|required');
         $accesstype = trim($this->input->post('access'));
-        if (!strcasecmp($accesstype, 'fed') == 0) {
+        if ($accesstype === 'fed') {
             $this->form_validation->set_rules('password', '' . lang('rr_password') . '', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
             $this->form_validation->set_rules('passwordconf', '' . lang('rr_passwordconf') . '', 'required|min_length[5]|max_length[23]');
         }
@@ -201,7 +201,7 @@ class Users extends MY_Controller
         if (empty($allowed2ef) || !is_array($allowed2ef)) {
             $allowed2ef = array();
         }
-        if (in_array($secondfactor, $allowed2ef)) {
+        if (in_array($secondfactor, $allowed2ef,true)) {
             $user->setSecondFactor($secondfactor);
         } else {
             $user->setSecondFactor(null);
@@ -232,7 +232,7 @@ class Users extends MY_Controller
         foreach ($currentRoles as $resultInJson) {
             $currentRolename = $resultInJson->getName();
             $roleType = $resultInJson->getType();
-            if (!in_array($currentRolename, $inputroles) && ($roleType === 'system')) {
+            if (($roleType === 'system') && !in_array($currentRolename, $inputroles,true)) {
                 if (strcasecmp($loggedUsername, $username) == 0 && strcasecmp($currentRolename, 'administrator') == 0) {
                     return $this->output->set_status_header(403)->set_output('You are not allowed to remove Administrator role from your own account');
                 }
@@ -245,7 +245,7 @@ class Users extends MY_Controller
         $sysroles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
         foreach ($sysroles as $newRole) {
             $newRolename = $newRole->getName();
-            if (in_array($newRolename, $inputroles)) {
+            if (in_array($newRolename, $inputroles,true)) {
                 $user->setRole($newRole);
             }
         }
@@ -378,8 +378,8 @@ class Users extends MY_Controller
             $passEditRow,
             array('key' => '' . lang('rr_userfullname') . '', 'val' => html_escape($user->getFullname())),
             array('key' => '' . lang('rr_uemail') . '', 'val' => html_escape($user->getEmail())),
-            array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(", ", $accessTypeStr)),
-            array('key' => '' . lang('rr_assignedroles') . '', 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn),
+            array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(', ', $accessTypeStr)),
+            array('key' => '' . lang('rr_assignedroles') . '', 'val' => '<span id="currentroles">' . implode(', ', $user->getRoleNames()) . '</span> ' . $manageBtn),
             array('key' => '' . lang('rrnotifications') . '', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encodedUsername . '', lang('rrmynotifications')))
         );
 
@@ -400,7 +400,7 @@ class Users extends MY_Controller
         $bookmarks = '';
 
         $board = $user->getBookmarks();
-        
+
         $bookmarks .= '<p><b>' . lang('identityproviders') . '</b><ul class="no-bullet">';
         foreach ($board['idp'] as $key => $value) {
             $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
@@ -425,7 +425,7 @@ class Users extends MY_Controller
         foreach ($authnLogs as $ath) {
 
             $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
-            $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
+            $detail = $ath->getDetail() . '<br /><small><i>' . $ath->getAgent() . '</i></small>';
             $tab3[] = array('key' => $date, 'val' => $detail);
         }
 
@@ -486,7 +486,6 @@ class Users extends MY_Controller
         );
 
         $data['breadcrumbs'] = $breadcrumbs;
-
         $data['titlepage'] = lang('rr_detforuser') . ': ' . $data['caption'];
         $data['content_view'] = 'manage/userdetail_view';
         $this->load->view('page', $data);
@@ -558,7 +557,7 @@ class Users extends MY_Controller
         foreach ($users as $u) {
             $encodedUsername = base64url_encode($u->getUsername());
             $roles = $u->getRoleNames();
-            if (in_array('Administrator', $roles)) {
+            if (in_array('Administrator', $roles,true)) {
                 $action = '';
             } else {
                 $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encodedUsername . '"><i class="fi-trash"></i><a>';
@@ -632,7 +631,7 @@ class Users extends MY_Controller
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
             if (!empty($user)) {
                 $userRoles = $user->getRoleNames();
-                if (in_array('Administrator', $userRoles)) {
+                if (in_array('Administrator', $userRoles,true)) {
                     set_status_header(403);
                     echo 'You cannot remover user who has Admninitrator role set';
                     return;

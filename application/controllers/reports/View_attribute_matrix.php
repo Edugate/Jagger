@@ -35,7 +35,6 @@ class View_attribute_matrix extends MY_Controller
         }
 
         $text = $img;
-        $color = $color;
 
         header("Content-type: image/png");
 
