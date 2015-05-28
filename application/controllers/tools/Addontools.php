@@ -37,9 +37,9 @@ class Addontools extends MY_Controller {
     {
         $publicAccess = FALSE;
         $access = $this->config->item('addontools');
-        if(!empty($access) && is_array($access) && isset($access['msgdecoder']) && $access['msgdecoder'] === TRUE)
+        if(!empty($access) && is_array($access) && isset($access['msgdecoder']) && $access['msgdecoder'] === true)
         {
-            $publicAccess = TRUE;
+            $publicAccess = true;
         }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin && !$publicAccess)
