@@ -354,10 +354,7 @@ class Users extends MY_Controller
             $passEditRow['val'] = '<a href="' . base_url('manage/users/passedit/' . $encodedUsername . '') . '" title="edit" ><i class="fi-pencil"></i></a>';
         }
 
-        /**
-         * @var $authnLogs models\Tracker[]
-         */
-        $authnLogs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
+
 
 
         $localAccess = $user->getLocal();
@@ -411,6 +408,11 @@ class Users extends MY_Controller
 
 
         $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limitAuthnRows, 'class' => 'highlight', 'colspan' => 2));
+
+        /**
+         * @var $authnLogs models\Tracker[]
+         */
+        $authnLogs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
         foreach ($authnLogs as $ath) {
             $tab3[] = array(
                 'key' => $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s'),
@@ -440,11 +442,6 @@ class Users extends MY_Controller
                 'tabtitle' => lang('authnlogs'),
                 'tabdata' => $tab3,
             ),
-            array(
-                'tabid' => 'tab4',
-                'tabtitle' => lang('actionlogs'),
-                'tabdata' => array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2)),
-            )
         );
         $data['breadcrumbs'] = $breadcrumbs;
         $data['titlepage'] = lang('rr_detforuser') . ': ' . html_escape($user->getUsername()) ;
