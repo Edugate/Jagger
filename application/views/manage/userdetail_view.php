@@ -13,8 +13,54 @@ echo '<section role="tabpanel" aria-hidden="true" class="content" id="' . $tabs[
 $this->table->clear();
 echo '<section role="tabpanel" aria-hidden="true" class="content" id="' . $tabs[2]['tabid'] . '"> ' . $this->table->generate($tabs[2]['tabdata']) . ' </section>';
 $this->table->clear();
-echo '<section role="tabpanel" aria-hidden="true" class="content" id="' . $tabs[3]['tabid'] . '"> ' . $this->table->generate($tabs[3]['tabdata']) . '  </section> </div>';
+
+/// Actions Logs
+echo '<section role="tabpanel" aria-hidden="true" class="content" id="' . $tabs[3]['tabid'] . '">';
+
+/**
+ * @var $actionlogs models\Tracker[]
+ */
+foreach($actionlogs as $ath)
+{
+    $subtype = $ath->getSubType();
+            if ($subtype === 'modification') {
+                $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
+                $d = unserialize($ath->getDetail());
+                $dstr = '<br />';
+                if (is_array($d)) {
+                    foreach ($d as $k => $v) {
+                        $dstr .= '<b>' . $k . ':</b><br />';
+                        if (is_array($v)) {
+                            foreach ($v as $h => $l) {
+                                if (!is_array($l)) {
+                                    $dstr .= $h . ':' . $l . '<br />';
+                                } else {
+                                    foreach ($l as $lk => $lv) {
+                                        $dstr .= $h . ':' . $lk . '::' . $lv . '<br />';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . '  ' . $dstr;
+                $this->table->add_row($date, $detail);
+            } elseif ($subtype === 'create' || $subtype == 'remove') {
+                $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
+                $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
+                $this->table->add_row($date, $detail);
+            }
+}
+echo $this->table->generate();
 $this->table->clear();
+
+
+echo '</section> </div>';
+/// end Action Logs
+
+
+
+
 echo '<div id="managerole" class="reveal-modal small" data-reveal style="display: none">';
 echo '<h2>This is a modal.</h2>';
 echo '<a class="close-reveal-modal">&#215;</a>';

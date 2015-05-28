@@ -356,10 +356,8 @@ class Users extends MY_Controller
 
         /**
          * @var $authnLogs models\Tracker[]
-         * @var $actionLogs models\Tracker[]
          */
         $authnLogs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
-        $actionLogs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
 
 
         $localAccess = $user->getLocal();
@@ -420,38 +418,11 @@ class Users extends MY_Controller
             );
         }
 
-        $tab4[] = array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2));
-        foreach ($actionLogs as $ath) {
-            $subtype = $ath->getSubType();
-            if ($subtype == 'modification') {
-                $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
-                $d = unserialize($ath->getDetail());
-                $dstr = '<br />';
-                if (is_array($d)) {
-                    foreach ($d as $k => $v) {
-                        $dstr .= '<b>' . $k . ':</b><br />';
-                        if (is_array($v)) {
-                            foreach ($v as $h => $l) {
-                                if (!is_array($l)) {
-                                    $dstr .= $h . ':' . $l . '<br />';
-                                } else {
-                                    foreach ($l as $lk => $lv) {
-                                        $dstr .= $h . ':' . $lk . '::' . $lv . '<br />';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . '  ' . $dstr;
-                $tab4[] = array('key' => $date, 'val' => $detail);
-            } elseif ($subtype == 'create' || $subtype == 'remove') {
-                $date = $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
-                $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
-                $tab4[] = array('key' => $date, 'val' => $detail);
-            }
-        }
 
+
+
+        $data['actionlogs'] = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
+;
 
         $data['tabs'] = array(
             array(
@@ -472,7 +443,7 @@ class Users extends MY_Controller
             array(
                 'tabid' => 'tab4',
                 'tabtitle' => lang('actionlogs'),
-                'tabdata' => $tab4,
+                'tabdata' => array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2)),
             )
         );
         $data['breadcrumbs'] = $breadcrumbs;
