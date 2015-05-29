@@ -287,7 +287,7 @@ if ($breadcrumbsEnabled === TRUE) {
 <?php
 // list js files to load 
 $jsToLoad1 = array(
-    'jquery-2.1.3.min.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
+    'jquery.min.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
     'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js', 'fastclick.js',
     'foundation.min.js', 'jquery.simplemodal.js', 'Chart.min.js','select2.min.js');
 foreach ($jsToLoad1 as $jsFile) {
