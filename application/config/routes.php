@@ -52,6 +52,7 @@ $route['reports/awaiting'] = 'reports/awaiting/alist';
 // for advanced sp/idp registration form
 $route['providers/idp_registration/advanced'] = 'manage/entityedit/register/idp';
 $route['providers/sp_registration/advanced'] = 'manage/entityedit/register/sp';
+$route['reports/awaiting'] = 'reports/awaitinglist';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

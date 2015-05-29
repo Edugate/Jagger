@@ -56,7 +56,7 @@ foreach ($feds as $k => $i)
     </div>
 
    <div id="queue" class="box small-12 medium-6 columns">
-       <div class="box-header"><h4><a href="<?php echo base_url().'reports/awaiting'?>"><i class="fi-list"></i> <?php echo lang('rr_queue'); ?></a></h4></div>
+       <div class="box-header"><h4><a href="<?php echo base_url().'reports/awaitinglist'; ?>"><i class="fi-list"></i> <?php echo lang('rr_queue'); ?></a></h4></div>
       <div class="box-content"><div id="dashresponsecontainer"></div></div>
     </div>
    </div>
