@@ -2,9 +2,10 @@
     <?php
     $entdelurl = base_url() . 'ajax/bookmarkentity/';
     $feddelurl = base_url() . 'ajax/bookfed/';
-    if(!empty($alertdashboard))
+    if(!empty($alertdashboard) and is_array($alertdashboard))
     {
-        echo '<div data-alert class="alert-box error">'.html_escape($alertdashboard).'</div>';
+        $alertdashboardHTML = implode('<br />',$alertdashboard);
+        echo '<div data-alert class="alert-box error">'.html_escape($alertdashboardHTML).'</div>';
     }
     ?>
  

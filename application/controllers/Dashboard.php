@@ -89,9 +89,15 @@ class Dashboard extends MY_Controller
         if ($this->j_auth->isAdministrator()) {
             $isnotified = $this->session->userdata('alertnotified');
             if (empty($isnotified)) {
+                $data['alertdashboard'] = array();
+                $isSetupOn = $this->config->item('rr_setup_allowed');
                 $isMigrationUptodate = $this->isMigrationUptodate();
                 if ($isMigrationUptodate !== true) {
-                    $data['alertdashboard'] = 'Administration/System (migration) steps are required to make system uptodate';
+                    $data['alertdashboard'][] = 'Administration/System (migration) steps are required to make system uptodate';
+                }
+                if(!empty($isSetupOn))
+                {
+                     $data['alertdashboard'][]  = 'Jagger setup is still enabled. Please disable it in config file';
                 }
                 $this->session->set_userdata(array('alertnotified' => true));
             }
