@@ -182,30 +182,6 @@ class Metadata2import
             $removeexternal = true;
         }
 
-        /**
-         * @todo replace it
-         */
-        /**
-         * begin block
-         */
-        $mailAddresses = array();
-        if (array_key_exists('mailreport', $this->defaults) && $this->defaults['mailreport'] === TRUE) {
-            if (array_key_exists('email', $this->defaults) && !empty($this->defaults['email'])) {
-                $mailAddresses[] = $this->defaults['email'];
-            } else {
-                /**
-                 * @var $a models\AclRole
-                 */
-                $a = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-                $a_members = $a->getMembers();
-                foreach ($a_members as $m) {
-                    $mailAddresses[] = $m->getEmail();
-                }
-            }
-        }
-        /**
-         * end block
-         */
         $time_start = microtime(true);
         $this->metadataInArray = $this->ci->metadata2array->rootConvert($metadata, $full);
         $time_end = microtime(true);
