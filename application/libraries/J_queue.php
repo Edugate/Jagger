@@ -486,9 +486,11 @@ class J_queue
 
         $this->ci->load->library('table');
         if ($queue->getRecipientType() == 'provider') {
+
             $provider = $this->tmp_providers->getOneById($queue->getRecipient());
         }
         if (empty($provider)) {
+            log_message('error',__METHOD__.' entity with ID: '.$queue->getRecipient().' not found in db');
             return false;
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');

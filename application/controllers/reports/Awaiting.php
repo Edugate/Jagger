@@ -30,32 +30,6 @@ class Awaiting extends MY_Controller
         $this->title = lang('title_approval');
     }
 
-    function alist()
-    {
-        if (!$this->j_auth->logged_in()) {
-            redirect('auth/login', 'location');
-
-        }
-        try {
-            $this->load->library(array('zacl', 'j_queue'));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            echo 'Internal server error';
-            return;
-        }
-        $this->title = lang('rr_listawaiting');
-        $data = array(
-            'titlepage' => lang('rr_listawaiting'),
-            'content_view' => 'reports/awaiting_view',
-            'message' => $this->alert,
-            'error_message' => $this->error_message,
-            'breadcrumbs' => array(
-                array('url' => '#', 'name' => lang('rr_listawaiting'), 'type' => 'current'),
-            )
-        );
-        $this->load->view('page', $data);
-    }
 
     function ajaxrefresh()
     {
@@ -471,12 +445,12 @@ class Awaiting extends MY_Controller
                 return false;
             }
             foreach ($domlist as $l) {
-                $entarray = $this->metadata2array->entityDOMToArray($l, TRUE);
+                $entarray = $this->metadata2array->entityDOMToArray($l, true);
             }
             $entity = new models\Provider;
-            $entity->setProviderFromArray(current($entarray), TRUE);
+            $entity->setProviderFromArray(current($entarray), true);
             $entity->setReqAttrsFromArray(current($entarray), $attributesByName);
-            $entity->setActive(TRUE);
+            $entity->setActive(true);
             $entity->setStatic(FALSE);
             if (isset($d['federations'])) {
                 $fe = $entity->getFederations();
@@ -830,7 +804,7 @@ class Awaiting extends MY_Controller
                      * @todo add more recipient like fedowner or fedadmins
                      */
                     $additionalReceipients = array();
-                    if ($this->config->item('notify_requester_if_queue_accepted') === TRUE) {
+                    if ($this->config->item('notify_requester_if_queue_accepted') === true) {
                         $additionalReceipients[] = $queueObj->getCreator()->getEmail();
                     }
                     $sbj = "Approved:" . $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
@@ -945,24 +919,24 @@ class Awaiting extends MY_Controller
                         if (strcasecmp($type, 'Federation') == 0) {
                             $isAdmin = $this->j_auth->isAdministrator();
                             if ($isAdmin) {
-                                $reject_access = TRUE;
+                                $reject_access = true;
                             }
                         }
                     } elseif (strcasecmp($queueAction, 'apply') == 0 && strcasecmp($recipienttype, 'entitycategory') == 0) {
                         $isAdmin = $this->j_auth->isAdministrator();
                         if ($isAdmin) {
-                            $reject_access = TRUE;
+                            $reject_access = true;
                         }
                     } elseif (strcasecmp($queueAction, 'apply') == 0 && strcasecmp($recipienttype, 'regpolicy') == 0) {
                         $isAdmin = $this->j_auth->isAdministrator();
                         if ($isAdmin) {
-                            $reject_access = TRUE;
+                            $reject_access = true;
                         }
                     }
                 }
                 $p = $queueObj->getName();
                 $qtoken = $queueObj->getToken();
-                if ($reject_access === TRUE) {
+                if ($reject_access === true) {
                     $additionalReciepients = array();
                     $m_creator = $queueObj->getCreator();
                     if (!empty($m_creator)) {
@@ -978,7 +952,7 @@ class Awaiting extends MY_Controller
                     $body .= "";
                     log_message('info', 'JAGGER: Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->j_auth->current_user());
                     $this->em->remove($queueObj);
-                    if ($notification === TRUE) {
+                    if ($notification === true) {
                         $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, FALSE);
                     }
                     $this->em->flush();

@@ -1898,7 +1898,6 @@ class Provider
         $r['federations'] = array();
         $membership = $this->getMembership();
         if (!empty($membership) && $membership->count() > 0) {
-            \log_message('debug', 'GKS found membership');
             foreach ($membership as $f) {
                 $state = $f->getJoinState();
                 if ($state != 2) {
@@ -2081,7 +2080,6 @@ class Provider
         }
 
         if (array_key_exists('logo', $ext) && is_array($ext['logo'])) {
-            \log_message('debug', 'GK logo provider');
             foreach ($ext['logo'] as $k => $p) {
                 $extdesc = new ExtendMetadata;
                 $extdesc->setLogo($p['val'], $this, $parentUIInfo, array('width' => $p['width'], 'height' => $p['height'], 'xml:lang' => $p['xml:lang']), $type);

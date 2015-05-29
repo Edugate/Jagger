@@ -26,7 +26,7 @@ class Metadata extends MY_Controller
 {
 
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->output->set_content_type('application/samlmetadata+xml');
@@ -66,7 +66,7 @@ class Metadata extends MY_Controller
             return;
         }
         $publisher = $federation->getPublisher();
-        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+        $validfor = new \DateTime('now', new \DateTimezone('UTC'));
         $creationInstant = $validfor->format('Y-m-d\TH:i:s\Z');
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
@@ -182,7 +182,7 @@ class Metadata extends MY_Controller
          * @var $members models\Provider[]
          */
         $members = $tmpm->getActiveFederationmembersForExport($federation, null);
-        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+        $validfor = new \DateTime('now', new \DateTimezone('UTC'));
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
 
@@ -204,7 +204,7 @@ class Metadata extends MY_Controller
         $xmlOut->startComment();
         $xmlOut->text($topcomment);
         if (!empty($termsofuse)) {
-            $toucomment = PHP_EOL . "TERMS OF USE:" . PHP_EOL . $termsofuse . PHP_EOL;
+            $toucomment = PHP_EOL . 'TERMS OF USE:' . PHP_EOL . $termsofuse . PHP_EOL;
             $xmlOut->text(h_metadataComment($toucomment));
         }
 
@@ -303,8 +303,8 @@ class Metadata extends MY_Controller
 
     private function isCircleFeatureEnabled()
     {
-        $circlemetaFeature = $this->config->item('featdisable');
-        return !(is_array($circlemetaFeature) && isset($circlemetaFeature['circlemeta']) && $circlemetaFeature['circlemeta'] === TRUE);
+        $cnf = $this->config->item('featdisable');
+        return !(isset($cnf['circlemeta']) && $cnf['circlemeta'] === true);
     }
 
     private function isProviderAllowedForCircle(\models\Provider $provider)
@@ -365,7 +365,7 @@ class Metadata extends MY_Controller
          */
         $members = $p->getActiveMembersOfFederations($feds, $excludeType);
 
-        $validfor = new \DateTime("now", new \DateTimezone('UTC'));
+        $validfor = new \DateTime('now', new \DateTimezone('UTC'));
         $idsuffix = $validfor->format('Ymd\THis');
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');

@@ -92,41 +92,6 @@ class Setup extends MY_Controller {
         $this->em->flush();
     }
 
-    private function _populateExampleUsers() {
-        $users = array();
-        $users[] = array(
-            'username' => 'member1',
-            'password' => 'member1',
-            'mail' => 'member1@example.com',
-            'role' => 'Member',
-        );
-        $users[] = array(
-            'username' => 'guest1',
-            'password' => 'guest1',
-            'mail' => 'guest1@example.com',
-            'role' => 'Guest',
-        );
-        foreach ($users as $u) {
-            $user = new models\User;
-            $user->setSalt();
-            $user->setUsername($u['username']);
-            $user->setPassword($u['password']);
-            $user->setEmail($u['mail']);
-            $user->setGivenname('Fn');
-            $user->setSurname('Sn');
-            $user->setLocalEnabled();
-            $user->setFederatedDisabled();
-            $user->setAccepted();
-            $user->setEnabled();
-            $user->setValid();
-            $member = new models\AclRole;
-            $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $u['role']));
-            if (!empty($member)) {
-                $user->setRole($member);
-            }
-            $this->em->persist($user);
-        }
-    }
 
     private function _populateResources() {
         $resources = array(
@@ -143,7 +108,6 @@ class Setup extends MY_Controller {
             array('name' => 'password', 'parent' => 'user', 'default' => 'none'),
         );
         $parents = array();
-        $r_coll = array();
         foreach ($resources as $r) {
             $r_name = $r['name'];
             $parent_name = $r['parent'];
@@ -216,29 +180,7 @@ class Setup extends MY_Controller {
         $this->em->persist($user);
         return true;
     }
-
-    private function _populateRoles() {
-        $guest = new models\AclRole;
-        $guest->setName('Guest');
-        $guest->setDescription('role with lowest permissions');
-        $guest->setType('system');
-        $this->em->persist($guest);
-
-        $user = new models\AclRole;
-        $user->setName('Member');
-        $user->setDescription('role with middle permissions');
-        $user->setParent($guest);
-        $user->setType('system');
-        $this->em->persist($user);
-
-        $admin = new models\AclRole;
-        $admin->setName('Administrator');
-        $admin->setDescription('role with highest permissions, only resource registry admins may be members of this group');
-        $admin->setParent($user);
-        $admin->setType('system');
-        $this->em->persist($admin);
-    }
-
+    
     private function _populateAttributes() {
         $attributes = array(
             array('name' => 'preferredLanguage', 'fullname' => 'Preferred Language', 'oid' => 'urn:oid:2.16.840.1.113730.3.1.39', 'urn' => 'urn:mace:dir:attribute-def:preferredLanguage', 'description' => 'Preferred language: Users preferred language (see RFC1766)'),

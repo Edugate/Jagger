@@ -75,9 +75,9 @@ if (count($attrs_array_newform) > 0)
 
 if (!empty($default_policy))
 {
-    echo '<span class="span-24 clear">';
+
     echo $default_policy;
-    echo '</span>';
+
 
 }
 echo '</div>';
@@ -87,19 +87,19 @@ echo '<div id="fedarptab" class="content" >';
 if (!empty($federations_policy))
 {
     
-    echo '<span><div>'.$federations_policy.'</div></span>';
+    echo '<div>'.$federations_policy.'</div>';
 }
 ?>
 </div>
 <div id="specarptab" class="content" >
-<span class="span-24">
+
 <?php
 if (!empty($specific_policy))
 {
     echo $specific_policy;
 }
 ?>
-</span>
+
 </div>
 <div id="supportedattrtab" class="content" >
 <?php
@@ -134,7 +134,7 @@ $buttons = array(
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo revealBtnsRow($buttons);
-echo '</div></form><a class="close-reveal-modal">&#215;</a></div>';
+echo '</div></form><a class="close-reveal-modal">&#215;</a></div></div>';
 
 /**
  * fedpolicyupdater modal

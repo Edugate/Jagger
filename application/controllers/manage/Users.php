@@ -1,27 +1,23 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
+
 /**
  * ResourceRegistry3
  *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
+ * @package   RR3
+ * @author    Middleware Team HEAnet
+ * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
- */
-
-/**
+ *
  * Users Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Users extends MY_Controller
 {
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->load->helper(array('cert', 'form'));
@@ -40,11 +36,11 @@ class Users extends MY_Controller
     {
         log_message('debug', '(add user) validating form initialized');
         $usernameMinLength = $this->config->item('username_min_length') ?: 5;
-        $this->form_validation->set_rules('username', '' . lang('rr_username') . '', 'trim|required|min_length[' . $usernameMinLength . ']|max_length[128]|user_username_unique[username]|xss_clean');
+        $this->form_validation->set_rules('username', '' . lang('rr_username') . '', 'trim|required|min_length[' . $usernameMinLength . ']|max_length[128]|user_username_unique[username]');
         $this->form_validation->set_rules('email', 'E-mail', 'trim|required|min_length[5]|max_length[128]|valid_email');
         $this->form_validation->set_rules('access', 'Access type', 'trim|required');
         $accesstype = trim($this->input->post('access'));
-        if (!strcasecmp($accesstype, 'fed') == 0) {
+        if ($accesstype === 'fed') {
             $this->form_validation->set_rules('password', '' . lang('rr_password') . '', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
             $this->form_validation->set_rules('passwordconf', '' . lang('rr_passwordconf') . '', 'required|min_length[5]|max_length[23]');
         }
@@ -107,9 +103,7 @@ class Users extends MY_Controller
     {
         $encodeduser = strip_tags($encodeduser);
         if (!$this->ajaxplusadmin() && !$this->ajaxplusowner($encodeduser)) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $username = base64url_decode(trim($encodeduser));
         /**
@@ -119,55 +113,63 @@ class Users extends MY_Controller
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            return;
+            return $this->output->set_status_header(500)->set_output('');
         }
         if (empty($user)) {
-            set_status_header(404);
-            echo 'user not found';
-            return;
+            return $this->output->set_status_header(404)->set_output('User not found');
         }
         $result = $this->getRolenamesToJson($user);
-        echo $result;
-        return;
+        $this->output
+            ->set_status_header(200)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+            ->_display();
+    }
+
+    /**
+     * @param $encodedusername
+     * @return \models\User
+     */
+    private function findUserOrExit($encodedusername)
+    {
+        $username = base64url_decode(trim($encodedusername));
+        /**
+         * @var $user models\User
+         */
+        try {
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+            $this->output->set_status_header(500)->set_output('Internal Server error')->_display();
+            exit;
+        }
+        if (empty($user)) {
+            $this->output->set_status_header(404)->set_output('User not found')->_display();
+            exit;
+        }
+        return $user;
     }
 
     public function currentSroles($encodeduser)
     {
         if (!$this->ajaxplusadmin()) {
             set_status_header(403);
-            echo 'denied';
+            echo 'denied2';
             return;
         }
-        $username = base64url_decode(trim($encodeduser));
-        /**
-         * @var $user models\User
-         */
-        try {
-            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            return;
-        }
+        $user = $this->findUserOrExit($encodeduser);
+        $resultInJsonEncoded = $this->getRolenamesToJson($user, 'system');
 
-        if (empty($user)) {
-            set_status_header(404);
-            echo 'user not found';
-            return;
-        }
-        $result = $this->getRolenamesToJson($user, 'system');
-        echo $result;
-        return;
+        $this->output
+            ->set_status_header(200)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output($resultInJsonEncoded);
     }
 
     public function updateSecondFactor($encodeduser)
     {
         if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo 'denied';
-            return;
-
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
 
@@ -182,37 +184,20 @@ class Users extends MY_Controller
 
         if (!$isAdmin && !$userAllowed) {
             set_status_header(403);
-            echo 'denied';
+            echo 'denied4';
             return;
 
 
         }
 
+        $user = $this->findUserOrExit($encodeduser);
 
-        $username = base64url_decode($encodeduser);
-        /**
-         * @var $user models\User
-         */
-        try {
-            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            echo 'DB problem';
-            return;
-        }
-
-        if (empty($user)) {
-            set_status_header(404);
-            echo 'user not found';
-            return;
-        }
         $secondfactor = $this->input->post('secondfactor');
         $allowed2ef = $this->config->item('2fengines');
         if (empty($allowed2ef) || !is_array($allowed2ef)) {
             $allowed2ef = array();
         }
-        if (in_array($secondfactor, $allowed2ef)) {
+        if (in_array($secondfactor, $allowed2ef, true)) {
             $user->setSecondFactor($secondfactor);
         } else {
             $user->setSecondFactor(null);
@@ -224,9 +209,7 @@ class Users extends MY_Controller
             $this->output->set_content_type('application/json')->set_output(json_encode($result));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            echo 'DB problem';
-            return;
+            return $this->output->set_status_header(500)->set_output('DB issue');
         }
 
     }
@@ -234,40 +217,22 @@ class Users extends MY_Controller
     public function updateRole($encodeduser)
     {
         if (!$this->ajaxplusadmin()) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $username = base64url_decode(trim($encodeduser));
         $loggedUsername = $this->j_auth->current_user();
-        /**
-         * @var $user models\User
-         */
-        try {
-            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            return;
-        }
-        if (empty($user)) {
-            set_status_header(404);
-            echo 'user not found';
-            return;
-        }
 
+        $user = $this->findUserOrExit($encodeduser);
         $inputroles = $this->input->post('checkrole[]');
         $currentRoles = $user->getRoles();
-        foreach ($currentRoles as $r) {
-            $currentRolename = $r->getName();
-            $roleType = $r->getType();
-            if (!in_array($currentRolename, $inputroles) && ($roleType === 'system')) {
+        foreach ($currentRoles as $resultInJson) {
+            $currentRolename = $resultInJson->getName();
+            $roleType = $resultInJson->getType();
+            if (($roleType === 'system') && !in_array($currentRolename, $inputroles, true)) {
                 if (strcasecmp($loggedUsername, $username) == 0 && strcasecmp($currentRolename, 'administrator') == 0) {
-                    set_status_header(403);
-                    echo 'You are not allowed to remove Administrator role from your own account';
-                    return;
+                    return $this->output->set_status_header(403)->set_output('You are not allowed to remove Administrator role from your own account');
                 }
-                $user->unsetRole($r);
+                $user->unsetRole($resultInJson);
             }
         }
         /**
@@ -276,53 +241,34 @@ class Users extends MY_Controller
         $sysroles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
         foreach ($sysroles as $newRole) {
             $newRolename = $newRole->getName();
-            if (in_array($newRolename, $inputroles)) {
+            if (in_array($newRolename, $inputroles, true)) {
                 $user->setRole($newRole);
             }
         }
         $this->em->persist($user);
         $this->em->flush();
-        $r = $this->getRolenamesToJson($user);
-        echo $r;
-        return;
+        $resultInJson = $this->getRolenamesToJson($user);
+        $this->output->set_content_type('application/json')->set_output($resultInJson);
     }
 
     public function add()
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo 'Permission denied';
-            return;
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in() || !$this->j_auth->isAdministrator()) {
+            return $this->output->set_status_header(403)->set_output('Permission denied');
         }
         $this->load->library('zacl');
-        $access = $this->zacl->check_acl('user', 'create', 'default', '');
-        if (!$access) {
-            set_status_header(403);
-            echo 'Permission denied';
-            return;
-        }
         if ($this->addSubmitValidate()) {
             $username = $this->input->post('username');
             $email = $this->input->post('email');
             $fname = $this->input->post('fname');
             $sname = $this->input->post('sname');
             $access = $this->input->post('access');
-            if (!strcasecmp($access, 'fed') == 0) {
-                $password = $this->input->post('password');
-            } else {
+            $password = $this->input->post('password');
+            if (strcasecmp($access, 'fed') == 0) {
                 $password = str_generator();
             }
             $user = new models\User;
-            $user->setSalt();
-            $user->setUsername($username);
-            $user->setPassword($password);
-            $user->setEmail($email);
-            $user->setGivenname($fname);
-            $user->setSurname($sname);
-            $user->setAccessType($access);
-            $user->setAccepted();
-            $user->setEnabled();
-            $user->setValid();
+            $user->genNewValidUser($username, $password, $email, $fname, $sname, $access);
             /**
              * @var $member models\AclRole
              */
@@ -344,7 +290,7 @@ class Users extends MY_Controller
                 echo 'OK';
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
-                show_error('Error occurred', 500);
+                return $this->output->set_status_header(500)->set_output('Internal server error');
             }
         } else {
             $errors = validation_errors('<div>', '</div>');
@@ -355,6 +301,26 @@ class Users extends MY_Controller
         }
     }
 
+    private function getBookmarks(models\User $user)
+    {
+        $bookmarksSections = array('idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'fed' => lang('federations'));
+        $board = $user->getBookmarks();
+
+        $bookmarks = array();
+        foreach (array_keys($board) as $sect) {
+            $bookmarks[] = '<p><b>' . $bookmarksSections[$sect] . '</b><ul class="no-bullet">';
+            foreach ($board[$sect] as $key => $value) {
+                if ($sect === 'fed') {
+                    $bookmarks[] = '<li><a href="' . base_url() . 'federations/manage/show/' . $value['url'] . '">' . $value['name'] . '</a></li>';
+                } else {
+                    $bookmarks[] = '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
+                }
+            }
+            $bookmarks[] = '</ul></p>';
+        }
+        return $bookmarks;
+    }
+
     public function show($encodedUsername)
     {
         if (!$this->j_auth->logged_in()) {
@@ -362,22 +328,8 @@ class Users extends MY_Controller
         }
         $this->load->library('zacl');
         $encodedUsername = trim($encodedUsername);
-        $username = base64url_decode($encodedUsername);
         $limitAuthnRows = 15;
-        /**
-         * @var $user models\User
-         */
-        try {
-            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            show_error('Internal server error', 500);
-
-        }
-        if (empty($user)) {
-            show_error('User not found', 404);
-        }
-
+        $user = $this->findUserOrExit($encodedUsername);
         $loggedUsername = $this->j_auth->current_user();
         $isOwner = (strcasecmp($loggedUsername, $user->getUsername()) == 0);
         $isAdmin = $this->j_auth->isAdministrator();
@@ -387,42 +339,35 @@ class Users extends MY_Controller
             return $this->load->view('page', array('error' => lang('error403'), 'content_view' => 'nopermission'));
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
+        $breadcrumbs = array(
+            array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
+            array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
+        );
         if (!$accessListUsers) {
             $breadcrumbs = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
                 array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
             );
-        } else {
-            $breadcrumbs = array(
-                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
-                array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
-            );
         }
-
         $passEditRow = array('key' => lang('rr_password'), 'val' => '<i class="fi-lock"></i>');
         if ($hasWriteAccess) {
-            $passEditRow = array('key' => lang('rr_password'), 'val' => '<span><a href="' . base_url('manage/users/passedit/' . $encodedUsername . '') . '" class="edit" title="edit" ><i class="fi-pencil"></i></a></span>');
+            $passEditRow['val'] = '<a href="' . base_url('manage/users/passedit/' . $encodedUsername . '') . '" title="edit" ><i class="fi-pencil"></i></a>';
         }
 
-        /**
-         * @var $authn_logs models\Tracker[]
-         * @var $action_logs models\Tracker[]
-         */
-        $authn_logs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
-        $action_logs = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
 
-        $data['caption'] = html_escape($user->getUsername());
-        $local_access = $user->getLocal();
-        $federated_access = $user->getFederated();
+
+
+        $localAccess = $user->getLocal();
+        $federatedAccess = $user->getFederated();
 
         $systemTwoFactorAuthn = $this->config->item('twofactorauthn');
         $secondFactor = $user->getSecondFactor();
-        $access_type_str = array();
-        if ($local_access) {
-            $access_type_str[] = lang('rr_local_authn');
+        $accessTypeStr = array();
+        if ($localAccess) {
+            $accessTypeStr[] = lang('rr_local_authn');
         }
-        if ($federated_access) {
-            $access_type_str[] = lang('federated_access');
+        if ($federatedAccess) {
+            $accessTypeStr[] = lang('federated_access');
         }
 
         $manageBtn = '';
@@ -430,26 +375,22 @@ class Users extends MY_Controller
             $manageBtn = $this->manageRoleBtn($encodedUsername);
         }
         $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_twofactorauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
-
-        $tab1 = array(
-            array('key' => lang('rr_username'), 'val' => htmlspecialchars($user->getUsername())),
-            $passEditRow,
-            array('key' => ''.lang('rr_userfullname').'', 'val' => html_escape($user->getFullname())),
-            array('key' => ''.lang('rr_uemail').'', 'val' => html_escape($user->getEmail())),
-            array('key' => ''.lang('rr_typeaccess').'', 'val' => implode(", ", $access_type_str)),
-            array('key' => ''.lang('rr_assignedroles').'', 'val' => '<span id="currentroles">' . implode(", ", $user->getRoleNames()) . '</span> ' . $manageBtn),
-            array('key' => ''.lang('rrnotifications').'', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encodedUsername . '', lang('rrmynotifications')))
-        );
-
-        $this->load->library('rrpreference');
         $allowed2fglobal = $this->rrpreference->getStatusByName('user2fset');
-
-
+        $bb = '';
         if ($isAdmin || ($isOwner && $allowed2fglobal)) {
             $bb = $this->manage2fBtn($encodedUsername);
-        } else {
-            $bb = '';
         }
+
+        $tab1 = array(
+            array('key' => lang('rr_username'), 'val' => html_escape($user->getUsername())),
+            $passEditRow,
+            array('key' => '' . lang('rr_userfullname') . '', 'val' => html_escape($user->getFullname())),
+            array('key' => '' . lang('rr_uemail') . '', 'val' => html_escape($user->getEmail())),
+            array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(', ', $accessTypeStr)),
+            array('key' => '' . lang('rr_assignedroles') . '', 'val' => '<span id="currentroles">' . implode(', ', $user->getRoleNames()) . '</span> ' . $manageBtn),
+            array('key' => '' . lang('rrnotifications') . '', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encodedUsername . '', lang('rrmynotifications')))
+        );
+
         if ($secondFactor) {
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="' . $secondFactor . ' ">' . $secondFactor . '</span>';
             if ($systemTwoFactorAuthn) {
@@ -461,77 +402,29 @@ class Users extends MY_Controller
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="none">none</span>';
             $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . $bb);
         }
-        $tab2[] = array('data' => array('data' => 'Dashboard', 'class' => 'highlight', 'colspan' => 2));
-        $bookmarks = '';
-        $userpref = $user->getUserpref();
-        if (isset($userpref['board'])) {
-            $board = $userpref['board'];
-        }
 
-        if (!empty($board) && is_array($board)) {
-            if (array_key_exists('idp', $board) && is_array($board['idp'])) {
-                $bookmarks .= '<p><b>'.lang('identityproviders').'</b><ul class="no-bullet">';
-                foreach ($board['idp'] as $key => $value) {
-                    $bookmarks .= '<li><a href="'.base_url('providers/detail/show/'.$key.'').'">'. $value['name'].'</a><br /><small>' . $value['entity'] . '</small></li>';
-                }
-                $bookmarks .= '</ul></p>';
-            }
-            if (array_key_exists('sp', $board) && is_array($board['sp'])) {
-                $bookmarks .= '<p><b>'.lang('serviceproviders') .'</b><ul class="no-bullet">';
-                foreach ($board['sp'] as $key => $value) {
-                    $bookmarks .= '<li><a href="' . base_url('providers/detail/show/' . $key . '') . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small></li>';
-                }
-                $bookmarks .= '</ul></p>';
-            }
-            if (array_key_exists('fed', $board) && is_array($board['fed'])) {
-                $bookmarks .= '<p><b>' . lang('federations') . '</b><ul class="no-bullet">';
-                foreach ($board['fed'] as $key => $value) {
-                    $bookmarks .= '<li><a href="' . base_url() . 'federations/manage/show/' . $value['url'] . '">' . $value['name'] . '</a></li>';
-                }
-                $bookmarks .= '</ul></p>';
-            }
-        }
-        $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => $bookmarks);
+        $bookmarks = $this->getBookmarks($user);
+        $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => implode('', $bookmarks));
+
+
         $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limitAuthnRows, 'class' => 'highlight', 'colspan' => 2));
-        foreach ($authn_logs as $ath) {
 
-            $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
-            $detail = $ath->getDetail() . "<br /><small><i>" . $ath->getAgent() . "</i></small>";
-            $tab3[] = array('key' => $date, 'val' => $detail);
+        /**
+         * @var $authnLogs models\Tracker[]
+         */
+        $authnLogs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
+        foreach ($authnLogs as $ath) {
+            $tab3[] = array(
+                'key' => $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s'),
+                'val' => $ath->getDetail() . '<br /><small><i>' . $ath->getAgent() . '</i></small>'
+            );
         }
 
-        $tab4[] = array('data' => array('data' => lang('actionlogs'), 'class' => 'highlight', 'colspan' => 2));
-        foreach ($action_logs as $ath) {
-            $subtype = $ath->getSubType();
-            if ($subtype == 'modification') {
-                $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
-                $d = unserialize($ath->getDetail());
-                $dstr = '<br />';
-                if (is_array($d)) {
-                    foreach ($d as $k => $v) {
-                        $dstr .= '<b>' . $k . ':</b><br />';
-                        if (is_array($v)) {
-                            foreach ($v as $h => $l) {
-                                if (!is_array($l)) {
-                                    $dstr .= $h . ':' . $l . '<br />';
-                                } else {
-                                    foreach ($l as $lk => $lv) {
-                                        $dstr .= $h . ':' . $lk . '::' . $lv . '<br />';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $dstr;
-                $tab4[] = array('key' => $date, 'val' => $detail);
-            } elseif ($subtype == 'create' || $subtype == 'remove') {
-                $date = $ath->getCreated()->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
-                $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
-                $tab4[] = array('key' => $date, 'val' => $detail);
-            }
-        }
 
+
+
+        $data['actionlogs'] = $this->em->getRepository("models\Tracker")->findBy(array('user' => $user->getUsername()), array('createdAt' => 'DESC'));
+;
 
         $data['tabs'] = array(
             array(
@@ -549,16 +442,9 @@ class Users extends MY_Controller
                 'tabtitle' => lang('authnlogs'),
                 'tabdata' => $tab3,
             ),
-            array(
-                'tabid' => 'tab4',
-                'tabtitle' => lang('actionlogs'),
-                'tabdata' => $tab4,
-            )
         );
-
         $data['breadcrumbs'] = $breadcrumbs;
-
-        $data['titlepage'] = lang('rr_detforuser') . ': ' . $data['caption'];
+        $data['titlepage'] = lang('rr_detforuser') . ': ' . html_escape($user->getUsername()) ;
         $data['content_view'] = 'manage/userdetail_view';
         $this->load->view('page', $data);
     }
@@ -629,7 +515,7 @@ class Users extends MY_Controller
         foreach ($users as $u) {
             $encodedUsername = base64url_encode($u->getUsername());
             $roles = $u->getRoleNames();
-            if (in_array('Administrator', $roles)) {
+            if (in_array('Administrator', $roles, true)) {
                 $action = '';
             } else {
                 $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encodedUsername . '"><i class="fi-trash"></i><a>';
@@ -637,7 +523,7 @@ class Users extends MY_Controller
             $last = $u->getLastlogin();
             $lastlogin = '';
             if (!empty($last)) {
-                $lastlogin = $last->modify('+ '.j_auth::$timeOffset.' seconds')->format('Y-m-d H:i:s');
+                $lastlogin = $last->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
             }
             $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(), $action);
         }
@@ -703,7 +589,7 @@ class Users extends MY_Controller
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
             if (!empty($user)) {
                 $userRoles = $user->getRoleNames();
-                if (in_array('Administrator', $userRoles)) {
+                if (in_array('Administrator', $userRoles, true)) {
                     set_status_header(403);
                     echo 'You cannot remover user who has Admninitrator role set';
                     return;
@@ -728,42 +614,6 @@ class Users extends MY_Controller
 
     }
 
-    public function accessedit($encodedUsername)
-    {
-
-        if (!$this->j_auth->logged_in()) {
-            redirect('auth/login', 'location');
-        }
-        $this->load->library('zacl');
-        $username = base64url_decode($encodedUsername);
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        if (empty($user)) {
-            show_error(lang('error404'), 404);
-        }
-        $hasManageAccess = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
-        if (!$hasManageAccess) {
-            $data['error'] = lang('error403');
-            $data['content_view'] = 'nopermission';
-            return $this->load->view('page', $data);
-        }
-        if ($this->accessmodifySubmitValidate() === TRUE) {
-            $this->input->post('authz');
-        } else {
-            $formAttributes = array('id' => 'formver2', 'class' => 'span-16');
-            $action = current_url();
-            $form = form_open($action, $formAttributes) . form_fieldset('Access manage for user ' . $username);
-            $form .= '<ol><li>' . form_label('Authorization', 'authz') . '<ol>';
-            $form .= '<li>Local authentication' . form_checkbox('authz[local]', '1', $user->getLocal()) . '</li>';
-            $form .= '<li>Federated access' . form_checkbox('authz[federated]', '1', $user->getFederated()) . '</li>';
-            $form .= '</ol></li><li>' . form_label('Account enabled', 'status');
-            $form .= '<ol><li>' . form_checkbox('status', '1', $user->isEnabled()) . '</li>';
-            $form .= '</ol></li></ol><div class="buttons"><button type="submit" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
-            $form .= form_fieldset_close() . form_close();
-            $data['content_view'] = 'manage/user_access_edit_view';
-            $data['form'] = $form;
-            return $this->load->view('page', $data);
-        }
-    }
 
     public function passedit($encodedUsername)
     {

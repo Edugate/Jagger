@@ -68,7 +68,7 @@ class Entityedit extends MY_Controller
                 }
             }
             $optArgsStr .= $entityParam . '=' . urlencode($metadataUrl);
-            $remoteUrl = $remoteUrl . $optArgsStr;
+            $remoteUrl .= $optArgsStr;
             $this->curl->create('' . $remoteUrl . '');
         } else {
             $params = $optArgs;
@@ -899,7 +899,8 @@ class Entityedit extends MY_Controller
              */
             $data['federations']['none'] = lang('noneatthemoment');
             foreach ($fedCollection as $key) {
-                $data['federations'][$key->getName()] = $key->getName();
+                $keyName = $key->getName();
+                $data['federations'][''.$keyName.''] = $keyName;
             }
         }
 
@@ -1041,7 +1042,7 @@ class Entityedit extends MY_Controller
                             $isactive = $federation->getActive();
                             if ($ispublic && $isactive) {
                                 $membership = new models\FederationMembers;
-                                $membership->setJoinState('1');
+                                $membership->setJoinstate('1');
                                 $membership->setProvider($ent);
                                 $membership->setFederation($federation);
                                 $ent->getMembership()->add($membership);

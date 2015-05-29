@@ -54,7 +54,7 @@ class Arpsexcl extends MY_Controller
         if (!$hasWriteAccess || $locked) {
             $data = array(
                 'content_view' => 'nopermission',
-                'error' => '' . lang('rrerror_noperm_provedit') . ': ' . $idp->getEntityid() . '',
+                'error' => '' . lang('rrerror_noperm_provedit') . ': ' . $idp->getEntityId() . '',
                 'breadcrumbs' => array(
                     array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
                     array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
