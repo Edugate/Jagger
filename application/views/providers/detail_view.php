@@ -69,7 +69,7 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                     echo '</li>';
                 }
                 echo '<li class="tab-title">';
-                echo '<a href="#providerlogtab" data-reveal-ajax-tab="' . base_url() . 'providers/detail/showlogs/' . $entid . '">' . lang('tabLogs') . '/' . lang('tabStats') . '</a>';
+                echo '<a href="#providerlogtab">' . lang('tabLogs') . '/' . lang('tabStats') . '</a>';
                 echo '</li>';
                 ?>
             </ul>
@@ -239,7 +239,7 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                 echo '</div>';
             }
             // logs tab reveal //
-            echo '<div id="providerlogtab" class="content">';
+            echo '<div id="providerlogtab" class="content" data-reveal-ajax-tab="' . base_url() . 'providers/detail/showlogs/' . $entid . '">';
             echo '</div>';
             // end logs
             echo '</div>';
