@@ -559,8 +559,8 @@ var GINIT = {
         });
 
         $('#providerlogtab').on('toggled', function (event, tab) {
-            var oko = tab.find("[data-reveal-ajax-tab]").first();
-            var link = oko.attr("data-reveal-ajax-tab");
+            console.log(tab);
+            var link = $(this).attr("data-reveal-ajax-tab");
             if (link !== undefined) {
                 $.ajax({
                     cache: true,
