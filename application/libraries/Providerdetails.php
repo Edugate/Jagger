@@ -271,6 +271,35 @@ class Providerdetails
 		return $result;
 	}
 
+    private function genContactsTabs(\models\Provider $ent)
+    {
+        $result = array();
+        $contacts = $ent->getContacts();
+        $contactsTypeToTranslate = array(
+            'technical' => lang('rr_cnt_type_tech'),
+            'administrative' => lang('rr_cnt_type_admin'),
+            'support' => lang('rr_cnt_type_support'),
+            'billing' => lang('rr_cnt_type_bill'),
+            'other' => lang('rr_cnt_type_other')
+        );
+        if (count($contacts) > 0) {
+            foreach ($contacts as $c) {
+                $part = array(
+                    array('header'=>lang('rr_contact')),
+                    array('name'=>lang('type'),'value'=>$contactsTypeToTranslate['' . strtolower($c->getType()) . '']),
+                    array('name'=>lang('rr_contactfirstname'),'value'=>html_escape($c->getGivenname())),
+                    array('name'=> lang('rr_contactlastname'),'value'=>html_escape($c->getSurname())),
+                    array('name'=>lang('rr_contactemail'),'value'=>'<span data-jagger-contactmail="' . html_escape($c->getEmail()) . '">' . html_escape($c->getEmail()) . '</span>'),
+                );
+                $result = array_merge($result,$part);
+            }
+        } else {
+            $result[]['2cols'] = '<div data-alert class="alert-box warning">' . lang('rr_notset') . '</div>';
+        }
+        return $result;
+
+    }
+
 	public function generateForControllerProvidersDetail(\models\Provider $ent)
 	{
 
@@ -290,34 +319,33 @@ class Providerdetails
 		$params = array(
 			'enable_classes' => true,
 		);
-		$sppart = FALSE;
-		$idppart = FALSE;
+		$sppart = false;
+		$idppart = false;
 		$type = strtolower($ent->getType());
 		$data['type'] = $type;
 		$edit_attributes = '';
+        $entmenu = array();
 		$edit_policy = '';
+        $presubtitle = '';
 
 
 		if ($type === 'idp') {
 			MY_Controller::$menuactive = 'idps';
-			$idppart = TRUE;
-			$data['presubtitle'] = lang('identityprovider');
+			$idppart = true;
+			$presubtitle = lang('identityprovider');
 		} elseif ($type === 'sp') {
 			MY_Controller::$menuactive = 'sps';
-			$sppart = TRUE;
-			$data['presubtitle'] = lang('serviceprovider');
-		} elseif ($type === 'both') {
-			$sppart = TRUE;
-			$idppart = TRUE;
-			$data['presubtitle'] = lang('rr_asboth');
+			$sppart = true;
+			$presubtitle = lang('serviceprovider');
+		} else {
+			$sppart = true;
+			$idppart = true;
+			$presubtitle = lang('rr_asboth');
 		}
+        $data['presubtitle'] = $presubtitle;
 		$id = $ent->getId();
-		$hasReadAccess = $this->CI->zacl->check_acl($id, 'read', 'entity', '');
 		$hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
 		$hasManageAccess = $this->CI->zacl->check_acl($id, 'manage', 'entity', '');
-		if (!$hasReadAccess) {
-			return false;
-		}
 		// off canvas menu for provider
 		$entmenu = array();
 
@@ -344,7 +372,7 @@ class Providerdetails
 		} else {
 			$edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon button small" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
 			$entmenu[0] = array('name' => '' . lang('rr_editentity') . '', 'link' => '' . base_url() . 'manage/entityedit/show/' . $id . '', 'class' => '');
-			$data['showclearcache'] = TRUE;
+			$data['showclearcache'] = true;
 		}
 		$data['edit_link'] = $edit_link;
 		$data['entmenu'] = &$entmenu;
@@ -359,7 +387,7 @@ class Providerdetails
 			}
 			if ($v->getElement() === 'Logo') {
 				$providerlogourl = $v->getLogoValue();
-				$is_logo = TRUE;
+				$is_logo = true;
 			}
 		}
 		if (!empty($providerlogourl)) {
@@ -429,7 +457,7 @@ class Providerdetails
 		$regauthority = $ent->getRegistrationAuthority();
 		$confRegAuth = $this->CI->config->item('registrationAutority');
 		$confRegLoad = $this->CI->config->item('load_registrationAutority');
-		$confRegistrationPolicy = $this->CI->config->item('registrationPolicy');
+		$confRegistPolicy = $this->CI->config->item('registrationPolicy');
 		$regauthoritytext = null;
 		if (empty($regauthority)) {
 			if ($isLocal && !empty($confRegLoad) && !empty($confRegAuth)) {
@@ -463,8 +491,8 @@ class Providerdetails
 					$regpolicy_value .= '<div><b>' . $v->getLang() . '</b>: <a href="' . $v->getUrl() . '" target="_blank">' . html_escape($v->getName()) . '</a> ' . $l . '</div>';
 				}
 			}
-		} elseif (!empty($confRegistrationPolicy) && !empty($confRegLoad)) {
-			$regpolicy_value .= '<b>en:</b> ' . $confRegistrationPolicy . ' <div data-alert class="alert-box info">' . lang('loadedfromglobalcnf') . '</div>';
+		} elseif (!empty($confRegistPolicy) && !empty($confRegLoad)) {
+			$regpolicy_value .= '<b>en:</b> ' . $confRegistPolicy . ' <div data-alert class="alert-box info">' . lang('loadedfromglobalcnf') . '</div>';
 		}
 		$d[++$i]['name'] = lang('rr_regpolicy');
 		$d[$i]['value'] = $regpolicy_value;
@@ -996,32 +1024,8 @@ class Providerdetails
 		$subresult[12] = array('section' => 'entcats', 'title' => '' . lang('tabEntcats') . '', 'data' => $d);
 
 
-		$d = array();
-		$i = 0;
-		$contacts = $ent->getContacts();
-		$contactsTypeToTranslate = array(
-			'technical' => lang('rr_cnt_type_tech'),
-			'administrative' => lang('rr_cnt_type_admin'),
-			'support' => lang('rr_cnt_type_support'),
-			'billing' => lang('rr_cnt_type_bill'),
-			'other' => lang('rr_cnt_type_other')
-		);
-		if (count($contacts) > 0) {
-			foreach ($contacts as $c) {
-				$d[++$i]['header'] = lang('rr_contact');
-				$d[++$i]['name'] = lang('type');
-				$d[$i]['value'] = $contactsTypeToTranslate['' . strtolower($c->getType()) . ''];
-				$d[++$i]['name'] = lang('rr_contactfirstname');
-				$d[$i]['value'] = html_escape($c->getGivenname());
-				$d[++$i]['name'] = lang('rr_contactlastname');
-				$d[$i]['value'] = html_escape($c->getSurname());
-				$d[++$i]['name'] = lang('rr_contactemail');
-				$d[$i]['value'] = '<span data-jagger-contactmail="' . html_escape($c->getEmail()) . '">' . html_escape($c->getEmail()) . '</span>';
-			}
-		} else {
-			$d[++$i]['2cols'] = '<div data-alert class="alert-box warning">' . lang('rr_notset') . '</div>';
-		}
-		$subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
+        $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $this->genContactsTabs($ent));
+
 		$d = array();
 		$i = 0;
 		if ($idppart) {
