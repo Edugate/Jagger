@@ -368,7 +368,7 @@ class Providerdetails
 		$type = strtolower($ent->getType());
 		$data['type'] = $type;
 		$edit_attributes = '';
-        $entmenu = array();
+
 		$edit_policy = '';
 
 		if ($type === 'idp') {
@@ -389,8 +389,7 @@ class Providerdetails
 		$hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
 		$hasManageAccess = $this->CI->zacl->check_acl($id, 'manage', 'entity', '');
 		// off canvas menu for provider
-		$entmenu = array();
-
+        $entmenu = array();
 
 		$edit_link = '';
 
@@ -417,7 +416,7 @@ class Providerdetails
 			$data['showclearcache'] = true;
 		}
 		$data['edit_link'] = $edit_link;
-		$data['entmenu'] = &$entmenu;
+
 		$extend = $ent->getExtendMetadata();
 		/**
 		 * get first assinged logo to display on site
@@ -1017,8 +1016,7 @@ class Providerdetails
 
 
 		$xmldata = $this->CI->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), TRUE);
-		$xmlmetatitle = '<img src="' . base_url() . 'images/jicons/xml3.svg" style="height: 20px"/> ';
-		$subresult[1] = array('section' => 'xmlmeta', 'title' => $xmlmetatitle, 'data' => '<code>' . $this->CI->geshilib->highlight($xmldata, 'xml', $params) . '</code>');
+		$subresult[1] = array('section' => 'xmlmeta', 'title' => '<i class="fi-clipboard-notes"></i>', 'data' => '<code>' . $this->CI->geshilib->highlight($xmldata, 'xml', $params) . '</code>');
 
 		$d = array();
 		if (count($entityCategories) == 0) {
@@ -1337,6 +1335,7 @@ class Providerdetails
 
 		$data['tabs'] = $result;
 		Detail::$alerts = $alerts;
+        $data['entmenu'] = $entmenu;
 		return $data;
 	}
 
