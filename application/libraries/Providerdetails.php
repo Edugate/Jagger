@@ -30,7 +30,7 @@ class Providerdetails
 		$this->em = $this->CI->doctrine->em;
 	}
 
-	private function _genCertView(models\Certificate $cert)
+	private function genCertView(models\Certificate $cert)
 	{
 		$certusage = $cert->getCertuse();
 		if ($certusage === 'signing') {
@@ -342,6 +342,8 @@ class Providerdetails
         return $result;
     }
 
+
+
 	public function generateForControllerProvidersDetail(\models\Provider $ent)
 	{
 
@@ -581,6 +583,9 @@ class Providerdetails
 		} else {
 			$d[$i]['value'] = '<span class="lbl lbl-alert">' . $validfrom . ' <b>--</b> ' . $validto . '</span>';
 		}
+
+
+
 		$result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
 
 
@@ -961,6 +966,10 @@ class Providerdetails
 			}
 		}
 		$subresult[6] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
+
+
+        // Begin Certificates
+
 		$d = array();
 		$tcerts = $ent->getCertificates();
 		$certs = array();
@@ -971,7 +980,7 @@ class Providerdetails
 			$d[]['msection'] = 'IDPSSODescriptor';
 			if (array_key_exists('idpsso', $certs)) {
 				foreach ($certs['idpsso'] as $v1) {
-					$c = $this->_genCertView($v1);
+					$c = $this->genCertView($v1);
 					foreach ($c as $v2) {
 						$d[] = $v2;
 					}
@@ -981,7 +990,7 @@ class Providerdetails
 			if (array_key_exists('aa', $certs)) {
 				$d[]['msection'] = 'AttributeAuthorityDescriptor';
 				foreach ($certs['aa'] as $v1) {
-					$c = $this->_genCertView($v1);
+					$c = $this->genCertView($v1);
 					foreach ($c as $v2) {
 						$d[] = $v2;
 					}
@@ -992,17 +1001,21 @@ class Providerdetails
 			$d[]['msection'] = 'SPSSODescriptor';
 			if (array_key_exists('spsso', $certs)) {
 				foreach ($certs['spsso'] as $v1) {
-					$c = $this->_genCertView($v1);
+					$c = $this->genCertView($v1);
 					foreach ($c as $v2) {
 						$d[] = $v2;
 					}
 				}
 			}
 		}
+        $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+
 		/**
-		 * end certs
+		 * End Certificates
 		 */
-		$subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+
+
+
 		$xmldata = $this->CI->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), TRUE);
 		$xmlmetatitle = '<img src="' . base_url() . 'images/jicons/xml3.svg" style="height: 20px"/> ';
 		$subresult[1] = array('section' => 'xmlmeta', 'title' => $xmlmetatitle, 'data' => '<code>' . $this->CI->geshilib->highlight($xmldata, 'xml', $params) . '</code>');
