@@ -271,11 +271,54 @@ class Providerdetails
 		return $result;
 	}
 
-    private function genContactsTabs(\models\Provider $ent)
+    private function genOrgTab(\models\Provider $ent)
+    {
+
+        $d = array();
+        $i = 0;
+        $d[++$i]['name'] = lang('e_orgname');
+        $lname = $ent->getMergedLocalName();
+        $lvalues = '';
+        if (count($lname) > 0) {
+            foreach ($lname as $k => $v) {
+                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
+            }
+            $d[$i]['value'] = $lvalues;
+        } else {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+        }
+        $d[++$i]['name'] = lang('e_orgdisplayname');
+        $ldisplayname = $ent->getMergedLocalDisplayName();
+        $lvalues = '';
+        if (count($ldisplayname) > 0) {
+            foreach ($ldisplayname as $k => $v) {
+                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
+            }
+            $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
+        } else {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+        }
+        $d[++$i]['name'] = lang('e_orgurl');
+        $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
+        if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0) {
+            $lvalues = '';
+            foreach ($localizedHelpdesk as $k => $v) {
+                $lvalues .= '<div><b>' . $k . ':</b> ' . html_escape($v) . '</div>';
+            }
+            $d[$i]['value'] = $lvalues;
+        } else {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+        }
+
+        return $d;
+
+
+    }
+    private function genContactsTab(\models\Provider $ent)
     {
         $result = array();
         $contacts = $ent->getContacts();
-        $contactsTypeToTranslate = array(
+        $typesInLang = array(
             'technical' => lang('rr_cnt_type_tech'),
             'administrative' => lang('rr_cnt_type_admin'),
             'support' => lang('rr_cnt_type_support'),
@@ -286,7 +329,7 @@ class Providerdetails
             foreach ($contacts as $c) {
                 $part = array(
                     array('header'=>lang('rr_contact')),
-                    array('name'=>lang('type'),'value'=>$contactsTypeToTranslate['' . strtolower($c->getType()) . '']),
+                    array('name'=>lang('type'),'value'=>$typesInLang['' . strtolower($c->getType()) . '']),
                     array('name'=>lang('rr_contactfirstname'),'value'=>html_escape($c->getGivenname())),
                     array('name'=> lang('rr_contactlastname'),'value'=>html_escape($c->getSurname())),
                     array('name'=>lang('rr_contactemail'),'value'=>'<span data-jagger-contactmail="' . html_escape($c->getEmail()) . '">' . html_escape($c->getEmail()) . '</span>'),
@@ -297,7 +340,6 @@ class Providerdetails
             $result[]['2cols'] = '<div data-alert class="alert-box warning">' . lang('rr_notset') . '</div>';
         }
         return $result;
-
     }
 
 	public function generateForControllerProvidersDetail(\models\Provider $ent)
@@ -326,8 +368,6 @@ class Providerdetails
 		$edit_attributes = '';
         $entmenu = array();
 		$edit_policy = '';
-        $presubtitle = '';
-
 
 		if ($type === 'idp') {
 			MY_Controller::$menuactive = 'idps';
@@ -544,47 +584,9 @@ class Providerdetails
 		$result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
 
 
-		/**
-		 * ORG tab
-		 */
-		$d = array();
-		$i = 0;
-		$d[++$i]['name'] = lang('e_orgname');
-		$lname = $ent->getMergedLocalName();
-		$lvalues = '';
-		if (count($lname) > 0) {
-			foreach ($lname as $k => $v) {
-				$lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
-			}
-			$d[$i]['value'] = $lvalues;
-		} else {
-			$d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
-		}
-		$d[++$i]['name'] = lang('e_orgdisplayname');
-		$ldisplayname = $ent->getMergedLocalDisplayName();
-		$lvalues = '';
-		if (count($ldisplayname) > 0) {
-			foreach ($ldisplayname as $k => $v) {
-				$lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
-			}
-			$d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
-		} else {
-			$d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
-		}
-		$d[++$i]['name'] = lang('e_orgurl');
-		$localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
-		if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0) {
-			$lvalues = '';
-			foreach ($localizedHelpdesk as $k => $v) {
-				$lvalues .= '<div><b>' . $k . ':</b> ' . html_escape($v) . '</div>';
-			}
-			$d[$i]['value'] = $lvalues;
-		} else {
-			$d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
-		}
 
 
-		$subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $d);
+        $subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $this->genOrgTab($ent));
 
 
 		/**
@@ -1024,7 +1026,7 @@ class Providerdetails
 		$subresult[12] = array('section' => 'entcats', 'title' => '' . lang('tabEntcats') . '', 'data' => $d);
 
 
-        $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $this->genContactsTabs($ent));
+        $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $this->genContactsTab($ent));
 
 		$d = array();
 		$i = 0;
