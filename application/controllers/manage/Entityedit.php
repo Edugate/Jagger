@@ -196,14 +196,12 @@ class Entityedit extends MY_Controller
             $register = true;
             $this->type = strtoupper($id);
         }
+        $loggedin = $this->j_auth->logged_in();
         $optValidationsPassed = true;
         $result = false;
         $y = $this->input->post();
         $staticisdefault = false;
         if (isset($y['f'])) {
-            $loggedin = $this->j_auth->logged_in();
-
-
             $this->form_validation->set_rules('f[usestatic]', 'use metadata', "valid_static[" . base64_encode($this->input->post('f[static]')) . ":::" . $this->input->post('f[entityid]') . " ]");
 
 
@@ -338,8 +336,8 @@ class Entityedit extends MY_Controller
             /**
              * certificates
              */
-            $allowedEnryptionMethods = j_KeyEncryptionAlgorithms();
-            $allowedEnryptionMethodsInList = implode(",", $allowedEnryptionMethods);
+            $grantEncrMeths = j_KeyEncryptionAlgorithms();
+            $grantEncrMethsList = implode(",", $grantEncrMeths);
             $certGroups = array(
                 'spsso' => 'SPSSODescriptor',
                 'idpsso' => 'IDPSSODescriptor',
@@ -355,7 +353,7 @@ class Entityedit extends MY_Controller
                                 $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][certdata]', $val . '/Certificate body', 'trim|required|getPEM|verify_cert');
                             }
                             $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
-                            $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $allowedEnryptionMethodsInList . ']');
+                            $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $grantEncrMethsList . ']');
 
 
                         }
@@ -833,11 +831,8 @@ class Entityedit extends MY_Controller
     private function isFromSimpleRegistration()
     {
         $fromSimpleMode = $this->input->post('advanced');
-        if (!empty($fromSimpleMode) && strcmp($fromSimpleMode, 'advanced') == 0) {
-            return true;
-        }
+        return (!empty($fromSimpleMode) && strcmp($fromSimpleMode, 'advanced') == 0);
 
-        return false;
     }
 
     public function register($t = null)
