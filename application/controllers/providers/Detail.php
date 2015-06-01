@@ -1,44 +1,34 @@
 <?php
-
-if (!defined('BASEPATH'))
-    exit('Ni direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 
 /**
  * ResourceRegistry3
  *
  * @package     RR3
- * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Provider_detail Class
- * @package     RR3
+ * @author      Middleware Team HEAnet
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Detail extends MY_Controller
 {
-    private $tmpAttributes;
+    protected $tmpAttributes;
     public static $alerts;
     public $isGearman;
 
     function __construct()
     {
         parent::__construct();
-        $this->current_site = current_url();
         $this->tmpAttributes = new models\Attributes;
         $this->tmpAttributes->getAttributes();
         self::$alerts = array();
         $this->isGearman = $this->config->item('gearman');
-        if(empty($this->isGearman))
-        {
+        if (empty($this->isGearman)) {
             $this->isGearman = false;
-        }
-        else
-        {
+        } else {
             $this->isGearman = true;
         }
     }
@@ -59,7 +49,7 @@ class Detail extends MY_Controller
             $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
             $hasWriteAccess = $this->zacl->check_acl($providerID, 'write', 'entity', '');
             log_message('debug', 'TEST access ' . $hasWriteAccess);
-            if ($hasWriteAccess === TRUE) {
+            if ($hasWriteAccess === true) {
                 log_message('debug', 'TEST access ' . $hasWriteAccess);
                 $providerID = trim($providerID);
                 $keyPrefix = getCachePrefix();
@@ -83,7 +73,6 @@ class Detail extends MY_Controller
 
     function status($providerID = null, $refresh = null)
     {
-        $this->output->set_content_type('application/json');
         if (!$this->input->is_ajax_request() || !ctype_digit($providerID) || !$this->j_auth->logged_in()) {
             set_status_header(403);
             echo 'access  denied';
@@ -126,11 +115,9 @@ class Detail extends MY_Controller
                 $result = $resultCache;
             }
         }
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
 
-        echo json_encode($result);
-
-        return;
     }
 
     function showlogs($providerID)
@@ -160,11 +147,11 @@ class Detail extends MY_Controller
                 'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>') . '');
         }
         $rows[] = array(
-            'header'=>lang('rr_logs'),
+            'header' => lang('rr_logs'),
         );
         $rows[] = array(
-            'name'=>lang('rr_variousreq'),
-            'value'=>$this->show_element->generateRequestsList($ent, 10)
+            'name' => lang('rr_variousreq'),
+            'value' => $this->show_element->generateRequestsList($ent, 10)
         );
         $rows[] = array(
             'name' => lang('rr_modifications'),
@@ -184,7 +171,7 @@ class Detail extends MY_Controller
             $loggHtml .= '</ul>';
             $rows[] = array('name' => '' . lang('rr_recentarpdownload') . '', 'value' => '' . $loggHtml . '');
         }
-        $this->load->view('providers/showlogs_view', array('d'=>$rows));
+        $this->load->view('providers/showlogs_view', array('d' => $rows));
 
     }
 
@@ -195,7 +182,6 @@ class Detail extends MY_Controller
         }
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
-            return;
         }
         $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml', 'providerdetails'));
 
@@ -210,7 +196,7 @@ class Detail extends MY_Controller
         $hasReadAccess = $this->zacl->check_acl($providerID, 'read', 'entity', '');
         if (!$hasReadAccess) {
             $data['content_view'] = 'nopermission';
-            $data['error'] = lang("rr_nospaccess");
+            $data['error'] = lang('rr_nospaccess');
             return $this->load->view('page', $data);
         }
 

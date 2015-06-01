@@ -30,7 +30,7 @@ class Providerdetails
 		$this->em = $this->CI->doctrine->em;
 	}
 
-	private function _genCertView(models\Certificate $cert)
+	private function genCertView(models\Certificate $cert)
 	{
 		$certusage = $cert->getCertuse();
 		if ($certusage === 'signing') {
@@ -271,6 +271,79 @@ class Providerdetails
 		return $result;
 	}
 
+    private function genOrgTab(\models\Provider $ent)
+    {
+
+        $d = array();
+        $i = 0;
+        $d[++$i]['name'] = lang('e_orgname');
+        $lname = $ent->getMergedLocalName();
+        $lvalues = '';
+        if (count($lname) > 0) {
+            foreach ($lname as $k => $v) {
+                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
+            }
+            $d[$i]['value'] = $lvalues;
+        } else {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+        }
+        $d[++$i]['name'] = lang('e_orgdisplayname');
+        $ldisplayname = $ent->getMergedLocalDisplayName();
+        $lvalues = '';
+        if (count($ldisplayname) > 0) {
+            foreach ($ldisplayname as $k => $v) {
+                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
+            }
+            $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
+        } else {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+        }
+        $d[++$i]['name'] = lang('e_orgurl');
+        $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
+        if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0) {
+            $lvalues = '';
+            foreach ($localizedHelpdesk as $k => $v) {
+                $lvalues .= '<div><b>' . $k . ':</b> ' . html_escape($v) . '</div>';
+            }
+            $d[$i]['value'] = $lvalues;
+        } else {
+            $d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+        }
+
+        return $d;
+
+
+    }
+    private function genContactsTab(\models\Provider $ent)
+    {
+        $result = array();
+        $contacts = $ent->getContacts();
+        $typesInLang = array(
+            'technical' => lang('rr_cnt_type_tech'),
+            'administrative' => lang('rr_cnt_type_admin'),
+            'support' => lang('rr_cnt_type_support'),
+            'billing' => lang('rr_cnt_type_bill'),
+            'other' => lang('rr_cnt_type_other')
+        );
+        if (count($contacts) > 0) {
+            foreach ($contacts as $c) {
+                $part = array(
+                    array('header'=>lang('rr_contact')),
+                    array('name'=>lang('type'),'value'=>$typesInLang['' . strtolower($c->getType()) . '']),
+                    array('name'=>lang('rr_contactfirstname'),'value'=>html_escape($c->getGivenname())),
+                    array('name'=> lang('rr_contactlastname'),'value'=>html_escape($c->getSurname())),
+                    array('name'=>lang('rr_contactemail'),'value'=>'<span data-jagger-contactmail="' . html_escape($c->getEmail()) . '">' . html_escape($c->getEmail()) . '</span>'),
+                );
+                $result = array_merge($result,$part);
+            }
+        } else {
+            $result[]['2cols'] = '<div data-alert class="alert-box warning">' . lang('rr_notset') . '</div>';
+        }
+        return $result;
+    }
+
+
+
 	public function generateForControllerProvidersDetail(\models\Provider $ent)
 	{
 
@@ -290,37 +363,33 @@ class Providerdetails
 		$params = array(
 			'enable_classes' => true,
 		);
-		$sppart = FALSE;
-		$idppart = FALSE;
+		$sppart = false;
+		$idppart = false;
 		$type = strtolower($ent->getType());
 		$data['type'] = $type;
 		$edit_attributes = '';
-		$edit_policy = '';
 
+		$edit_policy = '';
 
 		if ($type === 'idp') {
 			MY_Controller::$menuactive = 'idps';
-			$idppart = TRUE;
-			$data['presubtitle'] = lang('identityprovider');
+			$idppart = true;
+			$presubtitle = lang('identityprovider');
 		} elseif ($type === 'sp') {
 			MY_Controller::$menuactive = 'sps';
-			$sppart = TRUE;
-			$data['presubtitle'] = lang('serviceprovider');
-		} elseif ($type === 'both') {
-			$sppart = TRUE;
-			$idppart = TRUE;
-			$data['presubtitle'] = lang('rr_asboth');
+			$sppart = true;
+			$presubtitle = lang('serviceprovider');
+		} else {
+			$sppart = true;
+			$idppart = true;
+			$presubtitle = lang('rr_asboth');
 		}
+        $data['presubtitle'] = $presubtitle;
 		$id = $ent->getId();
-		$hasReadAccess = $this->CI->zacl->check_acl($id, 'read', 'entity', '');
 		$hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
 		$hasManageAccess = $this->CI->zacl->check_acl($id, 'manage', 'entity', '');
-		if (!$hasReadAccess) {
-			return false;
-		}
 		// off canvas menu for provider
-		$entmenu = array();
-
+        $entmenu = array();
 
 		$edit_link = '';
 
@@ -344,10 +413,10 @@ class Providerdetails
 		} else {
 			$edit_link .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon button small" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
 			$entmenu[0] = array('name' => '' . lang('rr_editentity') . '', 'link' => '' . base_url() . 'manage/entityedit/show/' . $id . '', 'class' => '');
-			$data['showclearcache'] = TRUE;
+			$data['showclearcache'] = true;
 		}
 		$data['edit_link'] = $edit_link;
-		$data['entmenu'] = &$entmenu;
+
 		$extend = $ent->getExtendMetadata();
 		/**
 		 * get first assinged logo to display on site
@@ -359,7 +428,7 @@ class Providerdetails
 			}
 			if ($v->getElement() === 'Logo') {
 				$providerlogourl = $v->getLogoValue();
-				$is_logo = TRUE;
+				$is_logo = true;
 			}
 		}
 		if (!empty($providerlogourl)) {
@@ -429,7 +498,7 @@ class Providerdetails
 		$regauthority = $ent->getRegistrationAuthority();
 		$confRegAuth = $this->CI->config->item('registrationAutority');
 		$confRegLoad = $this->CI->config->item('load_registrationAutority');
-		$confRegistrationPolicy = $this->CI->config->item('registrationPolicy');
+		$confRegistPolicy = $this->CI->config->item('registrationPolicy');
 		$regauthoritytext = null;
 		if (empty($regauthority)) {
 			if ($isLocal && !empty($confRegLoad) && !empty($confRegAuth)) {
@@ -463,8 +532,8 @@ class Providerdetails
 					$regpolicy_value .= '<div><b>' . $v->getLang() . '</b>: <a href="' . $v->getUrl() . '" target="_blank">' . html_escape($v->getName()) . '</a> ' . $l . '</div>';
 				}
 			}
-		} elseif (!empty($confRegistrationPolicy) && !empty($confRegLoad)) {
-			$regpolicy_value .= '<b>en:</b> ' . $confRegistrationPolicy . ' <div data-alert class="alert-box info">' . lang('loadedfromglobalcnf') . '</div>';
+		} elseif (!empty($confRegistPolicy) && !empty($confRegLoad)) {
+			$regpolicy_value .= '<b>en:</b> ' . $confRegistPolicy . ' <div data-alert class="alert-box info">' . lang('loadedfromglobalcnf') . '</div>';
 		}
 		$d[++$i]['name'] = lang('rr_regpolicy');
 		$d[$i]['value'] = $regpolicy_value;
@@ -513,50 +582,15 @@ class Providerdetails
 		} else {
 			$d[$i]['value'] = '<span class="lbl lbl-alert">' . $validfrom . ' <b>--</b> ' . $validto . '</span>';
 		}
+
+
+
 		$result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
 
 
-		/**
-		 * ORG tab
-		 */
-		$d = array();
-		$i = 0;
-		$d[++$i]['name'] = lang('e_orgname');
-		$lname = $ent->getMergedLocalName();
-		$lvalues = '';
-		if (count($lname) > 0) {
-			foreach ($lname as $k => $v) {
-				$lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
-			}
-			$d[$i]['value'] = $lvalues;
-		} else {
-			$d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
-		}
-		$d[++$i]['name'] = lang('e_orgdisplayname');
-		$ldisplayname = $ent->getMergedLocalDisplayName();
-		$lvalues = '';
-		if (count($ldisplayname) > 0) {
-			foreach ($ldisplayname as $k => $v) {
-				$lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
-			}
-			$d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
-		} else {
-			$d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
-		}
-		$d[++$i]['name'] = lang('e_orgurl');
-		$localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
-		if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0) {
-			$lvalues = '';
-			foreach ($localizedHelpdesk as $k => $v) {
-				$lvalues .= '<div><b>' . $k . ':</b> ' . html_escape($v) . '</div>';
-			}
-			$d[$i]['value'] = $lvalues;
-		} else {
-			$d[$i]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
-		}
 
 
-		$subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $d);
+        $subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $this->genOrgTab($ent));
 
 
 		/**
@@ -931,6 +965,10 @@ class Providerdetails
 			}
 		}
 		$subresult[6] = array('section' => 'samltab', 'title' => '' . lang('tabsaml') . '', 'data' => $d);
+
+
+        // Begin Certificates
+
 		$d = array();
 		$tcerts = $ent->getCertificates();
 		$certs = array();
@@ -941,7 +979,7 @@ class Providerdetails
 			$d[]['msection'] = 'IDPSSODescriptor';
 			if (array_key_exists('idpsso', $certs)) {
 				foreach ($certs['idpsso'] as $v1) {
-					$c = $this->_genCertView($v1);
+					$c = $this->genCertView($v1);
 					foreach ($c as $v2) {
 						$d[] = $v2;
 					}
@@ -951,7 +989,7 @@ class Providerdetails
 			if (array_key_exists('aa', $certs)) {
 				$d[]['msection'] = 'AttributeAuthorityDescriptor';
 				foreach ($certs['aa'] as $v1) {
-					$c = $this->_genCertView($v1);
+					$c = $this->genCertView($v1);
 					foreach ($c as $v2) {
 						$d[] = $v2;
 					}
@@ -962,20 +1000,23 @@ class Providerdetails
 			$d[]['msection'] = 'SPSSODescriptor';
 			if (array_key_exists('spsso', $certs)) {
 				foreach ($certs['spsso'] as $v1) {
-					$c = $this->_genCertView($v1);
+					$c = $this->genCertView($v1);
 					foreach ($c as $v2) {
 						$d[] = $v2;
 					}
 				}
 			}
 		}
+        $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+
 		/**
-		 * end certs
+		 * End Certificates
 		 */
-		$subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+
+
+
 		$xmldata = $this->CI->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), TRUE);
-		$xmlmetatitle = '<img src="' . base_url() . 'images/jicons/xml3.svg" style="height: 20px"/> ';
-		$subresult[1] = array('section' => 'xmlmeta', 'title' => $xmlmetatitle, 'data' => '<code>' . $this->CI->geshilib->highlight($xmldata, 'xml', $params) . '</code>');
+		$subresult[1] = array('section' => 'xmlmeta', 'title' => '<i class="fi-clipboard-notes"></i>', 'data' => '<code>' . $this->CI->geshilib->highlight($xmldata, 'xml', $params) . '</code>');
 
 		$d = array();
 		if (count($entityCategories) == 0) {
@@ -996,32 +1037,8 @@ class Providerdetails
 		$subresult[12] = array('section' => 'entcats', 'title' => '' . lang('tabEntcats') . '', 'data' => $d);
 
 
-		$d = array();
-		$i = 0;
-		$contacts = $ent->getContacts();
-		$contactsTypeToTranslate = array(
-			'technical' => lang('rr_cnt_type_tech'),
-			'administrative' => lang('rr_cnt_type_admin'),
-			'support' => lang('rr_cnt_type_support'),
-			'billing' => lang('rr_cnt_type_bill'),
-			'other' => lang('rr_cnt_type_other')
-		);
-		if (count($contacts) > 0) {
-			foreach ($contacts as $c) {
-				$d[++$i]['header'] = lang('rr_contact');
-				$d[++$i]['name'] = lang('type');
-				$d[$i]['value'] = $contactsTypeToTranslate['' . strtolower($c->getType()) . ''];
-				$d[++$i]['name'] = lang('rr_contactfirstname');
-				$d[$i]['value'] = html_escape($c->getGivenname());
-				$d[++$i]['name'] = lang('rr_contactlastname');
-				$d[$i]['value'] = html_escape($c->getSurname());
-				$d[++$i]['name'] = lang('rr_contactemail');
-				$d[$i]['value'] = '<span data-jagger-contactmail="' . html_escape($c->getEmail()) . '">' . html_escape($c->getEmail()) . '</span>';
-			}
-		} else {
-			$d[++$i]['2cols'] = '<div data-alert class="alert-box warning">' . lang('rr_notset') . '</div>';
-		}
-		$subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $d);
+        $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $this->genContactsTab($ent));
+
 		$d = array();
 		$i = 0;
 		if ($idppart) {
@@ -1318,6 +1335,7 @@ class Providerdetails
 
 		$data['tabs'] = $result;
 		Detail::$alerts = $alerts;
+        $data['entmenu'] = $entmenu;
 		return $data;
 	}
 

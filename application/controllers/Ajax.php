@@ -71,8 +71,7 @@ class Ajax extends MY_Controller
 		$v_errors = validation_errors('<span>', '</span>');
 		if (!$isvalid) {
 			$result['error'] = $v_errors;
-			$this->output->set_content_type('application/json')->set_output(json_encode($result));
-			return;
+			return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 		}
 		$logourl = trim($this->input->post('logourl'));
 		$configlogossl = $this->config->item('addlogocheckssl');
@@ -97,8 +96,7 @@ class Ajax extends MY_Controller
 
 		if (empty($image)) {
 			$result['error'] = $this->curl->error_string;
-			echo json_encode($result);
-			return;
+            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 		}
 		$img_mimes = array(
 			'image/jpeg',
@@ -111,8 +109,7 @@ class Ajax extends MY_Controller
 		$mimeType = $finfo->buffer($image);
 		if (!in_array($mimeType, $img_mimes)) {
 			$result['error'] = 'Incorrect mime type ' . $mimeType;
-			echo json_encode($result);
-			return;
+            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 		}
 		if (!function_exists('getimagesizefromstring')) {
 			$uri = 'data://application/octet-stream;base64,' . base64_encode($image);
@@ -126,9 +123,7 @@ class Ajax extends MY_Controller
 			'mime' => $mimeType,
 			'url' => $logourl,
 		);
-
-		$this->output->set_content_type('application/json')->set_output(json_encode($result));
-		return;
+		return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 	}
 
 	public function getfeds()

@@ -1,5 +1,4 @@
 <?php
-
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
@@ -9,15 +8,7 @@ if (!defined('BASEPATH'))
  * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Form_element Class
- *
- * @package     Jagger
  * @subpackage  Libraries
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Form_element
 {
@@ -124,14 +115,10 @@ class Form_element
         return $result;
     }
 
-    public function NgeneratePrivacy(models\Provider $ent, $ses = null)
+    public function NgeneratePrivacy(models\Provider $ent, array $ses = null)
     {
+        $sessform = (is_null($ses)) ? false : true;
         $result = array();
-        $sessform = FALSE;
-        if (!empty($ses) && is_array($ses)) {
-            $sessform = TRUE;
-        }
-
         $r = '<fieldset><legend>' . lang('PrivacyStatementURL') . ' <i>' . lang('rr_default') . '</i>' . showBubbleHelp('' . lang('rhelp_privacydefault1') . '') . '</legend><div>';
         $f_privacyurl = $ent->getPrivacyUrl();
         $p_privacyurl = $f_privacyurl;
@@ -146,14 +133,11 @@ class Form_element
         return $result;
     }
 
-    public function NgenerateEntityCategoriesForm(models\Provider $ent, $ses = null)
+    public function NgenerateEntityCategoriesForm(models\Provider $ent, array $ses = null)
     {
         $result = array();
-        $sessform = FALSE;
         $allowedCategories = attrsEntCategoryList($ent->getType());
-        if (!empty($ses) && is_array($ses)) {
-            $sessform = TRUE;
-        }
+        $sessform = (is_null($ses)) ? false : true;
         /**
          * @var  $entCategories models\Coc[]
          */
@@ -211,13 +195,12 @@ class Form_element
         return $result;
     }
 
-    public function NgenerateContactsForm(models\Provider $ent, $ses = null)
+    public function NgenerateContactsForm(models\Provider $ent, array $ses = null)
     {
         /**
          * @var $origcnts models\Contact[]
          */
         $origcnts = $ent->getContacts();
-        $r = FALSE;
         $formtypes = array(
             'administrative' => lang('rr_cnt_type_admin'),
             'technical' => lang('rr_cnt_type_tech'),
@@ -225,9 +208,7 @@ class Form_element
             'billing' => lang('rr_cnt_type_bill'),
             'other' => lang('rr_cnt_type_other')
         );
-        if (is_array($ses)) {
-            $r = TRUE;
-        }
+        $sessform = (is_null($ses)) ? false : true;
         $result = array();
         $tmpid = 100;
         foreach ($origcnts as $cnt) {
@@ -236,7 +217,7 @@ class Form_element
                 $tid = 'x' . $tmpid++;
             }
             $row = '';
-            if ($r) {
+            if ($sessform) {
                 if (isset($ses['contact']['' . $tid . ''])) {
                     $t1 = set_value($ses['contact'][$tid]['type'], $cnt->getType());
                     $t2 = $ses['contact'][$tid]['fname'];
@@ -259,11 +240,11 @@ class Form_element
             $result[] = '';
             $result[] = form_fieldset(lang('rr_contact')) . '<div>' . $row . '</div>' . form_fieldset_close();
             $result[] = '';
-            if ($r) {
+            if ($sessform) {
                 unset($ses['contact']['' . $tid . '']);
             }
         }
-        if ($r) {
+        if ($sessform) {
             foreach ($ses['contact'] as $k => $v) {
                 $n = '<fieldset class="newcontact"><legend>' . lang('rr_contact') . '</legend><div>';
 
@@ -286,14 +267,11 @@ class Form_element
         return $result;
     }
 
-    public function NgenerateCertificatesForm(models\Provider $ent, $ses = null)
+    public function NgenerateCertificatesForm(models\Provider $ent, array $ses = null)
     {
         $result = array();
-        $sessform = false;
         $enttype = $ent->getType();
         $c = $ent->getCertificates();
-
-        $providerId = $ent->getId();
         $origcerts = array('idpsso' => array(), 'spsso' => array(), 'aa' => array());
         $tmpid = 100;
         foreach ($c as $v) {
@@ -303,10 +281,9 @@ class Form_element
             }
             $origcerts['' . $v->getType() . '']['' . $tid . ''] = $v;
         }
-        if (is_array($ses)) {
-            $sessform = true;
-        }
 
+
+        $sessform = (is_null($ses)) ? false : true;
         if (strcmp($enttype, 'SP') != 0) {
             $Part = '<fieldset><legend>IDPSSODescriptor</legend><div>';
             $idpssocerts = array();
@@ -624,12 +601,9 @@ class Form_element
 
 //    public function NgenerateProtocols($ent, $entsession)
 
-    public function NgenerateStaticMetadataForm(models\Provider $ent, $entsession = null)
+    public function NgenerateStaticMetadataForm(models\Provider $ent, array $ses = null)
     {
-        $sessform = FALSE;
-        if (!empty($entsession) && is_array($entsession)) {
-            $sessform = TRUE;
-        }
+        $sessform = (is_null($ses)) ? false : true;
         $is_static = $ent->getStatic();
         $static_mid = $ent->getStaticMetadata();
         $static_metadata = '';
@@ -637,13 +611,13 @@ class Form_element
             $static_metadata = $static_mid->getMetadataToDecoded();
         }
         if ($sessform) {
-            if (array_key_exists('static', $entsession)) {
-                $svalue = $entsession['static'];
+            if (array_key_exists('static', $ses)) {
+                $svalue = $ses['static'];
             } else {
                 $svalue = $static_metadata;
             }
 
-            if (array_key_exists('usestatic', $entsession) && $entsession['usestatic'] === 'accept') {
+            if (array_key_exists('usestatic', $ses) && $ses['usestatic'] === 'accept') {
                 $susestatic = TRUE;
             } else {
                 $susestatic = $is_static;
@@ -681,7 +655,7 @@ class Form_element
         return $result;
     }
 
-    public function nGenerateAttrsReqs(models\Provider $ent, $ses = null)
+    public function nGenerateAttrsReqs(models\Provider $ent, array $ses = null)
     {
         /**
          * @var $allAttrs models\Attribute[]
@@ -695,10 +669,7 @@ class Form_element
         if (strcasecmp($enttype, 'IDP') == 0) {
             return null;
         }
-        $sessform = FALSE;
-        if (!empty($ses) && is_array($ses)) {
-            $sessform = TRUE;
-        }
+        $sessform = (is_null($ses)) ? false : true;
         $reqattrs = array();
         $tmpid = 100;
         $origreqattrs = $ent->getAttributesRequirement();
@@ -778,7 +749,7 @@ class Form_element
         return $result;
     }
 
-    public function NgenerateSAMLTab(models\Provider $ent, $ses = null)
+    public function NgenerateSAMLTab(models\Provider $ent, array  $ses = null)
     {
         $entid = $ent->getId();
         $enttype = $ent->getType();
@@ -792,10 +763,7 @@ class Form_element
         } else {
             $sppart = TRUE;
         }
-        $sessform = FALSE;
-        if (!empty($ses) && is_array($ses)) {
-            $sessform = TRUE;
-        }
+        $sessform = (is_null($ses)) ? false : true;
         $allowednameids = getAllowedNameId();
         $class_ent = '';
 
@@ -831,10 +799,6 @@ class Form_element
         foreach ($ssobindprotocols as $v) {
             $ssotmpl['' . $v . ''] = $v;
         }
-
-        $slotmpl = getBindSingleLogout();
-
-
         $srvs = $ent->getServiceLocations();
         $g = array();
         $artifacts_binding = array(
@@ -1928,14 +1892,12 @@ class Form_element
         return $result;
     }
 
-    public function generateUIHintForm(models\Provider $ent, $ses = null)
+    public function generateUIHintForm(models\Provider $ent, array $ses = null)
     {
-        $sessform = FALSE;
+
+        $sessform = (is_null($ses)) ? false : true;
         $type = $ent->getType();
         $result = array();
-        if (!is_null($ses) && is_array($ses)) {
-            $sessform = TRUE;
-        }
         $extendMetadata = $ent->getExtendMetadata();
         // BEGIN IDPSSO PART
         $enid = 0;
@@ -2026,7 +1988,7 @@ class Form_element
         return $result;
     }
 
-    public function NgenerateUiiForm(models\Provider $ent, $ses = null)
+    public function NgenerateUiiForm(models\Provider $ent, array $ses = null)
     {
         $logopart = $this->NgenerateLogoForm($ent, $ses);
         $langs = languagesCodes();
@@ -2039,10 +2001,7 @@ class Form_element
                 $ext['' . $value->getType() . '']['' . $value->getNamespace() . '']['' . $value->getElement() . ''][] = $value;
             }
         }
-        $sessform = FALSE;
-        if (!empty($ses) && is_array($ses)) {
-            $sessform = TRUE;
-        }
+        $sessform = (is_null($ses)) ? false : true;
         $f_privacyurl = $ent->getPrivacyUrl();
         $p_privacyurl = $f_privacyurl;
         if ($sessform && array_key_exists('privacyurl', $ses)) {
