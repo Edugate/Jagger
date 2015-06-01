@@ -21,7 +21,6 @@ if (!defined('BASEPATH'))
 class Importer extends MY_Controller
 {
     protected $otherErrors = array();
-    protected $globalerrors = array();
     private $access;
     protected $xmlbody;
     protected $curlMaxsize, $curlTimeout;
