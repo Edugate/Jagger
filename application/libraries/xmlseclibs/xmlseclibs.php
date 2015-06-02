@@ -2,7 +2,7 @@
 /**
  * xmlseclibs.php
  *
- * Copyright (c) 2007-2013, Robert Richards <rrichards@cdatazone.org>.
+ * Copyright (c) 2007-2015, Robert Richards <rrichards@cdatazone.org>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,9 +35,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author     Robert Richards <rrichards@cdatazone.org>
- * @copyright  2007-2013 Robert Richards <rrichards@cdatazone.org>
+ * @copyright  2007-2015 Robert Richards <rrichards@cdatazone.org>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    1.3.1
+ * @version    1.3.2
  */
 
 /*
@@ -792,6 +792,21 @@ class XMLSecurityDSig {
             }
             return C14NGeneral($node, $exclusive, $withComments);
         }
+        
+        if (is_null($arXPath) && ($node instanceof DOMNode) && ($node->ownerDocument !== NULL) && $node->isSameNode($node->ownerDocument->documentElement)) {
+            /* Check for any PI or comments as they would have been excluded */
+            $element = $node;
+            while ($refnode = $element->previousSibling) {
+                if ($refnode->nodeType == XML_PI_NODE || (($refnode->nodeType == XML_COMMENT_NODE) && $withComments)) {
+                    break;
+                }
+                $element = $refnode;
+            }
+            if ($refnode == NULL) {
+                $node = $node->ownerDocument;
+            }
+        }
+        
         return $node->C14N($exclusive, $withComments, $arXPath, $prefixList);
     }
 
@@ -1035,8 +1050,8 @@ class XMLSecurityDSig {
     }
 
     public function validateReference() {
-        $doc = $this->sigNode->ownerDocument;
-        if (! $doc->isSameNode($this->sigNode)) {
+        $docElem = $this->sigNode->ownerDocument->documentElement;
+        if (! $docElem->isSameNode($this->sigNode)) {
             $this->sigNode->parentNode->removeChild($this->sigNode);
         }
         $xpath = $this->getXPathObj();
@@ -1161,7 +1176,7 @@ class XMLSecurityDSig {
       $objNode = $this->createNewSignNode('Object');
       $this->sigNode->appendChild($objNode);
       if (! empty($mimetype)) {
-         $objNode->setAtribute('MimeType', $mimetype);
+         $objNode->setAttribute('MimeType', $mimetype);
       }
       if (! empty($encoding)) {
          $objNode->setAttribute('Encoding', $encoding);
@@ -1372,7 +1387,7 @@ class XMLSecurityDSig {
                         if (is_array($certData['issuer'])) {
                             $parts = array();
                             foreach ($certData['issuer'] AS $key => $value) {
-                                array_unshift($parts, "$key=$value" . $issuer);
+                                array_unshift($parts, "$key=$value");
                             }
                             $issuerName = implode(',', $parts);
                         } else {
