@@ -407,7 +407,7 @@ var GINIT = {
                         if (ctx && (countGroups.idp > 0 || countGroups.sp > 0 || countGroups.both > 0 )) {
                             var myPieChart = new Chart(ctx).Pie(data2, {
                                 responsive: true,
-                                legendTemplate: "<div class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><div><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;&nbsp;&nbsp;</span> <%if(segments[i].label){%><%=segments[i].label%><%}%></div><%}%></div>"
+                                legendTemplate: "<div class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><div><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;<%=segments[i].value %>&nbsp;</span> <%if(segments[i].label){%><%=segments[i].label%><%}%></div><%}%></div>"
                             });
                             var legend = myPieChart.generateLegend();
                             $("#fedpiechartlegend").html(legend);
