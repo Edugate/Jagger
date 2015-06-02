@@ -132,6 +132,9 @@ class Importer extends MY_Controller
          */
         $tmp = new models\Federations();
 
+        /**
+         * @var $fed models\Federation
+         */
         $fed = $tmp->getOneByName($arg['federation']);
         if (empty($fed)) {
             $this->otherErrors[] = 'No permission to add entities to selected federation';
@@ -187,6 +190,7 @@ class Importer extends MY_Controller
             $this->load->library('j_ncache');
             $this->j_ncache->cleanProvidersList('idp');
             $this->j_ncache->cleanProvidersList('sp');
+            $this->j_ncache->cleanFederationMembers($fed->getId());
             $data['title'] = lang('titleimportmeta');
             $data['success_message'] = lang('okmetaimported');
             if (isset($this->globalnotices['metadataimportmessage']) && is_array($this->globalnotices['metadataimportmessage'])) {
