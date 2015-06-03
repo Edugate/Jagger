@@ -62,6 +62,7 @@ $foundation = $base_url . 'foundation/';
 
 </head>
 <body>
+<noscript><div data-alert class="alert-box alert"><h5>JavaScript is not enabled in you browser!</h5></div></noscript>
 <!--[if lt IE 10]>
 <div data-alert class="alert-box alert"><p>You are using an <strong>outdated</strong> browser. Please <a
     href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p></div>
