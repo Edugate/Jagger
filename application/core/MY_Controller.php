@@ -1,28 +1,17 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
-
-
-
-
-
+}
 /**
  * ResourceRegistry3
  * 
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
+ * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  *  
  */
-
-/**
- * MY_Controller Class
- * 
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
-
 
 /**
  * @property CI_Config $config
@@ -74,12 +63,10 @@ class MY_Controller extends CI_Controller {
     {
 
         parent::__construct();
-        $this->output->set_header("Pragma: no-cache"); 
-        $this->output->set_header("X-Frame-Options: SAMEORIGIN"); 
+        $this->output->set_header('Pragma: no-cache');
+        $this->output->set_header('X-Frame-Options: SAMEORIGIN');
         $this->em = $this->doctrine->em;
-        $this->title = "";
-        $this->lang->load('rr_lang', 'english');
-        
+        $this->title = '';
         self::$langs = array(
             'en' => array('path' => 'english', 'val' => 'english'),
             'cs' => array('path' => 'cs', 'val' => 'čeština'),
@@ -90,45 +77,44 @@ class MY_Controller extends CI_Controller {
             'lt' => array('path' => 'lt', 'val' => 'lietuvos'),
             'pl' => array('path' => 'pl', 'val' => 'polski'),
             'pt' => array('path' => 'pt', 'val' => 'português'),
-            'sr' => array('path' => 'sr', 'val' => 'srpski'),
+            'sr' => array('path' => 'sr', 'val' => 'srpski')
         );
-        $cookieLang = $this->input->cookie('rrlang', TRUE);
-        $cookdefaultlang = $this->config->item('rr_lang');
-        $addlangs = $this->config->item('guilangs');
-        if(is_array($addlangs))
+        $additionalLangs = $this->config->item('guilangs');
+        if(is_array($additionalLangs))
         {
-            foreach($addlangs as $k=>$v)
+            foreach($additionalLangs as $k=>$v)
             {
                 self::$langs[''.$k.''] = $v;
             }
         }
-        if (empty($cookdefaultlang))
+
+
+        $defaultLang = $this->config->item('rr_lang');
+        if ($defaultLang === null)
         {
-            $cookdefaultlang = 'english';
+            $defaultLang = 'english';
         }
         else
         {
-            $this->lang->load('rr_lang', '' . $cookdefaultlang . '');
-            self::$currLang = '' . $cookdefaultlang . '';
+            self::$currLang = '' . $defaultLang . '';
         }
+
+
+
+        $cookieLang = $this->input->cookie('rrlang', true);
+
+
+
         $defaultlangCookie = array(
             'name' => 'rrlang',
-            'value' => '' . $cookdefaultlang . '',
+            'value' => '' . $defaultLang . '',
             'expire' => '2600000',
-            'secure' => TRUE
+            'secure' => true
         );
 
-        if (!empty($cookieLang) && (strcmp($cookieLang,'english') ==0 ||  array_key_exists($cookieLang, self::$langs)))
+        if ($cookieLang !== null && (($cookieLang ==='english') ||  array_key_exists($cookieLang, self::$langs)))
         {
-            $this->lang->load('rr_lang', $cookieLang);
-            if ($cookieLang === 'english')
-            {
-                self::$currLang = 'en';
-            }
-            else
-            {
-                self::$currLang = $cookieLang;
-            }
+            self::$currLang = $cookieLang;
         }
         else
         {
@@ -142,6 +128,16 @@ class MY_Controller extends CI_Controller {
         {
             $this->load->helper('custom');
             log_message('debug', __METHOD__ . ' custom_helper loaded');
+        }
+
+        $this->lang->load('rr_lang','english');
+        if(self::$currLang === 'english' || self::$currLang === 'en')
+        {
+            self::$currLang = 'en';
+        }
+        else
+        {
+              $this->lang->load('rr_lang',self::$currLang);
         }
 
     }
