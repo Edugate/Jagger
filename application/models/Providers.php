@@ -89,6 +89,40 @@ class Providers
         return $r2;
     }
 
+    public function getSPsForArpIncEntCats(Provider $provider, array $excludedEntityIDs)
+    {
+        $query1 = $this->em->createQuery("SELECT partial m.{id, federation},partial f.{id} FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
+        $query1->setParameter(1, $provider->getId());
+        $query1->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $result1 = $query1->getResult();
+        $feds = array();
+        foreach ($result1 as $r) {
+            $feds[] = $r->getFederation()->getId();
+        }
+        if (count($feds) == 0) {
+            return array();
+        }
+        if(count($excludedEntityIDs)>0) {
+            $query = $this->em->createQuery("SELECT partial p.{id, entityid,type},partial m.{id, provider, federation},partial f.{id},c FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f LEFT JOIN p.coc c WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.entityid NOT IN (:excludedents) AND  p.type IN ('SP','BOTH') AND  p.is_active = '1' AND p.is_approved = '1'");
+            $query->setParameter('excludedents', $excludedEntityIDs);
+        }
+        else
+        {
+            $query = $this->em->createQuery("SELECT partial p.{id, entityid,type},partial m.{id, provider, federation},partial f.{id},c FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f LEFT JOIN p.coc c WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.type IN ('SP','BOTH') AND  p.is_active = '1' AND p.is_approved = '1'");
+        }
+
+        $query->setParameter('feds', $feds);
+
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $result = $query->getResult();
+        $r2 = new \Doctrine\Common\Collections\ArrayCollection;
+        foreach ($result as $r) {
+            $r2->add($r);
+        }
+        return $r2;
+    }
+
+
     public function getIdPsForWayf(Provider $provider)
     {
         $spid = $provider->getId();

@@ -166,6 +166,18 @@ class AttributeRequirement
         return $this->status;
     }
 
+    /**
+     * @return int
+     */
+    public function getStatusToInt()
+    {
+        if(strcmp($this->status[0],'r')==0 )
+        {
+            return 1;
+        }
+        return 2;
+    }
+
     public function getReason()
     {
         return $this->reason;
