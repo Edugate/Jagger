@@ -73,6 +73,9 @@ class FederationMembers
       return $this->provider;
    }
 
+    /**
+     * @return Federation
+     */
    public function getFederation()
    {
       return $this->federation;
