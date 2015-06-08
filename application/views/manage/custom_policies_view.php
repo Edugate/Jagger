@@ -1,12 +1,8 @@
 <?php
 $subtitle = '<div id="subtitle"><dl><dt>'.lang('rr_provider').'</dt>';
-if($locked)
+if($isLocked)
 {
     $subtitle .='<dd>' . $idp_name . ' (' . $idp_entityid . ') <span class="notice">locked</span></dd>';
-}
-else
-{
-    $subtitle .='<dd>' . $idp_name . ' (' . $idp_entityid . ') ' . $idp_link . '</dd>';
 }
 
 $subtitle .='<dt>'.lang('serviceprovider').'</dt><dd>' . $sp_name . ' (' . $sp_entityid . ') </dd></dl></div>';
