@@ -14,6 +14,9 @@ class Arpgen
      * @var $ent \models\Provider
      */
     protected $ent;
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
     protected $em;
     /**
      * @var $attrsDefs models\Attribute[]
@@ -111,6 +114,9 @@ class Arpgen
         $result = array();
 
         $res = $tempAttrReqs->getRequirementsBySPs($sps);
+        /**
+         * @var $v models\AttributeRequirement[]
+         */
         foreach ($res as $k => $v) {
             foreach ($v as $req) {
                 $result[$k]['req'][$req->getAttribute()->getId()] = $req->getStatusToInt();
@@ -128,6 +134,9 @@ class Arpgen
     /// may contain unsuported attrs
     private function genGlobal()
     {
+        /**
+         * @var $globals models\AttributeReleasePolicy[]
+         */
         $globals = $this->tempARPolsInstance->getGlobalPolicyAttributes($this->ent);
         $result = array();
         foreach ($globals as $g) {
@@ -214,31 +223,30 @@ class Arpgen
         }
 
         $membersIDs = array();
-        foreach ($members as $p) {
-            $membersIDs[] = $p->getId();
+        foreach ($members as $member) {
+            $membersIDs[] = $member->getId();
         };
         $result['sps'] = array_fill_keys($membersIDs, array('active' => true, 'entcat' => array(), 'customsp' => array(), 'req' => array(), 'feds' => array(), 'prefinal' => $globalPolicy));
-        foreach ($members as $p) {
+        foreach ($members as $member) {
 
 
-            $pid = $p->getId();
+            $pid = $member->getId();
             if (isset($policies['customsp'][$pid])) {
                 $result['sps'][$pid]['custom'] = $policies['customsp'][$pid];
             }
-            $result['sps'][$pid]['type'] = $p->getType();
-            $result['sps'][$pid]['entid'] = $p->getId();
-            $result['sps'][$pid]['entityid'] = $p->getEntityId();
-            $feds = $p->getActiveFederations();
+            $result['sps'][$pid]['type'] = $member->getType();
+            $result['sps'][$pid]['entid'] = $member->getId();
+            $result['sps'][$pid]['entityid'] = $member->getEntityId();
+            $feds = $member->getActiveFederations();
             foreach ($feds as $f) {
                 $result['sps'][$pid]['feds'][] = $f->getId();
             }
 
-            $overrideGlobal = array();
 
 
             // start entityCategory
 
-            $pp = $p->getCoc();
+            $pp = $member->getCoc();
             foreach ($pp as $d) {
                 $t = $d->getType();
                 if ($t === 'entcat') {
@@ -306,11 +314,11 @@ class Arpgen
 
         $xml = $this->createXMLHead();
 
-        $comment = "\n
-			Experimental verion Attribute Release Policy for " . $this->ent->getEntityId()."\n
-                        generated on " . date("D M j G:i:s T Y") . "\n
-                        compatible with shibboleth idp version: ".$version.".x
-			\n";
+        $comment = PHP_EOL.'
+			Experimental verion Attribute Release Policy for ' . $this->ent->getEntityId().PHP_EOL.'
+                        generated on ' . date('D M j G:i:s T Y') . PHP_EOL.'
+                        compatible with shibboleth idp version: '.$version.'.x
+			'.PHP_EOL;
 
         $xml->startComment();
         $xml->text($comment);

@@ -141,6 +141,9 @@ class AttributeRequirement
         return $this->type;
     }
 
+    /**
+     * @return Attribute
+     */
     public function getAttribute()
     {
         return $this->attribute_id;
