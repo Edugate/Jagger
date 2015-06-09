@@ -120,6 +120,8 @@ class Arpgen
         return $this->supportAttributes;
     }
 
+
+    /// ITS OK
     private function genGlobal()
     {
         $globals = $this->tempARPolsInstance->getGlobalPolicyAttributes($this->ent);
@@ -156,10 +158,12 @@ class Arpgen
     {
         $flippedLimit = array_flip($limit);
         $filtered = array_intersect_key($source, $flippedLimit);
+
         if (count($filtered) < 1) {
             return array();
         }
 
+        $presum = array();
         foreach ($filtered as $k => $arr) {
 
             foreach ($arr as $k3 => $v3) {
@@ -170,7 +174,6 @@ class Arpgen
         foreach ($presum as $k4 => $v4) {
             $final[$k4] = max($v4);
         }
-
         return $final;
 
     }
@@ -199,7 +202,7 @@ class Arpgen
 
         $result['ecPolicies'] = $policies['entcat'];
         $result['fedPolicies'] = $policies['fed'];
-
+        $result['fedPoliciesPerFed'] = array();
 
         foreach ($policies['fed'] as $k => $v) {
             foreach ($v as $k2 => $v2) {
@@ -264,13 +267,12 @@ class Arpgen
         foreach ($result['sps'] as $spid => $spdet) {
 
             if (array_key_exists('active', $spdet)) {
+
                 if (array_key_exists('spec', $spdet)) {
                     $result['sps'][$spid]['final'] = array_replace($spdet['prefinal'], $this->mergeFedPolicies($result['fedPoliciesPerFed'], $spdet['feds']), $spdet['spec']);
                 } else {
                     $result['sps'][$spid]['final'] = array_replace($spdet['prefinal'], $this->mergeFedPolicies($result['fedPoliciesPerFed'], $spdet['feds']));
                 }
-                $result['sps'][$spid]['final'] = array_filter(array_intersect_key($result['sps'][$spid]['final'], $spdet['req']));
-
             }
         }
         return $result;
@@ -306,7 +308,6 @@ class Arpgen
         $xml->text('urn:mace:shibboleth:2.0:afp:mf:basic');
         $xml->endAttribute();
 //////
-
 
 
         $ecPolicies = $policy['ecPolicies'];
@@ -381,61 +382,77 @@ class Arpgen
 
             }
 
-            /// start per sp
-            foreach ($policy['sps'] as $spid => $spdets) {
-                if (!array_key_exists('active', $spdets)) {
-                    continue;
-                }
 
-                foreach ($spdets['req'] as $reqattrid => $regattrstatus) {
-                    foreach ($spdets['entcat'] as $encats) {
-                        if (isset($policy['ecPolicies'][$reqattrid][$encats])) {
-                            log_message('debug', 'JANUSZ3 spid:' . $spid . ' has entcat matchin idps:' . $encats);
-                        }
+            /// end per sp
 
 
-                        if (!array_key_exists($attr1ID, $policy['global']) || (isset($policy['ecPolicies'][$reqattrid][$encats]) && !isset($spdets['spec'][$reqattrid]))) {
-                            log_message('debug', 'JANUSZ3 unsetting req:' . $reqattrid . ' for spid:' . $spid);
-                            unset($spdets['req'][$reqattrid]);
-                            break;
-                        }
+            $xml->endElement();
+        }
+/////////////////////////////////////////////////
+        /// start per sp
+        foreach ($policy['sps'] as $spid => $spdets) {
+            if (!array_key_exists('active', $spdets)) {
+                continue;
+            }
+
+            foreach ($spdets['req'] as $reqattrid => $regattrstatus) {
+                foreach ($spdets['entcat'] as $encats) {
+                    if (isset($policy['ecPolicies'][$reqattrid][$encats])) {
+                        log_message('debug', 'JANUSZ3 spid:' . $spid . ' has entcat matchin idps:' . $encats);
+                    }
+
+
+                    if (!array_key_exists($reqattrid, $policy['global']) || (isset($policy['ecPolicies'][$reqattrid][$encats]) && !isset($spdets['spec'][$reqattrid]))) {
+                        log_message('debug', 'JANUSZ3 unsetting req:' . $reqattrid . ' for spid:' . $spid);
+                        unset($spdets['req'][$reqattrid]);
+                        break;
                     }
                 }
-                if (count($spdets['final']) == 0) {
+            }
+            if (count($spdets['final']) == 0) {
+                continue;
+            }
+
+            $releases = array();
+
+            foreach ($spdets['final'] as $finattrid => $finpolicy) {
+                if (!array_key_exists($finattrid, $spdets['req'])) {
                     continue;
                 }
-
-                $releases = array();
-
-                foreach ($spdets['final'] as $finattrid => $finpolicy) {
-                    if ($finpolicy >= $spdets['req'][$finattrid]) {
-                        $releases[$finattrid] = 1;
-                    }
+                if ($finpolicy >= $spdets['req'][$finattrid]) {
+                    $releases[$finattrid] = 1;
+                } else {
+                    $releases[$finattrid] = 0;
                 }
-                if (count($releases) == 0) {
-                    continue;
-                }
+            }
+            if (count($releases) == 0) {
+                continue;
+            }
 
-                $xml->startElementNs('afp', 'AttributeFilterPolicy', null);
-                $xml->startAttribute('id');
-                $xml->text($spdets['entityid']);
-                $xml->endAttribute();
-                $xml->startElementNs('afp', 'PolicyRequirementRule', null);
-                $xml->startAttribute('xsi:type');
-                $xml->text('basic:AttributeRequesterString');
-                $xml->endAttribute();
-                $xml->startAttribute('value');
-                $xml->text($spdets['entityid']);
-                $xml->endAttribute();
+            $xml->startComment();
+            $xml->text($spdets['entityid']);
+            $xml->endComment();
+            $xml->startElementNs('afp', 'AttributeFilterPolicy', null);
+            $xml->startAttribute('id');
+            $xml->text($spdets['entityid']);
+            $xml->endAttribute();
+            $xml->startElementNs('afp', 'PolicyRequirementRule', null);
+            $xml->startAttribute('xsi:type');
+            $xml->text('basic:AttributeRequesterString');
+            $xml->endAttribute();
+            $xml->startAttribute('value');
+            $xml->text($spdets['entityid']);
+            $xml->endAttribute();
 
-                $xml->endElement();
+            $xml->endElement();
 //<afp:AttributeRule attributeID="email"><afp:PermitValueRule xsi:type="basic:ANY"/></afp:AttributeRule>
-                foreach (array_keys($releases) as $attrsToRelease) {
-                    $xml->startElementNs('afp', 'AttributeRule', null);
-                    $xml->startAttribute('attributeID');
-                    $xml->text($policy['definitions']['attrs'][$attrsToRelease]);
-                    $xml->endAttribute();
+            foreach ($releases as $attrsToRelease => $permordeny) {
+                $xml->startElementNs('afp', 'AttributeRule', null);
+                $xml->startAttribute('attributeID');
+                $xml->text($policy['definitions']['attrs'][$attrsToRelease]);
+                $xml->endAttribute();
 
+                if ($permordeny === 1) {
                     if (isset($spdets['custom'][$attrsToRelease]) && count($spdets['custom'][$attrsToRelease]) > 0) {
 
                         foreach ($spdets['custom'][$attrsToRelease] as $accessType => $values) {
@@ -462,7 +479,7 @@ class Arpgen
                                     $xml->endElement();
 
                                 }
-                            } else { //<afp:PermitValueRule xsi:type="basic:AttributeValueString" value="dfg" ignoreCase="true"/>
+                            } else {
 
                                 $xml->startAttribute('xsi:type');
                                 $xml->text('basic:AttributeValueString');
@@ -475,7 +492,7 @@ class Arpgen
                             }
 
                             $xml->endElement();
-                            break;
+                         //   break;  //
                         }
 
                     } else {
@@ -485,21 +502,20 @@ class Arpgen
                         $xml->endAttribute();
                         $xml->endElement();
                     }
-
-
+                } else {
+                    $xml->startElementNs('afp', 'DenyValueRule', null);
+                    $xml->startAttribute('xsi:type');
+                    $xml->text('basic:ANY');
+                    $xml->endAttribute();
                     $xml->endElement();
                 }
 
                 $xml->endElement();
-
             }
-            /// end per sp
-
 
             $xml->endElement();
+
         }
-
-
 //////
         $xml->endElement();
         $xml->endDocument();
