@@ -21,6 +21,7 @@ class Arpgen
     protected $attrsDefs;
     protected $attrDefsSmplArray = array();
     protected $supportAttributes;
+    protected $supportAttrsFlipped;
     protected $tempARPolsInstance;
     protected $entityCategories = array();
     protected $federations = array();
@@ -47,6 +48,9 @@ class Arpgen
         foreach ($supportAttrColl as $attr) {
             $this->supportAttributes[] = $attr->getAttribute()->getId();
         }
+        $this->supportAttrsFlipped = array_flip($this->supportAttributes);
+
+
         /**
          * @var $entcats models\Coc[]
          */
@@ -121,7 +125,7 @@ class Arpgen
     }
 
 
-    /// ITS OK
+    /// may contain unsuported attrs
     private function genGlobal()
     {
         $globals = $this->tempARPolsInstance->getGlobalPolicyAttributes($this->ent);
@@ -183,6 +187,12 @@ class Arpgen
     {
 
         $globalPolicy = $this->genGlobal();
+        $policies = $this->getPoliciec();
+        /**
+         * @var $members models\Provider[]
+         */
+        $members = $this->getMembers($this->ent->getExcarps());
+
         $result = array(
             'definitions' => array(
                 'attrs' => $this->attrDefsSmplArray,
@@ -191,27 +201,18 @@ class Arpgen
             'memberof' => $this->federations,
             'supported' => $this->supportAttributes,
             'global' => $globalPolicy,
+            'ecPolicies' => $policies['entcat'],
+            'fedPolicies' => $policies['fed'],
+            'fedPoliciesPerFed' => array(),
+            'spPoliciec' => $policies['sp'],
+            'sps' => array(),
         );
-
-
-        $policies = $this->getPoliciec();
-        /**
-         * @var $members models\Provider[]
-         */
-        $members = $this->getMembers($this->ent->getExcarps());
-
-        $result['ecPolicies'] = $policies['entcat'];
-        $result['fedPolicies'] = $policies['fed'];
-        $result['fedPoliciesPerFed'] = array();
-
         foreach ($policies['fed'] as $k => $v) {
             foreach ($v as $k2 => $v2) {
                 $result['fedPoliciesPerFed'][$k2][$k] = $v2;
             }
         }
 
-        $result['spPoliciec'] = $policies['sp'];
-        $result['sps'] = array();
         $membersIDs = array();
         foreach ($members as $p) {
             $membersIDs[] = $p->getId();
@@ -241,7 +242,6 @@ class Arpgen
             foreach ($pp as $d) {
                 $t = $d->getType();
                 if ($t === 'entcat') {
-                    log_message('debug', 'JANUSZ ENTCAT: ' . $p->getId());
                     $result['sps'][$pid]['entcat'][] = $d->getId();
                 }
             }
@@ -273,6 +273,9 @@ class Arpgen
                 } else {
                     $result['sps'][$spid]['final'] = array_replace($spdet['prefinal'], $this->mergeFedPolicies($result['fedPoliciesPerFed'], $spdet['feds']));
                 }
+                //remeain only supported attrs
+                $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $this->supportAttrsFlipped);
+                $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $spdet['req']);
             }
         }
         return $result;
@@ -287,12 +290,31 @@ class Arpgen
         return $members;
     }
 
-    public function genXML()
+    public function genXML($version = null)
     {
+        if ($version === null) {
+            $version = 2;
+        }
+
+        // difference for shibboleth ver 2.x and ver 3.x
+        if ($version === 2) {
+            $entcatRuleTxt = 'saml:AttributeRequesterEntityAttributeExactMatch';
+        } else {
+            $entcatRuleTxt = 'saml:EntityAttributeExactMatch';
+        }
         $policy = $this->genPolicyDefs();
 
         $xml = $this->createXMLHead();
 
+        $comment = "\n
+			Experimental verion Attribute Release Policy for " . $this->ent->getEntityId()."\n
+                        generated on " . date("D M j G:i:s T Y") . "\n
+                        compatible with shibboleth idp version: ".$version.".x
+			\n";
+
+        $xml->startComment();
+        $xml->text($comment);
+        $xml->endComment();
 
         $xml->startElementNs('afp', 'AttributeFilterPolicyGroup', 'urn:mace:shibboleth:2.0:afp');
         $xml->startAttribute('id');
@@ -307,9 +329,9 @@ class Arpgen
         $xml->startAttribute('xmlns:basic');
         $xml->text('urn:mace:shibboleth:2.0:afp:mf:basic');
         $xml->endAttribute();
-//////
 
 
+///////////////// ENTITY CATEGORIES /////////////////////////
         $ecPolicies = $policy['ecPolicies'];
         $ecPoliciesByEntCat = array();
         foreach ($ecPolicies as $key => $value) {
@@ -320,6 +342,9 @@ class Arpgen
 
 
         foreach ($ecPoliciesByEntCat as $lkey => $lval) {
+            $xml->startComment();
+            $xml->text('EntityCategory: ' . $policy['definitions']['ec'][$lkey]['value']);
+            $xml->endComment();
             $xml->startElementNs('afp', 'AttributeFilterPolicy', null);
             $xml->startAttribute('id');
             $xml->text('EntityAttribute-' . $lkey);
@@ -327,7 +352,7 @@ class Arpgen
 
             $xml->startElementNs('afp', 'PolicyRequirementRule', null);
             $xml->startAttributeNs('xsi', 'type', null);
-            $xml->text('saml:EntityAttributeExactMatch');
+            $xml->text($entcatRuleTxt);
             $xml->endAttribute();
             $xml->startAttribute('attributeName');
             $xml->text($policy['definitions']['ec'][$lkey]['name']);
@@ -354,12 +379,6 @@ class Arpgen
                     $xml->text('basic:ANY');
                     $xml->endAttribute();
                     $xml->endElement();
-                } elseif ($attrP === 2) {
-                    $xml->startElementNs('afp', 'PermitValueRule', null);
-                    $xml->startAttributeNs('xsi', 'type', null);
-                    $xml->text('basic:ANY');
-                    $xml->endAttribute();
-                    $xml->endElement();
                 } else {
                     $xml->startElementNs('afp', 'PermitValueRule', null);
                     $xml->startAttributeNs('xsi', 'type', null);
@@ -370,25 +389,20 @@ class Arpgen
                     $xml->endAttribute();
 
                     $xml->startAttribute('onlyIfRequired');
-                    $xml->text('true');
+                    if ($attrP === 2) {
+                        $xml->text('false');
+                    } else {
+                        $xml->text('true');
+                    }
                     $xml->endAttribute();
 
-                    $xml->startAttribute('matchIfMetadataSilent');
-                    $xml->text('true');
-                    $xml->endAttribute();
                     $xml->endElement();
                 }
                 $xml->endElement();
-
             }
-
-
-            /// end per sp
-
-
             $xml->endElement();
         }
-/////////////////////////////////////////////////
+///////////////////////END ENTITY CATEGORIES //////////////////////////
         /// start per sp
         foreach ($policy['sps'] as $spid => $spdets) {
             if (!array_key_exists('active', $spdets)) {
@@ -397,28 +411,26 @@ class Arpgen
 
             foreach ($spdets['req'] as $reqattrid => $regattrstatus) {
                 foreach ($spdets['entcat'] as $encats) {
-                    if (isset($policy['ecPolicies'][$reqattrid][$encats])) {
-                        log_message('debug', 'JANUSZ3 spid:' . $spid . ' has entcat matchin idps:' . $encats);
-                    }
-
-
                     if (!array_key_exists($reqattrid, $policy['global']) || (isset($policy['ecPolicies'][$reqattrid][$encats]) && !isset($spdets['spec'][$reqattrid]))) {
-                        log_message('debug', 'JANUSZ3 unsetting req:' . $reqattrid . ' for spid:' . $spid);
-                        unset($spdets['req'][$reqattrid]);
-                        break;
+                        unset($spdets['req'][$reqattrid], $spdets['final'][$reqattrid]);
+                        //   break;
                     }
                 }
             }
             if (count($spdets['final']) == 0) {
+                $xml->startComment();
+                $xml->text('Ommited requester: ' . $spdets['entityid']);
+                $xml->endComment();
                 continue;
             }
 
             $releases = array();
 
+
             foreach ($spdets['final'] as $finattrid => $finpolicy) {
-                if (!array_key_exists($finattrid, $spdets['req'])) {
-                    continue;
-                }
+                //if (!array_key_exists($finattrid, $spdets['req'])) {
+                //   continue;
+                // }
                 if ($finpolicy >= $spdets['req'][$finattrid]) {
                     $releases[$finattrid] = 1;
                 } else {
@@ -426,11 +438,14 @@ class Arpgen
                 }
             }
             if (count($releases) == 0) {
+                $xml->startComment();
+                $xml->text('Ommited requester: ' . $spdets['entityid']);
+                $xml->endComment();
                 continue;
             }
 
             $xml->startComment();
-            $xml->text($spdets['entityid']);
+            $xml->text('Requester: ' . $spdets['entityid']);
             $xml->endComment();
             $xml->startElementNs('afp', 'AttributeFilterPolicy', null);
             $xml->startAttribute('id');
@@ -443,18 +458,15 @@ class Arpgen
             $xml->startAttribute('value');
             $xml->text($spdets['entityid']);
             $xml->endAttribute();
-
             $xml->endElement();
-//<afp:AttributeRule attributeID="email"><afp:PermitValueRule xsi:type="basic:ANY"/></afp:AttributeRule>
+
             foreach ($releases as $attrsToRelease => $permordeny) {
                 $xml->startElementNs('afp', 'AttributeRule', null);
                 $xml->startAttribute('attributeID');
                 $xml->text($policy['definitions']['attrs'][$attrsToRelease]);
                 $xml->endAttribute();
-
                 if ($permordeny === 1) {
                     if (isset($spdets['custom'][$attrsToRelease]) && count($spdets['custom'][$attrsToRelease]) > 0) {
-
                         foreach ($spdets['custom'][$attrsToRelease] as $accessType => $values) {
                             if ($accessType === 'deny') {
                                 $xml->startElementNs('afp', 'DenyValueRule', null);
@@ -477,7 +489,6 @@ class Arpgen
                                     $xml->text('true');
                                     $xml->endAttribute();
                                     $xml->endElement();
-
                                 }
                             } else {
 
@@ -492,7 +503,7 @@ class Arpgen
                             }
 
                             $xml->endElement();
-                         //   break;  //
+                            //   break;  //
                         }
 
                     } else {

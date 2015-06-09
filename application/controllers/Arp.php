@@ -53,6 +53,87 @@ class Arp extends MY_Controller
         return $result;
     }
 
+
+
+
+
+
+    public function format2exp($encodedEntity,$m = null){
+        if (!empty($m) && $m != 'arp.xml') {
+            show_error('Request not allowed', 403);
+        }
+        $entityID = base64_decode($encodedEntity);
+        try {
+            $ent = $this->em->getRepository('models\Provider')->findOneBy(array('entityid' => $entityID, 'type' => array('IDP', 'BOTH')));
+        }
+        catch(Exception $e)
+        {
+            $this->output->set_content_type('text/html');
+            log_message('error',$e);
+            set_status_header(500);
+            echo 'Internal server error';
+            return;
+        }
+        if (empty($ent)) {
+            log_message('error', 'IdP not found with id:.' . $idp_entityid);
+            show_error("Identity Provider not found", 404);
+        }
+        try{
+            $this->load->library('arpgen', array('ent' => $ent));
+        }
+        catch(Exception $e)
+        {
+            $this->output->set_content_type('text/html');
+            log_message('error',$e);
+            set_status_header(500);
+            echo 'Internal server error';
+            return;
+        }
+        $xml = $this->arpgen->genXML();
+        $result = $xml->outputMemory();
+        $this->output->set_content_type('text/xml')->set_output($result);
+
+    }
+
+
+    public function format3exp($encodedEntity,$m = null){
+        if (!empty($m) && $m != 'arp.xml') {
+            show_error('Request not allowed', 403);
+        }
+        $entityID = base64_decode($encodedEntity);
+        try {
+            $ent = $this->em->getRepository('models\Provider')->findOneBy(array('entityid' => $entityID, 'type' => array('IDP', 'BOTH')));
+        }
+        catch(Exception $e)
+        {
+            $this->output->set_content_type('text/html');
+            log_message('error',$e);
+            set_status_header(500);
+            echo 'Internal server error';
+            return;
+        }
+        if (empty($ent)) {
+            log_message('error', 'IdP not found with id:.' . $idp_entityid);
+            show_error("Identity Provider not found", 404);
+        }
+        try{
+            $this->load->library('arpgen', array('ent' => $ent));
+        }
+        catch(Exception $e)
+        {
+            $this->output->set_content_type('text/html');
+            log_message('error',$e);
+            set_status_header(500);
+            echo 'Internal server error';
+            return;
+        }
+        $xml = $this->arpgen->genXML(3);
+        $result = $xml->outputMemory();
+        $this->output->set_content_type('text/xml')->set_output($result);
+
+    }
+
+
     /**
      *
      * @param string $idp_entityid
