@@ -23,7 +23,7 @@ class Arpgen
      */
     protected $attrsDefs;
     protected $attrDefsSmplArray = array();
-    protected $supportAttributes;
+    protected $supportAttributes = array();
     protected $supportAttrsFlipped;
     protected $tempARPolsInstance;
     protected $entityCategories = array();
