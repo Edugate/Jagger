@@ -28,6 +28,7 @@ class Arpgen
     protected $tempARPolsInstance;
     protected $entityCategories = array();
     protected $federations = array();
+    protected $attrRequiredByFeds = array();
 
     public function __construct(array $args)
     {
@@ -74,6 +75,16 @@ class Arpgen
             }
         }
 
+        /**
+         * @var $fedAttrReqs models\AttributeRequirement[]
+         */
+        $fedAttrReqs = $this->em->getRepository('models\AttributeRequirement')->findBy(array('type' => 'FED'));
+        foreach ($fedAttrReqs as $req) {
+            if ($req->getFederation() !== null) {
+                $this->attrRequiredByFeds[$req->getFederation()->getId()][$req->getAttribute()->getId()] = $req->getStatusToInt();
+            }
+        }
+
 
     }
 
@@ -107,7 +118,21 @@ class Arpgen
         return $result;
     }
 
-    public function getRequirements($sps)
+    private function mergeReqAttrsByFeds($feds)
+    {
+        $filteredFeds = array_intersect_key($this->attrRequiredByFeds, $feds);
+        $result = array();
+        foreach ($filteredFeds as $fedid => $attrs) {
+            foreach ($attrs as $attrid => $status) {
+                if ((array_key_exists($attrid, $result) && $status < $result[$attrid]) || (!array_key_exists($attrid, $result))) {
+                    $result[$attrid] = $status;
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function getSPRequirements($sps)
     {
         $tempAttrReqs = new models\AttributeRequirements;
 
@@ -197,6 +222,7 @@ class Arpgen
             'ecPolicies' => $policies['entcat'],
             'fedPolicies' => $policies['fed'],
             'fedPoliciesPerFed' => array(),
+            'reqAttrByFeds' => $this->attrRequiredByFeds,
             'spPoliciec' => $policies['sp'],
             'sps' => array()
         );
@@ -210,7 +236,13 @@ class Arpgen
         foreach ($members as $member) {
             $membersIDs[] = $member->getId();
         };
-        $result['sps'] = array_fill_keys($membersIDs, array('active' => true, 'entcat' => array(), 'customsp' => array(), 'req' => array(), 'feds' => array(), 'spec'=>array(),'prefinal' => $globalPolicy));
+        $result['sps'] = array_fill_keys($membersIDs, array('active' => true, 'entcat' => array(), 'customsp' => array(), 'req' => array(), 'feds' => array(), 'spec' => array(), 'prefinal' => $globalPolicy));
+
+        // get required attrs by all SP and fille reseult 'req'
+        $req = $this->getSPRequirements(array_keys($result['sps']));
+        foreach ($req as $kreq => $kvalu) {
+            $result['sps'][$kreq]['req'] = $kvalu['req'];
+        }
         foreach ($members as $member) {
 
             $pid = $member->getId();
@@ -225,6 +257,9 @@ class Arpgen
                 $result['sps'][$pid]['feds'][] = $f->getId();
             }
 
+            if (count($result['sps'][$pid]['req']) == 0) {
+                $result['sps'][$pid]['req'] = $this->mergeReqAttrsByFeds(array_flip($result['sps'][$pid]['feds']));
+            }
 
 
             // start entityCategory
@@ -241,11 +276,6 @@ class Arpgen
 
         }
 
-        // get required attrs by all SP and fille reseult 'req'
-        $req = $this->getRequirements(array_keys($result['sps']));
-        foreach ($req as $kreq => $kvalu) {
-            $result['sps'][$kreq]['req'] = $kvalu['req'];
-        }
 
         foreach ($policies['sp'] as $attrid => $spPolArr) {
 
@@ -292,20 +322,17 @@ class Arpgen
 
         $xml = $this->createXMLHead();
 
-        $comment = PHP_EOL.'
-			Experimental verion Attribute Release Policy for ' . $this->ent->getEntityId().PHP_EOL.'
-                        generated on ' . date('D M j G:i:s T Y') . PHP_EOL.'
-                        compatible with shibboleth idp version: '.$version.'.x
-			'.PHP_EOL;
-
-
+        $comment = PHP_EOL . '
+			Experimental verion Attribute Release Policy for ' . $this->ent->getEntityId() . PHP_EOL . '
+                        generated on ' . date('D M j G:i:s T Y') . PHP_EOL . '
+                        compatible with shibboleth idp version: ' . $version . '.x
+			' . PHP_EOL;
 
 
         $xml->startElementNs('afp', 'AttributeFilterPolicyGroup', 'urn:mace:shibboleth:2.0:afp');
         $xml->startAttribute('id');
         $xml->text('policy');
         $xml->endAttribute();
-
 
 
         $xml->startAttributeNs('xsi', 'schemaLocation', 'http://www.w3.org/2001/XMLSchema-instance');
@@ -403,7 +430,7 @@ class Arpgen
                 }
             }
             if (count($spdets['final']) == 0) {
-                $xml->writeComment('Ommited requester: '.$spdets['entityid'].'');
+                $xml->writeComment('Ommited requester: ' . $spdets['entityid'] . '');
                 continue;
             }
 
@@ -418,10 +445,10 @@ class Arpgen
                 }
             }
             if (count($releases) == 0) {
-                $xml->writeComment('Ommited requester: '.$spdets['entityid'].'');
+                $xml->writeComment('Ommited requester: ' . $spdets['entityid'] . '');
                 continue;
             }
-            $xml->writeComment('Requester: '.$spdets['entityid'].'');
+            $xml->writeComment('Requester: ' . $spdets['entityid'] . '');
             $xml->startElementNs('afp', 'AttributeFilterPolicy', null);
             $xml->startAttribute('id');
             $xml->text($spdets['entityid']);

@@ -149,6 +149,9 @@ class AttributeRequirement
         return $this->attribute_id;
     }
 
+    /**
+     * @return Federation
+     */
     public function getFederation()
     {
         return $this->fed_id;
