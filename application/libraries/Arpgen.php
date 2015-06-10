@@ -43,6 +43,7 @@ class Arpgen
         foreach ($this->attrsDefs as $k => $v) {
             $this->attrDefsSmplArray[$k] = $v->getName();
         }
+        natcasesort($this->attrDefsSmplArray);
         $this->tempARPolsInstance = new models\AttributeReleasePolicies;
         /**
          * @var $supportAttrColl \models\AttributeReleasePolicy[]
@@ -101,7 +102,6 @@ class Arpgen
                 continue;
             }
 
-
             $result[$entryType][$entry->getAttribute()->getId()][$entry->getRequester()] = $valuePolicy;
         }
         return $result;
@@ -150,22 +150,6 @@ class Arpgen
         return $result;
     }
 
-    private function genPolicyByEC()
-    {
-        /**
-         * @var $pols models\AttributeReleasePolicy[]
-         */
-        $pols = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(array('idp' => $this->ent, 'type' => 'entcat'));
-        $result = array();
-        foreach ($pols as $val) {
-
-            $requester = $val->getRequester();
-            if ($requester !== null) {
-                $result[$val->getAttribute()->getId()][$requester] = $val->getPolicy();
-            }
-        }
-        return $result;
-    }
 
     private function mergeFedPolicies(array $source, array $limit)
     {
@@ -214,7 +198,7 @@ class Arpgen
             'fedPolicies' => $policies['fed'],
             'fedPoliciesPerFed' => array(),
             'spPoliciec' => $policies['sp'],
-            'sps' => array(),
+            'sps' => array()
         );
         foreach ($policies['fed'] as $k => $v) {
             foreach ($v as $k2 => $v2) {
@@ -226,9 +210,8 @@ class Arpgen
         foreach ($members as $member) {
             $membersIDs[] = $member->getId();
         };
-        $result['sps'] = array_fill_keys($membersIDs, array('active' => true, 'entcat' => array(), 'customsp' => array(), 'req' => array(), 'feds' => array(), 'prefinal' => $globalPolicy));
+        $result['sps'] = array_fill_keys($membersIDs, array('active' => true, 'entcat' => array(), 'customsp' => array(), 'req' => array(), 'feds' => array(), 'spec'=>array(),'prefinal' => $globalPolicy));
         foreach ($members as $member) {
-
 
             $pid = $member->getId();
             if (isset($policies['customsp'][$pid])) {
@@ -275,12 +258,7 @@ class Arpgen
         foreach ($result['sps'] as $spid => $spdet) {
 
             if (array_key_exists('active', $spdet)) {
-
-                if (array_key_exists('spec', $spdet)) {
-                    $result['sps'][$spid]['final'] = array_replace($spdet['prefinal'], $this->mergeFedPolicies($result['fedPoliciesPerFed'], $spdet['feds']), $spdet['spec']);
-                } else {
-                    $result['sps'][$spid]['final'] = array_replace($spdet['prefinal'], $this->mergeFedPolicies($result['fedPoliciesPerFed'], $spdet['feds']));
-                }
+                $result['sps'][$spid]['final'] = array_replace($spdet['prefinal'], $this->mergeFedPolicies($result['fedPoliciesPerFed'], $spdet['feds']), $spdet['spec']);
                 //remeain only supported attrs
                 $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $this->supportAttrsFlipped);
                 $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $spdet['req']);
@@ -350,9 +328,7 @@ class Arpgen
 
 
         foreach ($ecPoliciesByEntCat as $lkey => $lval) {
-            $xml->startComment();
-            $xml->text('EntityCategory: ' . $policy['definitions']['ec'][$lkey]['value']);
-            $xml->endComment();
+            $xml->writeComment('EntityCategory: ' . $policy['definitions']['ec'][$lkey]['value']);
             $xml->startElementNs('afp', 'AttributeFilterPolicy', null);
             $xml->startAttribute('id');
             $xml->text('EntityAttribute-' . $lkey);
@@ -416,19 +392,16 @@ class Arpgen
             if (!array_key_exists('active', $spdets)) {
                 continue;
             }
-
-            foreach ($spdets['req'] as $reqattrid => $regattrstatus) {
+            $requireAttrsIds = array_keys($spdets['req']);
+            foreach ($requireAttrsIds as $reqattrid) {
                 foreach ($spdets['entcat'] as $encats) {
                     if (!array_key_exists($reqattrid, $policy['global']) || (isset($policy['ecPolicies'][$reqattrid][$encats]) && !isset($spdets['spec'][$reqattrid]))) {
                         unset($spdets['req'][$reqattrid], $spdets['final'][$reqattrid]);
-                        //   break;
                     }
                 }
             }
             if (count($spdets['final']) == 0) {
-                $xml->startComment();
-                $xml->text('Ommited requester: ' . $spdets['entityid']);
-                $xml->endComment();
+                $xml->writeComment('Ommited requester: '.$spdets['entityid'].'');
                 continue;
             }
 
@@ -436,9 +409,6 @@ class Arpgen
 
 
             foreach ($spdets['final'] as $finattrid => $finpolicy) {
-                //if (!array_key_exists($finattrid, $spdets['req'])) {
-                //   continue;
-                // }
                 if ($finpolicy >= $spdets['req'][$finattrid]) {
                     $releases[$finattrid] = 1;
                 } else {
@@ -446,15 +416,10 @@ class Arpgen
                 }
             }
             if (count($releases) == 0) {
-                $xml->startComment();
-                $xml->text('Ommited requester: ' . $spdets['entityid']);
-                $xml->endComment();
+                $xml->writeComment('Ommited requester: '.$spdets['entityid'].'');
                 continue;
             }
-
-            $xml->startComment();
-            $xml->text('Requester: ' . $spdets['entityid']);
-            $xml->endComment();
+            $xml->writeComment('Requester: '.$spdets['entityid'].'');
             $xml->startElementNs('afp', 'AttributeFilterPolicy', null);
             $xml->startAttribute('id');
             $xml->text($spdets['entityid']);

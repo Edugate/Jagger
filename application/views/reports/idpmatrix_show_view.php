@@ -77,6 +77,7 @@ echo form_input(array('name' => 'requester', 'type' => 'hidden', 'value' => ''))
 $dropdown = $this->config->item('policy_dropdown');
 echo '<div class="row">';
 $dropdown = array_merge(array('' => lang('rr_select')), $dropdown);
+$dropdown['100'] = lang('droprmspecpol');
 echo '<div class="medium-3 columns medium-text-right"><label for="policy" class="inline" >' . lang('policy') . '</label></div>';
 echo '<div class="medium-9 columns">' . form_dropdown('policy', $dropdown, '') . '</div>';
 echo '</div>';

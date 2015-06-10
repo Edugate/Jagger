@@ -1015,6 +1015,7 @@ $lang['dropnotset']                 = 'not set';
 $lang['dropnever']                  = 'never permit';
 $lang['dropokreq']                  = 'permit only if required';
 $lang['dropokreqdes']               = 'permit if required or desired';
+$lang['droprmspecpol']              = 'remove policy based on requester';
 $lang['droprequired']               = 'required';
 $lang['dropdesired']                = 'desired';
 $lang['notrequired']                = 'not required';
