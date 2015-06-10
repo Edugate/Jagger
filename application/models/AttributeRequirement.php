@@ -141,6 +141,9 @@ class AttributeRequirement
         return $this->type;
     }
 
+    /**
+     * @return Attribute
+     */
     public function getAttribute()
     {
         return $this->attribute_id;
@@ -164,6 +167,18 @@ class AttributeRequirement
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatusToInt()
+    {
+        if(strcmp($this->status[0],'r')==0 )
+        {
+            return 1;
+        }
+        return 2;
     }
 
     public function getReason()

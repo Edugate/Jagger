@@ -141,6 +141,7 @@ class Custompolicies extends MY_Controller
             $data['idp_name'] = $idp->getNameToWebInLang($myLang, 'idp');
             $data['titlepage'] = lang('identityprovider') . ': <a href="' . base_url('providers/detail/show/' . $idp->getId() . '') . '">' . $data['idp_name'] . '</a>';
 
+            $data['locked'] = $isLocked;
             $data['isLocked'] = $isLocked;
             $data['idp_entityid'] = $idp->getEntityId();
             $data['sp_id'] = $sp->getId();

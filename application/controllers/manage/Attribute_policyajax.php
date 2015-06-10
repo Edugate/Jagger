@@ -63,8 +63,7 @@ class Attribute_policyajax extends MY_Controller
         $policy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $attrid, 'idp' => $idpid, 'requester' => $fedid, 'type' => 'fed'));
         if (empty($policy)) {
             $resultPolicy = 100;
-        }
-        else{
+        } else {
             $resultPolicy = $policy->getPolicy();
         }
 
@@ -258,7 +257,7 @@ class Attribute_policyajax extends MY_Controller
             return;
         }
 
-        if (!($policy == 0 || $policy == 1 || $policy == 2)) {
+        if (!in_array($policy, array('1', '2', '0', '100'))) {
             log_message('error', 'wrong policy in post: ' . $policy);
             set_status_header(403);
             echo lang('wrongpolicyval');
@@ -275,25 +274,37 @@ class Attribute_policyajax extends MY_Controller
         }
         if (!empty($arp)) {
             $old_policy = $arp->getPolicy();
-            $arp->setPolicy($policy);
-            $this->em->persist($arp);
-            if ($policy != $old_policy) {
+            if ($policy === '100') {
+                $this->em->remove($arp);
+                $changes['attr: ' . $attribute->getName() . ''] = array(
+                    'before' => 'policy for ' . $sp->getEntityId() . ' : ' . $tmp_a[$old_policy] . '',
+                    'after' => 'removed',
+                );
+                $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
+            } elseif ($policy !== $old_policy) {
+                $arp->setPolicy($policy);
+                $this->em->persist($arp);
+
                 $changes['attr: ' . $attribute->getName() . ''] = array(
                     'before' => 'policy for ' . $sp->getEntityId() . ' : ' . $tmp_a[$old_policy] . '',
                     'after' => $tmp_a[$policy],
                 );
                 $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
+
             }
+
             log_message('debug', 'action: modify - modifying arp from policy ' . $old_policy . ' to ' . $policy);
         } else {
-            $narp = new models\AttributeReleasePolicy;
-            $narp->setSpecificPolicy($idp, $attribute, $sp->getId(), $policy);
-            $this->em->persist($narp);
-            $changes['attr: ' . $attribute->getName() . ''] = array(
-                'before' => 'policy for ' . $sp->getEntityId() . ' : not set/inherited',
-                'after' => $tmp_a[$policy],
-            );
-            $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
+            if($policy !== '100') {
+                $narp = new models\AttributeReleasePolicy;
+                $narp->setSpecificPolicy($idp, $attribute, $sp->getId(), $policy);
+                $this->em->persist($narp);
+                $changes['attr: ' . $attribute->getName() . ''] = array(
+                    'before' => 'policy for ' . $sp->getEntityId() . ' : not set/inherited',
+                    'after' => $tmp_a[$policy]
+                );
+                $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
+            }
         }
         $this->em->flush();
         $keyPrefix = getCachePrefix();
@@ -331,21 +342,19 @@ class Attribute_policyajax extends MY_Controller
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID));
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $postAttrID));
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $postFedID));
-        if(empty($idp) || empty($attribute) || empty($federation))
-        {
+        if (empty($idp) || empty($attribute) || empty($federation)) {
             set_status_header(404);
             echo 'Not found 2';
             return;
         }
-        if(!$this->checkAccess($idp))
-        {
+        if (!$this->checkAccess($idp)) {
             set_status_header(403);
             echo 'access denied 2';
             return;
         }
         $dropdown = $this->config->item('policy_dropdown');
         $dropdown[100] = lang('dropnotset');
-        $policy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $postAttrID, 'idp' => $idpID, 'type' => 'fed','requester'=>$postFedID));
+        $policy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $postAttrID, 'idp' => $idpID, 'type' => 'fed', 'requester' => $postFedID));
         if (strcmp($postPolicy, '100') == 0) {
             if (empty($policy)) {
                 $statusPol = 100;
@@ -358,7 +367,7 @@ class Attribute_policyajax extends MY_Controller
 
         } elseif (empty($policy)) {
             $npolicy = new models\AttributeReleasePolicy();
-            $npolicy->setFedPolicy($idp, $attribute,$federation, $postPolicy);
+            $npolicy->setFedPolicy($idp, $attribute, $federation, $postPolicy);
             $this->em->persist($npolicy);
             $statusPol = $postPolicy;
 
@@ -413,8 +422,7 @@ class Attribute_policyajax extends MY_Controller
             return;
         }
 
-        if(!$this->checkAccess($idp))
-        {
+        if (!$this->checkAccess($idp)) {
             set_status_header(403);
             echo 'access denied';
             return;

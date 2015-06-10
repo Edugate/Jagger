@@ -52,7 +52,7 @@ class AttributeReleasePolicy {
     protected $idp;
 
     /**
-     * null/fed_id/sp_id
+     * null/fed_id/sp_id/entcat_id
      * @Column(type="integer",nullable=true)
      */
     protected $requester;
@@ -78,6 +78,9 @@ class AttributeReleasePolicy {
         return $this->id;
     }
 
+    /**
+     * @return Attribute
+     */
     public function getAttribute()
     {
         return $this->attribute;
@@ -102,6 +105,7 @@ class AttributeReleasePolicy {
     {
         return $this->requester;
     }
+
 
     public function getRelease()
     {
@@ -217,6 +221,16 @@ class AttributeReleasePolicy {
         $this->setProvider($idp);
         $this->setRequester($requester);
         $this->setType('sp');
+        $this->setPolicy($policy);
+        return $this;
+    }
+
+    public function setEntCategoryPolicy(Provider $idp, Attribute $attribute, $requester, $policy)
+    {
+        $this->setAttribute($attribute);
+        $this->setProvider($idp);
+        $this->setRequester($requester);
+        $this->setType('entcat');
         $this->setPolicy($policy);
         return $this;
     }
