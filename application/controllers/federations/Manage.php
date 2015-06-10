@@ -246,14 +246,14 @@ class Manage extends MY_Controller
         } else {
             $d[] = array(
                 lang('rr_fedmetaunsingedlink'),
-                $metaLink . ' ' . anchor($metaLink, '<i class="fi-arrow-right"></i>', 'class="showmetadata"')
+                $metaLink . ' ' . anchor($metaLink, '<i class="fi-arrow-right"></i>', 'class=""')
             );
             $d[] = array(
                 lang('rr_fedmetasingedlink') . ' <span class="label">' . $digest . '</span>', $metaLinkSigned . " " . anchor_popup($metaLinkSigned, '<i class="fi-arrow-right"></i>'));
         }
         $lexportenabled = $federation->getLocalExport();
         if ($lexportenabled === TRUE) {
-            $d[] = array(lang('rr_fedmetaexportunsingedlink'), $metaExportLink . " " . anchor_popup($metaExportLink, '<i class="fi-arrow-right"></i>', 'class="showmetadata"'));
+            $d[] = array(lang('rr_fedmetaexportunsingedlink'), $metaExportLink . " " . anchor_popup($metaExportLink, '<i class="fi-arrow-right"></i>', 'class=""'));
             $d[] = array(lang('rr_fedmetaexportsingedlink') . ' <span class="label">' . $digestExport . '</span>', $metaExportLinkSigned . " " . anchor_popup($metaExportLinkSigned, '<i class="fi-arrow-right"></i>'));
         }
         if ($federation->getActive()) {
