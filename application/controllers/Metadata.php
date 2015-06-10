@@ -466,8 +466,9 @@ class Metadata extends MY_Controller
     {
         $permitPull = FALSE;
 
-        $isAjax = $this->input->is_ajax_request();
-        if (!$isAjax) {
+
+        $loggedIn = $this->j_auth->logged_in();
+        if (!$loggedIn) {
             $limits = $this->config->item('unsignedmeta_iplimits');
             if (!empty($limits) && is_array($limits) && count($limits) > 0) {
                 $remoteip = $this->input->ip_address();
