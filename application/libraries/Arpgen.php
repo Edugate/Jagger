@@ -298,14 +298,15 @@ class Arpgen
                         compatible with shibboleth idp version: '.$version.'.x
 			'.PHP_EOL;
 
-        $xml->startComment();
-        $xml->text($comment);
-        $xml->endComment();
+
+
 
         $xml->startElementNs('afp', 'AttributeFilterPolicyGroup', 'urn:mace:shibboleth:2.0:afp');
         $xml->startAttribute('id');
         $xml->text('policy');
         $xml->endAttribute();
+
+
 
         $xml->startAttributeNs('xsi', 'schemaLocation', 'http://www.w3.org/2001/XMLSchema-instance');
         $xml->text('urn:mace:shibboleth:2.0:afp classpath:/schema/shibboleth-2.0-afp.xsd urn:mace:shibboleth:2.0:afp:mf:basic classpath:/schema/shibboleth-2.0-afp-mf-basic.xsd urn:mace:shibboleth:2.0:afp:mf:saml classpath:/schema/shibboleth-2.0-afp-mf-saml.xsd');
@@ -316,6 +317,7 @@ class Arpgen
         $xml->text('urn:mace:shibboleth:2.0:afp:mf:basic');
         $xml->endAttribute();
 
+        $xml->writeComment($comment);
 
 ///////////////// ENTITY CATEGORIES /////////////////////////
         $ecPolicies = $policy['ecPolicies'];
