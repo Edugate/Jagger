@@ -97,7 +97,7 @@ class Arpgen
         $policies = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(
             array(
                 'idp' => $idp,
-                'attribute' => $this->getSupportAttributes($idp),
+            //    'attribute' => $this->getSupportAttributes($idp),
                 'type' => array('fed', 'sp', 'entcat', 'customsp')
             )
         );
