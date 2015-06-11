@@ -71,7 +71,7 @@ class Arp extends MY_Controller
             show_error("Identity Provider not found", 404);
         }
         try {
-            $this->load->library('arpgen', array('ent' => $ent));
+            $this->load->library('arpgen');
         } catch (Exception $e) {
             $this->output->set_content_type('text/html');
             log_message('error', $e);
@@ -79,7 +79,7 @@ class Arp extends MY_Controller
             echo 'Internal server error';
             return;
         }
-        $xml = $this->arpgen->genXML($version);
+        $xml = $this->arpgen->genXML($ent,$version);
         $result = $xml->outputMemory();
         $this->output->set_content_type('text/xml')->set_output($result);
 

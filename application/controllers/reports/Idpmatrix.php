@@ -40,9 +40,7 @@ class Idpmatrix extends MY_Controller
 	public function getArpData($idpid)
 	{
 		if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
-			set_status_header(403);
-			echo 'Access denied';
-			return false;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
 		}
 		$this->load->library('zacl');
         /**
@@ -50,15 +48,11 @@ class Idpmatrix extends MY_Controller
          */
 		$idp = $this->tmp_providers->getOneIdpById($idpid);
 		if (empty($idp)) {
-			set_status_header(404);
-			echo 'IdP not found';
-			return false;
-		}
+            return $this->output->set_status_header(404)->set_output('IdP not found');
+        }
 		$has_read_access = $this->zacl->check_acl($idpid, 'read', 'entity', '');
 		if (!$has_read_access) {
-			set_status_header(403);
-			echo 'no perms';
-			return false;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
 		}
         /**
          * @var $attrs models\Attribute[]
@@ -94,7 +88,7 @@ class Idpmatrix extends MY_Controller
 		if ($arparray['total'] == 0) {
 			$arparray['message'] = lang('errormatrixnoattrsormembers');
 		}
-		$this->output->set_content_type('application/json')->set_output(json_encode($arparray));
+		return $this->output->set_content_type('application/json')->set_output(json_encode($arparray));
 	}
 
 	public function show($idpid)
