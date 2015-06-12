@@ -2097,20 +2097,173 @@ $(document).ready(function () {
     });
     if ($('#attrpols').length > 0) {
 
-    /*    $("#attrpols section.content").on('toggled', function(event){
-            var link = $(this).attr('data-reveal-ajax-tab');
-            if(link !== undefined)
-            {
-                window.alert(link);
+        /*    $("#attrpols section.content").on('toggled', function(event){
+         var link = $(this).attr('data-reveal-ajax-tab');
+         if(link !== undefined)
+         {
+         window.alert(link);
+         }
+         });*/
+        $('#attrpolstab').on('toggled', function (event, tab) {
+
+            console.log(event, tab);
+            var link = $(tab).attr('data-reveal-ajax-tab');
+            if (link === undefined) {
+                return false;
             }
-        });*/
-        $('#attrpolstab').on('toggled', function(event, tab) {
+            var target = $('#attrpols').find('section.active').first();
+            var tbl;
+            $.ajax({
+                url: link,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var idf;
+                    var supplbl;
+                    var policy;
+                    var datajaggersup ;
+                    if (data.type === 'supported') {
 
-            console.log(event,tab);
-var id = $(tab).attr('data-reveal-ajax-tab');
 
-            alert(id);
+                        var support = new Array();
+                        $.each(data.data.support, function (k, v) {
+                            support.push(v);
+                        });
+                        console.log(support);
+                        tbl = '<table class="table"><thead><tr>';
+                        $.each(data.definitions.columns, function (i, a) {
+                            tbl += '<th>' + a + '</th>';
+                        });
+                        tbl += '</tr></thead>';
+
+                        $.each(data.data.global, function (i, a) {
+                            policy = parseInt(a);
+                            supplbl = '';
+                            tbl += '<tr><td>' + data.definitions.attrs[i] + '</td><td>';
+                            if (policy === 0) {
+                                tbl += '<span class="label warning">' + data.definitions.policy[a] + '</span>';
+                            }
+                            else if (policy === 1) {
+                                tbl += '<span class="label secondary">' + data.definitions.policy[a] + '</span>';
+                            }
+                            else if (policy === 2) {
+                                tbl += '<span class="label success">' + data.definitions.policy[a] + '</span>';
+                            }
+                            else {
+                                tbl += '<span class="label">' + data.definitions.policy[a] + '</span>';
+                            }
+                            idf = support.indexOf(parseInt(i));
+                            if (idf === -1) {
+                                supplbl = '<span class="label alert">' + data.definitions.policy[1000] + '</span>';
+                                datajaggersup = '0';
+                            }
+                            else
+                            {
+                                datajaggersup = '1';
+                            }
+                            tbl += supplbl;
+                            tbl += '</td><td>';
+
+
+                            tbl += '<a href="#" class="modalconfirm" data-jagger-attrpolicy="'+a+'" data-jagger-attrsupport="'+datajaggersup+'" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="edit" data-jagger-arp="global"><i class="fi-pencil"></i></a>';
+                            if (idf === -1) {
+                                tbl += '&nbsp;&nbsp;&nbsp;<a href="#" class="modalconfirm" data-jagger-attrsupport="'+datajaggersup+'" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="delete" data-jagger-arp="global"><i class="fi-trash alert"></i></a>';
+
+                            }
+
+                            tbl += '</td></tr>';
+                        });
+
+
+                        tbl += '</table>';
+
+
+                    }
+
+
+                    target.html(tbl);
+
+
+                }
+            });
+
+
         });
+
+        $('#attrpols').on('click', 'a.modalconfirm', function (event) {
+            event.preventDefault();
+            var arptype = $(this).attr('data-jagger-arp');
+            var arpaction = $(this).attr('data-jagger-action');
+            var attrname = $(this).attr('data-jagger-attrname');
+            var attrid = $(this).attr('data-jagger-attrid');
+            var attrsupport =  $(this).attr('data-jagger-attrsupport');
+            var attrpolicy =  $(this).attr('data-jagger-attrpolicy');
+            if (arptype !== undefined && arpaction !== undefined) {
+
+                if (arptype === 'global' && arpaction === 'delete') {
+
+                    var modal = $("#arpmdelattr");
+                    modal.find('input[name="attrname"]').first().val(attrname);
+                    modal.find('input[name="attrid"]').first().val(attrid);
+                    modal.find('span.attributename').first().html(attrname);
+                    modal.foundation('reveal', 'open');
+                }
+                else if (arptype === 'global' && arpaction === 'edit')
+                {
+                    var modal = $("#arpmeditglobalattr");
+                    modal.find('span.attributename').first().html(attrname);
+                    modal.find('input[name="attrname"]').first().val(attrname);
+                    modal.find('input[name="attrid"]').first().val(attrid);
+                    var supportInput = modal.find('input[name="support"]').first();
+                    if(attrsupport === '1') {
+                        supportInput.prop("checked", true);
+                    }
+                    else
+                    {
+                         supportInput.prop("checked", false);
+                    }
+                    modal.find('[name="policy"] option').prop('selected', false).filter('[value="'+attrpolicy+'"]').prop('selected', true);
+
+                    modal.foundation('reveal', 'open');
+                }
+            }
+
+
+        });
+        $('#arpmdelattr').on('click', 'div.yes', function (event) {
+            var form = $('#arpmdelattr').find('form').first();
+            var serializedData = form.serializeArray();
+            var actionlink = form.attr('action');
+            $.ajax({
+                url: actionlink,
+                method: 'POST',
+                dataType: "json",
+                data: serializedData,
+                success: function (json) {
+                    $('#arpmdelattr').foundation('reveal', 'close');
+                    $('#attrpolstab').find('a[href="#attrpol-1"]').first().trigger('click');
+
+                }
+            });
+        });
+         $('#arpmeditglobalattr').on('click', 'div.yes', function (event) {
+                 var form = $('#arpmeditglobalattr').find('form').first();
+                 var serializedData = form.serializeArray();
+                 var actionlink = form.attr('action');
+              $.ajax({
+                url: actionlink,
+                method: 'POST',
+                dataType: "json",
+                data: serializedData,
+                success: function (json) {
+                    $('#arpmeditglobalattr').foundation('reveal', 'close');
+                    $('#attrpolstab').find('a[href="#attrpol-1"]').first().trigger('click');
+
+                }
+            });
+         });
+
+
 
     }
 

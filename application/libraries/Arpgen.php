@@ -77,6 +77,11 @@ class Arpgen
 
     }
 
+    public function getAttrDefs()
+    {
+        return $this->attrDefsSmplArray;
+    }
+
     public function getSupportAttributes(\models\Provider $idp)
     {
         $idpID = $idp->getId();
