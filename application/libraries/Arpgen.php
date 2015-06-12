@@ -23,6 +23,8 @@ class Arpgen
     protected $tempARPolsInstance;
     protected $entityCategories = array();
     protected $attrRequiredByFeds = array();
+    protected static $supportedAttrs = array();
+    protected static $globalsAttrs = array();
 
     public function __construct()
     {
@@ -77,15 +79,19 @@ class Arpgen
 
     public function getSupportAttributes(\models\Provider $idp)
     {
-        $result = array();
+        $idpID = $idp->getId();
+        if(array_key_exists($idpID,self::$supportedAttrs))
+        {
+            return self::$supportedAttrs[$idpID];
+        }
         /**
          * @var $supportAttrColl \models\AttributeReleasePolicy[]
          */
         $supportAttrColl = $this->tempARPolsInstance->getSupportedAttributes($idp);
         foreach ($supportAttrColl as $attr) {
-            $result[] = $attr->getAttribute()->getId();
+            self::$supportedAttrs[$idpID][] = $attr->getAttribute()->getId();
         }
-        return $result;
+        return self::$supportedAttrs[$idpID];
     }
 
     private function getPoliciec(\models\Provider $idp)
@@ -153,7 +159,7 @@ class Arpgen
 
 
     /// may contain unsuported attrs
-    private function genGlobal(\models\Provider $idp)
+    public function genGlobal(\models\Provider $idp)
     {
         /**
          * @var $globals models\AttributeReleasePolicy[]

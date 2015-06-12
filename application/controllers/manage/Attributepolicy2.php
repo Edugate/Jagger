@@ -1,6 +1,13 @@
 <?php
 
 
+/**
+ * @propoerty Arpgen $arpgen
+ */
+
+/**
+ * Class Attributepolicy2
+ */
 class Attributepolicy2 extends MY_Controller
 {
 
@@ -32,7 +39,9 @@ class Attributepolicy2 extends MY_Controller
             show_error('Denied',401);
         }
         $this->load->library('arpgen');
-        $data['arpgenresult'] = $this->arpgen->genPolicyDefs($ent);
+        $data['arpglobal'] = $this->arpgen->genGlobal($ent);
+        $data['arpsupport'] = $this->arpgen->getSupportAttributes($ent);
+
 
 
 

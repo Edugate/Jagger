@@ -24,7 +24,9 @@ class Attributes
 {
 
     protected $attributes;
+    protected $ci;
     protected $em;
+
 
     function __construct()
     {

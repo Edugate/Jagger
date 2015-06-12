@@ -1123,7 +1123,6 @@ var GINIT = {
         });
 
 
-
         $('#fvform').submit(function (e) {
             e.preventDefault();
             var fvform = $(this);
@@ -1383,20 +1382,18 @@ var GINIT = {
 };
 
 $(document).ready(function () {
-    $(window).scroll(function() {
+    $(window).scroll(function () {
         if ($(this).scrollTop() >= 100) {
             $('#return-to-top').fadeIn(200);
         } else {
             $('#return-to-top').fadeOut(200);
         }
     });
-    $('#return-to-top').click(function() {
+    $('#return-to-top').click(function () {
         $('body,html').animate({
-            scrollTop : 0
+            scrollTop: 0
         }, 400);
     });
-
-
 
 
     GINIT.initialize();
@@ -2098,6 +2095,26 @@ $(document).ready(function () {
             }
         })
     });
+    if ($('#attrpols').length > 0) {
+
+    /*    $("#attrpols section.content").on('toggled', function(event){
+            var link = $(this).attr('data-reveal-ajax-tab');
+            if(link !== undefined)
+            {
+                window.alert(link);
+            }
+        });*/
+        $('#attrpolstab').on('toggled', function(event, tab) {
+
+            console.log(event,tab);
+var id = $(tab).attr('data-reveal-ajax-tab');
+
+            alert(id);
+        });
+
+    }
+
+
     ////////////// new idpmatrix
     if ($('#matrixloader').length > 0) {
         var formupdater = $('#policyupdater');
@@ -2320,7 +2337,7 @@ $(document).ready(function () {
             fedmodalFedId.val(fedid);
             $.ajax({
                 type: "GET",
-                url: fedlink1 + '/' + fedid+'/'+fedattrid,
+                url: fedlink1 + '/' + fedid + '/' + fedattrid,
                 cache: false,
                 dataType: 'json',
                 success: function (data) {
