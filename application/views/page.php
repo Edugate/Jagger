@@ -248,7 +248,6 @@ if ($breadcrumbsEnabled === TRUE) {
 <div id="spinner" class="spinner" style="display:none;">
     <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="<?php echo lang('loading'); ?>"/>
 </div>
-
 <a href="javascript:" id="return-to-top"><i class="fi-arrow-up largeicon"></i></a>
 
 <div style="display: none">

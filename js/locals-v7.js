@@ -2097,6 +2097,7 @@ $(document).ready(function () {
     });
     if ($('#attrpols').length > 0) {
 
+
         /*    $("#attrpols section.content").on('toggled', function(event){
          var link = $(this).attr('data-reveal-ajax-tab');
          if(link !== undefined)
@@ -2104,8 +2105,10 @@ $(document).ready(function () {
          window.alert(link);
          }
          });*/
+
         $('#attrpolstab').on('toggled', function (event, tab) {
 
+            var addbtn = $('#addattrsupport');
             console.log(event, tab);
             var link = $(tab).attr('data-reveal-ajax-tab');
             if (link === undefined) {
@@ -2130,7 +2133,7 @@ $(document).ready(function () {
                             support.push(v);
                         });
                         console.log(support);
-                        tbl = '<table class="table"><thead><tr>';
+                        tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
                         $.each(data.definitions.columns, function (i, a) {
                             tbl += '<th>' + a + '</th>';
                         });
@@ -2175,14 +2178,15 @@ $(document).ready(function () {
                         });
 
 
-                        tbl += '</table>';
+                        tbl += '</table></div>';
 
 
                     }
 
 
-                    target.html(tbl);
+                    //target.html(tbl);
 
+                    addbtn.show().prependTo(target.html(tbl));
 
                 }
             });

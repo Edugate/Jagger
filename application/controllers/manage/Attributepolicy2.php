@@ -70,7 +70,7 @@ class Attributepolicy2 extends MY_Controller
 
 
         $result['type'] = 'supported';
-        $result['definitions']['columns'] = array('attribute name', 'default policy/status', 'action');
+        $result['definitions']['columns'] = array(lang('attrname'), lang('dfltarpcolname'), lang('rr_action'));
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['data']['global'] = $this->arpgen->genGlobal($ent);
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();

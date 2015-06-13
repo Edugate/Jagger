@@ -5,25 +5,21 @@
 
 echo '
 <ul class="tabs" id="attrpolstab" data-tab role="tablist">
-  <li class="tab-title active" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getsupported/' . $idpid . '') . '"><a href="#attrpol-1" role="tab" tabindex="0" aria-selected="false" controls="attrpol-1">' . lang('rr_attributes') . '</a></li>
-  <li class="tab-title" role="presentational"><a href="#attrpol-2" role="tab" tabindex="0"aria-selected="false" controls="attrpol-2">' . lang('defaultpolicytab') . '</a></li>
-  <li class="tab-title" role="presentational"><a href="#attrpol-3" role="tab" tabindex="0" aria-selected="false" controls="attrpol-3">' . lang('fedspolicytab') . '</a></li>
-  <li class="tab-title" role="presentational"><a href="#attrpol-4" role="tab" tabindex="0" aria-selected="false" controls="attrpol-4">' . lang('ecpolicytab') . '</a></li>
-  <li class="tab-title" role="presentational"><a href="#attrpol-5" role="tab" tabindex="0" aria-selected="false" controls="attrpol-5">' . lang('sppolicytab') . '</a></li>
+<li class="tab-title active" role="presentational"><a href="#introtab" role="tab" tabindex="0" aria-selected="true" controls="introtab">Information</a></li>
+  <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getsupported/' . $idpid . '') . '"><a href="#attrpol-1" role="tab" tabindex="0" aria-selected="false" controls="attrpol-1">' . lang('rr_attributes') . '/' . lang('defaultpolicytab') . '</a></li>
+  <li class="tab-title" role="presentational"><a href="#attrpol-2" role="tab" tabindex="0"aria-selected="false" controls="attrpol-2">' . lang('fedspolicytab') . '</a></li>
+  <li class="tab-title" role="presentational"><a href="#attrpol-3" role="tab" tabindex="0" aria-selected="false" controls="attrpol-3">' . lang('ecpolicytab') . '</a></li>
+  <li class="tab-title" role="presentational"><a href="#attrpol-4" role="tab" tabindex="0" aria-selected="false" controls="attrpol-4">' . lang('sppolicytab') . '</a></li>
 </ul>
 ';
 ?>
 
 
 <div id="attrpols" class="tabs-content">
+    <section role="tabpanel" aria-hidden="false" class="content active" id="introtab">
+        HELP
+    </section>
     <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-1">
-        <?php
-
-        echo '<pre>';
-        print_r($arpsupport);
-        echo '</pre>';
-
-        ?>
     </section>
     <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-2">
         <h2>Second panel content goes here...</h2>
@@ -33,9 +29,6 @@ echo '
     </section>
     <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-4">
         <h2>Fourth panel content goes here...</h2>
-    </section>
-    <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-5">
-        <h2>Fifth panel content goes here...</h2>
     </section>
 </div>
 
@@ -81,16 +74,15 @@ echo '
     echo '<div class="row">';
     echo '<div class="small-5 medium-3 column"><label class="text-right">Support?</lable></div>';
     echo '<div class="small-7 medium-9 column">';
-    echo '<div class="switch small"><input id="exampleCheckboxSwitch" type="checkbox" name="support" value="enabled"><label for="exampleCheckboxSwitch"></label></div>';
+    echo '<div class="switch small"><input id="CheckboxSwitch" type="checkbox" name="support" value="enabled"><label for="CheckboxSwitch"></label></div>';
     echo '</div>';
     echo '</div>';
 
     echo '<div class="row">';
     echo '<div class="medium-3 column"><label></label></div>';
 
-    echo '<div class="medium-9 column">'.form_dropdown('policy',array('0'=>'never','1'=>'when required','2'=>'when required or desired','100'=>'unset')).'</div>';
+    echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => 'never', '1' => 'when required', '2' => 'when required or desired', '100' => 'unset')) . '</div>';
     echo '</div>';
-
 
 
     $buttons = array(
@@ -103,3 +95,5 @@ echo '
     ?>
 
 </div>
+<?php
+echo '<div  id="addattrsupport" class="small-12 column hidden"><button class="small right">'.lang('btnaddattr').'</button></div>';
