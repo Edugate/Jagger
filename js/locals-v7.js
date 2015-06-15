@@ -2184,7 +2184,42 @@ $(document).ready(function () {
 
                     }
                     else if(data.type === 'federation'){
+                        var nrcols = 0;
 
+
+                        tbl =  '<div class="small-12 column"><table class="table"><thead><tr>';
+                        $.each(data.definitions.columns, function(i,v){
+                            nrcols = nrcols+1;
+                            tbl +='<th>'+v+'</th>';
+                        });
+                        tbl += '</tr></thead>';
+var nrcols2 = nrcols-1;
+                        var statusstr  =data['definitions']['statusstr'];
+
+                        var feid, idf1;
+                        $.each(data.data.fedpols, function(i,v){
+                            fedid = parseInt(i);
+
+                            idf1 = data.data.activefeds.indexOf(fedid);
+
+                            if(idf1 === -1)
+                            {
+                                tbl +='<tr class="highlight"><td colspan="'+nrcols+'">'+data.definitions.feds[i]+' <span class="label alert">'+statusstr['inactive']+'</span></td></tr>';
+                            }
+                            else
+                            {
+                                tbl +='<tr class="highlight"><td colspan="'+nrcols+'">'+data.definitions.feds[i]+'</td></tr>';
+                            }
+                            $.each(v, function(j,w){
+                                tbl += '<tr><td>'+data.definitions.attrs[j]+'</td><td colspan="'+nrcols2+'"></td></tr>';
+                            });
+
+
+                        });
+
+
+                        tbl += '</table></div>';
+                        target.html(tbl);
                     }
 
 
