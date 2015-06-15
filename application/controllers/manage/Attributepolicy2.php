@@ -147,13 +147,14 @@ class Attributepolicy2 extends MY_Controller
 
 
         $result['definitions']['feds'] = $allFederations;
-
+ $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
         $result['data']['fedpols'] = $fedpoliciesByRequester;
 
         $activeFederation = $this->arpgen->getActiveFederations($ent);
 
         $result['data']['activefeds'] = $activeFederation;
 
+        $result['definitions']['statusstr']['inactive'] = 'inactive';
 
         $this->em->flush();
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
