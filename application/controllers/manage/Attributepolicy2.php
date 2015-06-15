@@ -27,11 +27,13 @@ class Attributepolicy2 extends MY_Controller
         if (!ctype_digit($idpid)) {
             show_404();
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
 
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
         if ($ent === null) {
             show_404();
@@ -42,6 +44,7 @@ class Attributepolicy2 extends MY_Controller
             show_error('Denied', 401);
         }
         $this->load->library('arpgen');
+        $data['attrdefs'] = $this->arpgen->getAttrDefs();
         $data['arpglobal'] = $this->arpgen->genGlobal($ent);
         $data['arpsupport'] = $this->arpgen->getSupportAttributes($ent);
         $data['idpid'] = $ent->getId();
@@ -56,6 +59,9 @@ class Attributepolicy2 extends MY_Controller
         }
 
 
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
@@ -78,6 +84,79 @@ class Attributepolicy2 extends MY_Controller
 
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
+    }
+    public function getfedattrs($idpid = null)
+    {
+        if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+
+
+        /**
+         * @var $ent models\Provider
+         */
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
+        if ($ent === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+        $this->load->library('zacl');
+        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $this->load->library('arpgen');
+        $result['type'] = 'federation';
+
+       // $result['policydefs'] = $this->arpgen->genPolicyDefs($ent);
+
+        $result['definitions']['columns'] = array(lang('attrname'),'policy','reqstatus', lang('rr_action'));
+        $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
+        $result['data']['global'] = $this->arpgen->genGlobal($ent);
+
+        /**
+         * @var $allFeds models\Federation[]
+         */
+        $allFeds = $this->em->getRepository('models\Federation')->findAll();
+        $allFederations = array();
+        foreach ( $allFeds as $fed) {
+            $allFederations[$fed->getId()] = $fed->getName();
+
+        }
+        /**
+         * @var $fedpolicies models\AttributeReleasePolicy[]
+         */
+        $fedpolicies = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(
+            array(
+                'idp' => $ent,
+                'type' => array('fed')
+            )
+        );
+        $fedpoliciesByRequester = array();
+        foreach($fedpolicies as $fedpolicy)
+        {
+            $requester = $fedpolicy->getRequester();
+            if(!array_key_exists($requester,$allFederations))
+            {
+                log_message('warning',__METHOD__ .' found policy for federation which doesn not exist anymore - policy will be removed automaticaly');
+                $this->em->remove($fedpolicy);
+                continue;
+            }
+            $fedpoliciesByRequester[$fedpolicy->getRequester()][$fedpolicy->getAttribute()->getId()] = $fedpolicy->getPolicy();
+        }
+
+
+
+        $result['definitions']['feds'] = $allFederations;
+
+        $result['data']['fedpols'] = $fedpoliciesByRequester;
+
+        $activeFederation = $this->arpgen->getActiveFederations($ent);
+
+        $result['data']['activefeds'] = $activeFederation;
+
+
+        $this->em->flush();
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
 
@@ -123,6 +202,9 @@ class Attributepolicy2 extends MY_Controller
         if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
@@ -133,13 +215,16 @@ class Attributepolicy2 extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
-        $attrid = $this->input->post('attrid');
-        $policy = $this->input->post('policy');
-        $supportintput = $this->input->post('support');
+        $attrid = trim($this->input->post('attrid'));
+        $policy = trim($this->input->post('policy'));
+        $supportintput = trim($this->input->post('support'));
         if(!ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy,array('0','1','2','100')))
         {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
+        /**
+         * @var $attribute models\Attribute
+         */
         $attribute = $this->em->getRepository('models\Attribute')->findOneBy(array('id'=>$attrid));
         if($attribute === null)
         {
@@ -177,6 +262,7 @@ class Attributepolicy2 extends MY_Controller
             {
                 $globAttr = new models\AttributeReleasePolicy();
                 $globAttr->setGlobalPolicy($ent,$attribute,$policy);
+                $this->em->persist($globAttr);
             }
         }
 
