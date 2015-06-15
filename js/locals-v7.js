@@ -34,15 +34,15 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
 
     // these function pointers may change
     var matches = function (elem) {
-        elem.show()
-    }
+        elem.show();
+    };
     var noMatch = function (elem) {
         elem.hide();
         new_hidden = true
-    }
+    };
     var getText = function (elem) {
         return elem.text()
-    }
+    };
 
     if (column) {
         var index = null;
@@ -52,7 +52,7 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
                 return false;
             }
         });
-        if (index == null) throw("given column: " + column + " not found")
+        if (index == null) throw("given column: " + column + " not found");
 
         getText = function (elem) {
             return jQuery(elem.find(
@@ -74,8 +74,8 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
 
         // only hide visible rows
         matches = function (elem) {
-            ;
-        }
+
+        };
         var elems = jq.find("tbody > tr:visible")
     }
     else {
@@ -95,7 +95,7 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
 };
 
 // caching for speedup
-jQuery.uiTableFilter.last_phrase = ""
+jQuery.uiTableFilter.last_phrase = "";
 
 // not jQuery dependent
 // "" [""] -> Boolean
@@ -106,7 +106,7 @@ jQuery.uiTableFilter.has_words = function (str, words, caseSensitive) {
         if (text.indexOf(words[i]) === -1) return false;
     }
     return true;
-}
+};
 
 
 /// third party plugin //
@@ -209,7 +209,7 @@ var createRowTaskParams = function (label1, label2) {
     for (var i = 0; i < 5; i++) {
         rname += possible.charAt(Math.floor(Math.random() * possible.length));
     }
-    ;
+
     return $('<div class=\"row\"><div class=\"small-6 column\"><label>' + label1 + '<input name=\"params[' + rname + '][name]\" type=\"text\" value=\"\"/></label></div>' +
     '<div class=\"small-6 column\"><label>' + label2 + '<input name=\"params[' + rname + '][value]\" type="text"  value=\"\"/></label></div></div>');
 };
@@ -309,7 +309,7 @@ var GINIT = {
                                     }
                                 ];
                                 var ctx = pElement.find('canvas').get(0).getContext("2d");
-                                ;
+
                                 if (ctx) {
                                     var myPieChart = new Chart(ctx).Pie(data2, {
                                         responsive: true,
@@ -667,7 +667,7 @@ var GINIT = {
                         var a = 0;
                         $.each(data, function (i, v) {
                             result[a++] = '<li><a href="' + baseurl + 'providers/detail/show/' + v.provid + '">' + v.name + ' </a><small>(' + v.entityid + ')</small></li>';
-                        })
+                        });
                         listbody.append(result.join(''));
                         content.append(listbody);
                         modal.foundation('reveal', 'open');
@@ -694,7 +694,7 @@ var GINIT = {
                         var a = 0;
                         $.each(data, function (i, v) {
                             result[a++] = '<li><a href="' + baseurl + 'providers/detail/show/' + v.provid + '">' + v.name + ' </a><small>(' + v.entityid + ')</small></li>';
-                        })
+                        });
                         listbody.append(result.join(''));
                         content.append(listbody);
                         modal.foundation('reveal', 'open');
@@ -880,7 +880,7 @@ var GINIT = {
                     $('#spinner').hide();
                     result.html(data).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%",],
+                        position: ["20%"],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -896,7 +896,7 @@ var GINIT = {
                     result.css('color', 'red');
                     result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%",],
+                        position: ["20%"],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -936,7 +936,7 @@ var GINIT = {
                     result.html(data1);
                     $("div.uploadresult").append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%",],
+                        position: ["20%"],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -991,7 +991,7 @@ var GINIT = {
                             $("form#availablelogos input[name='filename']").unbind("click");
                             result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                                 closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                                position: ["20%",],
+                                position: ["20%"],
                                 overlayId: 'simpledialog-overlay',
                                 minHeight: '200px',
                                 containerId: 'simpledialog-container',
@@ -1008,7 +1008,7 @@ var GINIT = {
                     $('#spinner').hide();
                     result.html(jqXHR.responseText).append('<p><input type="button" value="Close" class="simplemodal-close" /></p>').modal({
                         closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-                        position: ["20%",],
+                        position: ["20%"],
                         overlayId: 'simpledialog-overlay',
                         minHeight: '200px',
                         containerId: 'simpledialog-container',
@@ -1108,7 +1108,7 @@ var GINIT = {
 
         }));
         $(".updatenotifactionstatus").click(function (e) {
-            e.preventDefault()
+            e.preventDefault();
             var notificationupdateform = $("#notificationupdateform");
             var related;
             var notid = $(this).attr('value');
@@ -1696,8 +1696,7 @@ $(document).ready(function () {
             var rmbtn = $("button#helperbutttonrm").html();
             var inputname = el.attr('value').replace('XXX', langselected);
             selected.attr('disabled', true).attr('selected', false);
-            var rowinputname = inputname;
-            var row = createRowWithLangRm(langselected, langselectedStr, rowinputname, rmbtn);
+            var row = createRowWithLangRm(langselected, langselectedStr, inputname, rmbtn);
             row.insertBefore($(this).closest('span').parent());
 
 
@@ -2105,6 +2104,7 @@ $(document).ready(function () {
          window.alert(link);
          }
          });*/
+        var fedid;
 
         $('#attrpolstab').on('toggled', function (event, tab) {
 
@@ -2128,7 +2128,7 @@ $(document).ready(function () {
                     if (data.type === 'supported') {
 
 
-                        var support = new Array();
+                        var support = [];
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
                         });
@@ -2185,7 +2185,9 @@ $(document).ready(function () {
                     }
                     else if(data.type === 'federation'){
                         var nrcols = 0;
+                        var fpolicy,labelclass;
 
+                        var federationStr = data.definitions.lang['federation'];
 
                         tbl =  '<div class="small-12 column"><table class="table"><thead><tr>';
                         $.each(data.definitions.columns, function(i,v){
@@ -2193,7 +2195,7 @@ $(document).ready(function () {
                             tbl +='<th>'+v+'</th>';
                         });
                         tbl += '</tr></thead>';
-var nrcols2 = nrcols-1;
+                        var nrcols2 = nrcols-2;
                         var statusstr  =data['definitions']['statusstr'];
 
                         var feid, idf1;
@@ -2204,14 +2206,28 @@ var nrcols2 = nrcols-1;
 
                             if(idf1 === -1)
                             {
-                                tbl +='<tr class="highlight"><td colspan="'+nrcols+'">'+data.definitions.feds[i]+' <span class="label alert">'+statusstr['inactive']+'</span></td></tr>';
+                                tbl +='<tr><td colspan="'+nrcols+'" class="highlight">'+federationStr+': '+data.definitions.feds[i]+' <span class="label alert">'+statusstr['inactive']+'</span></td></tr>';
                             }
                             else
                             {
-                                tbl +='<tr class="highlight"><td colspan="'+nrcols+'">'+data.definitions.feds[i]+'</td></tr>';
+                                tbl +='<tr><td colspan="'+nrcols+'" class="highlight">'+federationStr+': '+data.definitions.feds[i]+'</td></tr>';
                             }
                             $.each(v, function(j,w){
-                                tbl += '<tr><td>'+data.definitions.attrs[j]+'</td><td colspan="'+nrcols2+'"></td></tr>';
+                                labelclass ='';
+                                fpolicy = parseInt(w);
+                                if(fpolicy === 0)
+                                {
+                                    labelclass = 'warning';
+                                }
+                                else if(fpolicy === 1)
+                                {
+                                    labelclass = 'secondary';
+                                }
+                                else if(fpolicy === 2)
+                                {
+                                    labelclass = 'success';
+                                }
+                                tbl += '<tr><td>'+data.definitions.attrs[j]+'</td><td><span class="label '+labelclass+'">'+data.definitions.policy[w]+'</span></td><td></td><td colspan="'+nrcols2+'"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-attrid="' + j + '"><i class="fi-pencil"></i></a></td></tr>';
                             });
 
 
@@ -3439,7 +3455,7 @@ $(document).ready(function () {
                     data: serializedData,
                     success: function (data) {
                         $('#resultdialog').modal({
-                            position: ["20%",],
+                            position: ["20%"],
                             overlayId: 'simpledialog-overlay',
                             containerId: 'simpledialog-container',
                             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
@@ -3565,7 +3581,7 @@ $(document).ready(function () {
     function sconfirm(message, callback) {
         $('#sconfirm').modal({
             closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-            position: ["20%",],
+            position: ["20%"],
             minHeight: '300px',
             minWidth: '300px',
             overlayId: 'simpledialog-overlay',
