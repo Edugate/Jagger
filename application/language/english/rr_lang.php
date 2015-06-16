@@ -433,6 +433,7 @@ $lang['rr_ds_black']                = 'Excluded from list';
 $lang['rr_ds_json_url']            = 'JSON format'; 
 $lang['fvalid_name']                = 'Federation validator name';
 
+
 $lang['fcode_succes']               = 'Expected value for success';
 $lang['fcode_warning']               = 'Expected value for warning';
 $lang['fcode_error']                = 'Expected value for error';
@@ -1221,3 +1222,4 @@ $lang['metaalturlinput']         = 'Metadata publication URL';
 $lang['fieldnotusedbystt']            = 'This field is not used the setting';
 $lang['2fupdatetitle'] = 'Update 2F authentication' ;
 $lang['rrtools'] = 'Tools';
+$lang['nometainsertnotice']     = 'You did not inserted any metadata. You will have to fill in all the individual information manually';
