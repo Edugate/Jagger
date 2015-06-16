@@ -200,6 +200,11 @@ $result['definitions']['policy'] = array('0' => 'never permit', '1' => 'only whe
 
     }
 
+    public function updateattrfed($idpid = null)
+    {
+
+    }
+
     public function updateattrglobal($idpid = null)
     {
         if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {

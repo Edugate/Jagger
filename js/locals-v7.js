@@ -2114,7 +2114,7 @@ $(document).ready(function () {
                     var idf;
                     var supplbl;
                     var policy;
-                    var datajaggersup ;
+                    var datajaggersup;
                     if (data.type === 'supported') {
 
 
@@ -2151,17 +2151,16 @@ $(document).ready(function () {
                                 supplbl = '&nbsp;<span class="label alert">' + data.definitions.policy[1000] + '</span>';
                                 datajaggersup = '0';
                             }
-                            else
-                            {
+                            else {
                                 datajaggersup = '1';
                             }
                             tbl += supplbl;
                             tbl += '</td><td>';
 
 
-                            tbl += '<a href="#" class="modalconfirm" data-jagger-attrpolicy="'+a+'" data-jagger-attrsupport="'+datajaggersup+'" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="edit" data-jagger-arp="global"><i class="fi-pencil"></i></a>';
+                            tbl += '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + a + '" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="edit" data-jagger-arp="global"><i class="fi-pencil"></i></a>';
                             if (idf === -1) {
-                                tbl += '&nbsp;&nbsp;&nbsp;<a href="#" class="modalconfirm" data-jagger-attrsupport="'+datajaggersup+'" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="delete" data-jagger-arp="global"><i class="fi-trash alert"></i></a>';
+                                tbl += '&nbsp;&nbsp;&nbsp;<a href="#" class="modalconfirm" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="delete" data-jagger-arp="global"><i class="fi-trash alert"></i></a>';
 
                             }
 
@@ -2174,69 +2173,65 @@ $(document).ready(function () {
                         addbtn.show().prependTo(target.html(tbl));
 
                     }
-                    else if(data.type === 'federation'){
+                    else if (data.type === 'federation') {
                         var support = [];
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
                         });
 
                         var nrcols = 0;
-                        var fpolicy,labelclass;
+                        var fpolicy, labelclass;
 
                         var federationStr = data.definitions.lang['federation'];
 
-                        tbl =  '<div class="small-12 column"><table class="table"><thead><tr>';
-                        $.each(data.definitions.columns, function(i,v){
-                            nrcols = nrcols+1;
-                            tbl +='<th>'+v+'</th>';
+                        tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
+                        $.each(data.definitions.columns, function (i, v) {
+                            nrcols = nrcols + 1;
+                            tbl += '<th>' + v + '</th>';
                         });
                         tbl += '</tr></thead>';
-                        var nrcols2 = nrcols-2;
-                        var statusstr  =data['definitions']['statusstr'];
+                        var nrcols2 = nrcols - 2;
+                        var statusstr = data['definitions']['statusstr'];
 
                         var feid, idf1;
-                        $.each(data.data.fedpols, function(i,v){
+                        $.each(data.data.fedpols, function (i, v) {
                             var supportCopy = support.slice(0);
                             fedid = parseInt(i);
 
                             idf1 = data.data.activefeds.indexOf(fedid);
 
-                            if(idf1 === -1)
-                            {
-                                tbl +='<tr><td colspan="'+nrcols+'" class="highlight">'+federationStr+': '+data.definitions.feds[i]+' <span class="label alert">'+statusstr['inactive']+'</span></td></tr>';
+                            if (idf1 === -1) {
+                                tbl += '<tr><td colspan="' + nrcols + '" class="highlight">' + federationStr + ': ' + data.definitions.feds[i] + ' <span class="label alert">' + statusstr['inactive'] + '</span></td></tr>';
                             }
-                            else
-                            {
-                                tbl +='<tr><td colspan="'+nrcols+'" class="highlight">'+federationStr+': '+data.definitions.feds[i]+'</td></tr>';
+                            else {
+                                tbl += '<tr><td colspan="' + nrcols + '" class="highlight">' + federationStr + ': ' + data.definitions.feds[i] + '</td></tr>';
                             }
-                            $.each(v, function(j,w){
-                                labelclass ='';
+                            $.each(v, function (j, w) {
+                                labelclass = '';
                                 fpolicy = parseInt(w);
                                 idf = supportCopy.indexOf(parseInt(j));
 
-                                if(fpolicy === 0)
-                                {
+                                if (fpolicy === 0) {
                                     labelclass = 'alert';
                                 }
-                                else if(fpolicy === 1)
-                                {
+                                else if (fpolicy === 1) {
                                     labelclass = 'warning';
                                 }
-                                else if(fpolicy === 2)
-                                {
+                                else if (fpolicy === 2) {
                                     labelclass = 'success';
                                 }
-                                tbl += '<tr><td>'+data.definitions.attrs[j]+'</td><td><span class="label '+labelclass+'">'+data.definitions.policy[w]+'</span>';
-                                if(idf === -1)
-                                {
-                                    tbl += '&nbsp;<span class="label alert">'+data.definitions.lang['unsupported']+'</span>';
+                                tbl += '<tr><td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>';
+                                if (idf === -1) {
+                                    tbl += '&nbsp;<span class="label alert">' + data.definitions.lang['unsupported'] + '</span>';
                                 }
-                                else
-                                {
-                                    supportCopy.splice(idf,1);
+                                else {
+                                    supportCopy.splice(idf, 1);
                                 }
 
-                                tbl += '</td><td></td><td colspan="'+nrcols2+'"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-attrid="' + j + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '"><i class="fi-pencil"></i></a></td></tr>';
+                            });
+                            $.each(supportCopy, function (jk, wk) {
+                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fi-pencil"></i></a></td></tr>';
                             });
 
 
@@ -2251,7 +2246,6 @@ $(document).ready(function () {
                     //target.html(tbl);
 
 
-
                 }
             });
 
@@ -2264,8 +2258,9 @@ $(document).ready(function () {
             var arpaction = $(this).attr('data-jagger-action');
             var attrname = $(this).attr('data-jagger-attrname');
             var attrid = $(this).attr('data-jagger-attrid');
-            var attrsupport =  $(this).attr('data-jagger-attrsupport');
-            var attrpolicy =  $(this).attr('data-jagger-attrpolicy');
+            var fedid = $(this).attr('data-jagger-fedid');
+            var attrsupport = $(this).attr('data-jagger-attrsupport');
+            var attrpolicy = $(this).attr('data-jagger-attrpolicy');
             if (arptype !== undefined && arpaction !== undefined) {
 
                 if (arptype === 'global' && arpaction === 'delete') {
@@ -2276,22 +2271,27 @@ $(document).ready(function () {
                     modal.find('span.attributename').first().html(attrname);
                     modal.foundation('reveal', 'open');
                 }
-                else if (arptype === 'global' && arpaction === 'edit')
-                {
+                else if (arptype === 'global' && arpaction === 'edit') {
                     var modal = $("#arpmeditglobalattr");
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrname"]').first().val(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     var supportInput = modal.find('input[name="support"]').first();
-                    if(attrsupport === '1') {
+                    if (attrsupport === '1') {
                         supportInput.prop("checked", true);
                     }
-                    else
-                    {
-                         supportInput.prop("checked", false);
+                    else {
+                        supportInput.prop("checked", false);
                     }
-                    modal.find('[name="policy"] option').prop('selected', false).filter('[value="'+attrpolicy+'"]').prop('selected', true);
+                    modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
 
+                    modal.foundation('reveal', 'open');
+                }
+                else if (arptype === 'fed' && arpaction === 'edit') {
+                    var modal = $("#arpmeditfedattr");
+                    modal.find('span.attributename').first().html(attrname);
+                    modal.find('input[name="attrid"]').first().val(attrid);
+                    modal.find('input[name="fedid"]').first().val(fedid);
                     modal.foundation('reveal', 'open');
                 }
             }
@@ -2314,11 +2314,11 @@ $(document).ready(function () {
                 }
             });
         });
-         $('#arpmeditglobalattr').on('click', 'div.yes', function (event) {
-                 var form = $('#arpmeditglobalattr').find('form').first();
-                 var serializedData = form.serializeArray();
-                 var actionlink = form.attr('action');
-              $.ajax({
+        $('#arpmeditglobalattr').on('click', 'div.yes', function (event) {
+            var form = $('#arpmeditglobalattr').find('form').first();
+            var serializedData = form.serializeArray();
+            var actionlink = form.attr('action');
+            $.ajax({
                 url: actionlink,
                 method: 'POST',
                 dataType: "json",
@@ -2329,30 +2329,28 @@ $(document).ready(function () {
 
                 }
             });
-         });
+        });
 
 
-
-        $('#attrpols').on('click','#addattrsupport button', function(event){
+        $('#attrpols').on('click', '#addattrsupport button', function (event) {
 
             var link2 = $('#addattrsupport').attr('data-jagger-link');
             $.ajax({
                 url: link2,
-                method : 'GET',
+                method: 'GET',
                 dataType: 'json',
-                success: function(json){
-                    if(json.data.support)
-                    {
+                success: function (json) {
+                    if (json.data.support) {
                         var dropdown2 = $('#arpmaddattr').find("select[name='attrid']");
                         dropdown2.find("option").removeAttr('disabled');
-                        $.each(json.data.global, function (i,v){
-                             dropdown2.find('option[value=' + i + ']').prop('disabled', 'disabled');
+                        $.each(json.data.global, function (i, v) {
+                            dropdown2.find('option[value=' + i + ']').prop('disabled', 'disabled');
                         });
                     }
 
                 }
             });
-            $('#arpmaddattr').foundation('reveal','open');
+            $('#arpmaddattr').foundation('reveal', 'open');
         });
 
         $('#arpmaddattr').on('click', 'div.yes', function (event) {
@@ -2371,7 +2369,6 @@ $(document).ready(function () {
                 }
             });
         });
-
 
 
     }

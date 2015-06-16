@@ -131,3 +131,31 @@ $buttons = array(
 echo revealBtnsRow($buttons);
 echo form_close();
 echo '</div>';
+////////////////
+?>
+ <div id="arpmeditfedattr" class="reveal-modal medium" data-reveal>
+        <h4>You're going to update federation policy</h4>
+
+        <p>
+
+        <div>Attribute: <span class="attributename"></span></div>
+        </p>
+        <div class="response"></div>
+        <?php
+        $hidden = array('attrid' => '', 'fedid' => '');
+        echo form_open(base_url('manage/attributepolicy2/updateattrfed/' . $idpid . ''), null, $hidden);
+        echo '<div class="row">';
+        echo '<div class="medium-3 column"><label>Policy</label></div>';
+        echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => 'never', '1' => 'when required', '2' => 'when required or desired', '100' => 'unset')) . '</div>';
+        echo '</div>';
+
+
+        $buttons = array(
+            '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+            '<div class="yes button">' . lang('btnupdate') . '</div>'
+        );
+        echo revealBtnsRow($buttons);
+        echo form_close();
+        ?>
+
+    </div>
