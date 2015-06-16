@@ -1216,4 +1216,4 @@ $lang['metaalturlinput']         = 'Metadata publication URL';
 $lang['fieldnotusedbystt']            = 'This field is not used the setting';
 $lang['2fupdatetitle'] = 'Update 2F authentication' ;
 $lang['rrtools'] = 'Tools';
-$lang['nometainsertnotice']     = 'You did not inserted any metadata. You will have to fill in all the individual information manually';
+$lang['nometainsertnotice']     = 'You did not insert any metadata. You will have to fill in all the individual information manually';
