@@ -2230,10 +2230,10 @@ $(document).ready(function () {
                                     supportCopy.splice(idf, 1);
                                 }
 
-                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-attrname="' + data.definitions.attrs[j] + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-attrpolicy="'+w+'" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-attrname="' + data.definitions.attrs[j] + '"><i class="fi-pencil"></i></a></td></tr>';
                             });
                             $.each(supportCopy, function (jk, wk) {
-                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-attrname="' + data.definitions.attrs[wk] + '" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-attrname="' + data.definitions.attrs[wk] + '" data-jagger-attrpolicy="100" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fi-pencil"></i></a></td></tr>';
                             });
 
 
@@ -2246,10 +2246,15 @@ $(document).ready(function () {
                     else if (data.type === 'entcat') {
                         var support = [];
                         var nrcols = 0;
+                        var labelclass = '';
+                        var entpolicy;
+                        var idf;
+                        var unsupwttr;
 
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
                         });
+
                         tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
                         $.each(data.definitions.columns, function (i, v) {
                             nrcols = nrcols + 1;
@@ -2262,9 +2267,30 @@ $(document).ready(function () {
                             tbl +='<tr><td colspan="'+nrcols+'" class="highlight">EntityCategory: '+data.definitions.entcats[i]['name']+'  '+data.definitions.entcats[i]['value']+'</td></tr>';
 
                             $.each(v, function(j,w){
+                                unsupwttr = '';
+                                idf = support.indexOf(parseInt(j));
+                                if(idf === -1)
+                                {
+                                    unsupwttr = '&nbsp;<span class="label alert">'+data.definitions.policy[1000]+'</span>';
+                                }
+                                labelclass = '';
+                                entpolicy = parseInt(w);
+                                if(entpolicy === 0)
+                                {
+                                    labelclass = 'alert';
+                                }
+                                else if(entpolicy === 1)
+                                {
+                                    labelclass = 'warning';
+                                }
+                                else if(entpolicy === 2)
+                                {
+                                    labelclass = 'success';
+                                }
+
 
                                 tbl += '<tr>';
-                                tbl +='<td>'+data.definitions.attrs[j]+'</td><td>'+data.definitions.policy[w]+'</td><td><i class="fi-pencil"></i></td>'
+                                tbl +='<td>'+data.definitions.attrs[j]+'</td><td><span class="label '+labelclass+'">'+data.definitions.policy[w]+'</span>'+unsupwttr+'</td><td><a href="#" class="modalconfirm" data-jagger-arp="entcat" data-jagger-entcatid="'+i+'" data-jagger-attrid="'+j+'" data-jagger-arp="entcat" data-jagger-action="edit" data-jagger-attrname="'+data.definitions.attrs[j]+'" data-jagger-attrpolicy="'+w+'"><i class="fi-pencil"></i></a></td>'
                                 tbl += '</tr>';
                             });
 
@@ -2295,6 +2321,7 @@ $(document).ready(function () {
             var attrname = $(this).attr('data-jagger-attrname');
             var attrid = $(this).attr('data-jagger-attrid');
             var fedid = $(this).attr('data-jagger-fedid');
+            var entcatid = $(this).attr('data-jagger-entcatid');
             var attrsupport = $(this).attr('data-jagger-attrsupport');
             var attrpolicy = $(this).attr('data-jagger-attrpolicy');
             if (arptype !== undefined && arpaction !== undefined) {
@@ -2328,6 +2355,16 @@ $(document).ready(function () {
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="fedid"]').first().val(fedid);
+                    modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
+                    modal.foundation('reveal', 'open');
+                }
+                else if(arptype === 'entcat' && arpaction === 'edit')
+                {
+                    var modal = $('#arpmeditentcatattr');
+                    modal.find('span.attributename').first().html(attrname);
+                    modal.find('input[name="attrid"]').first().val(attrid);
+                    modal.find('input[name="entcatid"]').first().val(entcatid);
+                    modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
                     modal.foundation('reveal', 'open');
                 }
             }
@@ -2422,6 +2459,22 @@ $(document).ready(function () {
             });
         });
 
+        $('#arpmeditentcatattr').on('click', 'div.yes', function (event) {
+            var form = $('#arpmeditentcatattr').find('form').first();
+            var serializedData = form.serializeArray();
+            var actionlink = form.attr('action');
+            $.ajax({
+                url: actionlink,
+                method: 'POST',
+                dataType: "json",
+                data: serializedData,
+                success: function (json) {
+                    $('#arpmeditentcatattr').foundation('reveal', 'close');
+                    $('#attrpolstab').find('a[href="#attrpol-3"]').first().trigger('click');
+
+                }
+            });
+        });
 
     }
 

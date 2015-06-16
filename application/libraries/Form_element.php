@@ -1978,7 +1978,7 @@ class Form_element
             }
             $r = '';
             $r .= '<div class="small-12 column">';
-            $r .= '<div class="large-8 column" ><div class="row"><div class="small-10 column"><input id="latlng" type="text" placeholder="' . lang('rrclconmap1') . '"></div><div class="small-2 column"><a href="#" class="button tiny postfix" id="addlatlng">' . lang('rr_add') . '</a></div></div><div id="map-canvas" class="small-12 column" style="height: 400px;"></div></div>';
+            $r .= '<div class="large-8 column" ><div class="row"><div class="small-10 column"><input id="latlng" type="text" placeholder="' . lang('rrclconmap1') . '"></div><div class="small-2 column"><a href="#" class="button postfix" id="addlatlng">' . lang('rr_add') . '</a></div></div><div id="map-canvas" class="small-12 column" style="height: 400px;"></div></div>';
             $r .= '<div class="large-4 column"><input id="map-search" type="text" placeholder="' . lang('rrsearchonmap') . '"/><div id="geogroup">' . $geosinputs . '</div></div>';
             $r .= '</div>';
             $result[] = '<fieldset><legend>' . lang('rr_geolocation') . '</legend>' . $r . '</fieldset>';

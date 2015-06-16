@@ -48,7 +48,7 @@ class Attributepolicy2 extends MY_Controller
         $this->load->library('arpgen');
         $data['breadcrumbs'] = array(
             array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-            array('url' => base_url('providers/detail/show/ ' . $idpid . ''), 'name' => '' . $providerNameInLang . ''),
+            array('url' => base_url('providers/detail/show/' . $idpid . ''), 'name' => '' . $providerNameInLang . ''),
             array('url' => '#', 'name' => lang('rr_attributereleasepolicy'),'type'=>'current'),
         );
         $data['attrdefs'] = $this->arpgen->getAttrDefs();
@@ -326,13 +326,74 @@ class Attributepolicy2 extends MY_Controller
 
     }
 
+    public function updateattrentcat($idpid = null)
+    {
+        if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid,'type'=>array('IDP','BOTH')));
+        if ($ent === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+        $this->load->library('zacl');
+        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $attrid = trim($this->input->post('attrid'));
+        $policy = trim($this->input->post('policy'));
+        $entcatid = trim($this->input->post('entcatid'));
+        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($entcatid) || !in_array($policy, array('0', '1', '2', '100'))) {
+            return $this->output->set_status_header(403)->set_output('Posted invalid data');
+        }
+        /**
+         * @var $attribute models\Attribute
+         */
+        $attribute = $this->em->getRepository('models\Attribute')->findOneBy(array('id' => $attrid));
+        if ($attribute === null) {
+            return $this->output->set_status_header(403)->set_output('Attribute not found');
+        }
+        /**
+         * @todo add select by type(entitycategory)
+         * @var $entCategory models\Coc
+         */
+        $entCategory = $this->em->getRepository('models\Coc')->findOneBy(array('id'=>$entcatid));
+          if ($entCategory === null) {
+            return $this->output->set_status_header(403)->set_output('EntityCategory not found');
+        }
+        /**
+         * @var $attrPolicy models\AttributeReleasePolicy
+         */
+        $attrPolicy = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('attribute' => $attrid, 'idp' => $ent->getId(), 'type' => 'entcat', 'requester' => $entcatid));
+        if ($policy === '100') {
+            if ($attrPolicy !== null) {
+                $this->em->remove($attrPolicy);
+            }
+        } elseif ($attrPolicy === null) {
+            $attrPolicy = new models\AttributeReleasePolicy();
+            $attrPolicy->setEntCategoryPolicy($ent, $attribute, $entcatid, $policy);
+            $this->em->persist($attrPolicy);
+        } else {
+            $attrPolicy->setPolicy($policy);
+            $this->em->persist($attrPolicy);
+        }
+
+         try {
+            $this->em->flush();
+            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+            return $this->output->set_status_header(500)->set_output('Internal Server Error');
+        }
+    }
+
     public function updateattrfed($idpid = null)
     {
 
         if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid,'type'=>array('IDP','BOTH')));
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
         }
