@@ -26,6 +26,7 @@ echo '<div class="small-9 large-9 columns">'.form_textarea(array(
     'style' => 'font-family: monospace; font-size: smaller'
 )).'</div>';
 echo '<button type="submit" name="next" class="advancedmode button" value="'.base_url().'providers/idp_registration/advanced">'.lang('nextstep').'</button>';
+echo '<span class="modalnotice hidden">'.lang('nometainsertnotice').'</span>';
 ?>
 
 

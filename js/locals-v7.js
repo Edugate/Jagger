@@ -3526,9 +3526,10 @@ $(document).on('submit', 'div#loginform form', function (e) {
 
 });
 $("button.advancedmode").click(function () {
+    var modalnotice = $('span.modalnotice').text();
     var metadata = $("textarea#metadatabody").val();
     if (metadata.length === 0) {
-        window.alert("You did not inserted any metadata. You will have to fill in all the individual information manually.");
+        window.alert(modalnotice);
     }
     var thisB = $(this);
     var postUrl = thisB.val();
