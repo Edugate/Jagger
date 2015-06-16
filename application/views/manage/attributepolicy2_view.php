@@ -7,8 +7,8 @@ echo '
 <ul class="tabs" id="attrpolstab" data-tab role="tablist">
 <li class="tab-title active" role="presentational"><a href="#introtab" role="tab" tabindex="0" aria-selected="true" controls="introtab">Information</a></li>
   <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getsupported/' . $idpid . '') . '"><a href="#attrpol-1" role="tab" tabindex="0" aria-selected="false" controls="attrpol-1">' . lang('rr_attributes') . '/' . lang('defaultpolicytab') . '</a></li>
-  <li class="tab-title" role="presentational"data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getfedattrs/' . $idpid . '') . '"><a href="#attrpol-2" role="tab" tabindex="0"aria-selected="false" controls="attrpol-2">' . lang('fedspolicytab') . '</a></li>
-  <li class="tab-title" role="presentational"><a href="#attrpol-3" role="tab" tabindex="0" aria-selected="false" controls="attrpol-3">' . lang('ecpolicytab') . '</a></li>
+  <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getfedattrs/' . $idpid . '') . '"><a href="#attrpol-2" role="tab" tabindex="0"aria-selected="false" controls="attrpol-2">' . lang('fedspolicytab') . '</a></li>
+  <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getentcatattrs/' . $idpid . '') . '"><a href="#attrpol-3" role="tab" tabindex="0" aria-selected="false" controls="attrpol-3">' . lang('ecpolicytab') . '</a></li>
   <li class="tab-title" role="presentational"><a href="#attrpol-4" role="tab" tabindex="0" aria-selected="false" controls="attrpol-4">' . lang('sppolicytab') . '</a></li>
 </ul>
 ';
@@ -17,20 +17,13 @@ echo '
 
     <div id="attrpols" class="tabs-content">
         <section role="tabpanel" aria-hidden="false" class="content active" id="introtab">
-            <pre>
-            <?php
-
-            print_r($arpsupport);
-            ?>
-                </pre>
+            INFORMATION PART
         </section>
         <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-1">
         </section>
         <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-2">
-            <h2>Second panel content goes here...</h2>
         </section>
         <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-3">
-            <h2>Third panel content goes here...</h2>
         </section>
         <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-4">
             <h2>Fourth panel content goes here...</h2>

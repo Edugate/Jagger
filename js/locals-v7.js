@@ -27,7 +27,9 @@ function nl2br(str, is_xhtml) {
  */
 jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
     var new_hidden = false;
-    if (this.last_phrase === phrase) return false;
+    if (this.last_phrase === phrase) {
+        return false;
+    }
 
     var phrase_length = phrase.length;
     var words = phrase.toLowerCase().split(" ");
@@ -38,21 +40,21 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
     };
     var noMatch = function (elem) {
         elem.hide();
-        new_hidden = true
+        new_hidden = true;
     };
     var getText = function (elem) {
-        return elem.text()
+        return elem.text();
     };
 
     if (column) {
         var index = null;
         jq.find("thead > tr:last > th").each(function (i) {
-            if ($(this).text() == column) {
+            if ($(this).text() === column) {
                 index = i;
                 return false;
             }
         });
-        if (index == null) throw("given column: " + column + " not found");
+        if (index === null) throw("given column: " + column + " not found");
 
         getText = function (elem) {
             return jQuery(elem.find(
@@ -2228,14 +2230,48 @@ $(document).ready(function () {
                                     supportCopy.splice(idf, 1);
                                 }
 
-                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-attrname="' + data.definitions.attrs[j] + '"><i class="fi-pencil"></i></a></td></tr>';
                             });
                             $.each(supportCopy, function (jk, wk) {
-                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-attrname="' + data.definitions.attrs[wk] + '" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fi-pencil"></i></a></td></tr>';
                             });
 
 
                         });
+
+
+                        tbl += '</table></div>';
+                        target.html(tbl);
+                    }
+                    else if (data.type === 'entcat') {
+                        var support = [];
+                        var nrcols = 0;
+
+                        $.each(data.data.support, function (k, v) {
+                            support.push(v);
+                        });
+                        tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
+                        $.each(data.definitions.columns, function (i, v) {
+                            nrcols = nrcols + 1;
+                            tbl += '<th>' + v + '</th>';
+                        });
+                        tbl += '</tr></thead>';
+                        var nrcols2 = nrcols - 2;
+
+                        $.each(data.data.entcats, function(i,v){
+                            tbl +='<tr><td colspan="'+nrcols+'" class="highlight">EntityCategory: '+data.definitions.entcats[i]['name']+'  '+data.definitions.entcats[i]['value']+'</td></tr>';
+
+                            $.each(v, function(j,w){
+
+                                tbl += '<tr>';
+                                tbl +='<td>'+data.definitions.attrs[j]+'</td><td>'+data.definitions.policy[w]+'</td><td><i class="fi-pencil"></i></td>'
+                                tbl += '</tr>';
+                            });
+
+                        });
+
+
+
 
 
                         tbl += '</table></div>';
@@ -2365,6 +2401,22 @@ $(document).ready(function () {
                 success: function (json) {
                     $('#arpmaddattr').foundation('reveal', 'close');
                     $('#attrpolstab').find('a[href="#attrpol-1"]').first().trigger('click');
+
+                }
+            });
+        });
+        $('#arpmeditfedattr').on('click', 'div.yes', function (event) {
+            var form = $('#arpmeditfedattr').find('form').first();
+            var serializedData = form.serializeArray();
+            var actionlink = form.attr('action');
+            $.ajax({
+                url: actionlink,
+                method: 'POST',
+                dataType: "json",
+                data: serializedData,
+                success: function (json) {
+                    $('#arpmeditfedattr').foundation('reveal', 'close');
+                    $('#attrpolstab').find('a[href="#attrpol-2"]').first().trigger('click');
 
                 }
             });
