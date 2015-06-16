@@ -111,6 +111,7 @@ class Attributepolicy2 extends MY_Controller
 $result['definitions']['policy'] = array('0' => 'never permit', '1' => 'only when required', '2' => 'when required or desired', '100' => 'unset', '1000' => 'unsupported');
         $result['definitions']['columns'] = array(lang('attrname'),'policy','reqstatus', lang('rr_action'));
         $result['definitions']['lang']['federation'] = lang('rr_federation');
+        $result['definitions']['lang']['unsupported'] = 'unsupported';
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['data']['global'] = $this->arpgen->genGlobal($ent);
 

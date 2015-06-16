@@ -2095,17 +2095,7 @@ $(document).ready(function () {
         })
     });
     if ($('#attrpols').length > 0) {
-
-
-        /*    $("#attrpols section.content").on('toggled', function(event){
-         var link = $(this).attr('data-reveal-ajax-tab');
-         if(link !== undefined)
-         {
-         window.alert(link);
-         }
-         });*/
         var fedid;
-
         $('#attrpolstab').on('toggled', function (event, tab) {
 
             var addbtn = $('#addattrsupport');
@@ -2144,10 +2134,10 @@ $(document).ready(function () {
                             supplbl = '';
                             tbl += '<tr><td>' + data.definitions.attrs[i] + '</td><td>';
                             if (policy === 0) {
-                                tbl += '<span class="label warning">' + data.definitions.policy[a] + '</span>';
+                                tbl += '<span class="label alert">' + data.definitions.policy[a] + '</span>';
                             }
                             else if (policy === 1) {
-                                tbl += '<span class="label secondary">' + data.definitions.policy[a] + '</span>';
+                                tbl += '<span class="label warning">' + data.definitions.policy[a] + '</span>';
                             }
                             else if (policy === 2) {
                                 tbl += '<span class="label success">' + data.definitions.policy[a] + '</span>';
@@ -2155,9 +2145,10 @@ $(document).ready(function () {
                             else {
                                 tbl += '<span class="label">' + data.definitions.policy[a] + '</span>';
                             }
+
                             idf = support.indexOf(parseInt(i));
                             if (idf === -1) {
-                                supplbl = '<span class="label alert">' + data.definitions.policy[1000] + '</span>';
+                                supplbl = '&nbsp;<span class="label alert">' + data.definitions.policy[1000] + '</span>';
                                 datajaggersup = '0';
                             }
                             else
@@ -2184,6 +2175,11 @@ $(document).ready(function () {
 
                     }
                     else if(data.type === 'federation'){
+                        var support = [];
+                        $.each(data.data.support, function (k, v) {
+                            support.push(v);
+                        });
+
                         var nrcols = 0;
                         var fpolicy,labelclass;
 
@@ -2200,6 +2196,7 @@ $(document).ready(function () {
 
                         var feid, idf1;
                         $.each(data.data.fedpols, function(i,v){
+                            var supportCopy = support.slice(0);
                             fedid = parseInt(i);
 
                             idf1 = data.data.activefeds.indexOf(fedid);
@@ -2215,19 +2212,31 @@ $(document).ready(function () {
                             $.each(v, function(j,w){
                                 labelclass ='';
                                 fpolicy = parseInt(w);
+                                idf = supportCopy.indexOf(parseInt(j));
+
                                 if(fpolicy === 0)
                                 {
-                                    labelclass = 'warning';
+                                    labelclass = 'alert';
                                 }
                                 else if(fpolicy === 1)
                                 {
-                                    labelclass = 'secondary';
+                                    labelclass = 'warning';
                                 }
                                 else if(fpolicy === 2)
                                 {
                                     labelclass = 'success';
                                 }
-                                tbl += '<tr><td>'+data.definitions.attrs[j]+'</td><td><span class="label '+labelclass+'">'+data.definitions.policy[w]+'</span></td><td></td><td colspan="'+nrcols2+'"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-attrid="' + j + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '<tr><td>'+data.definitions.attrs[j]+'</td><td><span class="label '+labelclass+'">'+data.definitions.policy[w]+'</span>';
+                                if(idf === -1)
+                                {
+                                    tbl += '&nbsp;<span class="label alert">'+data.definitions.lang['unsupported']+'</span>';
+                                }
+                                else
+                                {
+                                    supportCopy.splice(idf,1);
+                                }
+
+                                tbl += '</td><td></td><td colspan="'+nrcols2+'"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-attrid="' + j + '"><i class="fi-pencil"></i></a></td></tr>';
                             });
 
 
