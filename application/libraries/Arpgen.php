@@ -376,7 +376,9 @@ class Arpgen
         $ecPoliciesByEntCat = array();
         foreach ($ecPolicies as $key => $value) {
             foreach ($value as $key2 => $value2) {
-                $ecPoliciesByEntCat[$key2][$key] = $value2;
+                if(in_array($key, $policy['supported'])) {
+                    $ecPoliciesByEntCat[$key2][$key] = $value2;
+                }
             }
         }
 
