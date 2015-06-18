@@ -34,12 +34,12 @@ class Attributepolicy2 extends MY_Controller
         /**
          * @var $ent models\Provider
          */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid,'type'=>array('IDP','BOTH')));
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
         if ($ent === null) {
             show_404();
         }
         $myLang = MY_Controller::getLang();
-        $providerNameInLang = $ent->getNameToWebInLang($myLang,'idp');
+        $providerNameInLang = $ent->getNameToWebInLang($myLang, 'idp');
         $this->load->library('zacl');
         $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
         if (!$hasWriteAccess) {
@@ -49,7 +49,7 @@ class Attributepolicy2 extends MY_Controller
         $data['breadcrumbs'] = array(
             array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
             array('url' => base_url('providers/detail/show/' . $idpid . ''), 'name' => '' . $providerNameInLang . ''),
-            array('url' => '#', 'name' => lang('rr_attributereleasepolicy'),'type'=>'current'),
+            array('url' => '#', 'name' => lang('rr_attributereleasepolicy'), 'type' => 'current'),
         );
         $data['attrdefs'] = $this->arpgen->getAttrDefs();
         $data['arpglobal'] = $this->arpgen->genGlobal($ent);
@@ -93,6 +93,39 @@ class Attributepolicy2 extends MY_Controller
 
     }
 
+    public function getentcats($idpid = null)
+    {
+        if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        /**
+         * @var $ent models\Provider
+         */
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
+        if ($ent === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+        $this->load->library('zacl');
+        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        /**
+         * @var $cocs models\Coc[]
+         */
+        $cocs = $this->em->getRepository('models\Coc')->findBy(array('type' => 'entcat','subtype'=>'http://macedir.org/entity-category'), array('url' => 'ASC'));
+        $entcats = array();
+        foreach ($cocs as $cocVal) {
+            $entcats[] = array('entcatid' => $cocVal->getId(), 'name' => $cocVal->getSubtype(), 'value' => $cocVal->getUrl(),'display'=>$cocVal->getName());
+        }
+        $this->load->library('arpgen');
+        $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
+        $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
+        $result['data']['entcats'] = $entcats;
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+
+    }
+
     public function getentcatattrs($idpid = null)
     {
         if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
@@ -118,23 +151,21 @@ class Attributepolicy2 extends MY_Controller
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
         $result['definitions']['policy'] = array('0' => 'never permit', '1' => 'only when required', '2' => 'when required or desired', '100' => 'unset', '1000' => 'unsupported');
 
-        $cocsColl = $this->em->getRepository('models\Coc')->findBy(array('type'=>'entcat'));
+        $cocsColl = $this->em->getRepository('models\Coc')->findBy(array('type' => 'entcat'));
         $entcats = array();
-        foreach($cocsColl as $entcat)
-        {
-            $entcats[$entcat->getId()] = array('name'=>$entcat->getSubtype(),'value'=>$entcat->getUrl());
+        foreach ($cocsColl as $entcat) {
+            $entcats[$entcat->getId()] = array('name' => $entcat->getSubtype(), 'value' => $entcat->getUrl());
         }
 
         $result['definitions']['entcats'] = $entcats;
         /**
          * @var $entcatPoliciesColl models\AttributeReleasePolicy[]
          */
-        $entcatPoliciesColl = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(array('idp'=>$ent, 'type'=>'entcat'));
+        $entcatPoliciesColl = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(array('idp' => $ent, 'type' => 'entcat'));
         $entcatPolicies = array();
-        foreach ( $entcatPoliciesColl as $encatpol) {
+        foreach ($entcatPoliciesColl as $encatpol) {
             $requester = $encatpol->getRequester();
-            if(empty($requester) || $requester === '0'|| !array_key_exists($requester,$entcats))
-            {
+            if (empty($requester) || $requester === '0' || !array_key_exists($requester, $entcats)) {
                 $this->em->remove($encatpol);
                 continue;
             }
@@ -145,6 +176,63 @@ class Attributepolicy2 extends MY_Controller
 
         $this->em->flush();
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+
+    }
+
+    public function addattrentcat($idpid = null)
+    {
+        if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        /**
+         * @var $ent models\Provider
+         */
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
+        if ($ent === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+        $this->load->library('zacl');
+        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $entcatid = trim($this->input->post('entcatid'));
+        $attrid = trim($this->input->post('attrid'));
+        $policy = trim($this->input->post('policy'));
+        if (!ctype_digit($entcatid) || !ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy, array('0', '1', '2'))) {
+            return $this->output->set_status_header(403)->set_output('Posted invalid data');
+        }
+        $attribute =  $this->em->getRepository('models\Attribute')->findOneBy(array('id'=>$attrid));
+        $entcategory = $this->em->getRepository('models\Coc')->findOneBy(array('id'=>$entcatid,'type'=>'entcat'));
+        if($attribute === null || $entcategory === null)
+        {
+            return $this->output->set_status_header(403)->set_output('Attribute or EntityCategory not found');
+        }
+        /**
+         * @var $findPolicy models\AttributeReleasePolicy
+         */
+        $findPolicy = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('attribute'=>$attrid,'idp'=>$ent,'type'=>'entcat','requester'=>$entcatid));
+        if($findPolicy === null)
+        {
+            $findPolicy = new models\AttributeReleasePolicy();
+            $findPolicy->setEntCategoryPolicy($ent,$attribute,$entcatid,$policy);
+        }
+        else
+        {
+            $findPolicy->setPolicy($policy);
+        }
+        $this->em->persist($findPolicy);
+
+        try{
+            $this->em->flush();
+
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            return $this->output->set_status_header(500)->set_output('Internal Server Error');
+        }
+
 
     }
 
@@ -215,6 +303,13 @@ class Attributepolicy2 extends MY_Controller
         $activeFederation = $this->arpgen->getActiveFederations($ent);
 
         $result['data']['activefeds'] = $activeFederation;
+        foreach($activeFederation as $fid)
+        {
+            if(!array_key_exists($fid, $result['data']['fedpols']))
+            {
+                $result['data']['fedpols'][$fid] = array();
+            }
+        }
 
         $result['definitions']['statusstr']['inactive'] = 'inactive';
 
@@ -331,7 +426,7 @@ class Attributepolicy2 extends MY_Controller
         if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid,'type'=>array('IDP','BOTH')));
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
         }
@@ -357,8 +452,8 @@ class Attributepolicy2 extends MY_Controller
          * @todo add select by type(entitycategory)
          * @var $entCategory models\Coc
          */
-        $entCategory = $this->em->getRepository('models\Coc')->findOneBy(array('id'=>$entcatid));
-          if ($entCategory === null) {
+        $entCategory = $this->em->getRepository('models\Coc')->findOneBy(array('id' => $entcatid));
+        if ($entCategory === null) {
             return $this->output->set_status_header(403)->set_output('EntityCategory not found');
         }
         /**
@@ -378,7 +473,7 @@ class Attributepolicy2 extends MY_Controller
             $this->em->persist($attrPolicy);
         }
 
-         try {
+        try {
             $this->em->flush();
             return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
@@ -393,7 +488,7 @@ class Attributepolicy2 extends MY_Controller
         if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid,'type'=>array('IDP','BOTH')));
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
         }

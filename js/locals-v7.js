@@ -986,14 +986,14 @@ var GINIT = {
                         }
                     });
                     $('#spinner').hide();
-                    revealAlert(data,'OK');
+                    revealAlert(data, 'OK');
 
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     $('#spinner').hide();
                     result.css('color', 'red');
-                     revealAlert('<div data-alert class="alert-box alert">'+jqXHR.responseText+'</div>','OK');
+                    revealAlert('<div data-alert class="alert-box alert">' + jqXHR.responseText + '</div>', 'OK');
                 }
 
             });
@@ -1023,7 +1023,7 @@ var GINIT = {
                 success: function (data1) {
                     $('#spinner').hide();
                     result.html(data1);
-                    revealAlert($('div.uploadresult').text(),'OK');
+                    revealAlert($('div.uploadresult').text(), 'OK');
                     $.ajax({
                         type: 'GET',
                         url: gridUrl2,
@@ -1067,7 +1067,7 @@ var GINIT = {
                             $('#uploadlogo').unbind();
                             $("table#details").unbind();
                             $("form#availablelogos input[name='filename']").off('click');
-                             revealAlert('<div data-alert class="alert-box alert">'+jqXHR.responseText+'</div>','OK');
+                            revealAlert('<div data-alert class="alert-box alert">' + jqXHR.responseText + '</div>', 'OK');
                             GINIT.initialize();
                         }
                     });
@@ -1075,7 +1075,7 @@ var GINIT = {
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     $('#spinner').hide();
-                    revealAlert('<div data-alert class="alert-box alert">'+jqXHR.responseText+'</div>','OK');
+                    revealAlert('<div data-alert class="alert-box alert">' + jqXHR.responseText + '</div>', 'OK');
 
                 }
             }).done(function () {
@@ -2259,7 +2259,6 @@ $(document).ready(function () {
                         $.each(data.data.fedpols, function (i, v) {
                             var supportCopy = support.slice(0);
                             fedid = parseInt(i);
-
                             idf1 = data.data.activefeds.indexOf(fedid);
 
                             if (idf1 === -1) {
@@ -2478,6 +2477,38 @@ $(document).ready(function () {
             $('#arpmaddattr').foundation('reveal', 'open');
         });
 
+        $('#attrpols').on('click', '#addentcatattr button', function (event) {
+
+            var link2 = $('#addentcatattr').attr('data-jagger-link');
+            $.ajax({
+                url: link2,
+                method: 'GET',
+                dataType: 'json',
+                success: function (json) {
+                    var attrdropdown = $('#arpmaddentcatattr').find("select[name='attrid']");
+                    var entcatdropdown = $('#arpmaddentcatattr').find("select[name='entcatid']");
+                    if (json.data.support) {
+                        $.each(json.data.support, function (k, v) {
+                            attrdropdown
+                                .append($("<option></option>")
+                                    .attr("value", v)
+                                    .text(json.definitions.attrs[v]));
+                        });
+                    }
+                    if(json.data.entcats){
+                        $.each(json.data.entcats, function(l,w){
+                              entcatdropdown
+                                .append($("<option></option>")
+                                    .attr("value", w['entcatid'])
+                                    .text(w['value']));
+                        });
+                    }
+
+                }
+            });
+            $('#arpmaddentcatattr').foundation('reveal', 'open');
+        });
+
         $('#arpmaddattr').on('click', 'div.yes', function (event) {
             var form = $('#arpmaddattr').find('form').first();
             var serializedData = form.serializeArray();
@@ -2522,6 +2553,22 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmeditentcatattr').foundation('reveal', 'close');
+                    $('#attrpolstab').find('a[href="#attrpol-3"]').first().trigger('click');
+
+                }
+            });
+        });
+        $('#arpmaddentcatattr').on('click', 'div.yes', function (event) {
+            var form = $('#arpmaddentcatattr').find('form').first();
+            var serializedData = form.serializeArray();
+            var actionlink = form.attr('action');
+            $.ajax({
+                url: actionlink,
+                method: 'POST',
+                dataType: "json",
+                data: serializedData,
+                success: function (json) {
+                    $('#arpmaddentcatattr').foundation('reveal', 'close');
                     $('#attrpolstab').find('a[href="#attrpol-3"]').first().trigger('click');
 
                 }
@@ -3618,7 +3665,7 @@ $(document).ready(function () {
                     data: serializedData,
                     success: function (data) {
 
-                        revealAlert($('#resultdialog .message').html(),'ok');
+                        revealAlert($('#resultdialog .message').html(), 'ok');
 
                     },
                     error: function (data) {
@@ -3743,7 +3790,7 @@ $(document).ready(function () {
 
     function sconfirm(message, callback) {
         var modal = $('#sconfirm');
-        modal.find('.message').html(message+'&nbsp;');
+        modal.find('.message').html(message + '&nbsp;');
         modal.foundation('reveal', 'open');
         modal.foundation('reflow');
         modal.on('opened.fndtn.reveal', function (e) {

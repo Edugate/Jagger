@@ -96,6 +96,10 @@ class Arpgen
         foreach ($supportAttrColl as $attr) {
             self::$supportedAttrs[$idpID][] = $attr->getAttribute()->getId();
         }
+        if(!array_key_exists($idpID,self::$supportedAttrs))
+        {
+            self::$supportedAttrs[$idpID] = array();
+        }
         return self::$supportedAttrs[$idpID];
     }
 
