@@ -91,15 +91,12 @@ echo '
     </div>
 <?php
 echo '<div  id="addattrsupport" class="small-12 column hidden" data-jagger-link="'.base_url('manage/attributepolicy2/getsupported/'.$idpid.'').'"><button class="small right">' . lang('btnaddattr') . '</button></div>';
-
+echo '<div  id="addentcatattr" class="small-12 column hidden" data-jagger-link="'.base_url('manage/attributepolicy2/getentcats/'.$idpid.'').'"><button class="small right">Add new policy</button></div>';
 ///////////////////////
 $nhidden = array('support' => 'enabled');
 
 echo '<div id="arpmaddattr" class="reveal-modal medium" data-reveal>';
 echo form_open(base_url('manage/attributepolicy2/updateattrglobal/' . $idpid . ''), null, $nhidden);
-
-
-
 echo '<div class="row">';
 echo '<div class="medium-3 column"><label class="text-right">Attribute</label></div>';
 $attrdropdown = array();

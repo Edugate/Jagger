@@ -5,6 +5,16 @@ function nl2br(str, is_xhtml) {
     return (str + '')
         .replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 }
+
+function revealAlert(str,btnval){
+    var button = '<div class="row text-right"><button class="small modal-close">'+btnval+'</button></div>';
+    var modal = $('#malert')
+    modal.empty().append('<div class="row text-center"><p><h4>'+str+'</h4></p></div>').append(button).foundation('reveal','open');
+}
+
+
+
+
 /*
  * Copyright (c) 2008 Greg Weber greg at gregweber.info
  * Dual licensed under the MIT and GPL licenses:
@@ -556,7 +566,7 @@ var GINIT = {
             return false;
         });
 
-        $('.modal-close').on('click', function (event) {
+        $(document).on('click','.modal-close', function (event) {
             $(this).foundation('reveal', 'close');
         });
 
@@ -1397,7 +1407,6 @@ $(document).ready(function () {
         }, 400);
     });
 
-
     GINIT.initialize();
 
 
@@ -2101,6 +2110,7 @@ $(document).ready(function () {
         $('#attrpolstab').on('toggled', function (event, tab) {
 
             var addbtn = $('#addattrsupport');
+            var addentcatbtn = $('#addentcatattr');
             console.log(event, tab);
             var link = $(tab).attr('data-reveal-ajax-tab');
             if (link === undefined) {
@@ -2244,8 +2254,8 @@ $(document).ready(function () {
                         target.html(tbl);
                     }
                     else if (data.type === 'entcat') {
-                        var support = [];
-                        var nrcols = 0;
+                        support = [];
+                        nrcols = 0;
                         var labelclass = '';
                         var entpolicy;
                         var idf;
@@ -2261,7 +2271,6 @@ $(document).ready(function () {
                             tbl += '<th>' + v + '</th>';
                         });
                         tbl += '</tr></thead>';
-                        var nrcols2 = nrcols - 2;
 
                         $.each(data.data.entcats, function(i,v){
                             tbl +='<tr><td colspan="'+nrcols+'" class="highlight">EntityCategory: '+data.definitions.entcats[i]['name']+'  '+data.definitions.entcats[i]['value']+'</td></tr>';
@@ -2301,7 +2310,8 @@ $(document).ready(function () {
 
 
                         tbl += '</table></div>';
-                        target.html(tbl);
+                        //target.html(tbl);
+                        addentcatbtn.show().prependTo(target.html(tbl));
                     }
 
 
@@ -3908,8 +3918,8 @@ $(document).on('submit', 'div#loginform form', function (e) {
 });
 $("button.advancedmode").click(function () {
     var modalnotice = $('span.modalnotice').text();
-    var metadata = $("textarea#metadatabody").val();
-    if (metadata.length === 0) {
+    var metadata = $("textarea#metadatabody").val().trim();
+    if (metadata.length < 20) {
         window.alert(modalnotice);
     }
     var thisB = $(this);
@@ -4339,6 +4349,7 @@ $(document).on('click', 'a.updateprefs', function (e) {
 
 $(".select2").select2();
 $("#itestcombo").select2();
+
 
 
 

@@ -345,6 +345,6 @@ if (!empty($rawJs) && is_array($rawJs)) {
     echo '</script>';
 }
 ?>
-
+<div id="malert" data-reveal class="reveal-modal tiny" ></div>
 </body>
 </html>
