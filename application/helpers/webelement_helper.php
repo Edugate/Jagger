@@ -68,12 +68,19 @@ function jaggerTagsReplacer($str)
 
 function confirmDialog($title, $msg, $yes, $no)
 {
-    $r = '<div id="sconfirm" class="small-12 columns hidden"><div class="title-header small-12 columns text-center">' . htmlentities($title) . '</div>
-  <p class="message">' . htmlentities($msg) . '</p>
-  <div class="small-12 columns button-groups">
-       <div class="no simplemodal-close small-3 columns"><div class="button small alert">' . htmlentities($no) . '</div></div>
-  <div class="yes small-3 columns "><div class="button small">' . htmlentities($yes) . '</div></div>
-  </div>
+    $r = '<div id="sconfirm" class="reveal-modal small" data-reveal><div class="title-header small-12 columns text-center">' . htmlentities($title) . '</div>
+  <p class="message">' . htmlentities($msg) . '</p>';
+
+  $btns= array(
+         '<div class="no button small alert reveal-close">' . htmlentities($no) . '</div>',
+         '<div class="yes button small">' . htmlentities($yes) . '</div>'
+        
+     );
+
+  $r .='<div class="small-12 columns">';
+    $r .= revealBtnsRow($btns);
+ 
+ $r .= '</div>
   </div>';
     return $r;
 }

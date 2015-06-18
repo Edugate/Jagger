@@ -292,7 +292,7 @@ if ($breadcrumbsEnabled === TRUE) {
 $jsToLoad1 = array(
     'jquery.min.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
     'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js', 'fastclick.js',
-    'foundation.min.js', 'jquery.simplemodal.js', 'Chart.min.js','select2.min.js');
+    'foundation.min.js', 'Chart.min.js','select2.min.js');
 foreach ($jsToLoad1 as $jsFile) {
     echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
 }
