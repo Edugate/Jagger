@@ -2159,6 +2159,9 @@ $(document).ready(function () {
         var fedid;
         $('#attrpolstab').on('toggled', function (event, tab) {
 
+            var progressbarHTML = '<div class="progress"><span class="meter" style="width: 10%"></span></div>';
+            var progressbar = $($.parseHTML(progressbarHTML));
+            var meter = progressbar.find('span.meter').first();
             var addbtn = $('#addattrsupport');
             var addentcatbtn = $('#addentcatattr');
             console.log(event, tab);
@@ -2167,12 +2170,17 @@ $(document).ready(function () {
                 return false;
             }
             var target = $('#attrpols').find('section.active').first();
+          //  progressbar.appendTo(target);
             var tbl;
             $.ajax({
                 url: link,
                 method: 'GET',
                 dataType: 'json',
+                beforeSend: function(){
+                    meter.css('width','50%');
+                },
                 success: function (data) {
+                    meter.css('width','100%');
                     var idf;
                     var supplbl;
                     var policy;
@@ -2354,6 +2362,10 @@ $(document).ready(function () {
                         tbl += '</table></div>';
                         //target.html(tbl);
                         addentcatbtn.show().prependTo(target.html(tbl));
+                    } else if (data.type === 'sp')
+                    {
+                        var arp = data.data.arp;
+
                     }
 
 
@@ -2486,7 +2498,9 @@ $(document).ready(function () {
                 dataType: 'json',
                 success: function (json) {
                     var attrdropdown = $('#arpmaddentcatattr').find("select[name='attrid']");
+                    attrdropdown.empty();
                     var entcatdropdown = $('#arpmaddentcatattr').find("select[name='entcatid']");
+                    entcatdropdown.empty();
                     if (json.data.support) {
                         $.each(json.data.support, function (k, v) {
                             attrdropdown

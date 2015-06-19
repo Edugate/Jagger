@@ -1,15 +1,12 @@
 <?php
 
-
-
-
 echo '
 <ul class="tabs" id="attrpolstab" data-tab role="tablist">
 <li class="tab-title active" role="presentational"><a href="#introtab" role="tab" tabindex="0" aria-selected="true" controls="introtab">Information</a></li>
   <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getsupported/' . $idpid . '') . '"><a href="#attrpol-1" role="tab" tabindex="0" aria-selected="false" controls="attrpol-1">' . lang('rr_attributes') . '/' . lang('defaultpolicytab') . '</a></li>
   <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getfedattrs/' . $idpid . '') . '"><a href="#attrpol-2" role="tab" tabindex="0"aria-selected="false" controls="attrpol-2">' . lang('fedspolicytab') . '</a></li>
   <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getentcatattrs/' . $idpid . '') . '"><a href="#attrpol-3" role="tab" tabindex="0" aria-selected="false" controls="attrpol-3">' . lang('ecpolicytab') . '</a></li>
-  <li class="tab-title" role="presentational"><a href="#attrpol-4" role="tab" tabindex="0" aria-selected="false" controls="attrpol-4">' . lang('sppolicytab') . '</a></li>
+  <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getspecattrs/' . $idpid . '') . '"><a href="#attrpol-4" role="tab" tabindex="0" aria-selected="false" controls="attrpol-4">' . lang('sppolicytab') . '</a></li>
 </ul>
 ';
 ?>

@@ -87,7 +87,7 @@ class Attributepolicy2 extends MY_Controller
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['data']['global'] = $this->arpgen->genGlobal($ent);
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
-        $result['definitions']['policy'] = array('0' => 'never permit', '1' => 'only when required', '2' => 'when required or desired', '100' => 'unset', '1000' => 'unsupported');
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
 
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
@@ -126,6 +126,35 @@ class Attributepolicy2 extends MY_Controller
 
     }
 
+    public function getspecattrs($idpid = null)
+    {
+        if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        /**
+         * @var $ent models\Provider
+         */
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
+        if ($ent === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+        $this->load->library('zacl');
+        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $this->load->library('arpgen');
+        $result['type'] = 'sp';
+        $result['data']['global'] = $this->arpgen->genGlobal($ent);
+        $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
+        $result['data']['arp'] = $this->arpgen->genPolicyDefs($ent);
+        $result['definitions']['columns'] = array(lang('attrname'), 'Policy', lang('rr_action'));
+        $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
+
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+    }
+
     public function getentcatattrs($idpid = null)
     {
         if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
@@ -149,7 +178,7 @@ class Attributepolicy2 extends MY_Controller
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['definitions']['columns'] = array(lang('attrname'), 'Policy', lang('rr_action'));
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
-        $result['definitions']['policy'] = array('0' => 'never permit', '1' => 'only when required', '2' => 'when required or desired', '100' => 'unset', '1000' => 'unsupported');
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
 
         $cocsColl = $this->em->getRepository('models\Coc')->findBy(array('type' => 'entcat'));
         $entcats = array();
@@ -225,7 +254,7 @@ class Attributepolicy2 extends MY_Controller
 
         try{
             $this->em->flush();
-
+            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         }
         catch(Exception $e)
         {
@@ -259,7 +288,7 @@ class Attributepolicy2 extends MY_Controller
         $result['type'] = 'federation';
 
         // $result['policydefs'] = $this->arpgen->genPolicyDefs($ent);
-        $result['definitions']['policy'] = array('0' => 'never permit', '1' => 'only when required', '2' => 'when required or desired', '100' => 'unset', '1000' => 'unsupported');
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
         $result['definitions']['columns'] = array(lang('attrname'), 'policy', 'reqstatus', lang('rr_action'));
         $result['definitions']['lang']['federation'] = lang('rr_federation');
         $result['definitions']['lang']['unsupported'] = 'unsupported';
