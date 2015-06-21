@@ -22,14 +22,11 @@ class Attributepolicy2 extends MY_Controller
      */
     private function initiateAjaxAccess($idpid = null)
     {
-        if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
-            return false;
-        }
-        return true;
+        return (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in);
     }
     private function getEntity($idpid)
     {
-        $ent =  $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
+        $ent =  $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid,'type'=>array('IDP','BOTH')));
         return $ent;
     }
 
@@ -45,7 +42,7 @@ class Attributepolicy2 extends MY_Controller
         /**
          * @var $ent models\Provider
          */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
+        $ent = $this->getEntity($idpid);
         if ($ent === null) {
             show_404();
         }
@@ -72,7 +69,7 @@ class Attributepolicy2 extends MY_Controller
 
     public function getsupported($idpid = null)
     {
-        if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
@@ -106,7 +103,7 @@ class Attributepolicy2 extends MY_Controller
 
     public function getentcats($idpid = null)
     {
-        if (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         /**
@@ -528,7 +525,7 @@ class Attributepolicy2 extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
+        $ent = $this->getEntity($idpid);
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
         }
