@@ -22,7 +22,7 @@ class Attributepolicy2 extends MY_Controller
      */
     private function initiateAjaxAccess($idpid = null)
     {
-        return (!ctype_digit($idpid) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in);
+        return (ctype_digit($idpid) && $this->input->is_ajax_request() && $this->j_auth->logged_in());
     }
     private function getEntity($idpid)
     {
@@ -152,12 +152,20 @@ class Attributepolicy2 extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $this->load->library('arpgen');
+        $tmpSPDefinition = new models\Providers();
+        $spsDefinitions = $tmpSPDefinition->getSPsEntities();
+        $sps = array();
+        foreach($spsDefinitions as $spEnt)
+        {
+            $sps[$spEnt->getId()]['entityid'] = $spEnt->getEntityId();
+        }
         $result['type'] = 'sp';
-        $result['data']['global'] = $this->arpgen->genGlobal($ent);
-        $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
-        $result['data']['arp'] = $this->arpgen->genPolicyDefs($ent);
-        $result['definitions']['columns'] = array(lang('attrname'), 'Policy', lang('rr_action'));
-        $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
+      //  $result['data']['global'] = $this->arpgen->genGlobal($ent);
+      //  $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
+        $result['data'] = $this->arpgen->genPolicyDefs($ent);
+        $result['definitions']['columns'] = array(lang('attrname'), 'Policy', 'requirements',lang('rr_action'));
+        $result['definitions']['sps'] = $sps;
+     //   $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
 
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
@@ -275,7 +283,7 @@ class Attributepolicy2 extends MY_Controller
 
     public function getfedattrs($idpid = null)
     {
-        if ($this->initiateAjaxAccess($idpid)) {
+        if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 

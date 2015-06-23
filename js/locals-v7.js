@@ -2170,17 +2170,18 @@ $(document).ready(function () {
                 return false;
             }
             var target = $('#attrpols').find('section.active').first();
-          //  progressbar.appendTo(target);
+            //  progressbar.appendTo(target);
             var tbl;
             $.ajax({
                 url: link,
                 method: 'GET',
                 dataType: 'json',
-                beforeSend: function(){
-                    meter.css('width','50%');
+                beforeSend: function () {
+                    $('#spinner').show();
                 },
                 success: function (data) {
-                    meter.css('width','100%');
+                    $('#spinner').hide();
+                    meter.css('width', '100%');
                     var idf;
                     var supplbl;
                     var policy;
@@ -2362,9 +2363,41 @@ $(document).ready(function () {
                         tbl += '</table></div>';
                         //target.html(tbl);
                         addentcatbtn.show().prependTo(target.html(tbl));
-                    } else if (data.type === 'sp')
-                    {
-                        var arp = data.data.arp;
+                    } else if (data.type === 'sp') {
+                        nrcols = 1;
+                        tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
+                        $.each(data.definitions.columns, function (i, v) {
+                            nrcols = nrcols + 1;
+                            tbl += '<th>' + v + '</th>';
+                        });
+                        tbl += '</tr></thead>';
+////////////////////////////////////////////////////////
+
+                        var sps = data.data.sps;
+                        var specpolicy;
+                        $.each(sps, function(i,v)
+                        {
+
+                            if(!$.isEmptyObject(v.spec)) {
+                                //console.log('SP: '+i+' '+ v.entityid);
+                                if(v.entityid !== undefined) {
+                                    tbl += '<tr><td colspan="' + nrcols + '" class="highlight">' + v.entityid + '</td></tr>';
+                                }
+                                else
+                                {
+                                    tbl += '<tr><td colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' </td></tr>';
+                                }
+                                $.each(v.spec, function(j,l){
+                                    tbl +='<tr><td>'+data.data.definitions.attrs[j]+'</td><td></td><td></td><td></td></tr>';
+                                });
+                            }
+                        }
+                        );
+
+///////////////////////////////////////////////////////
+                        tbl += '</table></div>';
+                        target.html(tbl);
+
 
                     }
 
@@ -2372,6 +2405,10 @@ $(document).ready(function () {
                     //target.html(tbl);
 
 
+                },
+                error: function (xhr, status, error) {
+                    $("#spinner").hide();
+                    target.html('<div data-aler class="alert-box alert">'+xhr.responseText+'</div>');
                 }
             });
 
@@ -2509,9 +2546,9 @@ $(document).ready(function () {
                                     .text(json.definitions.attrs[v]));
                         });
                     }
-                    if(json.data.entcats){
-                        $.each(json.data.entcats, function(l,w){
-                              entcatdropdown
+                    if (json.data.entcats) {
+                        $.each(json.data.entcats, function (l, w) {
+                            entcatdropdown
                                 .append($("<option></option>")
                                     .attr("value", w['entcatid'])
                                     .text(w['value']));
