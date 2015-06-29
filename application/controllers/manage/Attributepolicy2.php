@@ -166,8 +166,8 @@ class Attributepolicy2 extends MY_Controller
         $result['definitions']['columns'] = array(lang('attrname'), 'Policy', 'requirements',lang('rr_action'));
         $result['definitions']['sps'] = $sps;
         $result['definitions']['req'] = array(
-            '1' => 'require',
-            '2' => 'desire',
+            '1' => lang('droprequired'),
+            '2' => lang('dropdesired'),
             '100' => '',
 
         );

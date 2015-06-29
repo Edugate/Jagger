@@ -2373,79 +2373,80 @@ $(document).ready(function () {
                         });
                         tbl += '</tr></thead>';
 ////////////////////////////////////////////////////////
-
+                       support = [];
+                        $.each(data.data.supported, function (ks, vs) {
+                           support.push(vs);
+                        });
                         var spReqAttr;
                         var spReqAttrStr;
                         var sps = data.data.sps;
                         var specpolicy;
                         var policyLabels = {0: "alert", 1: "warning", 2: "success", 100: "secondary"};
+                        var attrName;
+                        var unsupportedLbl = '<span class="label alert">'+data.definitions.policy[1000]+'</span>';
+                        var supportedLbl = '';
+                        var supportedStatus;
+
                         $.each(data.data.sps, function (i, v) {
 
                                 var spReqAttr = new Array();
                                 if (v.req !== undefined) {
                                     $.each(v.req, function (p, w) {
-                                        if (parseInt(i) === 35) {
-                                            console.log('setting :' + p + ' with val:' + w);
-                                        }
                                         spReqAttr[p] = w;
                                     });
                                 }
-                                if (parseInt(i) === 35) {
- console.log(i+': ReqAttr before: '+spReqAttr);
-                                }
-                                //   console.log(i+': ReqAttr before: '+spReqAttr);
-
-                                for (var vkey in spReqAttr) {
-
-                                    if (parseInt(i) === 35) {
-
-                                        console.log('Beof ReqArrrr ' + vkey);
-                                    }
-                                }
                                 if (!$.isEmptyObject(v.spec)) {
-                                    //console.log('SP: '+i+' '+ v.entityid);
                                     if (v.entityid !== undefined) {
                                         tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight" >' + v.entityid + '</td></tr>';
                                     }
                                     else {
-                                        tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' </td></tr>';
+                                        tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' <span class="label alert">disabled</span></td></tr>';
                                     }
                                     $.each(v.spec, function (j, l) {
+
+
+                                        supportedStatus = '';
+                                        idf = support.indexOf(parseInt(j));
+                                        if (idf === -1) {
+                                            supportedStatus = unsupportedLbl;
+                                        }
+
+                                        attrName = data.data.definitions.attrs[j];
                                         spReqAttrStr = '100';
 
                                         if (spReqAttr[j] !== undefined) {
 
-                                            spReqAttrStr = spReqAttr[parseInt(j)];
+                                            spReqAttrStr = spReqAttr[j];
 
                                             delete spReqAttr[j];
 
 
                                         }
 
-                                        tbl += '<tr><td>' + data.data.definitions.attrs[j] + '</td><td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span></td><td>' + data.definitions.req[spReqAttrStr] + '</td><td><i class="fi-pencil"></i></td></tr>';
+                                        tbl += '<tr><td>' + attrName + '</td>' +
+                                        '<td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span>  '+supportedStatus+'</td>' +
+                                        '<td>' + data.definitions.req[spReqAttrStr] + '</td>' +
+                                        '<td>' +
+                                        '<a href="#" class="modalconfirm" data-jagger-attrname="' + attrName + '" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
+                                        '<i class="fi-pencil"></i></a></td></tr>';
                                     });
-                                }else if(spReqAttr.length>0)
-                                {
-                                    if (v.entityid !== undefined) {
-                                        tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight" >' + v.entityid + '</td></tr>';
+                                    for (var vkey in spReqAttr) {
+                                        supportedStatus = '';
+                                        idf = support.indexOf(parseInt(vkey));
+                                        if (idf === -1) {
+                                            supportedStatus = unsupportedLbl;
+                                        }
+                                        attrName = data.data.definitions.attrs[vkey];
+                                        if (spReqAttr.hasOwnProperty(vkey)) {
+                                            tbl += '<tr><td>' + attrName + '</td>' +
+                                            '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  '+supportedStatus+'</td>' +
+                                            '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
+                                            '<td><a href="#" class="modalconfirm" data-jagger-attrname="' + attrName + '" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fi-pencil"></i></i></td></tr>';
+                                        }
                                     }
-                                    else {
-                                        tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' </td></tr>';
-                                    }
+
                                 }
 
-
-                                // console.log(i+': ReqAttr '+spReqAttr.length+' after: '+spReqAttr);
-
-                                for (var vkey in spReqAttr) {
-
-                                    if (parseInt(i) === 35) {
-
-                                        console.log('ReqArrrr AFTER: vkey:' + vkey+' :: '+ data.data.definitions.attrs[vkey]);
-                                    }
-                                    tbl += '<tr><td>' + data.data.definitions.attrs[vkey] + '</td><td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span></td><td>' + data.definitions.req[spReqAttr[vkey]] + '</td><td><i class="fi-pencil"></i></td></tr>';
-
-                                }
                             }
                         );
 
