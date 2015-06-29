@@ -9,10 +9,10 @@ echo '
   <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy2/getspecattrs/' . $idpid . '') . '"><a href="#attrpol-4" role="tab" tabindex="0" aria-selected="false" controls="attrpol-4">' . lang('sppolicytab') . '</a></li>
 </ul>
 ';
-?>
 
 
-    <div id="attrpols" class="tabs-content">
+
+echo '<div id="attrpols" class="tabs-content" data-jagger-providerdetails="'.base_url('providers/detail/show/').'">
         <section role="tabpanel" aria-hidden="false" class="content active" id="introtab">
             INFORMATION SOON!
         </section>
@@ -25,11 +25,11 @@ echo '
         <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-4">
             <h2>Fourth panel content goes here...</h2>
         </section>
-    </div>
+    </div>';
 
 
 
-<?php
+
 /////////MODALS
 ?>
     <div id="arpmdelattr" class="reveal-modal medium" data-reveal>

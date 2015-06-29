@@ -165,6 +165,12 @@ class Attributepolicy2 extends MY_Controller
         $result['data'] = $this->arpgen->genPolicyDefs($ent);
         $result['definitions']['columns'] = array(lang('attrname'), 'Policy', 'requirements',lang('rr_action'));
         $result['definitions']['sps'] = $sps;
+        $result['definitions']['req'] = array(
+            '1' => 'require',
+            '2' => 'desire',
+            '100' => '',
+
+        );
      //   $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
 
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');

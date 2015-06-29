@@ -2155,7 +2155,9 @@ $(document).ready(function () {
             }
         })
     });
+    var providerdetailurl;
     if ($('#attrpols').length > 0) {
+        providerdetailurl = $('#attrpols').attr('data-jagger-providerdetails');
         var fedid;
         $('#attrpolstab').on('toggled', function (event, tab) {
 
@@ -2193,7 +2195,6 @@ $(document).ready(function () {
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
                         });
-                        console.log(support);
                         tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
                         $.each(data.definitions.columns, function (i, a) {
                             tbl += '<th>' + a + '</th>';
@@ -2373,25 +2374,79 @@ $(document).ready(function () {
                         tbl += '</tr></thead>';
 ////////////////////////////////////////////////////////
 
+                        var spReqAttr;
+                        var spReqAttrStr;
                         var sps = data.data.sps;
                         var specpolicy;
-                        $.each(sps, function(i,v)
-                        {
+                        var policyLabels = {0: "alert", 1: "warning", 2: "success", 100: "secondary"};
+                        $.each(data.data.sps, function (i, v) {
 
-                            if(!$.isEmptyObject(v.spec)) {
-                                //console.log('SP: '+i+' '+ v.entityid);
-                                if(v.entityid !== undefined) {
-                                    tbl += '<tr><td colspan="' + nrcols + '" class="highlight">' + v.entityid + '</td></tr>';
+                                var spReqAttr = new Array();
+                                if (v.req !== undefined) {
+                                    $.each(v.req, function (p, w) {
+                                        if (parseInt(i) === 35) {
+                                            console.log('setting :' + p + ' with val:' + w);
+                                        }
+                                        spReqAttr[p] = w;
+                                    });
                                 }
-                                else
+                                if (parseInt(i) === 35) {
+ console.log(i+': ReqAttr before: '+spReqAttr);
+                                }
+                                //   console.log(i+': ReqAttr before: '+spReqAttr);
+
+                                for (var vkey in spReqAttr) {
+
+                                    if (parseInt(i) === 35) {
+
+                                        console.log('Beof ReqArrrr ' + vkey);
+                                    }
+                                }
+                                if (!$.isEmptyObject(v.spec)) {
+                                    //console.log('SP: '+i+' '+ v.entityid);
+                                    if (v.entityid !== undefined) {
+                                        tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight" >' + v.entityid + '</td></tr>';
+                                    }
+                                    else {
+                                        tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' </td></tr>';
+                                    }
+                                    $.each(v.spec, function (j, l) {
+                                        spReqAttrStr = '100';
+
+                                        if (spReqAttr[j] !== undefined) {
+
+                                            spReqAttrStr = spReqAttr[parseInt(j)];
+
+                                            delete spReqAttr[j];
+
+
+                                        }
+
+                                        tbl += '<tr><td>' + data.data.definitions.attrs[j] + '</td><td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span></td><td>' + data.definitions.req[spReqAttrStr] + '</td><td><i class="fi-pencil"></i></td></tr>';
+                                    });
+                                }else if(spReqAttr.length>0)
                                 {
-                                    tbl += '<tr><td colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' </td></tr>';
+                                    if (v.entityid !== undefined) {
+                                        tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight" >' + v.entityid + '</td></tr>';
+                                    }
+                                    else {
+                                        tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' </td></tr>';
+                                    }
                                 }
-                                $.each(v.spec, function(j,l){
-                                    tbl +='<tr><td>'+data.data.definitions.attrs[j]+'</td><td></td><td></td><td></td></tr>';
-                                });
+
+
+                                // console.log(i+': ReqAttr '+spReqAttr.length+' after: '+spReqAttr);
+
+                                for (var vkey in spReqAttr) {
+
+                                    if (parseInt(i) === 35) {
+
+                                        console.log('ReqArrrr AFTER: vkey:' + vkey+' :: '+ data.data.definitions.attrs[vkey]);
+                                    }
+                                    tbl += '<tr><td>' + data.data.definitions.attrs[vkey] + '</td><td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span></td><td>' + data.definitions.req[spReqAttr[vkey]] + '</td><td><i class="fi-pencil"></i></td></tr>';
+
+                                }
                             }
-                        }
                         );
 
 ///////////////////////////////////////////////////////
@@ -2408,13 +2463,20 @@ $(document).ready(function () {
                 },
                 error: function (xhr, status, error) {
                     $("#spinner").hide();
-                    target.html('<div data-aler class="alert-box alert">'+xhr.responseText+'</div>');
+                    target.html('<div data-aler class="alert-box alert">' + xhr.responseText + '</div>');
                 }
             });
 
 
         });
 
+        $('#attrpols').on('click', 'td.highlight', function (event) {
+            var entlink = $(this).attr("data-jagger-entidlink");
+            if (entlink !== undefined) {
+                document.location.href = providerdetailurl + '/' + entlink;
+                return false;
+            }
+        });
         $('#attrpols').on('click', 'a.modalconfirm', function (event) {
             event.preventDefault();
             var arptype = $(this).attr('data-jagger-arp');
