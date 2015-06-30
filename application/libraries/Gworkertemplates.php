@@ -138,8 +138,8 @@ class Gworkertemplates
         if (array_key_exists('type', $result['fparams'])) {
             if ($result['fparams']['type'] === 'ext') {
                 $result['fname'] = 'externalstatcollection';
-            } elseif (($result['fparams']['type'] === 'sys') && !empty($result['fparams']['sysdef']) && array_key_exists($result['fparams']['sysdef'], $this->ispreworkers) && array_key_exists('worker', $this->ispreworkers['' . $$result['fparams']['sysdef'] . '']) && !empty($this->ispreworkers['' . $$result['fparams']['sysdef'] . '']['worker'])) {
-                $workername = $this->ispreworkers['' . $$result['fparams']['sysdef'] . '']['worker'];
+            } elseif (($result['fparams']['type'] === 'sys') && !empty($result['fparams']['sysdef']) && array_key_exists($result['fparams']['sysdef'], $this->ispreworkers) && array_key_exists('worker', $this->ispreworkers['' . $result['fparams']['sysdef'] . '']) && !empty($this->ispreworkers['' . $result['fparams']['sysdef'] . '']['worker'])) {
+                $workername = $this->ispreworkers['' . $result['fparams']['sysdef'] . '']['worker'];
                 $result['fname'] = $workername;
             }
         }
