@@ -145,7 +145,8 @@ class Gworkertemplates
         }
 
         if(array_key_exists('fname',$result)) {
-            return $result;
+
+            return array($result);
         }
         return false;
 
