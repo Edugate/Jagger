@@ -34,7 +34,18 @@ class Gearmanw
         $ci = & get_instance();
         log_message('info', 'GEARMAN ::' . __METHOD__ . ' received job');
         $em = $ci->doctrine->em;
-        $args = unserialize($job->workload());
+        $args = @unserialize($job->workload());
+        if (empty($args) || !is_array($args))
+        {
+            $args = json_decode($job->workload());
+            if (empty($args) || !is_array($args)){
+                log_message('error', 'GEARMAN ::' . __METHOD__ . ' didnt received args from requester');
+                $em->clear();
+                return false;
+            }
+        }
+
+
         $job->sendStatus(1, 10);
         sleep(1);
         $storage = $ci->config->item('datastorage_path');
@@ -53,13 +64,6 @@ class Gearmanw
             return false;
         }
         $statstorage = $storage . 'stats/';
-
-        if (empty($args) || !is_array($args))
-        {
-            log_message('error', 'GEARMAN ::' . __METHOD__ . ' didnt received args from requester');
-            $em->clear();
-            return false;
-        }
         if (!array_key_exists('defid', $args))
         {
             log_message('error', 'GEARMAN ::' . __METHOD__ . ' definition stat id not found in args');
