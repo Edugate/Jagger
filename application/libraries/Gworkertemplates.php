@@ -6,6 +6,7 @@ class Gworkertemplates
     protected $ci;
     protected $em;
     protected $digestmethod;
+    protected $ispreworkers;
 
     function __construct()
     {
@@ -16,6 +17,10 @@ class Gworkertemplates
             $this->digestmethod = 'SHA-1';
         }
 
+        $this->ispreworkers = $this->ci->config->item('predefinedstats');
+        if (empty($this->ispreworkers) || !is_array($this->ispreworkers)) {
+            $this->ispreworkers = array();
+        }
     }
 
     /**
@@ -30,11 +35,12 @@ class Gworkertemplates
             return $this->metadatasigner($params);
 
         }
+        elseif(strcasecmp($templateName, 'statcollector') == 0){
+            return $this->statcollector($params);
+        }
         return null;
 
     }
-
-
 
 
     private function resolveProvider(\models\Provider $provider)
@@ -90,6 +96,59 @@ class Gworkertemplates
         }
 
         return $result;
+    }
+
+    private function statcollector(array $params)
+    {
+
+        if (!array_key_exists('statid', $params) || !ctype_digit($params['statid'])) {
+
+            log_message('error', 'Task scheduler can run stat collector: no/incorrect params provided');
+            return false;
+        }
+        $statid = $params['statid'];
+        $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $statid));
+        if ($statDefinition === null) {
+            log_message('error', 'Task scheduler can run stat collector as stadef not found with id:' . $statid);
+            return false;
+        }
+        $provider = $statDefinition->getProvider();
+        if ($provider === null) {
+            log_message('error', 'Task scheduler can run stat collector as provider not found for stadefid:' . $statid);
+            return false;
+        }
+        $result['fparams'] = array(
+            'defid' => $statDefinition->getId(),
+            'entityid' => $provider->getEntityId(),
+            'url' => $statDefinition->getSourceUrl(),
+            'type' => $statDefinition->getType(),
+            'sysdef' => $statDefinition->getSysDef(),
+            'title' => $statDefinition->getTitle(),
+            'httpmethod' => $statDefinition->getHttpMethod(),
+            'format' => $statDefinition->getFormatType(),
+            'accesstype' => $statDefinition->getAccessType(),
+            'authuser' => $statDefinition->getAuthUser(),
+            'authpass' => $statDefinition->getAuthPass(),
+            'postoptions' => $statDefinition->getPostOptions(),
+            'displayoptions' => $statDefinition->getDisplayOptions(),
+            'overwrite' => $statDefinition->getOverwrite()
+        );
+
+
+        if (array_key_exists('type', $result['fparams'])) {
+            if ($result['fparams']['type'] === 'ext') {
+                $result['fname'] = 'externalstatcollection';
+            } elseif (($result['fparams']['type'] === 'sys') && !empty($result['fparams']['sysdef']) && array_key_exists($result['fparams']['sysdef'], $this->ispreworkers) && array_key_exists('worker', $this->ispreworkers['' . $$result['fparams']['sysdef'] . '']) && !empty($this->ispreworkers['' . $$result['fparams']['sysdef'] . '']['worker'])) {
+                $workername = $this->ispreworkers['' . $$result['fparams']['sysdef'] . '']['worker'];
+                $result['fname'] = $workername;
+            }
+        }
+
+        if(array_key_exists('fname',$result)) {
+            return $result;
+        }
+        return false;
+
     }
 
     private function metadatasigner(array $params)
