@@ -37,7 +37,7 @@ class Gearmanw
         $args = @unserialize($job->workload());
         if (empty($args) || !is_array($args))
         {
-            $args = json_decode($job->workload());
+            $args = json_decode($job->workload(),true);
             if (empty($args) || !is_array($args)){
                 log_message('error', 'GEARMAN ::' . __METHOD__ . ' didnt received args from requester');
                 $em->clear();
