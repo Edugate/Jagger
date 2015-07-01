@@ -124,7 +124,7 @@ class Attributepolicy extends MY_Controller
             'type' => $type,
             'breadcrumbs' => array(
                 array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-                array('url' => base_url('providers/detail/show/ ' . $idpID . ''), 'name' => '' . $providerNameInLang . ''),
+                array('url' => base_url('providers/detail/show/' . $idpID . ''), 'name' => '' . $providerNameInLang . ''),
                 array('url' => base_url('manage/attributepolicy/globals/' . $idpID . ''), 'name' => lang('rr_attributereleasepolicy')),
             )
         );
