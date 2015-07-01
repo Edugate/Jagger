@@ -596,5 +596,72 @@ class Attributepolicy2 extends MY_Controller
         }
 
     }
+    public function updateattrsp($idpid = null)
+    {
+        if (!$this->initiateAjaxAccess($idpid)) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $ent = $this->getEntity($idpid);
+        if ($ent === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+        $this->load->library('zacl');
+        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $attrid = trim($this->input->post('attrid'));
+        $policy = trim($this->input->post('policy'));
+        $spid = trim($this->input->post('spid'));
+        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($spid) || !in_array($policy, array('0', '1', '2', '100'))) {
+            return $this->output->set_status_header(403)->set_output('Posted invalid data');
+        }
+        /**
+         * @var $attribute models\Attribute
+         */
+        $attribute = $this->em->getRepository('models\Attribute')->findOneBy(array('id'=>$attrid));
+        if ($attribute === null) {
+            return $this->output->set_status_header(401)->set_output('Attribute not found');
+        }
+        /**
+         * @var $attrPolicy models\AttributeReleasePolicy
+         */
+        $attrPolicy = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('attribute' => $attrid, 'idp' => $ent->getId(), 'type' => 'sp', 'requester' => $spid));
+        /**
+         * @var $customattrPolicy models\AttributeReleasePolicy
+         */
+        $customattrPolicy = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('attribute' => $attrid, 'idp' => $ent->getId(), 'type' => 'customsp', 'requester' => $spid));
+
+
+        if($policy === '100')
+        {
+            if($attrPolicy !== null)
+            {
+                $this->em->remove($attrPolicy);
+            }
+
+        }
+        else{
+            if($attrPolicy === null){
+                $attrPolicy = new models\AttributeReleasePolicy();
+                $attrPolicy->setSpecificPolicy($ent,$attribute,$spid,$policy);
+            }
+            else{
+                $attrPolicy->setPolicy($policy);
+            }
+            $this->em->persist($attrPolicy);
+        }
+
+        try{
+            $this->em->flush();
+            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
+        }
+        catch(Exception $e)
+        {
+            log_message('error', __METHOD__ . ' ' . $e);
+            return $this->output->set_status_header(500)->set_output('Internal Server Error');
+        }
+
+    }
 
 }

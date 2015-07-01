@@ -11,8 +11,7 @@ echo '
 ';
 
 
-
-echo '<div id="attrpols" class="tabs-content" data-jagger-providerdetails="'.base_url('providers/detail/show/').'">
+echo '<div id="attrpols" class="tabs-content" data-jagger-providerdetails="' . base_url('providers/detail/show/') . '">
         <section role="tabpanel" aria-hidden="false" class="content active" id="introtab">
             INFORMATION SOON!
         </section>
@@ -32,63 +31,64 @@ echo '<div id="attrpols" class="tabs-content" data-jagger-providerdetails="'.bas
 
 /////////MODALS
 ?>
-    <div id="arpmdelattr" class="reveal-modal medium" data-reveal>
-        <h4>Are you sure you want to remove all policies related to below attribute?</h4>
+<div id="arpmdelattr" class="reveal-modal medium" data-reveal>
+    <h4>Are you sure you want to remove all policies related to below attribute?</h4>
 
-        <p>
+    <p>
 
-        <div>Attribute: <span class="attributename"></span></div>
-        </p>
-        <div class="response"></div>
-        <?php
-        $hidden = array('attrid' => '', 'idpid' => '');
-        echo form_open(base_url('manage/attributepolicy2/delattr/' . $idpid . ''), null, $hidden);
-        $buttons = array(
-            '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
-            '<div class="yes button">' . lang('btn_deleteall') . '</div>'
-        );
-        echo revealBtnsRow($buttons);
+    <div>Attribute: <span class="attributename"></span></div>
 
-        echo form_close();
-        ?>
+    </p>
+    <div class="response"></div>
+    <?php
+    $hidden = array('attrid' => '', 'idpid' => '');
+    echo form_open(base_url('manage/attributepolicy2/delattr/' . $idpid . ''), null, $hidden);
+    $buttons = array(
+        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<div class="yes button">' . lang('btn_deleteall') . '</div>'
+    );
+    echo revealBtnsRow($buttons);
 
-    </div>
+    echo form_close();
+    ?>
 
-    <div id="arpmeditglobalattr" class="reveal-modal medium" data-reveal>
-        <h4>You're going to update default policy</h4>
+</div>
 
-        <p>
+<div id="arpmeditglobalattr" class="reveal-modal medium" data-reveal>
+    <h4>You're going to update default policy</h4>
 
-        <div>Attribute: <span class="attributename"></span></div>
-        </p>
-        <div class="response"></div>
-        <?php
-        $hidden = array('attrid' => '', 'idpid' => '');
-        echo form_open(base_url('manage/attributepolicy2/updateattrglobal/' . $idpid . ''), null, $hidden);
-        echo '<div class="row">';
-        echo '<div class="small-5 medium-3 column"><label class="text-right">Support?</lable></div>';
-        echo '<div class="small-7 medium-9 column">';
-        echo '<div class="switch small"><input id="CheckboxSwitch" type="checkbox" name="support" value="enabled"><label for="CheckboxSwitch"></label></div>';
-        echo '</div>';
-        echo '</div>';
-        echo '<div class="row">';
-        echo '<div class="medium-3 column"><label>Policy</label></div>';
-        echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => 'never', '1' => 'when required', '2' => 'when required or desired', '100' => 'unset')) . '</div>';
-        echo '</div>';
+    <p>
+
+    <div>Attribute: <span class="attributename"></span></div>
+    </p>
+    <div class="response"></div>
+    <?php
+    $hidden = array('attrid' => '', 'idpid' => '');
+    echo form_open(base_url('manage/attributepolicy2/updateattrglobal/' . $idpid . ''), null, $hidden);
+    echo '<div class="row">';
+    echo '<div class="small-5 medium-3 column"><label class="text-right">Support?</lable></div>';
+    echo '<div class="small-7 medium-9 column">';
+    echo '<div class="switch small"><input id="CheckboxSwitch" type="checkbox" name="support" value="enabled"><label for="CheckboxSwitch"></label></div>';
+    echo '</div>';
+    echo '</div>';
+    echo '<div class="row">';
+    echo '<div class="medium-3 column medium-text-right"><label>Policy</label></div>';
+    echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+    echo '</div>';
 
 
-        $buttons = array(
-            '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
-            '<div class="yes button">' . lang('btnupdate') . '</div>'
-        );
-        echo revealBtnsRow($buttons);
-        echo form_close();
-        ?>
+    $buttons = array(
+        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<div class="yes button">' . lang('btnupdate') . '</div>'
+    );
+    echo revealBtnsRow($buttons);
+    echo form_close();
+    ?>
 
-    </div>
+</div>
 <?php
-echo '<div  id="addattrsupport" class="small-12 column hidden" data-jagger-link="'.base_url('manage/attributepolicy2/getsupported/'.$idpid.'').'"><button class="small right">' . lang('btnaddattr') . '</button></div>';
-echo '<div  id="addentcatattr" class="small-12 column hidden" data-jagger-link="'.base_url('manage/attributepolicy2/getentcats/'.$idpid.'').'"><button class="small right">Add new policy</button></div>';
+echo '<div  id="addattrsupport" class="small-12 column hidden" data-jagger-link="' . base_url('manage/attributepolicy2/getsupported/' . $idpid . '') . '"><button class="small right">' . lang('btnaddattr') . '</button></div>';
+echo '<div  id="addentcatattr" class="small-12 column hidden" data-jagger-link="' . base_url('manage/attributepolicy2/getentcats/' . $idpid . '') . '"><button class="small right">Add new policy</button></div>';
 ///////////////////////
 $nhidden = array('support' => 'enabled');
 
@@ -97,18 +97,16 @@ echo form_open(base_url('manage/attributepolicy2/updateattrglobal/' . $idpid . '
 echo '<div class="row">';
 echo '<div class="medium-3 column"><label class="text-right">Attribute</label></div>';
 $attrdropdown = array();
-foreach($attrdefs as $k => $v)
-{
-    if(!in_array($k,$arpsupport))
-    {
+foreach ($attrdefs as $k => $v) {
+    if (!in_array($k, $arpsupport)) {
         $attrdropdown[$k] = $v;
     }
 }
 echo '<div class="medium-9 column">' . form_dropdown('attrid', $attrdefs) . '</div>';
 echo '</div>';
 echo '<div class="row">';
-echo '<div class="medium-3 column"><label class="text-right">Policy</label></div>';
-echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => 'never', '1' => 'when required', '2' => 'when required or desired')) . '</div>';
+echo '<div class="medium-3 column medium-text-right"><label>Policy</label></div>';
+echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'))) . '</div>';
 echo '</div>';
 
 $buttons = array(
@@ -120,31 +118,31 @@ echo form_close();
 echo '</div>';
 ////////////////
 ?>
- <div id="arpmeditfedattr" class="reveal-modal medium" data-reveal>
-        <h4>You're going to update federation policy</h4>
+<div id="arpmeditfedattr" class="reveal-modal medium" data-reveal>
+    <h4>You're going to update federation policy</h4>
 
-        <p>
+    <p>
 
-        <div>Attribute: <span class="attributename"></span></div>
-        </p>
-        <div class="response"></div>
-        <?php
-        $hidden = array('attrid' => '', 'fedid' => '');
-        echo form_open(base_url('manage/attributepolicy2/updateattrfed/' . $idpid . ''), null, $hidden);
-        echo '<div class="row">';
-        echo '<div class="medium-3 column"><label>Policy</label></div>';
-        echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => 'never', '1' => 'when required', '2' => 'when required or desired', '100' => 'unset')) . '</div>';
-        echo '</div>';
+    <div>Attribute: <span class="attributename"></span></div>
+    </p>
+    <div class="response"></div>
+    <?php
+    $hidden = array('attrid' => '', 'fedid' => '');
+    echo form_open(base_url('manage/attributepolicy2/updateattrfed/' . $idpid . ''), null, $hidden);
+    echo '<div class="row">';
+    echo '<div class="medium-3 column medium-text-right"><label>Policy</label></div>';
+    echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+    echo '</div>';
 
 
-        $buttons = array(
-            '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
-            '<div class="yes button">' . lang('btnupdate') . '</div>'
-        );
-        echo revealBtnsRow($buttons);
-        echo form_close();
-        ?>
- </div>
+    $buttons = array(
+        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<div class="yes button">' . lang('btnupdate') . '</div>'
+    );
+    echo revealBtnsRow($buttons);
+    echo form_close();
+    ?>
+</div>
 
 <div id="arpmeditentcatattr" class="reveal-modal medium" data-reveal>
     <h4>You're going to update policy for entcategory</h4>
@@ -158,8 +156,8 @@ echo '</div>';
     $hidden = array('attrid' => '', 'entcatid' => '');
     echo form_open(base_url('manage/attributepolicy2/updateattrentcat/' . $idpid . ''), null, $hidden);
     echo '<div class="row">';
-    echo '<div class="medium-3 column"><label>Policy</label></div>';
-    echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => 'never', '1' => 'when required', '2' => 'when required or desired', '100' => 'unset')) . '</div>';
+    echo '<div class="medium-3 column medium-text-right"><label>Policy</label></div>';
+    echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
     echo '</div>';
     $buttons = array(
         '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
@@ -168,8 +166,37 @@ echo '</div>';
     echo revealBtnsRow($buttons);
     echo form_close();
     ?>
-
 </div>
+
+
+<div id="arpmeditspattr" class="reveal-modal medium" data-reveal>
+    <h4>You are going to update policy for sp</h4>
+
+    <p>
+
+    <div>Attribute: <span class="attributename"></span></div>
+    <div>Requester: <span class="requestersp"></span></div>
+    </p>
+    <div class="response"></div>
+    <?php
+    $hidden = array('attrid' => '', 'spid' => '');
+
+    echo form_open(base_url('manage/attributepolicy2/updateattrsp/' . $idpid . ''), null, $hidden);
+    echo '<div class="row">';
+    echo '<div class="medium-3 column medium-text-right"><label>Policy</label></div>';
+    echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+    echo '</div>';
+
+
+    $buttons = array(
+        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<div class="yes button">' . lang('btnupdate') . '</div>'
+    );
+    echo revealBtnsRow($buttons);
+    echo form_close();
+    ?>
+</div>
+
 
 <div id="arpmaddentcatattr" class="reveal-modal medium" data-reveal>
     <h4>You're going to add policy for entcategory</h4>
@@ -179,16 +206,16 @@ echo '</div>';
     <?php
     echo form_open(base_url('manage/attributepolicy2/addattrentcat/' . $idpid . ''));
     echo '<div class="row">';
-    echo '<div class="medium-3 column"><label>Attribute</label></div>';
-    echo '<div class="medium-9 column">' . form_dropdown('attrid', array() ). '</div>';
+    echo '<div class="medium-3 column medium-text-right"><label>Attribute</label></div>';
+    echo '<div class="medium-9 column">' . form_dropdown('attrid', array()) . '</div>';
     echo '</div>';
     echo '<div class="row">';
-    echo '<div class="medium-3 column"><label>Entity Category</label></div>';
+    echo '<div class="medium-3 column medium-text-right"><label>Entity Category</label></div>';
     echo '<div class="medium-9 column">' . form_dropdown('entcatid', array()) . '</div>';
     echo '</div>';
     echo '<div class="row">';
-    echo '<div class="medium-3 column"><label>Policy</label></div>';
-    echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => 'never', '1' => 'when required', '2' => 'when required or desired', '100' => 'unset')) . '</div>';
+    echo '<div class="medium-3 column medium-text-right"><label>Policy</label></div>';
+    echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
     echo '</div>';
     $buttons = array(
         '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',

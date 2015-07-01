@@ -2386,6 +2386,7 @@ $(document).ready(function () {
                         var unsupportedLbl = '<span class="label alert">'+data.definitions.policy[1000]+'</span>';
                         var supportedLbl = '';
                         var supportedStatus;
+                        var customattrpol;
 
                         $.each(data.data.sps, function (i, v) {
 
@@ -2405,6 +2406,7 @@ $(document).ready(function () {
                                     $.each(v.spec, function (j, l) {
 
 
+                                        customattrpol = '';
                                         supportedStatus = '';
                                         idf = support.indexOf(parseInt(j));
                                         if (idf === -1) {
@@ -2422,15 +2424,56 @@ $(document).ready(function () {
 
 
                                         }
+                                        if(v.custom !== undefined && v.custom[j] !== undefined)
+                                        {
+
+                                            if(v.custom[j]['deny'] !== undefined)
+                                            {
+                                                customattrpol += '<span class="label alert">denied values:  ';
+                                                $.each(v.custom[j]['deny'],function(ip,iv){
+                                                    customattrpol += iv+', ';
+                                                });
+                                                customattrpol +='</span>';
+                                            }
+                                            else
+                                            {
+                                                customattrpol += '<span class="label success">permited values: ';
+                                                $.each(v.custom[j]['permit'],function(ip,iv){
+                                                    customattrpol += iv+', ';
+                                                });
+                                                customattrpol += '</span>';
+                                            }
+                                        }
 
                                         tbl += '<tr><td>' + attrName + '</td>' +
-                                        '<td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span>  '+supportedStatus+'</td>' +
+                                        '<td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span>  '+supportedStatus+' '+customattrpol+'</td>' +
                                         '<td>' + data.definitions.req[spReqAttrStr] + '</td>' +
                                         '<td>' +
-                                        '<a href="#" class="modalconfirm" data-jagger-attrname="' + attrName + '" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
+                                        '<a href="#" class="modalconfirm" data-jagger-attrpolicy="'+l+'" data-jagger-entityid="'+data.definitions.sps[i]['entityid']+'" data-jagger-attrname="' + attrName + '" data-jagger-spid="'+i+'" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
                                         '<i class="fi-pencil"></i></a></td></tr>';
                                     });
                                     for (var vkey in spReqAttr) {
+                                        customattrpol = '';
+                                        if(v.custom !== undefined && v.custom[vkey] !== undefined)
+                                        {
+
+                                            if(v.custom[vkey]['deny'] !== undefined)
+                                            {
+                                                customattrpol += '<span class="label alert">denied values:  ';
+                                                $.each(v.custom[vkey]['deny'],function(ip,iv){
+                                                    customattrpol += iv+', ';
+                                                });
+                                                customattrpol +='</span>';
+                                            }
+                                            else
+                                            {
+                                                customattrpol += '<span class="label success">permited values: ';
+                                                $.each(v.custom[vkey]['permit'],function(ip,iv){
+                                                    customattrpol += iv+', ';
+                                                });
+                                                customattrpol += '</span>';
+                                            }
+                                        }
                                         supportedStatus = '';
                                         idf = support.indexOf(parseInt(vkey));
                                         if (idf === -1) {
@@ -2439,9 +2482,9 @@ $(document).ready(function () {
                                         attrName = data.data.definitions.attrs[vkey];
                                         if (spReqAttr.hasOwnProperty(vkey)) {
                                             tbl += '<tr><td>' + attrName + '</td>' +
-                                            '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  '+supportedStatus+'</td>' +
+                                            '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  '+supportedStatus+' '+customattrpol+'</td>' +
                                             '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
-                                            '<td><a href="#" class="modalconfirm" data-jagger-attrname="' + attrName + '" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fi-pencil"></i></i></td></tr>';
+                                            '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="'+data.definitions.sps[i]['entityid']+'" data-jagger-attrname="' + attrName + '" data-jagger-spid="'+i+'" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fi-pencil"></i></i></td></tr>';
                                         }
                                     }
 
@@ -2488,6 +2531,8 @@ $(document).ready(function () {
             var entcatid = $(this).attr('data-jagger-entcatid');
             var attrsupport = $(this).attr('data-jagger-attrsupport');
             var attrpolicy = $(this).attr('data-jagger-attrpolicy');
+            var spid = $(this).attr('data-jagger-spid');
+            var entityid = $(this).attr('data-jagger-entityid');
             if (arptype !== undefined && arpaction !== undefined) {
 
                 if (arptype === 'global' && arpaction === 'delete') {
@@ -2527,6 +2572,15 @@ $(document).ready(function () {
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="entcatid"]').first().val(entcatid);
+                    modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
+                    modal.foundation('reveal', 'open');
+                }
+                else if(arptype === 'sp' && arpaction === 'edit'){
+                    var modal = $('#arpmeditspattr');
+                    modal.find('span.attributename').first().html(attrname);
+                    modal.find('span.requestersp').first().html(entityid);
+                    modal.find('input[name="attrid"]').first().val(attrid);
+                    modal.find('input[name="spid"]').first().val(spid);
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
                     modal.foundation('reveal', 'open');
                 }
@@ -2651,6 +2705,24 @@ $(document).ready(function () {
                 success: function (json) {
                     $('#arpmeditfedattr').foundation('reveal', 'close');
                     $('#attrpolstab').find('a[href="#attrpol-2"]').first().trigger('click');
+
+                }
+            });
+        });
+
+
+        $('#arpmeditspattr').on('click', 'div.yes', function (event) {
+            var form = $('#arpmeditspattr').find('form').first();
+            var serializedData = form.serializeArray();
+            var actionlink = form.attr('action');
+            $.ajax({
+                url: actionlink,
+                method: 'POST',
+                dataType: "json",
+                data: serializedData,
+                success: function (json) {
+                    $('#arpmeditspattr').foundation('reveal', 'close');
+                    $('#attrpolstab').find('a[href="#attrpol-4"]').first().trigger('click');
 
                 }
             });
