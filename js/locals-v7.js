@@ -2156,6 +2156,7 @@ $(document).ready(function () {
         })
     });
     var providerdetailurl;
+
     if ($('#attrpols').length > 0) {
         providerdetailurl = $('#attrpols').attr('data-jagger-providerdetails');
         var fedid;
@@ -2166,6 +2167,7 @@ $(document).ready(function () {
             var meter = progressbar.find('span.meter').first();
             var addbtn = $('#addattrsupport');
             var addentcatbtn = $('#addentcatattr');
+            var addspecbtn = $('#addespecattr');
             console.log(event, tab);
             var link = $(tab).attr('data-reveal-ajax-tab');
             if (link === undefined) {
@@ -2495,8 +2497,7 @@ $(document).ready(function () {
 
 ///////////////////////////////////////////////////////
                         tbl += '</table></div>';
-                        target.html(tbl);
-
+                        addspecbtn.show().prependTo(target.html(tbl));
 
                     }
 
@@ -2677,6 +2678,46 @@ $(document).ready(function () {
             $('#arpmaddentcatattr').foundation('reveal', 'open');
         });
 
+        $('#attrpols').on('click', '#addespecattr button', function (event) {
+
+            var link2 = $('#addespecattr').attr('data-jagger-link');
+            var modal = $('#arpmaddspecattr').first();
+            var attrdropdown = modal.find("select[name='attrid']");
+            attrdropdown.empty();
+            var spdropdown = modal.find("select[name='spid']");
+            spdropdown.empty();
+            $.ajax({
+                url: link2,
+                method: 'GET',
+                dataType: 'json',
+                success: function (json) {
+
+                    if (json.members) {
+                        $.each(json.members, function (k, v) {
+                            spdropdown
+                                .append($("<option></option>")
+                                    .attr("value", v['pid'])
+                                    .text(v['name'] + ' ('+v['entityid']+')'));
+                        });
+                    }
+                    if (json.attrs) {
+                        $.each(json.attrs, function (l, w) {
+                            attrdropdown
+                                .append($("<option></option>")
+                                    .attr("value", w['attrid'])
+                                    .text(w['name']));
+                        });
+                    }
+
+                   // spdropdown.addClass('select2');
+
+                }
+            });
+            modal.foundation('reveal', 'open');
+            spdropdown.select2({width: "100%"});
+            attrdropdown.select2({width: "100%"});
+        });
+
         $('#arpmaddattr').on('click', 'div.yes', function (event) {
             var form = $('#arpmaddattr').find('form').first();
             var serializedData = form.serializeArray();
@@ -2708,6 +2749,15 @@ $(document).ready(function () {
 
                 }
             });
+        });
+
+        $('#arpmaddspecattr').on('change','select', function(event){
+            var selectedname = $(this).attr('name');
+            if(selectedname === undefined || !(selectedname === 'spid' || selectedname === 'attrid'))
+            {
+                console.log('TT');
+            }
+
         });
 
 

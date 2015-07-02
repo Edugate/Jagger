@@ -89,6 +89,7 @@ echo '<div id="attrpols" class="tabs-content" data-jagger-providerdetails="' . b
 <?php
 echo '<div  id="addattrsupport" class="small-12 column hidden" data-jagger-link="' . base_url('manage/attributepolicy2/getsupported/' . $idpid . '') . '"><button class="small right">' . lang('btnaddattr') . '</button></div>';
 echo '<div  id="addentcatattr" class="small-12 column hidden" data-jagger-link="' . base_url('manage/attributepolicy2/getentcats/' . $idpid . '') . '"><button class="small right">Add new policy</button></div>';
+echo '<div  id="addespecattr" class="small-12 column hidden" data-jagger-link="' . base_url('manage/attributepolicy2/getspecsp/' . $idpid . '') . '"><button class="small right">Add new policy</button></div>';
 ///////////////////////
 $nhidden = array('support' => 'enabled');
 
@@ -212,6 +213,35 @@ echo '</div>';
     echo '<div class="row">';
     echo '<div class="medium-3 column medium-text-right"><label>Entity Category</label></div>';
     echo '<div class="medium-9 column">' . form_dropdown('entcatid', array()) . '</div>';
+    echo '</div>';
+    echo '<div class="row">';
+    echo '<div class="medium-3 column medium-text-right"><label>Policy</label></div>';
+    echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+    echo '</div>';
+    $buttons = array(
+        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<div class="yes button">' . lang('btnupdate') . '</div>'
+    );
+    echo revealBtnsRow($buttons);
+    echo form_close();
+    ?>
+
+</div>
+
+<div id="arpmaddspecattr" class="reveal-modal medium" data-reveal>
+    <h4>You're going to add policy for SP</h4>
+
+
+    <div class="response"></div>
+    <?php
+    echo form_open(base_url('manage/attributepolicy2/addattrspec/' . $idpid . ''));
+    echo '<div class="row">';
+    echo '<div class="medium-3 column medium-text-right"><label>Attribute</label></div>';
+    echo '<div class="medium-9 column">' . form_dropdown('attrid', array()) . '</div>';
+    echo '</div>';
+    echo '<div class="row">';
+    echo '<div class="medium-3 column medium-text-right"><label>Service Provider</label></div>';
+    echo '<div class="medium-9 column">' . form_dropdown('spid', array()) . '</div>';
     echo '</div>';
     echo '<div class="row">';
     echo '<div class="medium-3 column medium-text-right"><label>Policy</label></div>';

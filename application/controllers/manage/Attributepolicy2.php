@@ -664,4 +664,46 @@ class Attributepolicy2 extends MY_Controller
 
     }
 
+
+    public function getspecsp($idpid = null)
+    {
+        if (!$this->initiateAjaxAccess($idpid)) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $ent = $this->getEntity($idpid);
+        if ($ent === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+        $this->load->library('zacl');
+        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $result = array('attrs'=>array(),'members'=>array());
+        $attrs = $this->em->getRepository('models\Attribute')->findAll();
+        foreach($attrs as $a)
+        {
+            $result['attrs'][] = array('attrid'=>$a->getId(),'name'=>$a->getName());
+        }
+        $tmpProviders = new models\Providers;
+        $myLang = MY_Controller::getLang();
+
+        /**
+         * @var $members models\Provider[]
+         */
+        $members = $tmpProviders->getTrustedServicesWithFeds($ent);
+
+        $preurl = base_url() . 'providers/detail/show/';
+        foreach ($members as $m) {
+            $feds = array();
+            $name = $m->getNameToWebInLang($myLang);
+        //    $y = $m->getFederations();
+        //    foreach ($y as $yv) {
+        //        $feds[] = $yv->getName();
+        //    }
+            $result['members'][] = array('entityid' => $m->getEntityId(), 'pid'=>$m->getId(),'name' => $name, 'url' => $preurl . $m->getId(), 'feds' => $feds);
+        }
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+    }
+
 }
