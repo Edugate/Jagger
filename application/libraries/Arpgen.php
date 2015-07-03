@@ -250,7 +250,7 @@ class Arpgen
             'fedPolicies' => $policies['fed'],
             'fedPoliciesPerFed' => array(),
             'reqAttrByFeds' => $this->attrRequiredByFeds,
-            'spPoliciec' => $policies['sp'],
+            'spPolicies' => $policies['sp'],
             'sps' => array()
         );
 

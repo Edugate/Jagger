@@ -88,15 +88,28 @@ class Attributepolicy2 extends MY_Controller
         }
 
         $this->load->library('arpgen');
+        $policiesDefs = $this->arpgen->genPolicyDefs($ent);
 
 
         $result['type'] = 'supported';
         $result['definitions']['columns'] = array(lang('attrname'), lang('dfltarpcolname'), lang('rr_action'));
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['data']['global'] = $this->arpgen->genGlobal($ent);
+        if(array_key_exists('spPolicies',$policiesDefs))
+        {
+            log_message('info','JANUSZ 44');
+            foreach(array_keys($policiesDefs['spPolicies']) as $ol)
+            {
+                if(!array_key_exists($ol,$result['data']['global'])){
+                    $result['data']['global'][$ol] = 0;
+                }
+            }
+        }
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
 
+        $result['oko'] = $policiesDefs;
+        $result['oko2'] = array_keys($policiesDefs);
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
@@ -127,6 +140,7 @@ class Attributepolicy2 extends MY_Controller
             $entcats[] = array('entcatid' => $cocVal->getId(), 'name' => $cocVal->getSubtype(), 'value' => $cocVal->getUrl(),'display'=>$cocVal->getName());
         }
         $this->load->library('arpgen');
+
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['data']['entcats'] = $entcats;
