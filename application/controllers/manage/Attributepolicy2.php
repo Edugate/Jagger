@@ -679,6 +679,40 @@ class Attributepolicy2 extends MY_Controller
     }
 
 
+    public function getcustomsp($idpid = null)
+    {
+        if (!$this->initiateAjaxAccess($idpid)) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $ent = $this->getEntity($idpid);
+        if ($ent === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+        $this->load->library('zacl');
+        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
+        $attrid = trim($this->input->post('attrid'));
+        $spid = trim($this->input->post('spid'));
+        if (!ctype_digit($attrid) || !ctype_digit($spid)) {
+            return $this->output->set_status_header(403)->set_output('Posted invalid data');
+        }
+        /**
+         * @var $customsp models\AttributeReleasePolicy
+         */
+        $customsp = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('attribute' => $attrid, 'idp' => $ent->getId(), 'type' => 'customsp', 'requester' => $spid));
+
+        $rawpolicy = null;
+        if($customsp !== null)
+        {
+            $rawpolicy = $customsp->getRawdata();
+        }
+
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success','rawdata'=>$rawpolicy)));
+
+    }
+
     public function getspecsp($idpid = null)
     {
         if (!$this->initiateAjaxAccess($idpid)) {
