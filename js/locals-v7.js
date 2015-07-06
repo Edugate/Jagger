@@ -2375,9 +2375,9 @@ $(document).ready(function () {
                         });
                         tbl += '</tr></thead>';
 ////////////////////////////////////////////////////////
-                       support = [];
+                        support = [];
                         $.each(data.data.supported, function (ks, vs) {
-                           support.push(vs);
+                            support.push(vs);
                         });
                         var spReqAttr;
                         var spReqAttrStr;
@@ -2385,7 +2385,7 @@ $(document).ready(function () {
                         var specpolicy;
                         var policyLabels = {0: "alert", 1: "warning", 2: "success", 100: "secondary"};
                         var attrName;
-                        var unsupportedLbl = '<span class="label alert">'+data.definitions.policy[1000]+'</span>';
+                        var unsupportedLbl = '<span class="label alert">' + data.definitions.policy[1000] + '</span>';
                         var supportedLbl = '';
                         var supportedStatus;
                         var customattrpol;
@@ -2426,52 +2426,46 @@ $(document).ready(function () {
 
 
                                         }
-                                        if(v.custom !== undefined && v.custom[j] !== undefined)
-                                        {
+                                        if (v.custom !== undefined && v.custom[j] !== undefined) {
 
-                                            if(v.custom[j]['deny'] !== undefined)
-                                            {
+                                            if (v.custom[j]['deny'] !== undefined) {
                                                 customattrpol += '<span class="label alert">denied values:  ';
-                                                $.each(v.custom[j]['deny'],function(ip,iv){
-                                                    customattrpol += iv+', ';
+                                                $.each(v.custom[j]['deny'], function (ip, iv) {
+                                                    customattrpol += iv + ', ';
                                                 });
-                                                customattrpol +='</span>';
+                                                customattrpol += '</span>';
                                             }
-                                            else
-                                            {
+                                            else {
                                                 customattrpol += '<span class="label success">permited values: ';
-                                                $.each(v.custom[j]['permit'],function(ip,iv){
-                                                    customattrpol += iv+', ';
+                                                $.each(v.custom[j]['permit'], function (ip, iv) {
+                                                    customattrpol += iv + ', ';
                                                 });
                                                 customattrpol += '</span>';
                                             }
                                         }
 
                                         tbl += '<tr><td>' + attrName + '</td>' +
-                                        '<td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span>  '+supportedStatus+' '+customattrpol+'</td>' +
+                                        '<td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
                                         '<td>' + data.definitions.req[spReqAttrStr] + '</td>' +
                                         '<td>' +
-                                        '<a href="#" class="modalconfirm" data-jagger-attrpolicy="'+l+'" data-jagger-entityid="'+data.definitions.sps[i]['entityid']+'" data-jagger-attrname="' + attrName + '" data-jagger-spid="'+i+'" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
+                                        '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + l + '" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
                                         '<i class="fi-pencil"></i></a></td></tr>';
                                     });
                                     for (var vkey in spReqAttr) {
                                         customattrpol = '';
-                                        if(v.custom !== undefined && v.custom[vkey] !== undefined)
-                                        {
+                                        if (v.custom !== undefined && v.custom[vkey] !== undefined) {
 
-                                            if(v.custom[vkey]['deny'] !== undefined)
-                                            {
+                                            if (v.custom[vkey]['deny'] !== undefined) {
                                                 customattrpol += '<span class="label alert">denied values:  ';
-                                                $.each(v.custom[vkey]['deny'],function(ip,iv){
-                                                    customattrpol += iv+', ';
+                                                $.each(v.custom[vkey]['deny'], function (ip, iv) {
+                                                    customattrpol += iv + ', ';
                                                 });
-                                                customattrpol +='</span>';
+                                                customattrpol += '</span>';
                                             }
-                                            else
-                                            {
+                                            else {
                                                 customattrpol += '<span class="label success">permited values: ';
-                                                $.each(v.custom[vkey]['permit'],function(ip,iv){
-                                                    customattrpol += iv+', ';
+                                                $.each(v.custom[vkey]['permit'], function (ip, iv) {
+                                                    customattrpol += iv + ', ';
                                                 });
                                                 customattrpol += '</span>';
                                             }
@@ -2484,9 +2478,9 @@ $(document).ready(function () {
                                         attrName = data.data.definitions.attrs[vkey];
                                         if (spReqAttr.hasOwnProperty(vkey)) {
                                             tbl += '<tr><td>' + attrName + '</td>' +
-                                            '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  '+supportedStatus+' '+customattrpol+'</td>' +
+                                            '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
                                             '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
-                                            '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="'+data.definitions.sps[i]['entityid']+'" data-jagger-attrname="' + attrName + '" data-jagger-spid="'+i+'" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fi-pencil"></i></i></td></tr>';
+                                            '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fi-pencil"></i></i></td></tr>';
                                         }
                                     }
 
@@ -2534,11 +2528,13 @@ $(document).ready(function () {
             var attrpolicy = $(this).attr('data-jagger-attrpolicy');
             var spid = $(this).attr('data-jagger-spid');
             var entityid = $(this).attr('data-jagger-entityid');
+            var baseurl = $("[name='baseurl']").val();
             if (arptype !== undefined && arpaction !== undefined) {
 
                 if (arptype === 'global' && arpaction === 'delete') {
 
                     var modal = $("#arpmdelattr");
+                    modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('input[name="attrname"]').first().val(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('span.attributename').first().html(attrname);
@@ -2546,6 +2542,7 @@ $(document).ready(function () {
                 }
                 else if (arptype === 'global' && arpaction === 'edit') {
                     var modal = $("#arpmeditglobalattr");
+                    modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrname"]').first().val(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
@@ -2562,6 +2559,7 @@ $(document).ready(function () {
                 }
                 else if (arptype === 'fed' && arpaction === 'edit') {
                     var modal = $("#arpmeditfedattr");
+                    modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="fedid"]').first().val(fedid);
@@ -2570,19 +2568,65 @@ $(document).ready(function () {
                 }
                 else if (arptype === 'entcat' && arpaction === 'edit') {
                     var modal = $('#arpmeditentcatattr');
+                    modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="entcatid"]').first().val(entcatid);
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
                     modal.foundation('reveal', 'open');
                 }
-                else if(arptype === 'sp' && arpaction === 'edit'){
+                else if (arptype === 'sp' && arpaction === 'edit') {
                     var modal = $('#arpmeditspattr');
+
+                    modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('span.requestersp').first().html(entityid);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="spid"]').first().val(spid);
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
+
+                    var sourcelink = modal.attr('data-jagger-getdata');
+                    var modalform = modal.find('form').first();
+                    var serializedData = modalform.serializeArray();
+                    var custompolicy = modalform.find('[name="custompolicy"]').first();
+                    var customvals = modalform.find('[name="customvals"]').first();
+                    var customenabled = modalform.find('[name="customenabled"]').first();
+                    customvals.empty();
+                    var cvals = '';
+                    customenabled.prop('checked', false);
+
+                    $.ajax({
+                        url: sourcelink,
+                        method: "POST",
+                        dataType: "json",
+                        data: serializedData,
+                        success: function (json) {
+                            if (json.data) {
+                                if (json.data.customsp !== undefined) {
+
+
+                                    if (json.data.customsp.deny) {
+                                        customenabled.prop('checked', true);
+                                        modalform.find('[name="custompolicy"] option').prop('selected', false).filter('[value="deny"]').prop('selected', true);
+                                        $.each(json.data.customsp.deny, function (io, iv) {
+                                            cvals += iv + ', ';
+                                        });
+                                    }
+                                    else if (json.data.customsp.permit) {
+                                        customenabled.prop('checked', true);
+                                        modalform.find('[name="custompolicy"] option').prop('selected', false).filter('[value="permit"]').prop('selected', true);
+                                        $.each(json.data.customsp.permit, function (io, iv) {
+                                            cvals += iv + ', ';
+                                        });
+                                    }
+                                    customvals.text(cvals);
+                                }
+
+                            }
+                        }
+                    });
+
+
                     modal.foundation('reveal', 'open');
                 }
             }
@@ -2617,6 +2661,11 @@ $(document).ready(function () {
                 success: function (json) {
                     $('#arpmeditglobalattr').foundation('reveal', 'close');
                     $('#attrpolstab').find('a[href="#attrpol-1"]').first().trigger('click');
+
+                },
+                error: function (xhr, status, error) {
+
+                    $('#arpmeditglobalattr').find('.response').html(xhr.responseText).addClass('alert').addClass('alert-box').show();
 
                 }
             });
@@ -2682,6 +2731,7 @@ $(document).ready(function () {
 
             var link2 = $('#addespecattr').attr('data-jagger-link');
             var modal = $('#arpmaddspecattr').first();
+            modal.find('div.response').first().removeClass('alert').removeClass('alert-box').empty().hide()
             var attrdropdown = modal.find("select[name='attrid']");
             attrdropdown.empty();
             var spdropdown = modal.find("select[name='spid']");
@@ -2697,7 +2747,7 @@ $(document).ready(function () {
                             spdropdown
                                 .append($("<option></option>")
                                     .attr("value", v['pid'])
-                                    .text(v['name'] + ' ('+v['entityid']+')'));
+                                    .text(v['name'] + ' (' + v['entityid'] + ')'));
                         });
                     }
                     if (json.attrs) {
@@ -2709,7 +2759,7 @@ $(document).ready(function () {
                         });
                     }
 
-                   // spdropdown.addClass('select2');
+                    // spdropdown.addClass('select2');
 
                 }
             });
@@ -2731,6 +2781,11 @@ $(document).ready(function () {
                     $('#arpmaddattr').foundation('reveal', 'close');
                     $('#attrpolstab').find('a[href="#attrpol-1"]').first().trigger('click');
 
+                },
+                error: function (xhr, status, error) {
+
+                    $('#arpmaddattr').find('.response').html(xhr.responseText).addClass('alert').addClass('alert-box').show();
+
                 }
             });
         });
@@ -2747,16 +2802,45 @@ $(document).ready(function () {
                     $('#arpmeditfedattr').foundation('reveal', 'close');
                     $('#attrpolstab').find('a[href="#attrpol-2"]').first().trigger('click');
 
+                },
+                error: function (xhr, status, error) {
+
+                    $('#arpmeditfedattr').find('.response').html(xhr.responseText).addClass('alert').addClass('alert-box').show();
+
                 }
             });
         });
 
-        $('#arpmaddspecattr').on('change','select', function(event){
+        $('#arpmaddspecattr').on('change', 'select', function (event) {
             var selectedname = $(this).attr('name');
-            if(selectedname === undefined || !(selectedname === 'spid' || selectedname === 'attrid'))
-            {
+            if (selectedname === undefined || !(selectedname === 'spid' || selectedname === 'attrid')) {
                 console.log('TT');
             }
+
+        });
+
+        $('#arpmaddspecattr').on('click', 'div.yes', function (event) {
+            var modal = $('#arpmaddspecattr');
+            var response = modal.find('.response').first();
+            response.empty().removeClass('alert').removeClass('alert-box').hide();
+            var form = modal.find('form').first();
+            var serializedData = form.serializeArray();
+            var actionlink = form.attr('action');
+
+
+            $.ajax({
+                url: actionlink,
+                method: 'POST',
+                dataType: "json",
+                data: serializedData,
+                success: function (json) {
+                    response.empty().removeClass('alert').removeClass('alert-box').hide();
+                },
+                error: function (xhr, status, error) {
+
+                    response.html(xhr.responseText).addClass('alert').addClass('alert-box').show();
+                }
+            });
 
         });
 
@@ -2773,6 +2857,11 @@ $(document).ready(function () {
                 success: function (json) {
                     $('#arpmeditspattr').foundation('reveal', 'close');
                     $('#attrpolstab').find('a[href="#attrpol-4"]').first().trigger('click');
+
+                },
+                error: function (xhr, status, error) {
+
+                    $('#arpmeditspattr').find('.response').html(xhr.responseText).addClass('alert').addClass('alert-box').show();
 
                 }
             });
@@ -2791,6 +2880,11 @@ $(document).ready(function () {
                     $('#arpmeditentcatattr').foundation('reveal', 'close');
                     $('#attrpolstab').find('a[href="#attrpol-3"]').first().trigger('click');
 
+                },
+                error: function (xhr, status, error) {
+
+                    $('#arpmeditentcatattr').find('.response').html(xhr.responseText).addClass('alert').addClass('alert-box').show();
+
                 }
             });
         });
@@ -2806,6 +2900,11 @@ $(document).ready(function () {
                 success: function (json) {
                     $('#arpmaddentcatattr').foundation('reveal', 'close');
                     $('#attrpolstab').find('a[href="#attrpol-3"]').first().trigger('click');
+
+                },
+                error: function (xhr, status, error) {
+
+                    $('#arpmaddentcatattr').find('.response').html(xhr.responseText).addClass('alert').addClass('alert-box').show();
 
                 }
             });
