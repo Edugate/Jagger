@@ -169,14 +169,44 @@ class Attributepolicy2 extends MY_Controller
         $tmpSPDefinition = new models\Providers();
         $spsDefinitions = $tmpSPDefinition->getSPsEntities();
         $sps = array();
-        foreach($spsDefinitions as $spEnt)
-        {
+        foreach ($spsDefinitions as $spEnt) {
             $sps[$spEnt->getId()]['entityid'] = $spEnt->getEntityId();
         }
+
+
+
         $result['type'] = 'sp';
-      //  $result['data']['global'] = $this->arpgen->genGlobal($ent);
-      //  $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
+
+
         $result['data'] = $this->arpgen->genPolicyDefs($ent);
+
+
+
+        $addReqSPs = array();
+        foreach ($result['data']['sps'] as $ksp => $vsp) {
+
+            if (!array_key_exists('req', $vsp)) {
+                $addReqSPs[] = $ksp;
+                log_message('info','JANUSZ::: '.$ksp);
+            }
+        }
+       // print_r($addReqSPs);
+        /**
+         * @var $missingReqs models\AttributeRequirement[]
+         */
+        $missingReqs = $this->em->getRepository('models\AttributeRequirement')->findBy(array('type' => 'SP', 'sp_id' => $addReqSPs));
+
+        foreach ($missingReqs as $missReq)
+        {
+            $mspid = $missReq->getSP()->getId();
+            $mattr = $missReq->getAttribute()->getId();
+            $mreq = $missReq->getStatusToInt();
+
+            $result['data']['sps'][$mspid]['req'][$mattr] = $mreq;
+        }
+
+
+
         $result['definitions']['columns'] = array(lang('attrname'), 'Policy', 'requirements',lang('rr_action'));
         $result['definitions']['sps'] = $sps;
         $result['definitions']['req'] = array(
