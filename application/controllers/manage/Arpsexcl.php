@@ -58,7 +58,7 @@ class Arpsexcl extends MY_Controller
                 'breadcrumbs' => array(
                     array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
                     array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
-                    array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
+                    array('url' => base_url('manage/attributepolicy/show/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
                     array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
 
                 ),
@@ -73,7 +73,7 @@ class Arpsexcl extends MY_Controller
             $data['breadcrumbs'] = array(
                 array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
                 array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
-                array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
+                array('url' => base_url('manage/attributepolicy/show/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
                 array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
 
             );
@@ -118,7 +118,7 @@ class Arpsexcl extends MY_Controller
             'breadcrumbs' => array(
                 array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
                 array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . $providerNameInLang . ''),
-                array('url' => base_url('manage/attributepolicy/globals/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
+                array('url' => base_url('manage/attributepolicy/show/' . $idp->getId() . ''), 'name' => '' . lang('rr_attributereleasepolicy') . ''),
                 array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current')
             )
         );
@@ -129,7 +129,7 @@ class Arpsexcl extends MY_Controller
 
     private function _submit_validate()
     {
-
+        $this->form_validation->set_rules('idpid' , 'idpid', 'trim|required');
         $exc = $this->input->post('exc');
         if(is_array($exc))
         {
@@ -138,10 +138,7 @@ class Arpsexcl extends MY_Controller
                 $this->form_validation->set_rules('exc['.$k.']' , 'Excluded entity', 'trim');
             }
         }
-        else
-        {
-            return true;
-        }
+        
         return $this->form_validation->run();
 
     }
