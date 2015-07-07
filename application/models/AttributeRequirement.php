@@ -150,13 +150,16 @@ class AttributeRequirement
     }
 
     /**
-     * @return Federation
+     * @return Federation|null
      */
     public function getFederation()
     {
         return $this->fed_id;
     }
 
+    /**
+     * @return Provider|null
+     */
     public function getSP()
     {
         return $this->sp_id;

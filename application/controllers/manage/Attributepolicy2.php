@@ -2,7 +2,7 @@
 
 
 /**
- * @propoerty Arpgen $arpgen
+ * @property Arpgen $arpgen
  */
 
 /**
@@ -97,7 +97,6 @@ class Attributepolicy2 extends MY_Controller
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['data']['global'] = $this->arpgen->genGlobal($ent);
         if (array_key_exists('spPolicies', $policiesDefs)) {
-            log_message('info', 'JANUSZ 44');
             foreach (array_keys($policiesDefs['spPolicies']) as $ol) {
                 if (!array_key_exists($ol, $result['data']['global'])) {
                     $result['data']['global'][$ol] = 0;
@@ -106,9 +105,7 @@ class Attributepolicy2 extends MY_Controller
         }
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
-
-        $result['oko'] = $policiesDefs;
-        $result['oko2'] = array_keys($policiesDefs);
+        
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
@@ -165,7 +162,12 @@ class Attributepolicy2 extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $this->load->library('arpgen');
+
         $tmpSPDefinition = new models\Providers();
+
+        /**
+         * @var $spsDefinitions models\Provider[]
+         */
         $spsDefinitions = $tmpSPDefinition->getSPsEntities();
         $sps = array();
         foreach ($spsDefinitions as $spEnt) {
@@ -184,10 +186,8 @@ class Attributepolicy2 extends MY_Controller
 
             if (!array_key_exists('req', $vsp)) {
                 $addReqSPs[] = $ksp;
-                log_message('info', 'JANUSZ::: ' . $ksp);
             }
         }
-        // print_r($addReqSPs);
         /**
          * @var $missingReqs models\AttributeRequirement[]
          */
@@ -241,6 +241,9 @@ class Attributepolicy2 extends MY_Controller
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
 
+        /**
+         * @var $cocsColl models\Coc[]
+         */
         $cocsColl = $this->em->getRepository('models\Coc')->findBy(array('type' => 'entcat'));
         $entcats = array();
         foreach ($cocsColl as $entcat) {
@@ -291,10 +294,14 @@ class Attributepolicy2 extends MY_Controller
         if ($isLocked) {
             return $this->output->set_status_header(403)->set_output('Entity is locked');
         }
+        if($this->updateattrspValidate() !== true)
+        {
+            return $this->output->set_status_header(403)->set_output('Incorrect data input');
+        }
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $spid = trim($this->input->post('spid'));
-        $customenable = trim($this->input->post('customenable'));
+        $customenable = trim($this->input->post('customenabled'));
         $custompolicy = trim($this->input->post('custompolicy'));
         $customvals = trim($this->input->post('customvals'));
 
@@ -316,6 +323,10 @@ class Attributepolicy2 extends MY_Controller
         }
 
 
+        /**
+         * @var $attribute models\Attribute
+         * @var $sp models\Provider
+         */
         $attribute = $this->em->getRepository('models\Attribute')->findOneBy(array('id'=>$attrid));
         $sp = $this->em->getRepository('models\Provider')->findOneBy(array('id'=>$spid));
 
@@ -334,9 +345,35 @@ class Attributepolicy2 extends MY_Controller
             $attrPolicy->setSpecificPolicy($ent, $attribute, $spid, $policy);
             $this->em->persist($attrPolicy);
         }
+        if(!empty($customenable) && $customenable === 'yes' && !empty($custompolicy) && in_array($custompolicy,array('permit','deny')) && !empty($customvals))
+        {
+            log_message('info','JANUSZ  ffff');
+            $customRawDataArray = array();
+            $explcustomvals = explode(',',$customvals);
+            foreach($explcustomvals as $r)
+            {
+                $rp = trim($r);
+                if(!empty($rp))
+                {
+                    $customRawDataArray[] = $rp;
+                }
+            }
+
+            if(count($customRawDataArray)>0) {
+                $customAttrPolicy = new models\AttributeReleasePolicy();
+                $customAttrPolicy->setAttribute($attribute);
+                $customAttrPolicy->setProvider($ent);
+                $customAttrPolicy->setType('customsp');
+                $customAttrPolicy->setRequester($spid);
+                $customAttrPolicy->setRawdata(array(''.$custompolicy.''=>$customRawDataArray));
+                $this->em->persist($customAttrPolicy);
+            }
+
+        }
 
         try{
             $this->em->flush();
+            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
 
         }
         catch(Exception $e)
@@ -371,6 +408,10 @@ class Attributepolicy2 extends MY_Controller
         if (!ctype_digit($entcatid) || !ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy, array('0', '1', '2'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
+        /**
+         * @var $attribute models\Attribute
+         * @var $entcategory models\Coc
+         */
         $attribute = $this->em->getRepository('models\Attribute')->findOneBy(array('id' => $attrid));
         $entcategory = $this->em->getRepository('models\Coc')->findOneBy(array('id' => $entcatid, 'type' => 'entcat'));
         if ($attribute === null || $entcategory === null) {
@@ -595,6 +636,9 @@ class Attributepolicy2 extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
@@ -661,6 +705,9 @@ class Attributepolicy2 extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->getEntity($idpid);
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
@@ -729,7 +776,8 @@ class Attributepolicy2 extends MY_Controller
         $this->form_validation->set_rules('customvals', '' . lang('permdenvalue') . '', 'trim|alpha_dash_comma');
         $this->form_validation->set_rules('custompolicy', 'Custom Policy', 'trim');
         $this->form_validation->set_rules('customenabled', 'Custom enabled', 'trim');
-
+        $this->form_validation->set_rules('attrid', 'Attribute', 'trim|required|numeric');
+        $this->form_validation->set_rules('spid', 'Service Provider ID', 'trim|required|numeric');
         return $this->form_validation->run();
     }
     public function updateattrsp($idpid = null)
@@ -737,6 +785,9 @@ class Attributepolicy2 extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->getEntity($idpid);
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
@@ -810,6 +861,7 @@ class Attributepolicy2 extends MY_Controller
         {
             $valsarray = array();
             $cvalsExploded = explode(',',$customvals);
+            $cvals = array();
             foreach($cvalsExploded as $rf)
             {
                 $cvals[] = trim($rf);
@@ -882,6 +934,9 @@ class Attributepolicy2 extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
+        /**
+         * @var $ent models\Provider
+         */
         $ent = $this->getEntity($idpid);
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
@@ -892,6 +947,9 @@ class Attributepolicy2 extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $result = array('attrs' => array(), 'members' => array());
+        /**
+         * @var $attrs models\Attribute[]
+         */
         $attrs = $this->em->getRepository('models\Attribute')->findAll();
         foreach ($attrs as $a) {
             $result['attrs'][] = array('attrid' => $a->getId(), 'name' => $a->getName());
