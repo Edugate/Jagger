@@ -210,7 +210,6 @@ class Attributepolicy extends MY_Controller
             '100' => '',
 
         );
-        //   $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
 
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
@@ -462,7 +461,7 @@ class Attributepolicy extends MY_Controller
         $this->load->library('arpgen');
         $result['type'] = 'federation';
 
-        // $result['policydefs'] = $this->arpgen->genPolicyDefs($ent);
+    
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
         $result['definitions']['columns'] = array(lang('attrname'), 'policy', 'reqstatus', lang('rr_action'));
         $result['definitions']['lang']['federation'] = lang('rr_federation');
@@ -873,7 +872,7 @@ class Attributepolicy extends MY_Controller
                     $valsarray[''.$custompolicy.''] = $cvals;
 
                 }
-                if ($customattrPolicy == null) {
+                if ($customattrPolicy === null) {
                     $customattrPolicy = new models\AttributeReleasePolicy();
                 }
                 $customattrPolicy->setRawdata($valsarray);

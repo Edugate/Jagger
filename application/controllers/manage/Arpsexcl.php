@@ -138,7 +138,7 @@ class Arpsexcl extends MY_Controller
                 $this->form_validation->set_rules('exc['.$k.']' , 'Excluded entity', 'trim');
             }
         }
-        
+
         return $this->form_validation->run();
 
     }
