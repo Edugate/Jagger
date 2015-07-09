@@ -2727,7 +2727,7 @@ $(document).ready(function () {
 
             var link2 = $('#addespecattr').attr('data-jagger-link');
             var modal = $('#arpmaddspecattr').first();
-            var customvals = modalform.find('[name="customvals"]').first();
+            var customvals = modal.find('[name="customvals"]').first();
             customvals.empty();
             modal.find('div.response').first().removeClass('alert').removeClass('alert-box').empty().hide()
             var attrdropdown = modal.find("select[name='attrid']");

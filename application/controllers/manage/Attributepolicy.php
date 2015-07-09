@@ -104,7 +104,7 @@ class Attributepolicy extends MY_Controller
             }
         }
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
-        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
 
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
@@ -203,7 +203,7 @@ class Attributepolicy extends MY_Controller
         }
 
 
-        $result['definitions']['columns'] = array(lang('attrname'), 'Policy', 'requirements', lang('rr_action'));
+        $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('reqstatus'), lang('rr_action'));
         $result['definitions']['sps'] = $sps;
         $result['definitions']['req'] = array(
             '1' => lang('droprequired'),
@@ -212,7 +212,7 @@ class Attributepolicy extends MY_Controller
 
         );
 
-        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
@@ -237,10 +237,10 @@ class Attributepolicy extends MY_Controller
         $result['type'] = 'entcat';
         $result['data']['global'] = $this->arpgen->genGlobal($ent);
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
-        $result['definitions']['columns'] = array(lang('attrname'), 'Policy', lang('rr_action'));
+        $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('rr_action'));
          $result['definitions']['ecmembers'] = base_url('manage/regpolicy/getmembers/');
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
-        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
 
         /**
          * @var $cocsColl models\Coc[]
@@ -348,7 +348,6 @@ class Attributepolicy extends MY_Controller
         }
         if(!empty($customenable) && $customenable === 'yes' && !empty($custompolicy) && in_array($custompolicy,array('permit','deny')) && !empty($customvals))
         {
-            log_message('info','JANUSZ  ffff');
             $customRawDataArray = array();
             $explcustomvals = explode(',',$customvals);
             foreach($explcustomvals as $r)
@@ -464,10 +463,10 @@ class Attributepolicy extends MY_Controller
         $result['type'] = 'federation';
 
     
-        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
-        $result['definitions']['columns'] = array(lang('attrname'), 'policy', 'reqstatus', lang('rr_action'));
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
+        $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('reqstatus'), lang('rr_action'));
         $result['definitions']['lang']['federation'] = lang('rr_federation');
-        $result['definitions']['lang']['unsupported'] = 'unsupported';
+        $result['definitions']['lang']['unsupported'] = lang('notsupported');
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['data']['global'] = $this->arpgen->genGlobal($ent);
 
