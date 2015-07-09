@@ -64,6 +64,7 @@ class Attributepolicy extends MY_Controller
         $data['arpglobal'] = $this->arpgen->genGlobal($ent);
         $data['arpsupport'] = $this->arpgen->getSupportAttributes($ent);
         $data['idpid'] = $ent->getId();
+        $data['encodedentity'] = base64url_encode($ent->getEntityId());
         $data['content_view'] = 'manage/attributepolicy2_view';
         $this->load->view('page', $data);
     }

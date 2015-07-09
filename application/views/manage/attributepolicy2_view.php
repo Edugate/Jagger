@@ -13,7 +13,20 @@ echo '
 
 echo '<div id="attrpols" class="tabs-content" data-jagger-providerdetails="' . base_url('providers/detail/show/') . '">
         <section role="tabpanel" aria-hidden="false" class="content active" id="introtab">
-            INFORMATION SOON!
+            INFORMATION GUIDE SOON!
+
+<ul>
+            <li>Default Attribute Release Policy - it does not include rules based on Entity Categories: <br />
+            <small>'.base_url('arp/format2/'.$encodedentity.'/arp.xml').'</small> <a href="'.base_url('arp/format2/'.$encodedentity.'/arp.xml').'"><i class="fi-link"></i></a>
+</li>
+<li>Experimental Attribute Release Policy for ShibbolethIDP ver 2.x - it does include rules based on Entity Categories: <br />
+            <small>'.base_url('arp/format2exp/'.$encodedentity.'/arp.xml').'</small> <a href="'.base_url('arp/format2exp/'.$encodedentity.'/arp.xml').'"><i class="fi-link"></i></a>
+            </li>
+
+<li>Experimental Attribute Release Policy for ShibbolethIDP ver 3.x - it does include rules based on Entity Categories: <br />
+            <small>'.base_url('arp/format3exp/'.$encodedentity.'/arp.xml').'</small> <a href="'.base_url('arp/format3exp/'.$encodedentity.'/arp.xml').'"><i class="fi-link"></i></a>
+            </li>
+            </ul>
         </section>
         <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-1">
         </section>
