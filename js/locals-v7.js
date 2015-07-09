@@ -788,7 +788,7 @@ var GINIT = {
 
             });
         });
-        $(".ecmembers").on('click', function (e) {
+        $(document).on('click', '.ecmembers', function (e) {
             var link = $(this).attr('data-jagger-jsource');
             var modal = $('#ecmembers');
             var content = modal.find(".datacontent").first();
@@ -2316,6 +2316,7 @@ $(document).ready(function () {
                         var entpolicy;
                         var idf;
                         var unsupwttr;
+                        var ecmemberurl = data.definitions.ecmembers;
 
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
@@ -2329,7 +2330,7 @@ $(document).ready(function () {
                         tbl += '</tr></thead>';
 
                         $.each(data.data.entcats, function (i, v) {
-                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i]['name'] + '  ' + data.definitions.entcats[i]['value'] + '</td></tr>';
+                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i]['name'] + '  ' + data.definitions.entcats[i]['value'] + ' <i class="ecmembers fi-list"  data-jagger-jsource="'+ecmemberurl+'/'+i+'"></i></td></tr>';
 
                             $.each(v, function (j, w) {
                                 unsupwttr = '';

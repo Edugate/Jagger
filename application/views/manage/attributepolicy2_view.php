@@ -288,3 +288,9 @@ echo form_close();
     <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 
 </div>
+<?php
+echo '<div id="ecmembers" class="reveal-modal small" data-reveal>';
+echo '<h4>'.lang('modtl_listentconec').'</h4>';
+echo '<div class="datacontent"></div>';
+echo '<a class="close-reveal-modal">&#215;</a>';
+echo '</div>';

@@ -137,6 +137,7 @@ class Attributepolicy extends MY_Controller
         }
         $this->load->library('arpgen');
 
+        $result['definitions']['ecmembers'] = base_url('manage/regpolicy/getmembers/');
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['data']['entcats'] = $entcats;
@@ -237,6 +238,7 @@ class Attributepolicy extends MY_Controller
         $result['data']['global'] = $this->arpgen->genGlobal($ent);
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['definitions']['columns'] = array(lang('attrname'), 'Policy', lang('rr_action'));
+         $result['definitions']['ecmembers'] = base_url('manage/regpolicy/getmembers/');
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => 'unsupported');
 
