@@ -169,6 +169,7 @@ class Metadata2array
                 'org' => array('OrganizationName' => array(), 'OrganizationDisplayName' => array(), 'OrganizationURL' => array()),
                 'contacts' => array(),
                 'reqattrs' => array(),
+                'reqattrsinmeta'=>false,
             ),
         );
         foreach ($node->childNodes as $gnode) {
@@ -189,6 +190,7 @@ class Metadata2array
                         $entity['details']['reqattrs'][] = array('name' => '' . $reqattr->getAttribute('Name') . '',
                             'req' => $reqattr->getAttribute('isRequired'));
                     }
+                    $entity['details']['reqattrsinmeta'] = true;
                 }
             } elseif ($gnode->nodeName === 'md:AttributeAuthorityDescriptor' || $gnode->nodeName === 'AttributeAuthorityDescriptor') {
                 $isIdp = true;
@@ -201,7 +203,7 @@ class Metadata2array
                             $entity['regdate'] = $enode->getAttribute('registrationInstant');
                             if ($enode->hasChildNodes()) {
                                 foreach ($enode->childNodes as $ch) {
-                                    if ($ch->nodeName == 'mdrpi:RegistrationPolicy') {
+                                    if ($ch->nodeName === 'mdrpi:RegistrationPolicy') {
                                         $chlang = strtolower($ch->getAttribute('xml:lang'));
                                         $chvalue = trim($ch->nodeValue);
                                         if (!empty($chlang) && !empty($chvalue)) {
