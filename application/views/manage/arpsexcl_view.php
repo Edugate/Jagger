@@ -9,8 +9,9 @@ if(!empty($success))
 }
 if(!empty($rows) && is_array($rows))
 {
+    $hidden = array('idpid'=>$idp_id);
     $attrs = array('id'=>'arpexlusions');
-    echo form_open(current_url(),$attrs);
+    echo form_open(current_url(),$attrs,$hidden);
     echo form_fieldset();
     foreach($rows as $r)
     {

@@ -10,10 +10,7 @@ class Arpgen
 {
 
     protected $CI;
-    /**
-     * @var $ent \models\Provider
-     */
-    protected $ent;
+
     /**
      * @var $em Doctrine\ORM\EntityManager
      */
@@ -23,21 +20,17 @@ class Arpgen
      */
     protected $attrsDefs;
     protected $attrDefsSmplArray = array();
-    protected $supportAttributes = array();
-    protected $supportAttrsFlipped;
     protected $tempARPolsInstance;
     protected $entityCategories = array();
-    protected $federations = array();
     protected $attrRequiredByFeds = array();
+    protected static $supportedAttrs = array();
+    protected static $globalsAttrs = array();
 
-    public function __construct(array $args)
+    public function __construct()
     {
         $this->CI = &get_instance();
         $this->em = $this->CI->doctrine->em;
-        if (!array_key_exists('ent', $args) || !($args['ent'] instanceof \models\Provider)) {
-            throw new Exception('Missing provider');
-        }
-        $this->ent = $args['ent'];
+
 
         $tmpAttrs = new models\Attributes();
         $this->attrsDefs = $tmpAttrs->getAttributesToArrayById();
@@ -46,34 +39,30 @@ class Arpgen
         }
         natcasesort($this->attrDefsSmplArray);
         $this->tempARPolsInstance = new models\AttributeReleasePolicies;
-        /**
-         * @var $supportAttrColl \models\AttributeReleasePolicy[]
-         */
-        $supportAttrColl = $this->tempARPolsInstance->getSupportedAttributes($this->ent);
-        foreach ($supportAttrColl as $attr) {
-            $this->supportAttributes[] = $attr->getAttribute()->getId();
-        }
-        $this->supportAttrsFlipped = array_flip($this->supportAttributes);
 
 
-        /**
-         * @var $entcats models\Coc[]
-         */
-        $entcats = $this->em->getRepository('models\Coc')->findBy(array('type' => 'entcat'));
-        foreach ($entcats as $e) {
-            $this->entityCategories[$e->getId()] = array('value' => $e->getUrl(), 'name' => $e->getSubtype());
-        }
+        $cachedEC = $this->CI->j_ncache->getEntityCategoriesDefs();
 
-        /**
-         * @var $federations models\Federation[]
-         */
-        $membership = $this->ent->getActiveFederations();
-        foreach ($membership as $mm) {
-            $isActiveFed = $mm->getActive();
-            if ($isActiveFed) {
-                $this->federations[] = $mm->getId();
+
+
+        if(empty($cachedEC))
+        {
+            /**
+             * @var $entcats models\Coc[]
+             */
+            $entcats = $this->em->getRepository('models\Coc')->findBy(array('type' => 'entcat'));
+            foreach ($entcats as $e) {
+                $this->entityCategories[$e->getId()] = array('value' => $e->getUrl(), 'name' => $e->getSubtype());
             }
+            $this->CI->j_ncache->saveEntityCategoriesDefs($this->entityCategories);
         }
+        else
+        {
+            $this->entityCategories = $cachedEC;
+        }
+
+
+
 
         /**
          * @var $fedAttrReqs models\AttributeRequirement[]
@@ -88,16 +77,42 @@ class Arpgen
 
     }
 
-
-    private function getPoliciec()
+    public function getAttrDefs()
     {
+        return $this->attrDefsSmplArray;
+    }
+
+    public function getSupportAttributes(\models\Provider $idp)
+    {
+        $idpID = $idp->getId();
+        if(array_key_exists($idpID,self::$supportedAttrs))
+        {
+            return self::$supportedAttrs[$idpID];
+        }
+        /**
+         * @var $supportAttrColl \models\AttributeReleasePolicy[]
+         */
+        $supportAttrColl = $this->tempARPolsInstance->getSupportedAttributes($idp);
+        foreach ($supportAttrColl as $attr) {
+            self::$supportedAttrs[$idpID][] = $attr->getAttribute()->getId();
+        }
+        if(!array_key_exists($idpID,self::$supportedAttrs))
+        {
+            self::$supportedAttrs[$idpID] = array();
+        }
+        return self::$supportedAttrs[$idpID];
+    }
+
+    private function getPoliciec(\models\Provider $idp)
+    {
+        $federations = $this->getActiveFederations($idp);
         /**
          * @var $policies models\AttributeReleasePolicy[]
          */
         $policies = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(
             array(
-                'idp' => $this->ent,
-                'attribute' => $this->supportAttributes,
+                'idp' => $idp,
+            //    'attribute' => $this->getSupportAttributes($idp),
                 'type' => array('fed', 'sp', 'entcat', 'customsp')
             )
         );
@@ -109,7 +124,7 @@ class Arpgen
                 $valuePolicy = $entry->getRawdata();
                 $result[$entryType][$entry->getRequester()][$entry->getAttribute()->getId()] = $valuePolicy;
                 continue;
-            } elseif ($entryType === 'fed' && !in_array($entry->getRequester(), $this->federations)) {
+            } elseif ($entryType === 'fed' && !in_array($entry->getRequester(), $federations)) {
                 continue;
             }
 
@@ -150,24 +165,21 @@ class Arpgen
         return $result;
     }
 
-    public function getSupportAttributes()
-    {
-        return $this->supportAttributes;
-    }
 
 
     /// may contain unsuported attrs
-    private function genGlobal()
+    public function genGlobal(\models\Provider $idp)
     {
         /**
          * @var $globals models\AttributeReleasePolicy[]
          */
-        $globals = $this->tempARPolsInstance->getGlobalPolicyAttributes($this->ent);
+        $globals = $this->tempARPolsInstance->getGlobalPolicyAttributes($idp);
         $result = array();
         foreach ($globals as $g) {
             $result[$g->getAttribute()->getId()] = $g->getPolicy();
         }
-        foreach ($this->supportAttributes as $v) {
+        $supportedAttrs = $this->getSupportAttributes($idp);
+        foreach ($supportedAttrs as $v) {
             if (!array_key_exists($v, $result)) {
                 $result[$v] = 0;
             }
@@ -200,32 +212,49 @@ class Arpgen
 
     }
 
-
-    public function genPolicyDefs()
+    public function getActiveFederations(\models\Provider $idp)
     {
 
-        $globalPolicy = $this->genGlobal();
-        $policies = $this->getPoliciec();
+        $membership = $idp->getActiveFederations();
+        $result = array();
+        foreach ($membership as $mm) {
+            $isActiveFed = $mm->getActive();
+            if ($isActiveFed) {
+                $result[] = $mm->getId();
+            }
+        }
+        return $result;
+    }
+
+    public function genPolicyDefs(\models\Provider $idp)
+    {
+
+        $globalPolicy = $this->genGlobal($idp);
+        $policies = $this->getPoliciec($idp);
+        $supportedAttrs = $this->getSupportAttributes($idp);
+        $supAttrsFlipped = array_flip($supportedAttrs);
         /**
          * @var $members models\Provider[]
          */
-        $members = $this->getMembers($this->ent->getExcarps());
+        $members = $this->getMembers($idp, $idp->getExcarps());
 
         $result = array(
             'definitions' => array(
                 'attrs' => $this->attrDefsSmplArray,
                 'ec' => $this->entityCategories,
             ),
-            'memberof' => $this->federations,
-            'supported' => $this->supportAttributes,
+            'memberof' => $this->getActiveFederations($idp),
+            'supported' => $supportedAttrs,
             'global' => $globalPolicy,
             'ecPolicies' => $policies['entcat'],
             'fedPolicies' => $policies['fed'],
             'fedPoliciesPerFed' => array(),
             'reqAttrByFeds' => $this->attrRequiredByFeds,
-            'spPoliciec' => $policies['sp'],
+            'spPolicies' => $policies['sp'],
             'sps' => array()
         );
+
+
         foreach ($policies['fed'] as $k => $v) {
             foreach ($v as $k2 => $v2) {
                 $result['fedPoliciesPerFed'][$k2][$k] = $v2;
@@ -290,7 +319,7 @@ class Arpgen
             if (array_key_exists('active', $spdet)) {
                 $result['sps'][$spid]['final'] = array_replace($spdet['prefinal'], $this->mergeFedPolicies($result['fedPoliciesPerFed'], $spdet['feds']), $spdet['spec']);
                 //remeain only supported attrs
-                $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $this->supportAttrsFlipped);
+                $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $supAttrsFlipped);
                 $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $spdet['req']);
             }
         }
@@ -299,14 +328,14 @@ class Arpgen
 
     }
 
-    private function getMembers(array $exclude)
+    private function getMembers(\models\Provider $idp, array $exclude)
     {
         $tempProviders = new models\Providers;
-        $members = $tempProviders->getSPsForArpIncEntCats($this->ent, $exclude);
+        $members = $tempProviders->getSPsForArpIncEntCats($idp, $exclude);
         return $members;
     }
 
-    public function genXML($version = null)
+    public function genXML(\models\Provider $idp, $version = null)
     {
         if ($version === null) {
             $version = 2;
@@ -318,12 +347,12 @@ class Arpgen
         } else {
             $entcatRuleTxt = 'saml:EntityAttributeExactMatch';
         }
-        $policy = $this->genPolicyDefs();
+        $policy = $this->genPolicyDefs($idp);
 
         $xml = $this->createXMLHead();
 
         $comment = PHP_EOL . '
-			Experimental verion Attribute Release Policy for ' . $this->ent->getEntityId() . PHP_EOL . '
+			Experimental verion Attribute Release Policy for ' . $idp->getEntityId() . PHP_EOL . '
                         generated on ' . date('D M j G:i:s T Y') . PHP_EOL . '
                         compatible with shibboleth idp version: ' . $version . '.x
 			' . PHP_EOL;
@@ -351,7 +380,9 @@ class Arpgen
         $ecPoliciesByEntCat = array();
         foreach ($ecPolicies as $key => $value) {
             foreach ($value as $key2 => $value2) {
-                $ecPoliciesByEntCat[$key2][$key] = $value2;
+                if(in_array($key, $policy['supported'])) {
+                    $ecPoliciesByEntCat[$key2][$key] = $value2;
+                }
             }
         }
 
@@ -417,7 +448,7 @@ class Arpgen
         }
 ///////////////////////END ENTITY CATEGORIES //////////////////////////
         /// start per sp
-        foreach ($policy['sps'] as $spid => $spdets) {
+        foreach ($policy['sps'] as  $spdets) {
             if (!array_key_exists('active', $spdets)) {
                 continue;
             }
@@ -440,7 +471,7 @@ class Arpgen
             foreach ($spdets['final'] as $finattrid => $finpolicy) {
                 if ($finpolicy >= $spdets['req'][$finattrid]) {
                     $releases[$finattrid] = 1;
-                } else {
+                } elseif(array_key_exists($finattrid,$policy['ecPolicies'])) {
                     $releases[$finattrid] = 0;
                 }
             }

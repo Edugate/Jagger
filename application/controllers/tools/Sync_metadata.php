@@ -195,6 +195,7 @@ class Sync_metadata extends CI_Controller {
             'removeexternal' => $conditions['removeexternal'],
             'mailreport' => $conditions['mailreport'],
             'email'=>$conditions['email'],
+            'attrreqinherit'=>true,
         );
         $other = null;
         $time_start = microtime(true);

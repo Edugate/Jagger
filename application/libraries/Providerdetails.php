@@ -1077,8 +1077,7 @@ class Providerdetails
 		if ($idppart) {
 			if ($hasWriteAccess) {
 				$entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
-				$entmenu[22] = array('name' => '' . lang('rr_supportedattributes') . '', 'link' => '' . base_url() . 'manage/supported_attributes/idp/' . $id . '', 'class' => '');
-				$entmenu[23] = array('name' => '' . lang('rr_attributepolicy') . '', 'link' => '' . base_url() . 'manage/attributepolicy/globals/' . $id . '', 'class' => '');
+				$entmenu[23] = array('name' => '' . lang('rr_attributepolicy') . '', 'link' => '' . base_url() . 'manage/attributepolicy/show/' . $id . '', 'class' => '');
 				if (!empty($logoUploadEnabled) && $logoUploadEnabled === TRUE) {
 					$entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/idp/' . $ent->getId() . ''), 'class' => '');
 				}

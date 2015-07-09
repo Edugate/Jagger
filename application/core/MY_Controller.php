@@ -38,6 +38,7 @@ if (!defined('BASEPATH')) {
  * @property Show_element $show_element
  * @property J_auth $j_auth
  * @property Arp_generator $arp_generator
+ * @property Arpgen $arpgen
  * @property Providerdetails $providerdetails
  * @property Rrpreference $rrpreference
  * @property User_manage $user_manage

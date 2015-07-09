@@ -115,5 +115,20 @@ class J_ncache
     }
 
 
+    public function getEntityCategoriesDefs()
+    {
+        \log_message('debug','janusz: method: '.__METHOD__);
+        $cacheid = 'entcatsdefs';
+        return $this->ci->cache->get($cacheid);
+    }
+    public function saveEntityCategoriesDefs($data)
+    {
+        \log_message('debug','janusz: method: '.__METHOD__);
+        $cacheid = 'entcatsdefs';
+        $this->ci->cache->save($cacheid,$data,600);
+        return true;
+    }
+
+
 }
 

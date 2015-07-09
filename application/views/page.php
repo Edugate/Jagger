@@ -248,7 +248,6 @@ if ($breadcrumbsEnabled === TRUE) {
 <div id="spinner" class="spinner" style="display:none;">
     <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="<?php echo lang('loading'); ?>"/>
 </div>
-
 <a href="javascript:" id="return-to-top"><i class="fi-arrow-up largeicon"></i></a>
 
 <div style="display: none">
@@ -293,7 +292,7 @@ if ($breadcrumbsEnabled === TRUE) {
 $jsToLoad1 = array(
     'jquery.min.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
     'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js', 'fastclick.js',
-    'foundation.min.js', 'jquery.simplemodal.js', 'Chart.min.js','select2.min.js');
+    'foundation.min.js', 'Chart.min.js','select2.min.js');
 foreach ($jsToLoad1 as $jsFile) {
     echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
 }
@@ -346,6 +345,6 @@ if (!empty($rawJs) && is_array($rawJs)) {
     echo '</script>';
 }
 ?>
-
+<div id="malert" data-reveal class="reveal-modal tiny" ></div>
 </body>
 </html>

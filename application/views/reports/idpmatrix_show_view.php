@@ -58,7 +58,7 @@ echo form_input(array('name' => 'requester', 'id' => 'requester', 'type' => 'hid
     </div>
     <div class="buttons small-12 columns">
         <div class="yes button"><?php echo lang('btnupdate'); ?></div>
-        <div class="no simplemodal-close button"><?php echo lang('rr_cancel'); ?></div>
+        <div class="no button"><?php echo lang('rr_cancel'); ?></div>
     </div>
 <?php
 echo form_close();

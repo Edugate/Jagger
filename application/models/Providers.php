@@ -375,6 +375,18 @@ class Providers
 
     }
 
+
+     public function getSPsEntities()
+    {
+        $dql = "SELECT partial p.{id,entityid} FROM models\Provider p WHERE p.type IN (?1,?2)";
+        $query = $this->em->createQuery($dql);
+        $query->setParameter(1, 'SP');
+        $query->setParameter(2, 'BOTH');
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();
+
+    }
+
     /**
      *  getIdps_inNative and getSps_inNative to display just the list of entities without details.
      *   it's faster than getIdps and getSps but its sesnsitive to database changes like column names etc

@@ -146,10 +146,11 @@ class Metadata2import
         }
 
 
+        /**
+         * @var $federations models\Federation[]
+         */
+        $federations = array();
         if (array_key_exists('federations', $this->defaults)) {
-            /**
-             * @var $federations models\Federation[]
-             */
             $federations = $this->em->getRepository("models\Federation")->findBy(array('name' => $this->defaults['federations']));
             foreach ($federations as $ff) {
                 $report['body'][] = 'Sync with federation: ' . $ff->getName();
@@ -181,6 +182,10 @@ class Metadata2import
         if (array_key_exists('removeexternal', $this->defaults) && $this->defaults['removeexternal'] === TRUE) {
             $removeexternal = true;
         }
+        $attrreqinherit = false;
+        if (array_key_exists('attrreqinherit', $this->defaults) && $this->defaults['attrreqinherit'] === true) {
+            $attrreqinherit = true;
+        }
 
         $time_start = microtime(true);
         $this->metadataInArray = $this->ci->metadata2array->rootConvert($metadata, $full);
@@ -195,7 +200,28 @@ class Metadata2import
 
 
         foreach ($federations as $f) {
+            /**
+             * @var $fedReqAttrs models\AttributeRequirement[]
+             */
+            $fedReqAttrs = $f->getAttributesRequirement();
+
+            $attrRequiredByFed = array();
+
+            foreach($fedReqAttrs as $rv)
+            {
+                $attrRequiredByFed[] = array(
+                    'name'=>$rv->getAttribute()->getOid(),
+                    'req'=>$rv->isRequiredToStr()
+                );
+            }
+            $copyFedAttrReq = false;
+            if(count($attrRequiredByFed)>0 && $attrreqinherit === true)
+            {
+                $copyFedAttrReq = true;
+            }
+
             $fedMembershipCollection = $f->getMembership();
+
             /**
              * @var $membership \models\FederationMembers[]
              */
@@ -267,8 +293,8 @@ class Metadata2import
 
                             // end entityCategory
                             // attr req  start
+                            $attrsset = array();
                             if (isset($ent['details']['reqattrs'])) {
-                                $attrsset = array();
                                 foreach ($ent['details']['reqattrs'] as $r) {
                                     if (array_key_exists($r['name'], $attributes)) {
                                         if (!in_array($r['name'], $attrsset)) {
@@ -289,6 +315,29 @@ class Metadata2import
                                         log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
                                     }
                                 }
+
+                                if($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true)
+                                {
+                                    foreach($attrRequiredByFed as $rt)
+                                    {
+                                        if(!in_array($rt['name'],$attrsset))
+                                        {
+                                            $reqattr = new models\AttributeRequirement;
+                                            $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
+                                            $reqattr->setType('SP');
+                                            $reqattr->setSP($importedProvider);
+                                            if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
+                                                $reqattr->setStatus('required');
+                                            } else {
+                                                $reqattr->setStatus('desired');
+                                            }
+                                            $importedProvider->setAttributesRequirement($reqattr);
+                                            $this->em->persist($reqattr);
+                                            $attrsset[] = $rt['name'];
+                                        }
+                                    }
+                                }
+
                             }
 
                             // attr req end
@@ -410,8 +459,30 @@ class Metadata2import
                                             }
                                             $existingProvider->setAttributesRequirement($reqattr);
                                             $this->em->persist($reqattr);
+                                            $duplicateControl[] = $nr['name'];
                                         } else {
                                             log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
+                                        }
+                                    }
+                                    if($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true)
+                                    {
+                                        foreach($attrRequiredByFed as $rt)
+                                        {
+                                            if(!in_array($rt['name'],$duplicateControl))
+                                            {
+                                                $reqattr = new models\AttributeRequirement;
+                                                $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
+                                                $reqattr->setType('SP');
+                                                $reqattr->setSP($existingProvider);
+                                                if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
+                                                    $reqattr->setStatus('required');
+                                                } else {
+                                                    $reqattr->setStatus('desired');
+                                                }
+                                                $existingProvider->setAttributesRequirement($reqattr);
+                                                $this->em->persist($reqattr);
+                                                $duplicateControl[] = $rt['name'];
+                                            }
                                         }
                                     }
                                 }
