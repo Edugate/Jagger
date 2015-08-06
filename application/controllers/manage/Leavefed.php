@@ -35,21 +35,23 @@ class Leavefed extends MY_Controller
         }
     }
 
-    private function submit_validate()
+    private function submitValidate()
     {
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('fedid', lang('rr_federation'), 'trim|required|numeric|xss_clean');
+        $this->form_validation->set_rules('fedid', lang('rr_federation'), 'trim|required|numeric');
         return $this->form_validation->run();
-
     }
 
     public function leavefederation($providerid = null)
     {
-        if (empty($providerid) || !ctype_digit($providerid)) {
+        if (!ctype_digit($providerid)) {
             show_error('Incorrect provider id provided', 404);
         }
+        /**
+         * @var $provider models\Provider
+         */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
-        if (empty($provider)) {
+        if ($provider === null) {
             show_error('Provider not found', 404);
         }
         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', strtolower($provider->getType()), '');
@@ -59,8 +61,9 @@ class Leavefed extends MY_Controller
         if ($provider->getLocked()) {
             show_error('Provider is locked', 403);
         }
+        $this->load->helper('form');
         $federations = $provider->getFederations();
-        $feds_dropdown = array();
+        $feds_dropdown = array('none'=>lang('selectfed'));
         foreach ($federations as $f) {
             $feds_dropdown[$f->getId()] = $f->getName();
         }
@@ -87,15 +90,20 @@ class Leavefed extends MY_Controller
 
         );
 
-        if ($this->submit_validate() === TRUE) {
+        if ($this->submitValidate() === true) {
             $fedid = $this->input->post('fedid');
+            /**
+             * @var $federation models\Federation
+             */
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
-            if (empty($federation)) {
+            if ($federation === null) {
                 show_error('Federation you want  to leave doesnt exist', 404);
-                return;
             }
+            /**
+             * @var $membership models\FederationMembers
+             */
             $membership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider' => $provider->getId(), 'federation' => $federation->getId()));
-            if (!empty($membership)) {
+            if ($membership !== null) {
                 $p_tmp = new models\AttributeReleasePolicies;
                 $arp_fed = $p_tmp->getFedPolicyAttributesByFed($provider, $federation);
                 $rm_arp_msg = '';
@@ -122,18 +130,13 @@ class Leavefed extends MY_Controller
                 }
                 try {
                     $this->em->flush();
-
                     $data['success_message'] = lang('rr_youleftfed') . ': ' . $federation->getName() . '<br />' . $rm_arp_msg;
-                    $data['content_view'] = 'manage/leavefederation_view';
-                    return $this->load->view('page', $data);
                 } catch (Exception $e) {
                     log_message('error', __METHOD__ . ' ' . $e);
                     $data['error_message'] = 'Unknown error occured';
-                    $data['content_view'] = 'manage/leavefederation_view';
-                    return $this->load->view('page', $data);
-
-
                 }
+                $data['content_view'] = 'manage/leavefederation_view';
+                return $this->load->view('page', $data);
 
             } else {
                 $data['error_message'] = lang('rr_youleftfed');
@@ -143,19 +146,15 @@ class Leavefed extends MY_Controller
 
             }
         } else {
-            if (count($feds_dropdown) > 0) {
-                $this->load->helper('form');
+            if (count($feds_dropdown) > 1) {
                 $data['feds_dropdown'] = $feds_dropdown;
                 $data['showform'] = true;
-
-                $data['content_view'] = 'manage/leavefederation_view';
-                $this->load->view('page', $data);
             } else {
                 $data['error_message'] = lang('cantleavefednonefound');
-                $data['content_view'] = 'manage/leavefederation_view';
-                $this->load->view('page', $data);
-
             }
+            $data['content_view'] = 'manage/leavefederation_view';
+            $this->load->view('page', $data);
+
         }
     }
 

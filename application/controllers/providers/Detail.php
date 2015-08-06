@@ -19,21 +19,19 @@ class Detail extends MY_Controller
     public static $alerts;
     public $isGearman;
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->tmpAttributes = new models\Attributes;
         $this->tmpAttributes->getAttributes();
         self::$alerts = array();
         $this->isGearman = $this->config->item('gearman');
-        if (empty($this->isGearman)) {
+        if ($this->isGearman !== true) {
             $this->isGearman = false;
-        } else {
-            $this->isGearman = true;
         }
     }
 
-    function refreshentity($providerID)
+    public function refreshentity($providerID)
     {
         if ($this->input->is_ajax_request()) {
             if (!$this->j_auth->logged_in()) {
@@ -71,7 +69,7 @@ class Detail extends MY_Controller
         }
     }
 
-    function status($providerID = null, $refresh = null)
+    public function status($providerID = null, $refresh = null)
     {
         if (!$this->input->is_ajax_request() || !ctype_digit($providerID) || !$this->j_auth->logged_in()) {
             set_status_header(403);
@@ -82,7 +80,7 @@ class Detail extends MY_Controller
          * @var $provider models\Provider
          */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => '' . $providerID . ''));
-        if (empty($provider)) {
+        if ($provider === null) {
             set_status_header(404);
             echo 'not foud';
             return;
@@ -120,7 +118,7 @@ class Detail extends MY_Controller
 
     }
 
-    function showlogs($providerID)
+    public function showlogs($providerID)
     {
         if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             set_status_header(403);
@@ -158,7 +156,7 @@ class Detail extends MY_Controller
             'value' => $this->show_element->generateModificationsList($ent, 10)
         );
 
-        if ((strcasecmp($ent->getType(), 'SP') != 0)) {
+        if ((strcasecmp($ent->getType(), 'SP') !== 0)) {
             $tmpLogs = new models\Trackers;
             /**
              * @var $arpLogs models\Tracker[]
@@ -175,7 +173,7 @@ class Detail extends MY_Controller
 
     }
 
-    function show($providerID)
+    public function show($providerID)
     {
         if (empty($providerID) || !ctype_digit($providerID)) {
             show_error(lang('error404'), 404);
@@ -190,7 +188,7 @@ class Detail extends MY_Controller
          * @var $ent models\Provider
          */
         $ent = $tmpProviders->getOneById($providerID);
-        if (empty($ent)) {
+        if ($ent === null) {
             show_error(lang('error404'), 404);
         }
         $hasReadAccess = $this->zacl->check_acl($providerID, 'read', 'entity', '');
@@ -213,10 +211,9 @@ class Detail extends MY_Controller
         $data['titlepage'] = $data['presubtitle'] . ': ' . $data['name'];
         $this->title = &$data['titlepage'];
         $data['content_view'] = 'providers/detail_view.php';
-        if (strcasecmp($ent->getType(), 'SP') == 0) {
+        $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
+        if (strcasecmp($ent->getType(), 'SP') === 0) {
             $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
-        } else {
-            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
         }
         $data['breadcrumbs'] = array(
             $plist,
@@ -226,7 +223,7 @@ class Detail extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    function showmembers($providerid)
+    public function showmembers($providerid)
     {
         if (!$this->input->is_ajax_request() || !ctype_digit($providerid) || !$this->j_auth->logged_in()) {
             set_status_header(403);
@@ -238,7 +235,7 @@ class Detail extends MY_Controller
          * @var $ent models\Provider
          */
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
-        if (empty($ent)) {
+        if ($ent === null) {
             set_status_header(404);
             echo lang('error404');
             return;
@@ -257,7 +254,7 @@ class Detail extends MY_Controller
          * @var $members models\Provider[]
          */
         $members = $tmpProviders->getTrustedServicesWithFeds($ent);
-        if (empty($members)) {
+        if (count($members) === 0) {
             $result[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');
         }
         $preurl = base_url() . 'providers/detail/show/';
