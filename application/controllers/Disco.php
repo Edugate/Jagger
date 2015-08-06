@@ -20,21 +20,21 @@ if (!defined('BASEPATH'))
  */
 class Disco extends MY_Controller {
 
-    protected $logo_url, $logo_basepath, $logo_baseurl, $wayflist;
+    protected $logoUrl, $logoBasePath, $logoBaseUrl, $wayfList;
 
     function __construct()
     {
         parent::__construct();
         parse_str($_SERVER['QUERY_STRING'], $_GET);
         $this->output->set_content_type('application/json');
-        $this->logo_basepath = $this->config->item('rr_logouriprefix');
-        $this->logo_baseurl = $this->config->item('rr_logobaseurl');
-        if (empty($this->logo_baseurl))
+        $this->logoBasePath = $this->config->item('rr_logouriprefix');
+        $this->logoBaseUrl = $this->config->item('rr_logobaseurl');
+        if (empty($this->logoBaseUrl))
         {
-            $this->logo_baseurl = base_url();
+            $this->logoBaseUrl = base_url();
         }
-        $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
-        $this->wayflist = array();
+        $this->logoUrl = $this->logoBaseUrl . $this->logoBasePath;
+        $this->wayfList = array();
         $this->output->set_header("X-Frame-Options: SAMEORIGIN");
         $this->output->set_header("Access-Control-Allow-Origin: *");
     }
@@ -48,19 +48,22 @@ class Disco extends MY_Controller {
         $r['entityID'] = $ent->getEntityId();
         $r['title'] = $ent->getNameToWebInLang('en');
         $doFilter = array('t' => array(''.$type.''), 'n' => array('mdui'), 'e' => array('GeolocationHint', 'Logo'));
+        /**
+         * @var $extend models\ExtendMetadata[]
+         */
         $extend = $ent->getExtendMetadata()->filter(
                 function(models\ExtendMetadata $entry) use ($doFilter)
         {
             return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
         });
-        $logoSet = FALSE;
-        $geoSet = FALSE;
+        $logoSet = false;
+        $geoSet = false;
         foreach ($extend as $ex)
         {
             $eElement = $ex->getElement();
             if ($eElement === 'GeolocationHint')
             {
-                if ($geoSet === TRUE)
+                if ($geoSet === true)
                 {
                     continue;
                 }
@@ -70,13 +73,13 @@ class Disco extends MY_Controller {
             }
             elseif ($eElement === 'Logo')
             {
-                if($logoSet === TRUE)
+                if($logoSet === true)
                 {
                     continue;
                 }
                 if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches)))
                 {
-                    $ElementValue = $this->logo_url . $ex->getEvalue();
+                    $ElementValue = $this->logoUrl . $ex->getEvalue();
                 }
                 else
                 {
@@ -107,6 +110,7 @@ class Disco extends MY_Controller {
             echo 'Request not allowed';
             return;
         }
+        $call = '';
         if (!empty($_GET['callback']))
         {
             $call = $_GET['callback'];
@@ -118,6 +122,9 @@ class Disco extends MY_Controller {
         $data = array();
         $name = base64url_decode($entityId);
         $tmp = new models\Providers;
+        /**
+         * @var $me models\Provider
+         */
         $me = $tmp->getOneSpByEntityId($name);
         if (empty($me))
         {
@@ -142,10 +149,13 @@ class Disco extends MY_Controller {
                 if (array_key_exists('white', $overwayf) && count($overwayf['white']) > 0)
                 {
                     $white = true;
-                    $this->wayflist = $overwayf['white'];
+                    $this->wayfList = $overwayf['white'];
                 }
             }
             $p = new models\Providers;
+            /**
+             * @var $p1 models\Provider[]
+             */
             $p1 = $p->getIdPsForWayf($me);
             if (empty($p1))
             {
@@ -159,7 +169,7 @@ class Disco extends MY_Controller {
                 $allowed = true;
                 if ($white)
                 {
-                    if (!in_array($ents->getEntityId(), $this->wayflist))
+                    if (!in_array($ents->getEntityId(), $this->wayfList))
                     {
                         $allowed = false;
                     }
@@ -211,6 +221,9 @@ class Disco extends MY_Controller {
         }
         $entityid = base64url_decode($encodedEntity);
         $tmp = new models\Providers;
+        /**
+         * @var $me models\Provider
+         */
         $me = $tmp->getOneSpByEntityId($entityid);
         if (empty($me))
         {
