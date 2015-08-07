@@ -85,7 +85,14 @@ class Gearmanw
             }
             catch (Exception $e)
             {
-                log_message('error', 'GEARMAN ::' . __METHOD__ . ' lost connection to database trying to reconnect');
+                if($attempt < $maxattempts)
+                {
+                    log_message('warning', 'GEARMAN ::' . __METHOD__ . ' lost connection to database trying to reconnect');
+                }
+                else
+                {
+                    log_message('error', 'GEARMAN ::' . __METHOD__ . ' no connection to database');
+                }
                 $em->getConnection()->close();
                 $em->getConnection()->connect();
                 $attempt++;
