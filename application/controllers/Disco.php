@@ -1,220 +1,183 @@
 <?php
-
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Disco Class
- * 
+ *
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Disco extends MY_Controller {
+class Disco extends MY_Controller
+{
 
     protected $logoUrl, $logoBasePath, $logoBaseUrl, $wayfList;
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
-        parse_str($_SERVER['QUERY_STRING'], $_GET);
         $this->output->set_content_type('application/json');
         $this->logoBasePath = $this->config->item('rr_logouriprefix');
         $this->logoBaseUrl = $this->config->item('rr_logobaseurl');
-        if (empty($this->logoBaseUrl))
-        {
+        if (empty($this->logoBaseUrl)) {
             $this->logoBaseUrl = base_url();
         }
         $this->logoUrl = $this->logoBaseUrl . $this->logoBasePath;
         $this->wayfList = array();
-        $this->output->set_header("X-Frame-Options: SAMEORIGIN");
-        $this->output->set_header("Access-Control-Allow-Origin: *");
+        $this->output->set_header('X-Frame-Options: SAMEORIGIN');
+        $this->output->set_header('Access-Control-Allow-Origin: *');
     }
 
-    private function providerToDisco(models\Provider $ent, $type = null)
+
+    /**
+     * @param \models\Provider $ent
+     * @param $type
+     * @return mixed
+     */
+    private function providerToDisco(models\Provider $ent, $type)
     {
-        if($type === null)
-        {
-            $type = 'idp';
-        }
-        $r['entityID'] = $ent->getEntityId();
-        $r['title'] = $ent->getNameToWebInLang('en');
-        $doFilter = array('t' => array(''.$type.''), 'n' => array('mdui'), 'e' => array('GeolocationHint', 'Logo'));
+        $result['entityID'] = $ent->getEntityId();
+        $result['title'] = $ent->getNameToWebInLang('en');
+        $doFilter = array('t' => array('' . $type . ''), 'n' => array('mdui'), 'e' => array('GeolocationHint', 'Logo'));
         /**
          * @var $extend models\ExtendMetadata[]
          */
         $extend = $ent->getExtendMetadata()->filter(
-                function(models\ExtendMetadata $entry) use ($doFilter)
-        {
-            return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
-        });
+            function (models\ExtendMetadata $entry) use ($doFilter) {
+                return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
+            });
         $logoSet = false;
         $geoSet = false;
-        foreach ($extend as $ex)
-        {
+        foreach ($extend as $ex) {
             $eElement = $ex->getElement();
-            if ($eElement === 'GeolocationHint')
-            {
-                if ($geoSet === true)
-                {
+            if ($eElement === 'GeolocationHint') {
+                if ($geoSet === true) {
                     continue;
                 }
                 $eValue = explode(',', $ex->getEvalue());
-                $r['geo'] = array('lat' => $eValue[0], 'lon' => $eValue[1]);
+                $result['geo'] = array('lat' => $eValue[0], 'lon' => $eValue[1]);
                 $geoSet = true;
-            }
-            elseif ($eElement === 'Logo')
-            {
-                if($logoSet === true)
-                {
+            } elseif ($eElement === 'Logo') {
+                if ($logoSet === true) {
                     continue;
                 }
-                if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches)))
-                {
-                    $ElementValue = $this->logoUrl . $ex->getEvalue();
-                }
-                else
-                {
-                    $ElementValue = $ex->getEvalue();
+                if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches))) {
+                    $elementValue = $this->logoUrl . $ex->getEvalue();
+                } else {
+                    $elementValue = $ex->getEvalue();
                 }
 
-                $r['icon'] = $ElementValue;
+                $result['icon'] = $elementValue;
                 $logoSet = true;
             }
         }
 
-        return $r;
+        return $result;
     }
 
-    function circle($entityId, $m = NULL)
+    public function circle($entityId, $filename = NULL)
     {
 
-        $cnf = $this->config->item('featdisable');
-        if (isset($cnf['discojuice']) && $cnf['discojuice'] === true)
-        {
-            set_status_header(404);
-            echo 'The feature no enabled';
-            return;
-        }
-        if (!empty($m) && $m != 'metadata.json')
-        {
+        if ($filename !== 'metadata.json') {
             set_status_header(403);
             echo 'Request not allowed';
             return;
         }
-        $call = '';
-        if (!empty($_GET['callback']))
-        {
-            $call = $_GET['callback'];
+        $cnf = $this->config->item('featdisable');
+        if (isset($cnf['discojuice']) && $cnf['discojuice'] === true) {
+            set_status_header(404);
+            echo 'The feature no enabled';
+            return;
         }
-        if (!empty($call))
-        {
-            $call_array = explode("_", $call);
+        $call = $this->input->get('callback');
+        $callArray = array();
+        if ($call !== null) {
+            $callArray = explode('_', $call);
         }
         $data = array();
-        $name = base64url_decode($entityId);
+        $decodedEntityId = base64url_decode($entityId);
         $tmp = new models\Providers;
         /**
-         * @var $me models\Provider
+         * @var $ent models\Provider
          */
-        $me = $tmp->getOneSpByEntityId($name);
-        if (empty($me))
-        {
-              log_message('error', 'Failed generating json  for provided entity:' . $name);
+        $ent = $tmp->getOneSpByEntityId($decodedEntityId);
+        if ($ent === null) {
+            log_message('error', 'Failed generating json  for provided entity:' . $decodedEntityId);
             set_status_header(404);
             echo 'Unknown serivce provider';
             return;
-          
+
         }
         $keyprefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
-        $cacheid = 'disco_' . $me->getId();
+        $cacheid = 'disco_' . $ent->getId();
         $cachedDisco = $this->cache->get($cacheid);
-        if (empty($cachedDisco))
-        {
-            log_message('debug', 'Cache: discojuice for entity:' . $me->getId() . ' with cacheid ' . $cacheid . ' not found in cache, generating...');
-            $overwayf = $me->getWayfList();
+        if (empty($cachedDisco)) {
+            log_message('debug', 'Cache: discojuice for entity:' . $ent->getId() . ' with cacheid ' . $cacheid . ' not found in cache, generating...');
+            $overwayf = $ent->getWayfList();
             $white = false;
 
-            if (!empty($overwayf) && is_array($overwayf))
-            {
-                if (array_key_exists('white', $overwayf) && count($overwayf['white']) > 0)
-                {
-                    $white = true;
-                    $this->wayfList = $overwayf['white'];
-                }
+            if (is_array($overwayf) && array_key_exists('white', $overwayf) && count($overwayf['white']) > 0) {
+                $white = true;
+                $this->wayfList = $overwayf['white'];
             }
-            $p = new models\Providers;
+            $tmpProviders = new models\Providers;
             /**
-             * @var $p1 models\Provider[]
+             * @var $providersForWayf models\Provider[]
              */
-            $p1 = $p->getIdPsForWayf($me);
-            if (empty($p1))
-            {
-                show_error('empty', 404);
+            $providersForWayf = $tmpProviders->getIdPsForWayf($ent);
+            if (empty($providersForWayf)) {
+                set_status_header(404);
+                echo 'no result';
                 return;
             }
             $output = array();
-            $oi = 0;
-            foreach ($p1 as $ents)
-            {
+            $icounter = 0;
+            foreach ($providersForWayf as $ents) {
                 $allowed = true;
-                if ($white)
-                {
-                    if (!in_array($ents->getEntityId(), $this->wayfList))
-                    {
-                        $allowed = false;
-                    }
+                if ($white && !in_array($ents->getEntityId(), $this->wayfList)) {
+                    $allowed = false;
                 }
-                if ($allowed)
-                {
+                if ($allowed) {
 
-                   $output[$oi] = $this->providerToDisco($ents);
-                   $oi++;
-                 }
+                    $output[$icounter] = $this->providerToDisco($ents, 'idp');
+                    $icounter++;
+                }
             }
             $jsonoutput = json_encode($output);
             $this->cache->save($cacheid, $jsonoutput, 600);
-            
-            if (!empty($call_array) && is_array($call_array) && count($call_array) == 3 && $call_array['0'] == 'dj' && $call_array['1'] == 'md' && is_numeric($call_array['2']))
-            {
-               $data['result'] = $call . '(' .  $jsonoutput . ')';
-            }
-            else
-            {
+
+            if ( count($callArray) == 3 && $callArray['0'] == 'dj' && $callArray['1'] == 'md' && is_numeric($callArray['2'])) {
+                $data['result'] = $call . '(' . $jsonoutput . ')';
+            } else {
                 $data['result'] = $jsonoutput;
             }
 
-        }
-        else
-        {
-            log_message('debug', 'Cache: Discojoice for entity ' . $me->getId() . ' found in cache id:' . $cacheid . ', retrieving...');
-            
-            if (!empty($call_array) && is_array($call_array) && count($call_array) == 3 && $call_array['0'] == 'dj' && $call_array['1'] == 'md' && is_numeric($call_array['2']))
-            {
-               $data['result'] = $call . '(' .  $cachedDisco . ')';
-            }
-            else
-            {
+        } else {
+            log_message('debug', 'Cache: Discojoice for entity ' . $ent->getId() . ' found in cache id:' . $cacheid . ', retrieving...');
+
+            if (!empty($callArray) && is_array($callArray) && count($callArray) == 3 && $callArray['0'] == 'dj' && $callArray['1'] == 'md' && is_numeric($callArray['2'])) {
+                $data['result'] = $call . '(' . $cachedDisco . ')';
+            } else {
                 $data['result'] = $cachedDisco;
             }
         }
         $this->load->view('disco_view', $data);
     }
-    
-    
+
+
     public function requester($encodedEntity = null)
     {
-        if(empty($encodedEntity))
-        {
+        if (empty($encodedEntity)) {
             set_status_header(404);
             echo 'entityID not provided';
             return;
@@ -222,16 +185,15 @@ class Disco extends MY_Controller {
         $entityid = base64url_decode($encodedEntity);
         $tmp = new models\Providers;
         /**
-         * @var $me models\Provider
+         * @var $ent models\Provider
          */
-        $me = $tmp->getOneSpByEntityId($entityid);
-        if (empty($me))
-        {
+        $ent = $tmp->getOneSpByEntityId($entityid);
+        if ($ent === null) {
             set_status_header(404);
             echo 'Unknown serivce provider';
             return;
         }
-        $result = $this->providerToDisco($me,'sp');
+        $result = $this->providerToDisco($ent, 'sp');
         $jsonoutput = json_encode($result);
         $data['result'] = $jsonoutput;
         $this->load->view('disco_view', $data);
