@@ -2399,7 +2399,13 @@ $(document).ready(function () {
                                         tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight" >' + v.entityid + '</td></tr>';
                                     }
                                     else {
-                                        tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' <span class="label alert">disabled</span></td></tr>';
+                                        if(data.definitions.sps[i] !== undefined) {
+                                            tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' <span class="label alert">disabled</span></td></tr>';
+                                        }
+                                        else
+                                        {
+                                            console.log('undefined '+i+' in data.definitions.sps');
+                                        }
                                     }
                                     $.each(v.spec, function (j, l) {
 
