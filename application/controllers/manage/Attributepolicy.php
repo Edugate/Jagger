@@ -177,19 +177,19 @@ class Attributepolicy extends MY_Controller
         }
 
 
-        log_message('debug',__METHOD__.' serialized SPS: '.serialize($sps));
+        log_message('debug',__METHOD__.' serialized SPS defs: '.serialize(array_keys($sps)));
         $result['type'] = 'sp';
 
 
         $result['data'] = $this->arpgen->genPolicyDefs($ent);
 
-
+        log_message('debug',__METHOD__.' serialized defs: '.serialize(array_keys($result['data']['sps'])));
         $addReqSPs = array();
         foreach ($result['data']['sps'] as $ksp => $vsp) {
 
             if(!array_key_exists($ksp,$sps))
             {
-                log_message('debug',__METHOD__.' test orphaned policy found for entityid: '.$ent->getEntityId().' :: sp with id: '.$ksp.' does not exist');
+       //         log_message('debug',__METHOD__.' test orphaned policy found for entityid: '.$ent->getEntityId().' :: sp with id: '.$ksp.' does not exist');
             }
             if (!array_key_exists('req', $vsp)) {
                 $addReqSPs[] = $ksp;
