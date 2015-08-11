@@ -177,6 +177,7 @@ class Attributepolicy extends MY_Controller
         }
 
 
+        log_message('debig',__METHOD__.' serialized SPS: '.serialize($sps));
         $result['type'] = 'sp';
 
 
@@ -188,7 +189,7 @@ class Attributepolicy extends MY_Controller
 
             if(!array_key_exists($ksp,$sps))
             {
-                log_message('warning',__METHOD__.' orphaned policy found for entityid: '.$ent->getEntityId().' :: sp with id: '.$ksp.' does not exist');
+                log_message('debug',__METHOD__.' test orphaned policy found for entityid: '.$ent->getEntityId().' :: sp with id: '.$ksp.' does not exist');
             }
             if (!array_key_exists('req', $vsp)) {
                 $addReqSPs[] = $ksp;
