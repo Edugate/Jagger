@@ -186,6 +186,10 @@ class Attributepolicy extends MY_Controller
         $addReqSPs = array();
         foreach ($result['data']['sps'] as $ksp => $vsp) {
 
+            if(!array_key_exists($ksp,$vsp))
+            {
+                log_message('warning',__METHOD__.' orphaned policy found for entityid: '.$ent->getEntityId().' :: sp with id: '.$ksp.' does not exist');
+            }
             if (!array_key_exists('req', $vsp)) {
                 $addReqSPs[] = $ksp;
             }
