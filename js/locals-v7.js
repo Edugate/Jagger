@@ -2399,7 +2399,7 @@ $(document).ready(function () {
                                         tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight" >' + v.entityid + '</td></tr>';
                                     }
                                     else {
-                                        if(data.definitions.sps[i] !== undefined) {
+                                        if(data.definitions.sps.hasOwnProperty(i)) {
                                             tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' <span class="label alert">disabled</span></td></tr>';
                                         }
                                         else
