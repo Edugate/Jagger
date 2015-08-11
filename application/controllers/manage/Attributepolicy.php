@@ -177,7 +177,7 @@ class Attributepolicy extends MY_Controller
         }
 
 
-        log_message('debig',__METHOD__.' serialized SPS: '.serialize($sps));
+        log_message('debug',__METHOD__.' serialized SPS: '.serialize($sps));
         $result['type'] = 'sp';
 
 
