@@ -1200,6 +1200,9 @@ class Provider
         return $this->registrar;
     }
 
+    /**
+     * @return null|\DateTime
+     */
     public function getRegistrationDate()
     {
         return $this->registerdate;

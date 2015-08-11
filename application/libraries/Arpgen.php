@@ -536,7 +536,6 @@ class Arpgen
                             }
 
                             $xml->endElement();
-                            //   break;  //
                         }
 
                     } else {
