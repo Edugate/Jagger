@@ -1,12 +1,8 @@
 <?php
-
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
 class Timelines extends MY_Controller {
-
-    private $alert;
-    private $error_message;
 
     function __construct()
     {
@@ -34,6 +30,10 @@ class Timelines extends MY_Controller {
 
     public function showregistered($fedid = null)
     {
+        /**
+         * @var $fed models\Federation
+         * @var $providers models\Provider[]
+         */
         if (!empty($fedid) && is_numeric($fedid))
         {
             $fed = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
@@ -52,11 +52,11 @@ class Timelines extends MY_Controller {
         {
             foreach ($providers as $p)
             {
-                $regdate = $p->getRegistrationDate();
-                if (!empty($regdate))
+
+                $registrationDate = $p->getRegistrationDateInFormat('Ymd',j_auth::$timeOffset);
+                if ($registrationDate !== null)
                 {
-                    $d = date('Ymd',$regdate->format('U')+j_auth::$timeOffset);
-                    $diag['known'][$d][$p->getId()] = array('n' => $p->getName(), 't' => $p->getType());
+                    $diag['known'][$registrationDate][$p->getId()] = array('n' => $p->getName(), 't' => $p->getType());
                 } else
                 {
                     $diag['unknown'][$p->getId()] = array('n' => $p->getName(), 't' => $p->getType());
