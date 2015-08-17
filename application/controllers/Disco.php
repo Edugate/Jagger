@@ -177,10 +177,8 @@ class Disco extends MY_Controller
 
     public function requester($encodedEntity = null)
     {
-        if (empty($encodedEntity)) {
-            set_status_header(404);
-            echo 'entityID not provided';
-            return;
+        if ($encodedEntity === null) {
+            return $this->output->set_status_header(404)->set_output('entityID not provided');
         }
         $entityid = base64url_decode($encodedEntity);
         $tmp = new models\Providers;
@@ -189,13 +187,10 @@ class Disco extends MY_Controller
          */
         $ent = $tmp->getOneSpByEntityId($entityid);
         if ($ent === null) {
-            set_status_header(404);
-            echo 'Unknown serivce provider';
-            return;
+            return $this->output->set_status_header(404)->set_output('Unknown serivce provider');
         }
         $result = $this->providerToDisco($ent, 'sp');
-        $jsonoutput = json_encode($result);
-        $data['result'] = $jsonoutput;
+        $data['result'] = json_encode($result);
         $this->load->view('disco_view', $data);
     }
 
