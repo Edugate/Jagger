@@ -129,6 +129,18 @@ class J_ncache
         return true;
     }
 
+    public function getCircleDisco($providerId)
+    {
+        $cacheid = 'disco_'.$providerId;
+        return $this->ci->cache->get($cacheid);
+    }
+    public  function saveCircleDisco($providerId,$data)
+    {
+        $cacheid = 'disco_'.$providerId;
+        $this->ci->cache->save($cacheid, $data, 600);
+        return true;
+    }
+
 
 }
 

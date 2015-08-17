@@ -4,10 +4,10 @@ if (!defined('BASEPATH'))
 /**
  * ResourceRegistry3
  *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
+ * @package   RR3
+ * @author    Middleware Team HEAnet
+ * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
 
@@ -84,25 +84,35 @@ class Disco extends MY_Controller
         return $result;
     }
 
+    /**
+     * @return bool
+     */
+    private function isFeatureEnabled()
+    {
+        $cnf = $this->config->item('featdisable');
+        if (isset($cnf['discojuice']) && $cnf['discojuice'] === true) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param $entityId
+     * @param null $filename
+     * @return CI_Output
+     */
     public function circle($entityId, $filename = NULL)
     {
 
         if ($filename !== 'metadata.json') {
-            set_status_header(403);
-            echo 'Request not allowed';
-            return;
+            return $this->output->set_status_header(403)->set_output('Request not allowed');
         }
-        $cnf = $this->config->item('featdisable');
-        if (isset($cnf['discojuice']) && $cnf['discojuice'] === true) {
-            set_status_header(404);
-            echo 'The feature no enabled';
-            return;
+        if (!$this->isFeatureEnabled()) {
+            return $this->output->set_status_header(404)->set_output('The feature not enabled');
         }
         $call = $this->input->get('callback');
-        $callArray = array();
-        if ($call !== null) {
-            $callArray = explode('_', $call);
-        }
+        $callArray = array_filter(explode('_', $call));
+        $inopaq = (count($callArray) == 3 && $callArray['0'] == 'dj' && $callArray['1'] == 'md' && is_numeric($callArray['2']));
         $data = array();
         $decodedEntityId = base64url_decode($entityId);
         $tmp = new models\Providers;
@@ -111,18 +121,13 @@ class Disco extends MY_Controller
          */
         $ent = $tmp->getOneSpByEntityId($decodedEntityId);
         if ($ent === null) {
-            log_message('error', 'Failed generating json  for provided entity:' . $decodedEntityId);
-            set_status_header(404);
-            echo 'Unknown serivce provider';
-            return;
+            log_message('warning', 'Failed generating json  for provided entity:' . $decodedEntityId);
+            return $this->output->set_status_header(404)->set_output('Unknown serivce provider');
 
         }
-        $keyprefix = getCachePrefix();
-        $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyprefix));
-        $cacheid = 'disco_' . $ent->getId();
-        $cachedDisco = $this->cache->get($cacheid);
+
+        $cachedDisco = $this->j_ncache->getCircleDisco($ent->getId());
         if (empty($cachedDisco)) {
-            log_message('debug', 'Cache: discojuice for entity:' . $ent->getId() . ' with cacheid ' . $cacheid . ' not found in cache, generating...');
             $overwayf = $ent->getWayfList();
             $white = false;
 
@@ -136,9 +141,7 @@ class Disco extends MY_Controller
              */
             $providersForWayf = $tmpProviders->getIdPsForWayf($ent);
             if (empty($providersForWayf)) {
-                set_status_header(404);
-                echo 'no result';
-                return;
+                return $this->output->set_status_header(404)->set_output('no result');
             }
             $output = array();
             $icounter = 0;
@@ -154,18 +157,15 @@ class Disco extends MY_Controller
                 }
             }
             $jsonoutput = json_encode($output);
-            $this->cache->save($cacheid, $jsonoutput, 600);
-
-            if ( count($callArray) == 3 && $callArray['0'] == 'dj' && $callArray['1'] == 'md' && is_numeric($callArray['2'])) {
+            $this->j_ncache->saveCircleDisco($ent->getId(),$jsonoutput);
+            if ( $inopaq) {
                 $data['result'] = $call . '(' . $jsonoutput . ')';
             } else {
                 $data['result'] = $jsonoutput;
             }
 
         } else {
-            log_message('debug', 'Cache: Discojoice for entity ' . $ent->getId() . ' found in cache id:' . $cacheid . ', retrieving...');
-
-            if (!empty($callArray) && is_array($callArray) && count($callArray) == 3 && $callArray['0'] == 'dj' && $callArray['1'] == 'md' && is_numeric($callArray['2'])) {
+            if ($inopaq) {
                 $data['result'] = $call . '(' . $cachedDisco . ')';
             } else {
                 $data['result'] = $cachedDisco;
