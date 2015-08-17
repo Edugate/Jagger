@@ -123,6 +123,16 @@ class Providers
     }
 
 
+    public function getAllIdPsForWayf() {
+        $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
+        $query = $this->em->createQuery("SELECT partial p.{id,entityid,type,ldisplayname,lname,name,displayname},e FROM models\Provider p LEFT JOIN p.extend e WHERE p.is_active = '1' AND p.is_approved = '1' AND (p.validto is null OR p.validto >= :now) AND (p.validfrom is null OR p.validfrom <= :now) AND p.type IN ('IDP','BOTH')");
+        $query->setParameter('now', $currentTime);
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $result = $query->getResult();
+        return $result;
+    }
+
+
     public function getIdPsForWayf(Provider $provider)
     {
         $spid = $provider->getId();

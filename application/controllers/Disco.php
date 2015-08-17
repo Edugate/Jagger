@@ -96,12 +96,59 @@ class Disco extends MY_Controller
         return true;
     }
 
+
+    public function getall($filename = null)
+    {
+        if ($filename !== 'metadata.json') {
+            return $this->output->set_status_header(403)->set_output('Request not allowed');
+        }
+        if (!$this->isFeatureEnabled()) {
+            return $this->output->set_status_header(404)->set_output('The feature not enabled');
+        }
+        $call = $this->input->get('callback');
+        $callArray = array_filter(explode('_', $call));
+        $inopaq = (count($callArray) == 3 && $callArray['0'] == 'dj' && $callArray['1'] == 'md' && is_numeric($callArray['2']));
+        $cachedDisco = $this->j_ncache->getFullDisco();
+        if (empty($cachedDisco)) {
+            $tmpProviders = new models\Providers;
+            /**
+             * @var $providersForWayf models\Provider[]
+             */
+            $providersForWayf = $tmpProviders->getAllIdPsForWayf();
+            if (empty($providersForWayf)) {
+                return $this->output->set_status_header(404)->set_output('no result');
+            }
+            $output = array();
+            $icounter = 0;
+            foreach ($providersForWayf as $ents) {
+                    $output[$icounter] = $this->providerToDisco($ents, 'idp');
+                    $icounter++;
+            }
+            $jsonoutput = json_encode($output);
+            $this->j_ncache->saveFullDisco($jsonoutput);
+            if ( $inopaq) {
+                $data['result'] = $call . '(' . $jsonoutput . ')';
+            } else {
+                $data['result'] = $jsonoutput;
+            }
+        } else {
+            if ($inopaq) {
+                $data['result'] = $call . '(' . $cachedDisco . ')';
+            } else {
+                $data['result'] = $cachedDisco;
+            }
+        }
+        $this->load->view('disco_view', $data);
+
+
+    }
+
     /**
      * @param $entityId
      * @param null $filename
      * @return CI_Output
      */
-    public function circle($entityId, $filename = NULL)
+    public function circle($entityId, $filename = null)
     {
 
         if ($filename !== 'metadata.json') {
