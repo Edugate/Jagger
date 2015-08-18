@@ -1,9 +1,6 @@
 <?php
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  * @property Curl $curl;
@@ -18,69 +15,62 @@ class Ajax extends MY_Controller
         $this->load->library(array('form_validation', 'j_auth', 'curl'));
     }
 
+    /**
+     * @return bool
+     */
     public function consentCookies()
     {
         if ($this->input->is_ajax_request()) {
-            $lc = array(
+            $cookieVal = array(
                 'name' => 'cookieAccept',
                 'value' => 'accepted',
                 'secure' => TRUE,
                 'expire' => '2600000',
             );
-            $this->input->set_cookie($lc);
+            $this->input->set_cookie($cookieVal);
             return true;
         }
+        return false;
 
     }
 
     public function getproviders()
     {
-        if (!$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'denied';
-            return;
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+        if (!($this->input->is_ajax_request() && $this->j_auth->logged_in())) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
+        $tmpProviders = new models\Providers();
 
-        $p = new models\Providers();
-        $providers = $p->getLocalIdsEntities();
+        $providers = $tmpProviders->getLocalIdsEntities();
         $result = array();
         foreach ($providers as $k) {
             $result[] = array('key' => $k['id'], 'value' => $k['entityid'], 'label' => $k['name']);
         }
-        $this->output->set_content_type('application/json')->set_output(json_encode($result));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
 
     public function checklogourl()
     {
         if (!($this->input->is_ajax_request())) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $result = array();
         $this->form_validation->set_rules('logourl', 'URL Logo', 'trim|required|min_length[5]|max_length[500]|no_white_spaces|valid_url_ssl');
         $isvalid = $this->form_validation->run();
-        $v_errors = validation_errors('<span>', '</span>');
+        $vErrors = validation_errors('<span>', '</span>');
         if (!$isvalid) {
-            $result['error'] = $v_errors;
+            $result['error'] = $vErrors;
             return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
         $logourl = trim($this->input->post('logourl'));
         $configlogossl = $this->config->item('addlogocheckssl');
-        if (isset($configlogossl) && $configlogossl === FALSE) {
-            $sslvalidate = FALSE;
+        $sslvalidate = true;
+        $sslvalidatehost = 2;
+        if ($configlogossl === false) {
+            $sslvalidate = false;
             $sslvalidatehost = 0;
-        } else {
-            $sslvalidate = TRUE;
-            $sslvalidatehost = 2;
         }
 
         $image = $this->curl->simple_get('' . $logourl . '', array(), array(
@@ -98,7 +88,7 @@ class Ajax extends MY_Controller
             $result['error'] = $this->curl->error_string;
             return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
-        $img_mimes = array(
+        $imgMimes = array(
             'image/jpeg',
             'image/pjpeg',
             'image/png',
@@ -107,19 +97,19 @@ class Ajax extends MY_Controller
         );
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->buffer($image);
-        if (!in_array($mimeType, $img_mimes)) {
+        if (!in_array($mimeType, $imgMimes)) {
             $result['error'] = 'Incorrect mime type ' . $mimeType;
             return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
         if (!function_exists('getimagesizefromstring')) {
             $uri = 'data://application/octet-stream;base64,' . base64_encode($image);
-            $image_details = getimagesize($uri);
+            $imageDetails = getimagesize($uri);
         } else {
-            $image_details = getimagesizefromstring($image);
+            $imageDetails = getimagesizefromstring($image);
         }
         $result['data'] = array(
-            'width' => $image_details[0],
-            'height' => $image_details[1],
+            'width' => $imageDetails[0],
+            'height' => $imageDetails[1],
             'mime' => $mimeType,
             'url' => $logourl,
         );
@@ -129,31 +119,25 @@ class Ajax extends MY_Controller
     public function getfeds()
     {
         if (!$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $p = new models\Federations();
-        $feds = $p->getAllIdNames();
+        $tmpFeds = new models\Federations();
+        $feds = $tmpFeds->getAllIdNames();
         $this->output->set_content_type('application/json')->set_output(json_encode($feds));
 
     }
 
-    public function changelanguage($language = null)
+    public function changelanguage($languageIn = null)
     {
-        if ($language === null || !$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+        if ($languageIn === null || !$this->input->is_ajax_request()) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
-        $language = substr($language, 0, 7);
+        $language = substr($languageIn, 0, 7);
 
         $langs = MY_Controller::guiLangs();
 
@@ -171,27 +155,31 @@ class Ajax extends MY_Controller
             'secure' => TRUE
         );
         $this->input->set_cookie($lang_cookie);
+        return $this->output->set_status_header(200)->set_output('OK');
     }
 
     public function fedcat($id = null)
     {
         if (!$this->input->is_ajax_request()) {
-            show_error('invalid method', 403);
-        }
-        if (!empty($id) && !is_numeric($id)) {
-            show_error('not found', 404);
+            return $this->output->set_status_header(403)->set_output('Invalid method');
+
         }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
-            show_error('permission denied', 403);
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
+
+        if ($id !== null && !ctype_digit($id)) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+
         /**
          * @var $fedcat models\FederationCategory
          */
-        if (!empty($id)) {
+        if ($id !== null) {
             $fedcat = $this->em->getRepository("models\FederationCategory")->findOneBy(array('id' => $id));
-            if (empty($fedcat)) {
-                show_error('Federation category not found', 404);
+            if ($fedcat === null) {
+                return $this->output->set_status_header(404)->set_output('Federation category not found');
             }
             $federations = $fedcat->getFederations();
         } else {
@@ -219,7 +207,7 @@ class Ajax extends MY_Controller
             }
             $members = ' <a href="' . base_url() . 'federations/manage/showmembers/' . $v->getId() . '" class="fmembers" id="' . $v->getId() . '">' . $imgtoggle . '</a>';
             $result[] = array(
-                'name' => anchor(base_url() . "federations/manage/show/" . base64url_encode($v->getName()), $v->getName()),
+                'name' => anchor(base_url('federations/manage/show/' . base64url_encode($v->getName() . '')), $v->getName()),
                 'urn' => $v->getUrn(),
                 'desc' => $v->getDescription(),
                 'members' => $members,
@@ -232,19 +220,15 @@ class Ajax extends MY_Controller
     public function showhelpstatus($n = null)
     {
         if (!$this->input->is_ajax_request()) {
-            show_error('denied', 403);
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        if (empty($n)) {
-            set_status_header(403);
-            echo 'empty param';
-            return;
+        if ($n === null) {
+            return $this->output->set_status_header(403)->set_output('Empty param');
         }
 
         $char = substr($n, 0, 1);
         if (!($char === 'y' || $char === 'n')) {
-            set_status_header(403);
-            echo 'incorrect param';
-            return;
+            return $this->output->set_status_header(403)->set_output('Incorrect param');
         }
         $loggedin = $this->j_auth->logged_in();
         if ($loggedin) {
@@ -253,11 +237,11 @@ class Ajax extends MY_Controller
             if ($char === 'y') {
                 $u->setShowHelp(true);
                 $this->session->set_userdata('showhelp', TRUE);
-                echo "set showhelp to true";
+                echo 'set showhelp to true';
             } else {
                 $u->setShowHelp(false);
                 $this->session->set_userdata('showhelp', FALSE);
-                echo "set showhelp to false";
+                echo 'set showhelp to false';
             }
             $this->em->persist($u);
             try {
@@ -268,24 +252,18 @@ class Ajax extends MY_Controller
                 echo 'problem with saving in db';
                 return;
             }
-            return "OK";
+            return 'OK';
         }
-        set_status_header(403);
-        echo "permission denied";
-        return;
+        return $this->output->set_status_header(403)->set_output('Access Denied');
     }
 
-    public function bookmarkentity($id = null, $action = null)
+    public function bookmarkentity($entID = null, $action = null)
     {
-        if (!$this->input->is_ajax_request() || empty($action) || empty($id) || !ctype_digit($id)) {
-            set_status_header(401);
-            echo 'denied';
-            return;
+        if ( $action === null || !ctype_digit($entID) || !$this->input->is_ajax_request() ) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         if (!$this->j_auth->logged_in()) {
-            set_status_header(401);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(401)->set_output('Access Denied');
         }
         $myLang = MY_Controller::getLang();
         $username = $this->j_auth->current_user();
@@ -293,27 +271,21 @@ class Ajax extends MY_Controller
          * @var $u models\User
          */
         $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
-        if (empty($u)) {
+        if ($u === null) {
             log_message('error', __METHOD__ . ' username:' . $username . ' loggedin but user not found in db');
-            set_status_header(401);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         if (strcmp($action, 'add') !== 0 && strcmp($action, 'del') !== 0) {
-            set_status_header(401);
-            echo 'unknown action';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied - unknown action');
 
         }
         if (strcmp($action, 'add') == 0) {
             /**
              * @var $ent models\Provider
              */
-            $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
-            if (empty($ent)) {
-                set_status_header(404);
-                echo 'provider not found';
-                return;
+            $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $entID));
+            if ($ent === null) {
+                return $this->output->set_status_header(404)->set_output('Provider not found');
             }
             $u->addEntityToBookmark($ent->getId(), $ent->getNameToWebInLang($myLang, $ent->getType()), $ent->getType(), $ent->getEntityId());
             $this->em->persist($u);
@@ -321,68 +293,59 @@ class Ajax extends MY_Controller
             $this->session->set_userdata(array('board' => $userprefs['board']));
         }
         if (strcmp($action, 'del') == 0) {
-            $u->delEntityFromBookmark($id);
+            $u->delEntityFromBookmark($entID);
             $this->em->persist($u);
             $userprefs = $u->getUserpref();
             $this->session->set_userdata(array('board' => $userprefs['board']));
         }
         try {
             $this->em->flush();
-            echo 'ok';
+            return $this->output->set_status_header(200)->set_output('ok');
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' : ' . $e);
-            set_status_header(500);
-            echo 'Database error occurred';
+            return $this->output->set_status_header(500)->set_output('Database Error');
         }
 
     }
 
-    public function bookfed($id = null, $action = null)
+    public function bookfed($entID = null, $action = null)
     {
-        if (!$this->input->is_ajax_request() || empty($action) || empty($id) || !ctype_digit($id) || !$this->j_auth->logged_in()) {
-            set_status_header(401);
-            echo 'denied';
-            return;
+        if ( $action === null || !ctype_digit($entID) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $username = $this->j_auth->current_user();
         /**
-         * @var $u models\User
+         * @var $user models\User
          */
         try {
-            $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
+            $user = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
         } catch (Exception $e) {
-            set_status_header(500);
             log_message('error', __METHOD__ . ' ' . $e);
-            echo 'Internal server error';
-            return;
+            return $this->output->set_status_header(500)->set_output('Internal server error');
         }
-        if (empty($u)) {
+        if ($user === null) {
             log_message('error', __METHOD__ . ' username:' . $username . ' loggedin but user not found in db');
-            set_status_header(401);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         if (strcmp($action, 'add') == 0) {
             /**
              * @var $fed models\Federation
              */
-            $fed = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $id));
-            if (empty($fed)) {
-                set_status_header(404);
-                echo 'federation not found';
-                return;
+            $fed = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $entID));
+            if ($fed === null) {
+                return $this->output->set_status_header(404)->set_output('Federation not found');
             }
-            $u->addFedToBookmark($fed->getId(), $fed->getName(), base64url_encode($fed->getName()));
-            $this->em->persist($u);
-            $userprefs = $u->getUserpref();
+            $user->addFedToBookmark($fed->getId(), $fed->getName(), base64url_encode($fed->getName()));
+            $this->em->persist($user);
+            $userprefs = $user->getUserpref();
             $this->session->set_userdata(array('board' => $userprefs['board']));
             $this->em->flush();
             echo 'ok';
 
         } elseif (strcmp($action, 'del') == 0) {
-            $u->delFedFromBookmark($id);
-            $this->em->persist($u);
-            $userprefs = $u->getUserpref();
+            $user->delFedFromBookmark($entID);
+            $this->em->persist($user);
+            $userprefs = $user->getUserpref();
             $this->session->set_userdata(array('board' => $userprefs['board']));
             $this->em->flush();
             echo 'ok';

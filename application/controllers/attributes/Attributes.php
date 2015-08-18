@@ -62,7 +62,6 @@ class Attributes extends MY_Controller {
         if (!$isAdmin)
         {
             show_error('Access Denied', 401);
-            return;
         }
 
         $this->load->helper('form');
