@@ -36,7 +36,7 @@ class Metadata2array
     protected $em;
     protected $doc, $xpath;
 
-    function __construct()
+    public function __construct()
     {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
@@ -55,7 +55,7 @@ class Metadata2array
         }
     }
 
-    function rootConvert($xml, $full = false)
+    public function rootConvert($xml, $full = false)
     {
         if (!$xml instanceOf \DOMDocument) {
             $this->doc = new \DOMDocument();
@@ -106,11 +106,11 @@ class Metadata2array
         return $this->metaArray;
     }
 
-    function entitiesConvert(\DOMElement $doc, $full = false)
+    public function entitiesConvert(\DOMElement $doc, $full = false)
     {
-        if ($doc->nodeName === "md:EntityDescriptor" || $doc->nodeName === "EntityDescriptor") {
+        if ($doc->localName === 'EntityDescriptor') {
             $this->entityConvert($doc, $full);
-        } elseif ($doc->nodeName === "EntitiesDescriptor" || $doc->nodeName === "md:EntitiesDescriptor") {
+        } elseif ($doc->localName === 'EntitiesDescriptor') {
             $lxpath = new \DomXPath($this->doc);
             foreach ($lxpath->query('namespace::*', $doc) as $pnode) {
                 $prefix = $pnode->prefix;
@@ -198,7 +198,7 @@ class Metadata2array
             } elseif ($gnode->nodeName === 'Extensions' || $gnode->nodeName === 'md:Extensions') {
                 if ($gnode->hasChildNodes()) {
                     foreach ($gnode->childNodes as $enode) {
-                        if ($enode->nodeName == 'mdrpi:RegistrationInfo' && $enode->hasAttributes()) {
+                        if ($enode->nodeName === 'mdrpi:RegistrationInfo' && $enode->hasAttributes()) {
                             $entity['registrar'] = $enode->getAttribute('registrationAuthority');
                             $entity['regdate'] = $enode->getAttribute('registrationInstant');
                             if ($enode->hasChildNodes()) {
@@ -296,7 +296,7 @@ class Metadata2array
                 $result['nameid'][] = trim($child->nodeValue);
             } elseif ($child->nodeName === 'AttributeService' || $child->nodeName === 'md:AttributeService') {
                 $result['attributeservice'][] = array('binding' => $child->getAttribute('Binding'), 'location' => $child->getAttribute('Location'));
-            } elseif ($child->nodeName === "KeyDescriptor" || $child->nodeName === "md:KeyDescriptor") {
+            } elseif ($child->nodeName === 'KeyDescriptor' || $child->nodeName === 'md:KeyDescriptor') {
                 $result['certificate'][] = $this->keyDescriptorConvert($child);
             }
         }
@@ -329,7 +329,7 @@ class Metadata2array
                     'order' => $child->getAttribute('index'),
                     'isdefault' => $child->getAttribute('isDefault')
                 );
-            } elseif ($child->nodeName == "KeyDescriptor" || $child->nodeName == "md:KeyDescriptor") {
+            } elseif ($child->nodeName === 'KeyDescriptor' || $child->nodeName === 'md:KeyDescriptor') {
                 $result['certificate'][] = $this->keyDescriptorConvert($child);
             }
         }
@@ -339,7 +339,7 @@ class Metadata2array
     private function spSSODescriptorConvert(\DOMElement $node)
     {
         $profilesTmp = $node->getAttribute('protocolSupportEnumeration');
-        $profiles = explode(" ", $profilesTmp);
+        $profiles = explode(' ', $profilesTmp);
         $result = array(
             'protocols' => $profiles,
             'servicelocations' => array('assertionconsumerservice' => array(), 'singlelogout' => array()),
@@ -356,23 +356,31 @@ class Metadata2array
         foreach ($node->childNodes as $child) {
             if ($child->nodeName === 'md:Extensions' || $child->nodeName === 'Extensions') {
                 $result['extensions'] = $this->extensionsToArray($child);
-            } elseif ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat') {
+                continue;
+            }
+            if ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat') {
                 $result['nameid'][] = trim($child->nodeValue);
-            } elseif ($child->nodeName === 'md:AssertionConsumerService' || $child->nodeName === 'AssertionConsumerService') {
+                continue;
+            }
+            if ($child->nodeName === 'md:AssertionConsumerService' || $child->nodeName === 'AssertionConsumerService') {
                 $result['servicelocations']['assertionconsumerservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location'),
                     'order' => $child->getAttribute('index'),
                     'isdefault' => $child->getAttribute('isDefault')
                 );
-            } elseif ($child->nodeName === 'md:ArtifactResolutionService' || $child->nodeName === 'ArtifactResolutionService') {
+                continue;
+            }
+            if ($child->nodeName === 'md:ArtifactResolutionService' || $child->nodeName === 'ArtifactResolutionService') {
                 $result['servicelocations']['artifactresolutionservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location'),
                     'order' => $child->getAttribute('index'),
                     'isdefault' => $child->getAttribute('isDefault')
                 );
-            } elseif ($child->nodeName === 'md:SingleLogoutService' || $child->nodeName === 'SingleLogoutService') {
+                continue;
+            }
+            if ($child->nodeName === 'md:SingleLogoutService' || $child->nodeName === 'SingleLogoutService') {
                 $bindProto = trim($child->getAttribute('Binding'));
                 if(!in_array($bindProto,$bindProts['singlelogout'])) {
                     $result['servicelocations']['singlelogout'][] = array(
@@ -381,12 +389,16 @@ class Metadata2array
                     );
                     $bindProts['singlelogout'][]=$bindProto;
                 }
-            } elseif ($child->nodeName === 'md:ManageNameIDService' || $child->nodeName === 'ManageNameIDService') {
+                continue;
+            }
+            if ($child->nodeName === 'md:ManageNameIDService' || $child->nodeName === 'ManageNameIDService') {
                 $result['servicelocations']['managenameidservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
-            } elseif ($child->nodeName === 'KeyDescriptor' || $child->nodeName === 'md:KeyDescriptor') {
+                continue;
+            }
+            if ($child->nodeName === 'KeyDescriptor' || $child->nodeName === 'md:KeyDescriptor') {
                 $result['certificate'][] = $this->keyDescriptorConvert($child);
             }
         }
@@ -400,13 +412,13 @@ class Metadata2array
         $usecase = $node->getAttribute('use');
         $cert['use'] = $usecase;
         foreach ($node->childNodes as $child) {
-            if ($child->nodeName === "ds:KeyInfo") {
+            if ($child->nodeName === 'ds:KeyInfo') {
                 foreach ($child->childNodes as $gchild) {
-                    if ($gchild->nodeName == "ds:KeyName") {
+                    if ($gchild->nodeName === 'ds:KeyName') {
                         $cert['keyname'][] = $gchild->nodeValue;
-                    } elseif ($gchild->nodeName == "ds:X509Data") {
+                    } elseif ($gchild->nodeName === 'ds:X509Data') {
                         foreach ($gchild->childNodes as $enode) {
-                            if ($enode->nodeName == "ds:X509Certificate") {
+                            if ($enode->nodeName === 'ds:X509Certificate') {
                                 if (!empty($enode->nodeValue)) {
                                     $cert['x509data']['x509certificate'] = reformatPEM($enode->nodeValue);
                                 } else {
@@ -440,33 +452,45 @@ class Metadata2array
         foreach ($node->childNodes as $enode) {
             if ($enode->nodeName === 'shibmd:Scope' ||  $enode->nodeName === 'saml1md:Scope') {
                 $ext['scope'][] = trim($enode->nodeValue);
-            } elseif ($enode->nodeName === 'idpdisc:DiscoveryResponse') {
+                continue;
+            }
+            if ($enode->nodeName === 'idpdisc:DiscoveryResponse') {
                 $ext['idpdisc'][] = array('binding' => $enode->getAttribute('Binding'), 'url' => $enode->getAttribute('Location'), 'order' => $enode->getAttribute('index'));
-            } elseif ($enode->nodeName === 'init:RequestInitiator') {
+                continue;
+            }
+            if ($enode->nodeName === 'init:RequestInitiator') {
                 $ext['init'][] = array('binding' => $enode->getAttribute('Binding'), 'url' => $enode->getAttribute('Location'));
-            } elseif ($enode->nodeName === 'mdui:UIInfo' && $enode->hasChildNodes()) {
+                continue;
+            }
+            if ($enode->nodeName === 'mdui:UIInfo' && $enode->hasChildNodes()) {
                 foreach ($enode->childNodes as $gnode) {
-                    /**
-                     * @todo finish
-                     */
                     if ($gnode->nodeName === 'mdui:Description') {
                         $ext['desc'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
-                    } elseif ($gnode->nodeName === 'mdui:DisplayName') {
+                        continue;
+                    }
+                    if ($gnode->nodeName === 'mdui:DisplayName') {
                         $ext['displayname'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
-                    } elseif ($gnode->nodeName === 'mdui:PrivacyStatementURL') {
+                        continue;
+                    }
+                    if ($gnode->nodeName === 'mdui:PrivacyStatementURL') {
                         $ext['privacyurl'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
-                    } elseif ($gnode->nodeName === 'mdui:InformationURL') {
+                        continue;
+                    }
+                    if ($gnode->nodeName === 'mdui:InformationURL') {
                         $ext['informationurl'][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
-                    } elseif ($gnode->nodeName === 'mdui:Logo') {
+                        continue;
+                    }
+                    if ($gnode->nodeName === 'mdui:Logo') {
                         $logoval = trim($gnode->nodeValue);
-                        if (substr($logoval, 0, 4) === "http") {
+                        if (substr($logoval, 0, 4) === 'http') {
                             $ext['logo'][] = array('height' => $gnode->getAttribute('height'), 'width' => $gnode->getAttribute('width'), 'xml:lang' => $gnode->getAttribute('xml:lang'), 'val' => $logoval);
                         }
                     }
                 }
-            } elseif ($enode->nodeName === 'mdui:DiscoHints' && $enode->hasChildNodes()) {
+                continue;
+            }
+            if ($enode->nodeName === 'mdui:DiscoHints' && $enode->hasChildNodes()) {
                 foreach ($enode->childNodes as $agnode) {
-                    $geovalue = array();
                     if ($agnode->nodeName === 'mdui:GeolocationHint') {
                         $geovalue = explode(',', str_ireplace('geo:', '', $agnode->nodeValue));
                         if (count($geovalue) == 2) {
@@ -506,20 +530,24 @@ class Metadata2array
 
     private function contactPersonConvert(\DOMElement $node)
     {
-        $cnt = array();
-        $cnt['type'] = $node->getAttribute('contactType');
-        $cnt['surname'] = null;
-        $cnt['givenname'] = null;
-        $cnt['email'] = null;
+        $cnt = array(
+            'type' => $node->getAttribute('contactType'),
+            'surname'=> null,
+            'givenname' => null,
+            'email' => null
+        );
         foreach ($node->childNodes as $cnode) {
-            if ($cnode->nodeName == "SurName" || $cnode->nodeName == "md:SurName") {
+            if ($cnode->localName === 'SurName') {
                 $cnt['surname'] = trim($cnode->nodeValue);
+                continue;
             }
-            if ($cnode->nodeName == "GivenName" || $cnode->nodeName == "md:GivenName") {
+            if ($cnode->localName === 'GivenName') {
                 $cnt['givenname'] = trim($cnode->nodeValue);
+                continue;
             }
-            if ($cnode->nodeName == "EmailAddress" || $cnode->nodeName == "md:EmailAddress") {
+            if ($cnode->localName === 'EmailAddress') {
                 $cnt['email'] = trim($cnode->nodeValue);
+                continue;
             }
         }
         return $cnt;
