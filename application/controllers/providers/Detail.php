@@ -130,7 +130,7 @@ class Detail extends MY_Controller
          * @var $ent models\Provider
          */
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerID));
-        if (empty($ent)) {
+        if ($ent === null) {
             return $this->load->view('providers/showlogs_view', array('d' => array()));
         }
 
@@ -140,7 +140,7 @@ class Detail extends MY_Controller
         }
 
         $isstats = $this->config->item('statistics');
-        if ($this->isGearman && !empty($isstats)) {
+        if ($this->isGearman && $isstats === true) {
             $rows[] = array('name' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')) . '',
                 'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>') . '');
         }
@@ -175,7 +175,7 @@ class Detail extends MY_Controller
 
     public function show($providerID)
     {
-        if (empty($providerID) || !ctype_digit($providerID)) {
+        if (!ctype_digit($providerID)) {
             show_error(lang('error404'), 404);
         }
         if (!$this->j_auth->logged_in()) {
