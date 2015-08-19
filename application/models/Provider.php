@@ -2,7 +2,6 @@
 
 namespace models;
 
-use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ResourceRegistry3
@@ -262,7 +261,7 @@ class Provider
      */
     protected $notifications;
 
-      /**
+    /**
      * @OneToMany(targetEntity="MetadataRevision", mappedBy="provider", cascade={"persist", "remove"})
      */
     protected $metadatadumps;
@@ -332,7 +331,7 @@ class Provider
         $this->extend = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->coc = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->updatedAt = new \DateTime("now", new \DateTimeZone('UTC'));
+        $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
         $this->is_approved = TRUE;
         $this->hidepublic = FALSE;
         $this->is_locked = FALSE;
@@ -350,7 +349,7 @@ class Provider
      */
     public function created()
     {
-        $this->createdAt = new \DateTime("now", new \DateTimeZone('UTC'));
+        $this->createdAt = new \DateTime('now', new \DateTimeZone('UTC'));
         if (!isset($this->hidepublic)) {
             $this->hidepublic = false;
         }
@@ -427,7 +426,7 @@ class Provider
     public function updated()
     {
         \log_message('debug', 'GG update providers updated time for:' . $this->entityid);
-        $this->updatedAt = new \DateTime("now", new \DateTimeZone('UTC'));
+        $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
     }
 
     /**
@@ -601,7 +600,7 @@ class Provider
     public function setNameId($nameid = NULL)
     {
         if (empty($nameid)) {
-            $nameid = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient";
+            $nameid = 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient';
         }
         if (empty($this->nameidformat)) {
             $this->nameidformat = new \Doctrine\Common\Collections\ArrayCollection();
@@ -657,7 +656,7 @@ class Provider
     public function setProtocol($protocol = NULL)
     {
         if (empty($protocol)) {
-            $protocol = "urn:oasis:names:tc:SAML:2.0:protocol";
+            $protocol = 'urn:oasis:names:tc:SAML:2.0:protocol';
         }
         if (empty($this->protocol)) {
             $this->protocol = new \Doctrine\Common\Collections\ArrayCollection();
@@ -669,7 +668,7 @@ class Provider
     public function setProtocolSupport($n, $data)
     {
         $allowed = array('aa', 'idpsso', 'spsso');
-        if (in_array($n, $allowed) && is_array($data)) {
+        if ( is_array($data) && in_array($n, $allowed)) {
             foreach ($data as $k => $v) {
                 $i = trim($v);
                 if (empty($i)) {
@@ -743,11 +742,13 @@ class Provider
         } else {
             $this->lhelpdeskurl = NULL;
         }
+        return $this;
     }
 
     public function setPrivacyUrl($url = null)
     {
         $this->privacyurl = $url;
+        return $this;
     }
 
     public function setLocalPrivacyUrl(array $url = null)
@@ -757,6 +758,7 @@ class Provider
         } else {
             $this->lprivacyurl = NULL;
         }
+        return $this;
     }
 
     public function setRegistrationAuthority($reg = null)
@@ -877,6 +879,7 @@ class Provider
         } else {
             $this->excarps = null;
         }
+        return $this;
     }
 
     public function setDefaultState()
@@ -909,6 +912,7 @@ class Provider
     public function setAsExternal()
     {
         $this->is_local = 0;
+        return $this;
     }
 
     public function setActive($val = NULL)
@@ -1165,7 +1169,7 @@ class Provider
             $this->setContact($cn2);
         }
         foreach ($this->getExtendMetadata() as $f) {
-                $this->removeExtendWithChildren($f);
+            $this->removeExtendWithChildren($f);
         }
         foreach ($provider->getExtendMetadata() as $gg) {
             $this->setExtendMetadata($gg);
@@ -1214,12 +1218,12 @@ class Provider
      */
     public function getRegistrationDateInFormat($format, $offset = 0)
     {
-        if(!empty($this->registerdate))
-        {
+        if (!empty($this->registerdate)) {
             return \date($format, $this->registerdate->format('U') + $offset);
         }
         return null;
     }
+
     /**
      * get collection of contacts which are used in metada
      */
@@ -1535,7 +1539,7 @@ class Provider
         if (empty($length) || !is_integer($length) || strlen($this->displayname) <= $length) {
             return $this->displayname;
         } else {
-            return substr($this->displayname, 0, $length) . "...";
+            return substr($this->displayname, 0, $length) . '...';
         }
     }
 
@@ -1605,21 +1609,16 @@ class Provider
         /**
          * @todo fix broken time for the momemnt reurns true
          */
-        $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
-        $validAfter = TRUE;
-        $validBefore = TRUE;
-        if (!empty($this->validfrom)) {
-
-            if ($currentTime < $this->validfrom) {
-                $validBefore = FALSE;
-            }
+        $currentTime = new \DateTime('now', new \DateTimeZone('UTC'));
+        $validAfter = true;
+        $validBefore = true;
+        if (!empty($this->validfrom) && ($currentTime < $this->validfrom)) {
+            $validBefore = false;
         }
-        if (!empty($this->validto)) {
-            if ($currentTime > $this->validto) {
-                $validAfter = FALSE;
-            }
-        }
+        if (!empty($this->validto) && ($currentTime > $this->validto)) {
+            $validAfter = false;
 
+        }
         return ($validAfter && $validBefore);
     }
 
@@ -1638,18 +1637,13 @@ class Provider
      */
     public function getTypesToArray()
     {
-        $result = array('idp'=>false,'sp'=>false);
-        if(strcasecmp($this->type,'BOTH')==0)
-        {
-            $result = array('idp'=>true,'sp'=>true);
-        }
-        elseif(strcasecmp($this->type,'IDP')==0)
-        {
+        $result = array('idp' => false, 'sp' => false);
+        if (strcasecmp($this->type, 'BOTH') == 0) {
+            $result = array('idp' => true, 'sp' => true);
+        } elseif (strcasecmp($this->type, 'IDP') == 0) {
             $result['idp'] = true;
-        }
-        else
-        {
-            $result['sp']= true;
+        } else {
+            $result['sp'] = true;
         }
         return $result;
     }
@@ -1922,7 +1916,7 @@ class Provider
             $this->setDisplayname($r['name']);
         }
         $this->setEntityid($r['entityid']);
-        if (is_array($r['nameid']) && count($r['nameid'] > 0)) {
+        if (is_array($r['nameid']) && count($r['nameid']) > 0) {
             foreach ($r['nameid'] as $k => $n) {
                 $this->setNameids($k, $n);
             }
@@ -2178,7 +2172,7 @@ class Provider
                         if ($vc === 'IDPArtifactResolutionService') {
                             $order = $s['order'];
                         }
-                        $sso->setInFull($vc,$s['binding'],$s['location'],$order);
+                        $sso->setInFull($vc, $s['binding'], $s['location'], $order);
                         $sso->setProvider($this);
                         $this->setServiceLocation($sso);
                     }
@@ -2345,18 +2339,16 @@ class Provider
              */
         }
         if (!empty($a['validuntil'])) {
-            $p = explode("T", $a['validuntil']);
+            $p = explode('T', $a['validuntil']);
             $this->setValidTo(\DateTime::createFromFormat('Y-m-d', $p[0]));
         }
         if (!empty($a['registrar'])) {
             $this->setRegistrationAuthority($a['registrar']);
             if (!empty($a['regdate'])) {
-                $p = explode("T", $a['regdate']);
-                if(array_key_exists('1',$p)) {
+                $p = explode('T', $a['regdate']);
+                if (array_key_exists('1', $p)) {
                     $ptime = str_replace('Z', '', $p['1']);
-                }
-                else
-                {
+                } else {
                     $ptime = '00:00:00';
                 }
                 $pdate = \DateTime::createFromFormat('Y-m-d H:i:s', $p[0] . ' ' . substr($ptime, 0, 8));
@@ -2456,10 +2448,8 @@ class Provider
                     $this->aaDescriptorFromArray($a['details']['aadescriptor']);
                 }
             }
-            if ($a['type'] !== 'IDP') {
-                if (array_key_exists('spssodescriptor', $a['details'])) {
-                    $this->spSSODescriptorFromArray($a['details']['spssodescriptor']);
-                }
+            if ($a['type'] !== 'IDP' && array_key_exists('spssodescriptor', $a['details'])) {
+                $this->spSSODescriptorFromArray($a['details']['spssodescriptor']);
             }
         }
         return $this;
