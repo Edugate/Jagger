@@ -1,5 +1,7 @@
 <?php
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 
 /**
@@ -97,7 +99,7 @@ class Ajax extends MY_Controller
         );
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->buffer($image);
-        if (!in_array($mimeType, $imgMimes)) {
+        if (!in_array($mimeType, $imgMimes, true)) {
             $result['error'] = 'Incorrect mime type ' . $mimeType;
             return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
@@ -118,16 +120,12 @@ class Ajax extends MY_Controller
 
     public function getfeds()
     {
-        if (!$this->input->is_ajax_request()) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
+        if (!$this->j_auth->loggedInAndAjax()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $tmpFeds = new models\Federations();
         $feds = $tmpFeds->getAllIdNames();
-        $this->output->set_content_type('application/json')->set_output(json_encode($feds));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($feds));
 
     }
 
@@ -143,41 +141,38 @@ class Ajax extends MY_Controller
 
         if (array_key_exists($language, $langs)) {
             log_message('info', __METHOD__ . 'changed gui lang to:' . $language);
-            $cookie_value = $language;
+            $cookieValue = $language;
         } else {
             log_message('warning', __METHOD__ . ' ' . $language . ' not found in allowed langs, setting english');
-            $cookie_value = 'english';
+            $cookieValue = 'english';
         }
-        $lang_cookie = array(
+        $langCookie = array(
             'name' => 'rrlang',
-            'value' => $cookie_value,
+            'value' => $cookieValue,
             'expire' => '2600000',
             'secure' => TRUE
         );
-        $this->input->set_cookie($lang_cookie);
+        $this->input->set_cookie($langCookie);
         return $this->output->set_status_header(200)->set_output('OK');
     }
 
-    public function fedcat($id = null)
+    public function fedcat($fedcatId = null)
     {
-        if (!$this->input->is_ajax_request()) {
+        if (!$this->j_auth->loggedInAndAjax()) {
             return $this->output->set_status_header(403)->set_output('Invalid method');
 
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            return $this->output->set_status_header(403)->set_output('Access denied');
-        }
 
-        if ($id !== null && !ctype_digit($id)) {
+        if ($fedcatId !== null && !ctype_digit($fedcatId)) {
             return $this->output->set_status_header(404)->set_output('Not found');
         }
 
         /**
          * @var $fedcat models\FederationCategory
+         * @var $federations models\Federation[]
          */
-        if ($id !== null) {
-            $fedcat = $this->em->getRepository("models\FederationCategory")->findOneBy(array('id' => $id));
+        if ($fedcatId !== null) {
+            $fedcat = $this->em->getRepository("models\FederationCategory")->findOneBy(array('id' => $fedcatId));
             if ($fedcat === null) {
                 return $this->output->set_status_header(404)->set_output('Federation category not found');
             }
@@ -189,21 +184,19 @@ class Ajax extends MY_Controller
         $result = array();
         $imgtoggle = '<img class="toggle" src="' . base_url() . 'images/icons/control-270.png" />';
         foreach ($federations as $v) {
-            $lbs = '';
+            $lbs = array(
+                'pub' => makeLabel('notpublic', '', lang('rr_fed_notpublic')),
+                'act' => makeLabel('disabled', '', lang('rr_fed_inactive')),
+                'loc' => makeLabel('external', '', lang('rr_fed_external'))
+            );
             if ($v->getPublic()) {
-                $lbs .= makeLabel('public', '', lang('rr_fed_public')) . ' ';
-            } else {
-                $lbs .= makeLabel('notpublic', '', lang('rr_fed_notpublic')) . ' ';
+                $lbs['pub'] = makeLabel('public', '', lang('rr_fed_public')) . ' ';
             }
             if ($v->getActive()) {
-                $lbs .= makeLabel('active', '', lang('rr_fed_active')) . ' ';
-            } else {
-                $lbs .= makeLabel('disabled', '', lang('rr_fed_inactive')) . ' ';
+                $lbs['act'] = makeLabel('active', '', lang('rr_fed_active')) . ' ';
             }
             if ($v->getLocal()) {
-                $lbs .= makeLabel('local', '', lang('rr_fed_local')) . ' ';
-            } else {
-                $lbs .= makeLabel('external', '', lang('rr_fed_external')) . ' ';
+                $lbs['loc'] = makeLabel('local', '', lang('rr_fed_local')) . ' ';
             }
             $members = ' <a href="' . base_url() . 'federations/manage/showmembers/' . $v->getId() . '" class="fmembers" id="' . $v->getId() . '">' . $imgtoggle . '</a>';
             $result[] = array(
@@ -211,67 +204,63 @@ class Ajax extends MY_Controller
                 'urn' => $v->getUrn(),
                 'desc' => $v->getDescription(),
                 'members' => $members,
-                'labels' => $lbs,
+                'labels' => implode(' ', $lbs),
             );
         }
-        $this->output->set_content_type('application/json')->set_output(json_encode($result));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
-    public function showhelpstatus($n = null)
+    public function showhelpstatus($str = null)
     {
-        if (!$this->input->is_ajax_request()) {
+        if (!$this->j_auth->loggedInAndAjax()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        if ($n === null) {
+        if ($str === null) {
             return $this->output->set_status_header(403)->set_output('Empty param');
         }
 
-        $char = substr($n, 0, 1);
+        $char = substr($str, 0, 1);
         if (!($char === 'y' || $char === 'n')) {
             return $this->output->set_status_header(403)->set_output('Incorrect param');
         }
-        $loggedin = $this->j_auth->logged_in();
-        if ($loggedin) {
-            $username = $this->j_auth->current_user();
-            $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-            if ($char === 'y') {
-                $u->setShowHelp(true);
-                $this->session->set_userdata('showhelp', TRUE);
-                echo 'set showhelp to true';
-            } else {
-                $u->setShowHelp(false);
-                $this->session->set_userdata('showhelp', FALSE);
-                echo 'set showhelp to false';
-            }
-            $this->em->persist($u);
-            try {
-                $this->em->flush();
-            } catch (Exception $e) {
-                log_message('error', __METHOD__ . ' ' . $e);
-                set_status_header(500);
-                echo 'problem with saving in db';
-                return;
-            }
-            return 'OK';
+
+        $username = $this->j_auth->current_user();
+        /**
+         * @var $user models\User
+         */
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        $toShowHelp = false;
+        if ($char === 'y') {
+            $toShowHelp = true;
         }
-        return $this->output->set_status_header(403)->set_output('Access Denied');
+        $user->setShowHelp($toShowHelp);
+        $this->session->set_userdata('showhelp', $toShowHelp);
+        $this->em->persist($user);
+        try {
+            $this->em->flush();
+            return $this->output->set_status_header(200)->set_output('OK');
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+            return $this->output->set_status_header(500)->set_output('problem with saving in db');
+        }
+
     }
 
     public function bookmarkentity($entID = null, $action = null)
     {
-        if ( $action === null || !ctype_digit($entID) || !$this->input->is_ajax_request() ) {
+        if ($action === null || !ctype_digit($entID)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->j_auth->loggedInAndAjax()) {
             return $this->output->set_status_header(401)->set_output('Access Denied');
         }
         $myLang = MY_Controller::getLang();
         $username = $this->j_auth->current_user();
         /**
-         * @var $u models\User
+         * @var $user models\User
          */
-        $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
-        if ($u === null) {
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
+        if ($user === null) {
             log_message('error', __METHOD__ . ' username:' . $username . ' loggedin but user not found in db');
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
@@ -279,7 +268,7 @@ class Ajax extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Access Denied - unknown action');
 
         }
-        if (strcmp($action, 'add') == 0) {
+        if ($action === 'add') {
             /**
              * @var $ent models\Provider
              */
@@ -287,15 +276,15 @@ class Ajax extends MY_Controller
             if ($ent === null) {
                 return $this->output->set_status_header(404)->set_output('Provider not found');
             }
-            $u->addEntityToBookmark($ent->getId(), $ent->getNameToWebInLang($myLang, $ent->getType()), $ent->getType(), $ent->getEntityId());
-            $this->em->persist($u);
-            $userprefs = $u->getUserpref();
+            $user->addEntityToBookmark($ent->getId(), $ent->getNameToWebInLang($myLang, $ent->getType()), $ent->getType(), $ent->getEntityId());
+            $this->em->persist($user);
+            $userprefs = $user->getUserpref();
             $this->session->set_userdata(array('board' => $userprefs['board']));
         }
-        if (strcmp($action, 'del') == 0) {
-            $u->delEntityFromBookmark($entID);
-            $this->em->persist($u);
-            $userprefs = $u->getUserpref();
+        if ($action === 'del') {
+            $user->delEntityFromBookmark($entID);
+            $this->em->persist($user);
+            $userprefs = $user->getUserpref();
             $this->session->set_userdata(array('board' => $userprefs['board']));
         }
         try {
@@ -310,7 +299,7 @@ class Ajax extends MY_Controller
 
     public function bookfed($entID = null, $action = null)
     {
-        if ( $action === null || !ctype_digit($entID) || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if ($action === null || !ctype_digit($entID) || !$this->j_auth->loggedInAndAjax()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $username = $this->j_auth->current_user();
@@ -327,7 +316,7 @@ class Ajax extends MY_Controller
             log_message('error', __METHOD__ . ' username:' . $username . ' loggedin but user not found in db');
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        if (strcmp($action, 'add') == 0) {
+        if ($action === 'add') {
             /**
              * @var $fed models\Federation
              */
@@ -340,19 +329,19 @@ class Ajax extends MY_Controller
             $userprefs = $user->getUserpref();
             $this->session->set_userdata(array('board' => $userprefs['board']));
             $this->em->flush();
-            echo 'ok';
+            return $this->output->set_status_header(200)->set_output('ok');
 
-        } elseif (strcmp($action, 'del') == 0) {
+
+        } elseif ($action === 'del') {
             $user->delFedFromBookmark($entID);
             $this->em->persist($user);
             $userprefs = $user->getUserpref();
             $this->session->set_userdata(array('board' => $userprefs['board']));
             $this->em->flush();
-            echo 'ok';
-        } else {
-            set_status_header(401);
-            echo 'unknown action';
+            return $this->output->set_status_header(200)->set_output('ok');
+
         }
+        return $this->output->set_status_header(403)->set_output('unknown action');
 
     }
 

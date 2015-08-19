@@ -155,6 +155,9 @@ class J_auth
         return TRUE;
     }
 
+    /**
+     * @return bool
+     */
     public function logged_in()
     {
         $loggedin = trim($this->ci->session->userdata('logged'));
@@ -163,9 +166,15 @@ class J_auth
             log_message('debug', 'session is active for: ' . $username . '');
             return true;
         }
-
         return false;
+    }
 
+    /**
+     * @return bool
+     */
+    public function loggedInAndAjax()
+    {
+        return ($this->logged_in() && $this->ci->input->is_ajax_request());
     }
 
     /**
