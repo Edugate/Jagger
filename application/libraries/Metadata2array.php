@@ -31,9 +31,13 @@ class Metadata2array
     protected $ci;
     protected $allowedEntcats = array();
     /**
-     * @var $em Doctrine\ORM\EntityManager
+     * @var Doctrine\ORM\EntityManager $em
      */
     protected $em;
+    /**
+     * @var \DOMDocument $doc
+     * @var \DomXPath $xpath
+     */
     protected $doc, $xpath;
 
     public function __construct()
@@ -154,6 +158,7 @@ class Metadata2array
 
     private function entityConvert(\DOMElement $node, $full = false)
     {
+
         $isIdp = false;
         $isSp = false;
         $entity = array(
@@ -169,19 +174,23 @@ class Metadata2array
                 'org' => array('OrganizationName' => array(), 'OrganizationDisplayName' => array(), 'OrganizationURL' => array()),
                 'contacts' => array(),
                 'reqattrs' => array(),
-                'reqattrsinmeta'=>false,
+                'reqattrsinmeta' => false,
             ),
         );
+
         foreach ($node->childNodes as $gnode) {
-            if ($gnode->nodeName === 'md:IDPSSODescriptor' || $gnode->nodeName === 'IDPSSODescriptor') {
+
+            if ($gnode->localName === 'IDPSSODescriptor') {
                 $isIdp = true;
-                if (!empty($full)) {
+                if ($full === true) {
 
                     $entity['details']['idpssodescriptor'] = $this->idpSSODescriptorConvert($gnode);
                 }
-            } elseif ($gnode->nodeName === 'md:SPSSODescriptor' || $gnode->nodeName === 'SPSSODescriptor') {
+                continue;
+            }
+            if ($gnode->localName === 'SPSSODescriptor') {
                 $isSp = true;
-                if (!empty($full)) {
+                if ($full === true) {
 
                     $entity['details']['spssodescriptor'] = $this->spSSODescriptorConvert($gnode);
                 }
@@ -192,10 +201,14 @@ class Metadata2array
                     }
                     $entity['details']['reqattrsinmeta'] = true;
                 }
-            } elseif ($gnode->nodeName === 'md:AttributeAuthorityDescriptor' || $gnode->nodeName === 'AttributeAuthorityDescriptor') {
+                continue;
+            }
+            if ($gnode->localName === 'AttributeAuthorityDescriptor') {
                 $isIdp = true;
                 $entity['details']['aadescriptor'] = $this->attributeAuthorityDescriptorConvert($gnode);
-            } elseif ($gnode->nodeName === 'Extensions' || $gnode->nodeName === 'md:Extensions') {
+                continue;
+            }
+            if ($gnode->localName === 'Extensions') {
                 if ($gnode->hasChildNodes()) {
                     foreach ($gnode->childNodes as $enode) {
                         if ($enode->nodeName === 'mdrpi:RegistrationInfo' && $enode->hasAttributes()) {
@@ -240,10 +253,15 @@ class Metadata2array
                         }
                     }
                 }
-            } elseif ($gnode->nodeName === 'md:ContactPerson' || $gnode->nodeName === 'ContactPerson') {
+                continue;
+            }
+            if ($gnode->localName === 'ContactPerson') {
                 $entity['details']['contacts'][] = $this->contactPersonConvert($gnode);
-            } elseif ($gnode->nodeName === 'md:Organization' || $gnode->nodeName === 'Organization') {
+                continue;
+            }
+            if ($gnode->localName === 'Organization') {
                 $entity['details']['org'] = $this->organizationConvert($gnode);
+                continue;
             }
         }
         if ($isIdp && $isSp) {
@@ -287,16 +305,21 @@ class Metadata2array
 
     private function attributeAuthorityDescriptorConvert(\DOMElement $node)
     {
-        $result = array();
         $result['protocols'] = array_filter(explode(' ', $node->getAttribute('protocolSupportEnumeration')), 'strlen');
         foreach ($node->childNodes as $child) {
-            if ($child->nodeName === 'md:Extensions' || $child->nodeName === 'Extensions') {
+            if ($child->localName === 'Extensions') {
                 $result['extensions'] = $this->aaExtensionsToArray($child);
-            } elseif ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat') {
+                continue;
+            }
+            if ($child->localName === 'NameIDFormat') {
                 $result['nameid'][] = trim($child->nodeValue);
-            } elseif ($child->nodeName === 'AttributeService' || $child->nodeName === 'md:AttributeService') {
+                continue;
+            }
+            if ($child->localName === 'AttributeService') {
                 $result['attributeservice'][] = array('binding' => $child->getAttribute('Binding'), 'location' => $child->getAttribute('Location'));
-            } elseif ($child->nodeName === 'KeyDescriptor' || $child->nodeName === 'md:KeyDescriptor') {
+                continue;
+            }
+            if ($child->localName === 'KeyDescriptor') {
                 $result['certificate'][] = $this->keyDescriptorConvert($child);
             }
         }
@@ -305,31 +328,40 @@ class Metadata2array
 
     private function idpSSODescriptorConvert(\DOMElement $node)
     {
-        $result = array();
         $result['protocols'] = array_filter(explode(' ', $node->getAttribute('protocolSupportEnumeration')), 'strlen');
         foreach ($node->childNodes as $child) {
-            if ($child->nodeName === 'md:Extensions' || $child->nodeName === 'Extensions') {
+            if ($child->localName === 'Extensions') {
                 $result['extensions'] = $this->extensionsToArray($child);
-            } elseif ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat') {
+                continue;
+            }
+            if ($child->localName === 'NameIDFormat') {
                 $result['nameid'][] = trim($child->nodeValue);
-            } elseif ($child->nodeName === 'SingleSignOnService' || $child->nodeName === 'md:SingleSignOnService') {
+                continue;
+            }
+            if ($child->localName === 'SingleSignOnService') {
                 $result['servicelocations']['singlesignonservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
-            } elseif ($child->nodeName === 'md:SingleLogoutService' || $child->nodeName === 'SingleLogoutService') {
+                continue;
+            }
+            if ($child->localName === 'SingleLogoutService') {
                 $result['servicelocations']['singlelogout'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
-            } elseif ($child->nodeName === 'md:ArtifactResolutionService' || $child->nodeName === 'ArtifactResolutionService') {
+                continue;
+            }
+            if ($child->localName === 'ArtifactResolutionService') {
                 $result['servicelocations']['artifactresolutionservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location'),
                     'order' => $child->getAttribute('index'),
                     'isdefault' => $child->getAttribute('isDefault')
                 );
-            } elseif ($child->nodeName === 'KeyDescriptor' || $child->nodeName === 'md:KeyDescriptor') {
+                continue;
+            }
+            if ($child->localName === 'KeyDescriptor') {
                 $result['certificate'][] = $this->keyDescriptorConvert($child);
             }
         }
@@ -350,19 +382,19 @@ class Metadata2array
             ),
         );
         $bindProts = array(
-            'singlelogout'=>array(),
+            'singlelogout' => array(),
         );
 
         foreach ($node->childNodes as $child) {
-            if ($child->nodeName === 'md:Extensions' || $child->nodeName === 'Extensions') {
+            if ($child->localName === 'Extensions') {
                 $result['extensions'] = $this->extensionsToArray($child);
                 continue;
             }
-            if ($child->nodeName === 'md:NameIDFormat' || $child->nodeName === 'NameIDFormat') {
+            if ($child->localName === 'NameIDFormat') {
                 $result['nameid'][] = trim($child->nodeValue);
                 continue;
             }
-            if ($child->nodeName === 'md:AssertionConsumerService' || $child->nodeName === 'AssertionConsumerService') {
+            if ($child->localName === 'AssertionConsumerService') {
                 $result['servicelocations']['assertionconsumerservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location'),
@@ -371,7 +403,7 @@ class Metadata2array
                 );
                 continue;
             }
-            if ($child->nodeName === 'md:ArtifactResolutionService' || $child->nodeName === 'ArtifactResolutionService') {
+            if ($child->localName === 'ArtifactResolutionService') {
                 $result['servicelocations']['artifactresolutionservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location'),
@@ -380,25 +412,25 @@ class Metadata2array
                 );
                 continue;
             }
-            if ($child->nodeName === 'md:SingleLogoutService' || $child->nodeName === 'SingleLogoutService') {
+            if ($child->localName === 'SingleLogoutService') {
                 $bindProto = trim($child->getAttribute('Binding'));
-                if(!in_array($bindProto,$bindProts['singlelogout'])) {
+                if (!in_array($bindProto, $bindProts['singlelogout'])) {
                     $result['servicelocations']['singlelogout'][] = array(
                         'binding' => $bindProto,
                         'location' => trim($child->getAttribute('Location'))
                     );
-                    $bindProts['singlelogout'][]=$bindProto;
+                    $bindProts['singlelogout'][] = $bindProto;
                 }
                 continue;
             }
-            if ($child->nodeName === 'md:ManageNameIDService' || $child->nodeName === 'ManageNameIDService') {
+            if ($child->localName === 'ManageNameIDService') {
                 $result['servicelocations']['managenameidservice'][] = array(
                     'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
                 continue;
             }
-            if ($child->nodeName === 'KeyDescriptor' || $child->nodeName === 'md:KeyDescriptor') {
+            if ($child->localName === 'KeyDescriptor') {
                 $result['certificate'][] = $this->keyDescriptorConvert($child);
             }
         }
@@ -450,7 +482,7 @@ class Metadata2array
     {
         $ext = array();
         foreach ($node->childNodes as $enode) {
-            if ($enode->nodeName === 'shibmd:Scope' ||  $enode->nodeName === 'saml1md:Scope') {
+            if ($enode->nodeName === 'shibmd:Scope' || $enode->nodeName === 'saml1md:Scope') {
                 $ext['scope'][] = trim($enode->nodeValue);
                 continue;
             }
@@ -532,7 +564,7 @@ class Metadata2array
     {
         $cnt = array(
             'type' => $node->getAttribute('contactType'),
-            'surname'=> null,
+            'surname' => null,
             'givenname' => null,
             'email' => null
         );
