@@ -41,94 +41,85 @@ class Arp extends MY_Controller
     {
         $returnArray = FALSE;
         $result1 = $this->arp_generator->arpToXML($idp, $returnArray);
+        $result = null;
         if (!empty($result1)) {
             $result = $result1->saveXML();
-        } else {
-
-            $result = null;
         }
         return $result;
     }
 
 
-    private function arpexperimental($encodedEntity, $version, $m = null)
+    private function arpexperimental($encodedEntity, $version, $filename = null)
     {
-        if (!empty($m) && $m != 'arp.xml') {
-            show_error('Request not allowed', 403);
+        if ($filename !== 'arp.xml') {
+            return $this->output->set_content_type('text/html')->set_status_header(403)->set_output('Request not allowed');
         }
         $entityID = base64_decode($encodedEntity);
+        /**
+         * @var models\Provider $ent
+         */
         try {
             $ent = $this->em->getRepository('models\Provider')->findOneBy(array('entityid' => $entityID, 'type' => array('IDP', 'BOTH')));
         } catch (Exception $e) {
-            $this->output->set_content_type('text/html');
             log_message('error', $e);
-            set_status_header(500);
-            echo 'Internal server error';
-            return;
+            return $this->output->set_content_type('text/html')->set_status_header(500)->set_output('Internal server error');
         }
-        if (empty($ent)) {
+        if ($ent === null) {
             log_message('error', 'IdP not found with id:.' . $entityID);
             show_error("Identity Provider not found", 404);
         }
         try {
             $this->load->library('arpgen');
         } catch (Exception $e) {
-            $this->output->set_content_type('text/html');
             log_message('error', $e);
-            set_status_header(500);
-            echo 'Internal server error';
-            return;
+            return $this->output->set_content_type('text/html')->set_status_header(500)->set_output('Internal server error');
         }
         $xml = $this->arpgen->genXML($ent,$version);
         $result = $xml->outputMemory();
-        $this->output->set_content_type('text/xml')->set_output($result);
+        return $this->output->set_content_type('text/xml')->set_output($result);
 
     }
 
-    public function format2exp($encodedEntity, $m = null)
+    public function format2exp($encodedEntity, $filename = null)
     {
-
-        $this->arpexperimental($encodedEntity, 2, $m);
-
+        $this->arpexperimental($encodedEntity, 2, $filename);
     }
 
 
-    public function format3exp($encodedEntity, $m = null)
+    public function format3exp($encodedEntity, $filename = null)
     {
 
-        $this->arpexperimental($encodedEntity, 3, $m);
+        $this->arpexperimental($encodedEntity, 3, $filename);
     }
 
 
     /**
      *
-     * @param string $idp_entityid
-     * @param string $m
+     * @param string $idpEntityID
+     * @param string $filename
      * @return string
      */
-    public function format2($idp_entityid, $m = null)
+    public function format2($idpEntityID, $filename = null)
     {
-        if (!empty($m) && $m != 'arp.xml') {
+        if ($filename !== 'arp.xml') {
             show_error('Request not allowed', 403);
         }
         $data = array();
-        $tmp_idp = new models\Providers;
+        $tmpProviders = new models\Providers;
 
         /**
          * @var $idp models\Provider
          */
         try {
-            $idp = $tmp_idp->getOneIdpByEntityId(base64url_decode($idp_entityid));
+            $idp = $tmpProviders->getOneIdpByEntityId(base64url_decode($idpEntityID));
         } catch (Exception $e) {
             $this->output->set_content_type('text/html');
             log_message('error', $e);
-            set_status_header(500);
-            echo 'Internal server error';
-            return;
+            return $this->output->set_content_type('text/html')->set_status_header(500)->set_output('Internal server error');
         }
-        if (empty($idp)) {
-            log_message('debug', 'IdP not found with id:.' . $idp_entityid);
-            show_error("Identity Provider not found", 404);
+        if ($idp === null) {
+            log_message('debug', 'IdP not found with id:.' . $idpEntityID);
+            return $this->output->set_content_type('text/html')->set_status_header(404)->set_output('Identity Provider Not Found');
         }
         $entityid = $idp->getEntityId();
         $keyprefix = getCachePrefix();
@@ -161,20 +152,19 @@ class Arp extends MY_Controller
 
     private function trackRequest($resourcename)
     {
-        $ref = null;
-        $reqtype = null;
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            $ref = $_SERVER['HTTP_REFERER'];
+        $ref = $this->input->server('HTTP_REFERER');
+        $reqtype = $this->input->server('REQUEST_METHOD');
+        $reftomatch = base_url('reports/sp_matrix/show');
+        if($ref !== null) {
             log_message('debug', 'REFERER: ' . $ref);
+
         }
-        if (isset($_SERVER['REQUEST_METHOD'])) {
-            $reqtype = $_SERVER['REQUEST_METHOD'];
-        }
-        $reftomatch = base_url() . 'reports/sp_matrix/show';
-        if ((!empty($reqtype) && $reqtype == 'GET') && ((!empty($ref) && stristr($ref, $reftomatch) === FALSE) || (empty($ref)))) {
-            $sync_with_db = true;
+
+
+        if (($reqtype == 'GET') && ((!empty($ref) && stristr($ref, $reftomatch) === FALSE) || (empty($ref)))) {
+            $syncWithDB = true;
             $details = null;
-            $this->tracker->save_track($this->resourcetype, $this->subtype, $resourcename, $details, $sync_with_db);
+            $this->tracker->save_track($this->resourcetype, $this->subtype, $resourcename, $details, $syncWithDB);
         }
     }
 }

@@ -1,22 +1,23 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /**
  * Jagger
  *
- * @package     Jagger
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @copyright Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
 
 /**
  * Metadata2import Class
  *
- * @package     Jagger
- * @subpackage  Libraries
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package    Jagger
+ * @subpackage Libraries
+ * @author     Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Metadata2import
 {
@@ -53,6 +54,10 @@ class Metadata2import
         $this->other = null;
     }
 
+    /**
+     * @param $report
+     * @return bool
+     */
     private function genReport($report)
     {
         if (!(!empty($report) && is_array($report))) {
@@ -81,6 +86,7 @@ class Metadata2import
         if ($structureChanged) {
             $this->ci->email_sender->addToMailQueue(array('gfedmemberschanged'), null, 'Federation sync/import report', $body, array(), false);
         }
+        return true;
     }
 
     private function getAttributesByNames()
@@ -207,16 +213,14 @@ class Metadata2import
 
             $attrRequiredByFed = array();
 
-            foreach($fedReqAttrs as $rv)
-            {
+            foreach ($fedReqAttrs as $rv) {
                 $attrRequiredByFed[] = array(
-                    'name'=>$rv->getAttribute()->getOid(),
-                    'req'=>$rv->isRequiredToStr()
+                    'name' => $rv->getAttribute()->getOid(),
+                    'req' => $rv->isRequiredToStr()
                 );
             }
             $copyFedAttrReq = false;
-            if(count($attrRequiredByFed)>0 && $attrreqinherit === true)
-            {
+            if (count($attrRequiredByFed) > 0 && $attrreqinherit === true) {
                 $copyFedAttrReq = true;
             }
 
@@ -248,7 +252,7 @@ class Metadata2import
                         continue;
                     }
                     $counter++;
-                    if ($ent['type'] === 'BOTH' || $ent['type'] === $type ||  $type === 'ALL' ) {
+                    if ($ent['type'] === 'BOTH' || $ent['type'] === $type || $type === 'ALL') {
 
                         $importedProvider = new models\Provider;
                         $importedProvider->setProviderFromArray($ent);
@@ -316,12 +320,9 @@ class Metadata2import
                                     }
                                 }
 
-                                if($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true)
-                                {
-                                    foreach($attrRequiredByFed as $rt)
-                                    {
-                                        if(!in_array($rt['name'],$attrsset))
-                                        {
+                                if ($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true) {
+                                    foreach ($attrRequiredByFed as $rt) {
+                                        if (!in_array($rt['name'], $attrsset)) {
                                             $reqattr = new models\AttributeRequirement;
                                             $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
                                             $reqattr->setType('SP');
@@ -464,12 +465,9 @@ class Metadata2import
                                             log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
                                         }
                                     }
-                                    if($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true)
-                                    {
-                                        foreach($attrRequiredByFed as $rt)
-                                        {
-                                            if(!in_array($rt['name'],$duplicateControl))
-                                            {
+                                    if ($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true) {
+                                        foreach ($attrRequiredByFed as $rt) {
+                                            if (!in_array($rt['name'], $duplicateControl)) {
                                                 $reqattr = new models\AttributeRequirement;
                                                 $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
                                                 $reqattr->setType('SP');

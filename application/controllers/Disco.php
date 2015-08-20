@@ -139,8 +139,6 @@ class Disco extends MY_Controller
             }
         }
         $this->load->view('disco_view', $data);
-
-
     }
 
     /**
