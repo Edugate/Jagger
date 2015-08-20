@@ -2153,9 +2153,12 @@ $(document).ready(function () {
     var providerdetailurl;
 
     if ($('#attrpols').length > 0) {
-        providerdetailurl = $('#attrpols').attr('data-jagger-providerdetails');
+        var attrpolsVar = $('#attrpols').first();
+        var attrpolstabVar = $('#attrpolstab').first();
+        var arpmaddspecattrVar = $('#arpmaddspecattr').first();
+        providerdetailurl = attrpolsVar.attr('data-jagger-providerdetails');
         var fedid;
-        $('#attrpolstab').on('toggled', function (event, tab) {
+        attrpolstabVar.on('toggled', function (event, tab) {
 
             var progressbarHTML = '<div class="progress"><span class="meter" style="width: 10%"></span></div>';
             var progressbar = $($.parseHTML(progressbarHTML));
@@ -2168,7 +2171,7 @@ $(document).ready(function () {
             if (link === undefined) {
                 return false;
             }
-            var target = $('#attrpols').find('section.active').first();
+            var target = attrpolsVar.find('section.active').first();
             //  progressbar.appendTo(target);
             var tbl;
             $.ajax({
@@ -2511,14 +2514,14 @@ $(document).ready(function () {
 
         });
 
-        $('#attrpols').on('click', 'td.highlight', function (event) {
+        attrpolsVar.on('click', 'td.highlight', function (event) {
             var entlink = $(this).attr("data-jagger-entidlink");
             if (entlink !== undefined) {
                 document.location.href = providerdetailurl + '/' + entlink;
                 return false;
             }
         });
-        $('#attrpols').on('click', 'a.modalconfirm', function (event) {
+        attrpolsVar.on('click', 'a.modalconfirm', function (event) {
             event.preventDefault();
             var arptype = $(this).attr('data-jagger-arp');
             var arpaction = $(this).attr('data-jagger-action');
@@ -2627,8 +2630,6 @@ $(document).ready(function () {
                             }
                         }
                     });
-
-
                     modal.foundation('reveal', 'open');
                 }
             }
@@ -2646,7 +2647,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmdelattr').foundation('reveal', 'close');
-                    $('#attrpolstab').find('a[href="#attrpol-1"]').first().trigger('click');
+                    attrpolstabVar.find('a[href="#attrpol-1"]').first().trigger('click');
 
                 }
             });
@@ -2662,7 +2663,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmeditglobalattr').foundation('reveal', 'close');
-                    $('#attrpolstab').find('a[href="#attrpol-1"]').first().trigger('click');
+                    attrpolstabVar.find('a[href="#attrpol-1"]').first().trigger('click');
 
                 },
                 error: function (xhr, status, error) {
@@ -2674,7 +2675,7 @@ $(document).ready(function () {
         });
 
 
-        $('#attrpols').on('click', '#addattrsupport button', function (event) {
+        attrpolsVar.on('click', '#addattrsupport button', function (event) {
 
             var link2 = $('#addattrsupport').attr('data-jagger-link');
             $.ajax({
@@ -2695,7 +2696,7 @@ $(document).ready(function () {
             $('#arpmaddattr').foundation('reveal', 'open');
         });
 
-        $('#attrpols').on('click', '#addentcatattr button', function (event) {
+        attrpolsVar.on('click', '#addentcatattr button', function (event) {
 
             var link2 = $('#addentcatattr').attr('data-jagger-link');
             $.ajax({
@@ -2729,10 +2730,10 @@ $(document).ready(function () {
             $('#arpmaddentcatattr').foundation('reveal', 'open');
         });
 
-        $('#attrpols').on('click', '#addespecattr button', function (event) {
+        attrpolsVar.on('click', '#addespecattr button', function (event) {
 
             var link2 = $('#addespecattr').attr('data-jagger-link');
-            var modal = $('#arpmaddspecattr').first();
+            var modal = arpmaddspecattrVar;
             var customvals = modal.find('[name="customvals"]').first();
             customvals.empty();
             modal.find('div.response').first().removeClass('alert').removeClass('alert-box').empty().hide()
@@ -2783,7 +2784,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmaddattr').foundation('reveal', 'close');
-                    $('#attrpolstab').find('a[href="#attrpol-1"]').first().trigger('click');
+                    attrpolstabVar.find('a[href="#attrpol-1"]').first().trigger('click');
 
                 },
                 error: function (xhr, status, error) {
@@ -2804,7 +2805,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmeditfedattr').foundation('reveal', 'close');
-                    $('#attrpolstab').find('a[href="#attrpol-2"]').first().trigger('click');
+                    attrpolstabVar.find('a[href="#attrpol-2"]').first().trigger('click');
 
                 },
                 error: function (xhr, status, error) {
@@ -2815,16 +2816,20 @@ $(document).ready(function () {
             });
         });
 
-        $('#arpmaddspecattr').on('change', 'select', function (event) {
+        arpmaddspecattrVar.on('change', 'select', function (event) {
             var selectedname = $(this).attr('name');
             if (selectedname === undefined || !(selectedname === 'spid' || selectedname === 'attrid')) {
                 console.log('TT');
             }
+            if(selectedname === 'spid')
+            {
+                console.log('DDDDDDDDDDDD');
+            }
 
         });
 
-        $('#arpmaddspecattr').on('click', 'div.yes', function (event) {
-            var modal = $('#arpmaddspecattr');
+        arpmaddspecattrVar.on('click', 'div.yes', function (event) {
+            var modal = arpmaddspecattrVar;
             var response = modal.find('.response').first();
             response.empty().removeClass('alert').removeClass('alert-box').hide();
             var form = modal.find('form').first();
@@ -2840,7 +2845,7 @@ $(document).ready(function () {
                 success: function (json) {
                     response.empty().removeClass('alert').removeClass('alert-box').hide();
                     modal.foundation('reveal', 'close');
-                    $('#attrpolstab').find('a[href="#attrpol-4"]').first().trigger('click');
+                    attrpolstabVar.find('a[href="#attrpol-4"]').first().trigger('click');
                 },
                 error: function (xhr, status, error) {
 
@@ -2862,7 +2867,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmeditspattr').foundation('reveal', 'close');
-                    $('#attrpolstab').find('a[href="#attrpol-4"]').first().trigger('click');
+                    attrpolstabVar.find('a[href="#attrpol-4"]').first().trigger('click');
 
                 },
                 error: function (xhr, status, error) {
@@ -2884,7 +2889,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmeditentcatattr').foundation('reveal', 'close');
-                    $('#attrpolstab').find('a[href="#attrpol-3"]').first().trigger('click');
+                    attrpolstabVar.find('a[href="#attrpol-3"]').first().trigger('click');
 
                 },
                 error: function (xhr, status, error) {
@@ -2905,7 +2910,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmaddentcatattr').foundation('reveal', 'close');
-                    $('#attrpolstab').find('a[href="#attrpol-3"]').first().trigger('click');
+                    attrpolstabVar.find('a[href="#attrpol-3"]').first().trigger('click');
 
                 },
                 error: function (xhr, status, error) {
