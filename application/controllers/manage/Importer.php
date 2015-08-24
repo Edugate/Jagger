@@ -176,7 +176,7 @@ class Importer extends MY_Controller
             'static' => $static,
             'local' => $local,
             'localimport' => true,
-            'federations' => array($fed->getName())
+            'federationid' => $fed->getId(),
         );
         foreach ($defaults as $key => $value) {
             if (!is_array($value)) {
