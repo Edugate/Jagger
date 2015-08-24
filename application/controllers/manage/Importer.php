@@ -175,7 +175,7 @@ class Importer extends MY_Controller
             'active' => $active,
             'static' => $static,
             'local' => $local,
-            'localimport' => TRUE,
+            'localimport' => true,
             'federations' => array($fed->getName())
         );
         foreach ($defaults as $key => $value) {

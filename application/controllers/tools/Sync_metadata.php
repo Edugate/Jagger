@@ -178,12 +178,10 @@ class Sync_metadata extends CI_Controller {
         }
 
         $type_of_entities = strtoupper($conditions['type']);
+        $full = false;
         if ($conditions['populate'])
         {
             $full = true;
-        } else
-        {
-            $full = false;
         }
 
         $defaults = array(

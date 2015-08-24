@@ -1154,9 +1154,32 @@ class Provider
         if (!empty($smetadata)) {
             $this->overwriteStaticMetadata($smetadata);
         }
+
+
+
+
+        /**
+         * @var $s ServiceLocation
+         * @var $nsrv ServiceLocation
+         */
+        $counterIdx = 0;
         foreach ($this->getServiceLocations() as $s) {
-            $this->removeServiceLocation($s);
+            if($provider->getServiceLocations()->containsKey($counterIdx))
+            {
+                $nsrv = $provider->getServiceLocations()->get($counterIdx);
+                $s->setInFull($nsrv->getType(),$nsrv->getBindingName(),$nsrv->getUrl(),$nsrv->getOrder());
+                $s->setDefault($nsrv->getDefault());
+                $provider->getServiceLocations()->remove($counterIdx);
+            }
+            else
+            {
+                $this->removeServiceLocation();
+            }
+            $counterIdx++;
+
         }
+
+
         foreach ($provider->getServiceLocations() as $r) {
             $this->setServiceLocation($r);
             $order = $r->getOrder();
@@ -1164,19 +1187,49 @@ class Provider
                 $r->setOrder(1);
             }
         }
+
+
         foreach ($this->getCertificates() as $c) {
             $this->removeCertificate($c);
         }
+
         foreach ($provider->getCertificates() as $r) {
             $this->setCertificate($r);
         }
 
+
+
+        $counterIdx = 0;
+        /**
+         * @var $cn Contact
+         * @var $nctn Contact
+         */
         foreach ($this->getContacts() as $cn) {
-            $this->removeContact($cn);
+            if($provider->getContacts()->containsKey($counterIdx))
+            {
+                $nctn = $provider->getContacts()->get($counterIdx);
+                $cn->setEmail($nctn->getEmail());
+                $cn->setType($nctn->getType());
+                $cn->setGivenName($nctn->getGivenName());
+                $cn->setSurName($nctn->getSurName());
+                $provider->getContacts()->remove($counterIdx);
+            }
+            else {
+                $this->removeContact($cn);
+            }
+            $counterIdx++;
         }
+
+
+
+
         foreach ($provider->getContacts() as $cn2) {
             $this->setContact($cn2);
         }
+
+
+
+
         foreach ($this->getExtendMetadata() as $f) {
             $this->removeExtendWithChildren($f);
         }

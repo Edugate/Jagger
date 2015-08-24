@@ -44,6 +44,7 @@ class Metadata2import
         $this->full = false;
 
         $this->defaults = array(
+            'localimport' => false,
             'static' => true,
             'local' => false,
             'federation' => null,
@@ -101,6 +102,25 @@ class Metadata2import
         }
         return $attributes;
     }
+
+    private function getAttrReqByFed(\models\Federation $federation)
+    {
+        /**
+         * @var $fedReqAttrs models\AttributeRequirement[]
+         */
+        $fedReqAttrs = $federation->getAttributesRequirement();
+
+        $attrRequiredByFed = array();
+
+        foreach ($fedReqAttrs as $rv) {
+            $attrRequiredByFed[] = array(
+                'name' => $rv->getAttribute()->getOid(),
+                'req' => $rv->isRequiredToStr()
+            );
+        }
+        return $attrRequiredByFed;
+    }
+
 
     public function import($metadata, $type, $full, array $defaults, $other = null)
     {
@@ -166,7 +186,7 @@ class Metadata2import
          * if param static is not provided then static is set to true
          */
         $static = true;
-        if (array_key_exists('static', $this->defaults) && $this->defaults['static'] === FALSE) {
+        if (array_key_exists('static', $this->defaults) && $this->defaults['static'] === false) {
             $static = false;
         }
         $local = false;
@@ -185,7 +205,7 @@ class Metadata2import
 
         // remove external entities if they're not member of any other federation
         $removeexternal = false;
-        if (array_key_exists('removeexternal', $this->defaults) && $this->defaults['removeexternal'] === TRUE) {
+        if (array_key_exists('removeexternal', $this->defaults) && $this->defaults['removeexternal'] === true) {
             $removeexternal = true;
         }
         $attrreqinherit = false;
@@ -193,56 +213,44 @@ class Metadata2import
             $attrreqinherit = true;
         }
 
-        $time_start = microtime(true);
+        $timeStart = microtime(true);
         $this->metadataInArray = $this->ci->metadata2array->rootConvert($metadata, $full);
-        $time_end = microtime(true);
-        $time_execution = $time_end - $time_start;
-        log_message('debug', __METHOD__ . ' time execution of converting metadata to array took: ' . $time_execution);
+        $timeEnd = microtime(true);
+        $timeExecution = $timeEnd - $timeStart;
+        log_message('debug', __METHOD__ . ' time execution of converting metadata to array took: ' . $timeExecution);
         if (!(empty($this->metadataInArray) || is_array($this->metadataInArray) || count($this->metadataInArray) == 0)) {
             \log_message('warning', __METHOD__ . ' converting xml metadata 
                                into array resulted empty array or null value');
-            return null;
+            return false;
         }
 
 
         foreach ($federations as $f) {
-            /**
-             * @var $fedReqAttrs models\AttributeRequirement[]
-             */
-            $fedReqAttrs = $f->getAttributesRequirement();
-
-            $attrRequiredByFed = array();
-
-            foreach ($fedReqAttrs as $rv) {
-                $attrRequiredByFed[] = array(
-                    'name' => $rv->getAttribute()->getOid(),
-                    'req' => $rv->isRequiredToStr()
-                );
-            }
+            $attrRequiredByFed = $this->getAttrReqByFed($f);
             $copyFedAttrReq = false;
-            if (count($attrRequiredByFed) > 0 && $attrreqinherit === true) {
+            if ($attrreqinherit === true && count($attrRequiredByFed) > 0) {
                 $copyFedAttrReq = true;
             }
 
-            $fedMembershipCollection = $f->getMembership();
+            $fedMembershipColl = $f->getMembership();
 
             /**
              * @var $membership \models\FederationMembers[]
              */
-            $membership = $fedMembershipCollection->toArray();
+            $membership = $fedMembershipColl->toArray();
             $membershipByEnt = array();
             foreach ($membership as $k => $m) {
                 $membershipByEnt['' . $m->getProvider()->getEntityId() . ''] = array('mshipKey' => $k, 'mship' => &$m);
             }
 
             // run sync
-            if (empty($this->defaults['localimport'])) {
+            if ($this->defaults['localimport'] !== true) {
                 \log_message('info', __METHOD__ . ' running as sync for ' . $f->getName());
-                foreach ($fedMembershipCollection as $m) {
+                foreach ($fedMembershipColl as $m) {
                     $membershipByEnt['' . $m->getProvider()->getEntityId() . ''] = $m;
                 }
                 // list entities in the source 
-                $membersFromRemoteSource = array();
+                $membersFromExtSrc = array();
                 $counter = 0;
                 foreach ($this->metadataInArray as $ent) {
                     $startTime = microtime(true);
@@ -259,10 +267,10 @@ class Metadata2import
                         /**
                          * @var $existingProvider models\Provider
                          */
-                        $existingProvider = $tmpProviders->getOneByEntityId($importedProvider->getEntityId());
-                        if (empty($existingProvider)) {
+                        $existingProvider = $tmpProviders->getOneByEntityId($ent['entityid']);
+                        if ($existingProvider === null) {
 
-                            $membersFromRemoteSource[] = $importedProvider->getEntityId();
+                            $membersFromExtSrc[] = $importedProvider->getEntityId();
                             $importedProvider->setStatic($static);
                             $importedProvider->setLocal($local);
                             $importedProvider->setActive($active);
@@ -351,7 +359,7 @@ class Metadata2import
                             $this->em->persist($importedProvider);
                         } // END for new provider
                         else { // provider exist
-                            $membersFromRemoteSource[] = $existingProvider->getEntityId();
+                            $membersFromExtSrc[] = $existingProvider->getEntityId();
                             $isLocal = $existingProvider->getLocal();
                             $isLocked = $existingProvider->getLocked();
                             $updateAllowed = (($isLocal && $overwritelocal && !$isLocked) || !$isLocal);
@@ -513,8 +521,8 @@ class Metadata2import
                     log_message('debug', 'running in loop time execution:: ' . $looptime);
                 }
 
-                $currentMembershipList = array_keys($membershipByEnt);
-                $membersdiff = array_diff($currentMembershipList, $membersFromRemoteSource);
+                $currMembersList = array_keys($membershipByEnt);
+                $membersdiff = array_diff($currMembersList, $membersFromExtSrc);
                 if (count($membersdiff) > 0) {
                     log_message('debug', __METHOD__ . ' found diff in membership, not existing members in external metadata ' . serialize($membersdiff));
                     foreach ($membersdiff as $d) {
