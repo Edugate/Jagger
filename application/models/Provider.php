@@ -764,12 +764,16 @@ class Provider
     public function setRegistrationAuthority($reg = null)
     {
         $this->registrar = $reg;
+        if($reg !== null && trim($reg) ==='')
+        {
+            $this->registrar = null;
+        }
         return $this;
     }
 
     public function setRegistrationDate(\DateTime $date = null)
     {
-        if (empty($date)) {
+        if ($date === null) {
             $this->registerdate = NULL;
         } else {
             $this->registerdate = $date->setTimezone(new \DateTimeZone('UTC'));
@@ -782,7 +786,7 @@ class Provider
      */
     public function setValidTo(\DateTime $date = NULL)
     {
-        if (empty($date)) {
+        if ($date === null) {
             $this->validto = NULL;
         } else {
             $this->validto = $date->setTimezone(new \DateTimeZone('UTC'));
@@ -790,9 +794,13 @@ class Provider
         return $this;
     }
 
+    /**
+     * @param \DateTime|NULL $date
+     * @return $this
+     */
     public function setValidFrom(\DateTime $date = NULL)
     {
-        if (empty($date)) {
+        if ($date === null) {
             $this->validfrom = NULL;
         } else {
             $this->validfrom = $date->setTimezone(new \DateTimeZone('UTC'));
@@ -848,7 +856,7 @@ class Provider
             $nelement->setValue($v);
             $attr = array('xml:lang' => $k);
             $nelement->setAttributes($attr);
-            if (empty($parent)) {
+            if ($parent === null) {
                 $parent = new ExtendMetadata();
                 $parent->setType($type);
                 $parent->setNameSpace('mdui');
@@ -889,14 +897,14 @@ class Provider
         $this->is_locked = 0;
         $this->is_static = 0;
         $this->is_local = 1;
-        $this->setValidFrom();
-        $this->setValidTo();
+        $this->validfrom = null;
+        $this->validto = null;
         return $this;
     }
 
-    public function setLocal($is_local)
+    public function setLocal($isLocal)
     {
-        if ($is_local) {
+        if ($isLocal === true) {
             $this->is_local = true;
         } else {
             $this->is_local = false;
@@ -907,6 +915,7 @@ class Provider
     public function setAsLocal()
     {
         $this->is_local = 1;
+        return $this;
     }
 
     public function setAsExternal()
@@ -1810,9 +1819,10 @@ class Provider
         $w = $this->wayflist;
         if (!empty($w)) {
             return unserialize($w);
-        } else {
-            return null;
         }
+
+        return null;
+
     }
 
     public function getExcarps()
@@ -1820,18 +1830,18 @@ class Provider
         $w = $this->excarps;
         if (!empty($w)) {
             return unserialize($w);
-        } else {
-            return array();
         }
+        return array();
+
     }
 
     public function getLastModified()
     {
         if (empty($this->updatedAt)) {
             return $this->createdAt;
-        } else {
-            return $this->updatedAt;
         }
+        return $this->updatedAt;
+
     }
 
     public function overwriteWithNameid(Provider $provider)
