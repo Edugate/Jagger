@@ -3,22 +3,22 @@
 namespace models;
 
 
-/**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-/**
- * Provider Class
- *
- * @package     RR3
- * @subpackage  Models
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
+    /**
+     * ResourceRegistry3
+     *
+     * @package     RR3
+     * @author      Middleware Team HEAnet
+     * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+     * @license     MIT http://www.opensource.org/licenses/mit-license.php
+     *
+     */
+    /**
+     * Provider Class
+     *
+     * @package     RR3
+     * @subpackage  Models
+     * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+     */
 
 /**
  * Provider Model
@@ -668,7 +668,7 @@ class Provider
     public function setProtocolSupport($n, $data)
     {
         $allowed = array('aa', 'idpsso', 'spsso');
-        if ( is_array($data) && in_array($n, $allowed)) {
+        if (is_array($data) && in_array($n, $allowed)) {
             foreach ($data as $k => $v) {
                 $i = trim($v);
                 if (empty($i)) {
@@ -764,8 +764,7 @@ class Provider
     public function setRegistrationAuthority($reg = null)
     {
         $this->registrar = $reg;
-        if($reg !== null && trim($reg) ==='')
-        {
+        if ($reg !== null && trim($reg) === '') {
             $this->registrar = null;
         }
         return $this;
@@ -1141,7 +1140,14 @@ class Provider
         $this->overwriteScopeFull($provider);
         $this->setEntityId($provider->getEntityId());
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
-        $this->setRegistrationDate($provider->getRegistrationDate());
+
+
+        $r1 = $this->getRegistrationDateInFormat('YmdHis');
+        $r2 = $provider->getRegistrationDateInFormat('YmdHis');
+        if ($r1 !== $r2) {
+            $this->setRegistrationDate($provider->getRegistrationDate());
+        }
+
         $this->overwriteWithNameid($provider);
         foreach (array('idpsso', 'aa', 'spsso') as $a) {
             $this->setProtocolSupport($a, $provider->getProtocolSupport($a));
@@ -1156,23 +1162,18 @@ class Provider
         }
 
 
-
-
         /**
          * @var $s ServiceLocation
          * @var $nsrv ServiceLocation
          */
         $counterIdx = 0;
         foreach ($this->getServiceLocations() as $s) {
-            if($provider->getServiceLocations()->containsKey($counterIdx))
-            {
+            if ($provider->getServiceLocations()->containsKey($counterIdx)) {
                 $nsrv = $provider->getServiceLocations()->get($counterIdx);
-                $s->setInFull($nsrv->getType(),$nsrv->getBindingName(),$nsrv->getUrl(),$nsrv->getOrder());
+                $s->setInFull($nsrv->getType(), $nsrv->getBindingName(), $nsrv->getUrl(), $nsrv->getOrderToInt());
                 $s->setDefault($nsrv->getDefault());
                 $provider->getServiceLocations()->remove($counterIdx);
-            }
-            else
-            {
+            } else {
                 $this->removeServiceLocation();
             }
             $counterIdx++;
@@ -1189,14 +1190,42 @@ class Provider
         }
 
 
-        foreach ($this->getCertificates() as $c) {
-            $this->removeCertificate($c);
+        /**
+         * @var $ctmp Certificate
+         * @var $nctmp Certificate
+         */
+        $counterIdx = 0;
+        foreach ($this->getCertificates() as $ctmp) {
+            if($provider->getCertificates()->containsKey($counterIdx))
+            {
+                $nctmp = $provider->getCertificates()->get($counterIdx);
+                $ctmp->setType($nctmp->getType());
+                $cdata1 = $nctmp->getFingerprint();
+                $cdata2 = $ctmp->getFingerprint();
+                if($cdata1 !== $cdata2)
+                {
+                    $ctmp->setCertdata($nctmp->getCertData());
+                }
+
+                $ctmp->setCertType($nctmp->getCertType());
+                $ctmp->setCertUse($nctmp->getCertUse());
+                $ctmp->setKeyname($nctmp->getKeyname());
+                $ctmp->setEncryptMethods($nctmp->getEncryptMethods());
+
+                $provider->getCertificates()->remove($counterIdx);
+
+            }
+            else
+            {
+                $this->removeCertificate($ctmp);
+            }
+
+            $counterIdx++;
         }
 
-        foreach ($provider->getCertificates() as $r) {
-            $this->setCertificate($r);
+        foreach ($provider->getCertificates() as $ncrt) {
+            $this->setCertificate($ncrt);
         }
-
 
 
         $counterIdx = 0;
@@ -1205,29 +1234,23 @@ class Provider
          * @var $nctn Contact
          */
         foreach ($this->getContacts() as $cn) {
-            if($provider->getContacts()->containsKey($counterIdx))
-            {
+            if ($provider->getContacts()->containsKey($counterIdx)) {
                 $nctn = $provider->getContacts()->get($counterIdx);
                 $cn->setEmail($nctn->getEmail());
                 $cn->setType($nctn->getType());
                 $cn->setGivenName($nctn->getGivenName());
                 $cn->setSurName($nctn->getSurName());
                 $provider->getContacts()->remove($counterIdx);
-            }
-            else {
+            } else {
                 $this->removeContact($cn);
             }
             $counterIdx++;
         }
 
 
-
-
         foreach ($provider->getContacts() as $cn2) {
             $this->setContact($cn2);
         }
-
-
 
 
         foreach ($this->getExtendMetadata() as $f) {

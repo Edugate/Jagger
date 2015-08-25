@@ -524,7 +524,7 @@ class Metadata2import
                     $isLocal = $mm2->getProvider()->getLocal();
 
                     log_message('debug', __METHOD__ . ' current state of provider:: joinstate-' . $mm2joinstate . ', islocal-' . $isLocal);
-                    if (!($mm2joinstate == 0 || $mm2joinstate == 1)) {
+                    if (!($mm2joinstate === 0 || $mm2joinstate === 1)) {
 
                         log_message('debug', 'proceeding ' . $mm2->getProvider()->getEntityId() . ' joinstatus:' . $mm2joinstate);
                         if (!$isLocal && $removeexternal) {

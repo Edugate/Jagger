@@ -71,7 +71,7 @@ class ServiceLocation {
 
     public function __construct()
     {
-        $this->is_default = FALSE;
+        $this->is_default = false;
     }
 
     /**
@@ -101,6 +101,7 @@ class ServiceLocation {
     public function setAsACS()
     {
         $this->type = 'AssertionConsumerService';
+        return $this;
     }
 
     public function setBindingName($bindingname)
@@ -115,6 +116,7 @@ class ServiceLocation {
         return $this;
     }
 
+
     public function setOrder($no)
     {
         $this->ordered_no = $no;
@@ -127,15 +129,15 @@ class ServiceLocation {
         return $this;
     }
 
-    public function setDefault($default = NULL)
+    public function setDefault($default = null)
     {
-        if ($default === TRUE)
+        if($default === true)
         {
-            $this->is_default = 1;
+            $this->is_default = true;
         }
         else
         {
-            $this->is_default = 0;
+            $this->is_default = false;
         }
         return $this;
     }
@@ -143,6 +145,7 @@ class ServiceLocation {
     public function setProvider(Provider $provider = null)
     {
         $this->provider = $provider;
+        return $this;
     }
 
     public function setRequestInitiator($url, $binding = NULL)
@@ -198,8 +201,20 @@ class ServiceLocation {
         return $this->url;
     }
 
+    /**
+     * @return mixed
+     */
     public function getOrder()
     {
+        return $this->ordered_no;
+    }
+
+    public function getOrderToInt()
+    {
+        if($this->ordered_no !== null)
+        {
+            return (int) $this->ordered_no;
+        }
         return $this->ordered_no;
     }
 
@@ -226,6 +241,7 @@ class ServiceLocation {
         $this->setUrl($s['url']);
         $this->setOrder($s['order']);
         $this->setDefault($s['default']);
+        return $this;
     }
 
 
