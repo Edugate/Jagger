@@ -47,10 +47,13 @@ class Metadata2import
             'localimport' => false,
             'static' => true,
             'local' => false,
-            'federation' => null,
+            'federationid' => null,
             'live' => false,
             'removeexternal' => false,
             'mailreport' => false,
+            'active'=>false,
+            'overwritelocal'=>false,
+            'attrreqinherit'=>false,
         );
         $this->other = null;
     }
@@ -103,6 +106,10 @@ class Metadata2import
         return $attributes;
     }
 
+    /**
+     * @param \models\Federation $federation
+     * @return array
+     */
     private function getAttrReqByFed(\models\Federation $federation)
     {
         /**
@@ -135,11 +142,9 @@ class Metadata2import
         }
 
         /**
-         * @var $coclist models\Coc[]
-         * @var $regpollist models\Coc[]
+         * @var $cocreglist models\Coc[]
          */
-        $coclist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
-        $regpollist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
+        $cocreglist = $this->em->getRepository("models\Coc")->findBy(array('type' => array('regpol','entcat')));
         $attributes = $this->getAttributesByNames();
 
 
@@ -159,17 +164,22 @@ class Metadata2import
         $regpollistconverted = array();
         $regpollistarray = array();
 
-
-        foreach ($coclist as $k => $c) {
-            $coclistconverted['' . $c->getId() . ''] = $c;
-            $coclistarray['' . $c->getId() . ''] = $c->getUrl();
-            $ncoclistarray['' . $c->getSubtype() . '']['' . $c->getId() . ''] = $c->getUrl();
+        foreach($cocreglist as $cocreg)
+        {
+            $cocregtype = $cocreg->getType();
+            if($cocregtype === 'entcat')
+            {
+                $coclistconverted['' . $cocreg->getId() . ''] = $cocreg;
+                $coclistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+                $ncoclistarray['' . $cocreg->getSubtype() . '']['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+            }
+            else{
+                $regpollistconverted['' . $cocreg->getId() . ''] = $cocreg;
+                $regpollistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+            }
         }
-        foreach ($regpollist as $k => $c) {
-            $regpollistconverted['' . $c->getId() . ''] = $c;
-            $regpollistarray['' . $c->getId() . ''] = $c->getUrl();
 
-        }
+
 
 
         /**
@@ -189,40 +199,21 @@ class Metadata2import
         /**
          * if param static is not provided then static is set to true
          */
-        $static = true;
-        if (array_key_exists('static', $this->defaults) && $this->defaults['static'] === false) {
-            $static = false;
-        }
-        $local = false;
-        if (array_key_exists('local', $this->defaults) && $this->defaults['local'] === true) {
-            $local = true;
-        }
-        $active = false;
-        if (array_key_exists('active', $this->defaults) && $this->defaults['active'] === true) {
-            $active = true;
-        }
-        $overwritelocal = false;
-        if (array_key_exists('overwritelocal', $this->defaults) && $this->defaults['overwritelocal'] === TRUE) {
-            $overwritelocal = true;
-        }
-
-
+        $static = $this->defaults['static'];
+        $local = $this->defaults['local'];
+        $active = $this->defaults['active'];
+        $overwritelocal = $this->defaults['overwritelocal'];
         // remove external entities if they're not member of any other federation
-        $removeexternal = false;
-        if (array_key_exists('removeexternal', $this->defaults) && $this->defaults['removeexternal'] === true) {
-            $removeexternal = true;
-        }
-        $attrreqinherit = false;
-        if (array_key_exists('attrreqinherit', $this->defaults) && $this->defaults['attrreqinherit'] === true) {
-            $attrreqinherit = true;
-        }
+        $removeexternal =$this->defaults['removeexternal'];
+        $attrreqinherit = $this->defaults['attrreqinherit'];
+
 
         $timeStart = microtime(true);
         $this->metadataInArray = $this->ci->metadata2array->rootConvert($metadata, $full);
         $timeEnd = microtime(true);
         $timeExecution = $timeEnd - $timeStart;
         log_message('debug', __METHOD__ . ' time execution of converting metadata to array took: ' . $timeExecution);
-        if (!(empty($this->metadataInArray) || is_array($this->metadataInArray) || count($this->metadataInArray) == 0)) {
+        if (!is_array($this->metadataInArray) || count($this->metadataInArray) == 0) {
             \log_message('warning', __METHOD__ . ' converting xml metadata 
                                into array resulted empty array or null value');
             return false;
