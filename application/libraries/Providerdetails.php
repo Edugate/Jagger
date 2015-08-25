@@ -1187,7 +1187,20 @@ class Providerdetails
 			if (isset($uiiarray['Logo'])) {
 				$str = '';
 				foreach ($uiiarray['Logo'] as $v) {
-					$str .= @anchor_popup($v->getLogoValue(), $v->getLogoValue(), $logoatts) . '<br />';
+					$logovalue = $v->getLogoValue();
+					$logoAttr = $v->getAttributes();
+					$figcap = '';
+					if((substr($logovalue, 0, 11)) === 'data:image/')
+					{
+						$figcap = lang('embedlogo');
+					}
+					else
+					{
+						$figcap = html_escape($logovalue);
+					}
+
+						$str .='<figure><img src="'.$logovalue.'" style="max-height: 40px"/><figcaption>'.$figcap.'<br/></figcaption></figure><br />';
+
 				}
 				$d[$i]['value'] = $str;
 			} else {

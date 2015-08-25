@@ -1858,7 +1858,13 @@ class Form_element
                 ));
                 $p .= '</div>';
                 $p .= '<div class="medium-6 columns">';
-                $p .= lang('rr_url') . ': ' . $v2['url'] . '<br />';
+                if((substr($v2['url'], 0, 11)) === 'data:image/')
+                {
+                    $p .= lang('embedlogo') . '<br />';
+                }
+                else {
+                    $p .= lang('rr_url') . ': ' . $v2['url'] . '<br />';
+                }
                 if (empty($v2['lang'])) {
                     $l = lang('rr_unspecified');
                 } else {

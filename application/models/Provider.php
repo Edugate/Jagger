@@ -1174,7 +1174,7 @@ class Provider
                 $s->setDefault($nsrv->getDefault());
                 $provider->getServiceLocations()->remove($counterIdx);
             } else {
-                $this->removeServiceLocation();
+                $this->removeServiceLocation($s);
             }
             $counterIdx++;
 

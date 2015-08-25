@@ -292,7 +292,7 @@ class Providertoxml
             foreach ($logoAttrs as $lk => $lv) {
                 $xml->writeAttribute($lk, $lv);
             }
-            if (!filter_var($l->getElementValue(), FILTER_VALIDATE_URL)) {
+            if (!filter_var($l->getElementValue(), FILTER_VALIDATE_URL) && !((substr($l->getElementValue(), 0, 11)) === 'data:image/')) {
                 $xml->text($this->logoPrefixUrl . $l->getElementValue());
             } else {
                 $xml->text($l->getElementValue());
