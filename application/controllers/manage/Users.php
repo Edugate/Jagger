@@ -133,9 +133,7 @@ class Users extends MY_Controller
     public function currentSroles($encodeduser)
     {
         if (!$this->ajaxplusadmin()) {
-            set_status_header(403);
-            echo 'denied2';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $user = $this->findUserOrExit($encodeduser);
         $resultInJsonEncoded = json_encode($user->getSystemRoleNames());
@@ -163,11 +161,7 @@ class Users extends MY_Controller
         $isAdmin = $this->j_auth->isAdministrator();
 
         if (!$isAdmin && !$userAllowed) {
-            set_status_header(403);
-            echo 'denied4';
-            return;
-
-
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
         $user = $this->findUserOrExit($encodeduser);
@@ -227,7 +221,6 @@ class Users extends MY_Controller
         }
         $this->em->persist($user);
         $this->em->flush();
-      //  $resultInJson = $this->getRolenamesToJson($user);
         $resultInJson = json_encode($user->getRoleNames());
         $this->output->set_content_type('application/json')->set_output($resultInJson);
     }
@@ -531,16 +524,12 @@ class Users extends MY_Controller
     public function remove()
     {
         if (!$this->j_auth->logged_in() || !$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'Permission denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Permission denied');
         }
         $this->load->library('zacl');
         $access = $this->zacl->check_acl('user', 'remove', 'default', '');
         if (!$access) {
-            set_status_header(403);
-            echo 'Permission denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Permission denied');
         }
         if (!$this->removeSubmitValidate()) {
             set_status_header(403);
@@ -556,18 +545,14 @@ class Users extends MY_Controller
             $inputUsername = trim($this->input->post('username'));
             $hiddenEcondedUser = trim($this->input->post('encodedusr'));
             if (empty($inputUsername) || strcmp(base64url_encode($inputUsername), $hiddenEcondedUser) != 0) {
-                set_status_header(403);
-                echo 'Entered username doesnt match';
-                return;
+                return $this->output->set_status_header(403)->set_output('Entered username doesnt match');
             }
 
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
             if (!empty($user)) {
                 $userRoles = $user->getRoleNames();
                 if (in_array('Administrator', $userRoles, true)) {
-                    set_status_header(403);
-                    echo 'You cannot remover user who has Admninitrator role set';
-                    return;
+                    return $this->output->set_status_header(403)->set_output('You cannot remover user who has Admninitrator role set');
                 }
                 $selectedUsername = strtolower($user->getUsername());
                 $currentUsername = strtolower($this->session->userdata('username'));
