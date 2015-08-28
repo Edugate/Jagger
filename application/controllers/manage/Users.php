@@ -4,11 +4,9 @@ if (!defined('BASEPATH')) {
 }
 
 /**
- * ResourceRegistry3
- *
- * @package   RR3
+ * @package   Jagger
  * @author    Middleware Team HEAnet
- * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright 2015  HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  *
@@ -80,25 +78,6 @@ class Users extends MY_Controller
         return $this->isOwner($encodedUsername);
     }
 
-    private function getRolenamesToJson(models\User $user, $range = null)
-    {
-        $roles = $user->getRoles();
-        $result = array();
-        if ($range === 'system') {
-            foreach ($roles as $r) {
-                $rtype = $r->getType();
-                if ($rtype === 'system') {
-                    $result[] = $r->getName();
-                }
-            }
-        } else {
-            foreach ($roles as $r) {
-                $result[] = $r->getName();
-            }
-        }
-        return json_encode($result);
-    }
-
     public function currentRoles($encodeduser)
     {
         $encodeduser = strip_tags($encodeduser);
@@ -118,7 +97,8 @@ class Users extends MY_Controller
         if (empty($user)) {
             return $this->output->set_status_header(404)->set_output('User not found');
         }
-        $result = $this->getRolenamesToJson($user);
+        //$result = $this->getRolenamesToJson($user);
+        $result = json_encode($user->getRoleNames());
         $this->output
             ->set_status_header(200)
             ->set_content_type('application/json', 'utf-8')
@@ -158,7 +138,7 @@ class Users extends MY_Controller
             return;
         }
         $user = $this->findUserOrExit($encodeduser);
-        $resultInJsonEncoded = $this->getRolenamesToJson($user, 'system');
+        $resultInJsonEncoded = json_encode($user->getSystemRoleNames());
 
         $this->output
             ->set_status_header(200)
@@ -247,7 +227,8 @@ class Users extends MY_Controller
         }
         $this->em->persist($user);
         $this->em->flush();
-        $resultInJson = $this->getRolenamesToJson($user);
+      //  $resultInJson = $this->getRolenamesToJson($user);
+        $resultInJson = json_encode($user->getRoleNames());
         $this->output->set_content_type('application/json')->set_output($resultInJson);
     }
 
@@ -546,12 +527,6 @@ class Users extends MY_Controller
         return $this->form_validation->run();
     }
 
-    private function accessmodifySubmitValidate()
-    {
-        log_message('debug', '(modify authz type) validating form initialized');
-        $this->form_validation->set_rules('authz', 'Access', 'xss');
-        return $this->form_validation->run();
-    }
 
     public function remove()
     {
