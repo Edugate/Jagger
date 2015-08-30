@@ -27,7 +27,7 @@ if (count($add_attr_final) > 0)
 <?php
     for ($i = 0; $i < $no_new_attr; $i++)
     {
-        echo form_open(base_url(). "manage/attribute_requirement/fedsubmit", $attributes, $spid_hidden);
+        echo form_open(base_url(). "manage/attrrequirement/fedsubmit", $attributes, $spid_hidden);
         echo form_fieldset(lang('rr_addreqattr'));
         echo '<ol>';
         echo '<li>';
@@ -59,7 +59,7 @@ if (count($already_in_attr) > 0)
     {
         $spid_hidden['attribute'] = $a['attr_id'];
         $spid_hidden['type'] = 'FED';
-        echo form_open(base_url() . 'manage/attribute_requirement/fedsubmit', $attributes2, $spid_hidden);
+        echo form_open(base_url() . 'manage/attrrequirement/fedsubmit', $attributes2, $spid_hidden);
         echo form_fieldset($a['name']);
         echo "<ol>";
         echo "<p><b>\"" . $a['fullname'] . "\":</b> " . $a['description'] . "<br />

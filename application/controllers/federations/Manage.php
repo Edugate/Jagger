@@ -312,7 +312,7 @@ class Manage extends MY_Controller
 
         } else {
             $sideicons[] = '<a href="' . base_url() . 'manage/fededit/show/' . $federationID . '" title="' . lang('rr_fededit') . '"><i class="fi-pencil"></i></a>';
-            $editAttributesLink = '<a href="' . base_url() . 'manage/attribute_requirement/fed/' . $federationID . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
+            $editAttributesLink = '<a href="' . base_url() . 'manage/attrrequirement/fed/' . $federationID . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
         }
 
         $bookmarked = false;
