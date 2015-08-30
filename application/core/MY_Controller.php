@@ -41,7 +41,7 @@ if (!defined('BASEPATH')) {
  * @property Arpgen $arpgen
  * @property Providerdetails $providerdetails
  * @property Rrpreference $rrpreference
- * @property User_manage $user_manage
+ * @property Jusermanage $jusermanage
  * @property Form_element $form_element
  * @property Doctrine $doctrine
  * @property CI_Cache $cache

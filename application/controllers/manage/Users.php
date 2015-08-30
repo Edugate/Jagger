@@ -538,7 +538,7 @@ class Users extends MY_Controller
             return;
 
         } else {
-            $this->load->library('user_manage');
+            $this->load->library('jusermanage');
             /**
              * @var $user models\User
              */
@@ -557,7 +557,7 @@ class Users extends MY_Controller
                 $selectedUsername = strtolower($user->getUsername());
                 $currentUsername = strtolower($this->session->userdata('username'));
                 if (strcmp($selectedUsername, $currentUsername) != 0) {
-                    $this->user_manage->remove($user);
+                    $this->jusermanage->remove($user);
                     echo 'user has been removed';
                     $this->load->library('tracker');
                     $this->tracker->save_track('user', 'remove', $selectedUsername, 'user removed from the system', true);
