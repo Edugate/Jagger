@@ -1,30 +1,16 @@
 <?php
-
 namespace models;
 
 
     /**
-     * ResourceRegistry3
-     *
-     * @package     RR3
-     * @author      Middleware Team HEAnet
-     * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
-     * @license     MIT http://www.opensource.org/licenses/mit-license.php
-     *
-     */
-    /**
-     * Provider Class
-     *
-     * @package     RR3
-     * @subpackage  Models
-     * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+     * @package   Jagger
+     * @author    Middleware Team HEAnet
+     * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+     * @license   MIT http://www.opensource.org/licenses/mit-license.php
+     * This model for Identity and Service Providers definitions
      */
 
 /**
- * Provider Model
- *
- * This model for Identity and Service Providers definitions
- *
  * @Entity
  * @HasLifecycleCallbacks
  * @Table(name="provider",indexes={@Index(name="type_idx", columns={"type"}),@Index(name="pname_idx", columns={"name"}),@Index(name="islocal_idx", columns={"is_local"})})
@@ -454,7 +440,7 @@ class Provider
 
     public function setLocalName(array $name = NULL)
     {
-        if (!empty($name)) {
+        if ($name !== null) {
             foreach ($name as $k => $v) {
                 if (empty($v)) {
                     unset($name['' . $k . '']);
@@ -474,7 +460,7 @@ class Provider
 
     public function setLocalDisplayName($name = NULL)
     {
-        if (!empty($name) && is_array($name)) {
+        if (is_array($name)) {
             foreach ($name as $k => $v) {
                 if (empty($v)) {
                     unset($name['' . $k . '']);
@@ -486,10 +472,10 @@ class Provider
         }
     }
 
-    public function setRegistrationPolicyFromArray($regarray, $reset = FALSE)
+    public function setRegistrationPolicyFromArray($regarray, $reset = false)
     {
 
-        if ($reset === TRUE) {
+        if ($reset === true) {
             $this->regpolicy = serialize($regarray);
         } else {
             $s = $this->getRegistrationPolicy();
@@ -513,13 +499,6 @@ class Provider
         return $this;
     }
 
-    /**
-     * public function setScope($scope)
-     * {
-     * $this->scope = $scope;
-     * return $this;
-     * }
-     */
 
     /**
      * type : idpsso, aa
@@ -874,14 +853,14 @@ class Provider
 
     public function setWayfList($wayflist = null)
     {
-        if (!empty($wayflist) && is_array($wayflist)) {
+        if (is_array($wayflist)) {
             $this->wayflist = serialize($wayflist);
         }
     }
 
     public function setExcarps($excarps = null)
     {
-        if (!empty($excarps) && is_array($excarps) && count($excarps) > 0) {
+        if (is_array($excarps) && count($excarps) > 0) {
             $this->excarps = serialize($excarps);
         } else {
             $this->excarps = null;
@@ -1196,14 +1175,12 @@ class Provider
          */
         $counterIdx = 0;
         foreach ($this->getCertificates() as $ctmp) {
-            if($provider->getCertificates()->containsKey($counterIdx))
-            {
+            if ($provider->getCertificates()->containsKey($counterIdx)) {
                 $nctmp = $provider->getCertificates()->get($counterIdx);
                 $ctmp->setType($nctmp->getType());
                 $cdata1 = $nctmp->getFingerprint();
                 $cdata2 = $ctmp->getFingerprint();
-                if($cdata1 !== $cdata2)
-                {
+                if ($cdata1 !== $cdata2) {
                     $ctmp->setCertdata($nctmp->getCertData());
                 }
 
@@ -1214,9 +1191,7 @@ class Provider
 
                 $provider->getCertificates()->remove($counterIdx);
 
-            }
-            else
-            {
+            } else {
                 $this->removeCertificate($ctmp);
             }
 
@@ -1545,7 +1520,7 @@ class Provider
     {
         $result = null;
         $backupname = null;
-        if (empty($type)) {
+        if ($type === null) {
             $type = $this->type;
         }
         $doFilter = array('DisplayName');
@@ -1650,7 +1625,7 @@ class Provider
         $result = array();
         $ex = $this->getExtendMetadata();
         foreach ($ex as $v) {
-            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'DisplayName') {
+            if ($v->getType() === $type && $v->getNameSpace() === 'mdui' && $v->getElement() === 'DisplayName') {
                 $l = $v->getAttributes();
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
@@ -1815,7 +1790,7 @@ class Provider
         $result = array();
         $ex = $this->getExtendMetadata();
         foreach ($ex as $v) {
-            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'PrivacyStatementURL') {
+            if ($v->getType() === $type && $v->getNameSpace() === 'mdui' && $v->getElement() === 'PrivacyStatementURL') {
                 $l = $v->getAttributes();
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
