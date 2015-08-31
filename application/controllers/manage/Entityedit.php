@@ -4,13 +4,11 @@ if (!defined('BASEPATH')) {
 }
 
 /**
- * ResourceRegistry3
- *
- * @package   RR3
- * @copyright Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
+ * @package   Jagger
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
- * Entityedit Class
- * @author   Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ *
  * @property Curl $curl
  * @property ProviderUpdater $providerupdater
  * @property Form_element $form_element
@@ -302,6 +300,11 @@ class Entityedit extends MY_Controller
                     $this->form_validation->set_rules('f[uii][idpsso][domainhint][' . $k . ']', 'DomainHint', 'trim|valid_domain|min_length[4]|max_length[500]');
                 }
             }
+             if (isset($y['f']['uii']['idpsso']['logo']) && is_array($y['f']['uii']['idpsso']['logo'])) {
+                foreach ($y['f']['uii']['idpsso']['logo'] as $k => $v) {
+                    $this->form_validation->set_rules('f[uii][idpsso][logo][' . $k . '][url]', 'Logo', 'trim|required|validimageorurl');
+                }
+            }
 
             if (array_key_exists('lhelpdesk', $y['f'])) {
                 foreach ($y['f']['lhelpdesk'] as $k => $v) {
@@ -417,7 +420,6 @@ class Entityedit extends MY_Controller
                         $this->form_validation->set_rules('f[srv][AssertionConsumerService][' . $k . '][order]', 'AssertionConsumerService index', 'trim|required|numeric');
 
                         $tmpurl = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['url']);
-                        $tmporder = trim($y['f']['srv']['AssertionConsumerService']['' . $k . '']['order']);
                         if (!empty($tmpurl)) {
                             if (!empty($v['order'])) {
                                 $acsindexes[] = $v['order'];

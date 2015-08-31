@@ -1169,7 +1169,7 @@ class Providerdetails
                 $str = '';
                 foreach ($uiiarray['Logo'] as $v) {
                     $logovalue = $v->getLogoValue();
-                    if ((substr($logovalue, 0, 11)) === 'data:image/') {
+                    if ((substr($logovalue, 0, 5)) === 'data:') {
                         $figcap = lang('embedlogo');
                     } else {
                         $figcap = html_escape($logovalue);

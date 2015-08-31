@@ -109,11 +109,13 @@ class Ajax extends MY_Controller
         } else {
             $imageDetails = getimagesizefromstring($image);
         }
+
         $result['data'] = array(
             'width' => $imageDetails[0],
             'height' => $imageDetails[1],
             'mime' => $mimeType,
             'url' => $logourl,
+            'raw' => 'data:'.$mimeType.';base64,'.base64_encode($image).''
         );
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }

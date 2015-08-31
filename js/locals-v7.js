@@ -1916,6 +1916,8 @@ $(document).ready(function () {
             var logourl = f.find("input[name='" + type + "inputurl']").attr('value');
             var logosize = f.find("input[name='" + type + "inputsize']").attr('value');
             var logolang = f.find("select[name='" + type + "logolang']").val();
+            var logoembedded = f.find("input[name='" + type + "embedded']").first().val();
+            var logoraw = f.find("input[name='" + type + "logoraw']").attr('value');
 
             if (logolang === '0') {
                 logolangtxt = 'unspec';
@@ -1925,14 +1927,24 @@ $(document).ready(function () {
             }
 
 
-            var hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logourl + '">';
+
             var hiddeninputsize = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][size]" value="' + logosize + '">';
             var hiddeninputlang = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][lang]" value="' + logolang + '">';
             var origblock = $('li#nlogo' + type + 'row');
             var newblock = origblock.clone(true);
             newblock.removeAttr('id');
-            newblock.find('img').first().attr('src', logourl).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
-            newblock.find('div.logoinfo').first().append('' + logolangtxt + '<br />').append(logourl + '<br />').append(logosize + '<br />');
+            if(logoembedded !== undefined && logoembedded === 'embedded' && logoraw !== undefined && logoraw !== null && logoraw !== '')
+            {
+                var hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logoraw + '">';
+                newblock.find('img').first().attr('src', logoraw).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
+                newblock.find('div.logoinfo').first().append('' + logolangtxt + '<br />').append(logosize + '<br />');
+            }
+            else {
+                var hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logourl + '">';
+                newblock.find('img').first().attr('src', logourl).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
+                newblock.find('div.logoinfo').first().append('' + logolangtxt + '<br />').append(logourl + '<br />').append(logosize + '<br />');
+            }
+
 
             newblock.insertBefore(origblock).show();
 
@@ -1986,7 +1998,7 @@ $(document).ready(function () {
                             };
                             img.src = jsondata.url;
                             var sizeinfo = jsondata.width + 'x' + json.data.height;
-                            var hiddeninputurl, hiddeninputsize, hiddeninputtype;
+                            var hiddeninputurl, hiddeninputsize, hiddeninputtype, hiddenlogoraw;
                             var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
                             var rname = '';
                             for (var i = 0; i < 5; i++) {
@@ -1996,8 +2008,9 @@ $(document).ready(function () {
                                 hiddeninputtype = '<input type="hidden" name="logotype" value="idp">';
                                 hiddeninputurl = '<input type="hidden" name="idpinputurl" value="' + json.data.url + '">';
                                 hiddeninputsize = '<input type="hidden" name="idpinputsize" value="' + sizeinfo + '">';
+                                hiddenlogoraw = '<input type="hidden" name="idplogoraw" value="' + json.data.raw + '">';
 
-                                imgdiv.empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
+                                imgdiv.empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype).append(hiddenlogoraw);
                                 $('div#idpreviewlogo div.logoinfo').empty().append(sizeinfo);
                                 logoreview.show();
                             }
@@ -2005,7 +2018,8 @@ $(document).ready(function () {
                                 hiddeninputtype = '<input type="hidden" name="logotype" value="idp">';
                                 hiddeninputurl = '<input type="hidden" name="spinputurl" value="' + json.data.url + '">';
                                 hiddeninputsize = '<input type="hidden" name="spinputsize" value="' + sizeinfo + '">';
-                                imgdiv.empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype);
+                                hiddenlogoraw = '<input type="hidden" name="splogoraw" value="' + json.data.raw + '">';
+                                imgdiv.empty().append(img).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputtype).append(hiddenlogoraw);
                                 $('div#spreviewlogo div.logoinfo').empty().append(sizeinfo);
                                 logoreview.show();
                             }

@@ -139,7 +139,7 @@ class ExtendMetadata {
         {
             return $this->evalue;
         }
-        elseif ((substr($this->evalue, 0, 11)) === 'data:image/')
+        elseif ((substr($this->evalue, 0, 5)) === 'data:')
         {
             return $this->evalue;
         }
