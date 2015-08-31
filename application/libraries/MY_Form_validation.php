@@ -156,14 +156,48 @@ class MY_form_validation extends CI_form_validation
         $urnRegex = '/^urn:[a-z0-9][a-z0-9-]{1,31}:([a-z0-9()+,-.:=@;$_!*\']|%(0[1-9a-f]|[1-9a-f][0-9a-f]))+$/i';
         $isUrnValid = (bool)preg_match($urnRegex, $str);
         if ($isUrnValid) {
-            return TRUE;
+            return true;
         }
         $isValidUrl = parent::valid_url($str);
         if ($isValidUrl) {
-            return TRUE;
+            return true;
         }
         $this->set_message('valid_urnorurl', "%s : contains invalid URI");
-        return FALSE;
+        return false;
+    }
+
+    public function validimageorurl($str)
+    {
+        $isValidUrl = parent::valid_url($str);
+        if ($isValidUrl) {
+            return true;
+        }
+        $str1pos = strpos($str,'data:');
+        $str2pos = strpos($str,'base64,');
+        if($str1pos === 0 && (30 > $str2pos) && ($str2pos > 0))
+        {
+            $cutpos = $str2pos+7;
+            $substr = substr($str, $cutpos);
+            $img = base64_decode($substr);
+            if(function_exists('imagecreatefromstring'))
+            {
+                $img2 =  imagecreatefromstring($img);
+                if(!$img2)
+                {
+                    $this->set_message('validimageorurl', "%s : contains invalid imagedata");
+                    return false;
+                }
+            }
+            else
+            {
+                 $this->set_message('validimageorurl', "%s : cannot validate imagedata");
+                 return false;
+            }
+            return true;
+
+        }
+        $this->set_message('validimageorurl', "%s : contains invalid URL/imagedata");
+        return false;
     }
 
     /**

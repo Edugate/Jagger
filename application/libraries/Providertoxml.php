@@ -17,7 +17,7 @@ class Providertoxml
 
     private $ci;
     /**
-     * @var $em Doctrine\ORM\EntityManager
+     * @var Doctrine\ORM\EntityManager $em
      */
     private $em;
     private $isGenIdFnExist;
@@ -145,74 +145,78 @@ class Providertoxml
             }
         );
         $algsCount = $algMethods->count();
-        if (!empty($registrar) || count($cocsByGroups['entcat']) || $algsCount > 0) {
-            $xml->startElementNs('md', 'Extensions', null);
-            if ($algsCount > 0) {
-                $xml->writeAttribute('xmlns:alg', 'urn:oasis:names:tc:SAML:metadata:algsupport');
-            }
+        if (empty($registrar) && count($cocsByGroups['entcat']) == 0 && $algsCount == 0) {
+            return $xml;
+        }
 
-            if (!empty($registrar)) {
-                $xml->startElementNs('mdrpi', 'RegistrationInfo', null);
-                $xml->writeAttribute('registrationAuthority', $registrar);
-                /**
-                 * @var $registerDate DateTime
-                 */
-                $registerDate = $ent->getRegistrationDate();
-                if (!empty($registerDate)) {
-                    $xml->writeAttribute('registrationInstant', $registerDate->format('Y-m-d\TH:i:s\Z'));
-                    if (count($cocsByGroups['regpol']) > 0) {
-                        $langsset = array();
-                        foreach ($cocsByGroups['regpol'] as $v) {
-                            $vlang = $v->getLang();
-                            if (in_array($vlang, $langsset)) {
-                                \log_message('error', __METHOD__ . ' multiple registration policies are set for lang:' . $vlang . ' for entityId: ' . $ent->getEntityId());
-                                continue;
-                            }
-                            $langsset[] = $vlang;
-                            $xml->startElementNs('mdrpi', 'RegistrationPolicy', null);
-                            $xml->writeAttribute('xml:lang', $vlang);
-                            $xml->text($v->getUrl());
-                            $xml->endElement();
+
+        $xml->startElementNs('md', 'Extensions', null);
+        if ($algsCount > 0) {
+            $xml->writeAttribute('xmlns:alg', 'urn:oasis:names:tc:SAML:metadata:algsupport');
+        }
+
+        if (!empty($registrar)) {
+            $xml->startElementNs('mdrpi', 'RegistrationInfo', null);
+            $xml->writeAttribute('registrationAuthority', $registrar);
+            /**
+             * @var $registerDate DateTime
+             */
+            $registerDate = $ent->getRegistrationDate();
+            if ($registerDate !== null) {
+                $xml->writeAttribute('registrationInstant', $registerDate->format('Y-m-d\TH:i:s\Z'));
+                if (count($cocsByGroups['regpol']) > 0) {
+                    $langsset = array();
+                    foreach ($cocsByGroups['regpol'] as $v) {
+                        $vlang = $v->getLang();
+                        if (in_array($vlang, $langsset)) {
+                            \log_message('error', __METHOD__ . ' multiple registration policies are set for lang:' . $vlang . ' for entityId: ' . $ent->getEntityId());
+                            continue;
                         }
-                    } elseif (!empty($this->globalRegpolicy)) {
+                        $langsset[] = $vlang;
                         $xml->startElementNs('mdrpi', 'RegistrationPolicy', null);
-                        $xml->writeAttribute('xml:lang', 'en');
-                        $xml->text($this->globalRegpolicy);
+                        $xml->writeAttribute('xml:lang', $vlang);
+                        $xml->text($v->getUrl());
                         $xml->endElement();
                     }
+                } elseif (!empty($this->globalRegpolicy)) {
+                    $xml->startElementNs('mdrpi', 'RegistrationPolicy', null);
+                    $xml->writeAttribute('xml:lang', 'en');
+                    $xml->text($this->globalRegpolicy);
+                    $xml->endElement();
                 }
-                $xml->endElement();
             }
+            $xml->endElement();
+        }
 
-            if (count($cocsByGroups['entcat']) > 0) {
+        if (count($cocsByGroups['entcat']) > 0) {
 
-                $xml->startElementNs('mdattr', 'EntityAttributes', null);
-                foreach ($cocsByGroups['entcat'] as $k => $v) {
+            $xml->startElementNs('mdattr', 'EntityAttributes', null);
+            foreach ($cocsByGroups['entcat'] as $k => $v) {
 
-                    $xml->startElementNs('saml', 'Attribute', null);
-                    $xml->writeAttribute('Name', $k);
-                    $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
-                    foreach ($v as $v1) {
-                        $xml->startElementNs('saml', 'AttributeValue', null);
-                        $xml->text($v1->getUrl());
-                        $xml->endElement();
-                    }
+                $xml->startElementNs('saml', 'Attribute', null);
+                $xml->writeAttribute('Name', $k);
+                $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
+                foreach ($v as $v1) {
+                    $xml->startElementNs('saml', 'AttributeValue', null);
+                    $xml->text($v1->getUrl());
                     $xml->endElement();
                 }
                 $xml->endElement();
             }
-
-            foreach ($algMethods as $alg) {
-                $xml->startElementNs('alg', $alg->getElement(), null);
-                $xml->writeAttribute('Algorithm', $alg->getEvalue());
-                $algattrs = $alg->getAttributes();
-                foreach ($algattrs as $k => $a) {
-                    $xml->writeAttribute($k, $a);
-                }
-                $xml->endElement();
-            }
-            $xml->endElement(); //end extensions element
+            $xml->endElement();
         }
+
+        foreach ($algMethods as $alg) {
+            $xml->startElementNs('alg', $alg->getElement(), null);
+            $xml->writeAttribute('Algorithm', $alg->getEvalue());
+            $algattrs = $alg->getAttributes();
+            foreach ($algattrs as $k => $a) {
+                $xml->writeAttribute($k, $a);
+            }
+            $xml->endElement();
+        }
+        $xml->endElement(); //end extensions element
+
         return $xml;
     }
 
@@ -247,22 +251,21 @@ class Providertoxml
     {
         $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
         $doFilter = array(
-            'elements'=>array_keys($extarray),
-            'type'=>array($role),
-            'namespace'=>array('mdui')
+            'elements' => array_keys($extarray),
+            'type' => array($role),
+            'namespace' => array('mdui')
         );
         $extendMeta = $ent->getExtendMetadata()->filter(
             function (models\ExtendMetadata $entry) use ($doFilter) {
-                return in_array($entry->getType(), $doFilter['type']) && in_array($entry->getElement(), $doFilter['elements']) &&  in_array($entry->getNamespace(), $doFilter['namespace']) ;
+                return in_array($entry->getType(), $doFilter['type']) && in_array($entry->getElement(), $doFilter['elements']) && in_array($entry->getNamespace(), $doFilter['namespace']);
             }
         );
-        if($extendMeta->count() ==0)
-        {
-             return $xml;
+        if ($extendMeta->count() == 0) {
+            return $xml;
         }
 
         foreach ($extendMeta as $v) {
-                $extarray['' . $v->getElement() . ''][] = $v;
+            $extarray['' . $v->getElement() . ''][] = $v;
         }
         $xml->startElementNs('mdui', 'UIInfo', null);
         $enLang = array();
@@ -289,7 +292,7 @@ class Providertoxml
             foreach ($logoAttrs as $lk => $lv) {
                 $xml->writeAttribute($lk, $lv);
             }
-            if (!filter_var($l->getElementValue(), FILTER_VALIDATE_URL)) {
+            if (!filter_var($l->getElementValue(), FILTER_VALIDATE_URL) && !((substr($l->getElementValue(), 0, 5)) === 'data:')) {
                 $xml->text($this->logoPrefixUrl . $l->getElementValue());
             } else {
                 $xml->text($l->getElementValue());
@@ -403,24 +406,23 @@ class Providertoxml
          * @var $reqColl \models\AttributeRequirement[]
          */
         $reqColl = $ent->getAttributesRequirement()->filter(
-            function(models\AttributeRequirement $entry){
+            function (models\AttributeRequirement $entry) {
                 return in_array($entry->getAttribute()->showInMetadata(), array(true));
             }
         );
         $reqCollHidden = $ent->getAttributesRequirement()->filter(
-            function(models\AttributeRequirement $entry){
+            function (models\AttributeRequirement $entry) {
                 return in_array($entry->getAttribute()->showInMetadata(), array(false));
             }
         );
         $finalReqAttrs = &$reqColl;
-        if (count($finalReqAttrs) == 0 && count($reqCollHidden)==0) {
+        if (count($finalReqAttrs) == 0 && count($reqCollHidden) == 0) {
             if (!isset($options['fedreqattrs']) || count($options['fedreqattrs']) == 0) {
                 return $xml;
             }
             $finalReqAttrs = &$options['fedreqattrs'];
         }
-        if (count($finalReqAttrs) == 0)
-        {
+        if (count($finalReqAttrs) == 0) {
             return $xml;
         }
 

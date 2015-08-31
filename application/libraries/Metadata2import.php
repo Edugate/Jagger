@@ -34,7 +34,7 @@ class Metadata2import
      */
     protected $em;
 
-    function __construct()
+    public function __construct()
     {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
@@ -44,12 +44,16 @@ class Metadata2import
         $this->full = false;
 
         $this->defaults = array(
+            'localimport' => false,
             'static' => true,
             'local' => false,
-            'federation' => null,
+            'federationid' => null,
             'live' => false,
             'removeexternal' => false,
             'mailreport' => false,
+            'active' => false,
+            'overwritelocal' => false,
+            'attrreqinherit' => false,
         );
         $this->other = null;
     }
@@ -60,7 +64,7 @@ class Metadata2import
      */
     private function genReport($report)
     {
-        if (!(!empty($report) && is_array($report))) {
+        if (!is_array($report)) {
             return false;
         }
         $this->ci->load->library('email_sender');
@@ -68,7 +72,7 @@ class Metadata2import
         foreach ($report['body'] as $bb) {
             $body .= $bb . PHP_EOL;
         }
-        $structureChanged = FALSE;
+        $structureChanged = false;
         $sections = array(
             'new' => 'List new providers registered during sync',
             'joinfed' => 'List existing providers added to federation during sync',
@@ -102,6 +106,29 @@ class Metadata2import
         return $attributes;
     }
 
+    /**
+     * @param \models\Federation $federation
+     * @return array
+     */
+    private function getAttrReqByFed(\models\Federation $federation)
+    {
+        /**
+         * @var $fedReqAttrs models\AttributeRequirement[]
+         */
+        $fedReqAttrs = $federation->getAttributesRequirement();
+
+        $attrRequiredByFed = array();
+
+        foreach ($fedReqAttrs as $rv) {
+            $attrRequiredByFed[] = array(
+                'name' => $rv->getAttribute()->getOid(),
+                'req' => $rv->isRequiredToStr()
+            );
+        }
+        return $attrRequiredByFed;
+    }
+
+
     public function import($metadata, $type, $full, array $defaults, $other = null)
     {
         $tmpProviders = new models\Providers;
@@ -115,11 +142,9 @@ class Metadata2import
         }
 
         /**
-         * @var $coclist models\Coc[]
-         * @var $regpollist models\Coc[]
+         * @var $cocreglist models\Coc[]
          */
-        $coclist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
-        $regpollist = $this->em->getRepository("models\Coc")->findBy(array('type' => 'regpol'));
+        $cocreglist = $this->em->getRepository("models\Coc")->findBy(array('type' => array('regpol', 'entcat')));
         $attributes = $this->getAttributesByNames();
 
 
@@ -138,671 +163,649 @@ class Metadata2import
         $coclistarray = array();
         $regpollistconverted = array();
         $regpollistarray = array();
-        $regpollistlangarray = array();
 
-        foreach ($coclist as $k => $c) {
-            $coclistconverted['' . $c->getId() . ''] = $c;
-            $coclistarray['' . $c->getId() . ''] = $c->getUrl();
-            $ncoclistarray['' . $c->getSubtype() . '']['' . $c->getId() . ''] = $c->getUrl();
-        }
-        foreach ($regpollist as $k => $c) {
-            $regpollistconverted['' . $c->getId() . ''] = $c;
-            $regpollistarray['' . $c->getId() . ''] = $c->getUrl();
-            $regpollistlangarray['' . $c->getId() . ''] = $c->getLang();
+        foreach ($cocreglist as $cocreg) {
+            $cocregtype = $cocreg->getType();
+            if ($cocregtype === 'entcat') {
+                $coclistconverted['' . $cocreg->getId() . ''] = $cocreg;
+                $coclistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+                $ncoclistarray['' . $cocreg->getSubtype() . '']['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+            } else {
+                $regpollistconverted['' . $cocreg->getId() . ''] = $cocreg;
+                $regpollistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+            }
         }
 
 
         /**
-         * @var $federations models\Federation[]
+         * @var $federation models\Federation
          */
-        $federations = array();
-        if (array_key_exists('federations', $this->defaults)) {
-            $federations = $this->em->getRepository("models\Federation")->findBy(array('name' => $this->defaults['federations']));
-            foreach ($federations as $ff) {
-                $report['body'][] = 'Sync with federation: ' . $ff->getName();
+
+        if (array_key_exists('federationid', $this->defaults)) {
+            $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $this->defaults['federationid']));
+            if ($federation === null) {
+                log_message('error', __METHOD__ . ' federation not found yu want to import to');
+                return false;
             }
+
+            $report['body'][] = 'Sync with federation: ' . $federation->getName();
+
         }
         /**
          * if param static is not provided then static is set to true
          */
-        $static = true;
-        if (array_key_exists('static', $this->defaults) && $this->defaults['static'] === FALSE) {
-            $static = false;
-        }
-        $local = false;
-        if (array_key_exists('local', $this->defaults) && $this->defaults['local'] === true) {
-            $local = true;
-        }
-        $active = false;
-        if (array_key_exists('active', $this->defaults) && $this->defaults['active'] === true) {
-            $active = true;
-        }
-        $overwritelocal = false;
-        if (array_key_exists('overwritelocal', $this->defaults) && $this->defaults['overwritelocal'] === TRUE) {
-            $overwritelocal = true;
-        }
-
-
+        $static = $this->defaults['static'];
+        $local = $this->defaults['local'];
+        $active = $this->defaults['active'];
+        $overwritelocal = $this->defaults['overwritelocal'];
         // remove external entities if they're not member of any other federation
-        $removeexternal = false;
-        if (array_key_exists('removeexternal', $this->defaults) && $this->defaults['removeexternal'] === TRUE) {
-            $removeexternal = true;
-        }
-        $attrreqinherit = false;
-        if (array_key_exists('attrreqinherit', $this->defaults) && $this->defaults['attrreqinherit'] === true) {
-            $attrreqinherit = true;
-        }
+        $removeexternal = $this->defaults['removeexternal'];
+        $attrreqinherit = $this->defaults['attrreqinherit'];
 
-        $time_start = microtime(true);
+
+        $timeStart = microtime(true);
         $this->metadataInArray = $this->ci->metadata2array->rootConvert($metadata, $full);
-        $time_end = microtime(true);
-        $time_execution = $time_end - $time_start;
-        log_message('debug', __METHOD__ . ' time execution of converting metadata to array took: ' . $time_execution);
-        if (!(empty($this->metadataInArray) || is_array($this->metadataInArray) || count($this->metadataInArray) == 0)) {
+        $timeEnd = microtime(true);
+        $timeExecution = $timeEnd - $timeStart;
+        log_message('debug', __METHOD__ . ' time execution of converting metadata to array took: ' . $timeExecution);
+        if (!is_array($this->metadataInArray) || count($this->metadataInArray) == 0) {
             \log_message('warning', __METHOD__ . ' converting xml metadata 
                                into array resulted empty array or null value');
-            return null;
+            return false;
         }
 
 
-        foreach ($federations as $f) {
-            /**
-             * @var $fedReqAttrs models\AttributeRequirement[]
-             */
-            $fedReqAttrs = $f->getAttributesRequirement();
+        $attrRequiredByFed = $this->getAttrReqByFed($federation);
+        $copyFedAttrReq = false;
+        if ($attrreqinherit === true && count($attrRequiredByFed) > 0) {
+            $copyFedAttrReq = true;
+        }
 
-            $attrRequiredByFed = array();
+        $fedMembershipColl = $federation->getMembership();
 
-            foreach ($fedReqAttrs as $rv) {
-                $attrRequiredByFed[] = array(
-                    'name' => $rv->getAttribute()->getOid(),
-                    'req' => $rv->isRequiredToStr()
-                );
+        /**
+         * @var $membership \models\FederationMembers[]
+         */
+        $membership = $fedMembershipColl->toArray();
+        $membershipByEnt = array();
+        foreach ($membership as $k => $m) {
+            $membershipByEnt['' . $m->getProvider()->getEntityId() . ''] = array('mshipKey' => $k, 'mship' => &$m);
+        }
+
+        // run sync
+        if ($this->defaults['localimport'] !== true) {
+            \log_message('info', __METHOD__ . ' running as sync for ' . $federation->getName());
+            foreach ($fedMembershipColl as $m) {
+                $membershipByEnt['' . $m->getProvider()->getEntityId() . ''] = $m;
             }
-            $copyFedAttrReq = false;
-            if (count($attrRequiredByFed) > 0 && $attrreqinherit === true) {
-                $copyFedAttrReq = true;
-            }
-
-            $fedMembershipCollection = $f->getMembership();
-
-            /**
-             * @var $membership \models\FederationMembers[]
-             */
-            $membership = $fedMembershipCollection->toArray();
-            $membershipByEnt = array();
-            foreach ($membership as $k => $m) {
-                $membershipByEnt['' . $m->getProvider()->getEntityId() . ''] = array('mshipKey' => $k, 'mship' => &$m);
-            }
-
-            // run sync
-            if (empty($this->defaults['localimport'])) {
-                \log_message('info', __METHOD__ . ' running as sync for ' . $f->getName());
-                foreach ($fedMembershipCollection as $m) {
-                    $membershipByEnt['' . $m->getProvider()->getEntityId() . ''] = $m;
+            // list entities in the source
+            $membersFromExtSrc = array();
+            $counter = 0;
+            foreach ($this->metadataInArray as $ent) {
+                $startTime = microtime(true);
+                // START if type matches
+                if (!isset($ent['type'])) {
+                    log_message('error', __METHOD__ . ' missing type for entity: ' . $ent['entityid']);
+                    continue;
                 }
-                // list entities in the source 
-                $membersFromRemoteSource = array();
-                $counter = 0;
-                foreach ($this->metadataInArray as $ent) {
-                    $startTime = microtime(true);
-                    // START if type matches 
-                    if (!isset($ent['type'])) {
-                        log_message('error', __METHOD__ . " missing type for entity: " . $ent['entityid']);
-                        continue;
+                $counter++;
+                if (!($type === 'ALL' || $ent['type'] === 'BOTH' || $ent['type'] === $type)) {
+                    continue;
+                }
+
+
+                $importedProvider = new models\Provider;
+                $importedProvider->setProviderFromArray($ent);
+                /**
+                 * @var $existingProvider models\Provider
+                 */
+                $existingProvider = $tmpProviders->getOneByEntityId($ent['entityid']);
+                if ($existingProvider === null) {
+
+                    $membersFromExtSrc[] = $importedProvider->getEntityId();
+                    $importedProvider->setStatic($static);
+                    $importedProvider->setLocal($local);
+                    $importedProvider->setActive($active);
+                    // entityCategory begin
+                    foreach ($ent['coc'] as $attrname => $v) {
+                        if (isset($ncoclistarray['' . $attrname . ''])) {
+                            foreach ($v as $kv => $pv) {
+                                $y = array_search($v, $ncoclistarray['' . $attrname . '']);
+                                if ($y !== NULL && $y !== FALSE) {
+                                    $celement = $coclistconverted['' . $y . ''];
+                                    if (!empty($celement)) {
+                                        $importedProvider->setCoc($celement);
+                                    }
+                                }
+                            }
+                        }
                     }
-                    $counter++;
-                    if ($ent['type'] === 'BOTH' || $ent['type'] === $type || $type === 'ALL') {
+                    foreach ($ent['regpol'] as $k => $v) {
+                        $y = array_search($v['url'], $regpollistarray);
 
-                        $importedProvider = new models\Provider;
-                        $importedProvider->setProviderFromArray($ent);
-                        /**
-                         * @var $existingProvider models\Provider
-                         */
-                        $existingProvider = $tmpProviders->getOneByEntityId($importedProvider->getEntityId());
-                        if (empty($existingProvider)) {
-
-                            $membersFromRemoteSource[] = $importedProvider->getEntityId();
-                            $importedProvider->setStatic($static);
-                            $importedProvider->setLocal($local);
-                            $importedProvider->setActive($active);
-                            // entityCategory begin
-                            foreach ($ent['coc'] as $attrname => $v) {
-                                if (isset($ncoclistarray['' . $attrname . ''])) {
-                                    foreach ($v as $kv => $pv) {
-                                        $y = array_search($v, $ncoclistarray['' . $attrname . '']);
-                                        if ($y !== NULL && $y !== FALSE) {
-                                            $celement = $coclistconverted['' . $y . ''];
-                                            if (!empty($celement)) {
-                                                $importedProvider->setCoc($celement);
-                                            }
-                                        }
-                                    }
+                        if ($y != NULL && $y != FALSE) {
+                            foreach ($regpollistconverted as $p) {
+                                $purl = $p->getUrl();
+                                $plang = $p->getLang();
+                                if (strcmp($purl, $v['url']) == 0 && strcasecmp($plang, $v['lang']) == 0) {
+                                    $importedProvider->setCoc($p);
+                                    break;
                                 }
                             }
-                            foreach ($ent['regpol'] as $k => $v) {
-                                $y = array_search($v['url'], $regpollistarray);
-
-                                if ($y != NULL && $y != FALSE) {
-                                    foreach ($regpollistconverted as $p) {
-                                        $purl = $p->getUrl();
-                                        $plang = $p->getLang();
-                                        if (strcmp($purl, $v['url']) == 0 && strcasecmp($plang, $v['lang']) == 0) {
-                                            $importedProvider->setCoc($p);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-
-                            // end entityCategory
-                            // attr req  start
-                            $attrsset = array();
-                            if (isset($ent['details']['reqattrs'])) {
-                                foreach ($ent['details']['reqattrs'] as $r) {
-                                    if (array_key_exists($r['name'], $attributes)) {
-                                        if (!in_array($r['name'], $attrsset)) {
-                                            $reqattr = new models\AttributeRequirement;
-                                            $reqattr->setAttribute($attributes['' . $r['name'] . '']);
-                                            $reqattr->setType('SP');
-                                            $reqattr->setSP($importedProvider);
-                                            if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0) {
-                                                $reqattr->setStatus('required');
-                                            } else {
-                                                $reqattr->setStatus('desired');
-                                            }
-                                            $importedProvider->setAttributesRequirement($reqattr);
-                                            $this->em->persist($reqattr);
-                                            $attrsset[] = $r['name'];
-                                        }
-                                    } else {
-                                        log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
-                                    }
-                                }
-
-                                if ($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true) {
-                                    foreach ($attrRequiredByFed as $rt) {
-                                        if (!in_array($rt['name'], $attrsset)) {
-                                            $reqattr = new models\AttributeRequirement;
-                                            $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
-                                            $reqattr->setType('SP');
-                                            $reqattr->setSP($importedProvider);
-                                            if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
-                                                $reqattr->setStatus('required');
-                                            } else {
-                                                $reqattr->setStatus('desired');
-                                            }
-                                            $importedProvider->setAttributesRequirement($reqattr);
-                                            $this->em->persist($reqattr);
-                                            $attrsset[] = $rt['name'];
-                                        }
-                                    }
-                                }
-
-                            }
-
-                            // attr req end
-                            $newmembership = new models\Federationmembers();
-                            $newmembership->setProvider($importedProvider);
-                            $newmembership->setFederation($f);
-                            $newmembership->setJoinState('3');
-                            $report['provider']['new'][] = $importedProvider->getEntityId();
-                            $this->em->persist($newmembership);
-                            $this->em->persist($importedProvider);
-                        } // END for new provider
-                        else { // provider exist
-                            $membersFromRemoteSource[] = $existingProvider->getEntityId();
-                            $isLocal = $existingProvider->getLocal();
-                            $isLocked = $existingProvider->getLocked();
-                            $updateAllowed = (($isLocal && $overwritelocal && !$isLocked) || !$isLocal);
-                            if ($updateAllowed) {
-                                $existingProvider->overwriteByProvider($importedProvider);
-                                $currentCocs = $existingProvider->getCoc();
-                                foreach ($currentCocs as $c) {
-                                    $cType = $c->getType();
-                                    if ($cType === 'entcat') {
-                                        $cUrl = $c->getUrl();
-                                        $cSubtype = $c->getSubtype();
-                                        if (!isset($ent['coc']['' . $cSubtype . ''])) {
-                                            $existingProvider->removeCoc($c);
-                                        } else {
-                                            $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
-                                            if ($y === NULL || $y === FALSE) {
-                                                $existingProvider->removeCoc($c);
-                                            } else {
-                                                unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
-                                            }
-                                        }
-                                    } elseif ($cType === 'regpol') {
-                                        $cUrl = $c->getUrl();
-                                        $cLang = $c->getLang();
-                                        $cExist = FALSE;
-                                        $cKey = null;
-                                        foreach ($ent['regpol'] as $k => $v) {
-                                            if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                                $cExist = TRUE;
-                                                $cKey = $k;
-                                                break;
-                                            }
-                                        }
-                                        if ($cExist === FALSE) {
-                                            $existingProvider->removeCoc($c);
-                                        } else {
-                                            unset($ent['regpol']['' . $cKey . '']);
-                                        }
-                                    }
-                                }
-                                foreach ($ent['coc'] as $attrname => $v) {
-                                    if (isset($ncoclistarray['' . $attrname . ''])) {
-                                        foreach ($v as $k => $p) {
-                                            $y = array_search($p, $ncoclistarray['' . $attrname . '']);
-                                            if ($y !== null && $y !== FALSE) {
-                                                $existingProvider->setCoc($coclistconverted['' . $y . '']);
-                                            }
-                                        }
-                                    }
-                                }
-                                foreach ($ent['regpol'] as $v) {
-                                    foreach ($regpollistconverted as $c) {
-                                        $cUrl = $c->getUrl();
-                                        $cLang = $c->getLang();
-                                        if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                            $existingProvider->setCoc($c);
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                $existingProvider->setStatic($static);
-                                $duplicateControl = array();
-                                $requiredAttrs = $existingProvider->getAttributesRequirement();
-                                foreach ($requiredAttrs as $a) {
-                                    $oid = $a->getAttribute()->getOid();
-                                    if (in_array('' . $oid . '', $duplicateControl)) {
-                                        $requiredAttrs->removeElement($a);
-                                        $this->em->remove($a);
-                                    } else {
-                                        $duplicateControl[] = $oid;
-                                    }
-                                }
-                                if (isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs'])) {
-                                    foreach ($requiredAttrs as $r) {
-                                        $found = false;
-                                        $roid = $r->getAttribute()->getOid();
-                                        foreach ($ent['details']['reqattrs'] as $k => $v) {
-                                            if (strcmp($roid, $v['name']) == 0) {
-                                                $found = true;
-                                                if (isset($v['req']) && strcasecmp($v['req'], 'true') == 0) {
-                                                    $r->setStatus('required');
-                                                } else {
-                                                    $r->setStatus('desired');
-                                                }
-                                                unset($ent['details']['reqattrs']['' . $k . '']);
-                                                $this->em->persist($r);
-                                                break;
-                                            }
-                                        }
-                                        if (!$found) {
-                                            $requiredAttrs->removeElement($r);
-                                            $this->em->remove($r);
-                                        }
-                                    }
-                                    foreach ($ent['details']['reqattrs'] as $nr) {
-                                        if (isset($nr['name']) && array_key_exists($nr['name'], $attributes)) {
-                                            $reqattr = new models\AttributeRequirement;
-                                            $reqattr->setAttribute($attributes['' . $nr['name'] . '']);
-                                            $reqattr->setType('SP');
-                                            $reqattr->setSP($existingProvider);
-                                            if (isset($nr['req']) && strcasecmp($nr['req'], 'true') == 0) {
-                                                $reqattr->setStatus('required');
-                                            } else {
-                                                $reqattr->setStatus('desired');
-                                            }
-                                            $existingProvider->setAttributesRequirement($reqattr);
-                                            $this->em->persist($reqattr);
-                                            $duplicateControl[] = $nr['name'];
-                                        } else {
-                                            log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
-                                        }
-                                    }
-                                    if ($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true) {
-                                        foreach ($attrRequiredByFed as $rt) {
-                                            if (!in_array($rt['name'], $duplicateControl)) {
-                                                $reqattr = new models\AttributeRequirement;
-                                                $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
-                                                $reqattr->setType('SP');
-                                                $reqattr->setSP($existingProvider);
-                                                if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
-                                                    $reqattr->setStatus('required');
-                                                } else {
-                                                    $reqattr->setStatus('desired');
-                                                }
-                                                $existingProvider->setAttributesRequirement($reqattr);
-                                                $this->em->persist($reqattr);
-                                                $duplicateControl[] = $rt['name'];
-                                            }
-                                        }
-                                    }
-                                }
-                                /**
-                                 * END attrs requirements processing
-                                 */
-                            }
-
-
-                            if (!array_key_exists($existingProvider->getEntityId(), $membershipByEnt)) {
-                                if (($isLocal && !$isLocked) || !($isLocal)) {
-
-                                    $newMembership = new models\FederationMembers;
-                                    $newMembership->setProvider($existingProvider);
-                                    $newMembership->setFederation($f);
-                                    $newMembership->setJoinState('3');
-                                    $this->em->persist($newMembership);
-                                    $report['provider']['joinfed'][] = $existingProvider->getEntityId();
-                                }
-                            }
-                            $this->em->persist($existingProvider);
                         }
-                        if ($counter > 300) {
-                            $this->em->flush();
-                            $counter = 0;
-                        }
-                    } // END if type matches
-                    $endTime = microtime(true);
-                    $looptime = $endTime - $startTime;
-                    log_message('debug', 'running in loop time execution:: ' . $looptime);
-                }
+                    }
 
-                $currentMembershipList = array_keys($membershipByEnt);
-                $membersdiff = array_diff($currentMembershipList, $membersFromRemoteSource);
-                if (count($membersdiff) > 0) {
-                    log_message('debug', __METHOD__ . ' found diff in membership, not existing members in external metadata ' . serialize($membersdiff));
-                    foreach ($membersdiff as $d) {
-                        $mm2 = $membershipByEnt['' . $d . ''];
-                        log_message('debug', __METHOD__ . ' proceeding removing ' . $mm2->getProvider()->getEntityId() . ' from fed:' . $f->getName());
-                        $mm2joinstate = $mm2->getJoinState();
-                        $tmpprov = $mm2->getProvider();
-
-                        $isLocal = $mm2->getProvider()->getLocal();
-
-                        log_message('debug', __METHOD__ . ' current state of provider:: joinstate-' . $mm2joinstate . ', islocal-' . $isLocal);
-                        if (!($mm2joinstate == 0 || $mm2joinstate == 1)) {
-
-                            log_message('debug', 'proceeding ' . $mm2->getProvider()->getEntityId() . ' joinstatus:' . $mm2joinstate);
-                            if (!$isLocal && $removeexternal) {
-
-                                $ff = $tmpprov->getFederations();
-                                $countFeds = $ff->count();
-                                if ($countFeds < 2 && $ff->contains($f)) {
-                                    $report['provider']['del'][] = $tmpprov->getEntityId();
-                                    $this->em->remove($tmpprov);
-                                } else {
-                                    $report['provider']['leavefed'][] = $tmpprov->getEntityId();
-                                    $this->em->remove($mm2);
-                                }
-                            } elseif ($mm2joinstate != 2) {
-                                $this->em->remove($mm2);
-                            }
-                        } elseif ($mm2joinstate == 0 && !$isLocal) {
-                            if ($removeexternal) {
-                                $countFeds = $mm2->getProvider()->getFederations()->count();
-                                if ($countFeds < 2) {
-                                    $this->em->remove($mm2->getProvider());
+                    // end entityCategory
+                    // attr req  start
+                    $attrsset = array();
+                    if (isset($ent['details']['reqattrs'])) {
+                        foreach ($ent['details']['reqattrs'] as $r) {
+                            if (array_key_exists($r['name'], $attributes)) {
+                                if (!in_array($r['name'], $attrsset)) {
+                                    $reqattr = new models\AttributeRequirement;
+                                    $reqattr->setAttribute($attributes['' . $r['name'] . '']);
+                                    $reqattr->setType('SP');
+                                    $reqattr->setSP($importedProvider);
+                                    if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0) {
+                                        $reqattr->setStatus('required');
+                                    } else {
+                                        $reqattr->setStatus('desired');
+                                    }
+                                    $importedProvider->setAttributesRequirement($reqattr);
+                                    $this->em->persist($reqattr);
+                                    $attrsset[] = $r['name'];
                                 }
                             } else {
-                                $this->em->remove($mm2);
+                                log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
                             }
                         }
-                    }
-                }
-                try {
-                    $this->genReport($report);
-                    $this->em->flush();
-                } catch (Exception $e) {
-                    log_message('error', __METHOD__ . ' ' . $e);
-                    return false;
-                }
-            }  // END SYNC
-            else {
-                \log_message('info', __METHOD__ . ' running as import for ' . $f->getName() . '
-                  - new entities will be created and added to federation(s)');
 
-                $counter = 0;
-                foreach ($this->metadataInArray as $ent) {
-                    $counter++;
-                    if ($ent['type'] === 'BOTH' || $ent['type'] === $type || $type == 'ALL') {
-                        $importedProvider = new models\Provider;
-                        $importedProvider->setProviderFromArray($ent);
-
-                        $existingProvider = $tmpProviders->getOneByEntityId($importedProvider->getEntityId());
-                        if (empty($existingProvider)) {
-                            $importResult[] = lang('provcreated') . ': ' . $importedProvider->getEntityId();
-                            $importedProvider->setStatic($static);
-                            $importedProvider->setLocal($local);
-                            $importedProvider->setActive($active);
-                            // coc begin
-
-                            foreach ($ent['coc'] as $attrname => $v) {
-                                if (isset($coclistarray['' . $attrname . ''])) {
-                                    $y = array_search($v, $coclistarray['' . $attrname . '']);
-                                    if ($y != NULL && $y != FALSE) {
-                                        $celement = $coclistconverted['' . $y . ''];
-                                        if (!empty($celement)) {
-                                            $importedProvider->setCoc($celement);
-                                        }
+                        if ($ent['details']['reqattrsinmeta'] === false && $copyFedAttrReq === true) {
+                            foreach ($attrRequiredByFed as $rt) {
+                                if (!in_array($rt['name'], $attrsset)) {
+                                    $reqattr = new models\AttributeRequirement;
+                                    $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
+                                    $reqattr->setType('SP');
+                                    $reqattr->setSP($importedProvider);
+                                    if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
+                                        $reqattr->setStatus('required');
+                                    } else {
+                                        $reqattr->setStatus('desired');
                                     }
+                                    $importedProvider->setAttributesRequirement($reqattr);
+                                    $this->em->persist($reqattr);
+                                    $attrsset[] = $rt['name'];
                                 }
                             }
-                            // coc end
-                            foreach ($ent['regpol'] as $v) {
-                                foreach ($regpollistconverted as $c) {
-                                    $cUrl = $c->getUrl();
-                                    $cLang = $c->getLang();
+                        }
+
+                    }
+
+                    // attr req end
+                    $newmembership = new models\Federationmembers();
+                    $newmembership->setProvider($importedProvider);
+                    $newmembership->setFederation($federation);
+                    $newmembership->setJoinstate('3');
+                    $report['provider']['new'][] = $importedProvider->getEntityId();
+                    $this->em->persist($newmembership);
+                    $this->em->persist($importedProvider);
+                } // END for new provider
+                else { // provider exist
+                    $membersFromExtSrc[] = $existingProvider->getEntityId();
+                    $isLocal = $existingProvider->getLocal();
+                    $isLocked = $existingProvider->getLocked();
+                    $updateAllowed = (($isLocal && $overwritelocal && !$isLocked) || !$isLocal);
+                    if ($updateAllowed) {
+                        $existingProvider->overwriteByProvider($importedProvider);
+                        $currentCocs = $existingProvider->getCoc();
+                        foreach ($currentCocs as $c) {
+                            $cType = $c->getType();
+                            if ($cType === 'entcat') {
+                                $cUrl = $c->getUrl();
+                                $cSubtype = $c->getSubtype();
+                                if (!isset($ent['coc']['' . $cSubtype . ''])) {
+                                    $existingProvider->removeCoc($c);
+                                } else {
+                                    $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
+                                    if ($y === NULL || $y === FALSE) {
+                                        $existingProvider->removeCoc($c);
+                                    } else {
+                                        unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
+                                    }
+                                }
+                            } elseif ($cType === 'regpol') {
+                                $cUrl = $c->getUrl();
+                                $cLang = $c->getLang();
+                                $cExist = FALSE;
+                                $cKey = null;
+                                foreach ($ent['regpol'] as $k => $v) {
                                     if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                        $importedProvider->setCoc($c);
+                                        $cExist = TRUE;
+                                        $cKey = $k;
                                         break;
                                     }
                                 }
-                            }
-
-                            // attr req  start
-                            if (isset($ent['details']['reqattrs'])) {
-                                $attrsset = array();
-                                foreach ($ent['details']['reqattrs'] as $r) {
-                                    if (array_key_exists($r['name'], $attributes)) {
-                                        if (!in_array($r['name'], $attrsset)) {
-                                            $reqattr = new models\AttributeRequirement;
-                                            $reqattr->setAttribute($attributes['' . $r['name'] . '']);
-                                            $reqattr->setType('SP');
-                                            $reqattr->setSP($importedProvider);
-                                            if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0) {
-                                                $reqattr->setStatus('required');
-                                            } else {
-                                                $reqattr->setStatus('desired');
-                                            }
-                                            $importedProvider->setAttributesRequirement($reqattr);
-                                            $this->em->persist($reqattr);
-                                            $attrsset[] = $r['name'];
-                                        }
-                                    } else {
-                                        log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
-                                    }
-                                }
-                            }
-
-                            // attr req end
-                            // set membership
-                            $isLocal = $importedProvider->getLocal();
-                            $newmembership = new models\Federationmembers();
-                            $newmembership->setProvider($importedProvider);
-                            $newmembership->setFederation($f);
-                            if ($isLocal) {
-                                $newmembership->setJoinState('1');
-                            }
-                            //set membership end
-
-                            $this->em->persist($newmembership);
-                            $this->em->persist($importedProvider);
-                        } else { // for existing entity
-                            $importEntity = '';
-                            $elocal = $existingProvider->getLocal();
-                            $isLocked = $existingProvider->getLocked();
-                            $updateAllowed = (($elocal && $overwritelocal && !$isLocked) OR !$elocal);
-                            if ($updateAllowed) {
-                                $importEntity .= lang('provupdated');
-                                $existingProvider->overwriteByProvider($importedProvider);
-                                $existingProvider->setLocal($this->defaults['local']);
-                                $currentCocs = $existingProvider->getCoc();
-                                foreach ($currentCocs as $c) {
-                                    $cType = $c->getType();
-                                    if ($cType === 'entcat') {
-                                        $cUrl = $c->getUrl();
-                                        $cSubtype = $c->getSubtype();
-                                        if (!isset($ent['coc']['' . $cSubtype . ''])) {
-                                            $existingProvider->removeCoc($c);
-                                        } else {
-                                            $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
-                                            if ($y === NULL || $y === FALSE) {
-                                                $existingProvider->removeCoc($c);
-                                            } else {
-                                                unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
-                                            }
-                                        }
-                                    } elseif ($cType === 'regpol') {
-                                        $cUrl = $c->getUrl();
-                                        $cLang = $c->getLang();
-                                        $cExist = FALSE;
-                                        $cKey = null;
-                                        foreach ($ent['regpol'] as $k => $v) {
-                                            if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                                $cExist = TRUE;
-                                                $cKey = $k;
-                                                break;
-                                            }
-                                        }
-                                        if ($cExist === FALSE) {
-                                            $existingProvider->removeCoc($c);
-                                        } else {
-                                            unset($ent['regpol']['' . $cKey . '']);
-                                        }
-                                    }
-                                }
-
-                                foreach ($ent['coc'] as $attrname => $v) {
-                                    if (isset($ncoclistarray['' . $attrname . ''])) {
-                                        foreach ($v as $k => $p) {
-                                            $y = array_search($p, $ncoclistarray['' . $attrname . '']);
-                                            if ($y !== null && $y !== FALSE) {
-                                                $existingProvider->setCoc($coclistconverted['' . $y . '']);
-                                            }
-                                        }
-                                    }
-                                }
-                                foreach ($ent['regpol'] as $v) {
-                                    foreach ($regpollistconverted as $c) {
-                                        $cUrl = $c->getUrl();
-                                        $cLang = $c->getLang();
-                                        if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                            $existingProvider->setCoc($c);
-                                            break;
-                                        }
-                                    }
-                                }
-
-
-                                $existingProvider->setStatic($static);
-                                /**
-                                 *   attrs requirements processing
-                                 */
-                                $duplicateControl = array();
-                                $requiredAttrs = $existingProvider->getAttributesRequirement();
-                                foreach ($requiredAttrs as $a) {
-                                    $oid = $a->getAttribute()->getOid();
-                                    if (in_array('' . $oid . '', $duplicateControl)) {
-                                        $requiredAttrs->removeElement($a);
-                                        $this->em->remove($a);
-                                    } else {
-                                        $duplicateControl[] = $oid;
-                                    }
-                                }
-                                if (isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs'])) {
-                                    foreach ($requiredAttrs as $r) {
-                                        $found = false;
-                                        $roid = $r->getAttribute()->getOid();
-                                        foreach ($ent['details']['reqattrs'] as $k => $v) {
-                                            if (strcmp($roid, $v['name']) == 0) {
-                                                $found = true;
-                                                if (isset($v['req']) && strcasecmp($v['req'], 'true') == 0) {
-                                                    $r->setStatus('required');
-                                                } else {
-                                                    $r->setStatus('desired');
-                                                }
-                                                unset($ent['details']['reqattrs']['' . $k . '']);
-                                                $this->em->persist($r);
-                                            }
-                                            if ($found) {
-                                                break;
-                                            }
-                                        }
-                                        if (!$found) {
-                                            $requiredAttrs->removeElement($r);
-                                            $this->em->remove($r);
-                                        }
-                                    }
-                                    foreach ($ent['details']['reqattrs'] as $nr) {
-                                        if (isset($nr['name']) && array_key_exists($nr['name'], $attributes)) {
-                                            $reqattr = new models\AttributeRequirement;
-                                            $reqattr->setAttribute($attributes['' . $nr['name'] . '']);
-                                            $reqattr->setType('SP');
-                                            $reqattr->setSP($existingProvider);
-                                            if (isset($nr['req']) && strcasecmp($nr['req'], 'true') == 0) {
-                                                $reqattr->setStatus('required');
-                                            } else {
-                                                $reqattr->setStatus('desired');
-                                            }
-                                            $existingProvider->setAttributesRequirement($reqattr);
-                                            $this->em->persist($reqattr);
-                                        } else {
-                                            log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
-                                        }
-                                    }
-                                }
-                                /**
-                                 * END attrs requirements processing
-                                 */
-                            }
-                            if (!($isLocked && $elocal)) {
-                                $settingMebership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider' => $existingProvider, 'federation' => $f->getId()));
-                                if (empty($settingMebership)) {
-                                    $newMembership = new models\FederationMembers();
-                                    $newMembership->setProvider($existingProvider);
-                                    $newMembership->setFederation($f);
-                                    $newMembership->setJoinState('1');
-                                    $this->em->persist($newMembership);
-                                    $importEntity .= ', ' . lang('rr_addedtofed');
+                                if ($cExist === FALSE) {
+                                    $existingProvider->removeCoc($c);
                                 } else {
-                                    $cjoinstate = $settingMebership->getJoinState();
-                                    if ($cjoinstate == 2) {
-                                        $importEntity .= '; ' . lang('rr_addedtofed');
-                                    } elseif ($cjoinstate == 3) {
-                                        $importEntity .= '; ' . lang('rr_convertjoinstate31');
-                                    } else {
-                                        $importEntity .= '; ' . lang('rr_joinstatealreadyinfed');
-                                    }
-                                    $settingMebership->setJoinState('1');
-                                    $this->em->persist($settingMebership);
+                                    unset($ent['regpol']['' . $cKey . '']);
                                 }
                             }
-                            $importResult[] = $importEntity . ': ' . $existingProvider->getEntityId();
-                        } // end for existing provider
+                        }
+                        foreach ($ent['coc'] as $attrname => $v) {
+                            if (isset($ncoclistarray['' . $attrname . ''])) {
+                                foreach ($v as $k => $p) {
+                                    $y = array_search($p, $ncoclistarray['' . $attrname . '']);
+                                    if ($y !== null && $y !== FALSE) {
+                                        $existingProvider->setCoc($coclistconverted['' . $y . '']);
+                                    }
+                                }
+                            }
+                        }
+                        foreach ($ent['regpol'] as $v) {
+                            foreach ($regpollistconverted as $c) {
+                                $cUrl = $c->getUrl();
+                                $cLang = $c->getLang();
+                                if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
+                                    $existingProvider->setCoc($c);
+                                    break;
+                                }
+                            }
+                        }
+
+                        $existingProvider->setStatic($static);
+                        $duplicateControl = array();
+                        $requiredAttrs = $existingProvider->getAttributesRequirement();
+                        foreach ($requiredAttrs as $a) {
+                            $oid = $a->getAttribute()->getOid();
+                            if (in_array('' . $oid . '', $duplicateControl)) {
+                                $requiredAttrs->removeElement($a);
+                                $this->em->remove($a);
+                            } else {
+                                $duplicateControl[] = $oid;
+                            }
+                        }
+                        if (isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs'])) {
+                            foreach ($requiredAttrs as $r) {
+                                $found = false;
+                                $roid = $r->getAttribute()->getOid();
+                                foreach ($ent['details']['reqattrs'] as $k => $v) {
+                                    if (strcmp($roid, $v['name']) == 0) {
+                                        $found = true;
+                                        if (isset($v['req']) && strcasecmp($v['req'], 'true') == 0) {
+                                            $r->setStatus('required');
+                                        } else {
+                                            $r->setStatus('desired');
+                                        }
+                                        unset($ent['details']['reqattrs']['' . $k . '']);
+                                        $this->em->persist($r);
+                                        break;
+                                    }
+                                }
+                                if (!$found) {
+                                    $requiredAttrs->removeElement($r);
+                                    $this->em->remove($r);
+                                }
+                            }
+                            foreach ($ent['details']['reqattrs'] as $nr) {
+                                if (isset($nr['name']) && array_key_exists($nr['name'], $attributes)) {
+                                    $reqattr = new models\AttributeRequirement;
+                                    $reqattr->setAttribute($attributes['' . $nr['name'] . '']);
+                                    $reqattr->setType('SP');
+                                    $reqattr->setSP($existingProvider);
+                                    if (isset($nr['req']) && strcasecmp($nr['req'], 'true') == 0) {
+                                        $reqattr->setStatus('required');
+                                    } else {
+                                        $reqattr->setStatus('desired');
+                                    }
+                                    $existingProvider->setAttributesRequirement($reqattr);
+                                    $this->em->persist($reqattr);
+                                    $duplicateControl[] = $nr['name'];
+                                } else {
+                                    log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
+                                }
+                            }
+                            if ($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true) {
+                                foreach ($attrRequiredByFed as $rt) {
+                                    if (!in_array($rt['name'], $duplicateControl)) {
+                                        $reqattr = new models\AttributeRequirement;
+                                        $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
+                                        $reqattr->setType('SP');
+                                        $reqattr->setSP($existingProvider);
+                                        if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
+                                            $reqattr->setStatus('required');
+                                        } else {
+                                            $reqattr->setStatus('desired');
+                                        }
+                                        $existingProvider->setAttributesRequirement($reqattr);
+                                        $this->em->persist($reqattr);
+                                        $duplicateControl[] = $rt['name'];
+                                    }
+                                }
+                            }
+                        }
+                        /**
+                         * END attrs requirements processing
+                         */
                     }
-                    if ($counter > 50) {
-                        $this->em->flush();
-                        $counter = 0;
+
+
+                    if ((($isLocal && !$isLocked) || !($isLocal)) && !array_key_exists($existingProvider->getEntityId(), $membershipByEnt)) {
+                        $newMembership = new models\FederationMembers;
+                        $newMembership->setProvider($existingProvider);
+                        $newMembership->setFederation($federation);
+                        $newMembership->setJoinstate('3');
+                        $this->em->persist($newMembership);
+                        $report['provider']['joinfed'][] = $existingProvider->getEntityId();
+
+                    }
+                    $this->em->persist($existingProvider);
+                }
+                if ($counter > 300) {
+                    $this->em->flush();
+                    $counter = 0;
+                }
+
+                $endTime = microtime(true);
+                $looptime = $endTime - $startTime;
+                log_message('debug', 'running in loop time execution:: ' . $looptime);
+            }
+
+            $currMembersList = array_keys($membershipByEnt);
+            $membersdiff = array_diff($currMembersList, $membersFromExtSrc);
+            if (count($membersdiff) > 0) {
+                log_message('debug', __METHOD__ . ' found diff in membership, not existing members in external metadata ' . serialize($membersdiff));
+                foreach ($membersdiff as $d) {
+                    $mm2 = $membershipByEnt['' . $d . ''];
+                    log_message('debug', __METHOD__ . ' proceeding removing ' . $mm2->getProvider()->getEntityId() . ' from fed:' . $federation->getName());
+                    $mm2joinstate = $mm2->getJoinState();
+                    $tmpprov = $mm2->getProvider();
+
+                    $isLocal = $mm2->getProvider()->getLocal();
+
+                    log_message('debug', __METHOD__ . ' current state of provider:: joinstate-' . $mm2joinstate . ', islocal-' . $isLocal);
+                    if (!($mm2joinstate === 0 || $mm2joinstate === 1)) {
+
+                        log_message('debug', 'proceeding ' . $mm2->getProvider()->getEntityId() . ' joinstatus:' . $mm2joinstate);
+                        if (!$isLocal && $removeexternal) {
+
+                            $ff = $tmpprov->getFederations();
+                            $countFeds = $ff->count();
+                            if ($countFeds < 2 && $ff->contains($federation)) {
+                                $report['provider']['del'][] = $tmpprov->getEntityId();
+                                $this->em->remove($tmpprov);
+                            } else {
+                                $report['provider']['leavefed'][] = $tmpprov->getEntityId();
+                                $this->em->remove($mm2);
+                            }
+                        } elseif ($mm2joinstate != 2) {
+                            $this->em->remove($mm2);
+                        }
+                    } elseif ($mm2joinstate == 0 && !$isLocal) {
+                        if ($removeexternal) {
+                            $countFeds = $mm2->getProvider()->getFederations()->count();
+                            if ($countFeds < 2) {
+                                $this->em->remove($mm2->getProvider());
+                            }
+                        } else {
+                            $this->em->remove($mm2);
+                        }
                     }
                 }
-            } // END import 
-        }
+            }
+            try {
+                $this->genReport($report);
+                $this->em->flush();
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
+                return false;
+            }
+        }  // END SYNC
+        else {
+            \log_message('info', __METHOD__ . ' running as import for ' . $federation->getName() . '
+                  - new entities will be created and added to federation(s)');
+
+            $counter = 0;
+            foreach ($this->metadataInArray as $ent) {
+                $counter++;
+                if (!($type == 'ALL' || $ent['type'] === 'BOTH' || $ent['type'] === $type)) {
+                    continue;
+                }
+                $importedProvider = new models\Provider;
+                $importedProvider->setProviderFromArray($ent);
+
+                /**
+                 * @var models\Provider $existingProvider
+                 */
+                $existingProvider = $tmpProviders->getOneByEntityId($importedProvider->getEntityId());
+                if (empty($existingProvider)) {
+                    $importResult[] = lang('provcreated') . ': ' . $importedProvider->getEntityId();
+                    $importedProvider->setStatic($static);
+                    $importedProvider->setLocal($local);
+                    $importedProvider->setActive($active);
+                    // coc begin
+
+                    foreach ($ent['coc'] as $attrname => $v) {
+                        if (isset($coclistarray['' . $attrname . ''])) {
+                            $y = array_search($v, $coclistarray['' . $attrname . '']);
+                            if ($y != NULL && $y != FALSE) {
+                                $celement = $coclistconverted['' . $y . ''];
+                                if (!empty($celement)) {
+                                    $importedProvider->setCoc($celement);
+                                }
+                            }
+                        }
+                    }
+                    // coc end
+                    foreach ($ent['regpol'] as $v) {
+                        foreach ($regpollistconverted as $c) {
+                            $cUrl = $c->getUrl();
+                            $cLang = $c->getLang();
+                            if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
+                                $importedProvider->setCoc($c);
+                                break;
+                            }
+                        }
+                    }
+
+                    // attr req  start
+                    if (isset($ent['details']['reqattrs'])) {
+                        $attrsset = array();
+                        foreach ($ent['details']['reqattrs'] as $r) {
+                            if (array_key_exists($r['name'], $attributes)) {
+                                if (!in_array($r['name'], $attrsset)) {
+                                    $reqattr = new models\AttributeRequirement;
+                                    $reqattr->setAttribute($attributes['' . $r['name'] . '']);
+                                    $reqattr->setType('SP');
+                                    $reqattr->setSP($importedProvider);
+                                    if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0) {
+                                        $reqattr->setStatus('required');
+                                    } else {
+                                        $reqattr->setStatus('desired');
+                                    }
+                                    $importedProvider->setAttributesRequirement($reqattr);
+                                    $this->em->persist($reqattr);
+                                    $attrsset[] = $r['name'];
+                                }
+                            } else {
+                                log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
+                            }
+                        }
+                    }
+
+                    // attr req end
+                    // set membership
+                    $isLocal = $importedProvider->getLocal();
+                    $newmembership = new models\Federationmembers();
+                    $newmembership->setProvider($importedProvider);
+                    $newmembership->setFederation($federation);
+                    if ($isLocal) {
+                        $newmembership->setJoinstate('1');
+                    }
+                    //set membership end
+
+                    $this->em->persist($newmembership);
+                    $this->em->persist($importedProvider);
+                } else { // for existing entity
+                    $importEntity = '';
+                    $elocal = $existingProvider->getLocal();
+                    $isLocked = $existingProvider->getLocked();
+                    $updateAllowed = (($elocal && $overwritelocal && !$isLocked) OR !$elocal);
+                    if ($updateAllowed) {
+                        $importEntity .= lang('provupdated');
+                        $existingProvider->overwriteByProvider($importedProvider);
+                        $existingProvider->setLocal($this->defaults['local']);
+                        $currentCocs = $existingProvider->getCoc();
+                        foreach ($currentCocs as $c) {
+                            $cType = $c->getType();
+                            if ($cType === 'entcat') {
+                                $cUrl = $c->getUrl();
+                                $cSubtype = $c->getSubtype();
+                                if (!isset($ent['coc']['' . $cSubtype . ''])) {
+                                    $existingProvider->removeCoc($c);
+                                } else {
+                                    $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
+                                    if ($y === NULL || $y === FALSE) {
+                                        $existingProvider->removeCoc($c);
+                                    } else {
+                                        unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
+                                    }
+                                }
+                            } elseif ($cType === 'regpol') {
+                                $cUrl = $c->getUrl();
+                                $cLang = $c->getLang();
+                                $cExist = FALSE;
+                                $cKey = null;
+                                foreach ($ent['regpol'] as $k => $v) {
+                                    if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
+                                        $cExist = TRUE;
+                                        $cKey = $k;
+                                        break;
+                                    }
+                                }
+                                if ($cExist === FALSE) {
+                                    $existingProvider->removeCoc($c);
+                                } else {
+                                    unset($ent['regpol']['' . $cKey . '']);
+                                }
+                            }
+                        }
+
+                        foreach ($ent['coc'] as $attrname => $v) {
+                            if (isset($ncoclistarray['' . $attrname . ''])) {
+                                foreach ($v as $k => $p) {
+                                    $y = array_search($p, $ncoclistarray['' . $attrname . '']);
+                                    if ($y !== null && $y !== FALSE) {
+                                        $existingProvider->setCoc($coclistconverted['' . $y . '']);
+                                    }
+                                }
+                            }
+                        }
+                        foreach ($ent['regpol'] as $v) {
+                            foreach ($regpollistconverted as $c) {
+                                $cUrl = $c->getUrl();
+                                $cLang = $c->getLang();
+                                if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
+                                    $existingProvider->setCoc($c);
+                                    break;
+                                }
+                            }
+                        }
+
+
+                        $existingProvider->setStatic($static);
+                        /**
+                         *   attrs requirements processing
+                         */
+                        $duplicateControl = array();
+                        $requiredAttrs = $existingProvider->getAttributesRequirement();
+                        foreach ($requiredAttrs as $a) {
+                            $oid = $a->getAttribute()->getOid();
+                            if (in_array('' . $oid . '', $duplicateControl)) {
+                                $requiredAttrs->removeElement($a);
+                                $this->em->remove($a);
+                            } else {
+                                $duplicateControl[] = $oid;
+                            }
+                        }
+                        if (isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs'])) {
+                            foreach ($requiredAttrs as $r) {
+                                $found = false;
+                                $roid = $r->getAttribute()->getOid();
+                                foreach ($ent['details']['reqattrs'] as $k => $v) {
+                                    if (strcmp($roid, $v['name']) == 0) {
+                                        $found = true;
+                                        if (isset($v['req']) && strcasecmp($v['req'], 'true') == 0) {
+                                            $r->setStatus('required');
+                                        } else {
+                                            $r->setStatus('desired');
+                                        }
+                                        unset($ent['details']['reqattrs']['' . $k . '']);
+                                        $this->em->persist($r);
+                                    }
+                                    if ($found) {
+                                        break;
+                                    }
+                                }
+                                if (!$found) {
+                                    $requiredAttrs->removeElement($r);
+                                    $this->em->remove($r);
+                                }
+                            }
+                            foreach ($ent['details']['reqattrs'] as $nr) {
+                                if (isset($nr['name']) && array_key_exists($nr['name'], $attributes)) {
+                                    $reqattr = new models\AttributeRequirement;
+                                    $reqattr->setAttribute($attributes['' . $nr['name'] . '']);
+                                    $reqattr->setType('SP');
+                                    $reqattr->setSP($existingProvider);
+                                    if (isset($nr['req']) && strcasecmp($nr['req'], 'true') == 0) {
+                                        $reqattr->setStatus('required');
+                                    } else {
+                                        $reqattr->setStatus('desired');
+                                    }
+                                    $existingProvider->setAttributesRequirement($reqattr);
+                                    $this->em->persist($reqattr);
+                                } else {
+                                    log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
+                                }
+                            }
+                        }
+                        /**
+                         * END attrs requirements processing
+                         */
+                    }
+                    if (!($isLocked && $elocal)) {
+                        $settingMebership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider' => $existingProvider, 'federation' => $federation->getId()));
+                        if (empty($settingMebership)) {
+                            $newMembership = new models\FederationMembers();
+                            $newMembership->setProvider($existingProvider);
+                            $newMembership->setFederation($federation);
+                            $newMembership->setJoinstate('1');
+                            $this->em->persist($newMembership);
+                            $importEntity .= ', ' . lang('rr_addedtofed');
+                        } else {
+                            $cjoinstate = $settingMebership->getJoinState();
+                            if ($cjoinstate == 2) {
+                                $importEntity .= '; ' . lang('rr_addedtofed');
+                            } elseif ($cjoinstate == 3) {
+                                $importEntity .= '; ' . lang('rr_convertjoinstate31');
+                            } else {
+                                $importEntity .= '; ' . lang('rr_joinstatealreadyinfed');
+                            }
+                            $settingMebership->setJoinState('1');
+                            $this->em->persist($settingMebership);
+                        }
+                    }
+                    $importResult[] = $importEntity . ': ' . $existingProvider->getEntityId();
+                } // end for existing provider
+
+                if ($counter > 50) {
+                    $this->em->flush();
+                    $counter = 0;
+                }
+            }
+        } // END import
+
         try {
             $this->em->flush();
             if (!empty($importResult)) {

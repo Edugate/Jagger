@@ -135,7 +135,15 @@ class ExtendMetadata {
     {
         $this->ci = & get_instance();
         $this->ci->load->helper('url');
-        if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $this->evalue, $matches)))
+        if(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $this->evalue, $matches))
+        {
+            return $this->evalue;
+        }
+        elseif ((substr($this->evalue, 0, 5)) === 'data:')
+        {
+            return $this->evalue;
+        }
+        else
         {
             $logobasepath = $this->ci->config->item('rr_logouriprefix');
             $logobaseurl = $this->ci->config->item('rr_logobaseurl');
@@ -146,10 +154,8 @@ class ExtendMetadata {
             $logourl = $logobaseurl . $logobasepath;
             return $logourl . $this->evalue;
         }
-        else
-        {
-            return $this->evalue;
-        }
+
+
     }
 
     public function getElementValue()

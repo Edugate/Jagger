@@ -1,21 +1,13 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /**
- * Jagger
- *
- * @package     Jagger
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Metadata Class
- *
- * @package     Jagger
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 
 /**
@@ -33,9 +25,9 @@ class Metadata extends MY_Controller
         $this->load->library('j_ncache');
     }
 
-    public function federation($federationName = NULL, $limitType = NULL)
+    public function federation($federationName = null, $limitType = null)
     {
-        if (empty($federationName)) {
+        if ($federationName === null) {
             show_error('Not found', 404);
         }
         $this->load->library('providertoxml');
@@ -56,14 +48,12 @@ class Metadata extends MY_Controller
         }
 
         /**
-         * @var $federation models\Federation
+         * @var  models\Federation $federation
          */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name, 'is_active' => true));
 
-        if (empty($federation)) {
-            set_status_header(404);
-            echo 'Federation not found or is inactive';
-            return;
+        if ($federation === null) {
+            return $this->output->set_status_header(404)->set_output('Federation not found or is inactive');
         }
         $publisher = $federation->getPublisher();
         $validfor = new \DateTime('now', new \DateTimezone('UTC'));
@@ -81,11 +71,13 @@ class Metadata extends MY_Controller
             $entitiesDescriptorId = $idprefix . $idsuffix;
         }
         $tmpAttrRequirements = new models\AttributeRequirements;
-        $options = array('attrs' => 1, 'fedreqattrs' => $tmpAttrRequirements->getRequirementsByFed($federation));
+        $options = array(
+            'attrs' => 1,
+            'fedreqattrs' => $tmpAttrRequirements->getRequirementsByFed($federation));
 
         $tmpm = new models\Providers;
         /**
-         * @var $members \models\Provider[]
+         * @var \models\Provider[] $members
          */
         $members = $tmpm->getActiveFederationMembers($federation, $excludeType);
 
@@ -114,9 +106,7 @@ class Metadata extends MY_Controller
             $xmlOut->endElement(); // Extensions
         }
         foreach ($members as $k => $m) {
-            $cacheId = null;
             $mtype = $m->getType();
-
             $xmlOut->startComment();
             $xmlOut->text(PHP_EOL . $m->getEntityId() . PHP_EOL);
 
@@ -149,14 +139,14 @@ class Metadata extends MY_Controller
         $this->load->view('metadata_view', $data);
     }
 
-    public function federationexport($federationName = NULL)
+    public function federationexport($federationName = null)
     {
-        if (empty($federationName)) {
+        if ($federationName === null) {
             show_error('Not found', 404);
         }
         $data = array();
         $permitPull = $this->checkAccess();
-        if ($permitPull !== TRUE) {
+        if ($permitPull !== true) {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
             show_error('Access denied', 403);
         }
@@ -166,7 +156,7 @@ class Metadata extends MY_Controller
          */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE, 'is_active' => TRUE));
 
-        if (empty($federation)) {
+        if ($federation === null) {
             show_404('page', 'log_error');
         }
         $this->load->library('providertoxml');
@@ -187,8 +177,7 @@ class Metadata extends MY_Controller
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
 
         $entitiesDescriptorId = $federation->getDescriptorId();
-        if (strlen($entitiesDescriptorId) == 0) {
-
+        if ($entitiesDescriptorId === '') {
             $idprefix = $this->config->item('fedexportmetadataidprefix');
             if (empty($idprefix)) {
                 $idprefix = '';
@@ -318,28 +307,32 @@ class Metadata extends MY_Controller
         return $result;
     }
 
-    public function circle($entityId = NULL, $fileName = NULL)
+    /**
+     * @param null $encodedEntityId
+     * @param null $fileName
+     */
+    public function circle($encodedEntityId = null, $fileName = null)
     {
         $isEnabled = $this->isCircleFeatureEnabled();
         if (!$isEnabled) {
             show_error('Circle of trust  metadata : Feature is disabled', 404);
         }
-        if (empty($entityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0) {
+        if ($encodedEntityId === null || $fileName === null || strcmp($fileName, 'metadata.xml') != 0) {
             show_error('Request not allowed', 403);
         }
         $permitPull = $this->checkAccess();
-        if ($permitPull !== TRUE) {
+        if ($permitPull !== true) {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
             show_error('Access denied', 403);
         }
         $data = array();
-        $name = base64url_decode($entityId);
+        $entityID = base64url_decode($encodedEntityId);
         /**
          * @var $provider models\Provider
          */
-        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $name . ''));
+        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $entityID . ''));
         if (empty($provider)) {
-            log_message('debug', 'Failed generating circle metadata for ' . $name);
+            log_message('debug', 'Failed generating circle metadata for ' . $entityID);
             show_error('unknown provider', 404);
         }
         if (!$this->isProviderAllowedForCircle($provider)) {

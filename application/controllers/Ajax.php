@@ -109,11 +109,13 @@ class Ajax extends MY_Controller
         } else {
             $imageDetails = getimagesizefromstring($image);
         }
+
         $result['data'] = array(
             'width' => $imageDetails[0],
             'height' => $imageDetails[1],
             'mime' => $mimeType,
             'url' => $logourl,
+            'raw' => 'data:'.$mimeType.';base64,'.base64_encode($image).''
         );
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
@@ -264,10 +266,7 @@ class Ajax extends MY_Controller
             log_message('error', __METHOD__ . ' username:' . $username . ' loggedin but user not found in db');
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        if (strcmp($action, 'add') !== 0 && strcmp($action, 'del') !== 0) {
-            return $this->output->set_status_header(403)->set_output('Access Denied - unknown action');
 
-        }
         if ($action === 'add') {
             /**
              * @var $ent models\Provider
@@ -280,12 +279,13 @@ class Ajax extends MY_Controller
             $this->em->persist($user);
             $userprefs = $user->getUserpref();
             $this->session->set_userdata(array('board' => $userprefs['board']));
-        }
-        if ($action === 'del') {
+        } elseif ($action === 'del') {
             $user->delEntityFromBookmark($entID);
             $this->em->persist($user);
             $userprefs = $user->getUserpref();
             $this->session->set_userdata(array('board' => $userprefs['board']));
+        } else {
+            return $this->output->set_status_header(403)->set_output('Access Denied - unknown action');
         }
         try {
             $this->em->flush();
@@ -325,23 +325,23 @@ class Ajax extends MY_Controller
                 return $this->output->set_status_header(404)->set_output('Federation not found');
             }
             $user->addFedToBookmark($fed->getId(), $fed->getName(), base64url_encode($fed->getName()));
-            $this->em->persist($user);
-            $userprefs = $user->getUserpref();
-            $this->session->set_userdata(array('board' => $userprefs['board']));
-            $this->em->flush();
-            return $this->output->set_status_header(200)->set_output('ok');
-
-
         } elseif ($action === 'del') {
             $user->delFedFromBookmark($entID);
-            $this->em->persist($user);
-            $userprefs = $user->getUserpref();
-            $this->session->set_userdata(array('board' => $userprefs['board']));
+        } else {
+            return $this->output->set_status_header(403)->set_output('unknown action');
+        }
+
+        $this->em->persist($user);
+        $userprefs = $user->getUserpref();
+        $this->session->set_userdata(array('board' => $userprefs['board']));
+
+        try {
             $this->em->flush();
             return $this->output->set_status_header(200)->set_output('ok');
-
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+            return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
-        return $this->output->set_status_header(403)->set_output('unknown action');
 
     }
 

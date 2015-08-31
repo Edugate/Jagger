@@ -25,9 +25,7 @@ class Fededit extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
+        if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('form_element');
@@ -71,15 +69,14 @@ class Fededit extends MY_Controller
         if (!ctype_digit($fedid)) {
             show_error(lang('wrongarggiven'), 403);
         }
-        $fed_tmp = new models\Federations();
+        $tmpFeds = new models\Federations();
         /**
          * @var $fed models\Federation
          */
-        $fed = $fed_tmp->getOneFederationById($fedid);
-        if (empty($fed)) {
+        $fed = $tmpFeds->getOneFederationById($fedid);
+        if ($fed === null) {
             show_error(lang('error_fednotfound'), 404);
         }
-        $allowedDigests = array('SHA-1', 'SHA-256');
         $this->load->library('form_element');
         $resource = $fed->getId();
         $this->fedid = $resource;
@@ -92,12 +89,12 @@ class Fededit extends MY_Controller
             array('url' => '#', 'type' => 'current', 'name' => lang('title_editform'))
 
         );
-        $has_write_access = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
-        $has_manage_access = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
-        if (($has_write_access || $has_manage_access) === FALSE) {
+        $hasWriteAcces = $this->zacl->check_acl('f_' . $resource, 'write', $group, '');
+        $hasManageAccess = $this->zacl->check_acl('f_' . $resource, 'manage', $group, '');
+        if (($hasWriteAcces || $hasManageAccess) === false) {
             show_error(lang('noperm_fededit'), 403);
         }
-        if ($this->_submit_validate() === TRUE) {
+        if ($this->_submit_validate() === true) {
             $inurn = $this->input->post('urn');
             $fedname = $this->input->post('fedname');
             $indesc = $this->input->post('description');
@@ -131,7 +128,7 @@ class Fededit extends MY_Controller
                 $fed->publish();
             }
 
-            if ($lexport == 'accept') {
+            if ($lexport === 'accept') {
                 $fed->setLocalExport(TRUE);
             } elseif (empty($lexport)) {
                 $fed->setLocalExport(FALSE);
@@ -159,20 +156,20 @@ class Fededit extends MY_Controller
             $attributes = array('id' => 'formver2', 'class' => 'span-16');
             $action = base_url() . "manage/fededit/show/" . $fedid;
             $hidden = array('fed' => '' . $fedid);
-            $f = validation_errors('<div  data-alert class="alert-box alert">', '</div>');
-            $f .= form_open($action, $attributes, $hidden);
-            $f .= $this->form_element->generateFederationEditForm($fed);
-            $tf = '<div class="buttons small-11 large-10 columns text-right">';
-            $tf .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon button alert">
+            $formStr = validation_errors('<div  data-alert class="alert-box alert">', '</div>');
+            $formStr .= form_open($action, $attributes, $hidden);
+            $formStr .= $this->form_element->generateFederationEditForm($fed);
+            $formStrFoot = '<div class="buttons small-11 large-10 columns text-right">';
+            $formStrFoot .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon button alert">
                   ' . lang('rr_reset') . '</button> ';
-            $tf .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon button">
+            $formStrFoot .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon button">
                   ' . lang('rr_save') . '</button>';
-            $tf .= '</div><div class="small-1 large-2 columns end"></div>';
+            $formStrFoot .= '</div><div class="small-1 large-2 columns end"></div>';
 
-            $tf .= '</div>';
+            $formStrFoot .= '</div>';
 
-            $f .= $tf;
-            $data['form'] = $f . form_close();
+            $formStr .= $formStrFoot;
+            $data['form'] = $formStr . form_close();
             $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $fedurl . '">' . html_escape($fedname) . '</a>';
 
         }

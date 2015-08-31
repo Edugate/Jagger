@@ -178,12 +178,10 @@ class Sync_metadata extends CI_Controller {
         }
 
         $type_of_entities = strtoupper($conditions['type']);
+        $full = false;
         if ($conditions['populate'])
         {
             $full = true;
-        } else
-        {
-            $full = false;
         }
 
         $defaults = array(
@@ -191,7 +189,7 @@ class Sync_metadata extends CI_Controller {
             'active' => $conditions['is_active'],
             'static' => $conditions['default_static'],
             'local' => $conditions['is_local'],
-            'federations' => array($fed->getName()),
+            'federationid' => $fed->getId(),
             'removeexternal' => $conditions['removeexternal'],
             'mailreport' => $conditions['mailreport'],
             'email'=>$conditions['email'],

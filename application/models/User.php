@@ -1,31 +1,21 @@
 <?php
-
 namespace models;
 
 use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * ResourceRegistry3
- *
- * @package     RR3
+ * @package     Jagger
  * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-/**
- * User Class
- *
- * @package     RR3
- * @subpackage  Models
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright   2015 HEAnet Limited (http://www.heanet.ie)
+ * @license     MIT http://www.opensource.org/licenses/mit-license.php
  */
+
 
 /**
  * User Model
  * @Entity
  * @Table(name="user")
- * @author janusz
  */
 class User
 {
@@ -153,12 +143,8 @@ class User
         for ($p = 0; $p < $length; $p++) {
             $string .= $characters[mt_rand(0, (strlen($characters)) - 1)];
         }
-
-        $encrypted_password = self::encryptPassword($string);
-
-        $this->password = $encrypted_password;
+        $this->password = self::encryptPassword($string);
         return $this;
-
     }
 
     /**
@@ -170,9 +156,7 @@ class User
      */
     public function setPassword($password)
     {
-        $encrypted_password = self::encryptPassword($password);
-
-        $this->password = $encrypted_password;
+        $this->password = self::encryptPassword($password);
         return $this;
     }
 
@@ -227,8 +211,8 @@ class User
 
     public function unsetRole(AclRole $role)
     {
-        $already_there = $this->getRoles()->contains($role);
-        if ($already_there) {
+        $alreadyThere = $this->getRoles()->contains($role);
+        if ($alreadyThere) {
             $this->getRoles()->removeElement($role);
         }
         return $this;
@@ -273,25 +257,25 @@ class User
 
     public function setLocalEnabled()
     {
-        $this->local = TRUE;
+        $this->local = true;
         return $this;
     }
 
     public function setLocalDisabled()
     {
-        $this->local = FALSE;
+        $this->local = false;
         return $this;
     }
 
     public function setFederatedEnabled()
     {
-        $this->federated = TRUE;
+        $this->federated = true;
         return $this;
     }
 
     public function setFederatedDisabled()
     {
-        $this->federated = FALSE;
+        $this->federated = false;
         return $this;
     }
 
@@ -333,25 +317,25 @@ class User
 
     public function setAccepted()
     {
-        $this->approved = TRUE;
+        $this->approved = true;
         return $this;
     }
 
     public function setRejected()
     {
-        $this->approved = FALSE;
+        $this->approved = false;
         return $this;
     }
 
     public function setEnabled()
     {
-        $this->enabled = TRUE;
+        $this->enabled = true;
         return $this;
     }
 
     public function setDisabled()
     {
-        $this->enabled = FALSE;
+        $this->enabled = false;
         return $this;
     }
 
@@ -468,12 +452,12 @@ class User
 
     public function setValid()
     {
-        $this->validated = TRUE;
+        $this->validated = true;
     }
 
     public function setInvalid()
     {
-        $this->validated = FALSE;
+        $this->validated = false;
     }
 
     /**
@@ -525,13 +509,14 @@ class User
      */
     public function getBasic()
     {
-        $data = array('username' => $this->getUsername(),
+        $data = array(
+            'username' => $this->getUsername(),
             'user_id' => $this->getId());
         $userpref = $this->getUserpref();
-        if (isset($userpref['showhelp']) && $userpref['showhelp'] === TRUE) {
-            $data['showhelp'] = TRUE;
+        if (isset($userpref['showhelp']) && $userpref['showhelp'] === true) {
+            $data['showhelp'] = true;
         } else {
-            $data['showhelp'] = FALSE;
+            $data['showhelp'] = false;
         }
 
         return $data;
@@ -598,12 +583,25 @@ class User
 
     public function getRoleNames()
     {
-        $rolename = array();
+        $result = array();
         $roles = $this->getRoles();
         foreach ($roles as $r) {
-            $rolename[] = $r->getName();
+            $result[] = $r->getName();
         }
-        return $rolename;
+        return $result;
+    }
+
+    public function getSystemRoleNames()
+    {
+        $result = array();
+        $roles = $this->getRoles();
+        foreach ($roles as $r) {
+            $rtype = $r->getType();
+            if ($rtype === 'system') {
+                $result[] = $r->getName();
+            }
+        }
+        return $result;
     }
 
     public function getSubscriptions()

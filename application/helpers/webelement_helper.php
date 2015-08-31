@@ -1,13 +1,11 @@
 <?php
 
 
-
 function revealBtnsRow($btns)
 {
     $r = '<ul class="button-group text-right">';
-    foreach($btns as $btn)
-    {
-        $r .= '<li>'.$btn.'</li>';
+    foreach ($btns as $btn) {
+        $r .= '<li>' . $btn . '</li>';
     }
     return $r;
 }
@@ -17,45 +15,35 @@ function jaggerTagsReplacer($str)
     $pattern = '#\[\[jagger\:\:(.*?)\]\]#s';
     preg_match_all($pattern, $str, $match);
 
-    $finalreplace = array('pattern'=>array(),'dst'=>array());
+    $finalreplace = array('pattern' => array(), 'dst' => array());
 
-    if(!isset($match[1]) || count($match[1])==0)
-    {
+    if (!isset($match[1]) || count($match[1]) == 0) {
         return $str;
     }
     $replacements = $match[0];
-    foreach($match[1] as $k => $v)
-    {
-        $exp = explode(':',$v);
+    foreach ($match[1] as $k => $v) {
+        $exp = explode(':', $v);
 
-        foreach($exp as $ke => $e)
-        {
+        foreach ($exp as $ke => $e) {
             $i = $ke;
-            if($ke % 2 == 0 )
-            {
+            if ($ke % 2 == 0) {
                 $varray[$e] = $exp[++$i];
             }
         }
 
 
-
-        if(isset($varray['graph']) && $varray['graph'] === 'pie')
-        {
-            if(isset($varray['federation']) && ctype_digit($varray['federation']))
-            {
-                $src = base_url('federations/manage/fedmemberscount/'.$varray['federation'].'');
-                if(isset($varray['federation']) && $varray['federation'] === '1')
-                {
+        if (isset($varray['graph']) && $varray['graph'] === 'pie') {
+            if (isset($varray['federation']) && ctype_digit($varray['federation'])) {
+                $src = base_url('federations/manage/fedmemberscount/' . $varray['federation'] . '');
+                if (isset($varray['federation']) && $varray['federation'] === '1') {
                     $hidden = '';
-                }
-                else
-                {
+                } else {
                     $hidden = ' hidden ';
                 }
 
-                $r = '<div class="pjagger piegraph fedgraph" data-jagger-link="'.$src.'"><canvas></canvas><div class="plegend'. $hidden.'"></div></div>';
+                $r = '<div class="pjagger piegraph fedgraph" data-jagger-link="' . $src . '"><canvas></canvas><div class="plegend' . $hidden . '"></div></div>';
 
-                $finalreplace['pattern'][$k] = ''.$match[0][$k].'';
+                $finalreplace['pattern'][$k] = '' . $match[0][$k] . '';
                 $finalreplace['dst'][$k] = $r;
             }
         }
@@ -69,18 +57,18 @@ function jaggerTagsReplacer($str)
 function confirmDialog($title, $msg, $yes, $no)
 {
     $r = '<div id="sconfirm" class="reveal-modal small" data-reveal><div class="title-header small-12 columns text-center">' . htmlentities($title) . '</div>
-  <p class="message">' . htmlentities($msg) . '</p>';
+  <p class="message">' . html_escape($msg) . '</p>';
 
-  $btns= array(
-         '<div class="no button small alert reveal-close">' . htmlentities($no) . '</div>',
-         '<div class="yes button small">' . htmlentities($yes) . '</div>'
-        
-     );
+    $btns = array(
+        '<div class="no button small alert reveal-close">' . htmlentities($no) . '</div>',
+        '<div class="yes button small">' . htmlentities($yes) . '</div>'
 
-  $r .='<div class="small-12 columns">';
+    );
+
+    $r .= '<div class="small-12 columns">';
     $r .= revealBtnsRow($btns);
- 
- $r .= '</div>
+
+    $r .= '</div>
   </div>';
     return $r;
 }
@@ -88,7 +76,7 @@ function confirmDialog($title, $msg, $yes, $no)
 function resultDialog($title, $msg, $close)
 {
     $r = '<div id="resultdialog" class="hidden"><div class="header"><span>' . htmlentities($title) . '</span></div>
-  <p class="message">' . htmlentities($msg) . '</p>
+  <p class="message">' . html_escape($msg) . '</p>
   <div class="buttons">
   <div class="no simplemodal-close">' . htmlentities($close) . '</div>
   </div>

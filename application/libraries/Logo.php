@@ -47,7 +47,7 @@ class Logo {
              if($file !== '.' && $file !== '..')
              {
                    $filetype = finfo_file($finfo,$this->logo_basepath . $file);
-                   if($filetype == 'image/jpeg' || $filetype == 'image/png')
+                   if($filetype === 'image/jpeg' || $filetype === 'image/png')
                    {
                        $size = getimagesize($this->logo_basepath . $file);
                        $imagestable[] = array(
@@ -74,15 +74,21 @@ class Logo {
             $table_curr_images = array();
             foreach($existing_logos as $ex)
             {
-               if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches)))
+               if ((preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches)))
                {
-                    $ElementValue = $this->logo_baseurl . $ex->getEvalue();
-                    $imgtitle = lang('rr_logolocal');
+                   $ElementValue = $ex->getEvalue();
+                   $imgtitle = lang('rr_logoexternal');
+
+               }
+               elseif(strpos($ex->getEvalue(), 'data:') === 0)
+               {
+                   $ElementValue = $ex->getEvalue();
+                   $imgtitle = lang('rr_embeddedlogo');
                }
                else
                {
-                    $ElementValue = $ex->getEvalue();
-                    $imgtitle = lang('rr_logoexternal');
+                   $ElementValue = $this->logo_baseurl . $ex->getEvalue();
+                   $imgtitle = lang('rr_logolocal');
                }
 
                $size = $ex->getAttributes();

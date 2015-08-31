@@ -1858,7 +1858,13 @@ class Form_element
                 ));
                 $p .= '</div>';
                 $p .= '<div class="medium-6 columns">';
-                $p .= lang('rr_url') . ': ' . $v2['url'] . '<br />';
+                if((substr($v2['url'], 0, 5)) === 'data:')
+                {
+                    $p .= lang('embedlogo') . '<br />';
+                }
+                else {
+                    $p .= lang('rr_url') . ': ' . $v2['url'] . '<br />';
+                }
                 if (empty($v2['lang'])) {
                     $l = lang('rr_unspecified');
                 } else {
@@ -1882,8 +1888,9 @@ class Form_element
             $in = '<div class="small-6 columns">' . form_input(array('name' => '' . $t . 'logoretrieve')) . '<small class="' . $t . 'logoretrieve error" style="display:none;"></small></div>';
             $in2 = '<div class="small-3 columns"><button type="button" name="' . $t . 'getlogo" class="button tiny getlogo" value="' . base_url() . 'ajax/checklogourl">' . lang('btngetlogo') . '</button></div></div>';
 
+            $embededoption = '<label for="'.$t.'embedded">Embedded?<input name="'.$t.'embedded" type="checkbox" value="embedded"/></label>';
             $langselection = form_dropdown($t . 'logolang', $btnlangs);
-            $reviewlogo = '<div class="small-3 column"><div class="logolangselect">' . $langselection . '</div><div class="logosizeinfo"></div></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button tiny addnewlogo" type="button" name="addnewlogo">' . lang('rr_add') . '</button></div>';
+            $reviewlogo = '<div class="small-3 column"><div class="logolangselect">' . $langselection . '</div><div class="logosizeinfo"></div><div>'.$embededoption.'</div></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button tiny addnewlogo" type="button" name="addnewlogo">' . lang('rr_add') . '</button></div>';
             $da = '<fieldset><legend>' . lang('rr_newlogosection') . '</legend>' . $inlabel . $in . $in2 . '<div id="' . $t . 'reviewlogo" class="small-12 column reviewlogo" style="display: none; max-height: 100px">' . $reviewlogo . '</div></fieldset>';
 
             $result[$k1][] = '<fieldset><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $da . '</fieldset>';

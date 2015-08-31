@@ -95,7 +95,7 @@ class Certificate
 
     public function __construct()
     {
-        $this->is_default = TRUE;
+        $this->is_default = true;
     }
 
     // Begin generic set/get methods
@@ -191,8 +191,7 @@ class Certificate
      */
     public function setAsDefault()
     {
-        $bool = TRUE;
-        $this->setDefault($bool);
+        $this->setDefault(true);
         return $this;
     }
 
@@ -286,6 +285,11 @@ class Certificate
     public function getCertData()
     {
         return $this->certdata;
+    }
+
+    public function isDefault()
+    {
+        return $this->is_default;
     }
 
     public function getEncryptMethods()

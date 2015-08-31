@@ -4,13 +4,13 @@ if (!defined('BASEPATH')) {
 }
 /**
  * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
+ * @package   RR3
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ *
  */
 
 /**
@@ -41,13 +41,13 @@ if (!defined('BASEPATH')) {
  * @property Arpgen $arpgen
  * @property Providerdetails $providerdetails
  * @property Rrpreference $rrpreference
- * @property User_manage $user_manage
+ * @property Jusermanage $jusermanage
  * @property Form_element $form_element
  * @property Doctrine $doctrine
  * @property CI_Cache $cache
  */
-
-class MY_Controller extends CI_Controller {
+class MY_Controller extends CI_Controller
+{
 
     public static $langselect = array();
     public static $menuactive;
@@ -81,30 +81,26 @@ class MY_Controller extends CI_Controller {
             'pt' => array('path' => 'pt', 'val' => 'português'),
             'sr' => array('path' => 'sr', 'val' => 'srpski')
         );
+        /**
+         * @var null|array $additionalLangs
+         */
         $additionalLangs = $this->config->item('guilangs');
-        if(is_array($additionalLangs))
-        {
-            foreach($additionalLangs as $k=>$v)
-            {
-                self::$langs[''.$k.''] = $v;
+        if (is_array($additionalLangs)) {
+            foreach ($additionalLangs as $k => $v) {
+                self::$langs['' . $k . ''] = $v;
             }
         }
 
 
         $defaultLang = $this->config->item('rr_lang');
-        if ($defaultLang === null)
-        {
+        if ($defaultLang === null) {
             $defaultLang = 'english';
-        }
-        else
-        {
+        } else {
             self::$currLang = '' . $defaultLang . '';
         }
 
 
-
         $cookieLang = $this->input->cookie('rrlang', true);
-
 
 
         $defaultlangCookie = array(
@@ -114,41 +110,40 @@ class MY_Controller extends CI_Controller {
             'secure' => true
         );
 
-        if ($cookieLang !== null && (($cookieLang ==='english') ||  array_key_exists($cookieLang, self::$langs)))
-        {
+        if ($cookieLang !== null && (($cookieLang === 'english') || array_key_exists($cookieLang, self::$langs))) {
             self::$currLang = $cookieLang;
-        }
-        else
-        {
+        } else {
             $this->input->set_cookie($defaultlangCookie);
         }
 
         self::$langselect = languagesCodes($this->config->item('langselectlimit'));
         self::$menuactive = '';
 
-        if (file_exists(APPPATH . 'helpers/custom_helper.php'))
-        {
+        if (file_exists(APPPATH . 'helpers/custom_helper.php')) {
             $this->load->helper('custom');
             log_message('debug', __METHOD__ . ' custom_helper loaded');
         }
 
-        $this->lang->load('rr_lang','english');
-        if(self::$currLang === 'english' || self::$currLang === 'en')
-        {
+        $this->lang->load('rr_lang', 'english');
+        if (self::$currLang === 'english' || self::$currLang === 'en') {
             self::$currLang = 'en';
-        }
-        else
-        {
-              $this->lang->load('rr_lang',self::$currLang);
+        } else {
+            $this->lang->load('rr_lang', self::$currLang);
         }
 
     }
 
+    /**
+     * @return string
+     */
     public static function getLang()
     {
         return self::$currLang;
     }
 
+    /***
+     * @return array
+     */
     public static function guiLangs()
     {
         return self::$langs;

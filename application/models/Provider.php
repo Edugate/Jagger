@@ -1,30 +1,16 @@
 <?php
-
 namespace models;
 
 
-/**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-/**
- * Provider Class
- *
- * @package     RR3
- * @subpackage  Models
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
+    /**
+     * @package   Jagger
+     * @author    Middleware Team HEAnet
+     * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+     * @license   MIT http://www.opensource.org/licenses/mit-license.php
+     * This model for Identity and Service Providers definitions
+     */
 
 /**
- * Provider Model
- *
- * This model for Identity and Service Providers definitions
- *
  * @Entity
  * @HasLifecycleCallbacks
  * @Table(name="provider",indexes={@Index(name="type_idx", columns={"type"}),@Index(name="pname_idx", columns={"name"}),@Index(name="islocal_idx", columns={"is_local"})})
@@ -454,7 +440,7 @@ class Provider
 
     public function setLocalName(array $name = NULL)
     {
-        if (!empty($name)) {
+        if ($name !== null) {
             foreach ($name as $k => $v) {
                 if (empty($v)) {
                     unset($name['' . $k . '']);
@@ -474,7 +460,7 @@ class Provider
 
     public function setLocalDisplayName($name = NULL)
     {
-        if (!empty($name) && is_array($name)) {
+        if (is_array($name)) {
             foreach ($name as $k => $v) {
                 if (empty($v)) {
                     unset($name['' . $k . '']);
@@ -486,10 +472,10 @@ class Provider
         }
     }
 
-    public function setRegistrationPolicyFromArray($regarray, $reset = FALSE)
+    public function setRegistrationPolicyFromArray($regarray, $reset = false)
     {
 
-        if ($reset === TRUE) {
+        if ($reset === true) {
             $this->regpolicy = serialize($regarray);
         } else {
             $s = $this->getRegistrationPolicy();
@@ -513,13 +499,6 @@ class Provider
         return $this;
     }
 
-    /**
-     * public function setScope($scope)
-     * {
-     * $this->scope = $scope;
-     * return $this;
-     * }
-     */
 
     /**
      * type : idpsso, aa
@@ -668,7 +647,7 @@ class Provider
     public function setProtocolSupport($n, $data)
     {
         $allowed = array('aa', 'idpsso', 'spsso');
-        if ( is_array($data) && in_array($n, $allowed)) {
+        if (is_array($data) && in_array($n, $allowed)) {
             foreach ($data as $k => $v) {
                 $i = trim($v);
                 if (empty($i)) {
@@ -764,12 +743,15 @@ class Provider
     public function setRegistrationAuthority($reg = null)
     {
         $this->registrar = $reg;
+        if ($reg !== null && trim($reg) === '') {
+            $this->registrar = null;
+        }
         return $this;
     }
 
     public function setRegistrationDate(\DateTime $date = null)
     {
-        if (empty($date)) {
+        if ($date === null) {
             $this->registerdate = NULL;
         } else {
             $this->registerdate = $date->setTimezone(new \DateTimeZone('UTC'));
@@ -782,7 +764,7 @@ class Provider
      */
     public function setValidTo(\DateTime $date = NULL)
     {
-        if (empty($date)) {
+        if ($date === null) {
             $this->validto = NULL;
         } else {
             $this->validto = $date->setTimezone(new \DateTimeZone('UTC'));
@@ -790,9 +772,13 @@ class Provider
         return $this;
     }
 
+    /**
+     * @param \DateTime|NULL $date
+     * @return $this
+     */
     public function setValidFrom(\DateTime $date = NULL)
     {
-        if (empty($date)) {
+        if ($date === null) {
             $this->validfrom = NULL;
         } else {
             $this->validfrom = $date->setTimezone(new \DateTimeZone('UTC'));
@@ -848,7 +834,7 @@ class Provider
             $nelement->setValue($v);
             $attr = array('xml:lang' => $k);
             $nelement->setAttributes($attr);
-            if (empty($parent)) {
+            if ($parent === null) {
                 $parent = new ExtendMetadata();
                 $parent->setType($type);
                 $parent->setNameSpace('mdui');
@@ -867,14 +853,14 @@ class Provider
 
     public function setWayfList($wayflist = null)
     {
-        if (!empty($wayflist) && is_array($wayflist)) {
+        if (is_array($wayflist)) {
             $this->wayflist = serialize($wayflist);
         }
     }
 
     public function setExcarps($excarps = null)
     {
-        if (!empty($excarps) && is_array($excarps) && count($excarps) > 0) {
+        if (is_array($excarps) && count($excarps) > 0) {
             $this->excarps = serialize($excarps);
         } else {
             $this->excarps = null;
@@ -889,14 +875,14 @@ class Provider
         $this->is_locked = 0;
         $this->is_static = 0;
         $this->is_local = 1;
-        $this->setValidFrom();
-        $this->setValidTo();
+        $this->validfrom = null;
+        $this->validto = null;
         return $this;
     }
 
-    public function setLocal($is_local)
+    public function setLocal($isLocal)
     {
-        if ($is_local) {
+        if ($isLocal === true) {
             $this->is_local = true;
         } else {
             $this->is_local = false;
@@ -907,6 +893,7 @@ class Provider
     public function setAsLocal()
     {
         $this->is_local = 1;
+        return $this;
     }
 
     public function setAsExternal()
@@ -1132,7 +1119,14 @@ class Provider
         $this->overwriteScopeFull($provider);
         $this->setEntityId($provider->getEntityId());
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
-        $this->setRegistrationDate($provider->getRegistrationDate());
+
+
+        $r1 = $this->getRegistrationDateInFormat('YmdHis');
+        $r2 = $provider->getRegistrationDateInFormat('YmdHis');
+        if ($r1 !== $r2) {
+            $this->setRegistrationDate($provider->getRegistrationDate());
+        }
+
         $this->overwriteWithNameid($provider);
         foreach (array('idpsso', 'aa', 'spsso') as $a) {
             $this->setProtocolSupport($a, $provider->getProtocolSupport($a));
@@ -1145,9 +1139,27 @@ class Provider
         if (!empty($smetadata)) {
             $this->overwriteStaticMetadata($smetadata);
         }
+
+
+        /**
+         * @var $s ServiceLocation
+         * @var $nsrv ServiceLocation
+         */
+        $counterIdx = 0;
         foreach ($this->getServiceLocations() as $s) {
-            $this->removeServiceLocation($s);
+            if ($provider->getServiceLocations()->containsKey($counterIdx)) {
+                $nsrv = $provider->getServiceLocations()->get($counterIdx);
+                $s->setInFull($nsrv->getType(), $nsrv->getBindingName(), $nsrv->getUrl(), $nsrv->getOrderToInt());
+                $s->setDefault($nsrv->getDefault());
+                $provider->getServiceLocations()->remove($counterIdx);
+            } else {
+                $this->removeServiceLocation($s);
+            }
+            $counterIdx++;
+
         }
+
+
         foreach ($provider->getServiceLocations() as $r) {
             $this->setServiceLocation($r);
             $order = $r->getOrder();
@@ -1155,19 +1167,67 @@ class Provider
                 $r->setOrder(1);
             }
         }
-        foreach ($this->getCertificates() as $c) {
-            $this->removeCertificate($c);
-        }
-        foreach ($provider->getCertificates() as $r) {
-            $this->setCertificate($r);
+
+
+        /**
+         * @var $ctmp Certificate
+         * @var $nctmp Certificate
+         */
+        $counterIdx = 0;
+        foreach ($this->getCertificates() as $ctmp) {
+            if ($provider->getCertificates()->containsKey($counterIdx)) {
+                $nctmp = $provider->getCertificates()->get($counterIdx);
+                $ctmp->setType($nctmp->getType());
+                $cdata1 = $nctmp->getFingerprint();
+                $cdata2 = $ctmp->getFingerprint();
+                if ($cdata1 !== $cdata2) {
+                    $ctmp->setCertdata($nctmp->getCertData());
+                }
+
+                $ctmp->setCertType($nctmp->getCertType());
+                $ctmp->setCertUse($nctmp->getCertUse());
+                $ctmp->setKeyname($nctmp->getKeyname());
+                $ctmp->setEncryptMethods($nctmp->getEncryptMethods());
+
+                $provider->getCertificates()->remove($counterIdx);
+
+            } else {
+                $this->removeCertificate($ctmp);
+            }
+
+            $counterIdx++;
         }
 
-        foreach ($this->getContacts() as $cn) {
-            $this->removeContact($cn);
+        foreach ($provider->getCertificates() as $ncrt) {
+            $this->setCertificate($ncrt);
         }
+
+
+        $counterIdx = 0;
+        /**
+         * @var $cn Contact
+         * @var $nctn Contact
+         */
+        foreach ($this->getContacts() as $cn) {
+            if ($provider->getContacts()->containsKey($counterIdx)) {
+                $nctn = $provider->getContacts()->get($counterIdx);
+                $cn->setEmail($nctn->getEmail());
+                $cn->setType($nctn->getType());
+                $cn->setGivenName($nctn->getGivenName());
+                $cn->setSurName($nctn->getSurName());
+                $provider->getContacts()->remove($counterIdx);
+            } else {
+                $this->removeContact($cn);
+            }
+            $counterIdx++;
+        }
+
+
         foreach ($provider->getContacts() as $cn2) {
             $this->setContact($cn2);
         }
+
+
         foreach ($this->getExtendMetadata() as $f) {
             $this->removeExtendWithChildren($f);
         }
@@ -1460,7 +1520,7 @@ class Provider
     {
         $result = null;
         $backupname = null;
-        if (empty($type)) {
+        if ($type === null) {
             $type = $this->type;
         }
         $doFilter = array('DisplayName');
@@ -1565,7 +1625,7 @@ class Provider
         $result = array();
         $ex = $this->getExtendMetadata();
         foreach ($ex as $v) {
-            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'DisplayName') {
+            if ($v->getType() === $type && $v->getNameSpace() === 'mdui' && $v->getElement() === 'DisplayName') {
                 $l = $v->getAttributes();
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
@@ -1730,7 +1790,7 @@ class Provider
         $result = array();
         $ex = $this->getExtendMetadata();
         foreach ($ex as $v) {
-            if ($v->getType() == $type && $v->getNameSpace() == 'mdui' && $v->getElement() == 'PrivacyStatementURL') {
+            if ($v->getType() === $type && $v->getNameSpace() === 'mdui' && $v->getElement() === 'PrivacyStatementURL') {
                 $l = $v->getAttributes();
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
@@ -1810,9 +1870,10 @@ class Provider
         $w = $this->wayflist;
         if (!empty($w)) {
             return unserialize($w);
-        } else {
-            return null;
         }
+
+        return null;
+
     }
 
     public function getExcarps()
@@ -1820,18 +1881,18 @@ class Provider
         $w = $this->excarps;
         if (!empty($w)) {
             return unserialize($w);
-        } else {
-            return array();
         }
+        return array();
+
     }
 
     public function getLastModified()
     {
         if (empty($this->updatedAt)) {
             return $this->createdAt;
-        } else {
-            return $this->updatedAt;
         }
+        return $this->updatedAt;
+
     }
 
     public function overwriteWithNameid(Provider $provider)

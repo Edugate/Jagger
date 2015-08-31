@@ -1,7 +1,7 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  * 
@@ -20,7 +20,7 @@ if (!defined('BASEPATH'))
  */
 class Access_manage extends MY_Controller {
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
@@ -33,7 +33,7 @@ class Access_manage extends MY_Controller {
         $this->load->helper('form');
     }
 
-    private function display_form_chng($access, $user, $action)
+    private function displayFormChng($access, $user, $action)
     {
 
         $form = '<div class="permset">' . form_open() . form_hidden('user', $user) . form_hidden('action', $action);
@@ -49,14 +49,14 @@ class Access_manage extends MY_Controller {
         return $form;
     }
 
-    function entity($id)
+    public function entity($id)
     {
 
         /**
          * @var $ent models\Provider
          */
         $ent = $this->tmp_providers->getOneById($id);
-        if (empty($ent))
+        if ($ent === null)
         {
             show_error(lang('rerror_providernotexist'), 404);
         }
@@ -65,37 +65,37 @@ class Access_manage extends MY_Controller {
         {
             $group = 'entity';
         }
-        $is_local = $ent->getLocal();
-        if ($is_local)
+        $isLocal = $ent->getLocal();
+        if ($isLocal)
         {
             /**
              * @var $isResourceAcl models\AclResource
              * @var $parent models\AclResource
              */
             $isResourceAcl = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => $ent->getId()));
-            if (empty($isResourceAcl))
+            if ($isResourceAcl === null)
             {
                 $parent = $this->em->getRepository("models\AclResource")->findOneBy(array('resource' => 'entity'));
-                $r = new models\AclResource;
-                $resource_name = $ent->getId();
-                $r->setResource($resource_name);
-                $r->setDefaultValue('view');
-                $r->setType('entity');
-                $r->setParent($parent);
-                $this->em->persist($r);
+                $aclResource = new models\AclResource;
+                $resourceName = $ent->getId();
+                $aclResource->setResource($resourceName);
+                $aclResource->setDefaultValue('view');
+                $aclResource->setType('entity');
+                $aclResource->setParent($parent);
+                $this->em->persist($aclResource);
                 $this->em->flush();
             }
         }
 
         $this->load->library('zacl');
 
-        $has_manage_access = $this->zacl->check_acl($ent->getId(), 'manage', $group, '');
-        if (!$has_manage_access)
+        $hasManageAccess = $this->zacl->check_acl($ent->getId(), 'manage', $group, '');
+        if (!$hasManageAccess)
         {
             show_error(lang('rr_noperm'), 403);
         }
 
-        if (!$is_local)
+        if (!$isLocal)
         {
             show_error(lang('rr_externalentity'), 403);
         }
@@ -120,18 +120,18 @@ class Access_manage extends MY_Controller {
                 $resource_type = 'entity';
                 if ($action === 'read')
                 {
-                    $y = $this->zacl->deny_access_fromUser($resource, $action, $user, $group, $resource_type);
-                    $y = $this->zacl->deny_access_fromUser($resource, 'write', $user, $group, $resource_type);
-                    $y = $this->zacl->deny_access_fromUser($resource, 'manage', $user, $group, $resource_type);
+                    $this->zacl->deny_access_fromUser($resource, $action, $user, $group, $resource_type);
+                    $this->zacl->deny_access_fromUser($resource, 'write', $user, $group, $resource_type);
+                    $this->zacl->deny_access_fromUser($resource, 'manage', $user, $group, $resource_type);
                 }
                 elseif ($action === 'write')
                 {
-                    $y = $this->zacl->deny_access_fromUser($resource, $action, $user, $group, $resource_type);
-                    $y = $this->zacl->deny_access_fromUser($resource, 'manage', $user, $group, $resource_type);
+                    $this->zacl->deny_access_fromUser($resource, $action, $user, $group, $resource_type);
+                    $this->zacl->deny_access_fromUser($resource, 'manage', $user, $group, $resource_type);
                 }
                 elseif ($action === 'manage')
                 {
-                    $y = $this->zacl->deny_access_fromUser($resource, $action, $user, $group, $resource_type);
+                    $this->zacl->deny_access_fromUser($resource, $action, $user, $group, $resource_type);
                 }
                 $this->em->flush();
             }
@@ -143,18 +143,18 @@ class Access_manage extends MY_Controller {
                 $resource_type = 'entity';
                 if ($action === 'manage')
                 {
-                    $y = $this->zacl->add_access_toUser($resource, $action, $user, $group, $resource_type);
-                    $y = $this->zacl->add_access_toUser($resource, 'write', $user, $group, $resource_type);
-                    $y = $this->zacl->add_access_toUser($resource, 'read', $user, $group, $resource_type);
+                    $this->zacl->add_access_toUser($resource, $action, $user, $group, $resource_type);
+                    $this->zacl->add_access_toUser($resource, 'write', $user, $group, $resource_type);
+                    $this->zacl->add_access_toUser($resource, 'read', $user, $group, $resource_type);
                 }
                 elseif ($action === 'write')
                 {
-                    $y = $this->zacl->add_access_toUser($resource, $action, $user, $group, $resource_type);
-                    $y = $this->zacl->add_access_toUser($resource, 'read', $user, $group, $resource_type);
+                    $this->zacl->add_access_toUser($resource, $action, $user, $group, $resource_type);
+                    $this->zacl->add_access_toUser($resource, 'read', $user, $group, $resource_type);
                 }
                 elseif ($action === 'read')
                 {
-                    $y = $this->zacl->add_access_toUser($resource, $action, $user, $group, $resource_type);
+                    $this->zacl->add_access_toUser($resource, $action, $user, $group, $resource_type);
                 }
                 $this->em->flush();
             }
@@ -170,14 +170,18 @@ class Access_manage extends MY_Controller {
         $this->em->flush();
         $this->zacl = new Zacl();
 
-        $tmp_users = $this->em->getRepository("models\User")->findAll();
-        $admin_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-        $admins = $admin_role->getMembers();
+        /**
+         * @var models\User[] $tmpUsers
+         * @var models\AclRole $adminRole
+         */
+        $tmpUsers = $this->em->getRepository("models\User")->findAll();
+        $adminRole = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
+        $admins = $adminRole->getMembers();
         $users_array = array();
         $users_objects = array();
         $actions = array('read', 'write', 'manage');
         $id_of_entity = $ent->getId();
-        foreach ($tmp_users as $u)
+        foreach ($tmpUsers as $u)
         {
             $users_objects[$u->getUsername()] = $u;
             foreach ($actions as $a)
@@ -189,12 +193,12 @@ class Access_manage extends MY_Controller {
 
         $row = array();
         $i = 0;
-        $session_user = $_SESSION['username'];
+        $currentUser = $this->j_auth->current_user();
         foreach ($users_array as $key => $value)
         {
             $is_me = '';
             $isitme = false;
-            if ($session_user == $key)
+            if ($currentUser === $key)
             {
                 $is_me = '<span class="alert">' . lang('rr_you') . '</span>';
                 $isitme = true;
@@ -202,15 +206,7 @@ class Access_manage extends MY_Controller {
             $u = $admins->contains($users_objects[$key]);
             if ($u)
             {
-                $k = 'admin';
-            }
-            else
-            {
-                $k = '';
-            }
-            if ($k)
-            {
-                $row[$i] = array($key . " (Administrator)" . $is_me, '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '');
+                $row[$i] = array($key . ' (Administrator)' . $is_me, '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '');
             }
             else
             {
@@ -223,7 +219,7 @@ class Access_manage extends MY_Controller {
                     {
                         if (!$isitme)
                         {
-                            $row[$i][] = $hasAccess . $this->display_form_chng('deny', $key, $ackey);
+                            $row[$i][] = $hasAccess . $this->displayFormChng('deny', $key, $ackey);
                         }
                         else
                         {
@@ -234,7 +230,7 @@ class Access_manage extends MY_Controller {
                     {
                         if (!$isitme)
                         {
-                            $row[$i][] = $hasNoAccess . $this->display_form_chng('allow', $key, $ackey);
+                            $row[$i][] = $hasNoAccess . $this->displayFormChng('allow', $key, $ackey);
                         }
                         else
                         {
@@ -246,7 +242,7 @@ class Access_manage extends MY_Controller {
             $i++;
         }
         $entity_link = anchor(base_url() . 'providers/detail/show/' . $id_of_entity, '<i class="fi-arrow-right"></i>');
-        $data['resource_name'] = $ent->getName() . " (" . $ent->getEntityId() . ")" . $entity_link;
+        $data['resource_name'] = $ent->getName() . ' (' . $ent->getEntityId() . ')' . $entity_link;
         $lang = MY_Controller::getLang();
         $data['resourcename'] = $ent->getNameToWebInLang($lang, $ent->getType());
         $data['entityid'] = $ent->getEntityId();
@@ -271,14 +267,16 @@ class Access_manage extends MY_Controller {
         $this->load->view('page', $data);
     }
 
-    function federation($id)
+    public function federation($id)
     {
         $this->load->library('zacl');
+        /**
+         * @var models\Federation $fed
+         */
         $fed = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $id));
-        if (empty($fed))
+        if ($fed === null)
         {
             show_error(lang('error_fednotfound'), 404);
-            return;
         }
         $fedurl= base64url_encode($fed->getName());
         $data['breadcrumbs'] = array(
@@ -293,7 +291,6 @@ class Access_manage extends MY_Controller {
         if (!$has_manage_access)
         {
             show_error(lang('rerror_noperm_mngperm'), 403);
-            return;
         }
         $submited = $this->input->post('change_access');
         if (!empty($submited))
@@ -327,7 +324,7 @@ class Access_manage extends MY_Controller {
                 $fresource = 'f_' . $fed->getId();
                 $action = $this->input->post('action');
                 $user = $this->input->post('user');
-                $resource_type = "federation";
+                $resource_type = 'federation';
                 if ($action === 'manage')
                 {
                     $this->zacl->add_access_toUser($fresource, $action, $user, $group, $resource_type);
@@ -373,13 +370,13 @@ class Access_manage extends MY_Controller {
         }
         $row = array();
         $i = 0;
-        $session_user = $_SESSION['username'];
+        $sessionUser = $this->j_auth->current_user();
 
         foreach ($users_array as $key => $value)
         {
-            $is_me = "";
+            $is_me = '';
             $isitme = false;
-            if ($session_user == $key)
+            if ($sessionUser == $key)
             {
                 $is_me = '<span class="alert">' . lang('rr_you') . '</span>';
                 $isitme = true;
@@ -387,11 +384,11 @@ class Access_manage extends MY_Controller {
             $u = $admins->contains($users_objects[$key]);
             if ($u)
             {
-                $k = "admin";
+                $k = 'admin';
             }
             else
             {
-                $k = "";
+                $k = '';
             }
             if ($k)
             {
@@ -399,7 +396,7 @@ class Access_manage extends MY_Controller {
             }
             else
             {
-                $row[$i][] = $is_me . " " . $key . " ";
+                $row[$i][] = $is_me . ' ' . $key . ' ';
                 $hasAccess = lang('rr_hasaccess');
                 $hasNoAccess = lang('rr_hasnoaccess');
                 foreach ($value as $ackey => $acvalue)
@@ -408,7 +405,7 @@ class Access_manage extends MY_Controller {
                     {
                         if (!$isitme)
                         {
-                            $row[$i][] = $hasAccess . $this->display_form_chng('deny', $key, $ackey);
+                            $row[$i][] = $hasAccess . $this->displayFormChng('deny', $key, $ackey);
                         }
                         else
                         {
@@ -419,7 +416,7 @@ class Access_manage extends MY_Controller {
                     {
                         if (!$isitme)
                         {
-                            $row[$i][] = $hasNoAccess . $this->display_form_chng('allow', $key, $ackey);
+                            $row[$i][] = $hasNoAccess . $this->displayFormChng('allow', $key, $ackey);
                         }
                         else
                         {
