@@ -514,9 +514,8 @@ class Metadata2array
                     }
                     if ($gnode->nodeName === 'mdui:Logo') {
                         $logoval = trim($gnode->nodeValue);
-                        if (substr($logoval, 0, 4) === 'http') {
-                            $ext['logo'][] = array('height' => $gnode->getAttribute('height'), 'width' => $gnode->getAttribute('width'), 'xml:lang' => $gnode->getAttribute('xml:lang'), 'val' => $logoval);
-                        }
+                        $ext['logo'][] = array('height' => $gnode->getAttribute('height'), 'width' => $gnode->getAttribute('width'), 'xml:lang' => $gnode->getAttribute('xml:lang'), 'val' => $logoval);
+
                     }
                 }
                 continue;
