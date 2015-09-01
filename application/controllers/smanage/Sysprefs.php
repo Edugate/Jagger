@@ -13,24 +13,24 @@ class Sysprefs extends MY_Controller
     }
 
 
-    private function prefconftoarray(\models\Preferences $c)
+    private function prefconftoarray(\models\Preferences $pref)
     {
-        $status = $c->getEnabled();
-        $type = $c->getType();
+        $status = $pref->getEnabled();
+        $type = $pref->getType();
         $statusString = lang('rr_disabled');
         if ($status) {
             $statusString = lang('rr_enabled');
         }
 
         $result = array(
-            'confname' => $c->getName(),
-            'displayname' => $c->getDescname(),
-            'desc' => $c->getDescription(),
+            'confname' => $pref->getName(),
+            'displayname' => $pref->getDescname(),
+            'desc' => $pref->getDescription(),
             'status' => $status,
             'type' => $type,
-            'vtext' => $c->getValue(),
-            'varray' => $c->getSerializedValue(),
-            'cat' => $c->getCategory(),
+            'vtext' => $pref->getValue(),
+            'varray' => $pref->getSerializedValue(),
+            'cat' => $pref->getCategory(),
             'statusstring' => $statusString
 
         );
@@ -42,41 +42,35 @@ class Sysprefs extends MY_Controller
     public function updateconf()
     {
         if (!$this->input->is_ajax_request() || !($this->input->method(TRUE) === 'POST')) {
-            set_status_header(401);
-            echo 'invalid request';
-            return;
+            return $this->output->set_status_header(401)->set_output('Invalid request');
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            set_status_header(401);
-            echo 'invalid session';
-            return;
+        if (!$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(401)->set_output('Invalid session');
         }
         $isAdmin = $this->j_auth->isAdministrator();
         if (!$isAdmin) {
-            set_status_header(401);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(401)->set_output('Access denied');
         }
         $this->load->library('form_validation');
 
         $this->form_validation->set_rules('confname', 'Conf name', 'required|trim|alpha_numeric');
         if ($this->form_validation->run() !== true) {
             $result['error'] = validation_errors('<div>', '</div>');
-            $this->output->set_content_type('application/json')->set_output(json_encode($result));
-            return;
+            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
 
 
         $postConfname = $this->input->post('confname');
 
-        $c = $this->em->getRepository("models\Preferences")->findOneBy(array('name' => $postConfname));
-        if (empty($c)) {
+        /**
+         * @var models\Preferences $cpref
+         */
+        $cpref = $this->em->getRepository("models\Preferences")->findOneBy(array('name' => $postConfname));
+        if ($cpref === null) {
             $result['error'] = 'No conf found';
-            $this->output->set_content_type('application/json')->set_output(json_encode($result));
-            return;
+            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
-        $type = $c->getType();
+        $type = $cpref->getType();
 
         $this->form_validation->reset_validation();
         if ($type === 'text') {
@@ -84,37 +78,34 @@ class Sysprefs extends MY_Controller
 
             if ($this->form_validation->run() !== true) {
                 $result['error'] = 'd' . validation_errors('<div>', '</div>');
-                $this->output->set_content_type('application/json')->set_output(json_encode($result));
-                return;
+                return $this->output->set_content_type('application/json')->set_output(json_encode($result));
             }
-            $t = $this->input->post('vtext');
-            $c->setValue(strip_tags($t, '<a>'));
+            $tstring = $this->input->post('vtext');
+            $cpref->setValue(strip_tags($tstring, '<a>'));
         }
 
 
         $postEnabled = $this->input->post('status');
         if (!empty($postEnabled) && $postEnabled === '1') {
-            $c->setEnabled();
+            $cpref->setEnabled();
         } else {
-            $c->setDisabled();
+            $cpref->setDisabled();
         }
 
-        $this->em->persist($c);
+        $this->em->persist($cpref);
         try {
-            $tmpresult = $this->prefconftoarray($c);
+            $tmpresult = $this->prefconftoarray($cpref);
             $this->em->flush();
 
             $this->j_cache->library('rrpreference', 'prefToArray', array('global'), -1);
             $result = $tmpresult;
             $result['result'] = 'OK';
 
-            $this->output->set_content_type('application/json')->set_output(json_encode($result));
-            return;
+            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         } catch (Exception $e) {
             $result['error'] = 'Error occurred';
             log_message('error', __METHOD__ . ' ' . $e);
-            $this->output->set_content_type('application/json')->set_output(json_encode($result));
-            return;
+            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
 
 
@@ -123,33 +114,27 @@ class Sysprefs extends MY_Controller
     public function retgconf($confparam = null)
     {
         if (!$this->input->is_ajax_request() || !($this->input->method(TRUE) === 'GET') || empty($confparam)) {
-            set_status_header(401);
-            echo 'invalid request';
-            return;
+            return $this->output->set_status_header(401)->set_output('Invalid request');
         }
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            set_status_header(401);
-            echo 'invalid session';
-            return;
+        if (!$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(401)->set_output('Invalid session');
         }
         $isAdmin = $this->j_auth->isAdministrator();
         if (!$isAdmin) {
-            set_status_header(401);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(401)->set_output('Access denied');
         }
         $arg = $confparam;
-        $c = $this->em->getRepository("models\Preferences")->findOneBy(array('name' => $arg));
-        if (empty($c)) {
-            set_status_header(404);
-            echo 'conf param not found';
-            return;
+        /**
+         * @var models\Preferences $pref
+         */
+        $pref = $this->em->getRepository("models\Preferences")->findOneBy(array('name' => $arg));
+        if ($pref === null) {
+            return $this->output->set_status_header(404)->set_output('configuration param not found');
         }
 
-        $result = $this->prefconftoarray($c);
+        $result = $this->prefconftoarray($pref);
 
-        $this->output->set_content_type('application/json')->set_output(json_encode($result));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
 
@@ -169,11 +154,14 @@ class Sysprefs extends MY_Controller
         MY_Controller::$menuactive = 'admins';
 
 
-        $f = $this->em->getRepository("models\Preferences")->findAll();
+        /**
+         * @var models\Preferences[] $prefs
+         */
+        $prefs = $this->em->getRepository("models\Preferences")->findAll();
 
         $sprefs = array();
 
-        foreach ($f as $s) {
+        foreach ($prefs as $s) {
             $sprefs['' . $s->getCategory() . ''][] = $this->prefconftoarray($s);
         }
 
