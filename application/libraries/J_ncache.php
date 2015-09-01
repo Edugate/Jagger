@@ -88,6 +88,21 @@ class J_ncache
 
     }
 
+    public function getUserQList($userid =null)
+    {
+        if($userid === null)
+        {
+            return null;
+        }
+        $cacheid = 'userq_' . $userid;
+        return $this->ci->cache->get($cacheid);
+    }
+    public function saveUserQList($userid, $data)
+    {
+        $cacheid = 'userq_' . $userid;
+        $this->ci->cache->save($cacheid, $data, 15);
+        return true;
+    }
 
     public function getMcircleMeta($providerId)
     {
