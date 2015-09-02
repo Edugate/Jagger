@@ -1235,16 +1235,28 @@ class Providerdetails
             } else {
                 $d[$i]['value'] = lang('rr_notset');
             }
-            $d[++$i]['name'] = lang('rr_logos');
+
+                $d[++$i]['name'] = lang('rr_logoofservice');
             if (isset($uiiarray['Logo'])) {
                 $str = '';
                 foreach ($uiiarray['Logo'] as $v) {
-                    $str .= anchor($v->getLogoValue()) . '<br />';
+                    $logovalue = $v->getLogoValue();
+                    if ((substr($logovalue, 0, 5)) === 'data:') {
+                        $figcap = lang('embedlogo');
+                    } else {
+                        $figcap = html_escape($logovalue);
+                    }
+
+                    $str .= '<figure><img src="' . $logovalue . '" style="max-height: 40px"/><figcaption>' . $figcap . '<br/></figcaption></figure><br />';
+
                 }
                 $d[$i]['value'] = $str;
             } else {
                 $d[$i]['value'] = lang('rr_notset');
             }
+
+
+          
         }
 
         $subresult[4] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);
