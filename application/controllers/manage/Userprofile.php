@@ -42,6 +42,22 @@ class Userprofile extends MY_Controller
         $this->form_validation->set_rules('fname', 'First name', 'trim');
         $this->form_validation->set_rules('sname', 'S name', 'trim');
 
+        $this->form_validation->set_rules('newpassword', 'New pass', 'trim');
+        $this->form_validation->set_rules('confirmnpassword', 'conf New pass', 'trim');
+
+        $npassword =  $this->input->post('npassword');
+        if(!empty($npassword))
+        {
+            $this->form_validation->set_rules('confirmnpassword', 'conf New pass', 'trim|required|matches[newpassword]');
+        }
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        $emailForm = $this->input->post('email');
+        $emailUser = $user->getEmail();
+        if($emailForm !== $emailUser)
+        {
+            $this->form_validation->set_rules('confirmemail', 'Confirm Email', 'trim|required|valid_email|matches[email]');
+        }
+
 
 
         return $this->form_validation->run();
@@ -93,6 +109,7 @@ class Userprofile extends MY_Controller
             'show2fa' => false,
             'user2factor' => $user->getSecondFactor(),
             'content_view'=> 'manage/userprofile_edit',
+            'formaction'=>current_url(),
             'userprofileurl'=>base_url('manage/users/show/'.base64url_encode($decodedUsername).''),
 
         );

@@ -3,7 +3,7 @@
 echo validation_errors('<div class="error">', '</div>');
 
 
-echo form_open();
+echo form_open($formaction, array('autocomplete'=>'off'));
 echo '
 <div class="small-12 column">
     <div class="medium-3 column medium-text-right"><label>' . lang('rr_username') . '</label></div>
@@ -17,7 +17,7 @@ if (!$isadmin) {
 }
 echo '<div class="small-12 column">
   <div class="medium-3 column medium-text-right"><label for="npassword">' . lang('rr_npassword') . '</label></div>
-    <div class="medium-6 end column">' . form_input(array('name' => 'npassword', 'type' => 'password', 'value' => '', 'autocomplete' => 'off')) . '</div>
+    <div class="medium-6 end column">' . form_input(array('name' => 'newpassword', 'type' => 'password', 'value' => '', 'autocomplete' => 'off')) . '</div>
 </div>';
 echo '<div class="small-12 column">
   <div class="medium-3 column medium-text-right"><label for="confirmnpassword">' . lang('rr_npasswordconf') . '</label></div>
