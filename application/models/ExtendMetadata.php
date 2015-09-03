@@ -1,5 +1,4 @@
 <?php
-
 namespace models;
 
 use \Doctrine\Common\Collections\ArrayCollection;
@@ -134,7 +133,7 @@ class ExtendMetadata {
     public function getLogoValue()
     {
         $this->ci = & get_instance();
-        $this->ci->load->helper('url');
+
         if(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $this->evalue, $matches))
         {
             return $this->evalue;

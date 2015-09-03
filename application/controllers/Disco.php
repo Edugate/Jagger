@@ -70,13 +70,8 @@ class Disco extends MY_Controller
                 if ($logoSet === true) {
                     continue;
                 }
-                if (!(preg_match_all("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)#i", $ex->getEvalue(), $matches))) {
-                    $elementValue = $this->logoUrl . $ex->getEvalue();
-                } else {
-                    $elementValue = $ex->getEvalue();
-                }
 
-                $result['icon'] = $elementValue;
+                $result['icon'] = $ex->getLogoValue();
                 $logoSet = true;
             }
         }
@@ -121,12 +116,12 @@ class Disco extends MY_Controller
             $output = array();
             $icounter = 0;
             foreach ($providersForWayf as $ents) {
-                    $output[$icounter] = $this->providerToDisco($ents, 'idp');
-                    $icounter++;
+                $output[$icounter] = $this->providerToDisco($ents, 'idp');
+                $icounter++;
             }
             $jsonoutput = json_encode($output);
             $this->j_ncache->saveFullDisco($jsonoutput);
-            if ( $inopaq) {
+            if ($inopaq) {
                 $data['result'] = $call . '(' . $jsonoutput . ')';
             } else {
                 $data['result'] = $jsonoutput;
@@ -202,8 +197,8 @@ class Disco extends MY_Controller
                 }
             }
             $jsonoutput = json_encode($output);
-            $this->j_ncache->saveCircleDisco($ent->getId(),$jsonoutput);
-            if ( $inopaq) {
+            $this->j_ncache->saveCircleDisco($ent->getId(), $jsonoutput);
+            if ($inopaq) {
                 $data['result'] = $call . '(' . $jsonoutput . ')';
             } else {
                 $data['result'] = $jsonoutput;
