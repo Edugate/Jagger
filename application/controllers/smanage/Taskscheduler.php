@@ -134,9 +134,9 @@ class Taskscheduler extends MY_Controller
             }
 
             $task->setJparams($paramsToSet);
-
             try {
                 $cronToTest = Cron\CronExpression::factory($task->getCronToStr());
+                $cronToTest->getNextRunDate()->format('Y-m-d H:i:s');
                 $this->em->persist($task);
                 $this->em->flush();
                 $data['msg'] = html_escape(lang('taskupsuccess'));
