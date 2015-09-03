@@ -1,5 +1,7 @@
 <?php
 
+echo validation_errors('<div class="error">', '</div>');
+
 
 echo form_open();
 echo '
@@ -51,18 +53,44 @@ if ($isadmin) {
   <div class="medium-3 column medium-text-right"><label for="accessroles">Access Roles</label></div>
     <div class="medium-6 end column">';
     foreach ($roles as $key => $value) {
-    echo form_checkbox(array('name' => 'accessroles', 'value' => ''.$key.'', 'checked' => $value)) . '<label>'.$key.'</label>';
+        echo form_checkbox(array('name' => 'accessroles', 'value' => '' . $key . '', 'checked' => $value)) . '<label>' . $key . '</label>';
     }
     echo '</div>
 </div>';
 
 }
-if($show2fa === true)
-{
-  echo '<div class="small-12 column">
+if ($show2fa === true) {
+    echo '<div class="small-12 column">
   <div class="medium-3 column medium-text-right"><label for="secondfactor">2ndFactor</label></div>
     <div class="medium-6 end column">';
-  echo '</div></div>';
+    if (count($allowed2fengines) > 0) {
+        $allowed2fengines = array('none'=>'none') + $allowed2fengines;
+        if($user2factor === null)
+        {
+            $user2factor = 'none';
+        }
+        foreach ($allowed2fengines as $fengine) {
+
+            $fchecked = false;
+            if ($fengine === $user2factor) {
+                $fchecked = true;
+            }
+            echo form_radio(array('name' => 'secondf', 'value' => '' . $fengine . '', 'checked' => $fchecked)) . '<label>' . $fengine . '</label>';
+        }
+    } else {
+    echo 'Not acti';
+    }
+    echo '</div></div>';
 }
 
+$btns = array(
+        '<a href="'.$userprofileurl.'" class="button alert">' . lang('rr_cancel') . '</a>',
+        '<button type="submit" name="update" value="updateprofile" class="button">' . lang('btnupdate') . '</button>'
+    );
+  echo '<div class="small-9 end column">';
+
+
+echo revealBtnsRow($btns);
+
+echo '</div>';
 echo form_close();

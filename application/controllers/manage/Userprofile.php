@@ -22,7 +22,29 @@ class Userprofile extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->isAdmin = $this->j_auth->isAdministrator();
+        $this->load->library('form_validation');
 
+    }
+
+
+    /**
+     * @param \models\User $user
+     * @return bool
+     */
+    private function validate(models\User $user)
+    {
+
+        $this->form_validation->set_rules('username', 'Username', 'trim|required');
+        if($this->input->post('username') !== $user->getUsername())
+        {
+            return false;
+        }
+        $this->form_validation->set_rules('fname', 'First name', 'trim');
+        $this->form_validation->set_rules('sname', 'S name', 'trim');
+
+
+
+        return $this->form_validation->run();
     }
 
 
@@ -55,10 +77,10 @@ class Userprofile extends MY_Controller
          */
         $user = $this->em->getRepository('models\User')->findOneBy(array('username' => $decodedUsername));
         if ($user === null) {
-            show_error(404, 'User not found');
+            show_error('User not found',404);
         }
 
-
+        $this->title = ' '.html_escape($user->getUsername());
 
         $data = array(
             'username'=>$user->getUsername(),
@@ -69,7 +91,10 @@ class Userprofile extends MY_Controller
             'federated'=>(bool) $user->getFederated(),
             'isadmin' => $this->isAdmin,
             'show2fa' => false,
+            'user2factor' => $user->getSecondFactor(),
             'content_view'=> 'manage/userprofile_edit',
+            'userprofileurl'=>base_url('manage/users/show/'.base64url_encode($decodedUsername).''),
+
         );
         $systeRoles = array('Administrator','Member','Guest');
         $userSRolesNames = $user->getSystemRoleNames();
@@ -89,9 +114,21 @@ class Userprofile extends MY_Controller
         if ($this->isAdmin  || ($grantAccess && $allowed2fglobal)) {
             $data['show2fa'] = true;
         }
+        $allowed2fengines = $this->config->item('2fengines');
+        if (!is_array($allowed2fengines)) {
+            $allowed2fengines = array();
+        }
+        $data['allowed2fengines'] = $allowed2fengines;
 
 
-        $this->load->view('page', $data);
+
+        if($this->validate($user) !== true) {
+            $this->load->view('page', $data);
+        }
+        else
+        {
+            echo 'OKO';
+        }
 
     }
 
