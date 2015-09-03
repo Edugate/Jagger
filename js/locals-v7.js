@@ -1916,7 +1916,7 @@ $(document).ready(function () {
             var logourl = f.find("input[name='" + type + "inputurl']").attr('value');
             var logosize = f.find("input[name='" + type + "inputsize']").attr('value');
             var logolang = f.find("select[name='" + type + "logolang']").val();
-            var logoembedded = f.find("input[name='" + type + "embedded']").first().val();
+            var logoembeddedcheck = f.find("input[name='" + type + "embedded']").first();
             var logoraw = f.find("input[name='" + type + "logoraw']").attr('value');
 
             if (logolang === '0') {
@@ -1933,7 +1933,7 @@ $(document).ready(function () {
             var origblock = $('li#nlogo' + type + 'row');
             var newblock = origblock.clone(true);
             newblock.removeAttr('id');
-            if(logoembedded !== undefined && logoembedded === 'embedded' && logoraw !== undefined && logoraw !== null && logoraw !== '')
+            if(logoembeddedcheck !== null && logoembeddedcheck.is(':checked') && logoembeddedcheck.val() === 'embedded' && logoraw !== undefined && logoraw !== null && logoraw !== '')
             {
                 var hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logoraw + '">';
                 newblock.find('img').first().attr('src', logoraw).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
