@@ -108,7 +108,7 @@ function nl2br(str, is_xhtml) {
 
 function revealAlert(str, btnval) {
     var button = '<div class="row text-right"><button class="small modal-close">' + btnval + '</button></div>';
-    var modal = $('#malert')
+    var modal = $('#malert');
     modal.empty().append('<div class="row text-center"><p><h4>' + str + '</h4></p></div>').append(button).foundation('reveal', 'open');
 }
 
@@ -2369,7 +2369,7 @@ $(document).ready(function () {
 
 
                                 tbl += '<tr>';
-                                tbl += '<td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>' + unsupwttr + '</td><td><a href="#" class="modalconfirm" data-jagger-arp="entcat" data-jagger-entcatid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-arp="entcat" data-jagger-action="edit" data-jagger-attrname="' + data.definitions.attrs[j] + '" data-jagger-attrpolicy="' + w + '"><i class="fi-pencil"></i></a></td>'
+                                tbl += '<td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>' + unsupwttr + '</td><td><a href="#" class="modalconfirm" data-jagger-arp="entcat" data-jagger-entcatid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-arp="entcat" data-jagger-action="edit" data-jagger-attrname="' + data.definitions.attrs[j] + '" data-jagger-attrpolicy="' + w + '"><i class="fi-pencil"></i></a></td>';
                                 tbl += '</tr>';
                             });
 
@@ -2750,7 +2750,7 @@ $(document).ready(function () {
             var modal = arpmaddspecattrVar;
             var customvals = modal.find('[name="customvals"]').first();
             customvals.empty();
-            modal.find('div.response').first().removeClass('alert').removeClass('alert-box').empty().hide()
+            modal.find('div.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
             var attrdropdown = modal.find("select[name='attrid']");
             attrdropdown.empty().append($("<option></option>").attr("value", '0').text(''));
             var spdropdown = modal.find("select[name='spid']");
