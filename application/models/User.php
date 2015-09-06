@@ -527,7 +527,7 @@ class User
             'username' => $this->getUsername(),
             'user_id' => $this->getId());
         $userpref = $this->getUserpref();
-        if (isset($userpref['showhelp']) && $userpref['showhelp'] === true) {
+        if (array_key_exists('showhelp', $userpref) && $userpref['showhelp'] === true) {
             $data['showhelp'] = true;
         } else {
             $data['showhelp'] = false;

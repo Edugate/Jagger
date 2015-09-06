@@ -137,11 +137,12 @@ class Userprofile extends MY_Controller
             'userprofileurl' => base_url('manage/users/show/' . base64url_encode($decodedUsername) . ''),
 
         );
+
         $systeRoles = array('Administrator', 'Member', 'Guest');
         $userSRolesNames = $user->getSystemRoleNames();
 
         foreach ($systeRoles as $role) {
-            if (in_array($role, $userSRolesNames)) {
+            if (in_array($role, $userSRolesNames, true)) {
                 $data['roles']['' . $role . ''] = true;
             } else {
                 $data['roles']['' . $role . ''] = false;
@@ -194,8 +195,8 @@ class Userprofile extends MY_Controller
             }
             catch(Exception $e)
             {
-                log_message('error',__METHOD__. ' '.$e);
-                show_error('Interlan',500);
+                log_message('error', __METHOD__. ' '.$e);
+                show_error('Interlan', 500);
             }
         }
 

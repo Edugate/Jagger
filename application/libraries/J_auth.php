@@ -84,7 +84,6 @@ class J_auth
     public function login($identity, $password)
     {
         /**
-         * @todo change to use static from model, add more condition like user is local,valid etc
          * @var models\User $u
          */
         try {
